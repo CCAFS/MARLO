@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
+import org.cgiar.ccafs.marlo.data.manager.DeliverableInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
@@ -170,6 +171,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -270,6 +272,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
   private DeliverableTypeManager deliverableTypeManager;
+  private DeliverableInfoManager deliverableInfoManager;
   // Variables
   private long projectID;
   private long innovationID;
@@ -382,7 +385,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationActorManager projectInnovationActorManager,
     ToolFunctionCategoryManager toolFunctionCategoryManager,
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
-    DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager) {
+    DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
+    DeliverableInfoManager deliverableInfoManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -453,6 +457,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
+    this.deliverableInfoManager = deliverableInfoManager;
 
   }
 
@@ -1560,15 +1565,19 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
+
+      // cgamboa 15/12/2024 function locElementManager.findAll() will be used once time
+      List<LocElement> listLocElementPrevious = locElementManager.findAll();
+
       // Getting The list of countries
-      countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
+      countries = listLocElementPrevious.stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
         .collect(Collectors.toList());
 
       // Getting the list of institution
       institutions = institutionManager.findAll().stream().collect(Collectors.toList());
 
       // Regions for Geographic Scope Regional Selection
-      regions = locElementManager.findAll().stream()
+      regions = listLocElementPrevious.stream()
         .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
         .collect(Collectors.toList());
 
@@ -1676,15 +1685,27 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (phase != null && phase.getDeliverableInfos() != null && project != null
-        && !phase.getDeliverableInfos().isEmpty()) {
-        List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
-          .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive()
-            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
-            && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-          .collect(Collectors.toList());
+      Set<DeliverableInfo> deliverableInfos = phase.getDeliverableInfos();
+      if (phase != null && deliverableInfos != null && project != null && !deliverableInfos.isEmpty()) {
+        /*
+         * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+         * .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
+         * && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive()
+         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
+         * .collect(Collectors.toList());
+         */
+        // 16/12/2024 cgamboa the query was reduced
+        List<DeliverableInfo> infos = new ArrayList<>();
+        try {
+
+          infos = this.deliverableInfoManager.getDeliverablesInfoByPhaseProjectAndStatus(phase, project.getId(), 5L)
+            .stream().filter(c -> c != null).collect(Collectors.toList());
+        } catch (Exception e) {
+          logger.error(" unable to get deliverable info " + e.getMessage());
+        }
+
         deliverableList = new ArrayList<>();
         for (DeliverableInfo deliverableInfo : infos) {
           Deliverable deliverable = deliverableInfo.getDeliverable();
@@ -1741,20 +1762,31 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
-
+        Set<DeliverableInfo> deliverableInfosShared = phase.getDeliverableInfos();
         // Get deliverable list for shared innovations projects
         if (projectSharedList != null && !projectSharedList.isEmpty()) {
           for (Project projectInnovationShared : projectSharedList) {
-            if (phase != null && phase.getDeliverableInfos() != null && projectInnovationShared != null
-              && !phase.getDeliverableInfos().isEmpty()) {
-              List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
-                .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-                  && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
-                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-                .collect(Collectors.toList());
+            if (phase != null && deliverableInfosShared != null && projectInnovationShared != null
+              && !deliverableInfosShared.isEmpty()) {
+              /*
+               * 16/12/2024 cgamboa the query was reduced
+               * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+               * .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
+               * && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
+               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
+               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
+               * .collect(Collectors.toList());
+               */
+              List<DeliverableInfo> infos = new ArrayList<>();
+              try {
 
+                infos = this.deliverableInfoManager
+                  .getDeliverablesInfoByPhaseProjectAndStatus(phase, projectInnovationShared.getId(), 5L).stream()
+                  .filter(c -> c != null).collect(Collectors.toList());
+              } catch (Exception e) {
+                logger.error(" unable to get deliverable info " + e.getMessage());
+              }
               for (DeliverableInfo deliverableInfo : infos) {
                 Deliverable deliverable = deliverableInfo.getDeliverable();
                 deliverable.setDeliverableInfo(deliverableInfo);
@@ -1927,13 +1959,6 @@ public class ProjectInnovationAction extends BaseAction {
                 && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
               .collect(Collectors.toList());
 
-            /*
-             * comments = feedbackQACommentManager.findAll().stream()
-             * .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-             * && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == innovation.getId()
-             * && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-             * .collect(Collectors.toList());
-             */
             field.setQaComments(comments);
           }
         }
@@ -4006,6 +4031,7 @@ public class ProjectInnovationAction extends BaseAction {
       validator.validate(this, project, innovation, clearLead, true, true, this.getActualPhase().getYear(),
         this.getActualPhase().getUpkeep());
     }
+
   }
 
   public void validateTabs() {
