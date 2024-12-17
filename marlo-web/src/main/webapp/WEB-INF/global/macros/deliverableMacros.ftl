@@ -1629,7 +1629,7 @@
 
       [#-- Commissioning Study --]
       <div class="form-group">
-        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.melia.commissioning.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true!true editable=editable /]
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.melia.commissioning.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true editable=editable isWidthFull=true/]
       </div>
       
       [#-- Activity Description --]
