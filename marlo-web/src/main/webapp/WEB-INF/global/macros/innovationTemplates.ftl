@@ -227,18 +227,7 @@
 
               [#-- External Contributing Centers --]
               <div class="col-md-6 top-five-contributing">
-                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" /]
-
-                [#-- Request partner adition --]
-                [#if editable]
-                  <p id="addPartnerText" class="helpMessage">
-                    If you cannot find the organization you are looking for, please 
-                    <a class="popup" href="[@s.url action='${crpSession}/partnerSave' namespace="/projects"][@s.param name='projectID']${(projectID)!}[/@s.param][@s.param name='context'](${(actionName)!}: ID-${(innovation.id)!})[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                      click here to [@s.text name="projectPartners.addPartnerMessage.second" /]
-                    </a>
-                  </p>
-                  <br />
-                [/#if]
+                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=true maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" /]
               </div>
 
             </div>
