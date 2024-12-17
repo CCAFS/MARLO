@@ -2139,6 +2139,14 @@ public class DeliverableAction extends BaseAction {
       studyTypeList = new ArrayList<>();
       studyTypeList = studyTypeManager.findAll();
 
+      try {
+        if (studyTypeList != null && !studyTypeList.isEmpty()) {
+          studyTypeList.remove(0);
+        }
+      } catch (Exception e) {
+        Log.error("error deleting elements from study type list " + e);
+      }
+
       crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
         .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()).collect(Collectors.toList())) {
