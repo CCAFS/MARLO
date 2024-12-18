@@ -3069,14 +3069,16 @@ public class DeliverableAction extends BaseAction {
 
       for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
         if (deliverableActivity.getId() != null && deliverableActivity.getId() != -1) {
-
-          deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
-          deliverableActivity.setPhase(this.getActualPhase());
-          deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
-          // This add projectFocus to generate correct auditlog.
-          deliverablePrew.getDeliverableActivities().add(deliverableActivity);
+          deliverableActivity = deliverableActivityManager.getDeliverableActivityById(deliverableActivity.getId());
         }
+
+        deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+        deliverableActivity.setPhase(this.getActualPhase());
+        deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
+        // This add projectFocus to generate correct auditlog.
+        deliverablePrew.getDeliverableActivities().add(deliverableActivity);
       }
+
     }
   }
 
