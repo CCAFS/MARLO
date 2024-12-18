@@ -39,6 +39,7 @@
         [#-- Innovations List --]
         <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
         <div class="simpleBox table-responsive">
+          <div class="loading timeline-loader" style="display:none"></div>
           [@innovationsTableMacro list=(projectInnovations)![] /]
         </div>
         
@@ -58,6 +59,7 @@
         <br />
         <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
         <div class="simpleBox table-responsive">
+          <div class="loading timeline-loader" style="display:none"></div>
           [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
         </div>
         

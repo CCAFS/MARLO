@@ -2,6 +2,13 @@ $(document).ready(function() {
 
   // Add Data Table
   addDataTable();
+
+  // Add click event to tsURL links
+  $('a[href*="/projects"]').on('click', function() {
+    const table = $(this).closest('#table-innovations_wrapper');
+    const loadingElement = table.siblings('.loading');
+    loadingElement.show();
+  });
 });
 
 function addDataTable() {
