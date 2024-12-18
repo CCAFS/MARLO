@@ -73,6 +73,18 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
 
 
   @Override
+  public List<Activity> getActiveActivitiesByProject(long projectId, long phaseId) {
+    String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
+      + " and is_active=1";
+    List<Activity> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+
+  }
+
+  @Override
   public int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId) {
 
     StringBuilder query = new StringBuilder();
@@ -91,18 +103,6 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     }
 
     return activity;
-
-  }
-
-  @Override
-  public List<Activity> getActiveActivitiesByProject(long projectId, long phaseId) {
-    String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
-      + " and is_active=1";
-    List<Activity> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
-    }
-    return null;
 
   }
 
