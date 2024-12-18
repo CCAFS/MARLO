@@ -4,10 +4,13 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovationsList.js?20241218",
-  "${baseUrlCdn}/global/js/autoSave.js",
+  [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20240517"] /]
+[#assign customCSS = [
+  "${baseUrlCdn}/global/css/customDataTable.css",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20240517"
+  ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 [#assign isListSection = true /]
@@ -36,32 +39,33 @@
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
 
-        [#-- Innovations List --]
-        <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
-        <div class="simpleBox table-responsive">
-          <div class="loading timeline-loader" style="display:none"></div>
-          [@innovationsTableMacro list=(projectInnovations)![] /]
-        </div>
-        
-        [#-- Add Innovation Button --]
-        [#if canEdit]
-        <div class="buttons">
-          <div class="buttons-content">
-            <div class="addInnovation button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewInnovation'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addInnovation" /]
-            </a></div>
-            <div class="clearfix"></div>
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          [#-- Innovations List --]
+          <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
+          <div class="simpleBox table-responsive">
+            [@innovationsTableMacro list=(projectInnovations)![] /]
           </div>
-        </div>
-        [/#if]
+          
+          [#-- Add Innovation Button --]
+          [#if canEdit]
+          <div class="buttons">
+            <div class="buttons-content">
+              <div class="addInnovation button-blue"><a  href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/addNewInnovation'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addInnovation" /]
+              </a></div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+          [/#if]
 
-        [#-- Previous Innovations List --]
-        <br />
-        <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
-        <div class="simpleBox table-responsive">
-          <div class="loading timeline-loader" style="display:none"></div>
-          [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
-        </div>
+          [#-- Previous Innovations List --]
+          <br />
+          <h3 class="headTitle">Previous [@s.text name="projectInnovations" /]</h3>
+          <div class="simpleBox table-responsive">
+            [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
+          </div>
+          <input type="hidden" name="projectID" value="${projectID}" />
+        [/@s.form]
         
      
     </div>
@@ -78,20 +82,20 @@
     <thead>
       <tr class="subHeader">
         <th id="tb-id" width="1%">ID</th>
-        <th id="tb-title" width="40%">[@s.text name="projectInnovations.table.title" /]</th>
-        <th id="tb-type" width="22%">[@s.text name="projectInnovations.table.type" /]</th>
-        <th id="tb-stage" width="15%">[@s.text name="projectInnovations.table.stage" /]</th>
+        <th id="tb-title" width="10%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-type" width="10%">[@s.text name="projectInnovations.table.type" /]</th>
+        <th id="tb-stage" width="10%">[@s.text name="projectInnovations.table.stage" /]</th>
         <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
         [#if action.hasSpecificities('feedback_active') ]
           <th id="feedbackStatus">Feedback Status</th>
         [/#if]
-        <th class="owner">Owner</th>
+        <th class="owner" width="10%">Owner</th>
         [#if currentTable]
-        <th></th>
+        <th width="1%"></th>
         [/#if]
-        <th id="projectDownload" class="no-sort"></th>
+        <th id="projectDownload" width="1%" class="no-sort"></th>
         [#if currentTable]
-        <th id="tb-remove" width="4%" class="no-sort"></th>
+        <th id="tb-remove" width="1%" class="no-sort"></th>
         [/#if]
       </tr>
     </thead>
