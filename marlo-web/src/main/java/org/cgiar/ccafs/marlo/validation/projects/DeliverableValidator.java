@@ -712,9 +712,9 @@ public class DeliverableValidator extends BaseValidator {
           // Study type validator
           if (dInfo.getStudyType() == null
             || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
-            action.addMessage(action.getText("deliverable.deliverableInfo.studyType"));
-            action.addMissingField("deliverable.deliverableInfo.studyType");
-            action.getInvalidFields().put("list-deliverable.deliverableInfo.studyType",
+            action.addMessage(action.getText("MELIA Study Type"));
+            action.addMissingField("deliverable.deliverableInfo.studyType.id");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.studyType.id",
               InvalidFieldsMessages.EMPTYLIST);
           }
 
