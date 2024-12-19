@@ -642,8 +642,7 @@ public class ProjectActivitiesAction extends BaseAction {
       List<Activity> activitiesDB = new ArrayList<Activity>();
       try {
         activitiesDB =
-          this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
-            .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+          this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId());
       } catch (Exception e) {
         logger.info(" unable to get activities from the BD in save function ");
       }

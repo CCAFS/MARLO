@@ -133,13 +133,11 @@ table ul {
 
 /** MARLO Responsibe Tables */
 .table-responsive table {
-  min-width: 1500px;
   margin-bottom: 0;
 }
 
 .table-responsive {
   border: 1px solid #ddd;
-  max-height: 500px;
 }
 
 .table > thead > tr > th {
