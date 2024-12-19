@@ -122,9 +122,9 @@ public class ActivityManagerImpl implements ActivityManager {
   public void deletActivityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<Activity> activities =
-      phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && activity.getComposeID().equals(c.getComposeID())).collect(Collectors.toList());
+    List<Activity> activities = this.getActiveActivitiesByProject(projecID, phase.getId()).stream()
+      .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+
     if (activities != null) {
       for (Activity activityDB : activities) {
         activityDAO.deleteActivity(activityDB.getId());
@@ -133,7 +133,6 @@ public class ActivityManagerImpl implements ActivityManager {
 
     if (phase.getNext() != null) {
       this.deletActivityPhase(phase.getNext(), projecID, activity);
-
     }
   }
 
@@ -144,11 +143,10 @@ public class ActivityManagerImpl implements ActivityManager {
     activityDAO.deleteActivity(activityId);
 
     Phase currentPhase = phaseDAO.find(activity.getPhase().getId());
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (activity.getPhase().getNext() != null) {
-        this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
-      }
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && activity.getPhase().getNext() != null) {
+      this.deletActivityPhase(activity.getPhase().getNext(), activity.getProject().getId(), activity);
     }
+
     // Uncomment this line to allow reporting replication to upkeep
     // if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
     // if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
@@ -209,14 +207,12 @@ public class ActivityManagerImpl implements ActivityManager {
       List<Map<String, Object>> result = projectPartnerPersonDAO.findPartner(
         projectPartnerPerson.getProjectPartner().getInstitution().getId(), phase.getId(),
         projectPartnerPerson.getProjectPartner().getProject().getId(), projectPartnerPerson.getUser().getId());
-      if (result.size() > 0) {
+      if (!result.isEmpty()) {
         Long id = Long.parseLong(result.get(0).get("id").toString());
         return projectPartnerPersonDAO.find(id);
       }
     }
-
     return null;
-
   }
 
 
@@ -233,21 +229,19 @@ public class ActivityManagerImpl implements ActivityManager {
 
     this.saveCurrentPhaseDeliverables(resultActivity, activity.getDeliverables(), currentPhase);
 
-    if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
-      if (currentPhase.getNext() != null) {
-        this.saveActvityPhase(currentPhase.getNext(), resultActivity.getProject().getId(), resultActivity);
-      }
+    if (currentPhase.getDescription().equals(APConstants.PLANNING) && currentPhase.getNext() != null) {
+      this.saveActvityPhase(currentPhase.getNext(), resultActivity.getProject().getId(), resultActivity);
     }
 
     // Uncomment this line to allow reporting replication to upkeep
-    if (currentPhase.getDescription().equals(APConstants.REPORTING)) {
-      if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
-        Phase upkeepPhase = currentPhase.getNext().getNext();
-        if (upkeepPhase != null) {
-          this.saveActvityPhase(upkeepPhase, activity.getProject().getId(), activity);
-        }
+    if (currentPhase.getDescription().equals(APConstants.REPORTING) && currentPhase.getNext() != null
+      && currentPhase.getNext().getNext() != null) {
+      Phase upkeepPhase = currentPhase.getNext().getNext();
+      if (upkeepPhase != null) {
+        this.saveActvityPhase(upkeepPhase, activity.getProject().getId(), activity);
       }
     }
+
     return resultActivity;
   }
 
@@ -260,29 +254,33 @@ public class ActivityManagerImpl implements ActivityManager {
    */
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
-
-    List<Activity> activities =
-      phase.getProjectActivites().stream().filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+    List<Activity> activities = this.getActiveActivitiesByProject(projecID, phase.getId()).stream()
+      .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
 
     // Create new Activity
     if (activities == null || activities.isEmpty()) {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
+
       activityDAO.save(activityAdd);
+
       if (activityAdd.getComposeID() == null || activityAdd.getComposeID().isEmpty()) {
         activity.setComposeID(activity.getProject().getId() + "-" + activityAdd.getId());
         activityAdd.setComposeID(activity.getComposeID());
         activityDAO.save(activityAdd);
       }
+
       this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
+
     } else {
       // Update activity
 
       Activity activityAdd = activities.get(0);
       this.cloneActivity(activityAdd, activity, phase);
+
       activityDAO.save(activityAdd);
       this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
+
     }
 
     if (phase.getNext() != null) {
@@ -320,11 +318,10 @@ public class ActivityManagerImpl implements ActivityManager {
           activityUI.getDeliverableActivities().add(deliverableActivityNew);
         } else {
           // Check if already exists in DB, then save
-          List<DeliverableActivity> deliverableActivities = currentPhase.getDeliverableActivities().stream()
-            .filter(da -> da.isActive() && da.getActivity() != null
-              && da.getActivity().getId().longValue() == activityUI.getId().longValue()
-              && da.getDeliverable().equals(deliverableActivity.getDeliverable()))
-            .collect(Collectors.toList());
+          List<DeliverableActivity> deliverableActivities =
+            deliverableActivityManager.getDeliverableActivitiesByDeliverableIDActivityAndPhase(
+              deliverableActivity.getDeliverable().getId(), activityUI.getId(), currentPhase.getId());
+
           if (deliverableActivities == null || deliverableActivities.isEmpty()) {
             DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
             this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activityUI, currentPhase);
