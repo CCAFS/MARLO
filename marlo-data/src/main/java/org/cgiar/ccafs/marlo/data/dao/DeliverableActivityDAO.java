@@ -69,6 +69,17 @@ public interface DeliverableActivityDAO {
    * This method gets deliverableActivity list by a given deliverable and phase identifier.
    * 
    * @param deliverableId - deliverable identifier
+   * @param activityId - activity identifier
+   * @param phaseId - phase identifier
+   * @return DeliverableActivity list.
+   */
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableIDActivityAndPhase(long deliverableID,
+    long activityID, long phaseId);
+
+  /**
+   * This method gets deliverableActivity list by a given deliverable and phase identifier.
+   * 
+   * @param deliverableId - deliverable identifier
    * @param phaseId - activity identifier
    * @return DeliverableActivity list.
    */

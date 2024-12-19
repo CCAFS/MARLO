@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -75,11 +74,8 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
     Phase phase = phaseDAO.find(next.getId());
 
     List<DeliverableActivity> activityPrev =
-      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phase.getId()).stream()
-        .filter(
-          r -> r.getActivity() != null && r.getActivity().getId() != null && deliverableActivity.getActivity() != null
-            && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
-        .collect(Collectors.toList());
+      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID,
+        deliverableActivity.getActivity().getId(), phase.getId());
 
     for (DeliverableActivity deliverableActivityDB : activityPrev) {
       deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityDB.getId());
@@ -111,6 +107,13 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   @Override
   public List<DeliverableActivity> getDeliverableActivitiesByDeliverableID(long deliverableID) {
     return deliverableActivityDAO.getDeliverableActivitiesByDeliverableID(deliverableID);
+  }
+
+  @Override
+  public List<DeliverableActivity> getDeliverableActivitiesByDeliverableIDActivityAndPhase(long deliverableID,
+    long activityID, long phaseId) {
+    return deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID, activityID,
+      phaseId);
   }
 
   @Override
@@ -150,13 +153,17 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
 
   private void saveDeliverableActivityPhase(Phase next, Long deliverableID, DeliverableActivity deliverableActivity) {
     Phase phase = phaseDAO.find(next.getId());
-
+    /*
+     * List<DeliverableActivity> deliverableActivityPrev =
+     * deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phase.getId()).stream()
+     * .filter(
+     * r -> r.getActivity() != null && r.getActivity().getId() != null && deliverableActivity.getActivity() != null
+     * && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
+     * .collect(Collectors.toList());
+     */
     List<DeliverableActivity> deliverableActivityPrev =
-      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDAndPhase(deliverableID, phase.getId()).stream()
-        .filter(
-          r -> r.getActivity() != null && r.getActivity().getId() != null && deliverableActivity.getActivity() != null
-            && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
-        .collect(Collectors.toList());
+      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID,
+        deliverableActivity.getActivity().getId(), phase.getId());
 
     if (deliverableActivityPrev.isEmpty()) {
       DeliverableActivity deliverableActivitysAdd = new DeliverableActivity();
