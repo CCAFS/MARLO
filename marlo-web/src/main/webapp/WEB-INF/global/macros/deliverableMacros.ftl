@@ -1634,7 +1634,7 @@
       
       [#-- Activity Description --]
       <div class="form-group">
-        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity" help="deliverable.melia.activity.help" helpIcon=false required=true placeholder="" className="limitWords-80" editable=editable isNote=true /]
+        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity" help="deliverable.melia.activity.help" helpIcon=false required=true placeholder="" className="limitWords-80" editable=editable isNote=true isWidthFull=true /]
       </div>
       <br>
     </div>

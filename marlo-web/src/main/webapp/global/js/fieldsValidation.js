@@ -88,11 +88,6 @@ function getInputElement(fieldName,message) {
       }
     }
 
-    const associateLabel = $("label[for='" + fieldName + "']");
-    if(associateLabel.exists()) {
-      $(associateLabel).attr("title", message);
-      $(associateLabel).addClass("fieldError");
-    }
   } else {
     // VALIDATE IF IT'S CHECKBOX
     if(elementQuery.attr("type") == "checkbox") {
@@ -128,6 +123,13 @@ function getInputElement(fieldName,message) {
         $(asociateDiv).addClass("fieldError");
       }
     }
+  }
+
+  // Find Associate Label to change the color
+  const associateLabel = $("label[for='" + fieldName + "']");
+  if(associateLabel.exists()) {
+    $(associateLabel).attr("title", message);
+    $(associateLabel).addClass("fieldError");
   }
 
   // Find Bootstrap tabs

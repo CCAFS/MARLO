@@ -164,7 +164,7 @@
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
-    <label for="" class="${isMainTitle?string('label--2','')}">
+    <label for="${name}" class="${isMainTitle?string('label--2','')}">
       [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
