@@ -700,8 +700,8 @@ public class DeliverableValidator extends BaseValidator {
 
         // Validate empty MELIA question
         if (dInfo.getMeliaStudy() == null) {
-          action.addMessage(action.getText("deliverable.deliverableInfo.meliaStudy"));
-          action.addMissingField("deliverable.deliverableInfo.meliaStudy");
+          action.addMessage(action.getText("Melia Study"));
+          action.addMissingField("Melia Study");
           action.getInvalidFields().put("input-deliverable.deliverableInfo.meliaStudy",
             InvalidFieldsMessages.EMPTYFIELD);
         }
@@ -713,7 +713,7 @@ public class DeliverableValidator extends BaseValidator {
           if (dInfo.getStudyType() == null
             || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
             action.addMessage(action.getText("MELIA Study Type"));
-            action.addMissingField("deliverable.deliverableInfo.studyType.id");
+            action.addMissingField("MELIA Study Type");
             action.getInvalidFields().put("input-deliverable.deliverableInfo.studyType.id",
               InvalidFieldsMessages.EMPTYLIST);
           }
@@ -721,8 +721,8 @@ public class DeliverableValidator extends BaseValidator {
           // Commissioning study validator
           if (!(this.isValidString(dInfo.getCommissioningStudy())
             && this.wordCount(dInfo.getActivityDescription()) <= 15)) {
-            action.addMessage(action.getText("deliverable.deliverableInfo.commissioningStudy"));
-            action.addMissingField("deliverable.deliverableInfo.commissioningStudy");
+            action.addMessage(action.getText("MELIA commissioning Study"));
+            action.addMissingField("MELIA commissioning Study");
             action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
               InvalidFieldsMessages.EMPTYFIELD);
           }
@@ -730,8 +730,8 @@ public class DeliverableValidator extends BaseValidator {
           // Activity description validator
           if (!(this.isValidString(dInfo.getActivityDescription())
             && this.wordCount(dInfo.getActivityDescription()) <= 80)) {
-            action.addMessage(action.getText("deliverable.deliverableInfo.activityDescription"));
-            action.addMissingField("deliverable.deliverableInfo.activityDescription");
+            action.addMessage(action.getText("MELIA Activity Description"));
+            action.addMissingField("MELIA Activity Description");
             action.getInvalidFields().put("input-deliverable.deliverableInfo.activityDescription",
               InvalidFieldsMessages.EMPTYFIELD);
           }

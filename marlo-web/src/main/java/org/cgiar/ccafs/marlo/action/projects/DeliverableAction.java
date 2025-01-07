@@ -2471,6 +2471,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase()).setRegion(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setGeographicScope(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpProgramOutcome(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setStudyType(null);
 
         if (deliverable.getCrps() != null) {
           deliverable.getCrps().clear();
@@ -2645,6 +2646,16 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      try {
+        if (deliverableManagedState.getDeliverableInfo().getStudyType() == null
+          || deliverableManagedState.getDeliverableInfo().getStudyType().getId() == null
+          || deliverableManagedState.getDeliverableInfo().getStudyType().getId().longValue() == -1) {
+          deliverableManagedState.getDeliverableInfo().setStudyType(null);
+        }
+      } catch (Exception e) {
+        Log.error("Validate null study type id " + e);
+      }
+
       if (haveRegions) {
         // Save the Regions List
         this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
@@ -2692,6 +2703,7 @@ public class DeliverableAction extends BaseAction {
           this.deleteAllActionsAndSubActions();
         }
       }
+
 
       /*
        * Delete the field 'new expected year' when the status is different to Extended and this field has information
