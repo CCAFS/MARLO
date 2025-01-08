@@ -46,7 +46,7 @@
       <column name="expected_unit"  />
     </many-to-one>
     
-        <property name="achievedValue" type="java.lang.Long">
+        <property name="achievedValue" type="java.lang.Double">
             <column name="achieved_value" precision="12" scale="2" />
         </property>
         <property name="narrativeTarget" type="string">

@@ -825,10 +825,10 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
 
     const modifiedMask = (targetUnit) => {
       const typeTargetUnit = {
-        "129": '999.99',
+        "129": '999.99999',
         "42": '999,999,000',
-        "35": '999.99',
-        "1": "999.99",
+        "35": '999.99999',
+        "1": "999.99999",
         "-1": "999,999,000"
       }
       return typeTargetUnit[targetUnit] || "999,999,000";
