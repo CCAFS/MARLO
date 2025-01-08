@@ -1197,10 +1197,14 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate Number
-    if (!this.isValidNumber(String.valueOf(projectExpectedStudyQuantification.getNumber()))) {
-      action.addMessage(this.getTextCustom(action, "quantifications.Number"));
-      action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
-        InvalidFieldsMessages.EMPTYFIELD);
+    try {
+      if (!this.isValidNumber(String.valueOf(projectExpectedStudyQuantification.getNumber()))) {
+        action.addMessage(this.getTextCustom(action, "quantifications.Number"));
+        action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } catch (Exception e) {
+      Log.error("error getting quantification number");
     }
 
     // Validate cero Number
