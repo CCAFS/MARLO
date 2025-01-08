@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1203,10 +1204,15 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate cero Number
-    if (projectExpectedStudyQuantification.getNumber() == 0) {
-      action.addMessage(this.getTextCustom(action, "quantifications.Number"));
-      action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
-        InvalidFieldsMessages.EMPTYFIELD);
+    try {
+      if (projectExpectedStudyQuantification.getNumber() != null
+        && projectExpectedStudyQuantification.getNumber() == 0) {
+        action.addMessage(this.getTextCustom(action, "quantifications.Number"));
+        action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].number",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+    } catch (Exception e) {
+      Log.error("error getting quantification number");
     }
 
     // Validate Unit
