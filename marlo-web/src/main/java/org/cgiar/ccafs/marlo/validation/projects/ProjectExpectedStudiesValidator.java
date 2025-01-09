@@ -918,69 +918,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         // Validate References Cited - Mandatory in reporting and progress phases
         this.validateReferencesCited(projectExpectedStudy, action, true);
 
-        // Validate Describe Gender
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
-            .getId() != 1
-            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel()
-              .getId() != 4)) {
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeGender())
-            && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-              .getDescribeGender()) <= 100) {
-            action.addMessage(this.getTextCustom(action, "Describe Gender"));
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeGender",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
-        // Validate Describe Youth
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel().getId() != 1
-            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getYouthLevel()
-              .getId() != 4)) {
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeYouth())
-            && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-              .getDescribeYouth()) <= 100) {
-            action.addMessage(this.getTextCustom(action, "Describe Youth"));
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeYouth",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-        // Validate Describe Capdev
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
-            .getId() != 1
-            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getCapdevLevel()
-              .getId() != 4)) {
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeCapdev())
-            && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-              .getDescribeCapdev()) <= 100) {
-            action.addMessage(this.getTextCustom(action, "Describe Capdev"));
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeCapdev",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
-        // Validate Describe ClimateChange
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-          .getClimateChangeLevel() != null
-          && (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getClimateChangeLevel()
-            .getId() != 1
-            && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getClimateChangeLevel()
-              .getId() != 4)) {
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getDescribeClimateChange())
-            && this.wordCount(projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase())
-              .getDescribeClimateChange()) <= 100) {
-            action.addMessage(this.getTextCustom(action, "Describe Climate Change"));
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.describeClimateChange",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
         if (!resultProgessValidate && !action.isAiccra()) {
           // Validate Contacts
           if (!this.isValidString(
