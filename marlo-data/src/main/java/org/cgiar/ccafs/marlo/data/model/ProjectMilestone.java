@@ -31,7 +31,7 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   private SrfTargetUnit expectedUnit;
 
   @Expose
-  private Long achievedValue;
+  private Double achievedValue;
   @Expose
   private String narrativeTarget;
   @Expose
@@ -68,7 +68,7 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public Long getAchievedValue() {
+  public Double getAchievedValue() {
     return achievedValue;
   }
 
@@ -140,7 +140,7 @@ public class ProjectMilestone extends MarloAuditableEntity implements java.io.Se
   }
 
 
-  public void setAchievedValue(Long achievedValue) {
+  public void setAchievedValue(Double achievedValue) {
     this.achievedValue = achievedValue;
   }
 

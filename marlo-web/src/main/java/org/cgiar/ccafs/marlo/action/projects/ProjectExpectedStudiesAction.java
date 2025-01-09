@@ -3934,80 +3934,84 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param phase
    */
   public void saveQuantifications(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    try {
+      // Search and deleted form Information
+      if ((projectExpectedStudy.getProjectExpectedStudyQuantifications() != null)
+        && !projectExpectedStudy.getProjectExpectedStudyQuantifications().isEmpty()) {
+        final List<ProjectExpectedStudyQuantification> quantificationPrev =
+          new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-    // Search and deleted form Information
-    if ((projectExpectedStudy.getProjectExpectedStudyQuantifications() != null)
-      && !projectExpectedStudy.getProjectExpectedStudyQuantifications().isEmpty()) {
-      final List<ProjectExpectedStudyQuantification> quantificationPrev =
-        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (final ProjectExpectedStudyQuantification studyQuantification : quantificationPrev) {
-        if ((this.expectedStudy.getQuantifications() == null)
-          || !this.expectedStudy.getQuantifications().contains(studyQuantification)) {
-          this.projectExpectedStudyQuantificationManager
-            .deleteProjectExpectedStudyQuantification(studyQuantification.getId());
-        }
-      }
-    }
-
-    // Save form Information
-    if (this.expectedStudy.getQuantifications() != null) {
-      for (final ProjectExpectedStudyQuantification studyQuantification : this.expectedStudy.getQuantifications()) {
-        if (studyQuantification.getId() == null) {
-          final ProjectExpectedStudyQuantification studyQuantificationSave = new ProjectExpectedStudyQuantification();
-          studyQuantificationSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyQuantificationSave.setPhase(phase);
-
-          // Default Values for type Quantification.
-          if (studyQuantification.getTypeQuantification() != null) {
-            studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
-          } else {
-            studyQuantificationSave.setTypeQuantification("A");
-          }
-
-          if ((studyQuantification.getQuantificationType() != null)
-            && (studyQuantification.getQuantificationType().getId() != -1)) {
-            studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
-          }
-
-          studyQuantificationSave.setNumber(studyQuantification.getNumber());
-          studyQuantificationSave.setComments(studyQuantification.getComments());
-          studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
-
-          this.projectExpectedStudyQuantificationManager
-            .saveProjectExpectedStudyQuantification(studyQuantificationSave);
-          // This is to add studyQuantificationSave to generate
-          // correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
-        } else {
-          final ProjectExpectedStudyQuantification studyQuantificationSave =
+        for (final ProjectExpectedStudyQuantification studyQuantification : quantificationPrev) {
+          if ((this.expectedStudy.getQuantifications() == null)
+            || !this.expectedStudy.getQuantifications().contains(studyQuantification)) {
             this.projectExpectedStudyQuantificationManager
-              .getProjectExpectedStudyQuantificationById(studyQuantification.getId());
-
-          // Default Values for type Quantification.
-          if (studyQuantification.getTypeQuantification() != null) {
-            studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
-          } else {
-            studyQuantificationSave.setTypeQuantification("A");
+              .deleteProjectExpectedStudyQuantification(studyQuantification.getId());
           }
-
-          if ((studyQuantification.getQuantificationType() != null)
-            && (studyQuantification.getQuantificationType().getId() != -1)) {
-            studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
-          }
-
-          studyQuantificationSave.setNumber(studyQuantification.getNumber());
-          studyQuantificationSave.setComments(studyQuantification.getComments());
-          studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
-
-          this.projectExpectedStudyQuantificationManager
-            .saveProjectExpectedStudyQuantification(studyQuantificationSave);
-          // This is to add studyQuantificationSave to generate
-          // correct auditlog.
-          this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
         }
       }
+
+      // Save form Information
+      if (this.expectedStudy.getQuantifications() != null) {
+        for (final ProjectExpectedStudyQuantification studyQuantification : this.expectedStudy.getQuantifications()) {
+          if (studyQuantification.getId() == null) {
+            final ProjectExpectedStudyQuantification studyQuantificationSave = new ProjectExpectedStudyQuantification();
+            studyQuantificationSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyQuantificationSave.setPhase(phase);
+
+            // Default Values for type Quantification.
+            if (studyQuantification.getTypeQuantification() != null) {
+              studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
+            } else {
+              studyQuantificationSave.setTypeQuantification("A");
+            }
+
+            if ((studyQuantification.getQuantificationType() != null)
+              && (studyQuantification.getQuantificationType().getId() != -1)) {
+              studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
+            }
+
+            studyQuantificationSave.setNumber(studyQuantification.getNumber());
+            studyQuantificationSave.setComments(studyQuantification.getComments());
+            studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
+
+            this.projectExpectedStudyQuantificationManager
+              .saveProjectExpectedStudyQuantification(studyQuantificationSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+          } else {
+            final ProjectExpectedStudyQuantification studyQuantificationSave =
+              this.projectExpectedStudyQuantificationManager
+                .getProjectExpectedStudyQuantificationById(studyQuantification.getId());
+
+            // Default Values for type Quantification.
+            if (studyQuantification.getTypeQuantification() != null) {
+              studyQuantificationSave.setTypeQuantification(studyQuantification.getTypeQuantification());
+            } else {
+              studyQuantificationSave.setTypeQuantification("A");
+            }
+
+            if ((studyQuantification.getQuantificationType() != null)
+              && (studyQuantification.getQuantificationType().getId() != -1)) {
+              studyQuantificationSave.setQuantificationType(studyQuantification.getQuantificationType());
+            }
+
+            studyQuantificationSave.setNumber(studyQuantification.getNumber());
+            studyQuantificationSave.setComments(studyQuantification.getComments());
+            studyQuantificationSave.setTargetUnit(studyQuantification.getTargetUnit());
+
+            this.projectExpectedStudyQuantificationManager
+              .saveProjectExpectedStudyQuantification(studyQuantificationSave);
+            // This is to add studyQuantificationSave to generate
+            // correct auditlog.
+            this.expectedStudy.getProjectExpectedStudyQuantifications().add(studyQuantificationSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error in quantification save method " + e);
+
     }
   }
 

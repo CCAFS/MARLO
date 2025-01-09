@@ -308,7 +308,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
       Long phaseID = null;
       projectId = projectMilestone.getProjectOutcome().getProject().getId().toString();
       BigDecimal outcomeExpectedValue = new BigDecimal(0);
-      Long achievedValue = new Long(0);
+      Double achievedValue = new Double(0);
       if (projectMilestone.isActive()
         && projectMilestone.getProjectOutcome().getProject().getProjecInfoPhase(this.getSelectedPhase())
           .getSummary() != null
@@ -390,7 +390,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
           outcomeExpectedValue = new BigDecimal(-1);
           // Only reporting
           if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
-            achievedValue = new Long(-1);
+            achievedValue = new Double(-1);
           }
         } else {
           if (projectMilestone.getExpectedValue() != null) {
@@ -439,7 +439,7 @@ public class OutcomesContributionsSummaryAction extends BaseSummariesAction impl
         achievedValueString = "<Not Applicable>";
         // Only reporting
         if (this.getSelectedCycle() != null && this.getSelectedCycle().equals(APConstants.REPORTING)) {
-          achievedValue = new Long(-1);
+          achievedValue = new Double(-1);
         }
       }
 
