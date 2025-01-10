@@ -825,10 +825,10 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
 
     const modifiedMask = (targetUnit) => {
       const typeTargetUnit = {
-        "129": '999.99999',
+        "129": '00Z.ZZ',
         "42": '999,999,000',
-        "35": '999.99999',
-        "1": "999.99999",
+        "35": '00Z.ZZ',
+        "1": "00Z.ZZ",
         "-1": "999,999,000"
       }
       return typeTargetUnit[targetUnit] || "999,999,000";
@@ -846,8 +846,15 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
     }
 
     const options = {
-      reverse: true,
-      clearIfNotMatch: false
+      reverse: modifiedIcon(targetUnitSelected) === "#"? true : false,
+      clearIfNotMatch: false,
+      translation: {
+        'Z': {
+          pattern: /[0-9]/,
+          optional: true
+        }
+
+      }
     };
 
     $(ele).mask(modifiedMask(targetUnitSelected), options);
