@@ -385,9 +385,9 @@
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false isNote=true className="" required=(!action.isAWPBActive()) editable=editable oldReference=true /]        
             </div>
         [#else]
-          <!-- <div class="feedback-flex-items"> -->
+          <div class="feedback-flex-items">
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=(!action.isAWPBActive()) editable=editable oldReference=false isNote=true isMainTitle=true /]        
-          <!-- </div> -->
+          </div>
         [/#if]      
           
             <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
@@ -439,7 +439,8 @@
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        <label for="" class="label--2">[@s.text name="study.generalInformation.quantification" /]: [@customForm.req required=(editable && reportingActive && isLeverOfMaturityOnThree) /] [@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=true isMainTitle=true isNote=true editable=true /]
+
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
@@ -964,11 +965,11 @@
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       [#-- Primary Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element required=reportingActive /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}.allianceAligment.primary" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element required=reportingActive /]
       </div>
       [#-- Related Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" required=false /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}.allianceAligment.related" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" required=false /]
       </div>
     </div>
 

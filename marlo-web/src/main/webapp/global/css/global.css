@@ -361,7 +361,11 @@ span.badge.fieldError {
 
 .margin-top-10{
 	margin-top: 1rem;
-  }
+}
+
+.margin-buttom-10{
+	margin-bottom: 1rem;
+}
 
 textarea.fieldError,
 input.fieldError,
