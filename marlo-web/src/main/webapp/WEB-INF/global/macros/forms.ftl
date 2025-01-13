@@ -1051,9 +1051,9 @@
     
 [/#macro]
 
-[#macro label name text="" helpText="" required=false isMainTitle=false isNote=false editable=false showIcon=false ]
-  <div class="feedback-flex-items">
-    <label for="${name}" class="${isMainTitle?string('label--2','')}">[@s.text name=text /]:[@req required=required /] [@customForm.helpLabel name=helpText isNote=isNote showIcon=showIcon editable=editable/]</label>
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false editable=false showIcon=false className="" ]
+  <div class="feedback-flex-items col-md-12 ${className}">
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ">[@s.text name=text /]:[@req required=required /] [@customForm.helpLabel name=helpText isNote=isNote showIcon=showIcon editable=editable/]</label>
     <div class="commentNumberContainer">
       <div class="numberOfCommentsBubble">
         <p></p>
@@ -1182,7 +1182,7 @@
 
   [#if listName?has_content]
     <div class="form-group selectableCheckToCheckboxMacro radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
-      <label for="">[@s.text name=label /][@req required=required && editable /]</label>
+      [@labelText name="${customName}" text=label helpText="" required=(required && editable)  editable=editable showIcon=false className="margin-buttom-10 margin-top-10" /]
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
 
