@@ -1051,6 +1051,18 @@
     
 [/#macro]
 
+[#macro label name text="" helpText="" required=false isMainTitle=false isNote=false editable=false showIcon=false ]
+  <div class="feedback-flex-items">
+    <label for="${name}" class="${isMainTitle?string('label--2','')}">[@s.text name=text /]:[@req required=required /] [@customForm.helpLabel name=helpText isNote=isNote showIcon=showIcon editable=editable/]</label>
+    <div class="commentNumberContainer">
+      <div class="numberOfCommentsBubble">
+        <p></p>
+      </div>
+      <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    </div>
+  </div>
+[/#macro]
+
 [#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
