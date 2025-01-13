@@ -1177,12 +1177,12 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=true listNameInnerCheckbox="" subtitleInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=true listNameInnerCheckbox="" subtitleInnerCheckbox="" for="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
   [#local customName = "${name}"]
 
   [#if listName?has_content]
     <div class="form-group selectableCheckToCheckboxMacro radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
-      [@labelText name="${customName}" text=label helpText="" required=(required && editable)  editable=editable showIcon=false className="margin-buttom-10 margin-top-10" /]
+      [@labelText name="${for}" text=label helpText="" required=(required && editable)  editable=editable showIcon=false className="margin-buttom-10 margin-top-10" /]
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
 
