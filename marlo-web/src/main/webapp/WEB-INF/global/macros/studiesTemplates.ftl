@@ -435,12 +435,13 @@
       [#-- 10. Quantification (where data is available)  --]
       [#local isLeverOfMaturityOnThree = (element.projectExpectedStudyInfo.repIndStageStudy.id == 3)!false]
       [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne quantificationsBlockContainer">
+      <div class="form-group stageProcessOne quantificationsBlockContainer" style="display: grid;">
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=true isMainTitle=true isNote=true editable=true /]
-
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=(editable && reportingActive && isLeverOfMaturityOnThree) isMainTitle=true isNote=true editable=true className="padding-left-0" /]
+        
+        <br>
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
@@ -467,9 +468,7 @@
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
-        <label for="" class="label--2">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
-          [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
-        </label>
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.crossCuttingRelevance" text="study.generalInformation.crossCuttingRelevance" helpText="study.generalInformation.crossCuttingRelevance.help" required=(editable && reportingActive) isMainTitle=true isNote=true editable=editable className="padding-left-0" /]
         [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help2" showIcon=false editable=editable/]
         <div class="row">
           [#-- Gender --]
