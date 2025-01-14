@@ -119,7 +119,7 @@
           <div class="form-group row">
             <div class="form-group col-md-4">
               [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false isFlex=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
             </div>
             <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
               [#-- Multinational, National and Subnational scope --]

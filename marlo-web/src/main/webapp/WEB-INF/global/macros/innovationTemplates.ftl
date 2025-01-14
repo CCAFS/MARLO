@@ -386,13 +386,13 @@
   <div id="alliance" class="borderBox clearfix">
     [#-- SDG Targets --]
     <div class="form-group">
-      [@customForm.labelText name="innovation.sdgs" text="projectInnovations.alliance.sdgTargets" required=true editable=editable isMainTitle=true /]
+      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
       <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
       [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
-      <label for="innovation.allianceLevers" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:[@customForm.req required=true /]</label>
+      [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true editable=editable isMainTitle=true /]
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
           [#list allianceLeverList as lever]
