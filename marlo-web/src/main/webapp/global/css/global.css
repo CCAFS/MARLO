@@ -300,6 +300,10 @@ div.disabled {
 	text-align: left !important;
 }
 
+.width-auto {
+	width: auto !important;
+}
+
 .red {
 	color: red;
 	font-weight: bold;

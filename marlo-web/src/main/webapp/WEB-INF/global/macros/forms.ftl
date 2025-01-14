@@ -1051,9 +1051,9 @@
     
 [/#macro]
 
-[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false editable=false showIcon=false className="" ]
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false editable=false showIcon=false className="" classNameLabel="" ]
   <div class="feedback-flex-items col-md-12 ${className}">
-    <label for="${name}" class="${isMainTitle?string('label--2','')} ">[@s.text name=text /]:[@req required=required /] [@customForm.helpLabel name=helpText isNote=isNote showIcon=showIcon editable=editable/]</label>
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]:[@req required=required /] [@customForm.helpLabel name=helpText isNote=isNote showIcon=showIcon editable=editable/]</label>
     <div class="commentNumberContainer">
       <div class="numberOfCommentsBubble">
         <p></p>
