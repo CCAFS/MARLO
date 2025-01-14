@@ -304,7 +304,7 @@
 
             [#-- Anticipated users --]
             <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
+              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true editable=editable isMainTitle=true /]
               [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
               <div class="col-md-12">
                 <div class="col-md-4">
