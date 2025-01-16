@@ -304,7 +304,7 @@
 
             [#-- Anticipated users --]
             <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true editable=editable isMainTitle=true /]
+              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
               [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
               <div class="col-md-12">
                 <div class="col-md-4">
@@ -392,7 +392,7 @@
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
-      [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true editable=editable isMainTitle=true /]
+      [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true isMainTitle=true /]
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
           [#list allianceLeverList as lever]
@@ -564,8 +564,8 @@
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" isMainTitle=true /]
-        <label class="note--2"><p>[@s.text name="projectInnovations.readiness.evidence.help" /]</p></label>
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true /]
+        <br>
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceListReadiness">
@@ -822,10 +822,7 @@
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
-    [@customForm.labelText name="${customName}" text="${label}" required=true isMainTitle=true/]
-    <label class="note--2">
-      <p>[@s.text name=helpLabel /]</p>
-    </label>
+    [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
     [#if listName?size > 0]
         [#local listLength = listName?size - 1 /]
     [#else]
