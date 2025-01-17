@@ -439,7 +439,7 @@
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=(editable && reportingActive && isLeverOfMaturityOnThree) isMainTitle=true isNote=true editable=true className="padding-left-0" /]
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=(editable && reportingActive && isLeverOfMaturityOnThree) isMainTitle=true isNote=true className="padding-left-0" /]
         
         <br>
         <div class="quantificationsBlock">
@@ -468,7 +468,7 @@
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
-        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.crossCuttingRelevance" text="study.generalInformation.crossCuttingRelevance" helpText="study.generalInformation.crossCuttingRelevance.help" required=(editable && reportingActive) isMainTitle=true isNote=true editable=editable className="padding-left-0" /]
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.crossCuttingRelevance" text="study.generalInformation.crossCuttingRelevance" helpText="study.generalInformation.crossCuttingRelevance.help" required=(editable && reportingActive) isMainTitle=true isNote=true className="padding-left-0" /]
         [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help2" showIcon=false editable=editable/]
         <div class="row">
           [#-- Gender --]
@@ -870,7 +870,7 @@
       --]
       [@customForm.labelText name="expectedStudy.outcomestoryLinks" text="study.generalInformation.outcomestoryLinks" required=false className="padding-left-0" /]
       [@customForm.helpLabel name="study.generalInformation.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
-
+      <br>
       <div class="linksBlock ">
         <div class="linksList">
           [#list (element.links)![{}] as link ]
