@@ -1051,6 +1051,18 @@
     
 [/#macro]
 
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false className="" classNameLabel="" ]
+  <div class="feedback-flex-items col-md-12 ${className}">
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]:[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon /]</label>
+    <div class="commentNumberContainer">
+      <div class="numberOfCommentsBubble">
+        <p></p>
+      </div>
+      <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    </div>
+  </div>
+[/#macro]
+
 [#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
     [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
@@ -1165,12 +1177,12 @@
   </div>
 [/#macro]
 
-[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=true listNameInnerCheckbox="" subtitleInnerCheckbox="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
+[#macro selectableCheckToCheckboxMacro element name="" className="" fieldName="" keyFieldName="" label="" listName=""  isPrimaryLever=false hasInnerCheckbox=true listNameInnerCheckbox="" subtitleInnerCheckbox="" for="" classReferenceInnerCheckbox="" class="" required=true editable=true isRadioButton=true isDirectInfo=false ]
   [#local customName = "${name}"]
 
   [#if listName?has_content]
     <div class="form-group selectableCheckToCheckboxMacro radioToCheckbox ${isPrimaryLever?then('containerPrimaryLever','')} ${className}">
-      <label for="">[@s.text name=label /][@req required=required && editable /]</label>
+      [@labelText name="${for}" text=label helpText="" required=(required && editable) showIcon=false className="margin-buttom-10 margin-top-10" /]
       <input type="hidden" name="${customName}.${fieldName}.isPrimary" value="${isPrimaryLever?c}" />
       [#list listName as radioItem]
 

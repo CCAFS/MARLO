@@ -119,7 +119,7 @@
           <div class="form-group row">
             <div class="form-group col-md-4">
               [#-- Geographic Scope --]
-              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false isFlex=true required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
+              [@customForm.elementsListComponent name="${customName}.geographicScopes" elementType="repIndGeographicScope" elementList=element.geographicScopes  listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false required=(!action.isPOWB() && validateIsProgressWithStatus!true) /]
             </div>
             <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
               [#-- Multinational, National and Subnational scope --]
@@ -385,9 +385,9 @@
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false isNote=true className="" required=(!action.isAWPBActive()) editable=editable oldReference=true /]        
             </div>
         [#else]
-          <!-- <div class="feedback-flex-items"> -->
+          <div class="feedback-flex-items">
             [@customForm.textAreaReferences name="${customName}.projectExpectedStudyInfo.referencesText" i18nkey="study.generalInformation.referencesEvidenceCited" help="study.generalInformation.referencesCited.help2" helpIcon=false className="" required=(!action.isAWPBActive()) editable=editable oldReference=false isNote=true isMainTitle=true /]        
-          <!-- </div> -->
+          </div>
         [/#if]      
           
             <label style="margin-top: 5px;">[@s.text name="${customName}.multireferences"][/@s.text]</label>
@@ -435,11 +435,13 @@
       [#-- 10. Quantification (where data is available)  --]
       [#local isLeverOfMaturityOnThree = (element.projectExpectedStudyInfo.repIndStageStudy.id == 3)!false]
       [#if isOutcomeCaseStudy]
-      <div class="form-group stageProcessOne quantificationsBlockContainer">
+      <div class="form-group stageProcessOne quantificationsBlockContainer" style="display: grid;">
         [#--
         [@customForm.textArea name="${customName}.projectExpectedStudyInfo.quantification" i18nkey="study.quantification" help="study.quantification.help" helpIcon=false className=" " required=editable && !(isPolicy && stageProcessOne) editable=editable /]
         --]
-        <label for="" class="label--2">[@s.text name="study.generalInformation.quantification" /]: [@customForm.req required=(editable && reportingActive && isLeverOfMaturityOnThree) /] [@customForm.helpLabel name="study.generalInformation.quantification.help" isNote=true showIcon=false editable=editable/]</label><br />
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.quantification" text="study.generalInformation.quantification" helpText="study.generalInformation.quantification.help" required=(editable && reportingActive && isLeverOfMaturityOnThree) isMainTitle=true isNote=true className="padding-left-0" /]
+        
+        <br>
         <div class="quantificationsBlock">
           <div class="quantificationsList">
           [#list (element.quantifications)![] as item]
@@ -466,9 +468,7 @@
       </div>
       <div class="form-group">
         [@tag name="Indicator #3" /]
-        <label for="" class="label--2">[@s.text name="study.generalInformation.crossCuttingRelevance" /]:
-          [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help" isNote=true showIcon=false editable=editable/]
-        </label>
+        [@customForm.labelText name="expectedStudy.projectExpectedStudyInfo.crossCuttingRelevance" text="study.generalInformation.crossCuttingRelevance" helpText="study.generalInformation.crossCuttingRelevance.help" required=(editable && reportingActive) isMainTitle=true isNote=true className="padding-left-0" /]
         [@customForm.helpLabel name="study.generalInformation.crossCuttingRelevance.help2" showIcon=false editable=editable/]
         <div class="row">
           [#-- Gender --]
@@ -868,10 +868,9 @@
     
       <br />
       --]
-      <label for="">[@s.text name="study.generalInformation.outcomestoryLinks" /]:
-        [@customForm.req required=false /]
-        [@customForm.helpLabel name="study.generalInformation.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
-      </label>
+      [@customForm.labelText name="expectedStudy.outcomestoryLinks" text="study.generalInformation.outcomestoryLinks" required=false className="padding-left-0" /]
+      [@customForm.helpLabel name="study.generalInformation.outcomestoryLinks.help" paramText="<a href='https://hdl.handle.net/10568/99384' target='_blank'>Personal data use authorization form</a>" showIcon=false editable=editable/]
+      <br>
       <div class="linksBlock ">
         <div class="linksList">
           [#list (element.links)![{}] as link ]
@@ -892,7 +891,7 @@
 
     [#-- Publications --]
     <div class="form-group">
-      <label for="">[@s.text name="study.communications.publications" /]:[@customForm.req required=false /]</label>
+      [@customForm.labelText name="study.publications" text="study.communications.publications" required=false className="padding-left-0" /]
       [@customForm.helpLabel name="study.communications.publications.help" showIcon=false isNote=true/]
       <div class="publicationsBlock">
         <div class="publicationsList">
@@ -964,11 +963,11 @@
       [@customForm.helpLabel name="study.allianceAligment.linkToLevers.note" showIcon=false editable=editable isNote=true /]
       [#-- Primary Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element required=reportingActive /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.primaryLever" name="${customName}" for="${customName}.allianceAligment.primary" fieldName="allianceLever" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=true  subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" element=element required=reportingActive /]
       </div>
       [#-- Related Levers --]
       <div class="form-group">
-        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" required=false /]
+        [@customForm.selectableCheckToCheckboxMacro label="study.allianceAligment.linkToLevers.options.relatedLever" name="${customName}" for="${customName}.allianceAligment.related" fieldName="allianceLevers" listName=allianceLeverList keyFieldName="sdgContributions" isPrimaryLever=false subtitleInnerCheckbox="study.allianceAligment.linkToLevers.options.text.contributionSDG" listNameInnerCheckbox="leverSdgContributions" classReferenceInnerCheckbox="sDGContribution" isRadioButton=false element=element className="containerRelatedLever" required=false /]
       </div>
     </div>
 
@@ -1013,7 +1012,7 @@
     <div class="form-group linkToImpactAndTarget"  [#if element.projectExpectedStudyInfo.hasCgiarContribution??] style="display:${((hasContributionToCGIAR?c) == 'true')?string('block','none')};" [#else] style="display: none;" [/#if]>
       <label class="label--2" for=""><b>[@s.text name="study.oneCGIARAligment.linkToImpactAndTarget.title" /]</b>[@customForm.req required=(editable) /]</label>
       
-      [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false subtitleInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
+      [@customForm.selectableCheckToCheckboxMacro label="study.oneCGIARAligment.linkToImpactAndTarget.descripition" name="${customName}" for="${customName}.oneCgiar.impactAreas" fieldName="impactArea" listName=impactAreasList keyFieldName="globalTargets" isPrimaryLever=false subtitleInnerCheckbox="" listNameInnerCheckbox="globalTargets" classReferenceInnerCheckbox="impactArea" isRadioButton=true isDirectInfo=true element=element /]
     </div>
   </div>
 [/#macro]

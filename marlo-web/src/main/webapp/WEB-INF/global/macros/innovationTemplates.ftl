@@ -304,7 +304,7 @@
 
             [#-- Anticipated users --]
             <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              <label class="label--2">[@s.text name="projectInnovations.anticipatedUsers" /][@customForm.req required=true /]</label>
+              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
               [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
               <div class="col-md-12">
                 <div class="col-md-4">
@@ -386,13 +386,13 @@
   <div id="alliance" class="borderBox clearfix">
     [#-- SDG Targets --]
     <div class="form-group">
-      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
+      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
       <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
       [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
     </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
-      <label for="innovation.allianceLevers" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.researchTheme" /]:[@customForm.req required=true /]</label>
+      [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true isMainTitle=true /]
       <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
       [#if allianceLeverList?has_content]
           [#list allianceLeverList as lever]
@@ -559,13 +559,13 @@
 
       [#-- Innovation Readiness reason --]
       <div class="form-group">
-        [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable /]
+        [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable isWidthFull=true /]
       </div>
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        <label class="label--2">[@s.text name="projectInnovations.readiness.evidence" /]:</label>
-        <label class="note--2"><p>[@s.text name="projectInnovations.readiness.evidence.help" /]</p></label>
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true /]
+        <br>
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceListReadiness">
@@ -626,7 +626,7 @@
           </div>
           [#-- hasKnowledgePotential --]
           <div class="col-md-12">
-            <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.potential" /]:</label>
+            [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
             [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
             [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
 
@@ -656,7 +656,7 @@
         <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.urls" /]:</label>
         [#-- hasToolUrl ---]
         <div class="col-md-12 padding-left-2">
-          <label class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool" /]:</label>
+          [@customForm.labelText name="innovation.hasToolUrl" text="projectInnovations.sharing.urls.tool" /]
           [#local hasToolUrlText = "hasToolUrl" /]
           [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)! /]    
 
@@ -712,7 +712,7 @@
           </div>
           [#-- urls Complementary Solutions --]
           <div class="col-md-12">
-            <label class="col-md-12">[@s.text name="projectInnovations.sharing.collaboration.complementarySolutions" /]:</label>
+            [@customForm.labelText name="innovation.hasComplementarySolutions" text="projectInnovations.sharing.collaboration.complementarySolutions" /]
             <div class="col-md-12">
               <div class="referenceBlock">
                 <div class="referenceListComplementary">
@@ -822,10 +822,7 @@
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
-    <label class="label--2" style="width:100%">[@s.text name=label /]:[@customForm.req required=true /]</label>
-    <label class="note--2">
-      <p>[@s.text name=helpLabel /]</p>
-    </label>
+    [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
     [#if listName?size > 0]
         [#local listLength = listName?size - 1 /]
     [#else]
@@ -836,7 +833,7 @@
       [#if listName?has_content]
         [#list listName as item]
           <div class="col-md-1 scaling__item">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" /]
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}_" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" /]
           </div>
         [/#list]
       [/#if]

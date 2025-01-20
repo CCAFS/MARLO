@@ -394,6 +394,7 @@ div.projectInnovationsPartners div.usersBlock{
 .scaling__container {
   display: flex;
   height: 100%;
+  width: 100%;
   min-height: -webkit-fill-available;
   position: relative;
   align-items: center;

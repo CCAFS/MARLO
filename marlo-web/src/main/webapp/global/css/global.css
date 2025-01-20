@@ -300,6 +300,10 @@ div.disabled {
 	text-align: left !important;
 }
 
+.width-auto {
+	width: auto !important;
+}
+
 .red {
 	color: red;
 	font-weight: bold;
@@ -361,7 +365,11 @@ span.badge.fieldError {
 
 .margin-top-10{
 	margin-top: 1rem;
-  }
+}
+
+.margin-buttom-10{
+	margin-bottom: 1rem;
+}
 
 textarea.fieldError,
 input.fieldError,
@@ -8371,6 +8379,10 @@ img.qaOptionsComment {
 
 .padding-left-2{
 	padding-left: 2rem !important;
+}
+
+.padding-left-0{
+	padding-left: 0 !important;
 }
 
 
