@@ -27,7 +27,7 @@
         <th id="deliverableResponsible">[@s.text name="project.deliverable.responsible.person" /]</th>
         
         [#if currentTable]
-        <th id="deliverableRF"></th>
+        <th id="deliverableRF"><p style="display: none;">Deliverable RF</p></th>
         <th id="deliverableRemove"></th>
         [/#if]
       </tr>
@@ -165,9 +165,9 @@
           [#if currentTable]
             <td class="text-center">
               [#if isDeliverableComplete]
-                <span class="icon-20 icon-check" title="Complete"></span>
+                <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span>
               [#else]
-                <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"></span>
+                <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"><p style="display: none;">Incomplete</p></span>
               [/#if]
             </td>
             <td class="text-center">

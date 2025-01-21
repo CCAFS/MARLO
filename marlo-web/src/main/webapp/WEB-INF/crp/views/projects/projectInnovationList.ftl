@@ -90,7 +90,7 @@
         [/#if]
         <th class="owner" width="10%">Owner</th>
         [#if currentTable]
-        <th width="1%"></th>
+        <th width="1%"><p style="display: none;">Innovation RF</p></th>
         [/#if]
         <th id="projectDownload" width="1%" class="no-sort"></th>
         [#if currentTable]
@@ -143,9 +143,9 @@
           [#if currentTable]
           <td>
             [#if isThisComplete]
-              <span class="icon-20 icon-check" title="Complete"></span> 
+              <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span> 
             [#else]
-              <span class="icon-20 icon-uncheck" title=""></span> 
+              <span class="icon-20 icon-uncheck" title=""><p style="display: none;">Incomplete</p></span> 
             [/#if]
           </td>
           [/#if]

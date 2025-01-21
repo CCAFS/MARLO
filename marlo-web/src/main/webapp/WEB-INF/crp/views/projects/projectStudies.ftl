@@ -126,7 +126,7 @@
         <th id="projectDownload" class="no-sort"></th>
         [/#if]
         [#if !previousTable]
-        <th></th>
+        <th><p style="display: none;">Studies RF</p></th>
         <th class="removeHighlight"></th> 
         [/#if]
       </tr>
@@ -195,9 +195,9 @@
             [#if !previousTable]
             <td>
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
-                <span class="icon-20 icon-check" title="Complete"></span> 
+                <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span> 
               [#else]
-                <span class="icon-20 icon-uncheck" title=""></span> 
+                <span class="icon-20 icon-uncheck" title=""><p style="display: none;">Incomplete</p></span> 
               [/#if]
             </td>
             <td class="removeHighlight-row text-center">
