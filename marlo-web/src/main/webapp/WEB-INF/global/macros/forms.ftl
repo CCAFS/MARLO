@@ -539,7 +539,7 @@
 [/#macro]
 
 
-[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
   <div class="feedback-flex-items radioFlat-flex"></div>
   <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
@@ -554,12 +554,14 @@
       [/#if]
     </label>
   </div>
-  <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
+  [#if canComment]
+    <div class="commentNumberContainer">
+      <div class="numberOfCommentsBubble">
+        <p></p>
+      </div>
+      <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
     </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
-  </div>
+  [/#if]
   [#elseif checked]
     <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
   [/#if]
