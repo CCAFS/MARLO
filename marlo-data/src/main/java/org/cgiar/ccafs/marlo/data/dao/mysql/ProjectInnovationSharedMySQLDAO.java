@@ -72,6 +72,22 @@ public class ProjectInnovationSharedMySQLDAO extends AbstractMarloDAO<ProjectInn
   }
 
   @Override
+  public List<ProjectInnovationShared> getByInnovationAndPhase(long innovationId, long phaseId) {
+    String query = "select distinct esp from ProjectInnovationShared esp "
+      + "where projectInnovation.id = :innovationId and phase.id = :phaseId and is_active=1";
+    Query<ProjectInnovationShared> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("innovationId", innovationId);
+    createQuery.setParameter("phaseId", phaseId);
+    List<ProjectInnovationShared> result = super.findAll(createQuery);
+
+    if (result != null && !result.isEmpty()) {
+      return result;
+    }
+    return null;
+  }
+
+
+  @Override
   public List<ProjectInnovationShared> getByProjectAndPhase(long projectId, long phaseId) {
     String query = "select distinct esp from ProjectInnovationShared esp "
       + "where project.id = :projectId and phase.id = :phaseId and is_active=1";

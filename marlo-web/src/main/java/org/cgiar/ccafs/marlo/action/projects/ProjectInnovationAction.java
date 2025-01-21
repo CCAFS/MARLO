@@ -1379,9 +1379,23 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovation shared Projects List
-        if (this.innovation.getProjectInnovationShareds() != null) {
-          this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        try {
+          List<ProjectInnovationShared> projectInnovationSharedList = new ArrayList<>();
+          projectInnovationSharedList =
+            this.projectInnovationSharedManager.getByInnovationAndPhase(this.innovation.getId(), phase.getId());
+          if (projectInnovationSharedList != null) {
+            // cgamboa 2025/01/21 the query was optimized
+            // this.innovation.setSharedInnovations(new
+            // ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
+            // .filter(o -> o.isActive() &&
+            // o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+            this.innovation.setSharedInnovations(projectInnovationSharedList);
+          }
+          logger.info(" linea projectID " + projectID);
+          logger.info(" linea phase.getId() " + phase.getId());
+
+        } catch (Exception e) {
+          e.printStackTrace();
         }
 
         // Expected Study Innovations List

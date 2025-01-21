@@ -52,6 +52,9 @@ public interface ProjectInnovationSharedManager {
   public List<ProjectInnovationShared> findAll();
 
 
+  public List<ProjectInnovationShared> getByInnovationAndPhase(long innovationId, long phaseId);
+
+
   public List<ProjectInnovationShared> getByProjectAndPhase(long projectId, long phaseId);
 
   /**
