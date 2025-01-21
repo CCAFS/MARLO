@@ -38,7 +38,8 @@
       [#-- Section Messages --]
       [#include "/WEB-INF/crp/views/projects/messages-projects.ftl" /]
 
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+        [#-- [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""] --]
+          
           [#-- Innovations List --]
           <h3 class="headTitle">[@s.text name="projectInnovations" /]</h3>
           <div class="simpleBox table-responsive">
@@ -63,8 +64,7 @@
           <div class="simpleBox table-responsive">
             [@innovationsTableMacro list=(projectOldInnovations)![] currentTable=false/]
           </div>
-          <input type="hidden" name="projectID" value="${projectID}" />
-        [/@s.form]
+        [#-- [/@s.form] --]
         
      
     </div>
@@ -174,7 +174,7 @@
                         <div class="modal-body">
                           [@customForm.textArea name="justification" i18nkey="projectInnovations.removeJustification" required=false className="removeJustification"/]
                           <input type="hidden"  name="innovationID" value="${(innovation.id)!}" />
-                          <input type="hidden"  name="projectID" value="${(innovation.project.id)!}" />
+                          <input type="hidden"  name="projectID" value="${(projectID)!}" />
                           <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
                         </div>
                         <div class="modal-footer">
