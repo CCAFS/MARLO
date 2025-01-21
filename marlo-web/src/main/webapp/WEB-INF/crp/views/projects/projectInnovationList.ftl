@@ -80,20 +80,31 @@
   <table id="table-innovations" class="table table-striped table-hover">
     <thead>
       <tr class="subHeader">
+        [#-- ID --]
         <th id="tb-id" width="1%">ID</th>
+        [#-- Title --]
         <th id="tb-title" width="10%">[@s.text name="projectInnovations.table.title" /]</th>
+        [#-- Type --]
         <th id="tb-type" width="10%">[@s.text name="projectInnovations.table.type" /]</th>
-        <th id="tb-stage" width="10%">[@s.text name="projectInnovations.table.stage" /]</th>
-        <th id="tb-year" width="8%">[@s.text name="projectInnovations.table.year" /]</th>
+        [#-- Nature --]
+        <th id="tb-stage" width="10%">[@s.text name="projectInnovations.table.nature" /]</th>
+        [#-- Readiness Level --]
+        <th id="tb-readinessLevel" width="12%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
+        [#-- Year --]
+        <th id="tb-year" width="5%">[@s.text name="projectInnovations.table.year" /]</th>
         [#if action.hasSpecificities('feedback_active') ]
-          <th id="feedbackStatus">Feedback Status</th>
+          [#-- Feedback Status --]
+          <th id="feedbackStatus" width="10%">Feedback Status</th>
         [/#if]
-        <th class="owner" width="10%">Owner</th>
+        [#--  <th class="owner" width="10%">Owner</th>  --]
         [#if currentTable]
+        [#-- Missing fields --]
         <th width="1%"><p style="display: none;">Innovation RF</p></th>
         [/#if]
+        [#-- Summary PDF download --]
         <th id="projectDownload" width="1%" class="no-sort"></th>
         [#if currentTable]
+        [#-- Remove --]
         <th id="tb-remove" width="1%" class="no-sort"></th>
         [/#if]
       </tr>
@@ -122,10 +133,13 @@
           <td>
             [@utils.tableText value=(innovation.projectInnovationInfo.repIndInnovationType.name)!"" /]
           </td>
-          [#-- Stage --]
+          [#-- Nature --]
           <td class="text-center">
-            [@utils.tableText value=(innovation.projectInnovationInfo.repIndStageInnovation.name)!"" /]
+            [@utils.tableText value=(innovation.projectInnovationInfo.repIndInnovationNature.name)!"" /]
           </td>
+          [#-- Readiness Level --]
+          <td class="text-center">
+            [@utils.tableText value=(innovation.projectInnovationInfo.readinessScale)!"" /]
           [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
@@ -136,9 +150,9 @@
                 [@utils.tableText value=(innovation.commentStatus)!"" /]
               </td>
           [/#if]
-          <td class="owner text-center">
-            [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${(innovation.project.acronym)!''}[#else]Not defined[/#if][/#if]
-          </td>
+          [#--      <td class="owner text-center">
+                      [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${(innovation.project.acronym)!''}[#else]Not defined[/#if][/#if]
+                    </td>  --]
           [#-- Missing fields --]
           [#if currentTable]
           <td>
