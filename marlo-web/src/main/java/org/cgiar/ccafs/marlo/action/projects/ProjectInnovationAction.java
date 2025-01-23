@@ -1391,8 +1391,6 @@ public class ProjectInnovationAction extends BaseAction {
             // o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
             this.innovation.setSharedInnovations(projectInnovationSharedList);
           }
-          logger.info(" linea projectID " + projectID);
-          logger.info(" linea phase.getId() " + phase.getId());
 
         } catch (Exception e) {
           e.printStackTrace();
