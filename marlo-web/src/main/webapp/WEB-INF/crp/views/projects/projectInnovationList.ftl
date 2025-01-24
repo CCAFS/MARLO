@@ -139,7 +139,7 @@
           </td>
           [#-- Readiness Level --]
           <td class="text-center">
-            [@utils.tableText value=(innovation.projectInnovationInfo.readinessScale)!"" /]
+            [@utils.tableText value=(innovation.projectInnovationInfo.readinessScale-1)!"" /]
           [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
