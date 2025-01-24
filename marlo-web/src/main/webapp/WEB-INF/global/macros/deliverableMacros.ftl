@@ -1603,6 +1603,45 @@
   <br>
 [/#macro]
 
+[#macro meliaStudyMacro]
+  [#local name = "deliverable.deliverableInfo"  /]
+  <div class="simpleBox form-group">
+    <div class=" row yesNoInputMeliaStudy">
+      <span class="col-md-9">
+        <label class="yesNoLabel" for="">[@s.text name="deliverable.melia.question" /] [@customForm.req required=true /]</label>      
+        
+      </span>
+      <div class="col-md-3">
+        [@customForm.yesNoInputDeliverable name="${name}.meliaStudy" editable=editable inverse=false cssClass="type-yesNoInputMeliaStudy text-center" /] 
+      </div>  
+    </div>
+    [#local isMeliaStudy = (deliverable.deliverableInfo.meliaStudy?string)!""]
+    <div class="block-yesNoInputMeliaStudy" style="display:${(isMeliaStudy == "true")?string('block', 'none')}">
+      <hr />
+      
+      <br>    
+      [#-- Study Types --]
+      <div class="form-group">
+        <div id="actionsListReference">
+          [@customForm.select className="" name="deliverable.deliverableInfo.studyType.id" i18nkey="deliverable.melia.studyType" listName="studyTypeList" keyFieldName="id" displayFieldName="name" required=true multiple=false editable=editable/]
+        </div>      
+      </div>
+
+      [#-- Commissioning Study --]
+      <div class="form-group">
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.melia.commissioning.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true editable=editable isWidthFull=true/]
+      </div>
+      
+      [#-- Activity Description --]
+      <div class="form-group">
+        [@customForm.textArea name="deliverable.deliverableInfo.activityDescription" value="${(deliverable.deliverableInfo.activityDescription)!}" i18nkey="deliverable.melia.activity" help="deliverable.melia.activity.help" helpIcon=false required=true placeholder="" className="limitWords-80" editable=editable isNote=true isWidthFull=true /]
+      </div>
+      <br>
+    </div>
+  </div>
+  <br>
+[/#macro]
+
 
 [#macro subActionItemMacro subActionItem name index=-1 isTemplate=false]
   [#assign deliverableCustomName = "${name}[${index}]" /]

@@ -156,6 +156,7 @@ public final class APConstants {
     "deliverable_shared_clusters_trainees_active";
   public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
   public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
+  public static final String DELIVERABLE_MELIA_MODULE_ACTIVE = "deliverable_melia_module_active";
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
   public static final String TIP_SECURITY_ACTIVE = "tip_security_active";
   public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";

@@ -57,6 +57,10 @@ label.label--2{
 	width: 100%;
 }
 
+.textArea label{
+	width: 100%;
+}
+
 .input-sm {
 	padding: 4px 10px;
 	height: 27px;

@@ -82,6 +82,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmPriorityActionManager;
 import org.cgiar.ccafs.marlo.data.manager.ShfrmSubActionManager;
 import org.cgiar.ccafs.marlo.data.manager.SoilIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.CgiarCrossCuttingMarker;
@@ -149,6 +150,7 @@ import org.cgiar.ccafs.marlo.data.model.RepositoryChannel;
 import org.cgiar.ccafs.marlo.data.model.ShfrmPriorityAction;
 import org.cgiar.ccafs.marlo.data.model.ShfrmSubAction;
 import org.cgiar.ccafs.marlo.data.model.SoilIndicator;
+import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -266,6 +268,7 @@ public class DeliverableAction extends BaseAction {
   private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   private SoilIndicatorManager soilIndicatorManager;
+  private StudyTypeManager studyTypeManager;
 
   // Variables
   private List<DeliverableQualityAnswer> answers;
@@ -311,6 +314,7 @@ public class DeliverableAction extends BaseAction {
   private List<CgiarCrossCuttingMarker> cgiarCrossCuttingMarkers;
   private List<Project> myProjects;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private List<StudyType> studyTypeList;
   private boolean isDuplicated;
   private String DOI;
   private String handle;
@@ -372,7 +376,7 @@ public class DeliverableAction extends BaseAction {
     ShfrmPriorityActionManager shfrmPriorityActionManager, ShfrmSubActionManager shfrmSubActionManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
     DeliverableShfrmSubActionManager deliverableShfrmSubActionManager, SoilIndicatorManager soilIndicatorManager,
-    SendMailS sendMail) {
+    StudyTypeManager studyTypeManager, SendMailS sendMail) {
     super(config);
     this.activityManager = activityManager;
     this.deliverableManager = deliverableManager;
@@ -440,6 +444,7 @@ public class DeliverableAction extends BaseAction {
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
     this.soilIndicatorManager = soilIndicatorManager;
     this.sendMail = sendMail;
+    this.studyTypeManager = studyTypeManager;
   }
 
   /**
@@ -1133,6 +1138,10 @@ public class DeliverableAction extends BaseAction {
       }
     }
     return 0;
+  }
+
+  public List<StudyType> getStudyTypeList() {
+    return studyTypeList;
   }
 
   /**
@@ -2127,6 +2136,17 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      studyTypeList = new ArrayList<>();
+      studyTypeList = studyTypeManager.findAll();
+
+      try {
+        if (studyTypeList != null && !studyTypeList.isEmpty()) {
+          studyTypeList.remove(0);
+        }
+      } catch (Exception e) {
+        Log.error("error deleting elements from study type list " + e);
+      }
+
       crps = new ArrayList<GlobalUnit>();
       for (GlobalUnit crp : crpManager.findAll().stream()
         .filter(c -> c.getId() != this.getLoggedCrp().getId() && c.isActive()).collect(Collectors.toList())) {
@@ -2451,6 +2471,7 @@ public class DeliverableAction extends BaseAction {
         deliverable.getDeliverableInfo(this.getActualPhase()).setRegion(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setGeographicScope(null);
         deliverable.getDeliverableInfo(this.getActualPhase()).setCrpProgramOutcome(null);
+        deliverable.getDeliverableInfo(this.getActualPhase()).setStudyType(null);
 
         if (deliverable.getCrps() != null) {
           deliverable.getCrps().clear();
@@ -2572,6 +2593,7 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -2624,6 +2646,16 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      try {
+        if (deliverableManagedState.getDeliverableInfo().getStudyType() == null
+          || deliverableManagedState.getDeliverableInfo().getStudyType().getId() == null
+          || deliverableManagedState.getDeliverableInfo().getStudyType().getId().longValue() == -1) {
+          deliverableManagedState.getDeliverableInfo().setStudyType(null);
+        }
+      } catch (Exception e) {
+        Log.error("Validate null study type id " + e);
+      }
+
       if (haveRegions) {
         // Save the Regions List
         this.saveDeliverableRegions(deliverableDB, this.getActualPhase(), deliverableManagedState);
@@ -2671,6 +2703,7 @@ public class DeliverableAction extends BaseAction {
           this.deleteAllActionsAndSubActions();
         }
       }
+
 
       /*
        * Delete the field 'new expected year' when the status is different to Extended and this field has information
@@ -2777,7 +2810,6 @@ public class DeliverableAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Deliverable CrossCutting Information
@@ -4739,6 +4771,10 @@ public class DeliverableAction extends BaseAction {
     this.statuses = statuses;
   }
 
+  public void setStudyTypeList(List<StudyType> studyTypeList) {
+    this.studyTypeList = studyTypeList;
+  }
+
   public void setTransaction(String transaction) {
     this.transaction = transaction;
   }
@@ -4846,6 +4882,15 @@ public class DeliverableAction extends BaseAction {
       deliverableInfoDb.setDeliverableType(null);
     }
 
+    try {
+      if (deliverable.getDeliverableInfo().getStudyType() == null
+        || deliverable.getDeliverableInfo().getStudyType().getId() == null
+        || deliverable.getDeliverableInfo().getStudyType().getId().longValue() == -1) {
+        deliverableInfoDb.setStudyType(null);
+      }
+    } catch (Exception e) {
+      Log.error("Validate null study type id " + e);
+    }
     // Set CrpProgramOutcome to null if has an -1 id
     if (deliverable.getDeliverableInfo().getCrpProgramOutcome() == null
       || deliverable.getDeliverableInfo().getCrpProgramOutcome().getId() == null

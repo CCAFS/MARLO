@@ -1,0 +1,1 @@
+ALTER TABLE deliverables_info ADD is_melia_study tinyint(1) NULL;
