@@ -823,17 +823,13 @@
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
     [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
-    [#if listName?size > 0]
-        [#local listLength = listName?size - 1 /]
-    [#else]
-        [#local listLength = 0 /]
-    [/#if]
+
     <div class="scaling__container">
-      <div class="scaling__line col-md-${listLength}"></div>
+      <div class="scaling__line col-md-12"></div>
       [#if listName?has_content]
         [#list listName as item]
           <div class="col-md-1 scaling__item">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}_" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" /]
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" canComment=false /]
           </div>
         [/#list]
       [/#if]
