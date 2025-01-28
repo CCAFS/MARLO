@@ -87,8 +87,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       this.getText("summaries.study.studyProjects"));
     masterReport.getParameterValues().put("i8nCaseStudiesRProject", this.getText("global.Project"));
     masterReport.getParameterValues().put("i8nCaseStudiesRPartI", this.getText("summaries.study.partI"));
-    masterReport.getParameterValues().put("i8nStudiesRType", this.getText("study.type"));
-    masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.status"));
+    masterReport.getParameterValues().put("i8nStudiesRType", this.getText("study.general.type"));
+    masterReport.getParameterValues().put("i8nStudiesRStatus", this.getText("study.general.status"));
     masterReport.getParameterValues().put("i8nStudiesRYear", this.getText("summaries.study.year"));
     masterReport.getParameterValues().put("i8nStudiesRTagged", this.getText("summaries.study.tagged"));
     masterReport.getParameterValues().put("i8nStudiesRTitle", this.getText("summaries.study.title"));
@@ -106,47 +106,58 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       this.getText("summaries.study.stratgicResultsLink"));
     masterReport.getParameterValues().put("i8nStudiesRSubIdos",
       this.getText("summaries.study.stratgicResultsLink.subIDOs"));
-    masterReport.getParameterValues().put("i8nCaseStudiesRTargetOption", this.getText("study.targetsOption"));
+    masterReport.getParameterValues().put("i8nCaseStudiesRTargetOption",
+      this.getText("study.generalInformation.targetsOption"));
     masterReport.getParameterValues().put("i8nStudiesRSRFTargets",
       this.getText("summaries.study.stratgicResultsLink.srfTargets"));
     masterReport.getParameterValues().put("i8nStudiesRTopLevelCommentst",
       this.getText("summaries.study.stratgicResultsLink.comments"));
-    masterReport.getParameterValues().put("i8nActivityDescription", this.getText("study.activityDescription"));
+    masterReport.getParameterValues().put("i8nActivityDescription",
+      this.getText("study.generalInformation.activityDescription"));
     masterReport.getParameterValues().put("i8nMeliaPublications", this.getText("summaries.study.meliaPublications"));
-    masterReport.getParameterValues().put("i8nStudiesRGeographicScope", this.getText("study.geographicScope"));
+    masterReport.getParameterValues().put("i8nStudiesRGeographicScope",
+      this.getText("study.generalInformation.geographicScope"));
     masterReport.getParameterValues().put("i8nStudiesRRegion", this.getText("study.region"));
     masterReport.getParameterValues().put("i8nStudiesRContries", this.getText("involveParticipants.countries"));
     masterReport.getParameterValues().put("i8nStudiesRScopeComments",
-      this.getText("study.geographicScopeComments.readText"));
+      this.getText("study.generalInformation.geographicScopeComments.readText"));
     masterReport.getParameterValues().put("i8nStudiesRKeyContributors",
       this.getText("summaries.study.keyContributors"));
-    masterReport.getParameterValues().put("i8nStudiesRCrps", this.getText("study.keyContributors.crps"));
+    masterReport.getParameterValues().put("i8nStudiesRCrps",
+      this.getText("study.generalInformation.keyContributors.crps"));
     masterReport.getParameterValues().put("i8nStudiesRFlagships", this.getText("study.keyContributors.flagships"));
-    masterReport.getParameterValues().put("i8nStudiesRCenters", this.getText("study.keyContributors.centers"));
-    masterReport.getParameterValues().put("i8nStudiesRRegions", this.getText("study.keyContributors.regions"));
+    masterReport.getParameterValues().put("i8nStudiesRCenters",
+      this.getText("study.generalInformation.keyContributors.centers"));
+    masterReport.getParameterValues().put("i8nStudiesRRegions",
+      this.getText("study.generalInformation.keyContributors.regions"));
     masterReport.getParameterValues().put("i8nStudiesRInstitutions",
-      this.getText("study.keyContributors.externalPartners"));
+      this.getText("study.generalInformation.keyContributors.externalPartners"));
     masterReport.getParameterValues().put("i8nStudiesCGIARInnovation",
-      this.getText("study.innovationsNarrative.readText"));
-    masterReport.getParameterValues().put("i8nStudiesCGIARInnovations", this.getText("study.innovationsList"));
+      this.getText("study.generalInformation.innovationsNarrative.readText"));
+    masterReport.getParameterValues().put("i8nStudiesCGIARInnovations",
+      this.getText("study.generalInformation.innovationsList"));
     masterReport.getParameterValues().put("i8nStudiesRElaborationOutcomeImpactStatement",
       this.getText("summaries.study.elaborationStatement"));
     masterReport.getParameterValues().put("i8nStudiesRReferenceText", this.getText("summaries.study.referencesCited"));
     masterReport.getParameterValues().put("i8nStudiesRGenderDevelopment",
       this.getText("summaries.study.crossCuttingRelevance"));
-    masterReport.getParameterValues().put("i8nStudiesRGenderRelevance", this.getText("study.genderRelevance"));
-    masterReport.getParameterValues().put("i8nStudiesRYouthRelevance", this.getText("study.youthRelevance"));
-    masterReport.getParameterValues().put("i8nStudiesRCapacityRelevance", this.getText("study.capDevRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRGenderRelevance",
+      this.getText("study.generalInformation.genderRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRYouthRelevance",
+      this.getText("study.generalInformation.youthRelevance"));
+    masterReport.getParameterValues().put("i8nStudiesRCapacityRelevance",
+      this.getText("study.generalInformation.capDevRelevance"));
     masterReport.getParameterValues().put("i8nStudiesRClimateRelevance", this.getText("study.climateRelevance"));
     masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensions",
-      this.getText("study.otherCrossCutting.readText"));
+      this.getText("study.generalInformation.otherCrossCutting.readText"));
     masterReport.getParameterValues().put("i8nStudiesROtherCrossCuttingDimensionsComments",
-      this.getText("study.otherCrossCutting.comments.readText"));
+      this.getText("study.generalInformation.otherCrossCutting.comments.readText"));
     masterReport.getParameterValues().put("i8nStudiesRContacts", this.getText("summaries.study.contacts"));
     masterReport.getParameterValues().put("i8nStudiesRCommissioningStudy",
       this.getText("study.commissioningStudy.readText"));
     masterReport.getParameterValues().put("i8nStudiesRStudyLink", this.getText("summaries.study.link"));
-    masterReport.getParameterValues().put("i8nStudiesRQuantification", this.getText("study.quantification.readText"));
+    masterReport.getParameterValues().put("i8nStudiesRQuantification",
+      this.getText("study.quantification.comments.readText"));
     masterReport.getParameterValues().put("i8nStudiesRQuantificationType", this.getText("study.quantificationType"));
     masterReport.getParameterValues().put("i8nStudiesRQuantificationNumber",
       this.getText("study.quantification.number"));
@@ -505,13 +516,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
           if (projectExpectedStudyInfo.getProjectExpectedStudy().getReferences() != null) {
+            int count = 1;
             for (ProjectExpectedStudyReference reference : projectExpectedStudyInfo.getProjectExpectedStudy()
               .getReferences()) {
               if (reference != null) {
                 if (studiesReference == null) {
-                  studiesReference = "&nbsp;&nbsp;&nbsp;&nbsp;● ";
+                  studiesReference = "&nbsp;&nbsp;&nbsp;&nbsp;" + count + ". ";
+                  // studiesReference = "&nbsp;&nbsp;&nbsp;&nbsp;● ";
                 } else {
-                  studiesReference += "<br>&nbsp;&nbsp;&nbsp;&nbsp;● ";
+                  studiesReference += " <br>&nbsp;&nbsp;&nbsp;&nbsp;" + count + ". ";
+                  // studiesReference += "<br>&nbsp;&nbsp;&nbsp;&nbsp;● ";
                 }
                 if (reference.getReference() != null) {
                   studiesReference += reference.getReference() + " | ";
@@ -523,7 +537,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 if (reference.getExternalAuthor() != null && reference.getExternalAuthor()) {
                   studiesReference += " (External Author)";
                 }
-
+                count++;
               }
             }
             /*
@@ -615,8 +629,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             && !projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(4l)
             && projectExpectedStudyInfo.getDescribeClimateChange() != null
             && !projectExpectedStudyInfo.getDescribeClimateChange().isEmpty()) {
-            climateRelevance += "<br>" + this.getText("study.achievementsClimateChangeRelevance.readText") + ": "
-              + htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeClimateChange());
+            climateRelevance +=
+              "<br>" + this.getText("study.generalInformation.achievementsClimateChangeRelevance.readText") + ": "
+                + htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeClimateChange());
           }
         }
 

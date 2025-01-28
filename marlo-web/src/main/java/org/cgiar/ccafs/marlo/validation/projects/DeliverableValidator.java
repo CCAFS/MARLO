@@ -620,20 +620,16 @@ public class DeliverableValidator extends BaseValidator {
 
           // Validate contribution narrative
           if (action.isReportingActive()) {
-            if (!(this
-              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR())
-              && this.wordCount(
-                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
+            if (!(this.isValidString(dInfo.getShfrmContributionNarrativeAR()) && this.wordCount(
+              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
               action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrativeAR"));
               action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrativeAR");
               action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrativeAR",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           } else {
-            if (!(this
-              .isValidString(deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative())
-              && this.wordCount(
-                deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
+            if (!(this.isValidString(dInfo.getShfrmContributionNarrative()) && this.wordCount(
+              deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrative()) <= 200)) {
               action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrative"));
               action.addMissingField("deliverable.deliverableInfo.shfrmContributionNarrative");
               action.getInvalidFields().put("input-deliverable.deliverableInfo.shfrmContributionNarrative",
@@ -698,6 +694,50 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
       }
+
+      // Validate other MELIA studies
+      if (action.hasSpecificities(APConstants.DELIVERABLE_MELIA_MODULE_ACTIVE) && dInfo != null) {
+
+        // Validate empty MELIA question
+        if (dInfo.getMeliaStudy() == null) {
+          action.addMessage(action.getText("Melia Study"));
+          action.addMissingField("Melia Study");
+          action.getInvalidFields().put("input-deliverable.deliverableInfo.meliaStudy",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // If MELIA question is true
+        if (dInfo.getMeliaStudy() != null && dInfo.getMeliaStudy()) {
+
+          // Study type validator
+          if (dInfo.getStudyType() == null
+            || (dInfo.getStudyType().getId() != null && dInfo.getStudyType().getId() == -1)) {
+            action.addMessage(action.getText("MELIA Study Type"));
+            action.addMissingField("MELIA Study Type");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.studyType.id",
+              InvalidFieldsMessages.EMPTYLIST);
+          }
+
+          // Commissioning study validator
+          if (!(this.isValidString(dInfo.getCommissioningStudy())
+            && this.wordCount(dInfo.getActivityDescription()) <= 15)) {
+            action.addMessage(action.getText("MELIA commissioning Study"));
+            action.addMissingField("MELIA commissioning Study");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+
+          // Activity description validator
+          if (!(this.isValidString(dInfo.getActivityDescription())
+            && this.wordCount(dInfo.getActivityDescription()) <= 80)) {
+            action.addMessage(action.getText("MELIA Activity Description"));
+            action.addMissingField("MELIA Activity Description");
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.activityDescription",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
+        }
+      }
+
     }
 
     // 2024/06/07 cgamboa functionality to validate activities, from the general check

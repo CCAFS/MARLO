@@ -53,12 +53,28 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   private String shfrmContributionNarrative;
   @Expose
   private String shfrmContributionNarrativeAR;
+  @Expose
+  private Boolean meliaStudy;
+  @Expose
+  private String commissioningStudy;
+  @Expose
+  private String activityDescription;
+  @Expose
+  private StudyType studyType;
 
   public DeliverableInfo() {
   }
 
+  public String getActivityDescription() {
+    return activityDescription;
+  }
+
   public Boolean getAdoptedLicense() {
     return adoptedLicense;
+  }
+
+  public String getCommissioningStudy() {
+    return commissioningStudy;
   }
 
   public Boolean getContributingShfrm() {
@@ -93,6 +109,7 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return geographicScope;
   }
 
+
   public Boolean getIsLocationGlobal() {
     return isLocationGlobal;
   }
@@ -104,6 +121,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return sb.toString();
   }
 
+  public Boolean getMeliaStudy() {
+    return meliaStudy;
+  }
 
   public Integer getNewExpectedYear() {
     return newExpectedYear;
@@ -117,11 +137,9 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return region;
   }
 
-
   public Boolean getRemainingPending() {
     return remainingPending;
   }
-
 
   public String getShfrmContributionNarrative() {
     return shfrmContributionNarrative;
@@ -159,6 +177,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     } catch (Exception e) {
       return "";
     }
+  }
+
+  public StudyType getStudyType() {
+    return studyType;
   }
 
   public String getTitle() {
@@ -238,7 +260,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
     return false;
   }
-
 
   public Boolean isRequiredToBeReported() {
     if (this.getStatus() == null) {
@@ -335,7 +356,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
-
   /**
    * Check if the deliverable has complete status for the current cycle with the expected year >= phase.year
    * Used in BaseAction.isDeliverableComplete to know if the Deliverable is Complete
@@ -378,10 +398,17 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     return false;
   }
 
+  public void setActivityDescription(String activityDescription) {
+    this.activityDescription = activityDescription;
+  }
+
   public void setAdoptedLicense(Boolean adoptedLicense) {
     this.adoptedLicense = adoptedLicense;
   }
 
+  public void setCommissioningStudy(String commissioningStudy) {
+    this.commissioningStudy = commissioningStudy;
+  }
 
   public void setContributingShfrm(Boolean contributingShfrm) {
     this.contributingShfrm = contributingShfrm;
@@ -390,7 +417,6 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
   public void setCrpClusterKeyOutput(CrpClusterKeyOutput crpClusterKeyOutput) {
     this.crpClusterKeyOutput = crpClusterKeyOutput;
   }
-
 
   public void setCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     this.crpProgramOutcome = crpProgramOutcome;
@@ -418,6 +444,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
 
   public void setIsLocationGlobal(Boolean isLocationGlobal) {
     this.isLocationGlobal = isLocationGlobal;
+  }
+
+  public void setMeliaStudy(Boolean meliaStudy) {
+    this.meliaStudy = meliaStudy;
   }
 
   public void setNewExpectedYear(Integer newExpectedYear) {
@@ -452,6 +482,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.statusDescription = statusDescription;
   }
 
+  public void setStudyType(StudyType studyType) {
+    this.studyType = studyType;
+  }
+
   public void setTitle(String title) {
     this.title = title;
   }
@@ -482,6 +516,10 @@ public class DeliverableInfo extends MarloAuditableEntity implements java.io.Ser
     this.setContributingShfrm(update.getContributingShfrm());
     this.setShfrmContributionNarrative(update.getShfrmContributionNarrative());
     this.setShfrmContributionNarrativeAR(update.getShfrmContributionNarrativeAR());
+    this.setMeliaStudy(update.getMeliaStudy());
+    this.setCommissioningStudy(update.getCommissioningStudy());
+    this.setActivityDescription(update.getActivityDescription());
+    this.setStudyType(update.getStudyType());
   }
 }
 

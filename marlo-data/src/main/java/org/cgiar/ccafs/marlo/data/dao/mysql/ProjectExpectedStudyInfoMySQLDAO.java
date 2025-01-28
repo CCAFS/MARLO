@@ -88,15 +88,27 @@ public class ProjectExpectedStudyInfoMySQLDAO extends AbstractMarloDAO<ProjectEx
   @Override
   public List<ProjectExpectedStudyInfo> getProjectExpectedStudyInfoByPhase(Phase phase) {
     StringBuilder query = new StringBuilder();
-    query.append("SELECT DISTINCT  ");
-    query.append("pesi.id as id ");
+    /*
+     * query.append("SELECT DISTINCT  ");
+     * query.append("pesi.id as id ");
+     * query.append("FROM ");
+     * query.append("project_expected_study_info AS pesi ");
+     * query.append("INNER JOIN project_expected_studies AS pes ON pes.id = pesi.project_expected_study_id ");
+     * query.append("INNER JOIN projects AS p ON p.id = pes.project_id AND p.is_active ");
+     * query.append("WHERE pes.is_active = 1 AND ");
+     * query.append("pesi.`id_phase` =" + phase.getId());
+     * query.append(" ORDER BY p.id,pes.id");
+     */
+
+    query.append("SELECT DISTINCT ");
+    query.append("pesi.id AS id, p.id AS project_id, pes.id AS expected_study_id ");
     query.append("FROM ");
     query.append("project_expected_study_info AS pesi ");
     query.append("INNER JOIN project_expected_studies AS pes ON pes.id = pesi.project_expected_study_id ");
     query.append("INNER JOIN projects AS p ON p.id = pes.project_id AND p.is_active ");
     query.append("WHERE pes.is_active = 1 AND ");
-    query.append("pesi.`id_phase` =" + phase.getId());
-    query.append(" ORDER BY p.id,pes.id");
+    query.append("pesi.id_phase = " + phase.getId());
+    query.append(" ORDER BY p.id, pes.id");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();

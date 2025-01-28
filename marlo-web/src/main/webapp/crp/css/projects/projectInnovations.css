@@ -413,12 +413,13 @@ div.projectInnovationsPartners div.usersBlock{
   margin-bottom: auto;
   margin-left: auto;
   margin-right: auto;
-  left: -5%;
   padding: 0;
 }
 
 .scaling__item {
   position: relative;
+  height: 62px;
+  display: contents;
 }
 
 .scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label{

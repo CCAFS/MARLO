@@ -156,8 +156,9 @@
 
     [/#if]
     
-
-    
+    [#if action.hasSpecificities('deliverable_melia_module_active') ]      
+      [@deliverableMacros.meliaStudyMacro /]
+    [/#if]    
     
   [#-- Key Outputs select --]
   [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]

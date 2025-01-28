@@ -164,7 +164,7 @@
     [#assign labelTitle][#if i18nkey==""][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][#else][@s.text name="${i18nkey}"][@s.param]${paramText}[/@s.param][/@s.text][/#if][/#assign]
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
-    <label for="" class="${isMainTitle?string('label--2','')}">
+    <label for="${name}" class="${isMainTitle?string('label--2','')}">
       [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
@@ -539,7 +539,7 @@
 [/#macro]
 
 
-[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" inline=true columns=0]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
   <div class="feedback-flex-items radioFlat-flex"></div>
   <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
@@ -554,12 +554,14 @@
       [/#if]
     </label>
   </div>
-  <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
+  [#if canComment]
+    <div class="commentNumberContainer">
+      <div class="numberOfCommentsBubble">
+        <p></p>
+      </div>
+      <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
     </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
-  </div>
+  [/#if]
   [#elseif checked]
     <p>[#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if]</p>
   [/#if]
@@ -1194,7 +1196,7 @@
       
         [#local isChecked = false]
 
-        [#if element?has_content && element[fieldName]?has_content]
+        [#if element?has_content && element[fieldName]?has_content && element[fieldName].id?has_content]
           [#if isRadioButton]
             [#if element[fieldName].id == radioItem.id]
               [#local isChecked = true /]
@@ -1302,22 +1304,30 @@
                         [#if element?has_content && element[fieldName]?has_content]
                             [#if isRadioButton]
                               [#--  --]
-                              [#local innerMultiChecked = element[fieldName][keyFieldName] /]
+                              [#local innerMultiChecked = element[fieldName][keyFieldName]![] /]
                               [#if innerMultiChecked?has_content]
                                 [#list innerMultiChecked as innerChecked]
-                                  [#if (innerChecked.id == innerInformartion.id) && (isChecked)]
-                                    [#local isCheckedInner = true /]
+                                  [#if innerChecked?has_content && innerChecked.id?has_content]
+                                    [#if (innerChecked.id == innerInformartion.id) && (isChecked)]
+                                      [#local isCheckedInner = true /]
+                                    [/#if]
                                   [/#if]
                                 [/#list]
                               [/#if]
                             [#else]
-                              [#list element[fieldName] as innerChecked]
-                                [#list innerChecked[keyFieldName] as innerItemChecked]
-                                  [#if (innerItemChecked.id == innerInformartion.id) && (isChecked) && (innerChecked.id == radioItem.id)]
-                                    [#local isCheckedInner = true /]
+                              [#if element[fieldName]?has_content]
+                                [#list element[fieldName] as innerChecked]
+                                  [#if innerChecked?has_content && innerChecked[keyFieldName]?has_content]
+                                    [#list innerChecked[keyFieldName] as innerItemChecked]
+                                      [#if innerItemChecked?has_content && innerItemChecked.id?has_content]
+                                        [#if (innerItemChecked.id == innerInformartion.id) && (isChecked) && (innerChecked.id == radioItem.id)]
+                                          [#local isCheckedInner = true /]
+                                        [/#if]
+                                      [/#if]
+                                    [/#list]
                                   [/#if]
                                 [/#list]
-                              [/#list]
+                              [/#if]
                             [/#if]
                         [/#if]
 
