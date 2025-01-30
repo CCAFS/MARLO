@@ -617,8 +617,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             && !projectExpectedStudyInfo.getCapdevLevel().getId().equals(4l)
             && projectExpectedStudyInfo.getDescribeCapdev() != null
             && !projectExpectedStudyInfo.getDescribeCapdev().isEmpty()) {
-            capacityRelevance += "<br>" + this.getText("study.achievementsCapDevRelevance.readText") + ": "
-              + htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeCapdev());
+            capacityRelevance += "<br>" + this.getText("study.generalInformation.achievementsCapDevRelevance.readText")
+              + ": " + htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeCapdev());
           }
         }
 
