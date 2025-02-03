@@ -527,7 +527,7 @@
             </div>
           [/#list]
         </div>
-        [#local showOtherCrossCuttingOptionsComponent = (element.projectExpectedStudyInfo.otherCrossCuttingSelection != "NA")!false /] 
+        [#local showOtherCrossCuttingOptionsComponent = (element.projectExpectedStudyInfo.otherCrossCuttingSelection == "Yes")!false /] 
         <div class="otherCrossCuttingOptionsComponent form-group" style="display:${showOtherCrossCuttingOptionsComponent?string('block', 'none')}">
           [@customForm.textArea name="${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" i18nkey="study.generalInformation.otherCrossCutting.comments" help="study.generalInformation.otherCrossCutting.comments.help" helpIcon=false  className="limitWords-200" required=true editable=editable /]
         </div>

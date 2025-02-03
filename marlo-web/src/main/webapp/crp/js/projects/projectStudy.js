@@ -167,7 +167,7 @@ function attachEvents() {
 
   // Other CrossCutting Component validation
   $('input.radioType-otherCrossCuttingOption').on('change', function() {
-    var showComponent = $(this).val().toLowerCase() !== "na";
+    var showComponent = $(this).val().toLowerCase() == "yes";
     if(showComponent) {
       $('.otherCrossCuttingOptionsComponent').slideDown(); // Show
     } else {

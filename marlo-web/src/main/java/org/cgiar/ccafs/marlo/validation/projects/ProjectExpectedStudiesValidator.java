@@ -1019,7 +1019,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       } else {
 
         // Validate other cross cutting dimension narrative
-        if (!studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("NA")
+        if (studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("Yes")
           && (studyInfo.getOtherCrossCuttingDimensions() == null
             || studyInfo.getOtherCrossCuttingDimensions().isEmpty())) {
           action.addMessage(this.getTextCustom(action, "Describe other cross cutting markets"));
@@ -1036,7 +1036,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
       // Validate other cross cutting dimension narrative when NA is selected
       if (studyInfo.getOtherCrossCuttingSelection() != null
-        && !studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("NA")
+        && studyInfo.getOtherCrossCuttingSelection().equalsIgnoreCase("Yes")
         && (studyInfo.getOtherCrossCuttingDimensions() == null
           || studyInfo.getOtherCrossCuttingDimensions().isEmpty())) {
         action.addMessage(this.getTextCustom(action, "Describe other cross cutting markets"));
