@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -49,19 +50,22 @@ public class FeedbackStatusAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(FeedbackStatusAction.class);
 
+  // Report name in bi-reports database table
+  private static final String REPORT_NAME = "QA process for PMC";
+
   // Managers
   private ProjectManager projectManager;
-  private String transaction;
 
+  private String transaction;
   // Front-end
   private long projectID;
   private GlobalUnit loggedCrp;
   private Project project;
+
   private Project projectDB;
-
   private BiReportsManager biReportsManager;
-  private BiParametersManager biParametersManager;
 
+  private BiParametersManager biParametersManager;
   // Front-end
   private List<BiReports> biReports;
   private List<BiParameters> biParameters;
@@ -118,9 +122,9 @@ public class FeedbackStatusAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    biReports = biReportsManager.findAll().stream()
+      .filter(bi -> bi != null && Objects.equals(bi.getReportName(), REPORT_NAME)).collect(Collectors.toList());
 
-    biReports = biReportsManager.findAll().stream().filter(bi -> bi != null && bi.getReportName().equals("Feedback"))
-      .collect(Collectors.toList());
     biParameters = biParametersManager.findAll();
 
     // Get current CRP
