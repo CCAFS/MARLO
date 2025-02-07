@@ -349,13 +349,10 @@ public class ProjectInnovationListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      if (feedbackQACommentableFieldsManager.findAll() != null) {
-        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f != null && f.getSectionName().equals("innovation")).collect(Collectors.toList());
-      }
+      commentableFields = feedbackQACommentableFieldsManager.findBySectionName("innovation");
+
       if (projectInnovations != null && !projectInnovations.isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
-
 
         // Set the comment status in each project outcome
 
@@ -363,33 +360,37 @@ public class ProjectInnovationListAction extends BaseAction {
           int answeredComments = 0, totalComments = 0;
           try {
 
-
             for (FeedbackQACommentableFields commentableField : commentableFields) {
               if (commentableField != null && commentableField.getId() != null) {
 
                 if (study != null && study.getId() != null && commentableField != null
                   && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                    .filter(f -> f != null && f.getParentId() == study.getId()
+
+                  List<FeedbackQAComment> comments = commentManager
+                    .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), study.getId()).stream()
+                    .filter(f -> f != null
 
                       && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
                         .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
                       // &&
                       // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
-                      ))
-
-                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                      )) && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
                     .collect(Collectors.toList());
+
                   if (comments != null && !comments.isEmpty()) {
                     totalComments += comments.size();
-                    comments = comments.stream()
-                      .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
-                        .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                        || (f.getFeedbackStatus() != null && f.getReply() != null)))
-                      .collect(Collectors.toList());
-                    if (comments != null) {
-                      answeredComments += comments.size();
-                    }
+                    List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                      Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                      boolean isDisagreedOrClarificationNeeded =
+                        statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                          || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                      boolean isAgreed =
+                        statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
+
+                      return (isDisagreedOrClarificationNeeded && f.getReply() != null) || isAgreed;
+                    }).collect(Collectors.toList());
+
+                    answeredComments += filteredComments.size();
                   }
                 }
               }
