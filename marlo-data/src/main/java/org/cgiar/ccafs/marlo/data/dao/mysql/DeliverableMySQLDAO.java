@@ -91,10 +91,10 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
     query.append("SELECT parent_id as parent_id,count(*) as count ");
     query.append("FROM feedback_qa_comments fqc");
     query.append(" WHERE id_phase=" + phase);
-    query.append(" and status_id = 1 ");
+    query.append(" and (status_id = 1 || status_id = 2 || status_id = 5) ");
     query.append(" and field_id in (select id from feedback_qa_commentable_fields fqcf ");
     query.append(" where section_name = 'deliverable') ");
-    query.append(" and reply_id is not null ");
+    query.append(" AND (status_id = 1 OR reply_id IS NOT NULL) ");
     query.append(" group by parent_id ");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());

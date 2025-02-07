@@ -24,7 +24,6 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
@@ -637,20 +636,22 @@ public class ProjectInnovationValidator extends BaseValidator {
       try {
         if (projectInnovation.getAllianceOrganizations() != null
           && !projectInnovation.getAllianceOrganizations().isEmpty()) {
-          int count = 0;
-          for (ProjectInnovationAllianceOrganization allianceOrganizations : projectInnovation
-            .getAllianceOrganizations()) {
-            if (allianceOrganizations.getInstitutionType() == null
-              || allianceOrganizations.getInstitutionType().getId() == null
-              || allianceOrganizations.getInstitutionType().getId() == -1) {
-              action.addMessage(action.getText("innovation.allianceOrganizations[" + count + "].institutionType.id"));
-              action.addMissingField("innovation.allianceOrganizations[" + count + "].institutionType.id");
-              action.getInvalidFields().put("list-innovation.allianceOrganizations[" + count + "].institutionType.id",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
-            }
-            count++;
-
-          }
+          // Removed 07/02/2025
+          /*
+           * int count = 0;
+           * for (ProjectInnovationAllianceOrganization allianceOrganizations : projectInnovation
+           * .getAllianceOrganizations()) {
+           * if (allianceOrganizations.getInstitutionType() == null
+           * || allianceOrganizations.getInstitutionType().getId() == null
+           * || allianceOrganizations.getInstitutionType().getId() == -1) {
+           * action.addMessage(action.getText("innovation.allianceOrganizations[" + count + "].institutionType.id"));
+           * action.addMissingField("innovation.allianceOrganizations[" + count + "].institutionType.id");
+           * action.getInvalidFields().put("list-innovation.allianceOrganizations[" + count + "].institutionType.id",
+           * action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
+           * }
+           * count++;
+           * }
+           */
         }
       } catch (Exception e) {
         Log.error("error validating actors " + e);
