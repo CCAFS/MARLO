@@ -798,14 +798,15 @@
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" className="indexTag" value=((element.id)?string)!"" editable=false display=false /]
-    [#-- "Dropdown Organizations - Type --]
+    [#-- "Dropdown Organizations - Type 
     <div class="col-md-12">
       [@customForm.select name="${customName}.institutionType.id" showTitle=false  i18nkey="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
     </div>
+    --]
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="name" required=false editable=true /]
+      [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedName" required=false editable=true /]
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
