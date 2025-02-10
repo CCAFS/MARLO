@@ -127,6 +127,40 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseInnovationAndStatus(Phase phase, long innovationId,
+    long statusId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("di.id as id ");
+    query.append("FROM ");
+    query.append("deliverables_info AS di ");
+    query.append("INNER JOIN deliverables AS d ON d.id = di.deliverable_id ");
+    query.append("INNER JOIN project_innovation_shared pis ON pis.project_id = d.project_id ");
+    query.append("WHERE d.is_active = 1 AND ");
+    query.append("d.project_id IS NOT NULL AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase.getId());
+    query.append(" AND pis.project_innovation_id =" + innovationId);
+    query.append(" AND pis.`id_phase` =" + phase.getId());
+    query.append(" AND pis.is_active =1");
+    query.append(" AND di.status !=" + statusId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableInfo> deliverableInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableInfo deliverableInfo = this.find(Long.parseLong(map.get("id").toString()));
+        deliverableInfos.add(deliverableInfo);
+      }
+    }
+
+    return deliverableInfos;
+  }
+
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByPhaseProjectAndStatus(Phase phase, long projectId, long statusId) {
 
     StringBuilder query = new StringBuilder();
@@ -182,7 +216,6 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
 
     return deliverableInfos;
   }
-
 
   @Override
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project) {
@@ -264,6 +297,7 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
 
     return false;
   }
+
 
   @Override
   public DeliverableInfo save(DeliverableInfo deliverableInfo) {

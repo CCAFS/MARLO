@@ -1754,48 +1754,60 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       List<Project> projectSharedList = new ArrayList<>();
-      if (innovation.getSharedInnovations() != null && !innovation.getSharedInnovations().isEmpty()) {
-        for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
-          if (sharedInnovation != null && sharedInnovation.getProject() != null
-            && sharedInnovation.getProject().getId() != null) {
-            projectSharedList.add(sharedInnovation.getProject());
-          }
-        }
+      try {
+        if (innovation.getSharedInnovations() != null && !innovation.getSharedInnovations().isEmpty()) {
+          /*
+           * for (ProjectInnovationShared sharedInnovation :
+           * innovation.getSharedInnovations()) {
+           * if (sharedInnovation != null && sharedInnovation.getProject() != null
+           * && sharedInnovation.getProject().getId() != null) {
+           * projectSharedList.add(sharedInnovation.getProject());
+           * }
+           * }
+           */
 
-        Set<DeliverableInfo> deliverableInfosShared = phase.getDeliverableInfos();
-        // Get deliverable list for shared innovations projects
-        if (projectSharedList != null && !projectSharedList.isEmpty()) {
-          for (Project projectInnovationShared : projectSharedList) {
-            if (phase != null && deliverableInfosShared != null && projectInnovationShared != null
-              && !deliverableInfosShared.isEmpty()) {
-              /*
-               * 16/12/2024 cgamboa the query was reduced
-               * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
-               * .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-               * && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-               * .collect(Collectors.toList());
-               */
-              List<DeliverableInfo> infos = new ArrayList<>();
-              try {
+          // Set<DeliverableInfo> deliverableInfosShared = phase.getDeliverableInfos();
+          // Get deliverable list for shared innovations projects
+          // if (projectSharedList != null && !projectSharedList.isEmpty()) {
+          /*
+           * for (Project projectInnovationShared : projectSharedList) {
+           * if (phase != null && deliverableInfosShared != null &&
+           * projectInnovationShared != null
+           * && !deliverableInfosShared.isEmpty()) {
+           * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+           * .filter(c -> c != null && c.getDeliverable() != null &&
+           * c.getDeliverable().getProject() != null
+           * && c.getDeliverable().getProject().equals(projectInnovationShared) &&
+           * c.getDeliverable().isActive()
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+           * != null
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+           * != 5)
+           * .collect(Collectors.toList());
+           * counting = infos.size() + counting;
+           * for (DeliverableInfo deliverableInfo : infos) {
+           * Deliverable deliverable = deliverableInfo.getDeliverable();
+           * deliverable.setDeliverableInfo(deliverableInfo);
+           * deliverable.setTagTitle(deliverable.getComposedName());
+           * deliverableList.add(deliverable);
+           * }
+           * }
+           * }
+           */
 
-                infos = this.deliverableInfoManager
-                  .getDeliverablesInfoByPhaseProjectAndStatus(phase, projectInnovationShared.getId(), 5L).stream()
-                  .filter(c -> c != null).collect(Collectors.toList());
-              } catch (Exception e) {
-                logger.error(" unable to get deliverable info " + e.getMessage());
-              }
-              for (DeliverableInfo deliverableInfo : infos) {
-                Deliverable deliverable = deliverableInfo.getDeliverable();
-                deliverable.setDeliverableInfo(deliverableInfo);
-                deliverable.setTagTitle(deliverable.getComposedName());
-                deliverableList.add(deliverable);
-              }
-            }
+          List<DeliverableInfo> infos =
+            this.deliverableInfoManager.getDeliverablesInfoByPhaseInnovationAndStatus(phase, innovation.getId(), 5L);
+          for (DeliverableInfo deliverableInfo : infos) {
+            Deliverable deliverable = deliverableInfo.getDeliverable();
+            deliverable.setDeliverableInfo(deliverableInfo);
+            deliverable.setTagTitle(deliverable.getComposedName());
+            deliverableList.add(deliverable);
           }
+          // }
         }
+      } catch (Exception e) {
+        logger.error("unable to get shared deliverables", e);
       }
 
       /**

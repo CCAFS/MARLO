@@ -62,6 +62,9 @@ public interface DeliverableInfoDAO {
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
 
 
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseInnovationAndStatus(Phase phase, long innovationId,
+    long statusId);
+
   /**
    * This method gets a list of DeliverableInfo that are active by a given phase, project and status
    * 

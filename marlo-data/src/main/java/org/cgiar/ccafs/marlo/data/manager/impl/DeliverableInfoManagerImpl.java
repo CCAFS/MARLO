@@ -100,6 +100,13 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseInnovationAndStatus(Phase phase, long innovationId,
+    long statusId) {
+    return deliverableInfoDAO.getDeliverablesInfoByPhaseInnovationAndStatus(phase, innovationId, statusId);
+  }
+
+
+  @Override
   public List<DeliverableInfo> getDeliverablesInfoByPhaseProjectAndStatus(Phase phase, long projectId, long statusId) {
     return deliverableInfoDAO.getDeliverablesInfoByPhaseProjectAndStatus(phase, projectId, statusId);
   }
@@ -115,7 +122,6 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project) {
     return deliverableInfoDAO.getDeliverablesInfoByProjectAndPhaseWithSharedProjects(phase, project);
   }
-
 
   @Override
   public List<DeliverableInfo> getDeliverablesInfoByType(Phase phase, DeliverableType deliverableType) {
