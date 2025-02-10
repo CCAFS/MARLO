@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
@@ -29,12 +28,14 @@ public interface DeliverableInfoDAO {
    * This method removes a specific deliverableInfo value from the database.
    * 
    * @param deliverableInfoId is the deliverableInfo identifier.
-   * @return true if the deliverableInfo was successfully deleted, false otherwise.
+   * @return true if the deliverableInfo was successfully deleted, false
+   *         otherwise.
    */
   public void deleteDeliverableInfo(long deliverableInfoId);
 
   /**
-   * This method validate if the deliverableInfo identify with the given id exists in the system.
+   * This method validate if the deliverableInfo identify with the given id exists
+   * in the system.
    * 
    * @param deliverableInfoID is a deliverableInfo identifier.
    * @return true if the deliverableInfo exists, false otherwise.
@@ -42,7 +43,8 @@ public interface DeliverableInfoDAO {
   public boolean existDeliverableInfo(long deliverableInfoID);
 
   /**
-   * This method gets a deliverableInfo object by a given deliverableInfo identifier.
+   * This method gets a deliverableInfo object by a given deliverableInfo
+   * identifier.
    * 
    * @param deliverableInfoID is the deliverableInfo identifier.
    * @return a DeliverableInfo object.
@@ -56,35 +58,40 @@ public interface DeliverableInfoDAO {
    */
   public List<DeliverableInfo> findAll();
 
-
   List<DeliverableInfo> getDeliverablesInfoByDeliverableId(long deliverableId);
 
   public List<DeliverableInfo> getDeliverablesInfoByPhase(Phase phase);
 
-
   /**
-   * This method gets a list of DeliverableInfo that are active by a given phase, project and status
+   * This method gets a list of DeliverableInfo that are active by a given phase,
+   * project and status
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   public List<DeliverableInfo> getDeliverablesInfoByPhaseProjectAndStatus(Phase phase, long projectId, long statusId);
 
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseInnovationAndStatus(Phase phase, long innovationId,
+      long statusId);
+
   /**
-   * This method gets a list of DeliverableInfo that are active by a given phase and project
+   * This method gets a list of DeliverableInfo that are active by a given phase
+   * and project
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project);
 
   /**
-   * This method gets a list of DeliverableInfo that are active by a given phase and project (including shared projects)
+   * This method gets a list of DeliverableInfo that are active by a given phase
+   * and project (including shared projects)
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
   List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project);
 
   /**
-   * This method gets a list of DeliverableInfo that are active by a given phase and type
+   * This method gets a list of DeliverableInfo that are active by a given phase
+   * and type
    * 
    * @return a list from DeliverableInfo null if no exist records
    */
@@ -95,8 +102,10 @@ public interface DeliverableInfoDAO {
   /**
    * This method saves the information of the given deliverableInfo
    * 
-   * @param deliverableInfo - is the deliverableInfo object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the deliverableInfo was
+   * @param deliverableInfo - is the deliverableInfo object with the new
+   *                        information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the
+   *         database, 0 if the deliverableInfo was
    *         updated
    *         or -1 is some error occurred.
    */

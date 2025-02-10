@@ -13,7 +13,6 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.DeliverableInfoDAO;
@@ -34,7 +33,6 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, Long> implements DeliverableInfoDAO {
-
 
   @Inject
   public DeliverableInfoMySQLDAO(SessionFactory sessionFactory) {
@@ -155,6 +153,38 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     return deliverableInfos;
   }
 
+  @Override
+  public List<DeliverableInfo> getDeliverablesInfoByPhaseInnovationAndStatus(Phase phase, long innovationId,
+      long statusId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT DISTINCT  ");
+    query.append("di.id as id ");
+    query.append("FROM ");
+    query.append("deliverables_info AS di ");
+    query.append("INNER JOIN deliverables AS d ON d.id = di.deliverable_id ");
+    query.append("INNER JOIN project_innovation_shared pis ON pis.project_id = d.project_id ");
+    query.append("WHERE d.is_active = 1 AND ");
+    query.append("d.project_id IS NOT NULL AND ");
+    query.append("di.is_active = 1 AND ");
+    query.append("di.`id_phase` =" + phase.getId());
+    query.append(" AND pis.project_innovation_id =" + innovationId);
+    query.append(" AND pis.`id_phase` =" + phase.getId());
+    query.append(" AND pis.is_active =1");
+    query.append(" AND di.status !=" + statusId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<DeliverableInfo> deliverableInfos = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        DeliverableInfo deliverableInfo = this.find(Long.parseLong(map.get("id").toString()));
+        deliverableInfos.add(deliverableInfo);
+      }
+    }
+
+    return deliverableInfos;
+  }
 
   @Override
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhase(Phase phase, Project project) {
@@ -183,7 +213,6 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     return deliverableInfos;
   }
 
-
   @Override
   public List<DeliverableInfo> getDeliverablesInfoByProjectAndPhaseWithSharedProjects(Phase phase, Project project) {
     StringBuilder query = new StringBuilder();
@@ -191,10 +220,10 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     query.append("DISTINCT di.id AS id ");
     query.append("FROM deliverables_info AS di ");
     query.append("LEFT JOIN deliverables AS d ON d.id = di.deliverable_id AND d.is_active = 1 AND d.project_id = "
-      + project.getId());
-    query.append(
-      " LEFT JOIN project_deliverable_shared AS pds ON pds.deliverable_id = di.deliverable_id AND pds.is_active = 1 AND pds.project_id = "
         + project.getId());
+    query.append(
+        " LEFT JOIN project_deliverable_shared AS pds ON pds.deliverable_id = di.deliverable_id AND pds.is_active = 1 AND pds.project_id = "
+            + project.getId());
     query.append(" WHERE di.is_active = 1 AND di.id_phase = " + phase.getId());
     query.append(" AND di.is_active = d.is_active ");
     query.append(" AND (d.id IS NOT NULL OR pds.id IS NOT NULL)");
@@ -226,9 +255,9 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
     query.append("di.`id_phase` =" + phase.getId() + " AND ");
     query.append("di.`status` !=" + ProjectStatusEnum.Cancelled.getStatusId() + " AND ");
     query.append("(( di.status = " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`new_expected_year` ="
-      + phase.getYear() + " ) OR ");
+        + phase.getYear() + " ) OR ");
     query.append(
-      "( di.status != " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`year` =" + phase.getYear() + " ))");
+        "( di.status != " + ProjectStatusEnum.Extended.getStatusId() + " AND di.`year` =" + phase.getYear() + " ))");
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
     List<DeliverableInfo> deliverableInfos = new ArrayList<>();
@@ -273,9 +302,7 @@ public class DeliverableInfoMySQLDAO extends AbstractMarloDAO<DeliverableInfo, L
       deliverableInfo = super.update(deliverableInfo);
     }
 
-
     return deliverableInfo;
   }
-
 
 }

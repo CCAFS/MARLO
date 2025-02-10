@@ -352,7 +352,7 @@
                 [#-- Element item Template --]
                 <div style="display:none">
                   [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+                  [@organizationsMacro name="innovation.allianceOrganizations" element={'id':''?string} index=-1 template=true /]
                 </div>
 
               </div>
@@ -800,7 +800,7 @@
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
     [#-- Hidden not saved - id --]
-    [@customForm.input name="${customName}.id" className="indexTag" value=((element.id)?string)!"" editable=false display=false /]
+    [@customForm.input name="${customName}.id" className="indexTag" value=((element.id)?string) editable=false display=false /]
     [#-- "Dropdown Organizations - Type 
     <div class="col-md-12">
       [@customForm.select name="${customName}.institutionType.id" showTitle=false  i18nkey="projectInnovations.organizations" listName="institutionTypeList" keyFieldName="id" displayFieldName="name" required=false editable=true /]

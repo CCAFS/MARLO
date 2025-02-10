@@ -339,54 +339,56 @@ public class ProjectInnovationAction extends BaseAction {
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
-    ProjectInnovationManager projectInnovationManager, ProjectManager projectManager, PhaseManager phaseManager,
-    RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
-    RepIndStageInnovationManager repIndStageInnovationManager,
-    RepIndGeographicScopeManager repIndGeographicScopeManager, RepIndInnovationTypeManager repIndInnovationTypeManager,
-    RepIndInnovationNatureManager repIndInnovationNatureManager, RepIndRegionManager repIndRegionManager,
-    LocElementManager locElementManager, ProjectExpectedStudyManager projectExpectedStudyManager,
-    DeliverableManager deriverableManager, RepIndGenderYouthFocusLevelManager focusLevelManager,
-    ProjectInnovationInfoManager projectInnovationInfoManager, ProjectInnovationCrpManager projectInnovationCrpManager,
-    ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
-    ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
-    ProjectInnovationCountryManager projectInnovationCountryManager,
-    RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
-    AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
-    RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager,
-    InstitutionManager institutionManager, CrpMilestoneManager milestoneManager,
-    ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
-    ProjectInnovationRegionManager projectInnovationRegionManager,
-    ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
-    ProjectInnovationSharedManager projectInnovationSharedManager,
-    ProjectInnovationCenterManager projectInnovationCenterManager,
-    ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
-    ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
-    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
-    ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
-    FeedbackQACommentManager feedbackQACommentManager,
-    ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager,
-    CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
-    ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
-    ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
-    ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
-    SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
-    ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
-    ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
-    IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager,
-    ScalingReadinessManager scalingReadinessManager,
-    ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager,
-    InstitutionTypeManager institutionTypeManager,
-    ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager,
-    ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
-    ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
-    ProjectInnovationActorManager projectInnovationActorManager,
-    ToolFunctionCategoryManager toolFunctionCategoryManager,
-    ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
-    DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
-    DeliverableInfoManager deliverableInfoManager) {
+      ProjectInnovationManager projectInnovationManager, ProjectManager projectManager, PhaseManager phaseManager,
+      RepIndPhaseResearchPartnershipManager repIndPhaseResearchPartnershipManager,
+      RepIndStageInnovationManager repIndStageInnovationManager,
+      RepIndGeographicScopeManager repIndGeographicScopeManager,
+      RepIndInnovationTypeManager repIndInnovationTypeManager,
+      RepIndInnovationNatureManager repIndInnovationNatureManager, RepIndRegionManager repIndRegionManager,
+      LocElementManager locElementManager, ProjectExpectedStudyManager projectExpectedStudyManager,
+      DeliverableManager deriverableManager, RepIndGenderYouthFocusLevelManager focusLevelManager,
+      ProjectInnovationInfoManager projectInnovationInfoManager,
+      ProjectInnovationCrpManager projectInnovationCrpManager,
+      ProjectInnovationOrganizationManager projectInnovationOrganizationManager,
+      ProjectInnovationDeliverableManager projectInnovationDeliverableManager,
+      ProjectInnovationCountryManager projectInnovationCountryManager,
+      RepIndOrganizationTypeManager repIndOrganizationTypeManager, ProjectInnovationValidator validator,
+      AuditLogManager auditLogManager, RepIndContributionOfCrpManager repIndContributionOfCrpManager,
+      RepIndDegreeInnovationManager repIndDegreeInnovationManager, DeliverableManager deliverableManager,
+      InstitutionManager institutionManager, CrpMilestoneManager milestoneManager,
+      ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+      ProjectInnovationRegionManager projectInnovationRegionManager,
+      ProjectInnovationGeographicScopeManager projectInnovationGeographicScopeManager,
+      ProjectInnovationSharedManager projectInnovationSharedManager,
+      ProjectInnovationCenterManager projectInnovationCenterManager,
+      ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
+      ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
+      ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+      ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
+      ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
+      FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager,
+      FeedbackQACommentManager feedbackQACommentManager,
+      ProjectInnovationCrpOutcomeManager projectInnovationCrpOutcomeManager,
+      CrpProgramOutcomeManager crpProgramOutcomeManager,
+      ProjectInnovationPartnershipManager projectInnovationPartnershipManager,
+      ProjectInnovationPartnerTypeManager projectInnovationPartnerTypeManager,
+      ProjectInnovationPartnershipPersonManager projectInnovationPartnershipPersonManager,
+      ProjectPartnerManager projectPartnerManager, AllianceLeverManager allianceLeverManager, UserManager userManager,
+      SdgManager sdgManager, ProjectInnovationAllianceLeversManager projectInnovationAllianceLeversManager,
+      ProjectInnovationSDGManager projectInnovationSDGManager, ImpactAreaManager impactAreaManager,
+      ProjectInnovationImpactAreaManager projectInnovationImpactAreaManager,
+      IntellectualPropertyRightsInstitutionManager intellectualPropertyRightsInstitutionManager,
+      ScalingReadinessManager scalingReadinessManager,
+      ProjectInnovationReferenceManager projectInnovationReferenceManager, ActorManager actorManager,
+      InstitutionTypeManager institutionTypeManager,
+      ProjectInnovationAllianceOrganizationManager projectInnovationAllianceOrganizationManager,
+      ProjectInnovationReferenceUrlManager projectInnovationReferenceUrlManager,
+      ProjectInnovationReferenceComplementarySolutionManager projectInnovationReferenceComplementarySolutionManager,
+      ProjectInnovationActorManager projectInnovationActorManager,
+      ToolFunctionCategoryManager toolFunctionCategoryManager,
+      ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
+      DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
+      DeliverableInfoManager deliverableInfoManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -450,8 +452,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.institutionTypeManager = institutionTypeManager;
     this.projectInnovationAllianceOrganizationManager = projectInnovationAllianceOrganizationManager;
     this.projectInnovationReferenceUrlManager = projectInnovationReferenceUrlManager;
-    this.projectInnovationReferenceComplementarySolutionManager =
-      projectInnovationReferenceComplementarySolutionManager;
+    this.projectInnovationReferenceComplementarySolutionManager = projectInnovationReferenceComplementarySolutionManager;
     this.projectInnovationActorManager = projectInnovationActorManager;
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
@@ -462,7 +463,8 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
-   * this is not functional, but is added to prevent a strange exception. Taken from DeliverableAction.
+   * this is not functional, but is added to prevent a strange exception. Taken
+   * from DeliverableAction.
    */
   @Override
   public String cancel() {
@@ -495,7 +497,7 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getProjectInnovationCountries() != null && innovation.getProjectInnovationCountries().size() > 0) {
 
         List<ProjectInnovationCountry> regionPrev = new ArrayList<>(innovation.getProjectInnovationCountries().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationCountry policyRegion : regionPrev) {
 
@@ -507,7 +509,7 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getProjectInnovationRegions() != null && innovation.getProjectInnovationRegions().size() > 0) {
 
         List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationRegion policyRegion : regionPrev) {
 
@@ -525,8 +527,8 @@ public class ProjectInnovationAction extends BaseAction {
     Long deliverableTypeParentId = typeDB.getDeliverableCategory().getId();
 
     deliverableSubTypes = new ArrayList<>(
-      deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
-        && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
+        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
+            && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
   }
 
   public List<Actor> getActorList() {
@@ -549,7 +551,7 @@ public class ProjectInnovationAction extends BaseAction {
     String actionFile = this.getActionName().replace("/", "_");
     // concatenate name and add the .json extension
     String autoSaveFile = innovation.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
-      + this.getActualPhase().getYear() + "_" + actionFile + ".json";
+        + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
   }
 
@@ -598,7 +600,7 @@ public class ProjectInnovationAction extends BaseAction {
     if (deliverableType != null) {
       if (deliverableType.getDeliverableTypes() != null) {
         for (DeliverableType deliverableSubType : deliverableType.getDeliverableTypes().stream()
-          .collect(Collectors.toList())) {
+            .collect(Collectors.toList())) {
           keyOutput = new HashMap<String, Object>();
           keyOutput.put("id", deliverableSubType.getId());
           keyOutput.put("name", deliverableSubType.getName());
@@ -714,8 +716,8 @@ public class ProjectInnovationAction extends BaseAction {
   public long[] getPersonsIds(ProjectInnovationPartnership projectInnovationPartnership) {
     if (projectInnovationPartnership != null) {
       final List<ProjectInnovationPartnershipPerson> pPersons = projectInnovationPartnership.getPartnershipPersons()
-        .stream().filter(pp -> (pp.getUser() != null) && (pp.getUser().getId() != null) && (pp.getUser().getId() > 0))
-        .collect(Collectors.toList());
+          .stream().filter(pp -> (pp.getUser() != null) && (pp.getUser().getId() != null) && (pp.getUser().getId() > 0))
+          .collect(Collectors.toList());
       if (pPersons != null) {
         final long[] ids = new long[pPersons.size()];
         for (int i = 0; i < ids.length; i++) {
@@ -806,14 +808,14 @@ public class ProjectInnovationAction extends BaseAction {
     List<ProjectPartner> partnersTmp = new ArrayList<>();
     try {
       partnersTmp = this.projectPartnerManager.findAllByPhaseProjectAndInstitution(this.projectID,
-        this.getActualPhase().getId(), institutionId);
+          this.getActualPhase().getId(), institutionId);
     } catch (final Exception e) {
       this.logger.error("unable to get partners");
     }
     if ((partnersTmp != null) && !partnersTmp.isEmpty()) {
       final ProjectPartner projectPartner = partnersTmp.get(0);
       final List<ProjectPartnerPerson> partnerPersons = new ArrayList<>(projectPartner.getProjectPartnerPersons()
-        .stream().filter(ProjectPartnerPerson::isActive).collect(Collectors.toList()));
+          .stream().filter(ProjectPartnerPerson::isActive).collect(Collectors.toList()));
       for (final ProjectPartnerPerson projectPartnerPerson : partnerPersons) {
 
         users.add(projectPartnerPerson.getUser());
@@ -833,8 +835,8 @@ public class ProjectInnovationAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = globalUnitManager.getGlobalUnitById(loggedCrp.getId());
 
-    innovationID =
-      Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.INNOVATION_REQUEST_ID)));
+    innovationID = Integer
+        .parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.INNOVATION_REQUEST_ID)));
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
 
@@ -859,12 +861,12 @@ public class ProjectInnovationAction extends BaseAction {
           for (ProjectInnovationOrganization projectOrganization : innovation.getProjectInnovationOrganizations()) {
 
             if (projectOrganization.getRepIndOrganizationType() != null
-              && projectOrganization.getRepIndOrganizationType().getId() != null) {
+                && projectOrganization.getRepIndOrganizationType().getId() != null) {
 
               if (repIndOrganizationTypeManager
-                .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId()) != null) {
+                  .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId()) != null) {
                 RepIndOrganizationType institution = repIndOrganizationTypeManager
-                  .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId());
+                    .getRepIndOrganizationTypeById(projectOrganization.getRepIndOrganizationType().getId());
               }
             }
           }
@@ -872,59 +874,61 @@ public class ProjectInnovationAction extends BaseAction {
 
         // load PhaseResearchPartnership
         if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null
-          && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() != null) {
+            && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(
-            repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(
-              innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId()));
+              repIndPhaseResearchPartnershipManager.getRepIndPhaseResearchPartnershipById(
+                  innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId()));
         }
 
         // load StageInnovation
         if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
-          && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null) {
+            && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndStageInnovation(repIndStageInnovationManager
-            .getRepIndStageInnovationById(innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId()));
+              .getRepIndStageInnovationById(innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId()));
         }
 
         // load Region
         if (innovation.getProjectInnovationInfo().getRepIndRegion() != null
-          && innovation.getProjectInnovationInfo().getRepIndRegion().getId() != null) {
+            && innovation.getProjectInnovationInfo().getRepIndRegion().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndRegion(
-            repIndRegionManager.getRepIndRegionById(innovation.getProjectInnovationInfo().getRepIndRegion().getId()));
+              repIndRegionManager.getRepIndRegionById(innovation.getProjectInnovationInfo().getRepIndRegion().getId()));
         }
 
         // load InnovationType
         if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
-          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null) {
+            && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndInnovationType(repIndInnovationTypeManager
-            .getRepIndInnovationTypeById(innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()));
+              .getRepIndInnovationTypeById(innovation.getProjectInnovationInfo().getRepIndInnovationType().getId()));
         }
 
         // load DegreeInnovation
         if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
-          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
+            && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() != null) {
           innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(repIndDegreeInnovationManager
-            .getRepIndDegreeInnovationById(innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
+              .getRepIndDegreeInnovationById(
+                  innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId()));
         }
 
         // load leadOrganization
         if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
-          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() != null) {
+            && innovation.getProjectInnovationInfo().getLeadOrganization().getId() != null) {
           innovation.getProjectInnovationInfo().setLeadOrganization(
-            institutionManager.getInstitutionById(innovation.getProjectInnovationInfo().getLeadOrganization().getId()));
+              institutionManager
+                  .getInstitutionById(innovation.getProjectInnovationInfo().getLeadOrganization().getId()));
         }
 
         // load InnovationDeliverables
         if (innovation.getProjectInnovationDeliverables() != null
-          && !innovation.getProjectInnovationDeliverables().isEmpty()) {
+            && !innovation.getProjectInnovationDeliverables().isEmpty()) {
           for (ProjectInnovationDeliverable projectInnovationDeliverable : innovation
-            .getProjectInnovationDeliverables()) {
+              .getProjectInnovationDeliverables()) {
             if (projectInnovationDeliverable.getDeliverable() != null
-              && projectInnovationDeliverable.getDeliverable().getId() != null) {
+                && projectInnovationDeliverable.getDeliverable().getId() != null) {
 
               if (deliverableManager
-                .getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()) != null) {
-                Deliverable deliverable =
-                  deliverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId());
+                  .getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()) != null) {
+                Deliverable deliverable = deliverableManager
+                    .getDeliverableById(projectInnovationDeliverable.getDeliverable().getId());
                 projectInnovationDeliverable.setDeliverable(deliverable);
                 projectInnovationDeliverable.getDeliverable().getDeliverableInfo(this.getActualPhase());
               }
@@ -934,7 +938,7 @@ public class ProjectInnovationAction extends BaseAction {
 
         // load clear lead
         if (innovation.getProjectInnovationInfo().getClearLead() == null
-          || innovation.getProjectInnovationInfo().getClearLead() == false) {
+            || innovation.getProjectInnovationInfo().getClearLead() == false) {
           clearLead = false;
         } else {
           clearLead = true;
@@ -942,15 +946,15 @@ public class ProjectInnovationAction extends BaseAction {
 
         // load contributionOrganization
         if (innovation.getProjectInnovationContributingOrganization() != null
-          && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
+            && !innovation.getProjectInnovationContributingOrganization().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getProjectInnovationContributingOrganization()) {
+              .getProjectInnovationContributingOrganization()) {
 
             if (projectInnovationContributingOrganization.getInstitution() != null
-              && projectInnovationContributingOrganization.getInstitution().getId() != null && institutionManager
-                .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()) != null) {
+                && projectInnovationContributingOrganization.getInstitution().getId() != null && institutionManager
+                    .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()) != null) {
               Institution institution = institutionManager
-                .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
+                  .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId());
               projectInnovationContributingOrganization.setInstitution(institution);
             }
 
@@ -992,14 +996,14 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getGeographicScopes() != null) {
           for (ProjectInnovationGeographicScope projectInnovationGeographicScope : innovation.getGeographicScopes()) {
             projectInnovationGeographicScope.setRepIndGeographicScope(repIndGeographicScopeManager
-              .getRepIndGeographicScopeById(projectInnovationGeographicScope.getRepIndGeographicScope().getId()));
+                .getRepIndGeographicScopeById(projectInnovationGeographicScope.getRepIndGeographicScope().getId()));
 
             if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
               haveRegions = true;
             }
 
             if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
               haveCountries = true;
             }
 
@@ -1011,7 +1015,7 @@ public class ProjectInnovationAction extends BaseAction {
           if (innovation.getRegions() != null) {
             for (ProjectInnovationRegion projectPolicyRegion : innovation.getRegions()) {
               projectPolicyRegion
-                .setLocElement(locElementManager.getLocElementById(projectPolicyRegion.getLocElement().getId()));
+                  .setLocElement(locElementManager.getLocElementById(projectPolicyRegion.getLocElement().getId()));
             }
           }
         }
@@ -1032,7 +1036,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getOrganizations() != null) {
           for (ProjectInnovationOrganization projectInnovationOrganization : innovation.getOrganizations()) {
             projectInnovationOrganization.setRepIndOrganizationType(repIndOrganizationTypeManager
-              .getRepIndOrganizationTypeById(projectInnovationOrganization.getRepIndOrganizationType().getId()));
+                .getRepIndOrganizationTypeById(projectInnovationOrganization.getRepIndOrganizationType().getId()));
           }
         }
 
@@ -1040,16 +1044,16 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getDeliverables() != null) {
           for (ProjectInnovationDeliverable projectInnovationDeliverable : innovation.getDeliverables()) {
             projectInnovationDeliverable.setDeliverable(
-              deriverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()));
+                deriverableManager.getDeliverableById(projectInnovationDeliverable.getDeliverable().getId()));
           }
         }
 
         // Innovation Contributing Institutions List Autosave
         if (innovation.getContributingOrganizations() != null && !innovation.getContributingOrganizations().isEmpty()) {
           for (ProjectInnovationContributingOrganization projectInnovationContributingOrganization : innovation
-            .getContributingOrganizations()) {
+              .getContributingOrganizations()) {
             projectInnovationContributingOrganization.setInstitution(institutionManager
-              .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
+                .getInstitutionById(projectInnovationContributingOrganization.getInstitution().getId()));
           }
         }
 
@@ -1057,7 +1061,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getCrps() != null) {
           for (ProjectInnovationCrp projectInnovationCrp : innovation.getCrps()) {
             projectInnovationCrp
-              .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectInnovationCrp.getGlobalUnit().getId()));
+                .setGlobalUnit(globalUnitManager.getGlobalUnitById(projectInnovationCrp.getGlobalUnit().getId()));
           }
         }
 
@@ -1065,7 +1069,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (this.innovation.getStudies() != null) {
           for (ProjectExpectedStudyInnovation projectExpectedStudyInnovation : this.innovation.getStudies()) {
             projectExpectedStudyInnovation.setProjectExpectedStudy(this.projectExpectedStudyManager
-              .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId()));
+                .getProjectExpectedStudyById(projectExpectedStudyInnovation.getProjectExpectedStudy().getId()));
           }
         }
 
@@ -1074,7 +1078,8 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getCenters() != null) {
           for (ProjectInnovationCenter projectInnovationCenter : innovation.getCenters()) {
             projectInnovationCenter
-              .setInstitution(institutionManager.getInstitutionById(projectInnovationCenter.getInstitution().getId()));
+                .setInstitution(
+                    institutionManager.getInstitutionById(projectInnovationCenter.getInstitution().getId()));
           }
         }
 
@@ -1083,17 +1088,16 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getMilestones() != null) {
           for (ProjectInnovationMilestone projectInnovationMilestone : innovation.getMilestones()) {
             projectInnovationMilestone.setCrpMilestone(
-              (milestoneManager.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
+                (milestoneManager.getCrpMilestoneById(projectInnovationMilestone.getCrpMilestone().getId())));
           }
         }
-
 
         // SubIdos List Autosave
 
         if (innovation.getSubIdos() != null) {
           for (ProjectInnovationSubIdo projectInnovationSubIdo : innovation.getSubIdos()) {
             projectInnovationSubIdo
-              .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().getId()));
+                .setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(projectInnovationSubIdo.getSrfSubIdo().getId()));
           }
         }
 
@@ -1101,7 +1105,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (this.innovation.getSharedInnovations() != null) {
           for (ProjectInnovationShared projectInnovationShared : this.innovation.getSharedInnovations()) {
             projectInnovationShared
-              .setProject(this.projectManager.getProjectById(projectInnovationShared.getProject().getId()));
+                .setProject(this.projectManager.getProjectById(projectInnovationShared.getProject().getId()));
           }
         }
 
@@ -1116,76 +1120,77 @@ public class ProjectInnovationAction extends BaseAction {
         // Setup Geographic Scope
         if (innovation.getProjectInnovationGeographicScopes() != null) {
           innovation.setGeographicScopes(new ArrayList<>(innovation.getProjectInnovationGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Countries List
         if (innovation.getProjectInnovationCountries() == null) {
           innovation.setCountries(new ArrayList<>());
         } else {
-          List<ProjectInnovationCountry> countries =
-            projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId());
+          List<ProjectInnovationCountry> countries = projectInnovationCountryManager
+              .getInnovationCountrybyPhase(innovation.getId(), phase.getId());
           innovation.setCountries(countries);
         }
 
         if (innovation.getProjectInnovationRegions() == null) {
           innovation.setRegions(new ArrayList<>());
         } else {
-          List<ProjectInnovationRegion> geographics =
-            projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), phase.getId());
+          List<ProjectInnovationRegion> geographics = projectInnovationRegionManager
+              .getInnovationRegionbyPhase(innovation.getId(), phase.getId());
 
           // Load Regions
           innovation.setRegions(geographics.stream().filter(sc -> sc.getLocElement().getLocElementType().getId() == 1)
-            .collect(Collectors.toList()));
+              .collect(Collectors.toList()));
         }
 
         // Innovation Organization Type List
         if (innovation.getProjectInnovationOrganizations() != null) {
           innovation.setOrganizations(new ArrayList<>(innovation.getProjectInnovationOrganizations().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Deliverable List
         if (innovation.getProjectInnovationDeliverables() != null) {
           innovation.setDeliverables(new ArrayList<>(innovation.getProjectInnovationDeliverables().stream()
-            .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
+              .filter(d -> d.isActive() && d.getPhase().getId() == phase.getId()).collect(Collectors.toList())));
         }
 
         // Innovation Contributing organizations List
         if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation
-            .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
-              .stream().filter(d -> d.getPhase().getId().equals(phase.getId()))
-              .sorted(
-                (o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()))
-              .collect(Collectors.toList())));
+              .setContributingOrganizations(new ArrayList<>(innovation.getProjectInnovationContributingOrganization()
+                  .stream().filter(d -> d.getPhase().getId().equals(phase.getId()))
+                  .sorted(
+                      (o1, o2) -> o1.getInstitution().getComposedName()
+                          .compareTo(o2.getInstitution().getComposedName()))
+                  .collect(Collectors.toList())));
         }
 
         // Innovation Crp list
         if (innovation.getProjectInnovationCrps() != null) {
           innovation.setCrps(new ArrayList<>(innovation.getProjectInnovationCrps().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Center list
         if (innovation.getProjectInnovationCenters() != null) {
           innovation.setCenters(new ArrayList<>(innovation.getProjectInnovationCenters().stream()
-            .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovation Milestone list
         if (innovation.getProjectInnovationMilestones() != null) {
           innovation.setMilestones(new ArrayList<>(innovation.getProjectInnovationMilestones().stream()
-            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 
           // Get the ID of the principal Sub IDO if exist
           if (innovation.getMilestones() != null) {
             List<ProjectInnovationMilestone> projectPolicies = new ArrayList<ProjectInnovationMilestone>();
 
             projectPolicies = innovation
-              .getMilestones().stream().filter(p -> p != null && p.isActive() && p.getPrimary() != null
-                && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+                .getMilestones().stream().filter(p -> p != null && p.isActive() && p.getPrimary() != null
+                    && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
             if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
@@ -1197,26 +1202,26 @@ public class ProjectInnovationAction extends BaseAction {
         // Expected Study Project Outcome list
         if (innovation.getProjectInnovationProjectOutcomes() != null) {
           innovation.setProjectOutcomes(new ArrayList<>(innovation.getProjectInnovationProjectOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
         // Expected Study crp Outcome list
         if (innovation.getProjectInnovationCrpOutcomes() != null) {
           innovation.setCrpOutcomes(new ArrayList<>(innovation.getProjectInnovationCrpOutcomes().stream()
-            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // SubIdos List
         if (innovation.getProjectInnovationSubIdos() != null) {
           innovation.setSubIdos(new ArrayList<>(innovation.getProjectInnovationSubIdos().stream()
-            .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 
           // Get the ID of the principal Sub IDO if exist
           if (innovation.getSubIdos(phase) != null) {
             List<ProjectInnovationSubIdo> projectPolicies = new ArrayList<ProjectInnovationSubIdo>();
 
             projectPolicies = innovation.getSubIdos(phase).stream()
-              .filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
-              .collect(Collectors.toList());
+                .filter(p -> p != null && p.isActive() && p.getPrimary() != null && p.getPrimary())
+                .collect(Collectors.toList());
 
             if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               subIdoPrimaryId = projectPolicies.get(0).getSrfSubIdo().getId(); //
@@ -1229,9 +1234,10 @@ public class ProjectInnovationAction extends BaseAction {
         if (this.innovation.getProjectInnovationPartnerships() != null) {
 
           final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-              .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-            .collect(Collectors.toList());
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+                  .getProjectInnovationPartnerType().getId()
+                  .equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+              .collect(Collectors.toList());
 
           if ((deList != null) && !deList.isEmpty()) {
             try {
@@ -1243,9 +1249,9 @@ public class ProjectInnovationAction extends BaseAction {
             for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
 
               if (projectInnovationPartnership.getProjectInnovationPartnershipPersons() != null) {
-                final List<ProjectInnovationPartnershipPerson> partnershipPersons =
-                  new ArrayList<>(projectInnovationPartnership.getProjectInnovationPartnershipPersons().stream()
-                    .filter(ProjectInnovationPartnershipPerson::isActive).collect(Collectors.toList()));
+                final List<ProjectInnovationPartnershipPerson> partnershipPersons = new ArrayList<>(
+                    projectInnovationPartnership.getProjectInnovationPartnershipPersons().stream()
+                        .filter(ProjectInnovationPartnershipPerson::isActive).collect(Collectors.toList()));
                 projectInnovationPartnership.setPartnershipPersons(partnershipPersons);
               }
               this.innovation.getPartnerships().add(projectInnovationPartnership);
@@ -1259,35 +1265,45 @@ public class ProjectInnovationAction extends BaseAction {
 
         /*
          * if (this.innovation.getProjectInnovationPartnerships() != null) {
-         * final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
-         * .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-         * .getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_INSTITUTION))
+         * final List<ProjectInnovationPartnership> deList =
+         * this.innovation.getProjectInnovationPartnerships().stream()
+         * .filter(dp -> dp.isActive() &&
+         * dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+         * .getProjectInnovationPartnerType().getId().equals(APConstants.
+         * INNOVATION_PARTNERSHIP_TYPE_INSTITUTION))
          * .collect(Collectors.toList());
          * if ((deList != null) && !deList.isEmpty()) {
          * try {
-         * Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+         * Collections.sort(deList, (p1, p2) ->
+         * p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
          * } catch (final Exception e) {
          * this.logger.error("unable to sort dlist", e);
          * }
          * this.innovation.setInstitutions(new ArrayList<>());
-         * for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
+         * for (final ProjectInnovationPartnership projectInnovationPartnership :
+         * deList) {
          * this.innovation.getInstitutions().add(projectInnovationPartnership);
          * }
          * }
          * }
          * if (this.innovation.getProjectInnovationPartnerships() != null) {
-         * final List<ProjectInnovationPartnership> deList = this.innovation.getProjectInnovationPartnerships().stream()
-         * .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-         * && dp.getProjectInnovationPartnerType().getId().equals(APConstants.INNOVATION_PARTNERSHIP_TYPE_CENTER))
+         * final List<ProjectInnovationPartnership> deList =
+         * this.innovation.getProjectInnovationPartnerships().stream()
+         * .filter(dp -> dp.isActive() &&
+         * dp.getPhase().getId().equals(this.getActualPhase().getId())
+         * && dp.getProjectInnovationPartnerType().getId().equals(APConstants.
+         * INNOVATION_PARTNERSHIP_TYPE_CENTER))
          * .collect(Collectors.toList());
          * if ((deList != null) && !deList.isEmpty()) {
          * try {
-         * Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+         * Collections.sort(deList, (p1, p2) ->
+         * p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
          * } catch (final Exception e) {
          * this.logger.error("unable to sort dlist", e);
          * }
          * this.innovation.setCenters(new ArrayList<>());
-         * for (final ProjectInnovationPartnership projectInnovationPartnership : deList) {
+         * for (final ProjectInnovationPartnership projectInnovationPartnership :
+         * deList) {
          * this.innovation.getCenters().add(projectInnovationPartnership);
          * }
          * }
@@ -1297,43 +1313,44 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovations Alliance levers
         if (innovation.getProjectInnovationAllianceLevers() != null) {
           innovation.setAllianceLevers(new ArrayList<>(innovation.getProjectInnovationAllianceLevers().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations SDGs
         if (innovation.getProjectInnovationSDGs() != null) {
           innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations impact area
         if (innovation.getProjectInnovationImpactAreas() != null) {
           innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations alliance organizations
         if (innovation.getProjectInnovationAllianceOrganizations() != null) {
           innovation
-            .setAllianceOrganizations(new ArrayList<>(innovation.getProjectInnovationAllianceOrganizations().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .setAllianceOrganizations(new ArrayList<>(innovation.getProjectInnovationAllianceOrganizations().stream()
+                  .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+                  .collect(Collectors.toList())));
         }
 
         // Innovations actors
         if (innovation.getProjectInnovationActors() != null) {
           innovation.setActors(new ArrayList<>(innovation.getProjectInnovationActors().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations tool categories
         if (innovation.getProjectInnovationToolCategories() != null) {
           innovation.setToolCategories(new ArrayList<>(innovation.getProjectInnovationToolCategories().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
         try {
           if (innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) {
             List<ProjectInnovationToolCategory> innovationToolCategoryList = projectInnovationToolCategoryManager
-              .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), this.getPhaseID());
+                .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), this.getPhaseID());
             if (innovationToolCategoryList != null && !innovationToolCategoryList.isEmpty()) {
               innovation.setToolCategories(innovationToolCategoryList);
             }
@@ -1343,11 +1360,11 @@ public class ProjectInnovationAction extends BaseAction {
         }
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null
-          && !innovation.getProjectInnovationReferences().isEmpty()) {
+            && !innovation.getProjectInnovationReferences().isEmpty()) {
           try {
             innovation.setReferences(innovation.getProjectInnovationReferences().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -1355,11 +1372,11 @@ public class ProjectInnovationAction extends BaseAction {
 
         // Innovations references URL
         if (innovation.getProjectInnovationReferenceUrls() != null
-          && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
+            && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
           try {
             innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -1367,12 +1384,12 @@ public class ProjectInnovationAction extends BaseAction {
 
         // Innovations references Complementary solutions
         if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
-          && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
+            && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
           try {
             innovation
-              .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
-                .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+                .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
+                    .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+                    .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -1381,21 +1398,21 @@ public class ProjectInnovationAction extends BaseAction {
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
           this.innovation.setSharedInnovations(new ArrayList<>(this.innovation.getProjectInnovationShareds().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study Innovations List
         if (this.innovation.getProjectExpectedStudyInnovations() != null) {
           this.innovation.setStudies(new ArrayList<>(this.innovation.getProjectExpectedStudyInnovations().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           // Get the ID of the principal Sub IDO if exist
           if (innovation.getMilestones() != null) {
             List<ProjectInnovationMilestone> projectPolicies = new ArrayList<ProjectInnovationMilestone>();
 
             projectPolicies = innovation
-              .getMilestones().stream().filter(p -> p != null && p.isActive() && p.getPrimary() != null
-                && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
-              .collect(Collectors.toList());
+                .getMilestones().stream().filter(p -> p != null && p.isActive() && p.getPrimary() != null
+                    && p.getPrimary() && p.getPhase() != null && p.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
             if (projectPolicies != null && !projectPolicies.isEmpty() && projectPolicies.get(0) != null) {
               milestonePrimaryId = projectPolicies.get(0).getCrpMilestone().getId(); //
@@ -1408,9 +1425,9 @@ public class ProjectInnovationAction extends BaseAction {
       try {
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
-          .filter(i -> i != null && i.isActive() && i.getProjectInnovationInfo(this.getActualPhase()) != null
-            && i.getProjectInnovationInfo(this.getActualPhase()).isActive())
-          .collect(Collectors.toList());
+            .filter(i -> i != null && i.isActive() && i.getProjectInnovationInfo(this.getActualPhase()) != null
+                && i.getProjectInnovationInfo(this.getActualPhase()).isActive())
+            .collect(Collectors.toList());
         this.partners = new ArrayList<>();
         this.contributingPartnerList = new ArrayList<>();
         this.partnerInstitutions = new ArrayList<>();
@@ -1434,43 +1451,45 @@ public class ProjectInnovationAction extends BaseAction {
       } catch (Exception e) {
         Log.error("error getting list " + e);
       }
-      boolean has_specific_management_deliverables =
-        this.hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
+      boolean has_specific_management_deliverables = this
+          .hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
 
       deliverableTypeParent = new ArrayList<>(
-        deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
-          && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
+          deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null
+              && dt.getCrp() == null && !dt.getAdminType().booleanValue()).collect(Collectors.toList()));
 
       deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
-          && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
-        .collect(Collectors.toList())));
+          .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
+              && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && !dt.getAdminType().booleanValue())
+          .collect(Collectors.toList())));
 
       if (project.getProjecInfoPhase(this.getActualPhase()).getAdministrative() != null
-        && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
+          && project.getProjecInfoPhase(this.getActualPhase()).getAdministrative().booleanValue()) {
 
         deliverableTypeParent
-          .addAll(deliverableTypeManager.findAll().stream()
-            .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() == null
-              && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
-            .collect(Collectors.toList()));
+            .addAll(deliverableTypeManager.findAll().stream()
+                .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() == null
+                    && dt.getAdminType().booleanValue() && !has_specific_management_deliverables)
+                .collect(Collectors.toList()));
 
         deliverableTypeParent.addAll(new ArrayList<>(deliverableTypeManager.findAll().stream()
-          .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
-            && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
-          .collect(Collectors.toList())));
+            .filter(dt -> dt.isActive() && dt.getDeliverableCategory() == null && dt.getCrp() != null
+                && dt.getCrp().getId().longValue() == loggedCrp.getId().longValue() && dt.getAdminType().booleanValue())
+            .collect(Collectors.toList())));
       }
       /*
        * deliverableSubTypes = new ArrayList<>(
-       * deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null
-       * && dt.getDeliverableCategory().getId() == deliverableTypeParentId).collect(Collectors.toList()));
+       * deliverableTypeManager.findAll().stream().filter(dt -> dt.isActive() &&
+       * dt.getDeliverableCategory() != null
+       * && dt.getDeliverableCategory().getId() ==
+       * deliverableTypeParentId).collect(Collectors.toList()));
        */
       deliverableSubTypes = new ArrayList<>(deliverableTypeManager.findAll().stream()
-        .filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null).collect(Collectors.toList()));
+          .filter(dt -> dt.isActive() && dt.getDeliverableCategory() != null).collect(Collectors.toList()));
 
       try {
-        this.institutionTypeList =
-          Optional.ofNullable(this.institutionTypeManager.findAll()).orElse(Collections.emptyList()).stream()
+        this.institutionTypeList = Optional.ofNullable(this.institutionTypeManager.findAll())
+            .orElse(Collections.emptyList()).stream()
             .filter(it -> it != null && it.getSource() != null && it.getSource() == 1 && it.getParent() == null)
             .collect(Collectors.toList());
       } catch (Exception e) {
@@ -1480,16 +1499,16 @@ public class ProjectInnovationAction extends BaseAction {
       // Order SDG list by ID
       if (this.sdgList != null) {
         this.sdgList = this.sdgList.stream().filter(sdg -> sdg != null && sdg.getId() != null)
-          .sorted(Comparator.comparing(Sdg::getId)).collect(Collectors.toList());
+            .sorted(Comparator.comparing(Sdg::getId)).collect(Collectors.toList());
       }
 
       final List<ProjectPartner> partnersTmp = this.projectPartnerManager
-        .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());
+          .findAllByPhaseProject(this.innovation.getProject().getId(), this.getActualPhase().getId());
 
       if (partnersTmp != null) {
         for (final ProjectPartner partner : partnersTmp) {
           final List<ProjectPartnerPerson> persons = partner.getProjectPartnerPersons().stream()
-            .filter(ProjectPartnerPerson::isActive).collect(Collectors.toList());
+              .filter(ProjectPartnerPerson::isActive).collect(Collectors.toList());
           if (!this.isManagingPartnerPersonRequerid) {
             this.partners.add(partner);
             this.partnerInstitutions.add(partner.getInstitution());
@@ -1508,20 +1527,20 @@ public class ProjectInnovationAction extends BaseAction {
         }
         this.partnerPersons = new ArrayList<>();
 
-        this.partnerPersons =
-          this.partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream()).collect(Collectors.toList());
+        this.partnerPersons = this.partners.stream().flatMap(e -> e.getProjectPartnerPersons().stream())
+            .collect(Collectors.toList());
 
         try {
           if (contributingPartnerList != null && !contributingPartnerList.isEmpty()) {
             for (Institution contributingPartner : contributingPartnerList) {
               if (contributingPartner.getId() != null) {
                 // Retrieve the location of the institution
-                InstitutionLocation loc =
-                  institutionLocationManager.findHeadquaterByInstitutionID(contributingPartner.getId());
+                InstitutionLocation loc = institutionLocationManager
+                    .findHeadquaterByInstitutionID(contributingPartner.getId());
 
                 // Check if there is a valid location with a name
-                String locationName =
-                  (loc != null && loc.getLocElement() != null) ? loc.getLocElement().getName() : null;
+                String locationName = (loc != null && loc.getLocElement() != null) ? loc.getLocElement().getName()
+                    : null;
 
                 // Build the name with the country
                 String tempName = (locationName != null && !locationName.isEmpty()) ? " (" + locationName + ")" : "";
@@ -1538,7 +1557,8 @@ public class ProjectInnovationAction extends BaseAction {
                 } else {
                   // Ensure nameWithCountry is not empty
                   contributingPartner.setNameWithCountry(contributingPartner.getNameWithCountry().isEmpty()
-                    ? defaultName : contributingPartner.getNameWithCountry());
+                      ? defaultName
+                      : contributingPartner.getNameWithCountry());
                 }
               } else {
                 // Handle institutions without a valid ID
@@ -1565,21 +1585,21 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-
-      // cgamboa 15/12/2024 function locElementManager.findAll() will be used once time
+      // cgamboa 15/12/2024 function locElementManager.findAll() will be used once
+      // time
       List<LocElement> listLocElementPrevious = locElementManager.findAll();
 
       // Getting The list of countries
       countries = listLocElementPrevious.stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
-        .collect(Collectors.toList());
+          .collect(Collectors.toList());
 
       // Getting the list of institution
-      institutions = institutionManager.findAll().stream().collect(Collectors.toList());
-
+      institutions = institutionManager.findAll().stream().filter(c -> c.getName() != null && c.getName().length() > 0)
+          .collect(Collectors.toList());
       // Regions for Geographic Scope Regional Selection
       regions = listLocElementPrevious.stream()
-        .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
-        .collect(Collectors.toList());
+          .filter(c -> c.getLocElementType().getId().intValue() == 1 && c.isActive() && c.getIsoNumeric() != null)
+          .collect(Collectors.toList());
 
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
@@ -1601,7 +1621,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
-            .collect(Collectors.toList());
+              .collect(Collectors.toList());
         }
       } catch (Exception e) {
         Log.error("error deleting elements from " + e);
@@ -1616,13 +1636,13 @@ public class ProjectInnovationAction extends BaseAction {
       // institutions & ppa partners
       List<Institution> centersTemp = new ArrayList<Institution>();
       List<ProjectPartner> projectPartnerList = project.getProjectPartners().stream()
-        .filter(c -> c != null && c.isActive() && c.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList());
+          .filter(c -> c != null && c.isActive() && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
       for (ProjectPartner projectPartner : projectPartnerList) {
         if (projectPartner.getInstitution() != null && projectPartner.getInstitution().getId() != null) {
           Institution institution = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
           if (institution != null && (institution.isPPA(this.getActualPhase().getCrp().getId(), this.getActualPhase())
-            || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
+              || institution.getInstitutionType().getId().longValue() == APConstants.INSTITUTION_CGIAR_CENTER_TYPE)) {
             centersTemp.add(institution);
           }
         }
@@ -1636,18 +1656,18 @@ public class ProjectInnovationAction extends BaseAction {
 
       // Load Studies
       List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
-        .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-        .collect(Collectors.toList());
+          .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList());
       if (studies != null && !studies.isEmpty()) {
         allProjectStudies.addAll(studies);
       }
 
       // Load Shared studies
       List<ExpectedStudyProject> expectedStudyProject = new ArrayList<>(project.getExpectedStudyProjects().stream()
-        .filter(px -> px.isActive() && px.getPhase().getId().equals(this.getActualPhase().getId())
-          && px.getProjectExpectedStudy().isActive()
-          && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
-        .collect(Collectors.toList()));
+          .filter(px -> px.isActive() && px.getPhase().getId().equals(this.getActualPhase().getId())
+              && px.getProjectExpectedStudy().isActive()
+              && px.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+          .collect(Collectors.toList()));
       if (expectedStudyProject != null && !expectedStudyProject.isEmpty()) {
         for (ExpectedStudyProject expectedStudy : expectedStudyProject) {
           if (!allProjectStudies.contains(expectedStudy.getProjectExpectedStudy())) {
@@ -1662,19 +1682,23 @@ public class ProjectInnovationAction extends BaseAction {
         // Every study of the current cycle year will be editable
         expectedStudyList = new ArrayList<>();
         expectedStudyList = allProjectStudies.stream()
-          .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
-            && ex.getProjectExpectedStudyInfo().getStudyType() != null
-            && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
-          .collect(Collectors.toList());
+            .filter(ex -> ex.isActive() && ex.getProjectExpectedStudyInfo(phase) != null
+                && ex.getProjectExpectedStudyInfo().getStudyType() != null
+                && ex.getProjectExpectedStudyInfo().getStudyType().getId().intValue() == 1 && ex.getProject() != null)
+            .collect(Collectors.toList());
       }
       List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.getStudiesByPhase(phase).stream()
-        .filter(s -> s != null && s.getProject() == null).collect(Collectors.toList());
+          .filter(s -> s != null && s.getProject() == null).collect(Collectors.toList());
       /*
-       * List<ProjectExpectedStudy> evidences = projectExpectedStudyManager.findAll().stream()
-       * .filter(s -> s != null && s.getProject() == null && s.getProjectExpectedStudyInfo(this.getActualPhase()) !=
+       * List<ProjectExpectedStudy> evidences =
+       * projectExpectedStudyManager.findAll().stream()
+       * .filter(s -> s != null && s.getProject() == null &&
+       * s.getProjectExpectedStudyInfo(this.getActualPhase()) !=
        * null
        * && s.getProjectExpectedStudyInfo().getPhase() != null
-       * && s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase().getId()))
+       * &&
+       * s.getProjectExpectedStudyInfo().getPhase().getId().equals(this.getActualPhase
+       * ().getId()))
        * .collect(Collectors.toList());
        */
       if (evidences != null) {
@@ -1689,11 +1713,15 @@ public class ProjectInnovationAction extends BaseAction {
       if (phase != null && deliverableInfos != null && project != null && !deliverableInfos.isEmpty()) {
         /*
          * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
-         * .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-         * && c.getDeliverable().getProject().equals(project) && c.getDeliverable().isActive()
+         * .filter(c -> c != null && c.getDeliverable() != null &&
+         * c.getDeliverable().getProject() != null
+         * && c.getDeliverable().getProject().equals(project) &&
+         * c.getDeliverable().isActive()
          * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
-         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
+         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+         * != null
+         * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+         * != 5)
          * .collect(Collectors.toList());
          */
         // 16/12/2024 cgamboa the query was reduced
@@ -1701,7 +1729,7 @@ public class ProjectInnovationAction extends BaseAction {
         try {
 
           infos = this.deliverableInfoManager.getDeliverablesInfoByPhaseProjectAndStatus(phase, project.getId(), 5L)
-            .stream().filter(c -> c != null).collect(Collectors.toList());
+              .stream().filter(c -> c != null).collect(Collectors.toList());
         } catch (Exception e) {
           logger.error(" unable to get deliverable info " + e.getMessage());
         }
@@ -1719,28 +1747,29 @@ public class ProjectInnovationAction extends BaseAction {
       try {
         // Load Shared deliverables
         List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
-          .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-            ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-              .stream()
-              .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-              .collect(Collectors.toList())
-            : Collections.emptyList();
+            .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
+                ? this.projectDeliverableSharedManager
+                    .getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
+                    .stream()
+                    .filter(px -> px.isActive() && px.getDeliverable().isActive()
+                        && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
+                    .collect(Collectors.toList())
+                : Collections.emptyList();
 
         if (deliverableShared != null && !deliverableShared.isEmpty()) {
           for (ProjectDeliverableShared deliverableS : deliverableShared) {
             if (!deliverableList.contains(deliverableS.getDeliverable())) {
 
               if (deliverableS.getDeliverable().getProject() != null
-                && deliverableS.getDeliverable().getProject().getId() != null
-                && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
-                DeliverableInfo deliverableInfo =
-                  deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
+                  && deliverableS.getDeliverable().getProject().getId() != null
+                  && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
+                DeliverableInfo deliverableInfo = deliverableS.getDeliverable()
+                    .getDeliverableInfo(this.getActualPhase());
                 deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
 
                 deliverableS.getDeliverable().setTagTitle(
-                  "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
-                    + "</span> " + deliverableS.getDeliverable().getComposedName());
+                    "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
+                        + "</span> " + deliverableS.getDeliverable().getComposedName());
               } else {
                 deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
               }
@@ -1753,49 +1782,65 @@ public class ProjectInnovationAction extends BaseAction {
         logger.error("unable to get shared deliverables", e);
       }
 
+      int counting = 0;
+
       List<Project> projectSharedList = new ArrayList<>();
-      if (innovation.getSharedInnovations() != null && !innovation.getSharedInnovations().isEmpty()) {
-        for (ProjectInnovationShared sharedInnovation : innovation.getSharedInnovations()) {
-          if (sharedInnovation != null && sharedInnovation.getProject() != null
-            && sharedInnovation.getProject().getId() != null) {
-            projectSharedList.add(sharedInnovation.getProject());
-          }
-        }
+      try {
+        if (innovation.getSharedInnovations() != null && !innovation.getSharedInnovations().isEmpty()) {
+          /*
+           * for (ProjectInnovationShared sharedInnovation :
+           * innovation.getSharedInnovations()) {
+           * if (sharedInnovation != null && sharedInnovation.getProject() != null
+           * && sharedInnovation.getProject().getId() != null) {
+           * projectSharedList.add(sharedInnovation.getProject());
+           * }
+           * }
+           */
 
-        Set<DeliverableInfo> deliverableInfosShared = phase.getDeliverableInfos();
-        // Get deliverable list for shared innovations projects
-        if (projectSharedList != null && !projectSharedList.isEmpty()) {
-          for (Project projectInnovationShared : projectSharedList) {
-            if (phase != null && deliverableInfosShared != null && projectInnovationShared != null
-              && !deliverableInfosShared.isEmpty()) {
-              /*
-               * 16/12/2024 cgamboa the query was reduced
-               * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
-               * .filter(c -> c != null && c.getDeliverable() != null && c.getDeliverable().getProject() != null
-               * && c.getDeliverable().getProject().equals(projectInnovationShared) && c.getDeliverable().isActive()
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != null
-               * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-               * .collect(Collectors.toList());
-               */
-              List<DeliverableInfo> infos = new ArrayList<>();
-              try {
+          // Set<DeliverableInfo> deliverableInfosShared = phase.getDeliverableInfos();
+          // Get deliverable list for shared innovations projects
+          // if (projectSharedList != null && !projectSharedList.isEmpty()) {
+          /*
+           * for (Project projectInnovationShared : projectSharedList) {
+           * if (phase != null && deliverableInfosShared != null &&
+           * projectInnovationShared != null
+           * && !deliverableInfosShared.isEmpty()) {
+           * 
+           * List<DeliverableInfo> infos = phase.getDeliverableInfos().stream()
+           * .filter(c -> c != null && c.getDeliverable() != null &&
+           * c.getDeliverable().getProject() != null
+           * && c.getDeliverable().getProject().equals(projectInnovationShared) &&
+           * c.getDeliverable().isActive()
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+           * != null
+           * && c.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus()
+           * != 5)
+           * .collect(Collectors.toList());
+           * counting = infos.size() + counting;
+           * for (DeliverableInfo deliverableInfo : infos) {
+           * Deliverable deliverable = deliverableInfo.getDeliverable();
+           * deliverable.setDeliverableInfo(deliverableInfo);
+           * deliverable.setTagTitle(deliverable.getComposedName());
+           * deliverableList.add(deliverable);
+           * }
+           * }
+           * }
+           */
 
-                infos = this.deliverableInfoManager
-                  .getDeliverablesInfoByPhaseProjectAndStatus(phase, projectInnovationShared.getId(), 5L).stream()
-                  .filter(c -> c != null).collect(Collectors.toList());
-              } catch (Exception e) {
-                logger.error(" unable to get deliverable info " + e.getMessage());
-              }
-              for (DeliverableInfo deliverableInfo : infos) {
-                Deliverable deliverable = deliverableInfo.getDeliverable();
-                deliverable.setDeliverableInfo(deliverableInfo);
-                deliverable.setTagTitle(deliverable.getComposedName());
-                deliverableList.add(deliverable);
-              }
-            }
+          List<DeliverableInfo> infos = this.deliverableInfoManager.getDeliverablesInfoByPhaseInnovationAndStatus(phase,
+              innovation.getId(), 5L);
+          counting = infos.size() + counting;
+          for (DeliverableInfo deliverableInfo : infos) {
+            Deliverable deliverable = deliverableInfo.getDeliverable();
+            deliverable.setDeliverableInfo(deliverableInfo);
+            deliverable.setTagTitle(deliverable.getComposedName());
+            deliverableList.add(deliverable);
           }
+          // }
         }
+      } catch (Exception e) {
+        logger.error("unable to get shared deliverables", e);
       }
 
       /**
@@ -1809,7 +1854,7 @@ public class ProjectInnovationAction extends BaseAction {
           if (deliverableInfo != null) {
 
             if (deliverableInfo.getDeliverableType() != null
-              && deliverableInfo.getDeliverableType().getName() != null) {
+                && deliverableInfo.getDeliverableType().getName() != null) {
               deliverableType = deliverableInfo.getDeliverableType().getName();
               if (deliverableType == null || deliverableType.isEmpty()) {
                 deliverableType = "Not defined";
@@ -1818,11 +1863,12 @@ public class ProjectInnovationAction extends BaseAction {
 
             try {
               handle = deliverable.getDeliverableMetadataElements().stream()
-                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                  && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
-                  && me.getDeliverable().getId().equals(deliverable.getId())
-                  && !StringUtils.isBlank(me.getElementValue()))
-                .findFirst().orElse(null).getElementValue();
+                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+                      && me.getMetadataElement().getId().longValue() == 35L
+                      && me.getPhase().equals(this.getActualPhase())
+                      && me.getDeliverable().getId().equals(deliverable.getId())
+                      && !StringUtils.isBlank(me.getElementValue()))
+                  .findFirst().orElse(null).getElementValue();
               if (handle == null || handle.isEmpty()) {
                 handle = "Not defined";
               }
@@ -1832,7 +1878,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
             try {
               if (deliverable.getDissemination() != null
-                && deliverable.getDissemination().getDisseminationChannelName() != null) {
+                  && deliverable.getDissemination().getDisseminationChannelName() != null) {
                 disseminationChannel = deliverable.getDissemination().getDisseminationChannelName();
                 if (disseminationChannel == null || disseminationChannel.isEmpty()) {
                   disseminationChannel = "Dissemination channel Not defined";
@@ -1843,7 +1889,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
 
             if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
-              && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
+                && !deliverable.getDissemination().getDisseminationUrl().isEmpty()) {
               disseminationURL = deliverable.getDissemination().getDisseminationUrl();
             }
             deliverable.setHandle(handle);
@@ -1851,7 +1897,7 @@ public class ProjectInnovationAction extends BaseAction {
             deliverable.setDisseminationURL(disseminationURL);
             deliverable.setDeliverableType(deliverableType);
             String composedInfo = "D" + deliverable.getId() + " " + deliverableInfo.getTitle() + " ("
-              + disseminationChannel + ")" + "\nHandle: " + handle + "\nType: " + deliverableType;
+                + disseminationChannel + ")" + "\nHandle: " + handle + "\nType: " + deliverableType;
             deliverable.setComposedInfo(composedInfo);
           }
 
@@ -1867,22 +1913,24 @@ public class ProjectInnovationAction extends BaseAction {
       // Get outcomes list
       List<ProjectOutcome> projectOutcomesList = new ArrayList<>();
       projectOutcomesList = project.getProjectOutcomes().stream()
-        .filter(
-          po -> po.isActive() && po.getPhase() != null && po.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList());
+          .filter(
+              po -> po.isActive() && po.getPhase() != null
+                  && po.getPhase().getId().equals(this.getActualPhase().getId()))
+          .collect(Collectors.toList());
 
       if (projectOutcomesList != null) {
         crpOutcomes = new ArrayList<>();
 
         for (ProjectOutcome projectOutcome : projectOutcomesList) {
           projectOutcome.setMilestones(projectOutcome.getProjectMilestones().stream()
-            .filter(
-              m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear())
-            .collect(Collectors.toList()));
+              .filter(
+                  m -> m != null && m.isActive() && m.getYear() != 0 && m.getYear() <= this.getActualPhase().getYear())
+              .collect(Collectors.toList()));
 
           if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())
-            && projectOutcome.getCrpProgramOutcome().getDescription() != null && !projectOutcome.getCrpProgramOutcome()
-              .getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
+              && projectOutcome.getCrpProgramOutcome().getDescription() != null
+              && !projectOutcome.getCrpProgramOutcome()
+                  .getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
             this.crpOutcomes.add(projectOutcome.getCrpProgramOutcome());
           }
 
@@ -1896,7 +1944,7 @@ public class ProjectInnovationAction extends BaseAction {
 
           // Fill projectOutcomes List
           if (projectOutcome.getCrpProgramOutcome() != null
-            && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
+              && projectOutcome.getCrpProgramOutcome().getComposedName() != null) {
             projectOutcome.setComposedName(projectOutcome.getCrpProgramOutcome().getComposedName());
           } else {
             projectOutcome.setComposedName(projectOutcome.getId() + "");
@@ -1923,17 +1971,17 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       crpList = globalUnitManager.findAll().stream()
-        .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
-        .collect(Collectors.toList());
+          .filter(gu -> gu.isActive() && (gu.getGlobalUnitType().getId() == 1 || gu.getGlobalUnitType().getId() == 3))
+          .collect(Collectors.toList());
 
       List<ProjectInnovationCrp> tempPcrp = null;
       // Update crp list - Delete the actual crp from the list except if this crp was
 
       if (innovation.getCrps() != null && innovation.getCrps().stream()
-        .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
+          .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId())) != null) {
         tempPcrp = innovation.getCrps().stream()
-          .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId()))
-          .collect(Collectors.toList());
+            .filter(x -> x != null && x.getGlobalUnit().getId().equals(this.getCurrentGlobalUnit().getId()))
+            .collect(Collectors.toList());
       }
 
       if (tempPcrp != null && tempPcrp.size() == 0 && this.getCurrentGlobalUnit() != null) {
@@ -1949,15 +1997,15 @@ public class ProjectInnovationAction extends BaseAction {
       if (this.hasSpecificities(this.feedbackModule())) {
         feedbackComments = new ArrayList<>();
         feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
-          .collect(Collectors.toList());
+            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+            .collect(Collectors.toList());
         if (feedbackComments != null) {
           for (FeedbackQACommentableFields field : feedbackComments) {
             List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
             feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId()).stream()
-              .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
-                && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-              .collect(Collectors.toList());
+                .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
+                    && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+                .collect(Collectors.toList());
 
             field.setQaComments(comments);
           }
@@ -1969,7 +2017,7 @@ public class ProjectInnovationAction extends BaseAction {
 
     innovationDB = projectInnovationManager.getProjectInnovationById(innovationID);
 
-    String params[] = {loggedCrp.getAcronym(), project.getId() + ""};
+    String params[] = { loggedCrp.getAcronym(), project.getId() + "" };
     this.setBasePermission(this.getText(Permission.PROJECT_INNOVATIONS_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
@@ -2130,7 +2178,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-            && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
             haveCountries = true;
           }
         }
@@ -2148,7 +2196,7 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
 
           List<ProjectInnovationCountry> countries = projectInnovationCountryManager
-            .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
+              .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
           List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
           for (String countryIds : innovation.getCountriesIds()) {
             ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
@@ -2190,60 +2238,60 @@ public class ProjectInnovationAction extends BaseAction {
 
       // Setup focusLevel
       if (innovation.getProjectInnovationInfo().getGenderFocusLevel() != null
-        && innovation.getProjectInnovationInfo().getGenderFocusLevel().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getGenderFocusLevel().getId() == -1) {
         innovation.getProjectInnovationInfo().setGenderFocusLevel(null);
       }
 
       if (innovation.getProjectInnovationInfo().getYouthFocusLevel() != null
-        && innovation.getProjectInnovationInfo().getYouthFocusLevel().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getYouthFocusLevel().getId() == -1) {
         innovation.getProjectInnovationInfo().setYouthFocusLevel(null);
       }
       // End
 
       // Validate negative Values
       if (innovation.getProjectInnovationInfo().getProjectExpectedStudy() != null
-        && innovation.getProjectInnovationInfo().getProjectExpectedStudy().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getProjectExpectedStudy().getId() == -1) {
         innovation.getProjectInnovationInfo().setProjectExpectedStudy(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership() != null
-        && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndPhaseResearchPartnership().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndPhaseResearchPartnership(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
-        && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndRegion() != null
-        && innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndRegion().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndRegion(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
-        && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
       }
 
       if (innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution() != null
-        && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() == -1) {
+          && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() == -1) {
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
       }
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
         innovation.getProjectInnovationInfo().setOtherInnovationType("");
       }
 
@@ -2251,16 +2299,17 @@ public class ProjectInnovationAction extends BaseAction {
       // innovation- is set to null
 
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
-        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 1) {
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 1) {
         innovation.getProjectInnovationInfo().setInnovationNumber(null);
       }
 
-      // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
+      // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO
+      // REVERSE THE CONDITIONAL
       if (/* NO */clearLead == null || /* NO */clearLead == false) {
         innovation.getProjectInnovationInfo().setClearLead(false);
         if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
-          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+            && innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
           innovation.getProjectInnovationInfo().setLeadOrganization(null);
         }
 
@@ -2272,7 +2321,7 @@ public class ProjectInnovationAction extends BaseAction {
       try {
         String reasonNotKnowledgePotential = innovation.getProjectInnovationInfo().getReasonNotKnowledgePotential();
         if (reasonNotKnowledgePotential != null && !reasonNotKnowledgePotential.isEmpty()
-          && reasonNotKnowledgePotential.length() > 50000) {
+            && reasonNotKnowledgePotential.length() > 50000) {
           innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(reasonNotKnowledgePotential);
         }
       } catch (Exception e) {
@@ -2282,28 +2331,29 @@ public class ProjectInnovationAction extends BaseAction {
       // Clean text fields according to the boolean selection
       // Has knowledge potential true
       if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
+          && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
         innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(null);
       }
       // Has knowledge potential false
       if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
+          && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
         innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
       }
       // Has tool URL true
       if (innovation.getProjectInnovationInfo().getHasToolUrl() != null
-        && innovation.getProjectInnovationInfo().getHasToolUrl()) {
+          && innovation.getProjectInnovationInfo().getHasToolUrl()) {
         innovation.getProjectInnovationInfo().setReasonNotToolUrl(null);
       }
       // Has CGIAR contribution true
       if (innovation.getProjectInnovationInfo().getHasCgiarContribution() != null
-        && innovation.getProjectInnovationInfo().getHasCgiarContribution()) {
+          && innovation.getProjectInnovationInfo().getHasCgiarContribution()) {
         innovation.getProjectInnovationInfo().setReasonNotCgiarContribution(null);
       }
       // Has CGIAR contribution false
       /*
        * if (innovation.getProjectInnovationInfo().getHasCgiarContribution() != null
-       * && innovation.getProjectInnovationInfo().getHasCgiarContribution() == false) {
+       * && innovation.getProjectInnovationInfo().getHasCgiarContribution() == false)
+       * {
        * innovation.setImpactAreas(null);;
        * }
        */
@@ -2317,7 +2367,7 @@ public class ProjectInnovationAction extends BaseAction {
        */
       this.setModificationJustification(innovation);
       projectInnovationManager.saveProjectInnovation(innovation, this.getActionName(), relationsName,
-        this.getActualPhase());
+          this.getActualPhase());
 
       if (path.toFile().exists()) {
         path.toFile().delete();
@@ -2358,20 +2408,21 @@ public class ProjectInnovationAction extends BaseAction {
     // Search and deleted form Information
     try {
       if (projectInnovation.getProjectInnovationActors() != null
-        && !projectInnovation.getProjectInnovationActors().isEmpty()) {
+          && !projectInnovation.getProjectInnovationActors().isEmpty()) {
 
         /*
          * List<ProjectInnovationActor> actorPrev = new
          * ArrayList<>(projectInnovation.getProjectInnovationActors().stream()
-         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+         * .filter(nu -> nu.isActive() &&
+         * nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
          */
         List<ProjectInnovationActor> actorPrev = projectInnovationActorManager
-          .getProjectInnovationActorByInnovationAndPhase(innovationID, this.getActualPhase().getId());
+            .getProjectInnovationActorByInnovationAndPhase(innovationID, this.getActualPhase().getId());
         try {
           for (ProjectInnovationActor actor : actorPrev) {
 
             if ((actor.getId() != null)
-              && (innovation.getActors() == null || !innovation.getActors().contains(actor))) {
+                && (innovation.getActors() == null || !innovation.getActors().contains(actor))) {
               if (projectInnovationActorManager.existProjectInnovationActor(actor.getId())) {
                 projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
               }
@@ -2390,15 +2441,15 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null
-            && innovationActor.getActor().getId() == -1) {
+              && innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
           }
           ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
           try {
             if (innovationActor.getId() != null) {
-              innovationActorSave =
-                projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+              innovationActorSave = projectInnovationActorManager
+                  .getProjectInnovationActorById(innovationActor.getId());
             }
           } catch (Exception e) {
             logger.error("unable to get old actors", e);
@@ -2436,21 +2487,25 @@ public class ProjectInnovationAction extends BaseAction {
     try {
       // Search and deleted form Information
       if (projectInnovation.getProjectInnovationAllianceLevers() != null
-        && !projectInnovation.getProjectInnovationAllianceLevers().isEmpty()) {
+          && !projectInnovation.getProjectInnovationAllianceLevers().isEmpty()) {
         /*
          * List<ProjectInnovationAllianceLevers> allianceLeverPrev =
-         * new ArrayList<>(projectInnovation.getProjectInnovationAllianceLevers().stream()
-         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+         * new
+         * ArrayList<>(projectInnovation.getProjectInnovationAllianceLevers().stream()
+         * .filter(nu -> nu.isActive() &&
+         * nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
          */
         List<ProjectInnovationAllianceLevers> allianceLeverPrev = new ArrayList<>(projectInnovationAllianceLeversManager
-          .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationID, this.getActualPhase().getId())).stream()
+            .getProjectInnovationAllianceLeversByInnovationAndPhase(innovationID, this.getActualPhase().getId()))
+            .stream()
             .filter(a -> a != null && a.getAllianceLever() != null && a.getAllianceLever().getId() != null)
             .collect(Collectors.toList());
 
         try {
           for (ProjectInnovationAllianceLevers allianceLever : allianceLeverPrev) {
             if (allianceLeverPrev != null && (allianceLever.getId() != null || allianceLever.getId() != -1)
-              && (innovation.getAllianceLevers() == null || !innovation.getAllianceLevers().contains(allianceLever))) {
+                && (innovation.getAllianceLevers() == null
+                    || !innovation.getAllianceLevers().contains(allianceLever))) {
               projectInnovationAllianceLeversManager.deleteProjectInnovationAllianceLevers(allianceLever.getId());
             }
           }
@@ -2471,15 +2526,15 @@ public class ProjectInnovationAction extends BaseAction {
           try {
             if (innovationAllianceLever.getId() != null) {
               innovationAllianceLeverSave = projectInnovationAllianceLeversManager
-                .getProjectInnovationAllianceLeversById(innovationAllianceLever.getId());
+                  .getProjectInnovationAllianceLeversById(innovationAllianceLever.getId());
             }
           } catch (Exception e) {
             logger.error("unable to get old actors", e);
           }
           boolean isSelectedId3 = false;
           if (innovationAllianceLever.getAllianceLever() != null
-            && innovationAllianceLever.getAllianceLever().getId() != null
-            && innovationAllianceLever.getAllianceLever().getId() == 3) {
+              && innovationAllianceLever.getAllianceLever().getId() != null
+              && innovationAllianceLever.getAllianceLever().getId() == 3) {
             isSelectedId3 = true;
           }
           innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
@@ -2524,21 +2579,23 @@ public class ProjectInnovationAction extends BaseAction {
     // Search and deleted form Information
     try {
       if (projectInnovation.getProjectInnovationAllianceOrganizations() != null
-        && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
+          && !projectInnovation.getProjectInnovationAllianceOrganizations().isEmpty()) {
         /*
          * List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
-         * new ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().stream()
-         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+         * new
+         * ArrayList<>(projectInnovation.getProjectInnovationAllianceOrganizations().
+         * stream()
+         * .filter(nu -> nu.isActive() &&
+         * nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
          */
-        List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev =
-          projectInnovationAllianceOrganizationManager
+        List<ProjectInnovationAllianceOrganization> allianceOrganizationPrev = projectInnovationAllianceOrganizationManager
             .getProjectInnovationAllianceOrganizationsByInnovationAndPhase(innovationID, this.getActualPhase().getId());
         try {
           for (ProjectInnovationAllianceOrganization allianceOrganization : allianceOrganizationPrev) {
             if ((allianceOrganization.getId() != null) && (innovation.getAllianceOrganizations() == null
-              || !innovation.getAllianceOrganizations().contains(allianceOrganization))) {
+                || !innovation.getAllianceOrganizations().contains(allianceOrganization))) {
               projectInnovationAllianceOrganizationManager
-                .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
+                  .deleteProjectInnovationAllianceOrganization(allianceOrganization.getId());
             }
           }
         } catch (Exception e) {
@@ -2549,29 +2606,28 @@ public class ProjectInnovationAction extends BaseAction {
       // Save form Information
       if (innovation.getAllianceOrganizations() != null && !innovation.getAllianceOrganizations().isEmpty()) {
         for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
-          .getAllianceOrganizations()) {
+            .getAllianceOrganizations()) {
 
           if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
             innovationAllianceOrganization.setId(null);
           }
 
           if (innovationAllianceOrganization.getInstitutionType() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
+              && innovationAllianceOrganization.getInstitutionType().getId() != null
+              && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
             innovationAllianceOrganization.setInstitutionType(null);
           }
           if (innovationAllianceOrganization.getInstitution() != null
-            && innovationAllianceOrganization.getInstitution().getId() != null
-            && innovationAllianceOrganization.getInstitution().getId() == -1) {
+              && innovationAllianceOrganization.getInstitution().getId() != null
+              && innovationAllianceOrganization.getInstitution().getId() == -1) {
             innovationAllianceOrganization.setInstitution(null);
           }
 
-          ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
-            new ProjectInnovationAllianceOrganization();
+          ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave = new ProjectInnovationAllianceOrganization();
           try {
             if (innovationAllianceOrganization.getId() != null) {
               innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
-                .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+                  .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
             }
           } catch (Exception e) {
             logger.error("unable to get old alliance organizations", e);
@@ -2585,8 +2641,9 @@ public class ProjectInnovationAction extends BaseAction {
           innovationAllianceOrganizationSave.setPhase(phase);
 
           projectInnovationAllianceOrganizationManager
-            .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
-          // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
+              .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
+          // This is to add innovationAllianceOrganizationSave to generate correct
+          // auditlog.
           innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
 
         }
@@ -2601,15 +2658,15 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationCenters() != null
-      && !projectInnovation.getProjectInnovationCenters().isEmpty()) {
+        && !projectInnovation.getProjectInnovationCenters().isEmpty()) {
 
-      List<ProjectInnovationCenter> centerPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationCenters().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationCenter> centerPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationCenters().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationCenter innovationCenter : centerPrev) {
         if ((innovationCenter.getId() != null || innovationCenter.getId() != -1) && innovation.getCenters() == null
-          || !innovation.getCenters().contains(innovationCenter)) {
+            || !innovation.getCenters().contains(innovationCenter)) {
           projectInnovationCenterManager.deleteProjectInnovationCenter(innovationCenter.getId());
         }
       }
@@ -2645,19 +2702,19 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationContributingOrganization() != null
-      && !projectInnovation.getProjectInnovationContributingOrganization().isEmpty()) {
+        && !projectInnovation.getProjectInnovationContributingOrganization().isEmpty()) {
 
-      List<ProjectInnovationContributingOrganization> organizationPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationContributingOrganization().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationContributingOrganization> organizationPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationContributingOrganization().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       if (organizationPrev != null) {
         for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
           if (innovationOrganization != null && innovation.getContributingOrganizations() != null
-            && !innovation.getContributingOrganizations().contains(innovationOrganization)
-            && innovationOrganization.getId() != -1) {
+              && !innovation.getContributingOrganizations().contains(innovationOrganization)
+              && innovationOrganization.getId() != -1) {
             projectInnovationContributingOrganizationManager
-              .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
+                .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
           }
         }
       }
@@ -2666,20 +2723,19 @@ public class ProjectInnovationAction extends BaseAction {
     // Save form Information
     if (innovation.getContributingOrganizations() != null) {
       for (ProjectInnovationContributingOrganization innovationOrganization : innovation
-        .getContributingOrganizations()) {
+          .getContributingOrganizations()) {
         if (innovationOrganization.getId() == null) {
-          ProjectInnovationContributingOrganization innovationOrganizationSave =
-            new ProjectInnovationContributingOrganization();
+          ProjectInnovationContributingOrganization innovationOrganizationSave = new ProjectInnovationContributingOrganization();
           innovationOrganizationSave.setProjectInnovation(projectInnovation);
           innovationOrganizationSave.setPhase(phase);
 
-          Institution institution =
-            institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+          Institution institution = institutionManager
+              .getInstitutionById(innovationOrganization.getInstitution().getId());
 
           innovationOrganizationSave.setInstitution(institution);
 
           projectInnovationContributingOrganizationManager
-            .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+              .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
           // This is to add innovationOrganizationSave to generate correct auditlog.
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
         }
@@ -2698,17 +2754,17 @@ public class ProjectInnovationAction extends BaseAction {
     // Search and deleted form Information
     try {
       if (projectInnovation.getProjectInnovationCrpOutcomes() != null
-        && !projectInnovation.getProjectInnovationCrpOutcomes().isEmpty()) {
+          && !projectInnovation.getProjectInnovationCrpOutcomes().isEmpty()) {
 
-        List<ProjectInnovationCrpOutcome> outcomePrev =
-          new ArrayList<>(projectInnovation.getProjectInnovationCrpOutcomes().stream()
-            .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        List<ProjectInnovationCrpOutcome> outcomePrev = new ArrayList<>(
+            projectInnovation.getProjectInnovationCrpOutcomes().stream()
+                .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationCrpOutcome innovationOutcome : outcomePrev) {
           if (this.innovation.getCrpOutcomes() == null
-            || !this.innovation.getCrpOutcomes().contains(innovationOutcome)) {
+              || !this.innovation.getCrpOutcomes().contains(innovationOutcome)) {
             this.projectInnovationCrpOutcomeManager.deleteProjectInnovationCrpOutcome(innovationOutcome.getId(),
-              this.getActualPhase().getId());
+                this.getActualPhase().getId());
           }
         }
       }
@@ -2730,8 +2786,8 @@ public class ProjectInnovationAction extends BaseAction {
             // For old crp outcomes
             try {
               if (innovationOutcome.getId() != null) {
-                innovationOutcomeSave =
-                  projectInnovationCrpOutcomeManager.getProjectInnovationCrpOutcomeById(innovationOutcome.getId());
+                innovationOutcomeSave = projectInnovationCrpOutcomeManager
+                    .getProjectInnovationCrpOutcomeById(innovationOutcome.getId());
               }
             } catch (Exception e) {
               logger.error("unable to get old crp outcome", e);
@@ -2739,8 +2795,8 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           if (innovationOutcome.getCrpOutcome() != null && innovationOutcome.getCrpOutcome().getId() != null) {
-            CrpProgramOutcome outcome =
-              crpProgramOutcomeManager.getCrpProgramOutcomeById(innovationOutcome.getCrpOutcome().getId());
+            CrpProgramOutcome outcome = crpProgramOutcomeManager
+                .getCrpProgramOutcomeById(innovationOutcome.getCrpOutcome().getId());
             if (outcome != null) {
               innovationOutcomeSave.setCrpOutcome(outcome);
             }
@@ -2766,10 +2822,10 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationCrps() != null
-      && !projectInnovation.getProjectInnovationCrps().isEmpty()) {
+        && !projectInnovation.getProjectInnovationCrps().isEmpty()) {
 
       List<ProjectInnovationCrp> crpPrev = new ArrayList<>(projectInnovation.getProjectInnovationCrps().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationCrp innovationCrp : crpPrev) {
         if (innovation.getCrps() == null || !innovation.getCrps().contains(innovationCrp)) {
@@ -2802,15 +2858,15 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationDeliverables() != null
-      && !projectInnovation.getProjectInnovationDeliverables().isEmpty()) {
+        && !projectInnovation.getProjectInnovationDeliverables().isEmpty()) {
 
-      List<ProjectInnovationDeliverable> deliverablePrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationDeliverables().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationDeliverable> deliverablePrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationDeliverables().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationDeliverable innovationDeliverable : deliverablePrev) {
         if (innovation != null && innovationDeliverable != null && innovation.getDeliverables() != null
-          && !innovation.getDeliverables().contains(innovationDeliverable)) {
+            && !innovation.getDeliverables().contains(innovationDeliverable)) {
           projectInnovationDeliverableManager.deleteProjectInnovationDeliverable(innovationDeliverable.getId());
         }
       }
@@ -2824,8 +2880,8 @@ public class ProjectInnovationAction extends BaseAction {
           innovationDeliverableSave.setProjectInnovation(projectInnovation);
           innovationDeliverableSave.setPhase(phase);
 
-          Deliverable deliverable =
-            deriverableManager.getDeliverableById(innovationDeliverable.getDeliverable().getId());
+          Deliverable deliverable = deriverableManager
+              .getDeliverableById(innovationDeliverable.getDeliverable().getId());
 
           innovationDeliverableSave.setDeliverable(deliverable);
 
@@ -2847,11 +2903,11 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationGeographicScopes() != null
-      && !projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
+        && !projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
 
-      List<ProjectInnovationGeographicScope> scopePrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationGeographicScope> scopePrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationGeographicScopes().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationGeographicScope innovationScope : scopePrev) {
         if (innovation.getGeographicScopes() == null || !innovation.getGeographicScopes().contains(innovationScope)) {
@@ -2869,7 +2925,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationScopeSave.setPhase(phase);
 
           RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-            .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
+              .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
 
           innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
 
@@ -2890,11 +2946,11 @@ public class ProjectInnovationAction extends BaseAction {
   public void saveImpactAreas(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationImpactAreas() != null
-      && !projectInnovation.getProjectInnovationImpactAreas().isEmpty()) {
+        && !projectInnovation.getProjectInnovationImpactAreas().isEmpty()) {
 
-      List<ProjectInnovationImpactArea> impactAreaPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationImpactAreas().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationImpactArea> impactAreaPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationImpactAreas().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationImpactArea impactArea : impactAreaPrev) {
         if (innovation.getImpactAreas() == null || !innovation.getImpactAreas().contains(impactArea)) {
@@ -2931,11 +2987,11 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationMilestones() != null
-      && !projectInnovation.getProjectInnovationMilestones().isEmpty()) {
+        && !projectInnovation.getProjectInnovationMilestones().isEmpty()) {
 
-      List<ProjectInnovationMilestone> milestonePrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationMilestones().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationMilestone> milestonePrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationMilestones().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationMilestone innovationMilestone : milestonePrev) {
         if (innovation.getMilestones() == null || !innovation.getMilestones().contains(innovationMilestone)) {
@@ -2945,7 +3001,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
     // Save policy milestones only if boolean 'has milestones' selection is true
     if (innovation.getProjectInnovationInfo().getHasMilestones() != null
-      && innovation.getProjectInnovationInfo().getHasMilestones()) {
+        && innovation.getProjectInnovationInfo().getHasMilestones()) {
 
       // Save form Information
       if (innovation.getMilestones() != null) {
@@ -2960,8 +3016,8 @@ public class ProjectInnovationAction extends BaseAction {
               innovationMilestoneSave.setPrimary(true);
             }
 
-            CrpMilestone milestone =
-              milestoneManager.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
+            CrpMilestone milestone = milestoneManager
+                .getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
             innovationMilestoneSave.setCrpMilestone(milestone);
 
             projectInnovationMilestoneManager.saveProjectInnovationMilestone(innovationMilestoneSave);
@@ -2970,14 +3026,14 @@ public class ProjectInnovationAction extends BaseAction {
           } else {
             // if milestone already exist - save primary
             ProjectInnovationMilestone innovationMilestoneSave = new ProjectInnovationMilestone();
-            innovationMilestoneSave =
-              projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationMilestone.getId());
+            innovationMilestoneSave = projectInnovationMilestoneManager
+                .getProjectInnovationMilestoneById(innovationMilestone.getId());
             innovationMilestoneSave.setProjectInnovation(projectInnovation);
             innovationMilestoneSave.setPhase(phase);
             if (innovationMilestoneSave.getCrpMilestone() != null
-              && innovationMilestoneSave.getCrpMilestone().getId() != null) {
-              CrpMilestone milestone =
-                milestoneManager.getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
+                && innovationMilestoneSave.getCrpMilestone().getId() != null) {
+              CrpMilestone milestone = milestoneManager
+                  .getCrpMilestoneById(innovationMilestone.getCrpMilestone().getId());
               innovationMilestoneSave.setCrpMilestone(milestone);
             }
             innovationMilestoneSave.setPrimary(innovationMilestone.getPrimary());
@@ -3004,7 +3060,7 @@ public class ProjectInnovationAction extends BaseAction {
               projectInnovationMilestoneManager.deleteProjectInnovationMilestone(innovationMilestone.getId());
               // This is to add innovationCenterSave to generate correct auditlog.
               innovation.getProjectInnovationMilestones()
-                .remove(projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationID));
+                  .remove(projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationID));
             }
           } catch (Exception e) {
 
@@ -3025,11 +3081,11 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationOrganizations() != null
-      && !projectInnovation.getProjectInnovationOrganizations().isEmpty()) {
+        && !projectInnovation.getProjectInnovationOrganizations().isEmpty()) {
 
-      List<ProjectInnovationOrganization> organizationPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationOrganizations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationOrganization> organizationPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationOrganizations().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
         if (innovation.getOrganizations() == null || !innovation.getOrganizations().contains(innovationOrganization)) {
@@ -3039,8 +3095,9 @@ public class ProjectInnovationAction extends BaseAction {
 
       // Delete innovations organizations when stage is different to 4
       if (projectInnovation.getProjectInnovationInfo(this.getActualPhase()) != null
-        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
-        && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation().getId() != 4) {
+          && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation() != null
+          && projectInnovation.getProjectInnovationInfo(this.getActualPhase()).getRepIndStageInnovation()
+              .getId() != 4) {
         for (ProjectInnovationOrganization innovationOrganization : organizationPrev) {
           projectInnovationOrganizationManager.deleteProjectInnovationOrganization(innovationOrganization.getId());
         }
@@ -3054,15 +3111,15 @@ public class ProjectInnovationAction extends BaseAction {
           innovationOrganization.setId(null);
         }
         if (innovationOrganization.getRepIndOrganizationType() != null
-          && innovationOrganization.getRepIndOrganizationType().getId() != null
-          && innovationOrganization.getRepIndOrganizationType().getId() == -1) {
+            && innovationOrganization.getRepIndOrganizationType().getId() != null
+            && innovationOrganization.getRepIndOrganizationType().getId() == -1) {
           innovationOrganization.setRepIndOrganizationType(null);
         }
         ProjectInnovationOrganization innovationOrganizationSave = new ProjectInnovationOrganization();
         try {
           if (innovationOrganization.getId() != null) {
-            innovationOrganizationSave =
-              projectInnovationOrganizationManager.getProjectInnovationOrganizationById(innovationOrganization.getId());
+            innovationOrganizationSave = projectInnovationOrganizationManager
+                .getProjectInnovationOrganizationById(innovationOrganization.getId());
           }
         } catch (Exception e) {
           logger.error("unable to get old innovation", e);
@@ -3072,7 +3129,7 @@ public class ProjectInnovationAction extends BaseAction {
         innovationOrganizationSave.setPhase(phase);
 
         RepIndOrganizationType repIndOrganizationType = repIndOrganizationTypeManager
-          .getRepIndOrganizationTypeById(innovationOrganization.getRepIndOrganizationType().getId());
+            .getRepIndOrganizationTypeById(innovationOrganization.getRepIndOrganizationType().getId());
 
         innovationOrganizationSave.setRepIndOrganizationType(repIndOrganizationType);
 
@@ -3093,11 +3150,11 @@ public class ProjectInnovationAction extends BaseAction {
   public void saveProjectInnovationPartnership(ProjectInnovation projectInnovation, Phase phase) {
 
     if ((projectInnovation.getProjectInnovationPartnerships() != null)
-      && (!projectInnovation.getProjectInnovationPartnerships().isEmpty())) {
+        && (!projectInnovation.getProjectInnovationPartnerships().isEmpty())) {
       List<ProjectInnovationPartnership> projectInnovationPartnershipCustom = null;
       try {
         projectInnovationPartnershipCustom = this.projectInnovationPartnershipManager
-          .findByInnovationAndPhase(projectInnovation.getId(), this.getActualPhase().getId());
+            .findByInnovationAndPhase(projectInnovation.getId(), this.getActualPhase().getId());
 
       } catch (final Exception e) {
         this.logger.info(e.getMessage());
@@ -3105,52 +3162,52 @@ public class ProjectInnovationAction extends BaseAction {
       List<ProjectInnovationPartnership> projectInnovationPartnershipPrev = null;
       if ((projectInnovationPartnershipCustom != null) && !projectInnovationPartnershipCustom.isEmpty()) {
         projectInnovationPartnershipPrev = projectInnovationPartnershipCustom.stream()
-          .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-            .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-          .collect(Collectors.toList());
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
+                .getProjectInnovationPartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+            .collect(Collectors.toList());
       }
       try {
         // 2024/07/22 conditional was added to avoid exception by null data
         if ((projectInnovationPartnershipPrev != null) && !projectInnovationPartnershipPrev.isEmpty()) {
           for (final ProjectInnovationPartnership projectInnovationPartnership : projectInnovationPartnershipPrev) {
             if ((this.innovation.getPartnerships() == null) || ((this.innovation.getPartnerships() != null)
-              && !this.innovation.getPartnerships().contains(projectInnovationPartnership))) {
+                && !this.innovation.getPartnerships().contains(projectInnovationPartnership))) {
               this.projectInnovationPartnershipManager
-                .deleteProjectInnovationPartnership(projectInnovationPartnership.getId());
+                  .deleteProjectInnovationPartnership(projectInnovationPartnership.getId());
             }
           }
         }
       } catch (final Exception e) {
         this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
-          e.getMessage());
+            e.getMessage());
       }
     }
 
     final ProjectInnovationPartnerType projectInnovationPartnerType = this.projectInnovationPartnerTypeManager
-      .getProjectInnovationPartnerTypeById(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE);
+        .getProjectInnovationPartnerTypeById(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE);
     if (this.innovation.getPartnerships() != null) {
       for (final ProjectInnovationPartnership projectInnovationPartnership : this.innovation.getPartnerships()) {
         if (projectInnovationPartnership.getId() != null) {
           ProjectInnovationPartnership projectInnovationPartnershipSave = this.projectInnovationPartnershipManager
-            .getProjectInnovationPartnershipById(projectInnovationPartnership.getId());
+              .getProjectInnovationPartnershipById(projectInnovationPartnership.getId());
 
           if (projectInnovationPartnership.getInstitution().getId() != null) {
             if (projectInnovationPartnership.getInstitution().getId() != -1) {
-              final Institution institution =
-                this.institutionManager.getInstitutionById(projectInnovationPartnership.getInstitution().getId());
+              final Institution institution = this.institutionManager
+                  .getInstitutionById(projectInnovationPartnership.getInstitution().getId());
               projectInnovationPartnershipSave.setInstitution(institution);
 
               if (projectInnovationPartnership.getPartnershipPersons() != null) {
                 projectInnovationPartnershipSave
-                  .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
+                    .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
               }
               projectInnovationPartnershipSave = this.projectInnovationPartnershipManager
-                .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
+                  .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
               this.saveProjectInnovationPartnershipsPersons(projectInnovationPartnership,
-                projectInnovationPartnershipSave);
+                  projectInnovationPartnershipSave);
             } else {
               this.projectInnovationPartnershipManager
-                .deleteProjectInnovationPartnership(projectInnovationPartnership.getId());
+                  .deleteProjectInnovationPartnership(projectInnovationPartnership.getId());
             }
           }
 
@@ -3162,22 +3219,21 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationPartnershipSave.setProjectInnovationPartnerType(projectInnovationPartnerType);
 
           if ((projectInnovationPartnership.getInstitution() != null)
-            && (projectInnovationPartnership.getInstitution().getId() != null)
-            && projectInnovationPartnership.getInstitution().getId() != -1) {
-            final Institution institution =
-              this.institutionManager.getInstitutionById(projectInnovationPartnership.getInstitution().getId());
+              && (projectInnovationPartnership.getInstitution().getId() != null)
+              && projectInnovationPartnership.getInstitution().getId() != -1) {
+            final Institution institution = this.institutionManager
+                .getInstitutionById(projectInnovationPartnership.getInstitution().getId());
             projectInnovationPartnershipSave.setInstitution(institution);
-
 
             if (projectInnovationPartnership.getPartnershipPersons() != null) {
               projectInnovationPartnershipSave
-                .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
+                  .setPartnershipPersons(projectInnovationPartnership.getPartnershipPersons());
             }
 
             projectInnovationPartnershipSave = this.projectInnovationPartnershipManager
-              .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
+                .saveProjectInnovationPartnership(projectInnovationPartnershipSave);
             this.saveProjectInnovationPartnershipsPersons(projectInnovationPartnership,
-              projectInnovationPartnershipSave);
+                projectInnovationPartnershipSave);
           }
 
         }
@@ -3187,23 +3243,24 @@ public class ProjectInnovationAction extends BaseAction {
 
   /*
    * @param projectInnovationPartnership (front-end element to save)
+   * 
    * @param projectInnovationPartnershipDB (previous element form DB)
    */
   private void saveProjectInnovationPartnershipsPersons(ProjectInnovationPartnership projectInnovationPartnership,
-    ProjectInnovationPartnership projectInnovationPartnershipDB) {
+      ProjectInnovationPartnership projectInnovationPartnershipDB) {
 
     if ((projectInnovationPartnershipDB.getProjectInnovationPartnershipPersons() != null)
-      && !projectInnovationPartnershipDB.getProjectInnovationPartnershipPersons().isEmpty()) {
+        && !projectInnovationPartnershipDB.getProjectInnovationPartnershipPersons().isEmpty()) {
 
-      final List<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersonPrev =
-        projectInnovationPartnershipDB.getProjectInnovationPartnershipPersons().stream()
+      final List<ProjectInnovationPartnershipPerson> projectInnovationPartnershipsPersonPrev = projectInnovationPartnershipDB
+          .getProjectInnovationPartnershipPersons().stream()
           .filter(ProjectInnovationPartnershipPerson::isActive).collect(Collectors.toList());
 
       for (final ProjectInnovationPartnershipPerson projectInnovationPartnershipsPerson : projectInnovationPartnershipsPersonPrev) {
         if ((projectInnovationPartnership.getPartnershipPersons() == null)
-          || !projectInnovationPartnership.getPartnershipPersons().contains(projectInnovationPartnershipsPerson)) {
+            || !projectInnovationPartnership.getPartnershipPersons().contains(projectInnovationPartnershipsPerson)) {
           this.projectInnovationPartnershipPersonManager
-            .deleteProjectInnovationPartnershipPerson(projectInnovationPartnershipsPerson.getId());
+              .deleteProjectInnovationPartnershipPerson(projectInnovationPartnershipsPerson.getId());
         }
       }
     }
@@ -3211,26 +3268,25 @@ public class ProjectInnovationAction extends BaseAction {
     if (projectInnovationPartnership.getPartnershipPersons() != null) {
       for (final ProjectInnovationPartnershipPerson person : projectInnovationPartnership.getPartnershipPersons()) {
         if (person.getId() != null) {
-          final ProjectInnovationPartnershipPerson projectInnovationPartnershipsPersonNew =
-            this.projectInnovationPartnershipPersonManager.getProjectInnovationPartnershipPersonById(person.getId());
+          final ProjectInnovationPartnershipPerson projectInnovationPartnershipsPersonNew = this.projectInnovationPartnershipPersonManager
+              .getProjectInnovationPartnershipPersonById(person.getId());
 
           if ((person.getUser() != null) && (person.getUser().getId() != null)) {
             if (!person.getUser().getId().equals(projectInnovationPartnershipsPersonNew.getUser().getId())) {
               projectInnovationPartnershipsPersonNew.setUser(this.userManager.getUser(person.getUser().getId()));
               this.projectInnovationPartnershipPersonManager
-                .saveProjectInnovationPartnershipPerson(projectInnovationPartnershipsPersonNew);
+                  .saveProjectInnovationPartnershipPerson(projectInnovationPartnershipsPersonNew);
             }
           } else {
             this.projectInnovationPartnershipPersonManager.deleteProjectInnovationPartnershipPerson(person.getId());
           }
         } else {
           if ((person.getUser() != null) && (person.getUser().getId() != null)) {
-            final ProjectInnovationPartnershipPerson projectInnovationPartnershipsPersonNew =
-              new ProjectInnovationPartnershipPerson();
+            final ProjectInnovationPartnershipPerson projectInnovationPartnershipsPersonNew = new ProjectInnovationPartnershipPerson();
             projectInnovationPartnershipsPersonNew.setUser(this.userManager.getUser(person.getUser().getId()));
             projectInnovationPartnershipsPersonNew.setProjectInnovationPartnership(projectInnovationPartnershipDB);
             this.projectInnovationPartnershipPersonManager
-              .saveProjectInnovationPartnershipPerson(projectInnovationPartnershipsPersonNew);
+                .saveProjectInnovationPartnershipPerson(projectInnovationPartnershipsPersonNew);
           }
         }
       }
@@ -3249,17 +3305,17 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationProjectOutcomes() != null
-      && !projectInnovation.getProjectInnovationProjectOutcomes().isEmpty()) {
+        && !projectInnovation.getProjectInnovationProjectOutcomes().isEmpty()) {
 
-      List<ProjectInnovationProjectOutcome> outcomePrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationProjectOutcomes().stream()
-          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationProjectOutcome> outcomePrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationProjectOutcomes().stream()
+              .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationProjectOutcome innovationOutcome : outcomePrev) {
         if (this.innovation.getProjectOutcomes() == null
-          || !this.innovation.getProjectOutcomes().contains(innovationOutcome)) {
+            || !this.innovation.getProjectOutcomes().contains(innovationOutcome)) {
           this.projectInnovationProjectOutcomeManager.deleteProjectInnovationProjectOutcome(innovationOutcome.getId(),
-            this.getActualPhase().getId());
+              this.getActualPhase().getId());
         }
       }
     }
@@ -3273,8 +3329,8 @@ public class ProjectInnovationAction extends BaseAction {
           innovationOutcomeSave.setPhase(phase);
 
           if (innovationOutcome.getProjectOutcome() != null && innovationOutcome.getProjectOutcome().getId() != null) {
-            ProjectOutcome outcome =
-              projectOutcomeManager.getProjectOutcomeById(innovationOutcome.getProjectOutcome().getId());
+            ProjectOutcome outcome = projectOutcomeManager
+                .getProjectOutcomeById(innovationOutcome.getProjectOutcome().getId());
             innovationOutcomeSave.setProjectOutcome(outcome);
 
             this.projectInnovationProjectOutcomeManager.saveProjectInnovationProjectOutcome(innovationOutcomeSave);
@@ -3284,7 +3340,6 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     }
-
 
   }
 
@@ -3298,15 +3353,15 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationShareds() != null
-      && !projectInnovation.getProjectInnovationShareds().isEmpty()) {
+        && !projectInnovation.getProjectInnovationShareds().isEmpty()) {
 
-      List<ProjectInnovationShared> projectPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationShareds().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationShared> projectPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationShareds().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationShared innovationProject : projectPrev) {
         if (this.innovation.getSharedInnovations() == null
-          || !this.innovation.getSharedInnovations().contains(innovationProject)) {
+            || !this.innovation.getSharedInnovations().contains(innovationProject)) {
           this.projectInnovationSharedManager.deleteProjectInnovationShared(innovationProject.getId());
         }
       }
@@ -3344,16 +3399,15 @@ public class ProjectInnovationAction extends BaseAction {
     if (projectInnovation.getProjectInnovationReferenceComplementarySolutions() != null) {
 
       try {
-        List<ProjectInnovationReferenceComplementarySolution> referencesPrev =
-          projectInnovationReferenceComplementarySolutionManager
+        List<ProjectInnovationReferenceComplementarySolution> referencesPrev = projectInnovationReferenceComplementarySolutionManager
             .getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(this.getActualPhase().getId(),
-              innovationID);
+                innovationID);
         for (ProjectInnovationReferenceComplementarySolution innovationReference : referencesPrev) {
           if ((innovation.getProjectInnovationReferenceComplementarySolutions() == null
-            || innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty())
-            || !innovation.getReferenceComplementarySolutions().contains(innovationReference)) {
+              || innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty())
+              || !innovation.getReferenceComplementarySolutions().contains(innovationReference)) {
             this.projectInnovationReferenceComplementarySolutionManager
-              .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
+                .deleteProjectInnovationReferenceComplementarySolution(innovationReference.getId());
           }
         }
       } catch (Exception e) {
@@ -3364,7 +3418,7 @@ public class ProjectInnovationAction extends BaseAction {
     // Save form Information
     if (this.innovation.getReferenceComplementarySolutions() != null) {
       for (final ProjectInnovationReferenceComplementarySolution innovationReference : this.innovation
-        .getReferenceComplementarySolutions()) {
+          .getReferenceComplementarySolutions()) {
 
         if (innovationReference.getId() != null && innovationReference.getId() == -1) {
           innovationReference.setId(null);
@@ -3374,11 +3428,10 @@ public class ProjectInnovationAction extends BaseAction {
           innovationReference.setInnovation(null);
         }
 
-        ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
-          new ProjectInnovationReferenceComplementarySolution();
+        ProjectInnovationReferenceComplementarySolution innovationReferenceSave = new ProjectInnovationReferenceComplementarySolution();
         if (innovationReference.getId() != null) {
           innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
-            .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
+              .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
         }
 
         innovationReferenceSave.setProjectInnovation(projectInnovation);
@@ -3388,18 +3441,18 @@ public class ProjectInnovationAction extends BaseAction {
         innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
         innovationReferenceSave.setInnovation(innovationReference.getInnovation());
         if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() != null
-          && innovationReference.getInnovation().getId() == -1) {
+            && innovationReference.getInnovation().getId() == -1) {
           innovationReferenceSave.setInnovation(null);
         }
         innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
         if (innovationReference.getDeliverableType() != null && innovationReference.getDeliverableType().getId() != null
-          && innovationReference.getDeliverableType().getId() == -1) {
+            && innovationReference.getDeliverableType().getId() == -1) {
           innovationReference.setDeliverableType(null);
         }
         innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
 
         this.projectInnovationReferenceComplementarySolutionManager
-          .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
+            .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
         // This is to add innovationReferenceSave to generate correct
         // auditlog.
         this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
@@ -3417,22 +3470,23 @@ public class ProjectInnovationAction extends BaseAction {
   private void saveReferences(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationReferences() != null
-      && !projectInnovation.getProjectInnovationReferences().isEmpty()) {
+        && !projectInnovation.getProjectInnovationReferences().isEmpty()) {
       /*
        * final List<ProjectInnovationReference> referencesPrev =
        * new ArrayList<>(projectInnovation.getProjectInnovationReferences().stream()
-       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null &&
+       * nu.getProjectInnovation().getId() != null
        * && nu.getProjectInnovation().getId() == projectInnovation.getId()
        * && nu.getPhase().getId().equals(phase.getId()))
        * .collect(Collectors.toList()));
        */
       try {
         List<ProjectInnovationReference> referencesPrev = projectInnovationReferenceManager
-          .getProjectInnovationReferenceByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
+            .getProjectInnovationReferenceByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
         for (ProjectInnovationReference studyReference : referencesPrev) {
           if ((innovation.getReferences() == null || innovation.getReferences().isEmpty())
-            || !innovation.getReferences().contains(studyReference)) {
+              || !innovation.getReferences().contains(studyReference)) {
             this.projectInnovationReferenceManager.deleteProjectInnovationReference(studyReference.getId());
           }
         }
@@ -3449,8 +3503,8 @@ public class ProjectInnovationAction extends BaseAction {
         }
         ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
         if (studyReference.getId() != null) {
-          studyReferenceSave =
-            this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+          studyReferenceSave = this.projectInnovationReferenceManager
+              .getProjectInnovationReferenceById(studyReference.getId());
         }
         studyReferenceSave.setProjectInnovation(projectInnovation);
         studyReferenceSave.setPhase(phase);
@@ -3463,16 +3517,16 @@ public class ProjectInnovationAction extends BaseAction {
         studyReferenceSave.setExternalAuthor(externalAutor);
         studyReferenceSave.setEvidenceByDeliverable(studyReference.getEvidenceByDeliverable());
         if (studyReference.getDeliverable() != null && studyReference.getDeliverable().getId() != null
-          && studyReference.getDeliverable().getId() == -1) {
+            && studyReference.getDeliverable().getId() == -1) {
           studyReference.setDeliverable(null);
         }
         studyReferenceSave.setDeliverable(studyReference.getDeliverable());
         if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
-          && studyReference.getDeliverableType().getId() == -1) {
+            && studyReference.getDeliverableType().getId() == -1) {
           studyReference.setDeliverableType(null);
         } else {
           if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
-            && deliverableTypeManager.existDeliverableType(studyReference.getDeliverableType().getId())) {
+              && deliverableTypeManager.existDeliverableType(studyReference.getDeliverableType().getId())) {
             studyReferenceSave.setDeliverableType(studyReference.getDeliverableType());
           }
         }
@@ -3495,21 +3549,23 @@ public class ProjectInnovationAction extends BaseAction {
     if (projectInnovation.getProjectInnovationReferenceUrls() != null) {
       /*
        * final List<ProjectInnovationReferenceUrl> referencesPrev =
-       * new ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
-       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null && nu.getProjectInnovation().getId() != null
+       * new
+       * ArrayList<>(projectInnovation.getProjectInnovationReferenceUrls().stream()
+       * .filter(nu -> nu.isActive() && nu.getProjectInnovation() != null &&
+       * nu.getProjectInnovation().getId() != null
        * && nu.getProjectInnovation().getId() == projectInnovation.getId()
        * && nu.getPhase().getId().equals(phase.getId()))
        * .collect(Collectors.toList()));
        */
       try {
         List<ProjectInnovationReferenceUrl> referencesPrev = projectInnovationReferenceUrlManager
-          .getProjectInnovationReferenceUrlByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
+            .getProjectInnovationReferenceUrlByPhaseAndInnovation(this.getActualPhase().getId(), innovationID);
 
         for (ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
           if ((innovation.getReferenceUrls() == null || innovation.getReferenceUrls().isEmpty())
-            || innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
+              || innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
             this.projectInnovationReferenceUrlManager
-              .deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
+                .deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
           }
         }
       } catch (Exception e) {
@@ -3529,7 +3585,7 @@ public class ProjectInnovationAction extends BaseAction {
           ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
           if (innovationReferenceUrl.getId() != null) {
             innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
-              .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
+                .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
           }
 
           innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
@@ -3542,14 +3598,14 @@ public class ProjectInnovationAction extends BaseAction {
           // innovationReferenceUrlSave.setDatasetType(innovationReferenceUrl.getDatasetType());
           innovationReferenceUrlSave.setEvidenceByDeliverable(innovationReferenceUrl.getEvidenceByDeliverable());
           if (innovationReferenceUrl.getDeliverable() != null && innovationReferenceUrl.getDeliverable().getId() != null
-            && innovationReferenceUrl.getDeliverable().getId() == -1) {
+              && innovationReferenceUrl.getDeliverable().getId() == -1) {
             innovationReferenceUrl.setDeliverable(null);
           }
           innovationReferenceUrlSave.setDeliverable(innovationReferenceUrl.getDeliverable());
 
           if (innovationReferenceUrl.getDeliverableType() != null
-            && innovationReferenceUrl.getDeliverableType().getId() != null
-            && innovationReferenceUrl.getDeliverableType().getId() == -1) {
+              && innovationReferenceUrl.getDeliverableType().getId() != null
+              && innovationReferenceUrl.getDeliverableType().getId() == -1) {
             innovationReferenceUrl.setDeliverableType(null);
           }
 
@@ -3577,11 +3633,11 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationRegions() != null
-      && !projectInnovation.getProjectInnovationRegions().isEmpty()) {
+        && !projectInnovation.getProjectInnovationRegions().isEmpty()) {
 
-      List<ProjectInnovationRegion> regionPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationRegion> regionPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationRegions().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationRegion innovationRegion : regionPrev) {
         if (innovation.getRegions() == null || !innovation.getRegions().contains(innovationRegion)) {
@@ -3620,10 +3676,10 @@ public class ProjectInnovationAction extends BaseAction {
     try {
       // Search and deleted form Information
       if (projectInnovation.getProjectInnovationSDGs() != null
-        && !projectInnovation.getProjectInnovationSDGs().isEmpty()) {
+          && !projectInnovation.getProjectInnovationSDGs().isEmpty()) {
 
         List<ProjectInnovationSDG> sdgPrev = new ArrayList<>(projectInnovation.getProjectInnovationSDGs().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
         for (ProjectInnovationSDG sdg : sdgPrev) {
           if ((innovation.getSdgs() == null || !innovation.getSdgs().contains(sdg)) && sdg.getId() != null) {
@@ -3665,10 +3721,10 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectExpectedStudyInnovations() != null
-      && !projectInnovation.getProjectExpectedStudyInnovations().isEmpty()) {
-      List<ProjectExpectedStudyInnovation> studyPrev =
-        new ArrayList<>(projectInnovation.getProjectExpectedStudyInnovations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        && !projectInnovation.getProjectExpectedStudyInnovations().isEmpty()) {
+      List<ProjectExpectedStudyInnovation> studyPrev = new ArrayList<>(
+          projectInnovation.getProjectExpectedStudyInnovations().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectExpectedStudyInnovation studyInnovation : studyPrev) {
         if (this.innovation.getStudies() == null || !this.innovation.getStudies().contains(studyInnovation)) {
@@ -3686,7 +3742,7 @@ public class ProjectInnovationAction extends BaseAction {
           studyInnovationSave.setPhase(phase);
 
           ProjectExpectedStudy projectExpectedStudy = this.projectExpectedStudyManager
-            .getProjectExpectedStudyById(studyInnovation.getProjectExpectedStudy().getId());
+              .getProjectExpectedStudyById(studyInnovation.getProjectExpectedStudy().getId());
 
           studyInnovationSave.setProjectExpectedStudy(projectExpectedStudy);
 
@@ -3709,11 +3765,11 @@ public class ProjectInnovationAction extends BaseAction {
 
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationSubIdos() != null
-      && !projectInnovation.getProjectInnovationSubIdos().isEmpty()) {
+        && !projectInnovation.getProjectInnovationSubIdos().isEmpty()) {
 
-      List<ProjectInnovationSubIdo> subIdoPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationSubIdos().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationSubIdo> subIdoPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationSubIdos().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationSubIdo innovationSubIdo : subIdoPrev) {
         if (innovation.getSubIdos() == null || !innovation.getSubIdos().contains(innovationSubIdo)) {
@@ -3744,8 +3800,8 @@ public class ProjectInnovationAction extends BaseAction {
         } else {
           // if sub ido already exist - save primary
           ProjectInnovationSubIdo innovationSubIdoSave = new ProjectInnovationSubIdo();
-          innovationSubIdoSave =
-            projectInnovationSubIdoManager.getProjectInnovationSubIdoById(innovationSubIdo.getId());
+          innovationSubIdoSave = projectInnovationSubIdoManager
+              .getProjectInnovationSubIdoById(innovationSubIdo.getId());
           innovationSubIdoSave.setProjectInnovation(projectInnovation);
           innovationSubIdoSave.setPhase(phase);
           innovationSubIdoSave.setPrimary(innovationSubIdo.getPrimary());
@@ -3777,11 +3833,11 @@ public class ProjectInnovationAction extends BaseAction {
   public void saveToolCategories(ProjectInnovation projectInnovation, Phase phase) {
     // Search and deleted form Information
     if (projectInnovation.getProjectInnovationToolCategories() != null
-      && !projectInnovation.getProjectInnovationToolCategories().isEmpty()) {
+        && !projectInnovation.getProjectInnovationToolCategories().isEmpty()) {
 
-      List<ProjectInnovationToolCategory> toolPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationToolCategories().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+      List<ProjectInnovationToolCategory> toolPrev = new ArrayList<>(
+          projectInnovation.getProjectInnovationToolCategories().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationToolCategory actor : toolPrev) {
         if (innovation.getToolCategories() == null || !innovation.getToolCategories().contains(actor)) {
@@ -3796,8 +3852,8 @@ public class ProjectInnovationAction extends BaseAction {
         ProjectInnovationToolCategory innovationToolCategorySave = new ProjectInnovationToolCategory();
         try {
           if (innovationToolCategory.getId() != null) {
-            innovationToolCategorySave =
-              projectInnovationToolCategoryManager.getProjectInnovationToolCategoryById(innovationToolCategory.getId());
+            innovationToolCategorySave = projectInnovationToolCategoryManager
+                .getProjectInnovationToolCategoryById(innovationToolCategory.getId());
           }
         } catch (Exception e) {
           logger.error("unable to get old tool categories", e);
@@ -3923,8 +3979,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.institutionTypeList = institutionTypeList;
   }
 
-  public void
-    setIntellectualInstitutionsList(List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList) {
+  public void setIntellectualInstitutionsList(
+      List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList) {
     this.intellectualInstitutionsList = intellectualInstitutionsList;
   }
 
@@ -4029,7 +4085,7 @@ public class ProjectInnovationAction extends BaseAction {
     if (save) {
       // Change the parameters for the new way to validate the data
       validator.validate(this, project, innovation, clearLead, true, true, this.getActualPhase().getYear(),
-        this.getActualPhase().getUpkeep());
+          this.getActualPhase().getUpkeep());
     }
 
   }
