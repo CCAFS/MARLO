@@ -981,6 +981,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
         contacts += "" + persons;
+        contacts = contacts.replace("null", "");
 
         // Shared clusters
         if (studyProjectList != null && !studyProjectList.isEmpty()) {
