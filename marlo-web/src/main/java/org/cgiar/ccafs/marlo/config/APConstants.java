@@ -164,6 +164,8 @@ public final class APConstants {
     "duplicated_deliverables_functionality_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
     "deliverable_shared_clusters_trainees_active";
+  public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
+    "deliverable_completed_in_previous_phases_active";
   public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
   public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
   public static final String DELIVERABLE_MELIA_MODULE_ACTIVE = "deliverable_melia_module_active";

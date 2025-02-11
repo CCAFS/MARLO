@@ -2441,7 +2441,9 @@ public class DeliverableAction extends BaseAction {
       } catch (Exception e) {
       }
 
-      this.checkDeliverableStatusInPreviousPhases(deliverable);
+      if (this.hasSpecificities(APConstants.DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE)) {
+        this.checkDeliverableStatusInPreviousPhases(deliverable);
+      }
 
       // Deliverable remaining value
       if (deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getRemainingPending() == null) {
