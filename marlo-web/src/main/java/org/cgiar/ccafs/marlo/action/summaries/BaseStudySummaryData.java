@@ -86,7 +86,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
    * @return masterReport with i8n parameters added
    */
   public MasterReport addi8nParameters(MasterReport masterReport) {
-    masterReport.getParameterValues().put("i8nStudies", this.getText("menu.studies"));
+    masterReport.getParameterValues().put("i8nStudies", this.getText("summaries.study.header"));
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
     masterReport.getParameterValues().put("i8nStudiesMainTitle", this.getText("summaries.study.mainTitle"));
     masterReport.getParameterValues().put("i8nStudiesCovidAnalysis", this.getText("summaries.study.hasCovidAnalysis"));
