@@ -89,6 +89,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudies", this.getText("summaries.study.header"));
     masterReport.getParameterValues().put("i8nStudiesRNoData", this.getText("summaries.study.noData"));
     masterReport.getParameterValues().put("i8nStudiesMainTitle", this.getText("summaries.study.mainTitle"));
+    masterReport.getParameterValues().put("i8nStudiesTagAs", this.getText("study.general.tag"));
+    masterReport.getParameterValues().put("i8nStudiesAllianceID", this.getText("study.general.allianceID"));
     masterReport.getParameterValues().put("i8nStudiesCovidAnalysis", this.getText("summaries.study.hasCovidAnalysis"));
     masterReport.getParameterValues().put("i8nStudiesLinkPerformance",
       this.getText("summaries.study.linkPerformanceIndicator"));
@@ -199,7 +201,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaPublications", "performanceIndicator",
         "covidAnalysis", "centers", "clusterAcronym", "allianceOICRID", "primaryAllianceLever", "strategicOutcome",
         "primarySDGcontribution", "relatedLever", "relatedSDGContribution", "hasCgiarContribution", "impactArea",
-        "publications"},
+        "publications", "tagAs"},
       new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
@@ -207,7 +209,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     URLShortener urlShortener = new URLShortener();
@@ -229,7 +231,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           otherCrossCuttingDimensionsSelection = null, url = null, studiesReference = null, meliaPublications = null,
           performanceIndicator = null, covidAnalysis = null, centers = null, clusterAcronym = null,
           allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null, primarySDGcontribution = null,
-          relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null;
+          relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null,
+          tagAs = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
@@ -239,6 +242,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Alliance OICR ID
         if (projectExpectedStudyInfo.getAllianceOicr() != null) {
           allianceOICRID = projectExpectedStudyInfo.getAllianceOicr();
+        }
+        // Tag As
+        if (projectExpectedStudyInfo.getTag() != null && projectExpectedStudyInfo.getTag().getTagName() != null) {
+          tagAs = projectExpectedStudyInfo.getTag().getTagName();
         }
         // Type
         if (projectExpectedStudyInfo.getStudyType() != null) {
@@ -1016,7 +1023,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           otherCrossCuttingDimensionsSelection, isContribution, isRegional, isNational, isOutcomeCaseStudy, isSrfTarget,
           url, studiesReference, meliaPublications, performanceIndicator, covidAnalysis, centers, clusterAcronym,
           allianceOICRID, primaryAllianceLever, strategicOutcome, primarySDGcontribution, relatedLever,
-          relatedSDGContribution, hasCGIARContribution, impactArea, publications});
+          relatedSDGContribution, hasCGIARContribution, impactArea, publications, tagAs});
 
       }
     }
