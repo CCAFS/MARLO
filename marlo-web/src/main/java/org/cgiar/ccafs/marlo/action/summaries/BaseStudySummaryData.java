@@ -371,10 +371,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               .equals(this.getReportingIndGeographicScopeRegional())) {
               isRegional = true;
             }
-            geographicScopeSet
-              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp;● " + geographicScope.getRepIndGeographicScope().getName());
+            geographicScopeSet.add(geographicScope.getRepIndGeographicScope().getName());
           }
-          geographicScopes = String.join("", geographicScopeSet);
+          geographicScopes = String.join(", ", geographicScopeSet);
         }
 
         // Country(s)
@@ -387,12 +386,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           if (studyCountries != null && !studyCountries.isEmpty()) {
             Set<String> countriesSet = new HashSet<>();
             for (ProjectExpectedStudyCountry projectExpectedStudyCountry : studyCountries) {
-              countriesSet
-                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectExpectedStudyCountry.getLocElement().getName());
+              countriesSet.add(projectExpectedStudyCountry.getLocElement().getName());
             }
-            countries = String.join("", countriesSet);
+            countries = String.join(", ", countriesSet);
           }
         }
+
         // Region(s)
         if (isRegional) {
           List<ProjectExpectedStudyRegion> studyRegions =
@@ -402,9 +401,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           if (studyRegions != null && !studyRegions.isEmpty()) {
             Set<String> regionsSet = new HashSet<>();
             for (ProjectExpectedStudyRegion projectExpectedStudyRegion : studyRegions) {
-              regionsSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectExpectedStudyRegion.getLocElement().getName());
+              regionsSet.add(projectExpectedStudyRegion.getLocElement().getName());
             }
-            regions = String.join("", regionsSet);
+            regions = String.join(", ", regionsSet);
           }
         }
         // Centers(s)
@@ -416,10 +415,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (studyCenters != null && !studyCenters.isEmpty()) {
           Set<String> centersSet = new HashSet<>();
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
-            centersSet
-              .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + projectExpectedStudyCenter.getInstitution().getComposedName());
+            centersSet.add(projectExpectedStudyCenter.getInstitution().getComposedName());
           }
-          centers = String.join("", centersSet);
+          centers = String.join(", ", centersSet);
         }
 
         // Geographic Scope comment
@@ -479,12 +477,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyInstitutions().stream()
             .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
-        Set<String> institutionSet = new HashSet<>();
         if (studyInstitutionList != null && !studyInstitutionList.isEmpty()) {
-          for (ProjectExpectedStudyInstitution studyinstitution : studyInstitutionList) {
-            institutionSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyinstitution.getInstitution().getComposedName());
+          Set<String> institutionSet = new HashSet<>();
+          for (ProjectExpectedStudyInstitution studyInstitution : studyInstitutionList) {
+            institutionSet.add(studyInstitution.getInstitution().getComposedName());
           }
-          institutions = String.join("", institutionSet);
+          institutions = String.join(", ", institutionSet);
         }
         // cgiarInnovations
         if (projectExpectedStudyInfo.getCgiarInnovation() != null) {
@@ -501,11 +499,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             studyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase());
             String composedName = studyInnovation.getProjectInnovation().getComposedName();
             if (composedName != null && !composedName.isEmpty()) {
-              innovationSet
-                .add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● " + studyInnovation.getProjectInnovation().getComposedName());
+              innovationSet.add(composedName);
             }
           }
-          cgiarInnovations = String.join("", innovationSet);
+          cgiarInnovations = String.join(", ", innovationSet);
+
         }
         // Elaboration of Outcome/Impact Statement
         if (projectExpectedStudyInfo.getElaborationOutcomeImpactStatement() != null
@@ -690,7 +688,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               && outcome.getCrpOutcome().getDescription() != null) {
 
               if (performanceIndicator == null) {
-                performanceIndicator = " ●" + outcome.getCrpOutcome().getDescription();
+                performanceIndicator = "&nbsp;&nbsp;&nbsp;&nbsp; ●" + outcome.getCrpOutcome().getDescription();
               } else {
                 performanceIndicator += "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●" + outcome.getCrpOutcome().getDescription();
               }
