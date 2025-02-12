@@ -71,7 +71,7 @@
   </div>
 </div>
 
-[#if completeInPreviousPhase]
+[#if action.hasSpecificities('deliverable_completed_in_previous_phases_active') && completeInPreviousPhase]
   <div class="animated flipInX container  viewMore-block containerAlertMargin">
     <div class=" containerAlert  alert-leftovers alertColorBackgroundWarning"  id="containerAlert">
       <div class="containerLine alertColorWarning"></div>

@@ -50,9 +50,6 @@ public class FeedbackStatusAction extends BaseAction {
 
   private static final Logger LOG = LoggerFactory.getLogger(FeedbackStatusAction.class);
 
-  // Report name in bi-reports database table
-  private static final String REPORT_NAME = "QA process for PMC";
-
   // Managers
   private ProjectManager projectManager;
 
@@ -122,8 +119,9 @@ public class FeedbackStatusAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
+    String reportName = this.getFeedbackBIReportName();
     biReports = biReportsManager.findAll().stream()
-      .filter(bi -> bi != null && Objects.equals(bi.getReportName(), REPORT_NAME)).collect(Collectors.toList());
+      .filter(bi -> bi != null && Objects.equals(bi.getReportName(), reportName)).collect(Collectors.toList());
 
     biParameters = biParametersManager.findAll();
 

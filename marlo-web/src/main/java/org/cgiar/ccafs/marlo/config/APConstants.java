@@ -60,6 +60,7 @@ public final class APConstants {
   public static final String CRP_REPORT_DELIVERABLE_PPA_FILTER = "crp_report_deliverable_ppa_filter";
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
+  public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
   public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
@@ -164,6 +165,8 @@ public final class APConstants {
     "duplicated_deliverables_functionality_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
     "deliverable_shared_clusters_trainees_active";
+  public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
+    "deliverable_completed_in_previous_phases_active";
   public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
   public static final String SHFRM_CONTRIBUTION_ACTIVE = "shfrm_contribution_active";
   public static final String DELIVERABLE_MELIA_MODULE_ACTIVE = "deliverable_melia_module_active";

@@ -400,10 +400,12 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         baseAction.setCanEditPhase(false);
         baseAction.setEditStatus(false);
       }
-      // Set canEdit variable if the deliverable is not completed in previous phases
-      if (completeInPreviousPhase && (!baseAction.canAccessSuperAdmin() && !baseAction.canAcessCrpAdmin())) {
-        canEdit = false;
-        editParameter = false;
+      if (baseAction.hasSpecificities(APConstants.DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE)) {
+        // Set canEdit variable if the deliverable is not completed in previous phases
+        if (completeInPreviousPhase && (!baseAction.canAccessSuperAdmin() && !baseAction.canAcessCrpAdmin())) {
+          canEdit = false;
+          editParameter = false;
+        }
       }
       // Set the variable that indicates if the user can edit the section
       if (!editParameter) {

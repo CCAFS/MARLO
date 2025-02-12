@@ -237,7 +237,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   @Override
   public String getFileName() {
     StringBuffer fileName = new StringBuffer();
-    fileName.append("OICRStudySummary-");
+    fileName.append("OICRsMELIAsSummary-");
     fileName.append(this.getLoggedCrp().getAcronym() + "-");
     try {
       if (studyProjects != null && !studyProjects.isEmpty()) {

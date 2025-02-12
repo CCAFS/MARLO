@@ -140,7 +140,6 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -388,6 +387,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private String crpSession;
 
   private String customTextHeader;
+  private String feedbackBIReportName;
 
   protected boolean dataSaved;
 
@@ -4147,6 +4147,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
+  /**
+   * Get the Custom BI report for feedback cluster status
+   *
+   * @return the custom BI report for feedback cluster status
+   */
+  public String getFeedbackBIReportName() {
+    try {
+      if (this.getSession().get(APConstants.CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME) != null) {
+        feedbackBIReportName = (String) this.getSession().get(APConstants.CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME);
+      }
+    } catch (Exception e) {
+      LOG.error("error getting custom text header " + e);
+    }
+    return feedbackBIReportName;
+  }
+
+
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -4231,10 +4248,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
-
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
@@ -4334,6 +4351,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public List<Integer> getInnovationsYears(Long innovation) {
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
       .filter(c -> c != null && c.getProjectInnovation() != null
@@ -4361,7 +4379,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     allYears.add(this.getActualPhase().getYear());
     return allYears;
   }
-
 
   public HashMap<String, String> getInvalidFields() {
     return this.invalidFields;
@@ -7540,6 +7557,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+
   public boolean isEntityPlatform() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 3) {
@@ -7548,7 +7566,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
-
 
   /**
    * Get if the Evidence is new
@@ -7576,6 +7593,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   public boolean isExpectedDeliverablesReportAllYearsVisible() {
     // Specificity for show expected deliverable summary - all years selection - in summaries section
@@ -7637,7 +7655,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isFullEditable() {
     return this.fullEditable;
   }
-
 
   public Boolean isFundingSourceNew(long fundingSourceID) {
 
@@ -7716,6 +7733,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  public boolean isInnovationAllianceAlignmentComplete() {
+    return isInnovationAllianceAlignmentComplete;
+  }
+
+  public boolean isInnovationGeneralInformationComplete() {
+    return isInnovationGeneralInformationComplete;
+  }
+
   /**
    * Get if the Innovation is new
    *
@@ -7743,6 +7768,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
+  }
+
+  public boolean isInnovationOneCgiarAlignmentComplete() {
+    return isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public boolean isInnovationReadinessComplete() {
+    return isInnovationReadinessComplete;
+  }
+
+  public boolean isInnovationRightsComplete() {
+    return isInnovationRightsComplete;
   }
 
   public boolean isLessonsActive() {
@@ -8884,8 +8921,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.editStatus = editStatus;
   }
 
+  public void setFeedbackBIReportName(String feedbackBIReportName) {
+    this.feedbackBIReportName = feedbackBIReportName;
+  }
+
   public void setFullEditable(boolean fullEditable) {
     this.fullEditable = fullEditable;
+  }
+
+  public void setInnovationAllianceAlignmentComplete(boolean isInnovationAllianceAlignmentComplete) {
+    this.isInnovationAllianceAlignmentComplete = isInnovationAllianceAlignmentComplete;
+  }
+
+  public void setInnovationGeneralInformationComplete(boolean isInnovationGeneralInformationComplete) {
+    this.isInnovationGeneralInformationComplete = isInnovationGeneralInformationComplete;
+  }
+
+  public void setInnovationOneCgiarAlignmentComplete(boolean isInnovationOneCgiarAlignmentComplete) {
+    this.isInnovationOneCgiarAlignmentComplete = isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public void setInnovationReadinessComplete(boolean isInnovationReadinessComplete) {
+    this.isInnovationReadinessComplete = isInnovationReadinessComplete;
+  }
+
+  public void setInnovationRightsComplete(boolean isInnovationRightsComplete) {
+    this.isInnovationRightsComplete = isInnovationRightsComplete;
   }
 
   public void setInvalidFields(HashMap<String, String> invalidFields) {
@@ -9045,6 +9106,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return SUCCESS;
   }
 
+
   /**
    * ************************ CENTER METHOD ********************* Validate
    * the missing fields in the program impacts section
@@ -9066,6 +9128,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return true;
   }
+
 
   /**
    * ************************ CENTER METHOD ********************* Validate
@@ -9298,7 +9361,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
@@ -9312,7 +9374,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return true;
   }
-
 
   //
   public boolean validURL(String URL) {
@@ -9328,45 +9389,5 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-  }
-
-  public boolean isInnovationGeneralInformationComplete() {
-    return isInnovationGeneralInformationComplete;
-  }
-
-  public void setInnovationGeneralInformationComplete(boolean isInnovationGeneralInformationComplete) {
-    this.isInnovationGeneralInformationComplete = isInnovationGeneralInformationComplete;
-  }
-
-  public boolean isInnovationAllianceAlignmentComplete() {
-    return isInnovationAllianceAlignmentComplete;
-  }
-
-  public void setInnovationAllianceAlignmentComplete(boolean isInnovationAllianceAlignmentComplete) {
-    this.isInnovationAllianceAlignmentComplete = isInnovationAllianceAlignmentComplete;
-  }
-
-  public boolean isInnovationOneCgiarAlignmentComplete() {
-    return isInnovationOneCgiarAlignmentComplete;
-  }
-
-  public void setInnovationOneCgiarAlignmentComplete(boolean isInnovationOneCgiarAlignmentComplete) {
-    this.isInnovationOneCgiarAlignmentComplete = isInnovationOneCgiarAlignmentComplete;
-  }
-
-  public boolean isInnovationReadinessComplete() {
-    return isInnovationReadinessComplete;
-  }
-
-  public void setInnovationReadinessComplete(boolean isInnovationReadinessComplete) {
-    this.isInnovationReadinessComplete = isInnovationReadinessComplete;
-  }
-
-  public boolean isInnovationRightsComplete() {
-    return isInnovationRightsComplete;
-  }
-
-  public void setInnovationRightsComplete(boolean isInnovationRightsComplete) {
-    this.isInnovationRightsComplete = isInnovationRightsComplete;
   }
 }

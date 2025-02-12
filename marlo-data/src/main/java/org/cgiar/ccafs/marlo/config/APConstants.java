@@ -59,6 +59,7 @@ public final class APConstants {
   public static final String CRP_REPORT_DELIVERABLE_PPA_FILTER = "crp_report_deliverable_ppa_filter";
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
+  public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
   public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
@@ -129,6 +130,8 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
+  public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
+    "deliverable_completed_previous_phases_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
