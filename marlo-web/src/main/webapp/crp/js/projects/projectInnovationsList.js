@@ -4,7 +4,7 @@ $(document).ready(function() {
   addDataTable();
 
   // Add click event to tsURL links
-  $('a[href*="/projects"]').on('click', function() {
+  $('a[href*="/projects"], a[href*="/marlo-web/projects"]').on('click', function() {
     const loadingElement = $('.container_page_load');
     loadingElement.show();
   });
@@ -13,14 +13,33 @@ $(document).ready(function() {
 function addDataTable() {
 
   $('table').each(function(i,table) {
+
+    if ($(table).find('thead th').length === 0) {
+      console.warn('Skipping DataTables initialization for a table without headers.');
+      return;
+    }
+
+    if ($.fn.dataTable.isDataTable(table)) {
+      return; // Prevent re-initialization
+    }
+
     var columns = $(table).find('th').length;
     console.log(columns);
 
-    noSortColumns = $(table).find('th.no-sort').map(function(j,th) {
-      return $(th).index();
-    });
+    noSortColumns = $(table).find('th.no-sort').map(function() {
+      let index = $(this).index();
+      return index < columns ? index : null;
+    }).get().filter(index => index !== null);
 
-    $(table).dataTable({
+    // Ensure noSortColumns is a valid array
+    if (!Array.isArray(noSortColumns)) {
+        noSortColumns = [];
+    }
+
+    console.log('No-sort columns:', noSortColumns); // Debugging
+
+    try {
+      $(table).dataTable({
         "bPaginate": true, // This option enable the table pagination
         "bLengthChange": true, // This option disables the select table size option
         "bFilter": true, // This option enable the search
@@ -31,23 +50,22 @@ function addDataTable() {
           searchPlaceholder: "Search...",
           "emptyTable": "No entries entered into the system yet."
         },
-        "order": [
-          [
-              1, 'desc'
-          ]
-        ],
-        aoColumnDefs: [
-            {
-                bSortable: false,
-                aTargets: noSortColumns
-            }, {
-                sType: "natural",
-                aTargets: [
-                  0
-                ]
-            }
-        ]
-    });
+        "order": $(table).find('th').length > 1 ? [[1, 'desc']] : [],
+        "aoColumnDefs": noSortColumns.length > 0 ? [
+          {
+            "bSortable": false,
+            "aTargets": noSortColumns
+          },
+          {
+            "sType": "natural",
+            "aTargets": [0]
+          }
+        ] : [] // Prevent errors if no columns are defined
+      });
+    } catch (error) {
+      console.error('Error initializing DataTables:', error);
+      
+    }
 
   //Add styles to the table
   var iconSearch = $("<div></div>").addClass("iconSearch");

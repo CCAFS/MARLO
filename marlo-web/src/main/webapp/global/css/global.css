@@ -248,6 +248,10 @@ input.disabled {
 	padding: 10px 15px;
 }
 
+.modal-header small {
+	color: #dfdfdf;
+}
+
 .modal-body .panel.tertiary .panel-head{
 	border-bottom: none;
 }
