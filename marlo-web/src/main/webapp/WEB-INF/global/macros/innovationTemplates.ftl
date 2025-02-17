@@ -336,7 +336,7 @@
                 <div class="col-md-6 organizationsBlock">
                   <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
                   <label class="note--2">
-                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@][/@]</p>
+                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
                   </label>
                   [#-- list of items --]
                   <div class="organizationsList">
