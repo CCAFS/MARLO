@@ -54,13 +54,16 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
@@ -192,6 +195,93 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
 
     return masterReport;
+  }
+
+  // Method to generate JSON matching the required format
+  public String generateJsonData(TypedTableModel tableModel) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> jsonRoot = new HashMap<>();
+    Map<String, Object> jsonData = new HashMap<>();
+    Map<String, Object> jsonOptions = new HashMap<>();
+    Map<String, Object> jsonCredentials = new HashMap<>();
+
+    for (int row = 0; row < tableModel.getRowCount(); row++) {
+      jsonData.put("id", tableModel.getValueAt(row, 0));
+      jsonData.put("year", tableModel.getValueAt(row, 1));
+      jsonData.put("title", tableModel.getValueAt(row, 2));
+      jsonData.put("commissioningStudy", tableModel.getValueAt(row, 3));
+      jsonData.put("status", tableModel.getValueAt(row, 4));
+      jsonData.put("type", tableModel.getValueAt(row, 5));
+      jsonData.put("outcomeImpactStatement", tableModel.getValueAt(row, 6));
+      jsonData.put("isContributionText", tableModel.getValueAt(row, 7));
+      jsonData.put("stageStudy", tableModel.getValueAt(row, 8));
+      jsonData.put("srfTargets", tableModel.getValueAt(row, 9));
+      jsonData.put("subIdos", tableModel.getValueAt(row, 10));
+      jsonData.put("topLevelComments", tableModel.getValueAt(row, 11));
+      jsonData.put("geographicScopes", tableModel.getValueAt(row, 12));
+      jsonData.put("regions", tableModel.getValueAt(row, 13));
+      jsonData.put("countries", tableModel.getValueAt(row, 14));
+      jsonData.put("scopeComments", tableModel.getValueAt(row, 15));
+      jsonData.put("crps", tableModel.getValueAt(row, 16));
+      jsonData.put("flagships", tableModel.getValueAt(row, 17));
+      jsonData.put("regionalPrograms", tableModel.getValueAt(row, 18));
+      jsonData.put("institutions", tableModel.getValueAt(row, 19));
+      jsonData.put("elaborationOutcomeImpactStatement", tableModel.getValueAt(row, 20));
+      jsonData.put("referenceText", tableModel.getValueAt(row, 21));
+      jsonData.put("quantification", tableModel.getValueAt(row, 22));
+      jsonData.put("genderRelevance", tableModel.getValueAt(row, 23));
+      jsonData.put("youthRelevance", tableModel.getValueAt(row, 24));
+      jsonData.put("capacityRelevance", tableModel.getValueAt(row, 25));
+      jsonData.put("otherCrossCuttingDimensions", tableModel.getValueAt(row, 26));
+      jsonData.put("communicationsMaterial", tableModel.getValueAt(row, 27));
+      jsonData.put("contacts", tableModel.getValueAt(row, 28));
+      jsonData.put("studyProjects", tableModel.getValueAt(row, 29));
+      jsonData.put("tagged", tableModel.getValueAt(row, 30));
+      jsonData.put("cgiarInnovation", tableModel.getValueAt(row, 31));
+      jsonData.put("cgiarInnovations", tableModel.getValueAt(row, 32));
+      jsonData.put("climateRelevance", tableModel.getValueAt(row, 33));
+      jsonData.put("link", tableModel.getValueAt(row, 34));
+      jsonData.put("links", tableModel.getValueAt(row, 35));
+      jsonData.put("studyPolicies", tableModel.getValueAt(row, 36));
+      jsonData.put("url", tableModel.getValueAt(row, 37));
+      jsonData.put("studiesReference", tableModel.getValueAt(row, 38));
+      jsonData.put("meliaPublications", tableModel.getValueAt(row, 39));
+      jsonData.put("performanceIndicator", tableModel.getValueAt(row, 40));
+      jsonData.put("covidAnalysis", tableModel.getValueAt(row, 41));
+      jsonData.put("centers", tableModel.getValueAt(row, 42));
+      jsonData.put("clusterAcronym", tableModel.getValueAt(row, 43));
+      jsonData.put("allianceOICRID", tableModel.getValueAt(row, 44));
+      jsonData.put("primaryAllianceLever", tableModel.getValueAt(row, 45));
+      jsonData.put("strategicOutcome", tableModel.getValueAt(row, 46));
+      jsonData.put("primarySDGcontribution", tableModel.getValueAt(row, 47));
+      jsonData.put("relatedLever", tableModel.getValueAt(row, 48));
+      jsonData.put("relatedSDGContribution", tableModel.getValueAt(row, 49));
+      jsonData.put("hasCgiarContribution", tableModel.getValueAt(row, 50));
+      jsonData.put("impactArea", tableModel.getValueAt(row, 51));
+      jsonData.put("publications", tableModel.getValueAt(row, 52));
+      jsonData.put("tagAs", tableModel.getValueAt(row, 53));
+    }
+
+    jsonOptions.put("format", "A3");
+    jsonOptions.put("orientation", "portrait");
+    jsonOptions.put("timeout", "300000");
+
+    jsonCredentials.put("username", "____");
+    jsonCredentials.put("password", "___");
+
+    jsonRoot.put("templateData", "<html>Generated Report</html>");
+    jsonRoot.put("data", jsonData);
+    jsonRoot.put("options", jsonOptions);
+    jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
+    jsonRoot.put("bucketName", "microservice-reports");
+    jsonRoot.put("credentials", jsonCredentials);
+
+    try {
+      return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "{}";
+    }
   }
 
   public TypedTableModel getCaseStudiesTableModel(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
