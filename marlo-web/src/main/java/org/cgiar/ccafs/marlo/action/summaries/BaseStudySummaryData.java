@@ -419,6 +419,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             String institutionType =
               Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
                 .map(InstitutionType::getName).map(name -> " | Type: " + name).orElse("");
+            try {
+              projectExpectedStudyCenter.getInstitution().getLocations()
+                .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
+                  .filter(o -> o.isActive()).collect(Collectors.toList()));
+            } catch (Exception e) {
+              Log.error("Error setting locations " + e);
+            }
             String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .flatMap(locations -> locations.stream()
                 .filter(location -> location.isHeadquater() && location.getLocElement() != null
