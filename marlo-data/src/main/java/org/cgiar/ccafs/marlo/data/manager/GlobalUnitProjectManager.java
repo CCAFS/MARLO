@@ -81,6 +81,14 @@ public interface GlobalUnitProjectManager {
    */
   public GlobalUnitProject getGlobalUnitProjectById(long globalUnitProjectID);
 
+  /**
+   * This method gets a Boolean by a given globalUnitProject identifier if the project belong to CRP or Platform.
+   * 
+   * @param globalUnitProjectID is the globalUnitProject identifier.
+   * @return a Boolean.
+   */
+  public Boolean isProjectCreatedByCrpOrPlatform(long globalUnitProjectID);
+
 
   /**
    * This method saves the information of the given globalUnitProject

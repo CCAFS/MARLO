@@ -121,6 +121,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
@@ -185,21 +187,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static final long serialVersionUID = -740360140511380630L;
 
   private static HashMap<String, String> isOicrGeneralInformationCompleteMap = new HashMap<>();
+
   private static HashMap<String, String> isOicrAllianceAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isOicrOneCgiarAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isOicrCommunicationsCompleteMap = new HashMap<>();
-
   // Innovation tabs validators
   private static HashMap<String, String> isInnovationGeneralInformationCompleteMap = new HashMap<>();
+
   private static HashMap<String, String> isInnovationAllianceAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isInnovationReadinessCompleteMap = new HashMap<>();
   private static HashMap<String, String> isInnovationRightsCompleteMap = new HashMap<>();
 
-
   public static HashMap<String, String> getIsInnovationAllianceAlignmentCompleteMap() {
     return isInnovationAllianceAlignmentCompleteMap;
   }
+
 
   public static HashMap<String, String> getIsInnovationGeneralInformationCompleteMap() {
     return isInnovationGeneralInformationCompleteMap;
@@ -793,42 +796,50 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return yes if the user has a role that allows approve comments
    */
   public boolean canApproveComments(Long projectID) {
-    boolean response = false;
-    if (this.canAccessSuperAdmin()) {
-      response = true;
-    }
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
+      }
 
-    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
-    List<Role> roles = new ArrayList<>();
-    roles = this.getRolesList();
-    if (roles != null && !roles.isEmpty()) {
+      List<Role> roles = this.getRolesList();
+      if (roles == null || roles.isEmpty() || projectID == null) {
+        return false;
+      }
 
       Project project = projectManager.getProjectById(projectID);
+      if (project == null) {
+        return false;
+      }
+
       project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
 
-      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
-        && project.getProjectInfo().getClusterType().getName() != null) {
-        String clusterType = project.getProjectInfo().getClusterType().getName();
-        for (Role role : roles) {
-          if (role != null && role.getAcronym() != null) {
+      String clusterType = Optional.ofNullable(project.getProjectInfo()).map(ProjectInfo::getClusterType)
+        .map(ClusterType::getName).orElse(null);
 
-            switch (role.getAcronym()) {
-              case "PMU":
-                if (clusterType.equalsIgnoreCase("Theme") || clusterType.equalsIgnoreCase("Regional")) {
-                  response = true;
-                }
-                break;
-              case "RPL":
-                if (clusterType.equalsIgnoreCase("Country")) {
-                  response = true;
-                }
-                break;
-            }
-          }
-        }
+      if (clusterType == null) {
+        return false;
       }
+
+      return roles.stream().anyMatch(role -> {
+        if (role == null || role.getAcronym() == null) {
+          return false;
+        }
+
+        switch (role.getAcronym()) {
+          case "PMU":
+            return clusterType.equalsIgnoreCase("Theme") || clusterType.equalsIgnoreCase("Regional");
+          case "RPL":
+            return clusterType.equalsIgnoreCase("Country");
+          default:
+            return false;
+        }
+      });
+
+    } catch (Exception e) {
+      LOG.error("Error checking approval permissions", e);
     }
-    return response;
+
+    return false;
   }
 
   public boolean canBeDeleted(long id, String className) {
@@ -1438,30 +1449,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the user can leave draft comments
    */
   public boolean canLeaveComments() {
-    boolean response = false;
-
-    // TODO: Update the permissions for manage feedback comments
-    if (this.canAccessSuperAdmin()) {
-      response = true;
-    }
-
-    // cagmboa 19/04/2024 this.getRolesList() function is called once and it is reused
-    List<Role> roles = new ArrayList<>();
-    roles = this.getRolesList();
-    if (roles != null && !roles.isEmpty()) {
-      for (Role role : roles) {
-        if (role != null && role.getAcronym() != null) {
-          // FPL & FPM roles can comment
-
-          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM") || role.getAcronym().equals("RPL")
-            || role.getAcronym().equals("RPM")) {
-            response = true;
-          }
-        }
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
       }
+
+      List<Role> roles = this.getRolesList();
+      Set<String> allowedRoles = new HashSet<>(Arrays.asList("FPL", "FPM", "RPL", "RPM"));
+
+      return roles != null && roles.stream().anyMatch(role -> role != null && allowedRoles.contains(role.getAcronym()));
+
+    } catch (Exception e) {
+      LOG.error("Error checking comment permissions", e);
     }
-    return response;
+
+    return false;
   }
+
 
   /**
    * Validate the user permission to replay or react to a comment
@@ -1476,58 +1480,55 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean response = false;
 
     // TODO: Update the permissions for manage feedback comments
-    if (this.canAccessSuperAdmin()) {
-      response = true;
-    }
 
-    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
-    List<Role> roles = new ArrayList<>();
-    roles = this.getRolesList();
-    if (roles != null && !roles.isEmpty()) {
-      for (Role role : roles) {
-        if (role != null && role.getAcronym() != null) {
-          // FPL & FPM roles can comment
-
-          if (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")) {
-            response = true;
-          }
-        }
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
       }
-    }
 
-    if (projectID != null && response) {
-      try {
-        List<ProjectPartner> projectPartners = projectPartnerManager
-          .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
-        List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
-        if (projectPartners != null) {
-          for (ProjectPartner projectPartner : projectPartners) {
-            if (projectPartner != null && projectPartner.getId() != null) {
-              projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
-              if (projectParnerPersons != null) {
-                projectParnerPersons = projectParnerPersons.stream()
-                  .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
-                    && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
-                  .collect(Collectors.toList());
-
-                if (projectParnerPersons != null) {
-                  for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
-                    if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
-                      && (projectParnerPerson.getContactType().equals("PL")
-                        && projectParnerPerson.getContactType().equals("PC"))) {
-                      // TODO: verify this code
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      } catch (Exception e) {
-        LOG.error("Error getting project partners ", e);
+      List<Role> roles = this.getRolesList();
+      if (roles != null && roles.stream().anyMatch(role -> role != null && role.getAcronym() != null
+        && (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")))) {
+        return true;
       }
+    } catch (Exception e) {
+      LOG.error("Error checking feedback management permissions", e);
     }
 
+
+    /*
+     * if (projectID != null && response) {
+     * try {
+     * List<ProjectPartner> projectPartners = projectPartnerManager
+     * .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
+     * List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
+     * if (projectPartners != null) {
+     * for (ProjectPartner projectPartner : projectPartners) {
+     * if (projectPartner != null && projectPartner.getId() != null) {
+     * projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
+     * if (projectParnerPersons != null) {
+     * projectParnerPersons = projectParnerPersons.stream()
+     * .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
+     * && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
+     * .collect(Collectors.toList());
+     * if (projectParnerPersons != null) {
+     * for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
+     * if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
+     * && (projectParnerPerson.getContactType().equals("PL")
+     * && projectParnerPerson.getContactType().equals("PC"))) {
+     * // TODO: verify this code
+     * }
+     * }
+     * }
+     * }
+     * }
+     * }
+     * }
+     * } catch (Exception e) {
+     * LOG.error("Error getting project partners ", e);
+     * }
+     * }
+     */
     return response;
   }
 
@@ -1612,30 +1613,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the user can leave draft comments
    */
   public boolean canTrackComments() {
-    boolean response = false;
-
     // TODO: Update the permissions for track feedback comments
     if (this.canAccessSuperAdmin()) {
-      response = true;
+      return true;
     }
 
-
-    // cagmboa 29/05/2024 this.getRolesList() function is called once and it is reused
-    List<Role> roles = new ArrayList<>();
-    roles = this.getRolesList();
-    if (roles != null && !roles.isEmpty()) {
-      for (Role role : roles) {
-        if (role != null && role.getAcronym() != null) {
-          // FPL & FPM roles can comment
-
-          if (role.getAcronym().equals("FPL") || role.getAcronym().equals("FPM") || role.getAcronym().equals("RPL")
-            || role.getAcronym().equals("RPM")) {
-            response = true;
-          }
-        }
-      }
-    }
-    return response;
+    return this.getRolesList().stream().filter(Objects::nonNull).map(Role::getAcronym).filter(Objects::nonNull)
+      .anyMatch(acronym -> Arrays.asList("FPL", "FPM", "RPL", "RPM").contains(acronym));
   }
 
   /**
@@ -5201,65 +5185,46 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           returnValue = true;
           break;
         case DELIVERABLES:
+          // Retrieve the project and current phase only once
           project = this.projectManager.getProjectById(projectID);
-
           Phase phase = this.getActualPhase();
-          List<Deliverable> deliverables = new ArrayList<>();
 
+          // Check if the project has deliverables
           if (project.getDeliverables() != null) {
 
+            // Fetch DeliverableInfo for the project and phase
             List<DeliverableInfo> infos =
               this.deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
 
-            if (infos != null && !infos.isEmpty()) {
-              for (DeliverableInfo deliverableInfo : infos) {
-                Deliverable deliverable = deliverableInfo.getDeliverable();
-                deliverable.setDeliverableInfo(deliverableInfo);
-                deliverables.add(deliverable);
-              }
-            }
-          }
-
-          for (Deliverable deliverable : deliverables) {
-
-            if (!this.isDeliverableComplete(deliverable.getId(), this.getActualPhase().getId())) {
+            // If there are no deliverables, return false immediately
+            if (infos == null || infos.isEmpty()) {
               return false;
             }
 
-            // sectionStatus =
-            // this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            // this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(),
-            // section);
-            // if (sectionStatus == null) {
-            //
-            // return false;
-            // } else {
-            // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
-            // deliverable.getDeliverableInfo(phase)
-            // .getStatus().intValue() ==
-            // Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-            // if (deliverable.getDeliverableInfo(phase).getYear() >
-            // this.getActualPhase().getYear()) {
-            // sectionStatus.setMissingFields("");
-            // }
-            // }
-            //
-            // if (this.isPlanningActive() && !this.isUpKeepActive()) {
-            // if (deliverable.getDeliverableInfo(phase).getStatus() != null &&
-            // deliverable.getDeliverableInfo(phase)
-            // .getStatus().intValue() ==
-            // Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-            // sectionStatus.setMissingFields("");
-            // }
-            // }
-            // }
-            //
-            // if (sectionStatus.getMissingFields().length() != 0) {
-            // return false;
-            // }
-          }
-          returnValue = true;
+            // Iterate over the deliverables and check if they are complete
+            for (DeliverableInfo deliverableInfo : infos) {
+              Deliverable deliverable = deliverableInfo.getDeliverable();
+              deliverable.setDeliverableInfo(deliverableInfo);
 
+              // If any deliverable is incomplete, return false
+              if (!this.isDeliverableComplete(deliverable.getId(), phase.getId())) {
+                return false;
+              }
+
+              // Additional validation could be added here if necessary
+              // Example: Checking sectionStatus, uncomment and modify if needed
+              // SectionStatus sectionStatus =
+              // this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+              // this.getCurrentCycle(), this.getCurrentCycleYear(),
+              // this.isUpKeepActive(), section);
+              // if (sectionStatus == null || sectionStatus.getMissingFields().length() != 0) {
+              // return false;
+              // }
+            }
+          }
+
+          // If all deliverables pass the validation, return true
+          returnValue = true;
           break;
 
         case ACTIVITIES:
@@ -7396,35 +7361,44 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * completed
    *
    * @param deliverableID is the deliverable ID to be identified.
+   * @param phaseID The ID of the phase.
    * @return Boolean object with the status of the deliverable
    */
   public Boolean isDeliverableComplete(Long deliverableID, Long phaseID) {
-    if (deliverableID != null && phaseID != null) {
-      Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
-      Phase phase = this.phaseManager.getPhaseById(phaseID);
-
-      if (deliverable.getDeliverableInfo(phase) != null) {
-        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-
-        if (deliverableInfo.isRequiredToComplete() || deliverableInfo.isStatusCompleteInNextPhases()) {
-          SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-            phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
-          if (sectionStatus == null) {
-            return false;
-          }
-
-          if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
-            return false;
-          }
-        } else {
-          return true;
-        }
-      }
-      return true;
-    } else {
+    // Validate input parameters
+    if (deliverableID == null || phaseID == null) {
       return false;
     }
 
+    // Retrieve deliverable and phase objects
+    Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
+    Phase phase = this.phaseManager.getPhaseById(phaseID);
+
+    // Ensure valid objects are retrieved
+    if (deliverable == null || phase == null) {
+      return false;
+    }
+
+    // Get deliverable info for the given phase
+    DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+
+    // If no info is found, consider it complete
+    if (deliverableInfo == null) {
+      return true;
+    }
+
+    // Check if deliverable requires completion verification
+    if (!deliverableInfo.isRequiredToComplete() && !deliverableInfo.isStatusCompleteInNextPhases()) {
+      return true;
+    }
+
+    // Retrieve section status for the deliverable in the current phase
+    SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
+      phase.getDescription(), phase.getYear(), phase.getUpkeep(), "deliverableList");
+
+    // Return true if section status is valid and has no missing fields
+    return sectionStatus != null && sectionStatus.getMissingFields() != null
+      && sectionStatus.getMissingFields().isEmpty();
   }
 
   /**
@@ -8024,15 +7998,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isProjectCenter(long projectID) {
+    if (this.isAiccra()) {
+      return false;
+    } else {
+      GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
 
-    GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
-
-    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
-      return true;
+      if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
+        return true;
+      }
     }
-
     return false;
-
   }
 
   /**
@@ -8042,24 +8017,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isProjectCrpOrPlatform(long projectID) {
-
-    GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
-
-    if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 1
-      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 3) {
+    if (this.isAiccra()) {
       return true;
+    } else {
+      boolean result = globalUnitProjectManager.isProjectCreatedByCrpOrPlatform(projectID);
+      return result;
     }
-
-    return false;
-
-  }
-
-  public boolean isProjectDescription() {
-    String name = this.getActionName();
-    if (name.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus())) {
-      return true;
-    }
-    return false;
   }
 
   /**

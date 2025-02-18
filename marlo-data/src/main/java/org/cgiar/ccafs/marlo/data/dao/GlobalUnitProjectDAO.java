@@ -79,6 +79,14 @@ public interface GlobalUnitProjectDAO {
   public GlobalUnitProject findByProjectIdOutOrigin(long projectId, long globalUnitId);
 
   /**
+   * This method gets a Boolean by a given globalUnitProject identifier if the project belong to CRP or Platform.
+   * 
+   * @param globalUnitProjectID is the globalUnitProject identifier.
+   * @return a Boolean.
+   */
+  public Boolean isProjectCreatedByCrpOrPlatform(long globalUnitProjectID);
+
+  /**
    * This method saves the information of the given globalUnitProject
    * 
    * @param globalUnitProject - is the globalUnitProject object with the new information to be added/updated.
