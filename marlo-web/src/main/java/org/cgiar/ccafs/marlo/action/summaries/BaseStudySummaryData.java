@@ -197,6 +197,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return masterReport;
   }
 
+  public String cleanHtml(String input) {
+    if (input == null) {
+      return null;
+    }
+    return input.replaceAll("(<br>|&nbsp;)+●", ";").trim();
+  }
+
   // Method to generate JSON matching the required format
   public String generateJsonDataV1(TypedTableModel tableModel) {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -241,7 +248,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       jsonData.put("cgiarInnovations", tableModel.getValueAt(row, 32));
       jsonData.put("climateRelevance", tableModel.getValueAt(row, 33));
       jsonData.put("link", tableModel.getValueAt(row, 34));
-      jsonData.put("links", tableModel.getValueAt(row, 35));
+
+      try {
+        String links = null;
+        links = this.cleanHtml(tableModel.getValueAt(row, 35).toString());
+        jsonData.put("links", links);
+      } catch (Exception e) {
+        Log.error("error getting links " + e);
+      }
+
       // jsonData.put("studyPolicies", tableModel.getValueAt(row, 36));
       jsonData.put("url", tableModel.getValueAt(row, 37));
       jsonData.put("studiesReference", tableModel.getValueAt(row, 38));
