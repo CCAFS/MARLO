@@ -5185,46 +5185,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           returnValue = true;
           break;
         case DELIVERABLES:
-          // Retrieve the project and current phase only once
+          // Retrieve project and phase once
           project = this.projectManager.getProjectById(projectID);
-          Phase phase = this.getActualPhase();
-
-          // Check if the project has deliverables
-          if (project.getDeliverables() != null) {
-
-            // Fetch DeliverableInfo for the project and phase
-            List<DeliverableInfo> infos =
-              this.deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
-
-            // If there are no deliverables, return false immediately
-            if (infos == null || infos.isEmpty()) {
-              return false;
-            }
-
-            // Iterate over the deliverables and check if they are complete
-            for (DeliverableInfo deliverableInfo : infos) {
-              Deliverable deliverable = deliverableInfo.getDeliverable();
-              deliverable.setDeliverableInfo(deliverableInfo);
-
-              // If any deliverable is incomplete, return false
-              if (!this.isDeliverableComplete(deliverable.getId(), phase.getId())) {
-                return false;
-              }
-
-              // Additional validation could be added here if necessary
-              // Example: Checking sectionStatus, uncomment and modify if needed
-              // SectionStatus sectionStatus =
-              // this.sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(),
-              // this.getCurrentCycle(), this.getCurrentCycleYear(),
-              // this.isUpKeepActive(), section);
-              // if (sectionStatus == null || sectionStatus.getMissingFields().length() != 0) {
-              // return false;
-              // }
-            }
+          if (project == null || project.getDeliverables() == null) {
+            returnValue = false;
+            break;
           }
 
-          // If all deliverables pass the validation, return true
-          returnValue = true;
+          Phase phase = this.getActualPhase();
+          if (phase == null) {
+            returnValue = false;
+            break;
+          }
+
+          // Fetch deliverables for the project and phase
+          List<DeliverableInfo> infos =
+            this.deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
+
+          // Return false immediately if there are no deliverables
+          if (infos == null || infos.isEmpty()) {
+            returnValue = false;
+            break;
+          }
+
+          // Use stream to check if any deliverable is incomplete (exits early if false is found)
+          returnValue = infos.stream().filter(info -> info != null && info.getDeliverable() != null)
+            .noneMatch(info -> !this.isDeliverableComplete(info.getDeliverable().getId(), phase.getId()));
+
           break;
 
         case ACTIVITIES:
