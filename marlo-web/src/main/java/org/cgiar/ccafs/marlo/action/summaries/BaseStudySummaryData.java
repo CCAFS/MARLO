@@ -198,7 +198,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   }
 
   // Method to generate JSON matching the required format
-  public String generateJsonData(TypedTableModel tableModel) {
+  public String generateJsonDataV1(TypedTableModel tableModel) {
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> jsonRoot = new HashMap<>();
     Map<String, Object> jsonData = new HashMap<>();
@@ -215,16 +215,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       jsonData.put("outcomeImpactStatement", tableModel.getValueAt(row, 6));
       jsonData.put("isContributionText", tableModel.getValueAt(row, 7));
       jsonData.put("stageStudy", tableModel.getValueAt(row, 8));
-      jsonData.put("srfTargets", tableModel.getValueAt(row, 9));
-      jsonData.put("subIdos", tableModel.getValueAt(row, 10));
+      // jsonData.put("srfTargets", tableModel.getValueAt(row, 9));
+      // jsonData.put("subIdos", tableModel.getValueAt(row, 10));
       jsonData.put("topLevelComments", tableModel.getValueAt(row, 11));
       jsonData.put("geographicScopes", tableModel.getValueAt(row, 12));
       jsonData.put("regions", tableModel.getValueAt(row, 13));
       jsonData.put("countries", tableModel.getValueAt(row, 14));
       jsonData.put("scopeComments", tableModel.getValueAt(row, 15));
-      jsonData.put("crps", tableModel.getValueAt(row, 16));
-      jsonData.put("flagships", tableModel.getValueAt(row, 17));
-      jsonData.put("regionalPrograms", tableModel.getValueAt(row, 18));
+      // jsonData.put("crps", tableModel.getValueAt(row, 16));
+      // jsonData.put("flagships", tableModel.getValueAt(row, 17));
+      // jsonData.put("regionalPrograms", tableModel.getValueAt(row, 18));
       jsonData.put("institutions", tableModel.getValueAt(row, 19));
       jsonData.put("elaborationOutcomeImpactStatement", tableModel.getValueAt(row, 20));
       jsonData.put("referenceText", tableModel.getValueAt(row, 21));
@@ -236,13 +236,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       jsonData.put("communicationsMaterial", tableModel.getValueAt(row, 27));
       jsonData.put("contacts", tableModel.getValueAt(row, 28));
       jsonData.put("studyProjects", tableModel.getValueAt(row, 29));
-      jsonData.put("tagged", tableModel.getValueAt(row, 30));
+      // jsonData.put("tagged", tableModel.getValueAt(row, 30));
       jsonData.put("cgiarInnovation", tableModel.getValueAt(row, 31));
       jsonData.put("cgiarInnovations", tableModel.getValueAt(row, 32));
       jsonData.put("climateRelevance", tableModel.getValueAt(row, 33));
       jsonData.put("link", tableModel.getValueAt(row, 34));
       jsonData.put("links", tableModel.getValueAt(row, 35));
-      jsonData.put("studyPolicies", tableModel.getValueAt(row, 36));
+      // jsonData.put("studyPolicies", tableModel.getValueAt(row, 36));
       jsonData.put("url", tableModel.getValueAt(row, 37));
       jsonData.put("studiesReference", tableModel.getValueAt(row, 38));
       jsonData.put("meliaPublications", tableModel.getValueAt(row, 39));
@@ -275,6 +275,144 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
     jsonRoot.put("bucketName", "microservice-reports");
     jsonRoot.put("credentials", jsonCredentials);
+
+    try {
+      String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
+      System.out.println(jsonOutput);
+      return jsonOutput;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "{}";
+    }
+  }
+
+  // Method to generate JSON matching the required format
+  public String generateJsonDataV2() {
+    Long id = null;
+    int year = 0;
+    String title = null;
+    String commissioningStudy = null;
+    String status = null;
+    String type = null;
+    String outcomeImpactStatement = null;
+    String isContributionText = null;
+    String stageStudy = null;
+    String srfTargets = null;
+    String subIdos = null;
+    String topLevelComments = null;
+    String geographicScopes = null;
+    String regions = null;
+    String countries = null;
+    String scopeComments = null;
+    String crps = null;
+    String flagships = null;
+    String regionalPrograms = null;
+    String institutions = null;
+    String elaborationOutcomeImpactStatement = null;
+    String referenceText = null;
+    String quantification = null;
+    String genderRelevance = null;
+    String youthRelevance = null;
+    String capacityRelevance = null;
+    String otherCrossCuttingDimensions = null;
+    String communicationsMaterial = null;
+    String contacts = null;
+    String studyProjects = null;
+    String tagged = null;
+    String cgiarInnovation = null;
+    String cgiarInnovations = null;
+    String climateRelevance = null;
+    String link = null;
+    String links = null;
+    String studyPolicies = null;
+    String url = null;
+    String studiesReference = null;
+    String meliaPublications = null;
+    String performanceIndicator = null;
+    String covidAnalysis = null;
+    String centers = null;
+    String clusterAcronym = null;
+    String allianceOICRID = null;
+    String primaryAllianceLever = null;
+    String strategicOutcome = null;
+    String primarySDGcontribution = null;
+    String relatedLever = null;
+    String relatedSDGContribution = null;
+    String hasCgiarContribution = null;
+    String impactArea = null;
+    String publications = null;
+    String tagAs = null;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> jsonRoot = new HashMap<>();
+    Map<String, Object> jsonData = new HashMap<>();
+    Map<String, Object> jsonOptions = new HashMap<>();
+    Map<String, Object> jsonCredentials = new HashMap<>();
+
+    jsonData.put("id", id);
+    jsonData.put("year", year);
+    jsonData.put("title", title);
+    jsonData.put("commissioningStudy", commissioningStudy);
+    jsonData.put("status", status);
+    jsonData.put("type", type);
+    jsonData.put("outcomeImpactStatement", outcomeImpactStatement);
+    jsonData.put("isContributionText", isContributionText);
+    jsonData.put("stageStudy", stageStudy);
+    jsonData.put("srfTargets", srfTargets);
+    jsonData.put("subIdos", subIdos);
+    jsonData.put("topLevelComments", topLevelComments);
+    jsonData.put("geographicScopes", geographicScopes);
+    jsonData.put("regions", regions);
+    jsonData.put("countries", countries);
+    jsonData.put("scopeComments", scopeComments);
+    jsonData.put("crps", crps);
+    jsonData.put("flagships", flagships);
+    jsonData.put("regionalPrograms", regionalPrograms);
+    jsonData.put("institutions", institutions);
+    jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
+    jsonData.put("referenceText", referenceText);
+    jsonData.put("quantification", quantification);
+    jsonData.put("genderRelevance", genderRelevance);
+    jsonData.put("youthRelevance", youthRelevance);
+    jsonData.put("capacityRelevance", capacityRelevance);
+    jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
+    jsonData.put("communicationsMaterial", communicationsMaterial);
+    jsonData.put("contacts", contacts);
+    jsonData.put("studyProjects", studyProjects);
+    jsonData.put("tagged", tagged);
+    jsonData.put("cgiarInnovation", cgiarInnovation);
+    jsonData.put("cgiarInnovations", cgiarInnovations);
+    jsonData.put("climateRelevance", climateRelevance);
+    jsonData.put("link", link);
+    jsonData.put("links", links);
+    jsonData.put("studyPolicies", studyPolicies);
+    jsonData.put("url", url);
+    jsonData.put("studiesReference", studiesReference);
+    jsonData.put("meliaPublications", meliaPublications);
+    jsonData.put("performanceIndicator", performanceIndicator);
+    jsonData.put("covidAnalysis", covidAnalysis);
+    jsonData.put("centers", centers);
+    jsonData.put("clusterAcronym", clusterAcronym);
+    jsonData.put("allianceOICRID", allianceOICRID);
+    jsonData.put("primaryAllianceLever", primaryAllianceLever);
+    jsonData.put("strategicOutcome", strategicOutcome);
+    jsonData.put("primarySDGcontribution", primarySDGcontribution);
+    jsonData.put("relatedLever", relatedLever);
+    jsonData.put("relatedSDGContribution", relatedSDGContribution);
+    jsonData.put("hasCgiarContribution", hasCgiarContribution);
+    jsonData.put("impactArea", impactArea);
+    jsonData.put("publications", publications);
+    jsonData.put("tagAs", tagAs);
+
+    jsonRoot.put("templateData", "<html>Generated Report</html>");
+    jsonRoot.put("data", jsonData);
+    jsonRoot.put("options", jsonOptions);
+    jsonRoot.put("fileName", "PRMS-Result-Generated.pdf");
+    jsonRoot.put("bucketName", "microservice-reports");
+    jsonRoot.put("credentials", jsonCredentials);
+
+    jsonCredentials.put("username", "____");
+    jsonCredentials.put("password", "___");
 
     try {
       return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
@@ -1154,6 +1292,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           relatedSDGContribution, hasCGIARContribution, impactArea, publications, tagAs});
 
       }
+      this.generateJsonDataV1(model);
+
     }
 
     return model;
