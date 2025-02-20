@@ -52,6 +52,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -197,15 +200,35 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return masterReport;
   }
 
+  /**
+   * Cleans an HTML string by removing unnecessary characters.
+   * - Replaces multiple "&nbsp;" and "<br>
+   * " with a single space.
+   * - Converts "●" into ";" ensuring no spaces before it but one space after.
+   * - Removes any leading ";" from the final result.
+   *
+   * @param input The original HTML string.
+   * @return The cleaned string.
+   */
   public String cleanHtml(String input) {
     if (input == null) {
       return null;
     }
-    return input.replaceAll("(<br>|&nbsp;)+●", ";").trim();
+    String cleanedText = input.replaceAll("(&nbsp;|<br>)+", " ") // Replace multiple &nbsp; and <br> with a single space
+      .replaceAll("\\s*●", ";") // Removes spaces before '●' and replaces it with ';'
+      .replaceAll("●", ";") // Ensures remaining '●' are replaced
+      .replaceAll("\\s+;", ";") // Removes any extra spaces before ';'
+      .replaceAll(";\\s*", "; ") // Ensures exactly one space after ';'
+      .trim();
+
+    // Removes any leading ';' characters
+    return cleanedText.replaceAll("^;+\\s*", "").trim();
   }
 
   // Method to generate JSON matching the required format
   public String generateJsonDataV1(TypedTableModel tableModel) {
+    String templateData = "<html>Generated Report</html>";
+
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> jsonRoot = new HashMap<>();
     Map<String, Object> jsonData = new HashMap<>();
@@ -226,15 +249,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       // jsonData.put("subIdos", tableModel.getValueAt(row, 10));
       jsonData.put("topLevelComments", tableModel.getValueAt(row, 11));
       jsonData.put("geographicScopes", tableModel.getValueAt(row, 12));
-      jsonData.put("regions", tableModel.getValueAt(row, 13));
-      jsonData.put("countries", tableModel.getValueAt(row, 14));
+      jsonData.put("regions", this.cleanHtml(tableModel.getValueAt(row, 13).toString()));
+      jsonData.put("countries", this.cleanHtml(tableModel.getValueAt(row, 14).toString()));
       jsonData.put("scopeComments", tableModel.getValueAt(row, 15));
       // jsonData.put("crps", tableModel.getValueAt(row, 16));
       // jsonData.put("flagships", tableModel.getValueAt(row, 17));
       // jsonData.put("regionalPrograms", tableModel.getValueAt(row, 18));
-      jsonData.put("institutions", tableModel.getValueAt(row, 19));
+      jsonData.put("institutions", this.cleanHtml(tableModel.getValueAt(row, 19).toString()));
       jsonData.put("elaborationOutcomeImpactStatement", tableModel.getValueAt(row, 20));
-      jsonData.put("referenceText", tableModel.getValueAt(row, 21));
+      jsonData.put("referenceText", this.cleanHtml(tableModel.getValueAt(row, 21).toString()));
       jsonData.put("quantification", tableModel.getValueAt(row, 22));
       jsonData.put("genderRelevance", tableModel.getValueAt(row, 23));
       jsonData.put("youthRelevance", tableModel.getValueAt(row, 24));
@@ -242,21 +265,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       jsonData.put("otherCrossCuttingDimensions", tableModel.getValueAt(row, 26));
       jsonData.put("communicationsMaterial", tableModel.getValueAt(row, 27));
       jsonData.put("contacts", tableModel.getValueAt(row, 28));
-      jsonData.put("studyProjects", tableModel.getValueAt(row, 29));
+      jsonData.put("studyProjects", this.cleanHtml(tableModel.getValueAt(row, 29).toString()));
       // jsonData.put("tagged", tableModel.getValueAt(row, 30));
       jsonData.put("cgiarInnovation", tableModel.getValueAt(row, 31));
       jsonData.put("cgiarInnovations", tableModel.getValueAt(row, 32));
       jsonData.put("climateRelevance", tableModel.getValueAt(row, 33));
       jsonData.put("link", tableModel.getValueAt(row, 34));
-
-      try {
-        String links = null;
-        links = this.cleanHtml(tableModel.getValueAt(row, 35).toString());
-        jsonData.put("links", links);
-      } catch (Exception e) {
-        Log.error("error getting links " + e);
-      }
-
+      jsonData.put("links", this.cleanHtml(tableModel.getValueAt(row, 35).toString()));
       // jsonData.put("studyPolicies", tableModel.getValueAt(row, 36));
       jsonData.put("url", tableModel.getValueAt(row, 37));
       jsonData.put("studiesReference", tableModel.getValueAt(row, 38));
@@ -266,15 +281,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       jsonData.put("centers", tableModel.getValueAt(row, 42));
       jsonData.put("clusterAcronym", tableModel.getValueAt(row, 43));
       jsonData.put("allianceOICRID", tableModel.getValueAt(row, 44));
-      jsonData.put("primaryAllianceLever", tableModel.getValueAt(row, 45));
+      jsonData.put("primaryAllianceLever", this.cleanHtml(tableModel.getValueAt(row, 45).toString()));
       jsonData.put("strategicOutcome", tableModel.getValueAt(row, 46));
-      jsonData.put("primarySDGcontribution", tableModel.getValueAt(row, 47));
+      jsonData.put("primarySDGcontribution", this.cleanHtml((String) tableModel.getValueAt(row, 47)));
       jsonData.put("relatedLever", tableModel.getValueAt(row, 48));
-      jsonData.put("relatedSDGContribution", tableModel.getValueAt(row, 49));
+      jsonData.put("relatedSDGContribution", this.cleanHtml(tableModel.getValueAt(row, 49).toString()));
       jsonData.put("hasCgiarContribution", tableModel.getValueAt(row, 50));
       jsonData.put("impactArea", tableModel.getValueAt(row, 51));
-      jsonData.put("publications", tableModel.getValueAt(row, 52));
-      jsonData.put("tagAs", tableModel.getValueAt(row, 53));
+      jsonData.put("publications", this.cleanHtml(tableModel.getValueAt(row, 52).toString()));
+      jsonData.put("tagAs", this.cleanHtml(tableModel.getValueAt(row, 53).toString()));
     }
 
     jsonOptions.put("format", "A3");
@@ -284,7 +299,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     jsonCredentials.put("username", "____");
     jsonCredentials.put("password", "___");
 
-    jsonRoot.put("templateData", "<html>Generated Report</html>");
+    jsonRoot.put("templateData", templateData);
     jsonRoot.put("data", jsonData);
     jsonRoot.put("options", jsonOptions);
     jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
@@ -293,9 +308,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
     try {
       String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
-      System.out.println(jsonOutput);
+      FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
+      fileWriter.write(jsonOutput);
+      fileWriter.close();
       return jsonOutput;
-    } catch (Exception e) {
+    } catch (IOException e) {
       e.printStackTrace();
       return "{}";
     }
