@@ -66,6 +66,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
@@ -75,11 +76,52 @@ import org.slf4j.LoggerFactory;
 
 public class BaseStudySummaryData extends BaseSummariesAction {
 
+  public static class PublicationDTO {
+
+    private String name;
+    private String position;
+    private String affiliation;
+
+    public PublicationDTO(String name, String position, String affiliation) {
+      this.name = name;
+      this.position = position;
+      this.affiliation = affiliation;
+    }
+
+    public String getAffiliation() {
+      return affiliation;
+    }
+
+    // Getters required for Jackson serialization
+    public String getName() {
+      return name;
+    }
+
+    public String getPosition() {
+      return position;
+    }
+  }
+
   private static final long serialVersionUID = -3643067302492726266L;
 
   private static Logger LOG = LoggerFactory.getLogger(BaseStudySummaryData.class);
 
+  /**
+   * Removes the first occurrence of ';' in a string only if there is no text before it.
+   * Leading spaces before the ';' are ignored.
+   *
+   * @param input The original string to process.
+   * @return The modified string with the first ';' removed if applicable.
+   */
+  public static String removeLeadingSemicolon(String input) {
+    if (input == null) {
+      return null; // Return null if the input is null
+    }
+    return input.replaceFirst("^\\s*;", "");
+  }
+
   private final HTMLParser htmlParser;
+
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
 
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
@@ -1219,9 +1261,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
           link = null, links = null, studyPolicies = null, url = null, studiesReference = null,
           meliaPublications = null, performanceIndicator = null, covidAnalysis = null, centers = null,
-          clusterAcronym = null, allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null,
-          primarySDGcontribution = null, relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null,
-          impactArea = null, tagAs = null, globalTargets = null;
+          clusterAcronym = null, clusterName = null, leadPerson = null, isAllianceContribution = null,
+          allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null, primarySDGcontribution = null,
+          relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null,
+          tagAs = null, globalTargets = null, impactAreaCode = null, reasonNotCgiarContribution = null;
 
         Boolean isRegional = false, isNational = false;
         ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyInfo.getProjectExpectedStudy();
@@ -1275,8 +1318,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
 
         // Level of maturity
-        if (projectExpectedStudyInfo.getRepIndStageStudy() != null) {
-          stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName();
+        if (projectExpectedStudyInfo.getRepIndStageStudy() != null
+          && projectExpectedStudyInfo.getRepIndStageStudy().getName() != null
+          && projectExpectedStudyInfo.getRepIndStageStudy().getDescription() != null) {
+          stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName() + " - "
+            + projectExpectedStudyInfo.getRepIndStageStudy().getDescription();
         }
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
@@ -1570,11 +1616,34 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
 
-        // Cluster Acronum
+        // Cluster Acronym
         if (projectExpectedStudy.getProject().getAcronym() != null) {
           clusterAcronym = projectExpectedStudy.getProject().getAcronym();
         } else {
           clusterAcronym = "C" + projectExpectedStudy.getProject().getId();
+        }
+
+        // Cluster Name
+        if (projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
+          && projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
+          clusterName = projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+        } else {
+          clusterName = "C" + projectExpectedStudy.getProject().getId();
+        }
+
+        // Lead Person
+        try {
+          leadPerson = projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase()).getUser()
+            .getComposedNameWithoutEmail();
+        } catch (Exception e) {
+          Log.error("error getting leader " + e);
+        }
+
+        // Is Alliance Contributionm
+
+        // Reason Not CGIAR Contribution
+        if (projectExpectedStudyInfo.getReasonNotCgiarContribution() != null) {
+          reasonNotCgiarContribution = projectExpectedStudyInfo.getReasonNotCgiarContribution();
         }
 
         // TODO: Add Quantifications in Pentaho/MySQL
@@ -1823,11 +1892,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
             projectExpectedStudy.setImpactAreas(filteredImpactAreas);
 
-            if (!filteredImpactAreas.isEmpty()) {
-              ImpactArea firstImpactArea = filteredImpactAreas.get(0).getImpactArea();
-              if (firstImpactArea != null && firstImpactArea.getName() != null
-                && firstImpactArea.getDescription() != null) {
-                impactAreaBuilder.append("; ").append(firstImpactArea.getName());
+            // Impact area code
+            if (filteredImpactAreas != null && !filteredImpactAreas.isEmpty()) {
+              ImpactArea impactAreaTemp = filteredImpactAreas.get(0).getImpactArea();
+              if (impactAreaTemp != null && impactAreaTemp.getId() != null) {
+                impactAreaCode = String.valueOf(impactAreaTemp.getId());
               }
             }
           }
@@ -1905,189 +1974,201 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             .collect(Collectors.toList())));
         }
         StringBuilder publications = new StringBuilder();
-        if (projectExpectedStudy.getPublications() != null) {
-          int count = 1;
+
+        // Ensure publications list exists
+        if (projectExpectedStudy.getPublications() != null && !projectExpectedStudy.getPublications().isEmpty()) {
+          List<PublicationDTO> publicationsList = new ArrayList<>();
+          publications.append("publications:");
           for (ProjectExpectedStudyPublication publication : projectExpectedStudy.getPublications()) {
-            publications.append("<br><b>Publication ").append(count).append("</b>");
-            if (publication.getName() != null) {
-              publications.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;● Name: ").append(publication.getName());
+            if (publication.getName() != null || publication.getPosition() != null
+              || publication.getAffiliation() != null) {
+              publicationsList.add(
+                new PublicationDTO(publication.getName(), publication.getPosition(), publication.getAffiliation()));
             }
-            if (publication.getPosition() != null) {
-              publications.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;● Position: ").append(publication.getPosition());
-            }
-            if (publication.getAffiliation() != null) {
-              publications.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;● Affiliation: ").append(publication.getAffiliation());
-            }
-            count++;
           }
-        }
 
-        // Partners persons
-        if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null) {
+          // Convert list to JSON
+          ObjectMapper objectMapper = new ObjectMapper();
+          try {
+            String publicationsJson = objectMapper.writeValueAsString(publicationsList); // Generar JSON correctamente
+            publications.append(publicationsJson); // Agregar correctamente al
+                                                   // StringBuilder
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+          }
 
-          final List<ProjectExpectedStudyPartnership> deList =
-            projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
-              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-                && dp.getProjectExpectedStudyPartnerType().getId()
-                  .equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-              .collect(Collectors.toList());
+          // Partners persons
+          if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null) {
 
-          if ((deList != null) && !deList.isEmpty()) {
-            projectExpectedStudy.setPartnerships(new ArrayList<>());
-            for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+            final List<ProjectExpectedStudyPartnership> deList =
+              projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
+                .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                  && dp.getProjectExpectedStudyPartnerType().getId()
+                    .equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+                .collect(Collectors.toList());
 
-              if (projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons() != null) {
-                final List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
-                  new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons().stream()
-                    .filter(ProjectExpectedStudyPartnershipsPerson::isActive).collect(Collectors.toList()));
-                projectExpectedStudyPartnership.setPartnershipPersons(partnershipPersons);
+            if ((deList != null) && !deList.isEmpty()) {
+              projectExpectedStudy.setPartnerships(new ArrayList<>());
+              for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+
+                if (projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons() != null) {
+                  final List<ProjectExpectedStudyPartnershipsPerson> partnershipPersons =
+                    new ArrayList<>(projectExpectedStudyPartnership.getProjectExpectedStudyPartnershipsPersons()
+                      .stream().filter(ProjectExpectedStudyPartnershipsPerson::isActive).collect(Collectors.toList()));
+                  projectExpectedStudyPartnership.setPartnershipPersons(partnershipPersons);
+                }
+                projectExpectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
               }
-              projectExpectedStudy.getPartnerships().add(projectExpectedStudyPartnership);
-            }
 
-          }
-        }
-
-
-        StringBuilder persons = new StringBuilder();
-        List<ProjectExpectedStudyPartnership> partnerships = projectExpectedStudy.getPartnerships();
-        if (partnerships != null && !partnerships.isEmpty()) {
-          ProjectExpectedStudyPartnership partnerTemp = partnerships.get(0);
-
-          if (partnerTemp != null) {
-            // Verifica si getInstitution() devuelve un objeto con getComposedName()
-            Institution institution = partnerTemp.getInstitution();
-            if (institution != null && institution.getComposedName() != null) {
-              persons.append(institution.getComposedName());
-            }
-
-            List<ProjectExpectedStudyPartnershipsPerson> personsList = partnerTemp.getPartnershipPersons();
-            if (personsList != null && !personsList.isEmpty()) {
-              // Concatenamos nombres con StringBuilder dentro del stream
-              String personsDetails = personsList.stream().map(ProjectExpectedStudyPartnershipsPerson::getUser)
-                .filter(Objects::nonNull).map(User::getComposedName).filter(Objects::nonNull)
-                .map(name -> "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●" + name).collect(Collectors.joining());
-
-              persons.append(personsDetails);
             }
           }
-        }
-        contacts += persons.toString().replace("null", "");
 
-        // Shared clusters
-        if (studyProjectList != null && !studyProjectList.isEmpty()) {
-          for (ExpectedStudyProject studyProject : studyProjectList) {
-            if (studyProject.getProject().getAcronym() != null) {
-              if (studyProjectSet != null && !studyProjectSet.contains("; " + studyProject.getProject().getAcronym())) {
-                studyProjectSet.add("; " + studyProject.getProject().getAcronym());
+
+          StringBuilder persons = new StringBuilder();
+          List<ProjectExpectedStudyPartnership> partnerships = projectExpectedStudy.getPartnerships();
+          if (partnerships != null && !partnerships.isEmpty()) {
+            ProjectExpectedStudyPartnership partnerTemp = partnerships.get(0);
+
+            if (partnerTemp != null) {
+              // Verifica si getInstitution() devuelve un objeto con getComposedName()
+              Institution institution = partnerTemp.getInstitution();
+              if (institution != null && institution.getComposedName() != null) {
+                persons.append(institution.getComposedName());
               }
-            } else {
-              if (studyProjectSet != null && !studyProjectSet.contains("; C" + studyProject.getProject().getId())) {
-                studyProjectSet.add("; C" + studyProject.getProject().getId());
+
+              List<ProjectExpectedStudyPartnershipsPerson> personsList = partnerTemp.getPartnershipPersons();
+              if (personsList != null && !personsList.isEmpty()) {
+                // Concatenamos nombres con StringBuilder dentro del stream
+                String personsDetails = personsList.stream().map(ProjectExpectedStudyPartnershipsPerson::getUser)
+                  .filter(Objects::nonNull).map(User::getComposedName).filter(Objects::nonNull)
+                  .map(name -> "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●" + name).collect(Collectors.joining());
+
+                persons.append(personsDetails);
               }
             }
           }
-        }
-        if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
-          studyProjects = String.join("", studyProjectSet);
-        }
+          contacts += persons.toString().replace("null", "");
 
-        if (relatedLever.isEmpty()) {
-          relatedLever = null;
-        }
-        contacts = contacts.replace("null", "");
+          // Shared clusters
+          if (studyProjectList != null && !studyProjectList.isEmpty()) {
+            for (ExpectedStudyProject studyProject : studyProjectList) {
+              if (studyProject.getProject().getAcronym() != null) {
+                if (studyProjectSet != null
+                  && !studyProjectSet.contains("; " + studyProject.getProject().getAcronym())) {
+                  studyProjectSet.add("; " + studyProject.getProject().getAcronym());
+                }
+              } else {
+                if (studyProjectSet != null && !studyProjectSet.contains("; C" + studyProject.getProject().getId())) {
+                  studyProjectSet.add("; C" + studyProject.getProject().getId());
+                }
+              }
+            }
+          }
+          if (studyProjectSet != null && !studyProjectSet.isEmpty()) {
+            studyProjects = String.join("", studyProjectSet);
+          }
 
-        /**
-         * Generate Json
-         */
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> jsonRoot = new HashMap<>();
-        Map<String, Object> jsonData = new HashMap<>();
-        Map<String, Object> jsonOptions = new HashMap<>();
-        Map<String, Object> jsonCredentials = new HashMap<>();
+          if (relatedLever.isEmpty()) {
+            relatedLever = null;
+          }
+          contacts = contacts.replace("null", "");
 
-        String templateData = "<html>Generated Report</html>";
+          /**
+           * Generate Json
+           */
+          Map<String, Object> jsonRoot = new HashMap<>();
+          Map<String, Object> jsonData = new HashMap<>();
+          Map<String, Object> jsonOptions = new HashMap<>();
+          Map<String, Object> jsonCredentials = new HashMap<>();
 
-        jsonData.put("id", id);
-        jsonData.put("year", year);
-        jsonData.put("title", title);
-        jsonData.put("commissioningStudy", commissioningStudy);
-        jsonData.put("status", status);
-        jsonData.put("type", type);
-        jsonData.put("outcomeImpactStatement", outcomeImpactStatement);
-        jsonData.put("isContributionText", isContributionText);
-        jsonData.put("stageStudy", stageStudy);
-        jsonData.put("srfTargets", srfTargets);
-        jsonData.put("subIdos", subIdos);
-        jsonData.put("topLevelComments", topLevelComments);
-        jsonData.put("geographicScopes", geographicScopes);
-        jsonData.put("regions", regions);
-        jsonData.put("countries", countries);
-        jsonData.put("scopeComments", scopeComments);
-        jsonData.put("crps", crps);
-        jsonData.put("flagships", flagships);
-        jsonData.put("regionalPrograms", regionalPrograms);
-        jsonData.put("institutions", institutions);
-        jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
-        jsonData.put("referenceText", referenceText);
-        jsonData.put("quantification", quantification);
-        jsonData.put("genderRelevance", genderRelevance);
-        jsonData.put("youthRelevance", youthRelevance);
-        jsonData.put("capacityRelevance", capacityRelevance);
-        jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
-        jsonData.put("communicationsMaterial", communicationsMaterial);
-        jsonData.put("contacts", contacts);
-        jsonData.put("studyProjects", studyProjects);
-        jsonData.put("tagged", tagged);
-        jsonData.put("cgiarInnovation", cgiarInnovation);
-        jsonData.put("cgiarInnovations", cgiarInnovations);
-        jsonData.put("climateRelevance", climateRelevance);
-        jsonData.put("link", link);
-        jsonData.put("links", links);
-        jsonData.put("studyPolicies", studyPolicies);
-        jsonData.put("url", url);
-        jsonData.put("studiesReference", studiesReference);
-        jsonData.put("meliaPublications", meliaPublications);
-        jsonData.put("performanceIndicator", performanceIndicator);
-        jsonData.put("covidAnalysis", covidAnalysis);
-        jsonData.put("centers", centers);
-        jsonData.put("clusterAcronym", clusterAcronym);
-        jsonData.put("allianceOICRID", allianceOICRID);
-        jsonData.put("primaryAllianceLever", primaryAllianceLever);
-        jsonData.put("strategicOutcome", strategicOutcome);
-        jsonData.put("primarySDGcontribution", primarySDGcontribution);
-        jsonData.put("relatedLever", relatedLever);
-        jsonData.put("relatedSDGContribution", relatedSDGContribution);
-        jsonData.put("hasCgiarContribution", hasCGIARContribution);
-        jsonData.put("impactArea", impactArea);
-        jsonData.put("publications", publications);
-        jsonData.put("tagAs", tagAs);
-        jsonData.put("globalTargets", globalTargets);
+          String templateData = "<html>Generated Report</html>";
 
-        jsonRoot.put("templateData", templateData);
-        jsonRoot.put("data", jsonData);
-        jsonRoot.put("options", jsonOptions);
-        jsonRoot.put("fileName", "PRMS-Result-Generated.pdf");
-        jsonRoot.put("bucketName", "microservice-reports");
-        jsonRoot.put("credentials", jsonCredentials);
+          jsonData.put("id", id);
+          jsonData.put("year", year);
+          jsonData.put("title", title);
+          jsonData.put("commissioningStudy", commissioningStudy);
+          jsonData.put("status", status);
+          jsonData.put("type", type);
+          jsonData.put("outcomeImpactStatement", outcomeImpactStatement);
+          jsonData.put("isContributionText", isContributionText);
+          jsonData.put("stageStudy", stageStudy);
+          jsonData.put("srfTargets", srfTargets);
+          jsonData.put("subIdos", subIdos);
+          jsonData.put("topLevelComments", topLevelComments);
+          jsonData.put("geographicScopes", geographicScopes);
+          jsonData.put("regions", regions);
+          jsonData.put("countries", countries);
+          jsonData.put("scopeComments", scopeComments);
+          jsonData.put("crps", crps);
+          jsonData.put("flagships", flagships);
+          jsonData.put("regionalPrograms", regionalPrograms);
+          jsonData.put("institutions", institutions);
+          jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
+          jsonData.put("referenceText", referenceText);
+          jsonData.put("quantification", quantification);
+          jsonData.put("genderRelevance", genderRelevance);
+          jsonData.put("youthRelevance", youthRelevance);
+          jsonData.put("capacityRelevance", capacityRelevance);
+          jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
+          jsonData.put("communicationsMaterial", communicationsMaterial);
+          jsonData.put("contacts", contacts);
+          jsonData.put("studyProjects", studyProjects);
+          jsonData.put("tagged", tagged);
+          jsonData.put("cgiarInnovation", cgiarInnovation);
+          jsonData.put("cgiarInnovations", cgiarInnovations);
+          jsonData.put("climateRelevance", climateRelevance);
+          jsonData.put("link", link);
+          jsonData.put("links", links);
+          jsonData.put("studyPolicies", studyPolicies);
+          jsonData.put("url", url);
+          jsonData.put("studiesReference", studiesReference);
+          jsonData.put("meliaPublications", meliaPublications);
+          jsonData.put("performanceIndicator", performanceIndicator);
+          jsonData.put("covidAnalysis", covidAnalysis);
+          jsonData.put("centers", centers);
+          jsonData.put("clusterAcronym", clusterAcronym);
+          jsonData.put("allianceOICRID", allianceOICRID);
+          jsonData.put("primaryAllianceLever", primaryAllianceLever);
+          jsonData.put("strategicOutcome", strategicOutcome);
+          jsonData.put("primarySDGcontribution", primarySDGcontribution);
+          jsonData.put("relatedLever", relatedLever);
+          jsonData.put("relatedSDGContribution", relatedSDGContribution);
+          jsonData.put("hasCgiarContribution", hasCGIARContribution);
+          jsonData.put("impactArea", impactArea);
+          jsonData.put("publications", publications);
+          jsonData.put("tagAs", tagAs);
+          jsonData.put("clusterName", clusterName);
+          jsonData.put("leadPerson", leadPerson);
+          jsonData.put("isAllianceContribution", isAllianceContribution);
+          jsonData.put("ïmpactAreaCode", impactAreaCode);
+          jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
 
-        jsonCredentials.put("username", "____");
-        jsonCredentials.put("password", "___");
+          jsonRoot.put("templateData", templateData);
+          jsonRoot.put("data", jsonData);
+          jsonRoot.put("options", jsonOptions);
+          jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
+          jsonRoot.put("bucketName", "microservice-reports");
+          jsonRoot.put("credentials", jsonCredentials);
 
-        try {
-          String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
-          FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
-          fileWriter.write(jsonOutput);
-          fileWriter.close();
-          return jsonOutput;
-        } catch (IOException e) {
-          e.printStackTrace();
-          return "{}";
+          jsonCredentials.put("username", "____");
+          jsonCredentials.put("password", "___");
+
+          try {
+            String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
+            FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
+            fileWriter.write(jsonOutput);
+            fileWriter.close();
+            return jsonOutput;
+          } catch (IOException e) {
+            e.printStackTrace();
+            return "{}";
+          }
         }
       }
+
     }
-
     return SUCCESS;
-  }
 
+
+  }
 }
