@@ -906,3 +906,323 @@ function setMaskInputAllianceId(){
 
   });
 }
+
+function initNumberField(fieldId, options = {}) {
+  const inputElement = document.getElementById(fieldId);
+  if (!inputElement) {
+      console.error(`El elemento con ID ${fieldId} no existe`);
+      return;
+  }
+  
+  // Opciones por defecto
+  const defaultOptions = {
+      maxDigits: 10,
+      removeTrailingZeros: true,
+      keepOneDecimalZero: true,
+      allowDecimals: true,
+      isPercentage: true
+  };
+  
+  // Combinar opciones por defecto con las proporcionadas
+  const config = { ...defaultOptions, ...options };
+  
+  // Guarda el valor original con todos los decimales permitidos
+  let originalValue = '';
+  
+  // Función para normalizar ceros iniciales y finales
+  function normalizeZeros(value) {
+      if (!value) return '';
+      
+      // Dividir en parte entera y decimal
+      const parts = value.split('.');
+      let integerPart = parts[0];
+      let decimalPart = config.allowDecimals && parts.length > 1 ? parts[1] : '';
+      
+      // Verificar si tiene ceros iniciales en la parte entera
+      if (integerPart.length > 1 && integerPart.startsWith('0')) {
+          // Eliminar ceros iniciales
+          integerPart = integerPart.replace(/^0+/, '');
+          
+          // Si quedó vacío después de quitar ceros, dejar un solo cero
+          if (integerPart === '') {
+              integerPart = '0';
+          }
+      }
+      
+      // Si hay parte decimal, está permitido y configurado para eliminar ceros
+      if (decimalPart && config.allowDecimals && config.removeTrailingZeros) {
+          // Verificar si solo contiene ceros
+          const onlyZeros = /^0+$/.test(decimalPart);
+          
+          if (onlyZeros && config.keepOneDecimalZero) {
+              // Si solo hay ceros, dejar un solo cero
+              decimalPart = '0';
+          } else if (onlyZeros && !config.keepOneDecimalZero) {
+              // Si no queremos mantener ni un cero, eliminar todos
+              decimalPart = '';
+          } else {
+              // Si tiene otros dígitos, eliminar ceros finales
+              decimalPart = decimalPart.replace(/0+$/, '');
+          }
+      }
+      
+      // Reconstruir el valor
+      if (decimalPart && config.allowDecimals) {
+          return integerPart + '.' + decimalPart;
+      }
+      
+      return integerPart;
+  }
+  
+  // Función para formatear el número con los decimales correctos (para blur)
+  function formatAsDecimal(value) {
+      if (value === '') return '';
+      
+      // Si no se permiten decimales, eliminar cualquier parte decimal
+      if (!config.allowDecimals) {
+          value = value.split('.')[0];
+      }
+      
+      // Agregar un 0 si el valor comienza con punto decimal
+      if (config.allowDecimals && value.startsWith('.')) {
+          value = '0' + value;
+      }
+      
+      // Normalizar ceros iniciales y finales
+      value = normalizeZeros(value);
+      
+      // Dividir en parte entera y decimal manteniendo la cadena original
+      const parts = value.split('.');
+      const integerPart = parts[0];
+      const decimalPart = config.allowDecimals && parts.length > 1 ? parts[1] : '';
+      
+      // Formatear la parte entera con comas
+      const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      
+      // Si no se permiten decimales, devolver solo la parte entera
+      if (!config.allowDecimals) {
+          return formattedInteger;
+      }
+      
+      // Verificar cuántos decimales podemos mantener dentro del límite de dígitos
+      const availableDecimals = Math.max(0, config.maxDigits - integerPart.length);
+      
+      // Si no hay parte decimal o no hay espacio para decimales
+      if (!decimalPart || availableDecimals === 0) {
+          return formattedInteger;
+      }
+      
+      // Preservar tantos decimales como sean posibles dentro del límite
+      const visibleDecimalPart = decimalPart.substring(0, availableDecimals);
+      
+      // Guardar el valor original para usarlo en focus
+      originalValue = integerPart + (decimalPart ? '.' + decimalPart : '');
+      
+      return formattedInteger + (visibleDecimalPart ? '.' + visibleDecimalPart : '');
+  }
+  
+  // Función para formatear con comas en tiempo real
+  function formatWithCommas(value) {
+      if (!value) return '';
+      
+      // Si no se permiten decimales, eliminar cualquier parte decimal
+      if (!config.allowDecimals) {
+          value = value.split('.')[0];
+      }
+      
+      // Agregar un 0 si el valor comienza con punto decimal
+      if (config.allowDecimals && value.startsWith('.')) {
+          value = '0' + value;
+      }
+      
+      // Dividir en parte entera y decimal
+      const parts = value.split('.');
+      const integerPart = parts[0];
+      let decimalPart = config.allowDecimals && parts.length > 1 ? parts[1] : '';
+      
+      // Formatear la parte entera con comas
+      const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      
+      // Si hay parte decimal y se permiten decimales, mantenerla
+      if (parts.length > 1 && config.allowDecimals) {
+          return integerWithCommas + '.' + decimalPart;
+      }
+      
+      return integerWithCommas;
+  }
+  
+  // Función para obtener la posición del cursor después de agregar comas
+  function getCaretPositionAfterFormat(value, valueWithCommas, caretPos) {
+      // Contar cuántas comas hay antes de la posición del cursor
+      let countCommasBefore = 0;
+      let valueIndex = 0;
+      
+      for (let i = 0; i < valueWithCommas.length && valueIndex < caretPos; i++) {
+          if (valueWithCommas[i] === ',') {
+              countCommasBefore++;
+          } else {
+              valueIndex++;
+          }
+      }
+      
+      return caretPos + countCommasBefore;
+  }
+  
+  // Validación estricta en tiempo real mientras se escribe
+  inputElement.addEventListener('input', function(e) {
+      const cursorPos = this.selectionStart;
+      const originalInputValue = this.value;
+      
+      // Eliminar comas existentes para procesar correctamente
+      let valueWithoutCommas = originalInputValue.replace(/,/g, '');
+      
+      // Agregar un 0 si el valor comienza con punto decimal y se permiten decimales
+      let startsWithDot = false;
+      if (config.allowDecimals && valueWithoutCommas.startsWith('.')) {
+          valueWithoutCommas = '0' + valueWithoutCommas;
+          startsWithDot = true;
+      }
+      
+      // Normalizar ceros iniciales (mantenemos los ceros finales durante la edición)
+      const normalizedValue = valueWithoutCommas.replace(/^0+(\d)/, '$1');
+      let adjustCursor = valueWithoutCommas.length - normalizedValue.length;
+      valueWithoutCommas = normalizedValue === '' ? '0' : normalizedValue;
+      
+      // Primera fase: eliminar caracteres no válidos (solo números y un punto si se permiten decimales)
+      let cleanValue = '';
+      let hasDecimal = false;
+      
+      for (let i = 0; i < valueWithoutCommas.length; i++) {
+          const char = valueWithoutCommas[i];
+          
+          if (config.allowDecimals && char === '.' && !hasDecimal) {
+              cleanValue += char;
+              hasDecimal = true;
+          } else if (/[0-9]/.test(char)) {
+              cleanValue += char;
+          }
+      }
+      
+      // Segunda fase: aplicar restricción de máximo de dígitos en total
+      const parts = hasDecimal ? cleanValue.split('.') : [cleanValue];
+      const integerPart = parts[0];
+      const decimalPart = parts.length > 1 ? parts[1] : '';
+      
+      // Contar dígitos totales
+      const totalDigits = integerPart.length + (config.allowDecimals ? decimalPart.length : 0);
+      
+      if (totalDigits > config.maxDigits) {
+          // Si hay más dígitos que el máximo, tenemos que recortar
+          if (hasDecimal && config.allowDecimals) {
+              // Priorizar mantener la parte entera y recortar decimales
+              const maxDecimalDigits = Math.max(0, config.maxDigits - integerPart.length);
+              const trimmedDecimal = decimalPart.substring(0, maxDecimalDigits);
+              cleanValue = integerPart + (trimmedDecimal ? '.' + trimmedDecimal : '');
+          } else {
+              // Sin punto decimal, simplemente recortar al máximo
+              cleanValue = cleanValue.substring(0, config.maxDigits);
+          }
+      }
+      
+      // Actualizar valor original
+      originalValue = cleanValue;
+      
+      // Calcular posición relativa del cursor (sin contar comas)
+      let cleanCursorPos;
+      if (cleanValue !== valueWithoutCommas || adjustCursor > 0) {
+          // Si el valor ha cambiado, calcular nueva posición del cursor
+          let countBeforeCursor = 0;
+          for (let i = 0; i < cursorPos && i < originalInputValue.length; i++) {
+              if (originalInputValue[i] !== ',') {
+                  countBeforeCursor++;
+              }
+          }
+          
+          // Ajustar por los ceros iniciales eliminados
+          countBeforeCursor = Math.max(0, countBeforeCursor - adjustCursor);
+          
+          // Ajustar si el valor limpio es más corto
+          cleanCursorPos = Math.min(countBeforeCursor, cleanValue.length);
+      } else {
+          // Si solo se quitaron comas, la posición es más simple
+          cleanCursorPos = cursorPos - (originalInputValue.length - valueWithoutCommas.length);
+      }
+      
+      // Aplicar formato con comas para la visualización
+      const formattedValue = formatWithCommas(cleanValue);
+      
+      // Calcular la nueva posición del cursor incluyendo las comas
+      let newCursorPos = getCaretPositionAfterFormat(cleanValue, formattedValue, cleanCursorPos);
+      
+      // Ajustar posición del cursor si agregamos un 0 al inicio
+      if (startsWithDot && cursorPos === 0) {
+          newCursorPos = 1; // Posicionar después del 0 añadido
+      } else if (startsWithDot) {
+          newCursorPos += 1; // Ajustar por el 0 añadido
+      }
+      
+      // Actualizar el valor y la posición del cursor
+      this.value = formattedValue;
+      this.setSelectionRange(newCursorPos, newCursorPos);
+  });
+  
+  // Aplicar formato completo cuando el input pierde el foco
+  inputElement.addEventListener('blur', function(e) {
+      // Si hay un valor, formatearlo manteniendo los decimales originales
+      if (this.value && this.value !== '') {
+          // Eliminar cualquier coma existente primero
+          const valueWithoutCommas = this.value.replace(/,/g, '');
+          
+          // Formatear para mostrar los decimales correctos y normalizar ceros
+          this.value = formatAsDecimal(valueWithoutCommas);
+      }
+  });
+  
+  // Cuando el campo obtiene el foco, mostrar el valor original con todos los dígitos posibles
+  inputElement.addEventListener('focus', function(e) {
+      if (this.value && this.value !== '') {
+          // Eliminar comas para procesar
+          let valueWithoutCommas = this.value.replace(/,/g, '');
+          
+          // Normalizar ceros iniciales y finales para evitar inconsistencias
+          valueWithoutCommas = normalizeZeros(valueWithoutCommas);
+          
+          // Dividir en parte entera y decimal
+          const parts = valueWithoutCommas.split('.');
+          const integerPart = parts[0];
+          const decimalPart = config.allowDecimals && parts.length > 1 ? parts[1] : '';
+          
+          // Formatear la parte entera con comas
+          const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          
+          // Reconstruir el valor con la parte decimal (si existe y está permitida)
+          let result = integerWithCommas;
+          if (decimalPart && config.allowDecimals) {
+              result += '.' + decimalPart;
+          }
+          
+          this.value = result;
+      }
+  });
+  
+  // Añadir o quitar la clase CSS para el símbolo de porcentaje
+  const parentContainer = inputElement.parentElement;
+  if (config.isPercentage && !parentContainer.classList.contains('percentage-container')) {
+      parentContainer.classList.add('percentage-container');
+  } else if (!config.isPercentage && parentContainer.classList.contains('percentage-container')) {
+      parentContainer.classList.remove('percentage-container');
+  }
+  
+  // Devolver un objeto con métodos públicos para interactuar con el campo
+  return {
+      getValue: function() {
+          return inputElement.value.replace(/,/g, '');
+      },
+      setValue: function(value) {
+          inputElement.value = formatAsDecimal(value);
+      },
+      clear: function() {
+          inputElement.value = '';
+      }
+  };
+}
