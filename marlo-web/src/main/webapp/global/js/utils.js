@@ -874,7 +874,6 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
     //add validations to input field through initNumberField
     initNumberField(name, modfiedOptions(targetUnitSelected));
 
-    window.initNumberField = initNumberField;
 
   });
 
@@ -909,7 +908,8 @@ function setMaskInputAllianceId(){
 }
 
 function initNumberField(fieldId, options = {}) {
-  const inputElement = document.querySelector(`[name="${fieldId}"]`);
+
+  const inputElement = document.querySelector(`input[name="${fieldId}"]`);
   if (!inputElement) {
       console.error(`El elemento con name = ${fieldId} no existe`);
       return;
@@ -921,8 +921,7 @@ function initNumberField(fieldId, options = {}) {
       removeTrailingZeros: true,
       keepOneDecimalZero: true,
       allowDecimals: true,
-      isPercentage: true,
-      formatOnLoad: false // Nueva opción para formatear al cargar
+      isPercentage: true
   };
   
   // Combinar opciones por defecto con las proporcionadas
@@ -1218,15 +1217,6 @@ function initNumberField(fieldId, options = {}) {
       parentContainer.classList.add('percentage-container');
   } else if (!config.isPercentage && parentContainer.classList.contains('percentage-container')) {
       parentContainer.classList.remove('percentage-container');
-  }
-  
-  // Formatear el valor al cargar si está habilitada la opción y hay un valor
-  if (config.formatOnLoad && inputElement.value && inputElement.value !== '') {
-      // Eliminar cualquier coma existente primero
-      const valueWithoutCommas = inputElement.value.replace(/,/g, '');
-      
-      // Formatear para mostrar los decimales correctos y normalizar ceros
-      inputElement.value = formatAsDecimal(valueWithoutCommas);
   }
   
   // Devolver un objeto con métodos públicos para interactuar con el campo
