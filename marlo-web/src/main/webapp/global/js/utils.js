@@ -811,6 +811,8 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
 
   $(inputSelector).each(function (i, ele) {
 
+    const name = $(ele).attr('name');
+
     const $parentAvailable = $(ele).closest('.targetValue-block');
     let targetUnitSelected;
 
@@ -821,17 +823,6 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
     } else {
       $brotherContent = $('.targetUnit-block');
       targetUnitSelected = $brotherContent.attr('data-targetunit');
-    }
-
-    const modifiedMask = (targetUnit) => {
-      const typeTargetUnit = {
-        "129": '00Z.ZZ',
-        "42": '999,999,000',
-        "35": '00Z.ZZ',
-        "1": "00Z.ZZ",
-        "-1": "999,999,000"
-      }
-      return typeTargetUnit[targetUnit] || "999,999,000";
     }
 
     const modifiedIcon = (targetUnit) => {
@@ -845,35 +836,43 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
       return typeTargetUnit[targetUnit] || "?";
     }
 
-    const options = {
-      reverse: modifiedIcon(targetUnitSelected) === "#"? true : false,
-      clearIfNotMatch: false,
-      translation: {
-        'Z': {
-          pattern: /[0-9]/,
-          optional: true
+    const modfiedOptions = (targetUnit) => {
+      const typeTargetUnit = {
+        "129": {
+          maxDigits: 10,
+          allowDecimals: true,
+          isPercentage: true
+        },
+        "42": {
+          maxDigits: 8,
+          allowDecimals: false,
+          isPercentage: false
+        },
+        "35": {
+          maxDigits: 10,
+          allowDecimals: true,
+          isPercentage: true
+        },
+        "1": {
+          maxDigits: 10,
+          allowDecimals: true,
+          isPercentage: true
+        },
+        "-1": {
+          maxDigits: 8,
+          allowDecimals: false,
+          isPercentage: false
         }
-
       }
-    };
-
-    $(ele).mask(modifiedMask(targetUnitSelected), options);
-
-    if ($(ele).attr("value") === "") {
-      $(ele).empty();
-      $(ele).unmask();
-      $(ele).val("");
+      return typeTargetUnit[targetUnit] || {};
     }
-
-    $(ele).on("focus", function () {
-      if ($(ele).attr("value") === "") {
-        $(ele).mask(modifiedMask(targetUnitSelected), options);
-      }
-    });
 
     //add icon to after parent .input to visualize the unit
     const $parent = $(ele).closest('.input');
     $parent.attr('data-targetunit', modifiedIcon(targetUnitSelected));
+
+    //add validations to input field through initNumberField
+    initNumberField(name, modfiedOptions(targetUnitSelected));
 
   });
 
@@ -908,9 +907,9 @@ function setMaskInputAllianceId(){
 }
 
 function initNumberField(fieldId, options = {}) {
-  const inputElement = document.getElementById(fieldId);
+  const inputElement = document.querySelector(`[name="${fieldId}"]`);
   if (!inputElement) {
-      console.error(`El elemento con ID ${fieldId} no existe`);
+      console.error(`El elemento con name = ${fieldId} no existe`);
       return;
   }
   
