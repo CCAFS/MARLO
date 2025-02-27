@@ -1978,7 +1978,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Ensure publications list exists
         if (projectExpectedStudy.getPublications() != null && !projectExpectedStudy.getPublications().isEmpty()) {
           List<PublicationDTO> publicationsList = new ArrayList<>();
-          publications.append("publications:");
+
           for (ProjectExpectedStudyPublication publication : projectExpectedStudy.getPublications()) {
             if (publication.getName() != null || publication.getPosition() != null
               || publication.getAffiliation() != null) {
@@ -1990,9 +1990,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           // Convert list to JSON
           ObjectMapper objectMapper = new ObjectMapper();
           try {
-            String publicationsJson = objectMapper.writeValueAsString(publicationsList); // Generar JSON correctamente
-            publications.append(publicationsJson); // Agregar correctamente al
-                                                   // StringBuilder
+            String publicationsJson = objectMapper.writeValueAsString(publicationsList);
+            publications.append("publications: ").append(publicationsJson);
+
           } catch (JsonProcessingException e) {
             e.printStackTrace();
           }
@@ -2096,13 +2096,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("subIdos", subIdos);
           jsonData.put("topLevelComments", topLevelComments);
           jsonData.put("geographicScopes", geographicScopes);
-          jsonData.put("regions", regions);
-          jsonData.put("countries", countries);
+          jsonData.put("regions", removeLeadingSemicolon(regions));
+          jsonData.put("countries", removeLeadingSemicolon(countries));
           jsonData.put("scopeComments", scopeComments);
           jsonData.put("crps", crps);
           jsonData.put("flagships", flagships);
           jsonData.put("regionalPrograms", regionalPrograms);
-          jsonData.put("institutions", institutions);
+          jsonData.put("institutions", removeLeadingSemicolon(institutions));
           jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
           jsonData.put("referenceText", referenceText);
           jsonData.put("quantification", quantification);
@@ -2112,27 +2112,27 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
           jsonData.put("communicationsMaterial", communicationsMaterial);
           jsonData.put("contacts", contacts);
-          jsonData.put("studyProjects", studyProjects);
+          jsonData.put("studyProjects", removeLeadingSemicolon(studyProjects));
           jsonData.put("tagged", tagged);
           jsonData.put("cgiarInnovation", cgiarInnovation);
           jsonData.put("cgiarInnovations", cgiarInnovations);
           jsonData.put("climateRelevance", climateRelevance);
           jsonData.put("link", link);
-          jsonData.put("links", links);
+          jsonData.put("links", removeLeadingSemicolon(links));
           jsonData.put("studyPolicies", studyPolicies);
           jsonData.put("url", url);
           jsonData.put("studiesReference", studiesReference);
           jsonData.put("meliaPublications", meliaPublications);
           jsonData.put("performanceIndicator", performanceIndicator);
           jsonData.put("covidAnalysis", covidAnalysis);
-          jsonData.put("centers", centers);
+          jsonData.put("centers", removeLeadingSemicolon(centers));
           jsonData.put("clusterAcronym", clusterAcronym);
           jsonData.put("allianceOICRID", allianceOICRID);
-          jsonData.put("primaryAllianceLever", primaryAllianceLever);
-          jsonData.put("strategicOutcome", strategicOutcome);
-          jsonData.put("primarySDGcontribution", primarySDGcontribution);
-          jsonData.put("relatedLever", relatedLever);
-          jsonData.put("relatedSDGContribution", relatedSDGContribution);
+          jsonData.put("primaryAllianceLever", removeLeadingSemicolon(primaryAllianceLever));
+          jsonData.put("strategicOutcome", removeLeadingSemicolon(strategicOutcome));
+          jsonData.put("primarySDGcontribution", removeLeadingSemicolon(primarySDGcontribution));
+          jsonData.put("relatedLever", removeLeadingSemicolon(relatedLever));
+          jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
           jsonData.put("hasCgiarContribution", hasCGIARContribution);
           jsonData.put("impactArea", impactArea);
           jsonData.put("publications", publications);
