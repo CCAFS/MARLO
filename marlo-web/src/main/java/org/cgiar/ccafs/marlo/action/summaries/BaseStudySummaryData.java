@@ -1235,7 +1235,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           relatedSDGContribution, hasCGIARContribution, impactArea, publications, tagAs});
 
       }
-      this.getCaseStudiesTableModelv2(projectExpectedStudyInfos);
+      // this.getCaseStudiesTableModelv2(projectExpectedStudyInfos);
 
     }
 
