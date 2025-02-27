@@ -99,10 +99,10 @@
         [#--  <th class="owner" width="10%">Owner</th>  --]
         [#if currentTable]
         [#-- Missing fields --]
-        <th width="1%"><p style="display: none;">Innovation RF</p></th>
+        <th id="tb-missingFields" width="1%"><p style="display: none;">Innovation RF</p></th>
         [/#if]
         [#-- Summary PDF download --]
-        <th id="projectDownload" width="1%" class="no-sort"></th>
+        <th id="tb-projectDownload" width="1%" class="no-sort"></th>
         [#if currentTable]
         [#-- Remove --]
         <th id="tb-remove" width="1%" class="no-sort"></th>

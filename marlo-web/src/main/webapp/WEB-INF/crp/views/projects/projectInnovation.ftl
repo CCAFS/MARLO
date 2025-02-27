@@ -6,7 +6,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js?20241210",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20241210"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250121"] /]
 [#assign currentSection = "projects" /]

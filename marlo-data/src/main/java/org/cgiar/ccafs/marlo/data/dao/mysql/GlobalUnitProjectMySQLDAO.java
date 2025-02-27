@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.dao.GlobalUnitProjectDAO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -103,6 +104,22 @@ public class GlobalUnitProjectMySQLDAO extends AbstractMarloDAO<GlobalUnitProjec
     return null;
   }
 
+
+  @Override
+  public Boolean isProjectCreatedByCrpOrPlatform(long projectId) {
+    String query = "SELECT CASE " + "WHEN gu.global_unit_type_id IN (1, 3) THEN 1 " + "ELSE 0 " + "END AS result "
+      + "FROM global_unit_projects gup " + "JOIN global_units gu ON gup.global_unit_id = gu.id "
+      + "WHERE gup.project_id = " + projectId;
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query);
+
+    if (rList != null && !rList.isEmpty()) {
+      Map<String, Object> map = rList.get(0);
+      Object result = map.get("result");
+      return result != null && Integer.valueOf(result.toString()) == 1;
+    }
+    return false;
+  }
 
   @Override
   public GlobalUnitProject save(GlobalUnitProject globalUnitProject) {

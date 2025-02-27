@@ -651,6 +651,9 @@ function hideShowOptionButtons(block, status) {
 			block.find('img.clarificationCommentBtn').hide();
 			block.find('div.deleteCommentBtn').show();
 			block.find('.containerSentCommentBtn').hide();
+			block.find('.correctCommentBtn').show();
+			block.find('.editCommentBtn').show();
+			block.find('.dismissCommentBtn').show();
 			block.find('.commentTitle').css('font-style', 'oblique');
 			block.find('.commentTitle').css('font-weight', '200');
 			block.find('.commentReadonly').css('font-style', 'oblique');

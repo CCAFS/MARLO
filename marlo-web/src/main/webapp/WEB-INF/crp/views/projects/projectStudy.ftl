@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js?20250203",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20240313"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
   ] 
 /]
 [#assign customCSS = [

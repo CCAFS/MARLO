@@ -108,6 +108,7 @@ import javax.inject.Named;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -691,23 +692,27 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
         List<DeliverableActivity> deliverableActivityList = activity.getDeliverableActivities().stream()
           .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList());
-        if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
-          for (DeliverableActivity deliverableActivity : deliverableActivityList) {
-            String deliverableTitle = "";
-            if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
-              deliverableTitle =
-                deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
-            } else {
-              deliverableTitle = "&lt;Not Defined&gt;";
-            }
-            if (deliverables.isEmpty()) {
-              deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
-            } else {
-              deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+        try {
+          if (deliverableActivityList != null && !deliverableActivityList.isEmpty()) {
+            for (DeliverableActivity deliverableActivity : deliverableActivityList) {
+              String deliverableTitle = "";
+              if (deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle() != null) {
+                deliverableTitle =
+                  deliverableActivity.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle();
+              } else {
+                deliverableTitle = "&lt;Not Defined&gt;";
+              }
+              if (deliverables.isEmpty()) {
+                deliverables = "● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              } else {
+                deliverables += "<br>● D" + deliverableActivity.getDeliverable().getId() + ": " + deliverableTitle;
+              }
             }
           }
+          status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
+        } catch (Exception e) {
+          Log.error("error in deliverableActivityList");
         }
-        status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
         model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate, endDate,
           institution, activityLeader, status, deliverables});
       }

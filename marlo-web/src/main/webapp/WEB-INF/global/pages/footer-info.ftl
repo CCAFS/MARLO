@@ -87,7 +87,7 @@
 [#-- Copyright --]
 <div class="copyRight">
   <hr />
-  <span>[@s.text name="footer.copyrighAlert" /]</span><br />
+  <span>[@s.text name="footer.copyrighAlert"][@s.param]${.now?string("yyyy")}[/@s.param][/@s.text]</span><br />
   <span style="opacity:0.7;">[@s.text name="footer.developedBy" /]<span><br> 
   <span style="opacity:0.5;">[@s.text name="footer.rightsReserved" /]</span>
 </div>
