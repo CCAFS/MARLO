@@ -84,6 +84,11 @@ public class GlobalUnitProjectManagerImpl implements GlobalUnitProjectManager {
   }
 
   @Override
+  public Boolean isProjectCreatedByCrpOrPlatform(long globalUnitProjectID) {
+    return globalUnitProjectDAO.isProjectCreatedByCrpOrPlatform(globalUnitProjectID);
+  }
+
+  @Override
   public GlobalUnitProject saveGlobalUnitProject(GlobalUnitProject globalUnitProject) {
 
     return globalUnitProjectDAO.save(globalUnitProject);
