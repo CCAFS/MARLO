@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +69,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
@@ -75,6 +77,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BaseStudySummaryData extends BaseSummariesAction {
+
+  public class InstitutionDTO {
+
+    private String name;
+    private String type;
+    private String headquarter;
+
+    public InstitutionDTO(String name, String type, String headquarter) {
+      this.name = name;
+      this.type = type;
+      this.headquarter = headquarter;
+    }
+
+    public String getHeadquarter() {
+      return headquarter;
+    }
+
+    // Getters
+    public String getName() {
+      return name;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public void setHeadquarter(String headquarter) {
+      this.headquarter = headquarter;
+    }
+
+    // Setters
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public void setType(String type) {
+      this.type = type;
+    }
+  }
 
   public static class PublicationDTO {
 
@@ -1179,7 +1220,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           ProjectExpectedStudyPartnership partnerTemp = partnerships.get(0);
 
           if (partnerTemp != null) {
-            // Verifica si getInstitution() devuelve un objeto con getComposedName()
             Institution institution = partnerTemp.getInstitution();
             if (institution != null && institution.getComposedName() != null) {
               persons.append(institution.getComposedName());
@@ -1187,7 +1227,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
             List<ProjectExpectedStudyPartnershipsPerson> personsList = partnerTemp.getPartnershipPersons();
             if (personsList != null && !personsList.isEmpty()) {
-              // Concatenamos nombres con StringBuilder dentro del stream
               String personsDetails = personsList.stream().map(ProjectExpectedStudyPartnershipsPerson::getUser)
                 .filter(Objects::nonNull).map(User::getComposedName).filter(Objects::nonNull)
                 .map(name -> "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●" + name).collect(Collectors.joining());
@@ -1494,26 +1533,37 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList());
 
+        // Institutions
         if (!studyInstitutionList.isEmpty()) {
-          Set<String> institutionSet = studyInstitutionList.stream().map(studyInstitution -> {
+          List<InstitutionDTO> institutionList = studyInstitutionList.stream().map(studyInstitution -> {
             Institution institution = studyInstitution.getInstitution();
             if (institution == null) {
               return null;
             }
 
-            String institutionType = Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::getName)
-              .map(name -> " | Type: " + name).orElse("");
+            String institutionType =
+              Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::getName).orElse(null);
+
             String headquarter = Optional.ofNullable(institution.getLocations())
               .flatMap(locations -> locations.stream()
                 .filter(location -> location.isHeadquater() && location.getLocElement() != null
                   && location.getLocElement().getComposedName() != null)
-                .map(location -> " | headquarter: " + location.getLocElement().getComposedName()).findFirst())
-              .orElse("");
+                .map(location -> location.getLocElement().getComposedName()).findFirst())
+              .orElse(null);
 
-            return "; " + institution.getComposedName() + institutionType + headquarter;
-          }).filter(Objects::nonNull).collect(Collectors.toSet());
+            return new InstitutionDTO(institution.getComposedName(), institutionType, headquarter);
+          }).filter(Objects::nonNull).collect(Collectors.toList());
 
-          institutions = String.join(" ", institutionSet);
+          // Convert to JSON
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+          try {
+            String institutionsJson = objectMapper.writeValueAsString(institutionList);
+            institutions = institutionsJson;
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+          }
         }
         // cgiarInnovations
         if (projectExpectedStudyInfo.getCgiarInnovation() != null) {
@@ -1556,27 +1606,31 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 .collect(Collectors.toList())));
           }
 
-          if (projectExpectedStudy.getReferences() != null) {
+          if (projectExpectedStudy.getReferences() != null && !projectExpectedStudy.getReferences().isEmpty()) {
+            // List to store reference data with numbering
+            List<Map<String, Object>> referenceList = new ArrayList<>();
+
+            // Counter for numbering
             int count = 1;
             for (ProjectExpectedStudyReference reference : projectExpectedStudy.getReferences()) {
-              if (reference != null) {
-                if (studiesReference == null) {
-                  studiesReference = count + ". ";
-                } else {
-                  studiesReference += "; " + count + ". ";
-                }
-                if (reference.getReference() != null) {
-                  studiesReference += reference.getReference() + " | ";
-                }
-                if (reference.getLink() != null) {
-                  studiesReference += reference.getLink();
-                }
+              if (reference != null && (reference.getReference() != null || reference.getLink() != null)) {
+                Map<String, Object> referenceMap = new LinkedHashMap<>(); // Maintain insertion order
+                referenceMap.put("code", count);
+                referenceMap.put("title", reference.getReference());
+                referenceMap.put("link", reference.getLink());
+                referenceMap.put("externalAuthor", Boolean.TRUE.equals(reference.getExternalAuthor()));
 
-                if (reference.getExternalAuthor() != null && reference.getExternalAuthor()) {
-                  studiesReference += " (External Author)";
-                }
+                referenceList.add(referenceMap);
                 count++;
               }
+            }
+
+            // Convert the list to a JSON string
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+              studiesReference = objectMapper.writeValueAsString(referenceList);
+            } catch (JsonProcessingException e) {
+              e.printStackTrace();
             }
             /*
              * Get short url calling tinyURL service
@@ -1789,17 +1843,19 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   && allianceLeverOutcome.getAllianceLever().getName() != null
                   && allianceLeverOutcome.getAllianceLever().getDescription() != null) {
 
-                  if (primaryAllianceLever == null) {
-                    primaryAllianceLever += "; " + allianceLeverOutcome.getAllianceLever().getName() + ": "
-                      + allianceLeverOutcome.getAllianceLever().getDescription();
-                  } else {
-                    if (primaryAllianceLever != null
-                      && !primaryAllianceLever.contains(allianceLeverOutcome.getAllianceLever().getName())) {
-                      primaryAllianceLever += "; " + allianceLeverOutcome.getAllianceLever().getName() + ": "
-                        + allianceLeverOutcome.getAllianceLever().getDescription();
-                    }
+                  String name = allianceLeverOutcome.getAllianceLever().getName();
+                  String description = allianceLeverOutcome.getAllianceLever().getDescription();
+                  String strategicOutcomeText = null;
+
+                  String leverJson = "{ \"name\": \"" + name + "\", \"description\": \"" + description
+                    + "\", \"strategicOutcome\": \"" + strategicOutcomeText + "\" }";
+
+                  if (primaryAllianceLever == null || primaryAllianceLever.isEmpty()) {
+                    primaryAllianceLever = "[" + leverJson;
+                  } else if (!primaryAllianceLever.contains(name)) {
+                    primaryAllianceLever += ", " + leverJson;
                   }
-                  primaryAllianceLever = primaryAllianceLever.replace("null", "");
+
                 }
 
                 // Strategic outcome
@@ -1811,6 +1867,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   strategicOutcome = strategicOutcome.replace("null", "");
                 }
               }
+              primaryAllianceLever += "]";
+
             }
           }
 
@@ -1846,8 +1904,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                       "; " + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
                     primarySDGcontribution = primarySDGcontribution.replace("null", "");
                   } else {
-                    relatedSDGContribution +=
-                      "; " + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
+                    relatedSDGContribution += "" + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
                     relatedSDGContribution = relatedSDGContribution.replace("null", "");
 
                     // Related levers
@@ -1855,12 +1912,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                       && sdgAllianceLever.getAllianceLever().getName() != null
                       && sdgAllianceLever.getAllianceLever().getDescription() != null
                       && !relatedLever.contains(sdgAllianceLever.getAllianceLever().getName())) {
-                      relatedLever += "; " + sdgAllianceLever.getAllianceLever().getName() + ": "
+                      relatedLever += "" + sdgAllianceLever.getAllianceLever().getName() + ": "
                         + sdgAllianceLever.getAllianceLever().getDescription();
                     }
                   }
                 }
               }
+
+              relatedLever = "[" + relatedLever + "],";
+              relatedSDGContribution = "[" + relatedSDGContribution + "],";
 
             }
           }
@@ -1911,7 +1971,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setGlobalTargets(filteredGlobalTargets);
 
             if (!filteredGlobalTargets.isEmpty()) {
-              globalTargetsBuilder.append("<br><br>Global Targets:&nbsp;&nbsp;&nbsp;&nbsp;");
+              // globalTargetsBuilder.append("<br><br>Global Targets:&nbsp;&nbsp;&nbsp;&nbsp;");
               Set<String> uniqueTargets = new HashSet<>();
 
               for (ProjectExpectedStudyGlobalTarget target : filteredGlobalTargets) {
@@ -1934,8 +1994,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           String impactAreaResult = impactAreaBuilder.toString().trim();
           String globalTargetsResult = globalTargetsBuilder.toString().trim();
 
-          impactArea = (impactAreaResult.isEmpty() ? "" : impactAreaResult)
-            + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
+          impactArea = (impactAreaResult.isEmpty() ? "" : impactAreaResult);
+          // + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
 
         } catch (NullPointerException e) {
           Log.error("NullPointerException while getting Impact Areas", e);
@@ -1960,10 +2020,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               /*
                * Get short url calling tinyURL service
                */
-              linkSet.add("; " + urlShortener.getShortUrlService(projectExpectedStudyLink.getLink()));
+              linkSet.add("" + urlShortener.getShortUrlService(projectExpectedStudyLink.getLink()));
             }
           }
-          links = String.join("", linkSet);
+          links = "[" + String.join("", linkSet) + "],";
         }
 
         // Expected Study Publications List
@@ -1991,6 +2051,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           ObjectMapper objectMapper = new ObjectMapper();
           try {
             String publicationsJson = objectMapper.writeValueAsString(publicationsList);
+
+            // Remove unwanted backslashes if they appear
+            publicationsJson = publicationsJson.replace("\\", "");
+
+            // Append properly formatted JSON to the existing string
             publications.append("publications: ").append(publicationsJson);
 
           } catch (JsonProcessingException e) {
@@ -2030,7 +2095,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             ProjectExpectedStudyPartnership partnerTemp = partnerships.get(0);
 
             if (partnerTemp != null) {
-              // Verifica si getInstitution() devuelve un objeto con getComposedName()
               Institution institution = partnerTemp.getInstitution();
               if (institution != null && institution.getComposedName() != null) {
                 persons.append(institution.getComposedName());
@@ -2038,10 +2102,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
               List<ProjectExpectedStudyPartnershipsPerson> personsList = partnerTemp.getPartnershipPersons();
               if (personsList != null && !personsList.isEmpty()) {
-                // Concatenamos nombres con StringBuilder dentro del stream
                 String personsDetails = personsList.stream().map(ProjectExpectedStudyPartnershipsPerson::getUser)
-                  .filter(Objects::nonNull).map(User::getComposedName).filter(Objects::nonNull)
-                  .map(name -> "<br>&nbsp;&nbsp;&nbsp;&nbsp; ●" + name).collect(Collectors.joining());
+                  .filter(Objects::nonNull).map(User::getComposedName).filter(Objects::nonNull).map(name -> name)
+                  .collect(Collectors.joining());
 
                 persons.append(personsDetails);
               }
@@ -2111,7 +2174,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("capacityRelevance", capacityRelevance);
           jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
           jsonData.put("communicationsMaterial", communicationsMaterial);
-          jsonData.put("contacts", contacts);
+          jsonData.put("contacts", removeLeadingSemicolon(contacts));
           jsonData.put("studyProjects", removeLeadingSemicolon(studyProjects));
           jsonData.put("tagged", tagged);
           jsonData.put("cgiarInnovation", cgiarInnovation);
