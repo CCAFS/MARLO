@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome;
@@ -43,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPublication;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
@@ -141,6 +143,54 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
     public String getPosition() {
       return position;
+    }
+  }
+
+  public static class QuantificationDTO {
+
+    private String type;
+    private String number;
+    private String unit;
+    private String comments;
+
+    public QuantificationDTO(String type, String number, String unit, String comments) {
+      super();
+      this.type = type;
+      this.number = number;
+      this.unit = unit;
+      this.comments = comments;
+    }
+
+    public String getComments() {
+      return comments;
+    }
+
+    public String getNumber() {
+      return number;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public String getUnit() {
+      return unit;
+    }
+
+    public void setComments(String comments) {
+      this.comments = comments;
+    }
+
+    public void setNumber(String number) {
+      this.number = number;
+    }
+
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    public void setUnit(String unit) {
+      this.unit = unit;
     }
   }
 
@@ -1298,18 +1348,19 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           isContributionText = null, stageStudy = null, srfTargets = null, subIdos = null, topLevelComments = null,
           geographicScopes = null, regions = null, countries = null, scopeComments = null, crps = null,
           flagships = null, regionalPrograms = null, institutions = null, elaborationOutcomeImpactStatement = null,
-          referenceText = null, quantification = null, genderRelevance = null, youthRelevance = null,
-          capacityRelevance = null, otherCrossCuttingDimensions = null, communicationsMaterial = null, contacts = null,
-          studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
-          link = null, links = null, studyPolicies = null, url = null, studiesReference = null,
-          meliaPublications = null, performanceIndicator = null, covidAnalysis = null, centers = null,
-          clusterAcronym = null, clusterName = null, leadPerson = null, isAllianceContribution = null,
-          allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null, primarySDGcontribution = null,
-          relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null,
-          tagAs = null, globalTargets = null, impactAreaCode = null, reasonNotCgiarContribution = null;
+          referenceText = null, genderRelevance = null, youthRelevance = null, capacityRelevance = null,
+          otherCrossCuttingDimensions = null, communicationsMaterial = null, contacts = null, studyProjects = null,
+          tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null, link = null,
+          links = null, studyPolicies = null, url = null, studiesReference = null, meliaPublications = null,
+          performanceIndicator = null, covidAnalysis = null, centers = null, clusterAcronym = null, clusterName = null,
+          leadPerson = null, isAllianceContribution = null, allianceOICRID = null, primaryAllianceLever = null,
+          strategicOutcome = null, primarySDGcontribution = null, relatedLever = "", relatedSDGContribution = null,
+          hasCGIARContribution = null, impactArea = null, tagAs = null, globalTargets = null, impactAreaCode = null,
+          reasonNotCgiarContribution = null;
 
         Boolean isRegional = false, isNational = false;
         ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyInfo.getProjectExpectedStudy();
+        Phase phase = this.getSelectedPhase();
         id = projectExpectedStudy.getId();
 
         // Alliance OICR ID
@@ -1331,8 +1382,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           status = projectExpectedStudyInfo.getStatus().getName();
         }
         // Year
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null) {
-          year = projectExpectedStudy.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear();
+        if (projectExpectedStudy.getProjectExpectedStudyInfo(phase).getYear() != null) {
+          year = projectExpectedStudy.getProjectExpectedStudyInfo(phase).getYear();
         }
         // Tagged
         if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.getEvidenceTag() != null
@@ -1366,10 +1417,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName() + " - "
             + projectExpectedStudyInfo.getRepIndStageStudy().getDescription();
         }
+
+        // IsAllianceContribution
+
+
         // SubIdos
         List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList());
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
         Set<String> subIdoSet = new HashSet<>();
         if (subIdosList != null && !subIdosList.isEmpty()) {
           for (ProjectExpectedStudySubIdo studySrfTarget : subIdosList) {
@@ -1383,7 +1437,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             // SRF Targets
             List<ProjectExpectedStudySrfTarget> studySrfTargets =
               projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-                .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+                .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase))
                 .collect(Collectors.toList());
             Set<String> srfTargetSet = new HashSet<>();
             if (studySrfTargets != null && !studySrfTargets.isEmpty()) {
@@ -1400,10 +1454,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           topLevelComments = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getTopLevelComments());
         }
         // Geographic Scopes
-        List<ProjectExpectedStudyGeographicScope> geographicScopeList =
-          projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-            .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyGeographicScope> geographicScopeList = projectExpectedStudy
+          .getProjectExpectedStudyGeographicScopes().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
         Set<String> geographicScopeSet = new HashSet<>();
         if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
           for (ProjectExpectedStudyGeographicScope geographicScope : geographicScopeList) {
@@ -1424,8 +1477,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Country(s)
         if (isNational) {
           List<ProjectExpectedStudyCountry> studyCountries = this.projectExpectedStudyCountryManager
-            .getProjectExpectedStudyCountrybyPhase(projectExpectedStudy.getId(), this.getSelectedPhase().getId())
-            .stream().filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
+            .getProjectExpectedStudyCountrybyPhase(projectExpectedStudy.getId(), phase.getId()).stream()
+            .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 2)
             .collect(Collectors.toList());
           if (studyCountries != null && !studyCountries.isEmpty()) {
             Set<String> countriesSet = new HashSet<>();
@@ -1439,7 +1492,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Region(s)
         if (isRegional) {
           List<ProjectExpectedStudyRegion> studyRegions = projectExpectedStudy.getProjectExpectedStudyRegions().stream()
-            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase))
             .collect(Collectors.toList());
           if (studyRegions != null && !studyRegions.isEmpty()) {
             Set<String> regionsSet = new HashSet<>();
@@ -1451,8 +1504,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
         // Centers(s)
         List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudy.getProjectExpectedStudyCenters().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList());
+          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase)).collect(Collectors.toList());
         if (studyCenters != null && !studyCenters.isEmpty()) {
           Set<String> centersSet = new HashSet<>();
           for (ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
@@ -1495,8 +1547,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Key Contributions
         // CRPs/Platforms
         List<ProjectExpectedStudyCrp> studyCrpsList = projectExpectedStudy.getProjectExpectedStudyCrps().stream()
-          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-          .collect(Collectors.toList());
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
         Set<String> crpsSet = new HashSet<>();
         if (studyCrpsList != null && !studyCrpsList.isEmpty()) {
           for (ProjectExpectedStudyCrp studyCrp : studyCrpsList) {
@@ -1506,7 +1557,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
         // Crp Programs
         List<ProjectExpectedStudyFlagship> studyProgramsList = projectExpectedStudy.getProjectExpectedStudyFlagships()
-          .stream().filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
+          .stream().filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase))
           .collect(Collectors.toList());
         // Flagships
         List<ProjectExpectedStudyFlagship> studyFlagshipList = studyProgramsList.stream()
@@ -1531,10 +1582,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           regionalPrograms = String.join("", regionSet);
         }
         // External Partners
-        List<ProjectExpectedStudyInstitution> studyInstitutionList =
-          projectExpectedStudy.getProjectExpectedStudyInstitutions().stream()
-            .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyInstitution> studyInstitutionList = projectExpectedStudy
+          .getProjectExpectedStudyInstitutions().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
 
         // Institutions
         if (!studyInstitutionList.isEmpty()) {
@@ -1573,14 +1623,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           cgiarInnovation = projectExpectedStudyInfo.getCgiarInnovation();
         }
         // Innovations
-        List<ProjectExpectedStudyInnovation> studyInnovationList =
-          projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
-            .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyInnovation> studyInnovationList = projectExpectedStudy
+          .getProjectExpectedStudyInnovations().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
         Set<String> innovationSet = new HashSet<>();
         if (studyInnovationList != null && !studyInnovationList.isEmpty()) {
           for (ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
-            studyInnovation.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase());
+            studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
             String composedName = studyInnovation.getProjectInnovation().getComposedName();
             if (composedName != null && !composedName.isEmpty()) {
               innovationSet.add(composedName);
@@ -1601,12 +1650,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Expected Study Reference List
         try {
           if (projectExpectedStudy.getProjectExpectedStudyReferences() != null) {
-            projectExpectedStudy
-              .setReferences(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyReferences().stream()
-                .filter(
-                  o -> o != null && o.getId() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-                .sorted((o1, o2) -> Comparator.comparing(ProjectExpectedStudyReference::getId).compare(o1, o2))
-                .collect(Collectors.toList())));
+            projectExpectedStudy.setReferences(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyReferences()
+              .stream().filter(o -> o != null && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+              .sorted((o1, o2) -> Comparator.comparing(ProjectExpectedStudyReference::getId).compare(o1, o2))
+              .collect(Collectors.toList())));
           }
 
           if (projectExpectedStudy.getReferences() != null && !projectExpectedStudy.getReferences().isEmpty()) {
@@ -1680,10 +1727,42 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           clusterAcronym = "C" + projectExpectedStudy.getProject().getId();
         }
 
+        // Quantifications
+        StringBuilder quantification = new StringBuilder();
+        if (projectExpectedStudy.getProjectExpectedStudyQuantifications() != null) {
+          projectExpectedStudy
+            .setQuantifications(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+
+          List<QuantificationDTO> quantificationsList = new ArrayList<>();
+
+          for (ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy.getQuantifications()) {
+            if (quantificationItem.getQuantificationType().getName() != null || quantificationItem.getNumber() != null
+              || quantificationItem.getTargetUnit() != null || quantificationItem.getComments() != null) {
+              quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
+                quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
+                quantificationItem.getComments()));
+            }
+          }
+
+          // Convert list to JSON
+          ObjectMapper objectMapper = new ObjectMapper();
+          try {
+            String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
+            // Remove unwanted backslashes if they appear
+            quantificationsJson = quantificationsJson.replace("\\", "");
+            // Append properly formatted JSON to the existing string
+            quantification.append(quantificationsJson);
+
+          } catch (JsonProcessingException e) {
+            e.printStackTrace();
+          }
+        }
+
         // Cluster Name
-        if (projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()) != null
-          && projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle() != null) {
-          clusterName = projectExpectedStudy.getProject().getProjecInfoPhase(this.getSelectedPhase()).getTitle();
+        if (projectExpectedStudy.getProject().getProjecInfoPhase(phase) != null
+          && projectExpectedStudy.getProject().getProjecInfoPhase(phase).getTitle() != null) {
+          clusterName = projectExpectedStudy.getProject().getProjecInfoPhase(phase).getTitle();
         } else {
           clusterName = "C" + projectExpectedStudy.getProject().getId();
         }
@@ -1778,10 +1857,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Expected Study Project Outcome list
         if (projectExpectedStudyInfo.getProjectExpectedStudy() != null
           && projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes() != null) {
-          projectExpectedStudyInfo.getProjectExpectedStudy()
-            .setCrpOutcomes(new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy()
-              .getProjectExpectedStudyCrpOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
+          projectExpectedStudyInfo.getProjectExpectedStudy().setCrpOutcomes(
+            new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes()
+              .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         if (projectExpectedStudyInfo.getProjectExpectedStudy().getCrpOutcomes() != null) {
@@ -1805,13 +1883,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getIsPublic() != null && projectExpectedStudyInfo.getIsPublic()
           && projectExpectedStudyInfo.getPhase() != null && this.getBaseUrl() != null) {
           link = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
-            + projectExpectedStudyInfo.getProjectExpectedStudy().getId() + "&cycle=Reporting&year="
-            + this.getSelectedPhase().getYear();
+            + projectExpectedStudyInfo.getProjectExpectedStudy().getId() + "&cycle=Reporting&year=" + phase.getYear();
         }
         // Projects
         List<ExpectedStudyProject> studyProjectList =
           projectExpectedStudyInfo.getProjectExpectedStudy().getExpectedStudyProjects().stream()
-            .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase()))
+            .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(phase))
             .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
             .collect(Collectors.toList());
         Set<String> studyProjectSet = new HashSet<>();
@@ -1832,10 +1909,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
          */
         try {
           if (projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
-            projectExpectedStudy.setAllianceLeversOutcomes(new ArrayList<>(projectExpectedStudy
-              .getProjectExpectedStudyAllianceLeversOutcomes().stream().filter(o -> o != null && o.isActive()
-                && o.getId() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList())));
+            projectExpectedStudy.setAllianceLeversOutcomes(
+              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+                .filter(
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList())));
 
             if (projectExpectedStudy.getAllianceLeversOutcomes() != null
               && !projectExpectedStudy.getAllianceLeversOutcomes().isEmpty()) {
@@ -1886,10 +1964,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Primary SDG contribution
         try {
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
-            projectExpectedStudy.setSdgAllianceLevers(new ArrayList<>(projectExpectedStudy
-              .getProjectExpectedStudySdgAllianceLevers().stream().filter(o -> o != null && o.isActive()
-                && o.getId() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList())));
+            projectExpectedStudy.setSdgAllianceLevers(
+              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
+                .filter(
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList())));
             if (projectExpectedStudy.getSdgAllianceLevers() != null
               && !projectExpectedStudy.getSdgAllianceLevers().isEmpty()) {
               for (ProjectExpectedStudySdgAllianceLever sdgAllianceLever : projectExpectedStudy
@@ -1949,10 +2028,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
           // Filter Impact Areas
           if (projectExpectedStudy.getProjectExpectedStudyImpactAreas() != null) {
-            List<ProjectExpectedStudyImpactArea> filteredImpactAreas = projectExpectedStudy
-              .getProjectExpectedStudyImpactAreas().stream().filter(o -> o != null && o.getId() != null && o.isActive()
-                && o.getPhase() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList());
+            List<ProjectExpectedStudyImpactArea> filteredImpactAreas =
+              projectExpectedStudy
+                .getProjectExpectedStudyImpactAreas().stream().filter(o -> o != null && o.getId() != null
+                  && o.isActive() && o.getPhase() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
             projectExpectedStudy.setImpactAreas(filteredImpactAreas);
 
@@ -1969,7 +2049,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           if (projectExpectedStudy.getProjectExpectedStudyGlobalTargets() != null) {
             List<ProjectExpectedStudyGlobalTarget> filteredGlobalTargets = projectExpectedStudy
               .getProjectExpectedStudyGlobalTargets().stream().filter(o -> o != null && o.getId() != null
-                && o.isActive() && o.getPhase() != null && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+                && o.isActive() && o.getPhase() != null && o.getPhase().getId().equals(phase.getId()))
               .collect(Collectors.toList());
 
             projectExpectedStudy.setGlobalTargets(filteredGlobalTargets);
@@ -2012,10 +2092,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
          */
 
         // Links
-        List<ProjectExpectedStudyLink> linksList =
-          projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
-            .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase()))
-            .collect(Collectors.toList());
+        List<ProjectExpectedStudyLink> linksList = projectExpectedStudyInfo.getProjectExpectedStudy()
+          .getProjectExpectedStudyLinks().stream()
+          .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase)).collect(Collectors.toList());
         Set<String> linkSet = new HashSet<>();
         if (linksList != null && !linksList.isEmpty()) {
           linksList.sort((l1, l2) -> l1.getId().compareTo(l2.getId()));
@@ -2032,10 +2111,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Expected Study Publications List
         if (projectExpectedStudy.getProjectExpectedStudyPublications() != null) {
-          projectExpectedStudy.setPublications(new ArrayList<>(projectExpectedStudy
-            .getProjectExpectedStudyPublications().stream().filter(o -> (o != null) && (o.getId() != null)
-              && o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-            .collect(Collectors.toList())));
+          projectExpectedStudy
+            .setPublications(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyPublications().stream()
+              .filter(
+                o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
+              .collect(Collectors.toList())));
         }
         StringBuilder publications = new StringBuilder();
 
@@ -2251,23 +2331,23 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     // Validate if the Alliance institution is selected
     if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
       try {
-      for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
-        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
-          Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
-          if (institutiontmp != null && institutiontmp.getName() != null) {
-            center.getInstitution().setName(institutiontmp.getName());
+        for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
+          if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
+            Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
+            if (institutiontmp != null && institutiontmp.getName() != null) {
+              center.getInstitution().setName(institutiontmp.getName());
+            }
+          }
+          if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
+            && center.getInstitution().getName() != null
+            && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
+            return true;
           }
         }
-        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
-          && center.getInstitution().getName() != null
-          && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
-          return true;
-        }
+      } catch (Exception e) {
+        Log.error("error in isAllianceSelected " + e);
       }
-    }catch(Exception e) {
-      Log.error("error in alliance selected method " + e);
     }
-    
     return false;
   }
 }
