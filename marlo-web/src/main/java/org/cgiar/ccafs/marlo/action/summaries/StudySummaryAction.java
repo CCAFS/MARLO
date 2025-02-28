@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
@@ -72,6 +73,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
   private final ResourceManager resourceManager;
   private final HTMLParser htmlParser;;
+  private final InstitutionManager institutionManager;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private GlobalUnitManager crpManager;
   private String crp;
@@ -93,12 +95,14 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   public StudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     HTMLParser htmlParser, ProjectManager projectManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
-    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager);
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager) {
+    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
+      institutionManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
     this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
   }
 
 

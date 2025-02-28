@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
@@ -73,6 +74,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   private final HTMLParser htmlParser;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private final InstitutionManager institutionManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -92,12 +94,15 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   public StudiesSummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser htmlParser,
-    ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
-    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager);
+    ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    InstitutionManager institutionManager) {
+    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
+      institutionManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.institutionManager = institutionManager;
   }
 
   @Override
