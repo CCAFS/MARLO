@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.summaries;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -164,13 +165,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private final HTMLParser htmlParser;
 
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private final InstitutionManager institutionManager;
 
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.institutionManager = institutionManager;
   }
 
   /**
@@ -1693,7 +1696,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           Log.error("error getting leader " + e);
         }
 
-        // Is Alliance Contributionm
+        // Is Alliance Contribution
+        isAllianceContribution = this.isAllianceSelected(projectExpectedStudy) ? "Yes" : "No";
 
         // Reason Not CGIAR Contribution
         if (projectExpectedStudyInfo.getReasonNotCgiarContribution() != null) {
@@ -2233,5 +2237,37 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return SUCCESS;
 
 
+  }
+
+  /**
+   * Validate the Alliance center selection
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectExpectedStudy An specific projectExpectedStudy
+   * @param saving related action
+   */
+  public boolean isAllianceSelected(ProjectExpectedStudy projectExpectedStudy) {
+    // Validate if the Alliance institution is selected
+    if (projectExpectedStudy != null && projectExpectedStudy.getCenters() != null) {
+      try {
+      for (ProjectExpectedStudyPartnership center : projectExpectedStudy.getCenters()) {
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null) {
+          Institution institutiontmp = this.institutionManager.getInstitutionById(center.getInstitution().getId());
+          if (institutiontmp != null && institutiontmp.getName() != null) {
+            center.getInstitution().setName(institutiontmp.getName());
+          }
+        }
+        if (center != null && center.getInstitution() != null && center.getInstitution().getId() != null
+          && center.getInstitution().getName() != null
+          && center.getInstitution().getName().toLowerCase().contains(APConstants.ALLIANCE_INSTITUTION_NAME)) {
+          return true;
+        }
+      }
+    }catch(Exception e) {
+      Log.error("error in alliance selected method " + e);
+    }
+    
+    return false;
   }
 }
