@@ -360,11 +360,22 @@
 <!-- 			<groupId>com.weddini.throttling</groupId> -->
 <!-- 			<artifactId>spring-boot-throttling-starter</artifactId> -->
 <!-- 		</dependency> -->
-<dependency>
-    <groupId>org.javassist</groupId>
-    <artifactId>javassist</artifactId>
-    <version>3.27.0-GA</version>
-</dependency>
+    <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>3.27.0-GA</version>
+    </dependency>
+
+    <!-- Spring AMQP for messaging with RabbitMQ -->
+    <dependency>
+        <groupId>org.springframework.amqp</groupId>
+        <artifactId>spring-amqp</artifactId>
+    </dependency>
+    <!-- Pika dependency for RabbitMQ -->
+    <dependency>
+        <groupId>com.rabbitmq</groupId>
+        <artifactId>amqp-client</artifactId>
+    </dependency>
 	</dependencies>
 
 
@@ -543,9 +554,18 @@
 		<repository>
             <id>jaspersoft-third-party</id>
             <url>https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/</url>
-        </repository>
+    </repository>
 
 		<!-- Maven repo -->
+		<repository>
+        <id>central</id>
+        <url>https://repo.maven.apache.org/maven2/</url>
+    </repository>
+
+    <repository>
+          <id>centra2</id>
+          <url>https://mvnrepository.com/artifact/org.springframework/spring-jms</url>
+     </repository>
 
 	</repositories>
 	<licenses>
