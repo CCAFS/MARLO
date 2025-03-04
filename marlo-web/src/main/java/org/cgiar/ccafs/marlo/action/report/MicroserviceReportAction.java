@@ -29,7 +29,9 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -68,6 +70,9 @@ public class MicroserviceReportAction extends BaseAction {
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String OICRs_MS_FM_URL = null;
+
+  private String jsonData = null;
+
 
   @Inject
   public MicroserviceReportAction(APConfig config, ProjectManager projectManager, PhaseManager phaseManager,
@@ -147,6 +152,10 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
 
+  public String getJsonData() {
+    return jsonData;
+  }
+
   public long getProjectID() {
     return projectID;
   }
@@ -154,8 +163,8 @@ public class MicroserviceReportAction extends BaseAction {
   public void loadData() {
     try {
       List<ReportConfiguration> reportConfigurations = new ArrayList<>();
-      String OICRReportName = "";
-      String OICRTemplateData = "";
+      String OICRReportName = "OICRs_reportName";
+      String OICRTemplateData = "OICRs_templateData";
       reportConfigurations = reportConfigurationManager.findAll();
       if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
         for (ReportConfiguration configuration : reportConfigurations) {
@@ -183,7 +192,74 @@ public class MicroserviceReportAction extends BaseAction {
   public void prepare() throws Exception {
   }
 
+
   public String sendOICRsQueueMessage() {
+    this.loadData(); // Load necessary data before processing
+    String url = queueUrl;
+    ConnectionFactory factory = new ConnectionFactory();
+    try {
+      factory.setUri(url); // Set the connection URI
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      Map<String, Object> data;
+      if (jsonData != null && !jsonData.isEmpty()) {
+        // If a pre-built JSON is provided, parse it directly
+        data = objectMapper.readValue(jsonData, Map.class);
+
+      } else {
+        // Manually construct the data object if jsonData is not provided
+        String link =
+          "https://localhost:8443/marlo-web/projects/AICCRA/studySummary.do?studyID=3517&cycle=Reporting&year=2024";
+
+        data = new HashMap<>();
+        data.put("pattern", "pdf.generate");
+
+        Map<String, Object> nestedData = new HashMap<>();
+        nestedData.put("templateData", OICRsTemplateData);
+
+        Map<String, String> linkData = new HashMap<>();
+        linkData.put("link", link);
+
+        nestedData.put("data", linkData);
+        nestedData.put("clusterAcronym", false);
+        nestedData.put("fileName", OICRsReportName);
+        nestedData.put("bucketName", bucketName);
+
+        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        nestedData.put("credentials", credentialsJson);
+        /*
+         * Map<String, String> credentials = new HashMap<>();
+         * credentials.put("username", username);
+         * credentials.put("password", password);
+         * nestedData.put("credentials", credentials);
+         */
+        data.put("data", nestedData);
+      }
+
+      try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
+        // Declare the queue to ensure it exists and is durable
+        channel.queueDeclare(queueName, true, false, false, null);
+
+        // Convert the data to JSON format
+        String message = objectMapper.writeValueAsString(data);
+
+        // Publish the message to the queue
+        channel.basicPublish("", queueName, null, message.getBytes());
+        System.out.println(" [x] Sent: '" + message + "'");
+      }
+    } catch (URISyntaxException | NoSuchAlgorithmException |
+
+      KeyManagementException e) {
+      System.err.println("Queue connection error: " + e.getMessage());
+      return ERROR;
+    } catch (Exception e) {
+      System.err.println("Message sending error: " + e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  public String sendOICRsQueueMessageV2() {
     this.loadData();
     // URL for connecting to the queue (amqps) and credentials
     String url = queueUrl;
@@ -198,26 +274,54 @@ public class MicroserviceReportAction extends BaseAction {
         // Ensure the queue exists and is durable
         channel.queueDeclare(queueName, true, false, false, null);
 
-        // Message to send to the queue
-        String message = "{\n" + "  \"pattern\": \"pdf.generate\",\n" + // Here we add the cmd: 'generate'\n" +
-          "  \"data\": {\n" + "    \"templateData\": \"<html>tes</html>\",\n"
-          + "    \"data\":{\"link\": \"https://localhost:8443/marlo-web/projects/AICCRA/studySummary.do?studyID=3517&cycle=Reporting&year=2024\"},\n"
-          + "    \"clusterAcronym\": false,\n" + "    \"fileName\": \"aiccra-test.pdf\",\n"
-          + "    \"bucketName\": \"microservice-reports\",\n"
-          + "    \"credentials\": \"{\\\"username\\\":\\\"7947f395-aab5-43f5-a070-c8609bee1a04\\\",\\\"password\\\":\\\"/,QX:[>;GduK5;-cbw/}?,|X-k@*^_ck\\\"}\"\n"
-          + // Quotes are escaped here
-          "  }\n" + "}";
+        // Define the template data
+        String templateData = "<html><body><h1>Test PDF</h1><p>This is a test document.</p></body></html>";
 
+        // Construct the message JSON structure
+        Map<String, Object> data = new HashMap<>();
+        data.put("pattern", "pdf.generate"); // Command pattern to request PDF generation
+        data.put("data", new HashMap<String, Object>() {
+
+          {
+            this.put("templateData", templateData); // HTML template data
+            this.put("data", new HashMap<String, String>() {
+
+              {
+                this.put("link",
+                  "https://localhost:8443/marlo-web/projects/AICCRA/studySummary.do?studyID=3517&cycle=Reporting&year=2024");
+              }
+            });
+            this.put("clusterAcronym", false);
+            this.put("fileName", OICRsReportName);
+            this.put("bucketName", bucketName);
+            this.put("credentials", new HashMap<String, String>() {
+
+              {
+                this.put("username", username);
+                this.put("password", password);
+              }
+            });
+          }
+        });
+
+        // Convert the message to JSON format
+        String message = new ObjectMapper().writeValueAsString(data);
         // Send the message
         channel.basicPublish("", queueName, null, message.getBytes());
         System.out.println(" [x] Sent: '" + message + "'");
       }
     } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
-      e.printStackTrace();
+      System.err.println("Queue connection error: " + e.getMessage());
+      return ERROR;
     } catch (Exception e) {
-      e.printStackTrace();
+      System.err.println("Message sending error: " + e.getMessage());
+      return ERROR;
     }
     return SUCCESS;
+  }
+
+  public void setJsonData(String jsonData) {
+    this.jsonData = jsonData;
   }
 
   public void setProjectID(long projectID) {

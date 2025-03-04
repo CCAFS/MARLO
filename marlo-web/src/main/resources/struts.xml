@@ -555,6 +555,7 @@
 	<include file="struts-summaries.xml" />
 	<include file="struts-bi.xml" />
 	<include file="struts-tip.xml" />
+	<include file="struts-report.xml" />
 	<include file="struts-synthesis.xml" />
 	<include file="struts-powb.xml" />
 	<include file="struts-annualReport.xml" />

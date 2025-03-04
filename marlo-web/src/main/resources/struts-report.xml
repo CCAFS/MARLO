@@ -8,29 +8,20 @@
 		extends="marlo-default">
 
 		<action name="{crp}/sendOICRsQueueMessage" method="sendOICRsQueueMessage"
-			class="org.cgiar.ccafs.marlo.action.projects.MicroserviceReportAction">
-			<interceptor-ref name="projectListStack" />
-			<result name="input">/WEB-INF/crp/views/projects/projectsList.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/description</param>
-				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-			</result>
+			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
+			<interceptor-ref name="homeStack" />
+    		<result name="success"></result>
+		</action>
+		<action name="{crp}/sendOICRsQueueMessage2" method="sendOICRsQueueMessageV2"
+			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
+			<interceptor-ref name="homeStack" />
+    		<result name="success"></result>
 		</action>
 		
 		<action name="{crp}/fetchPDF" method="fetchPDF"
-			class="org.cgiar.ccafs.marlo.action.projects.MicroserviceReportAction">
-			<interceptor-ref name="projectListStack" />
-			<result name="input">/WEB-INF/crp/views/projects/projectsList.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/description</param>
-				<param name="projectID">${projectID}</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-			</result>
+			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
+			<interceptor-ref name="homeStack" />		
+    		<result name="success"></result>
 		</action>
 
 	</package>

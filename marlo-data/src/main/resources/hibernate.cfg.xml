@@ -467,5 +467,6 @@
   <mapping resource="xmls/ProjectInnovationActors.hbm.xml"/>
   <mapping resource="xmls/ToolFunctionCategories.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationToolCategories.hbm.xml"/>
+  <mapping resource="xmls/ReportConfigurations.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
