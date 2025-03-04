@@ -15,12 +15,14 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -50,6 +52,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
@@ -216,14 +219,22 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
   private final InstitutionManager institutionManager;
+  private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
+  private String OICRsTemplateData = null;
+  private String OICRsReportName = null;
+  private String bucketName = null;
 
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager) {
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.institutionManager = institutionManager;
+    this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
   }
 
   /**
@@ -2223,6 +2234,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           /**
            * Generate Json
            */
+          Map<String, Object> jsonMainRoot = new HashMap<>();
           Map<String, Object> jsonRoot = new HashMap<>();
           Map<String, Object> jsonData = new HashMap<>();
           Map<String, Object> jsonOptions = new HashMap<>();
@@ -2290,11 +2302,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("ïmpactAreaCode", impactAreaCode);
           jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
 
-          jsonRoot.put("templateData", templateData);
           jsonRoot.put("data", jsonData);
           jsonRoot.put("options", jsonOptions);
-          jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
-          jsonRoot.put("bucketName", "microservice-reports");
+          this.loadData();
+
+          bucketName = config.getMicroserviceBucketname();
+
+          jsonRoot.put("templateData", OICRsTemplateData);
+          jsonRoot.put("fileName", OICRsReportName);
+          jsonRoot.put("bucketName", bucketName);
 
           /*
            * jsonRoot.put("credentials", jsonCredentials);
@@ -2312,11 +2328,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
           jsonRoot.put("credentials", credentialsJson);
 
+          jsonMainRoot.put("data", jsonRoot);
+          jsonMainRoot.put("pattern", "pdf.generate");
+
           try {
-            String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
+            String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
             FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
             fileWriter.write(jsonOutput);
             fileWriter.close();
+
+            microserviceReportAction.sendOICRsQueueMessage(jsonOutput);
 
             // TODO: Call microservice action
             return jsonOutput;
@@ -2329,8 +2350,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
     }
     return SUCCESS;
-
-
   }
 
   /**
@@ -2363,5 +2382,35 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       }
     }
     return false;
+  }
+
+  public void loadData() {
+    try {
+      List<ReportConfiguration> reportConfigurations = new ArrayList<>();
+      String OICRReportName = "OICRs_reportName";
+      String OICRTemplateData = "OICRs_templateData";
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        for (ReportConfiguration configuration : reportConfigurations) {
+          if (configuration.getName() != null && configuration.getValue() != null) {
+            if (configuration.getName().equals(OICRReportName)) {
+              OICRsReportName = configuration.getValue();
+            }
+            if (configuration.getName().equals(OICRTemplateData)) {
+              OICRsTemplateData = configuration.getValue();
+            }
+          }
+        }
+      }
+      /*
+       * username = config.getMicroserviceUsername();
+       * password = config.getMicroservicePassword();
+       * queueUrl = config.getMicroserviceQueueURL();
+       * queueName = config.getMicroserviceQueueName();
+       * bucketName = config.getMicroserviceBucketname();
+       */
+    } catch (Exception e) {
+      Log.error("error getting report configuration data " + e);
+    }
   }
 }

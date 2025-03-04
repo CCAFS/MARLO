@@ -167,6 +167,8 @@ public class APConfig {
   private String MICROSERVICE_PASSWORD;
   @Value("${microservice.bucketName}")
   private String MICROSERVICE_BUCKETNAME;
+  @Value("${microservice.reporting.url}")
+  private String MICROSERVICE_REPORTING_URL;
 
   public APConfig() {
   }
@@ -603,6 +605,14 @@ public class APConfig {
       return null;
     }
     return MICROSERVICE_QUEUE_URL;
+  }
+
+  public String getMicroserviceReportingUrl() {
+    if (MICROSERVICE_REPORTING_URL == null) {
+      LOG.error("there is not microservice reporting urk.");
+      return null;
+    }
+    return MICROSERVICE_REPORTING_URL;
   }
 
   public String getMicroserviceUsername() {
