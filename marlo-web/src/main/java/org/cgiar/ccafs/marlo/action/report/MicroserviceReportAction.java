@@ -16,8 +16,6 @@
 package org.cgiar.ccafs.marlo.action.report;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -58,8 +56,6 @@ public class MicroserviceReportAction extends BaseAction {
   private long projectID;
 
   // Managers
-  private ProjectManager projectManager;
-  private PhaseManager phaseManager;
   private ReportConfigurationManager reportConfigurationManager;
 
   private String username = null;
@@ -75,11 +71,8 @@ public class MicroserviceReportAction extends BaseAction {
 
 
   @Inject
-  public MicroserviceReportAction(APConfig config, ProjectManager projectManager, PhaseManager phaseManager,
-    ReportConfigurationManager reportConfigurationManager) {
+  public MicroserviceReportAction(APConfig config, ReportConfigurationManager reportConfigurationManager) {
     super(config);
-    this.projectManager = projectManager;
-    this.phaseManager = phaseManager;
     this.reportConfigurationManager = reportConfigurationManager;
   }
 

@@ -2295,16 +2295,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonRoot.put("options", jsonOptions);
           jsonRoot.put("fileName", "AICCRA-Result-Generated.pdf");
           jsonRoot.put("bucketName", "microservice-reports");
-          jsonRoot.put("credentials", jsonCredentials);
 
-          jsonCredentials.put("username", "____");
-          jsonCredentials.put("password", "___");
+          /*
+           * jsonRoot.put("credentials", jsonCredentials);
+           * jsonCredentials.put("username", "____");
+           * jsonCredentials.put("password", "___");
+           */
+
+          String username = null, password = null;
+          try {
+            username = config.getMicroserviceUsername();
+            password = config.getMicroservicePassword();
+          } catch (Exception e) {
+            Log.error("error getting conf credentials " + e);
+          }
+          String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+          jsonRoot.put("credentials", credentialsJson);
 
           try {
             String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonRoot);
             FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
             fileWriter.write(jsonOutput);
             fileWriter.close();
+
+            // TODO: Call microservice action
             return jsonOutput;
           } catch (IOException e) {
             e.printStackTrace();
