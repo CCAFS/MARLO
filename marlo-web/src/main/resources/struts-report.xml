@@ -12,11 +12,6 @@
 			<interceptor-ref name="homeStack" />
     		<result name="success"></result>
 		</action>
-		<action name="{crp}/sendOICRsQueueMessage2" method="sendOICRsQueueMessageV2"
-			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
-			<interceptor-ref name="homeStack" />
-    		<result name="success"></result>
-		</action>
 		
 		<action name="{crp}/fetchPDF" method="fetchPDF"
 			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">

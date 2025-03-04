@@ -2339,10 +2339,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
             microserviceReportAction.sendOICRsQueueMessage(jsonOutput);
 
-            // TODO: Call microservice action
             return jsonOutput;
           } catch (IOException e) {
-            e.printStackTrace();
+            Log.error("error generating json " + e);
             return "{}";
           }
         }
