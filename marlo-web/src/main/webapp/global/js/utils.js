@@ -839,7 +839,7 @@ function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions 
     const modfiedOptions = (targetUnit) => {
       const typeTargetUnit = {
         "129": {
-          maxDigits: 10,
+          maxDigits: 8,
           allowDecimals: true,
           isPercentage: true
         },
@@ -849,12 +849,12 @@ function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions 
           isPercentage: false
         },
         "35": {
-          maxDigits: 10,
+          maxDigits: 8,
           allowDecimals: true,
           isPercentage: true
         },
         "1": {
-          maxDigits: 10,
+          maxDigits: 8,
           allowDecimals: true,
           isPercentage: true
         },
@@ -917,7 +917,7 @@ function initNumberField(fieldId, options = {}) {
   
   // Opciones por defecto
   const defaultOptions = {
-      maxDigits: 10,
+      maxDigits: 8,
       removeTrailingZeros: true,
       keepOneDecimalZero: true,
       allowDecimals: true,
@@ -1085,6 +1085,21 @@ function initNumberField(fieldId, options = {}) {
     // Formatear el valor inicial según la configuración
     element.value = formatAsDecimal(element.value);
   }
+
+  // Validar si se digito una coma y convertirla en .
+  element.addEventListener('keydown', function(e) {
+    if (e.key === ',' || e.keyCode === 188) {
+      e.preventDefault();
+
+      console.log('Coma detectada');
+
+      const currentValue = this.value.replace(/,/g, '');
+      this.value = formatWithCommas(currentValue) + '.';
+
+      const newCursorPos = getCaretPositionAfterFormat(currentValue, this.value, this.selectionStart) + 1;
+      this.setSelectionRange(newCursorPos, newCursorPos);
+    }
+  });
   
   // Validación estricta en tiempo real mientras se escribe
   element.addEventListener('input', function(e) {
