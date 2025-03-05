@@ -807,7 +807,7 @@ function setCustomEvent(event_category,eventName,event_label) {
 /**
  * Sets the format for input fields with numbers to have commas and separators.
  */
-function setFormatInput(inputSelector = "input.targetValueNumber") {
+function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions = {}) {
 
   $(inputSelector).each(function (i, ele) {
 
@@ -864,7 +864,7 @@ function setFormatInput(inputSelector = "input.targetValueNumber") {
           isPercentage: false
         }
       }
-      return typeTargetUnit[targetUnit] || {};
+      return {...typeTargetUnit[targetUnit] || {}, ...otherOptions};
     }
 
     //add icon to after parent .input to visualize the unit
@@ -921,7 +921,8 @@ function initNumberField(fieldId, options = {}) {
       removeTrailingZeros: true,
       keepOneDecimalZero: true,
       allowDecimals: true,
-      isPercentage: true
+      isPercentage: true,
+      isRecallMethod: false
   };
   
   // Combinar opciones por defecto con las proporcionadas
@@ -929,6 +930,17 @@ function initNumberField(fieldId, options = {}) {
   
   // Guarda el valor original con todos los decimales permitidos
   let originalValue = '';
+  
+  // Clear previous event listeners using cloneNode
+  const oldElement = inputElement;
+  const newElement = oldElement.cloneNode(true);
+
+  if(config.isRecallMethod) {
+      oldElement.parentNode.replaceChild(newElement, oldElement);
+  }
+  
+  // Reference the new element for our listeners
+  const element = config.isRecallMethod ? newElement : inputElement;
   
   // Función para normalizar ceros iniciales y finales
   function normalizeZeros(value) {
@@ -1069,13 +1081,13 @@ function initNumberField(fieldId, options = {}) {
       return caretPos + countCommasBefore;
   }
 
-  if (inputElement.value) {
+  if (element.value) {
     // Formatear el valor inicial según la configuración
-    inputElement.value = formatAsDecimal(inputElement.value);
+    element.value = formatAsDecimal(element.value);
   }
   
   // Validación estricta en tiempo real mientras se escribe
-  inputElement.addEventListener('input', function(e) {
+  element.addEventListener('input', function(e) {
       const cursorPos = this.selectionStart;
       const originalInputValue = this.value;
       
@@ -1173,7 +1185,7 @@ function initNumberField(fieldId, options = {}) {
   });
   
   // Aplicar formato completo cuando el input pierde el foco
-  inputElement.addEventListener('blur', function(e) {
+  element.addEventListener('blur', function(e) {
       // Si hay un valor, formatearlo manteniendo los decimales originales
       if (this.value && this.value !== '') {
           // Eliminar cualquier coma existente primero
@@ -1185,7 +1197,7 @@ function initNumberField(fieldId, options = {}) {
   });
   
   // Cuando el campo obtiene el foco, mostrar el valor original con todos los dígitos posibles
-  inputElement.addEventListener('focus', function(e) {
+  element.addEventListener('focus', function(e) {
       if (this.value && this.value !== '') {
           // Eliminar comas para procesar
           let valueWithoutCommas = this.value.replace(/,/g, '');
@@ -1212,7 +1224,7 @@ function initNumberField(fieldId, options = {}) {
   });
   
   // Añadir o quitar la clase CSS para el símbolo de porcentaje
-  const parentContainer = inputElement.parentElement;
+  const parentContainer = element.parentElement;
   if (config.isPercentage && !parentContainer.classList.contains('percentage-container')) {
       parentContainer.classList.add('percentage-container');
   } else if (!config.isPercentage && parentContainer.classList.contains('percentage-container')) {
@@ -1222,13 +1234,13 @@ function initNumberField(fieldId, options = {}) {
   // Devolver un objeto con métodos públicos para interactuar con el campo
   return {
       getValue: function() {
-          return inputElement.value.replace(/,/g, '');
+          return element.value.replace(/,/g, '');
       },
       setValue: function(value) {
-          inputElement.value = formatAsDecimal(value);
+          element.value = formatAsDecimal(value);
       },
       clear: function() {
-          inputElement.value = '';
+          element.value = '';
       }
   };
 }
