@@ -169,6 +169,8 @@ public class APConfig {
   private String MICROSERVICE_BUCKETNAME;
   @Value("${microservice.reporting.url}")
   private String MICROSERVICE_REPORTING_URL;
+  @Value("${microservice.s3.url}")
+  private String MICROSERVICE_S3_URL;
 
   public APConfig() {
   }
@@ -613,6 +615,14 @@ public class APConfig {
       return null;
     }
     return MICROSERVICE_REPORTING_URL;
+  }
+
+  public String getMicroserviceS3Url() {
+    if (MICROSERVICE_S3_URL == null) {
+      LOG.error("there is not microservice S3 urk.");
+      return null;
+    }
+    return MICROSERVICE_S3_URL;
   }
 
   public String getMicroserviceUsername() {

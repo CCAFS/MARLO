@@ -67,6 +67,7 @@ public class MicroserviceReportAction extends BaseAction {
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String OICRs_MS_FM_URL = null;
+  private String s3URL = null;
 
   private String jsonData = null;
   private String authHeaderMs4;
@@ -82,7 +83,7 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public void downloadPDFByURL(String reportName, String reportURL) {
-    String pdfUrl = reportURL + "/" + reportName;
+    String pdfUrl = reportURL + "" + reportName;
     HttpServletResponse response = ServletActionContext.getResponse();
 
     try {
@@ -186,6 +187,7 @@ public class MicroserviceReportAction extends BaseAction {
       queueName = config.getMicroserviceQueueName();
       bucketName = config.getMicroserviceBucketname();
       OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
+      s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
       Log.error("error getting report configuration data " + e);
     }
@@ -259,7 +261,7 @@ public class MicroserviceReportAction extends BaseAction {
         channel.basicPublish("", queueName, null, message.getBytes());
         System.out.println(" [x] Sent: '" + message + "'");
         try {
-          this.downloadPDFByURL(OICRsReportName, OICRs_MS_FM_URL);
+          this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {
           Log.error("error getting pdf by URL " + e);
         }
