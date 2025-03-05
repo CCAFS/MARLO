@@ -259,7 +259,6 @@ public class MicroserviceReportAction extends BaseAction {
 
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
-        System.out.println(" [x] Sent: '" + message + "'");
         try {
           this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {

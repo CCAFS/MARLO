@@ -137,64 +137,70 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     }
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-      crp = this.getLoggedCrp().getAcronym();
-      if (crp == null || crp.isEmpty()) {
-        String[] actionMap = ActionContext.getContext().getName().split("/");
-        if (actionMap.length > 1) {
-          String enteredCrp = actionMap[0];
-          crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+    if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
+      try {
+        Resource reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+
+        crp = this.getLoggedCrp().getAcronym();
+        if (crp == null || crp.isEmpty()) {
+          String[] actionMap = ActionContext.getContext().getName().split("/");
+          if (actionMap.length > 1) {
+            String enteredCrp = actionMap[0];
+            crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+          }
         }
+
+        String center = crp;
+
+        // Get datetime
+        ZonedDateTime timezone = ZonedDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+        String zone = timezone.getOffset() + "";
+        if (zone.equals("Z")) {
+          zone = "+0";
+        }
+        String date = timezone.format(format) + "(GMT" + zone + ")";
+
+
+        // Set Main_Query
+        CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+        String masterQueryName = "main";
+        TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+        TypedTableModel model = this.getMasterTableModel(crp, date, String.valueOf(this.getSelectedYear()));
+        sdf.addTable(masterQueryName, model);
+        masterReport.setDataFactory(cdf);
+        // Set i8n for pentaho
+        masterReport = this.addi8nParameters(masterReport);
+        // Get details band
+        ItemBand masteritemBand = masterReport.getItemBand();
+        // Create new empty subreport hash map
+        HashMap<String, Element> hm = new HashMap<String, Element>();
+        // method to get all the subreports in the prpt and store in the HashMap
+        this.getAllSubreports(hm, masteritemBand);
+        // Uncomment to see which Subreports are detecting the method getAllSubreports
+        // System.out.println("Pentaho SubReports: " + hm);
+
+        this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
+
+        PdfReportUtil.createPDF(masterReport, os);
+        bytesPDF = os.toByteArray();
+        os.close();
+      } catch (Exception e) {
+        LOG.error("Error generating Study Summary: " + e.getMessage());
+        throw e;
       }
-
-      String center = crp;
-
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
-      }
-      String date = timezone.format(format) + "(GMT" + zone + ")";
-
-
-      // Set Main_Query
-      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-      String masterQueryName = "main";
-      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(crp, date, String.valueOf(this.getSelectedYear()));
-      sdf.addTable(masterQueryName, model);
-      masterReport.setDataFactory(cdf);
-      // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
-      // Get details band
-      ItemBand masteritemBand = masterReport.getItemBand();
-      // Create new empty subreport hash map
-      HashMap<String, Element> hm = new HashMap<String, Element>();
-      // method to get all the subreports in the prpt and store in the HashMap
-      this.getAllSubreports(hm, masteritemBand);
-      // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
-
-      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
-
-      PdfReportUtil.createPDF(masterReport, os);
-      bytesPDF = os.toByteArray();
-      os.close();
-    } catch (Exception e) {
-      LOG.error("Error generating Study Summary: " + e.getMessage());
-      throw e;
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+        + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     }
-    // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    bytesPDF = os.toByteArray();
+    os.close();
+    this.generateAndSendJson(projectExpectedStudyInfos);
     return SUCCESS;
   }
 
