@@ -1237,14 +1237,7 @@ function initNumberField(fieldId, options = {}) {
           this.value = result;
       }
   });
-  
-  // Añadir o quitar la clase CSS para el símbolo de porcentaje
-  const parentContainer = element.parentElement;
-  if (config.isPercentage && !parentContainer.classList.contains('percentage-container')) {
-      parentContainer.classList.add('percentage-container');
-  } else if (!config.isPercentage && parentContainer.classList.contains('percentage-container')) {
-      parentContainer.classList.remove('percentage-container');
-  }
+
   
   // Devolver un objeto con métodos públicos para interactuar con el campo
   return {
