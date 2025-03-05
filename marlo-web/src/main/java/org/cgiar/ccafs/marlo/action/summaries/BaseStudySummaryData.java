@@ -2302,6 +2302,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("ïmpactAreaCode", impactAreaCode);
           jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
 
+          jsonOptions.put("format", "A3");
+          jsonOptions.put("orientation", "portrait");
+          jsonOptions.put("timeout", "300000");
+
           jsonRoot.put("data", jsonData);
           jsonRoot.put("options", jsonOptions);
           this.loadData();

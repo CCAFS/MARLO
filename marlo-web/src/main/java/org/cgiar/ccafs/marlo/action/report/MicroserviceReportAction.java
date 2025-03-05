@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -36,11 +37,13 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.apache.struts2.ServletActionContext;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +79,39 @@ public class MicroserviceReportAction extends BaseAction {
 
   private String createAuthHeader(String username, String password) {
     return String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
+  }
+
+  public void downloadPDFByURL(String reportName, String reportURL) {
+    String pdfUrl = reportURL + "/" + reportName;
+    HttpServletResponse response = ServletActionContext.getResponse();
+
+    try {
+      URL url = new URL(pdfUrl);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestMethod("GET");
+
+      int responseCode = connection.getResponseCode();
+      if (responseCode == 200) { // OK
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + reportName + "\"");
+
+        try (InputStream inputStream = connection.getInputStream();
+          OutputStream outputStream = response.getOutputStream()) {
+
+          byte[] buffer = new byte[8192];
+          int bytesRead;
+          while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+          }
+
+          outputStream.flush();
+        }
+      } else {
+        response.sendError(responseCode, "Failed to download PDF");
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Error downloading PDF: " + e.getMessage(), e);
+    }
   }
 
   public String fetchPDF() {
@@ -168,6 +204,7 @@ public class MicroserviceReportAction extends BaseAction {
   public void prepare() throws Exception {
   }
 
+
   public String sendOICRsQueueMessage() {
     this.loadData(); // Load necessary data before processing
     String url = queueUrl;
@@ -221,6 +258,11 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         System.out.println(" [x] Sent: '" + message + "'");
+        try {
+          this.downloadPDFByURL(OICRsReportName, OICRs_MS_FM_URL);
+        } catch (Exception e) {
+          Log.error("error getting pdf by URL " + e);
+        }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
