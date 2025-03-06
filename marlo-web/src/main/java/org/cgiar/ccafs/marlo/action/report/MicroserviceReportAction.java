@@ -159,6 +159,10 @@ public class MicroserviceReportAction extends BaseAction {
     return jsonData;
   }
 
+  public String getOICRsReportName() {
+    return OICRsReportName;
+  }
+
   public long getProjectID() {
     return projectID;
   }
@@ -172,7 +176,8 @@ public class MicroserviceReportAction extends BaseAction {
       if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
         for (ReportConfiguration configuration : reportConfigurations) {
           if (configuration.getName() != null && configuration.getValue() != null) {
-            if (configuration.getName().equals(OICRReportName)) {
+            if ((OICRReportName == null || OICRReportName.isEmpty())
+              && configuration.getName().equals(OICRReportName)) {
               OICRsReportName = configuration.getValue();
             }
             if (configuration.getName().equals(OICRTemplateData)) {
@@ -205,7 +210,6 @@ public class MicroserviceReportAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
   }
-
 
   public String sendOICRsQueueMessage() {
     this.loadData(); // Load necessary data before processing
@@ -277,13 +281,18 @@ public class MicroserviceReportAction extends BaseAction {
     return SUCCESS;
   }
 
-  public void sendOICRsQueueMessage(String json) {
+  public void sendOICRsQueueMessage(String json, String reportName) {
+    this.setOICRsReportName(reportName);
     this.setJsonData(json);
     this.sendOICRsQueueMessage();
   }
 
   public void setJsonData(String jsonData) {
     this.jsonData = jsonData;
+  }
+
+  public void setOICRsReportName(String oICRsReportName) {
+    OICRsReportName = oICRsReportName;
   }
 
   public void setProjectID(long projectID) {

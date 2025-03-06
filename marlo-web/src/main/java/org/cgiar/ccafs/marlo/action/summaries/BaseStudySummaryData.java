@@ -1271,6 +1271,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           Map<String, Object> jsonData = new HashMap<>();
           Map<String, Object> jsonOptions = new HashMap<>();
           Map<String, Object> jsonCredentials = new HashMap<>();
+          Map<String, String> headerMap = new HashMap<>();
+          Map<String, String> footerMap = new HashMap<>();
 
           String templateData = "<html>Generated Report</html>";
 
@@ -1334,36 +1336,26 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("ïmpactAreaCode", impactAreaCode);
           jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
 
+          headerMap.put("height", "40mm");
+          footerMap.put("height", "30mm");
+
           jsonOptions.put("format", "A3");
           jsonOptions.put("orientation", "portrait");
           jsonOptions.put("border", "0");
           jsonOptions.put("zoomFactor", 1);
-
-          Map<String, String> headerMap = new HashMap<>();
-          headerMap.put("height", "40mm");
           jsonOptions.put("header", headerMap);
-
-          Map<String, String> footerMap = new HashMap<>();
-          footerMap.put("height", "30mm");
           jsonOptions.put("footer", footerMap);
-    
           jsonOptions.put("timeout", "300000");
 
           jsonRoot.put("data", jsonData);
           jsonRoot.put("options", jsonOptions);
           this.loadData();
 
-          bucketName = config.getMicroserviceBucketname();
+          OICRsReportName = "OICR" + projectExpectedStudy.getId() + "_AICCRA_Summary.pdf";
 
           jsonRoot.put("templateData", OICRsTemplateData);
           jsonRoot.put("fileName", OICRsReportName);
           jsonRoot.put("bucketName", bucketName);
-
-          /*
-           * jsonRoot.put("credentials", jsonCredentials);
-           * jsonCredentials.put("username", "____");
-           * jsonCredentials.put("password", "___");
-           */
 
           String username = null, password = null;
           try {
@@ -1384,7 +1376,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             fileWriter.write(jsonOutput);
             fileWriter.close();
 
-            microserviceReportAction.sendOICRsQueueMessage(jsonOutput);
+            microserviceReportAction.sendOICRsQueueMessage(jsonOutput, OICRsReportName);
 
             return jsonOutput;
           } catch (IOException e) {
@@ -2266,7 +2258,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           relatedSDGContribution, hasCGIARContribution, impactArea, publications, tagAs});
 
       }
-      this.generateAndSendJson(projectExpectedStudyInfos);
+      // this.generateAndSendJson(projectExpectedStudyInfos);
 
     }
 
@@ -2314,22 +2306,20 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
         for (ReportConfiguration configuration : reportConfigurations) {
           if (configuration.getName() != null && configuration.getValue() != null) {
-            if (configuration.getName().equals(OICRReportName)) {
-              OICRsReportName = configuration.getValue();
-            }
+            /*
+             * if (configuration.getName().equals(OICRReportName)) {
+             * OICRsReportName = configuration.getValue();
+             * }
+             */
             if (configuration.getName().equals(OICRTemplateData)) {
               OICRsTemplateData = configuration.getValue();
             }
           }
         }
       }
-      /*
-       * username = config.getMicroserviceUsername();
-       * password = config.getMicroservicePassword();
-       * queueUrl = config.getMicroserviceQueueURL();
-       * queueName = config.getMicroserviceQueueName();
-       * bucketName = config.getMicroserviceBucketname();
-       */
+
+      bucketName = config.getMicroserviceBucketname();
+
     } catch (Exception e) {
       Log.error("error getting report configuration data " + e);
     }

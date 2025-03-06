@@ -197,10 +197,26 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       stopTime = stopTime - startTime;
       LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
         + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    } else {
+      try {
+        this.generateAndSendJson(projectExpectedStudyInfos);
+        bytesPDF = os.toByteArray();
+      } catch (Exception e) {
+        if (e.getClass().getName().contains("ClientAbortException")) {
+          LOG.warn("Client aborted the connection: " + e.getMessage());
+        } else {
+          LOG.error("Exception while generating JSON: " + e.getMessage(), e);
+          throw e;
+        }
+      } finally {
+        try {
+          os.close();
+        } catch (Exception e) {
+          LOG.warn("Error closing output stream: " + e.getMessage());
+        }
+      }
+
     }
-    bytesPDF = os.toByteArray();
-    os.close();
-    this.generateAndSendJson(projectExpectedStudyInfos);
     return SUCCESS;
   }
 
