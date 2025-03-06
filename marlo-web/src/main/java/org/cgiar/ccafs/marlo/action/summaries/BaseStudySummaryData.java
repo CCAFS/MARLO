@@ -1336,6 +1336,17 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
           jsonOptions.put("format", "A3");
           jsonOptions.put("orientation", "portrait");
+          jsonOptions.put("border", "0");
+          jsonOptions.put("zoomFactor", 1);
+
+          Map<String, String> headerMap = new HashMap<>();
+          headerMap.put("height", "40mm");
+          jsonOptions.put("header", headerMap);
+
+          Map<String, String> footerMap = new HashMap<>();
+          footerMap.put("height", "30mm");
+          jsonOptions.put("footer", footerMap);
+    
           jsonOptions.put("timeout", "300000");
 
           jsonRoot.put("data", jsonData);
