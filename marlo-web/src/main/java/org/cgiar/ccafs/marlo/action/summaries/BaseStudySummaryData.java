@@ -1200,7 +1200,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             publicationsJson = publicationsJson.replace("\\", "");
 
             // Append properly formatted JSON to the existing string
-            publications.append("publications: ").append(publicationsJson);
+            publications.append("").append(publicationsJson);
 
           } catch (final JsonProcessingException e) {
             e.printStackTrace();
