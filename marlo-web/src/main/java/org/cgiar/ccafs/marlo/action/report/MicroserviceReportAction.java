@@ -170,21 +170,13 @@ public class MicroserviceReportAction extends BaseAction {
   public void loadData() {
     try {
       List<ReportConfiguration> reportConfigurations = new ArrayList<>();
-      String OICRReportName = "OICRs_reportName";
-      String OICRTemplateData = "OICRs_templateData";
       reportConfigurations = reportConfigurationManager.findAll();
       if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
-        for (ReportConfiguration configuration : reportConfigurations) {
-          if (configuration.getName() != null && configuration.getValue() != null) {
-            if ((OICRReportName == null || OICRReportName.isEmpty())
-              && configuration.getName().equals(OICRReportName)) {
-              OICRsReportName = configuration.getValue();
-            }
-            if (configuration.getName().equals(OICRTemplateData)) {
-              OICRsTemplateData = configuration.getValue();
-            }
-          }
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        if (reportConfiguration.getOicrTemplateData() != null) {
+          OICRsTemplateData = reportConfiguration.getOicrTemplateData();
         }
+
       }
       username = config.getMicroserviceUsername();
       password = config.getMicroservicePassword();

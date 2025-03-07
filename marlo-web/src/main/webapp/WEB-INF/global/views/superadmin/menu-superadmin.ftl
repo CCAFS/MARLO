@@ -36,6 +36,7 @@
     { 'slug': 'tipManagement',    'name': 'menu.superadmin.tipManagement', 'action': 'tipManagement',   'active': true },
     { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': true}
     { 'slug': 'feedbackManagement',    'name': 'menu.superadmin.feedbackManagement', 'action': 'feedbackManagement',   'active': true}
+    { 'slug': 'reportsManagement',    'name': 'menu.superadmin.reportsManagement', 'action': 'reportsManagement',   'active': true}
     { 'slug': 'buttonGuideManagement',    'name': 'menu.superadmin.buttonGuideManagement', 'action': 'buttonGuideManagement',   'active': true}
   ]/]
 [/#if]

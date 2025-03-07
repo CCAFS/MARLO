@@ -9,14 +9,8 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
-		<property name="name" type="string">
-			<column name="name" sql-type="TEXT" />
-		</property>
-		<property name="description" type="string">
-			<column name="description" sql-type="TEXT" />
-		</property>		
-		<property name="value" type="string">
-			<column name="value" sql-type="TEXT" />
+		<property name="oicrTemplateData" type="string">
+			<column name="oicr_template_data" sql-type="TEXT" />
 		</property>		
 	</class>
 </hibernate-mapping>

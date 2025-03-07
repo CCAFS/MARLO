@@ -14,11 +14,7 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
   private static final long serialVersionUID = -7806050142645120199L;
 
   @Expose
-  private String name;
-  @Expose
-  private String description;
-  @Expose
-  private String value;
+  private String oicrTemplateData;
 
   public ReportConfiguration() {
   }
@@ -28,10 +24,6 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
-  }
-
-  public String getDescription() {
-    return description;
   }
 
   @Override
@@ -52,12 +44,8 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
     return null;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public String getValue() {
-    return value;
+  public String getOicrTemplateData() {
+    return oicrTemplateData;
   }
 
   @Override
@@ -66,20 +54,13 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
     return false;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setOicrTemplateData(String oicrTemplateData) {
+    this.oicrTemplateData = oicrTemplateData;
   }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
 }

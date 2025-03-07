@@ -63,6 +63,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -1369,7 +1371,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonRoot.put("options", jsonOptions);
           this.loadData();
 
-          this.OICRsReportName = "OICR" + projectExpectedStudy.getId() + "_AICCRA_Summary.pdf";
+          this.OICRsReportName =
+            "OICR" + projectExpectedStudy.getId() + "_AICCRA_Summary_" + this.getCurrentDateTime() + ".pdf";
 
           jsonRoot.put("templateData", this.OICRsTemplateData);
           jsonRoot.put("fileName", this.OICRsReportName);
@@ -2292,10 +2295,17 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return model;
   }
 
-  private String getCurrentDate() {
+  public String getCurrentDate() {
     final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
     formatter.setTimeZone(TimeZone.getTimeZone("CET"));
     return formatter.format(new Date());
+  }
+
+  public String getCurrentDateTime() {
+    LocalDateTime currentDateTime = LocalDateTime.now();
+    String formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+
+    return formattedDateTime;
   }
 
   /**
@@ -2335,22 +2345,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   public void loadData() {
     try {
       List<ReportConfiguration> reportConfigurations = new ArrayList<>();
-      final String OICRReportName = "OICRs_reportName";
-      final String OICRTemplateData = "OICRs_templateData";
-      reportConfigurations = this.reportConfigurationManager.findAll();
-      if ((reportConfigurations != null) && !reportConfigurations.isEmpty()) {
-        for (final ReportConfiguration configuration : reportConfigurations) {
-          if ((configuration.getName() != null) && (configuration.getValue() != null)) {
-            /*
-             * if (configuration.getName().equals(OICRReportName)) {
-             * OICRsReportName = configuration.getValue();
-             * }
-             */
-            if (configuration.getName().equals(OICRTemplateData)) {
-              this.OICRsTemplateData = configuration.getValue();
-            }
-          }
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        if (reportConfiguration.getOicrTemplateData() != null) {
+          OICRsTemplateData = reportConfiguration.getOicrTemplateData();
         }
+
       }
 
       this.bucketName = this.config.getMicroserviceBucketname();
