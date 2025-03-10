@@ -1380,8 +1380,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
           String username = null, password = null;
           try {
-            username = this.config.getMicroserviceUsername();
-            password = this.config.getMicroservicePassword();
+            username = null;
+            password = null;
           } catch (final Exception e) {
             Log.error("error getting conf credentials " + e);
           }
@@ -2355,7 +2355,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
       }
 
-      this.bucketName = this.config.getMicroserviceBucketname();
+      this.bucketName = null;
 
     } catch (final Exception e) {
       Log.error("error getting report configuration data " + e);
