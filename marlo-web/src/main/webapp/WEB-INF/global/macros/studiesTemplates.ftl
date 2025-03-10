@@ -1052,7 +1052,7 @@
       </div>
       [#-- Number --]
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive && additionalRequired) editable=editable /]
+        [@customForm.input name="${customName}.number" type="number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive && additionalRequired) editable=editable /]
       </div>
       [#-- Unit --]
       <div class="col-md-4"> 
