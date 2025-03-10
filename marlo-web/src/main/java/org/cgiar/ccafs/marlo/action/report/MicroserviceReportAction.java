@@ -204,6 +204,7 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public String sendOICRsQueueMessage() {
+    Log.info("microservice sendOICRsQueueMessage");
     this.loadData(); // Load necessary data before processing
     String url = queueUrl;
     ConnectionFactory factory = new ConnectionFactory();
@@ -256,6 +257,8 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
+          Log.info("s3URL " + s3URL);
+
           this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {
           Log.error("error getting pdf by URL " + e);

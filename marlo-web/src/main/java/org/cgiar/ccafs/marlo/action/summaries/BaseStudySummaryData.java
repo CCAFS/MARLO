@@ -728,7 +728,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 referenceMap.put("code", count);
                 referenceMap.put("title", reference.getReference());
                 referenceMap.put("link", reference.getLink());
-                referenceMap.put("externalAuthor", Boolean.TRUE.equals(reference.getExternalAuthor()));
+                referenceMap.put("externalAuthor", reference.getExternalAuthor());
 
                 referenceList.add(referenceMap);
                 count++;
@@ -1372,7 +1372,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           this.loadData();
 
           this.OICRsReportName =
-            "OICR" + projectExpectedStudy.getId() + "_AICCRA_Summary_" + this.getCurrentDateTime() + ".pdf";
+            "AICCRA-OICR" + projectExpectedStudy.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
 
           jsonRoot.put("templateData", this.OICRsTemplateData);
           jsonRoot.put("fileName", this.OICRsReportName);
@@ -1397,6 +1397,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             fileWriter.write(jsonOutput);
             fileWriter.close();
 
+            Log.info("send microservice class: " + this.OICRsReportName);
             this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
 
             return jsonOutput;

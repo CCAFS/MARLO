@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -139,6 +140,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
+      Log.info("specificity false");
+
       try {
         Resource reportResource = resourceManager
           .createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
@@ -199,6 +202,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
         + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     } else {
       try {
+        Log.info("Generate Json to send to microservice");
         this.generateAndSendJson(projectExpectedStudyInfos);
         bytesPDF = os.toByteArray();
       } catch (Exception e) {
