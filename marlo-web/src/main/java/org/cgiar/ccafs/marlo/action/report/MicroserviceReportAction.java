@@ -178,13 +178,13 @@ public class MicroserviceReportAction extends BaseAction {
         }
 
       }
-      username = config.getMicroserviceUsername();
-      password = config.getMicroservicePassword();
-      queueUrl = config.getMicroserviceQueueURL();
-      queueName = config.getMicroserviceQueueName();
-      bucketName = config.getMicroserviceBucketname();
-      OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
-      s3URL = config.getMicroserviceS3Url();
+      username = null;
+      password = null;
+      queueUrl = null;
+      queueName = null;
+      bucketName = null;
+      OICRs_MS_FM_URL = null;
+      s3URL = null;
     } catch (Exception e) {
       Log.error("error getting report configuration data " + e);
     }
