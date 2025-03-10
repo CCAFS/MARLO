@@ -15,13 +15,16 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
@@ -73,6 +76,9 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   private final HTMLParser htmlParser;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private final ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager;
+  private final InstitutionManager institutionManager;
+  private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -92,12 +98,18 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   public StudiesSummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager,
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser htmlParser,
-    ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
-    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager);
+    ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
+    InstitutionManager institutionManager, MicroserviceReportAction microserviceReportAction,
+    ReportConfigurationManager reportConfigurationManager) {
+    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
+      institutionManager, microserviceReportAction, reportConfigurationManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
+    this.institutionManager = institutionManager;
+    this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
   }
 
   @Override

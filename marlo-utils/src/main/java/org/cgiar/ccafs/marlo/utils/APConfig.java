@@ -156,6 +156,22 @@ public class APConfig {
   @Value("${recaptcha.site.key}")
   private String RECAPTCHAT_SITE_KEY;
 
+  // Microservice configurations
+  @Value("${microservice.queueUrl}")
+  private String MICROSERVICE_QUEUE_URL;
+  @Value("${microservice.queueName}")
+  private String MICROSERVICE_QUEUE_NAME;
+  @Value("${microservice.userName}")
+  private String MICROSERVICE_USERNAME;
+  @Value("${microservice.password}")
+  private String MICROSERVICE_PASSWORD;
+  @Value("${microservice.bucketName}")
+  private String MICROSERVICE_BUCKETNAME;
+  @Value("${microservice.reporting.url}")
+  private String MICROSERVICE_REPORTING_URL;
+  @Value("${microservice.s3.url}")
+  private String MICROSERVICE_S3_URL;
+
   public APConfig() {
   }
 
@@ -561,6 +577,62 @@ public class APConfig {
     return GOOGLE_API_KEY;
   }
 
+  public String getMicroserviceBucketname() {
+    if (MICROSERVICE_BUCKETNAME == null) {
+      LOG.error("there is not microservice bucketname configured.");
+      return null;
+    }
+    return MICROSERVICE_BUCKETNAME;
+  }
+
+  public String getMicroservicePassword() {
+    if (MICROSERVICE_PASSWORD == null) {
+      LOG.error("there is not microservice queue password configured.");
+      return null;
+    }
+    return MICROSERVICE_PASSWORD;
+  }
+
+  public String getMicroserviceQueueName() {
+    if (MICROSERVICE_QUEUE_NAME == null) {
+      LOG.error("there is not microservice queue name configured.");
+      return null;
+    }
+    return MICROSERVICE_QUEUE_NAME;
+  }
+
+  public String getMicroserviceQueueURL() {
+    if (MICROSERVICE_QUEUE_URL == null) {
+      LOG.error("there is not microservice queue url configured.");
+      return null;
+    }
+    return MICROSERVICE_QUEUE_URL;
+  }
+
+  public String getMicroserviceReportingUrl() {
+    if (MICROSERVICE_REPORTING_URL == null) {
+      LOG.error("there is not microservice reporting urk.");
+      return null;
+    }
+    return MICROSERVICE_REPORTING_URL;
+  }
+
+  public String getMicroserviceS3Url() {
+    if (MICROSERVICE_S3_URL == null) {
+      LOG.error("there is not microservice S3 urk.");
+      return null;
+    }
+    return MICROSERVICE_S3_URL;
+  }
+
+  public String getMicroserviceUsername() {
+    if (MICROSERVICE_USERNAME == null) {
+      LOG.error("there is not microservice username configured.");
+      return null;
+    }
+    return MICROSERVICE_USERNAME;
+  }
+
   /**
    * Get the folder where the bilateral project contract proposal should be
    * loaded
@@ -785,5 +857,4 @@ public class APConfig {
     }
     return MYSQL_SHOW_SQL.equals("true");
   }
-
 }

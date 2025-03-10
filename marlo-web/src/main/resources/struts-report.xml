@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
+  "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+	<!-- Add addition packages and configuration here. -->
+	<package name="report" namespace="/report"
+		extends="marlo-default">
+
+		<action name="{crp}/sendOICRsQueueMessage" method="sendOICRsQueueMessage"
+			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
+			<interceptor-ref name="homeStack" />
+    		<result name="success"></result>
+		</action>
+		
+		<action name="{crp}/fetchPDF" method="fetchPDF"
+			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
+			<interceptor-ref name="homeStack" />		
+    		<result name="success"></result>
+		</action>
+
+	</package>
+
+</struts>

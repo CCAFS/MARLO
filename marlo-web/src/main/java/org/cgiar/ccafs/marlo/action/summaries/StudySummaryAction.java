@@ -15,13 +15,16 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
@@ -46,6 +49,7 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -72,6 +76,9 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private final ProjectExpectedStudyManager projectExpectedStudyManager;
   private final ResourceManager resourceManager;
   private final HTMLParser htmlParser;;
+  private final InstitutionManager institutionManager;
+  private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private GlobalUnitManager crpManager;
   private String crp;
@@ -93,12 +100,17 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   public StudySummaryAction(APConfig config, CaseStudyManager caseStudyManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, ResourceManager resourceManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     HTMLParser htmlParser, ProjectManager projectManager,
-    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager) {
-    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager);
+    ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
+    super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
+      institutionManager, microserviceReportAction, reportConfigurationManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
     this.crpManager = crpManager;
+    this.institutionManager = institutionManager;
+    this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
   }
 
 
@@ -126,64 +138,89 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     }
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    try {
-      Resource reportResource =
-        resourceManager.createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
 
-      crp = this.getLoggedCrp().getAcronym();
-      if (crp == null || crp.isEmpty()) {
-        String[] actionMap = ActionContext.getContext().getName().split("/");
-        if (actionMap.length > 1) {
-          String enteredCrp = actionMap[0];
-          crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+    if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
+      Log.info("specificity false");
+
+      try {
+        Resource reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/StudiesPDF.prpt"), MasterReport.class);
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+
+        crp = this.getLoggedCrp().getAcronym();
+        if (crp == null || crp.isEmpty()) {
+          String[] actionMap = ActionContext.getContext().getName().split("/");
+          if (actionMap.length > 1) {
+            String enteredCrp = actionMap[0];
+            crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();
+          }
+        }
+
+        String center = crp;
+
+        // Get datetime
+        ZonedDateTime timezone = ZonedDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+        String zone = timezone.getOffset() + "";
+        if (zone.equals("Z")) {
+          zone = "+0";
+        }
+        String date = timezone.format(format) + "(GMT" + zone + ")";
+
+
+        // Set Main_Query
+        CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+        String masterQueryName = "main";
+        TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+        TypedTableModel model = this.getMasterTableModel(crp, date, String.valueOf(this.getSelectedYear()));
+        sdf.addTable(masterQueryName, model);
+        masterReport.setDataFactory(cdf);
+        // Set i8n for pentaho
+        masterReport = this.addi8nParameters(masterReport);
+        // Get details band
+        ItemBand masteritemBand = masterReport.getItemBand();
+        // Create new empty subreport hash map
+        HashMap<String, Element> hm = new HashMap<String, Element>();
+        // method to get all the subreports in the prpt and store in the HashMap
+        this.getAllSubreports(hm, masteritemBand);
+        // Uncomment to see which Subreports are detecting the method getAllSubreports
+        // System.out.println("Pentaho SubReports: " + hm);
+
+        this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
+
+        PdfReportUtil.createPDF(masterReport, os);
+        bytesPDF = os.toByteArray();
+        os.close();
+      } catch (Exception e) {
+        LOG.error("Error generating Study Summary: " + e.getMessage());
+        throw e;
+      }
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+        + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    } else {
+      try {
+        Log.info("Generate Json to send to microservice");
+        this.generateAndSendJson(projectExpectedStudyInfos);
+        bytesPDF = os.toByteArray();
+      } catch (Exception e) {
+        if (e.getClass().getName().contains("ClientAbortException")) {
+          LOG.warn("Client aborted the connection: " + e.getMessage());
+        } else {
+          LOG.error("Exception while generating JSON: " + e.getMessage(), e);
+          throw e;
+        }
+      } finally {
+        try {
+          os.close();
+        } catch (Exception e) {
+          LOG.warn("Error closing output stream: " + e.getMessage());
         }
       }
 
-      String center = crp;
-
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
-      }
-      String date = timezone.format(format) + "(GMT" + zone + ")";
-
-
-      // Set Main_Query
-      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-      String masterQueryName = "main";
-      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(crp, date, String.valueOf(this.getSelectedYear()));
-      sdf.addTable(masterQueryName, model);
-      masterReport.setDataFactory(cdf);
-      // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
-      // Get details band
-      ItemBand masteritemBand = masterReport.getItemBand();
-      // Create new empty subreport hash map
-      HashMap<String, Element> hm = new HashMap<String, Element>();
-      // method to get all the subreports in the prpt and store in the HashMap
-      this.getAllSubreports(hm, masteritemBand);
-      // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
-
-      this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
-
-      PdfReportUtil.createPDF(masterReport, os);
-      bytesPDF = os.toByteArray();
-      os.close();
-    } catch (Exception e) {
-      LOG.error("Error generating Study Summary: " + e.getMessage());
-      throw e;
     }
-    // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 

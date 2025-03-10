@@ -64,6 +64,8 @@
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.15.4</jsoup.version>
 		<geoip2.version>2.12.0</geoip2.version>
+		<spring-amqp.version>3.1.8</spring-amqp.version>
+		<amqp-client.version>5.21.0</amqp-client.version>
 		<javax.inject.version>1</javax.inject.version>
 		<tomcat.version>8.0.53</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
@@ -578,6 +580,18 @@
 				<artifactId>geoip2</artifactId>
 				<version>${geoip2.version}</version>
 			</dependency>
+			<!-- Spring AMQP for messaging with RabbitMQ -->
+      <dependency>
+          <groupId>org.springframework.amqp</groupId>
+          <artifactId>spring-amqp</artifactId>
+          <version>${spring-amqp.version}</version>
+      </dependency>
+      <!-- Pika dependency for RabbitMQ -->
+      <dependency>
+          <groupId>com.rabbitmq</groupId>
+          <artifactId>amqp-client</artifactId>
+          <version>${amqp-client.version}</version>
+      </dependency>
 			<!-- throttling library to REST API -->
 			<!-- 			<dependency> -->
 			<!-- 				<groupId>com.weddini.throttling</groupId> -->
