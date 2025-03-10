@@ -27,6 +27,13 @@ var notyDefaultOptions = {
  */
 $(document).ready(function () {
 
+  // Sanitize form inputs before submission
+  $('form').on('submit', function(e) {
+    // Sanitize text inputs and textareas
+    $('input[type="text"], textarea').sanitizeInputs();
+    return true;
+  });
+
   
   showHelpText();
   validatePhase().then(function(isProgress){

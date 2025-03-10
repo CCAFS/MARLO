@@ -42,6 +42,9 @@ function autoSave() {
         },
         beforeSend: function(xhr,opts) {
           console.log("autoSaveActive", autoSaveActive);
+
+          $('input[type="text"], textarea').sanitizeInputs();
+          
           if(autoSaveActive) {
             $draftTag.text('... Saving');
           } else {
