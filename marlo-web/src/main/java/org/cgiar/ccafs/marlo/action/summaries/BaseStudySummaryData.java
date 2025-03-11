@@ -1410,9 +1410,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           final ObjectMapper objectMapper = new ObjectMapper();
           final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-          final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
-          fileWriter.write(jsonOutput);
-          fileWriter.close();
+          try {
+            final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
+            fileWriter.write(jsonOutput);
+            fileWriter.close();
+          } catch (Exception e) {
+            System.out.println("Generated just for local environments");
+          }
 
           System.out.println("send microservice class: " + this.OICRsReportName);
           this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
