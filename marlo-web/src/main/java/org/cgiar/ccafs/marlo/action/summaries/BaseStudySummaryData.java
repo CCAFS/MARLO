@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -228,6 +230,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private final InstitutionManager institutionManager;
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
+  private final LocElementManager locElementManager;
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String bucketName = null;
@@ -235,13 +238,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
-    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.institutionManager = institutionManager;
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
+    this.locElementManager = locElementManager;
   }
 
   /**
@@ -575,11 +580,21 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             } catch (final Exception e) {
               Log.error("Error setting locations " + e);
             }
-            final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
+
+            final String headquarter2 = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .flatMap(locations -> locations.stream()
                 .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
                   && (location.getLocElement().getName() != null))
                 .map(location -> " | headquarter: " + location.getLocElement().getName()).findFirst())
+              .orElse("");
+
+            final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
+              .map(locations -> locations.stream()
+                .filter(location -> location.isHeadquater() && location.getLocElement() != null).map(location -> {
+                  LocElement locElement = locElementManager.getLocElementById(location.getLocElement().getId());
+                  return (locElement != null && locElement.getName() != null)
+                    ? " | headquarter: " + locElement.getName() : "";
+                }).filter(name -> !name.isEmpty()).findFirst().orElse(""))
               .orElse("");
 
             centersSet.add(
@@ -811,8 +826,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           final ObjectMapper objectMapper = new ObjectMapper();
           try {
             String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
-            // Remove unwanted backslashes if they appear
-            quantificationsJson = quantificationsJson.replace("\\", "");
             // Append properly formatted JSON to the existing string
             quantification.append(quantificationsJson);
 
@@ -851,48 +864,19 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Gender
         if (projectExpectedStudyInfo.getGenderLevel() != null) {
           genderRelevance = projectExpectedStudyInfo.getGenderLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getGenderLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getGenderLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeGender() != null)
-            && !projectExpectedStudyInfo.getDescribeGender().isEmpty()) {
-            genderRelevance += "<br>" + this.getText("study.achievementsGenderRelevance.readText") + ": "
-              + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeGender());
-          }
         }
         // Youth
         if (projectExpectedStudyInfo.getYouthLevel() != null) {
           youthRelevance = projectExpectedStudyInfo.getYouthLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getYouthLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getYouthLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeYouth() != null)
-            && !projectExpectedStudyInfo.getDescribeYouth().isEmpty()) {
-            youthRelevance += "<br>" + this.getText("study.achievementsYouthRelevance.readText") + ": "
-              + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeYouth());
-          }
         }
         // Capacity Development
         if (projectExpectedStudyInfo.getCapdevLevel() != null) {
           capacityRelevance = projectExpectedStudyInfo.getCapdevLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getCapdevLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getCapdevLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeCapdev() != null)
-            && !projectExpectedStudyInfo.getDescribeCapdev().isEmpty()) {
-            capacityRelevance += "<br>" + this.getText("study.generalInformation.achievementsCapDevRelevance.readText")
-              + ": " + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeCapdev());
-          }
         }
 
         // Climate change
         if (projectExpectedStudyInfo.getClimateChangeLevel() != null) {
           climateRelevance = projectExpectedStudyInfo.getClimateChangeLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeClimateChange() != null)
-            && !projectExpectedStudyInfo.getDescribeClimateChange().isEmpty()) {
-            climateRelevance +=
-              "<br>" + this.getText("study.generalInformation.achievementsClimateChangeRelevance.readText") + ": "
-                + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeClimateChange());
-          }
         }
 
         if ((projectExpectedStudyInfo.getOtherCrossCuttingSelection() != null)
@@ -1197,9 +1181,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           final ObjectMapper objectMapper = new ObjectMapper();
           try {
             String publicationsJson = objectMapper.writeValueAsString(publicationsList);
-
-            // Remove unwanted backslashes if they appear
-            publicationsJson = publicationsJson.replace("\\", "");
 
             // Append properly formatted JSON to the existing string
             publications.append("").append(publicationsJson);
