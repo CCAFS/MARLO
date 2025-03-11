@@ -98,13 +98,13 @@ public class MicroserviceReportAction extends BaseAction {
           fileReady = true;
           break;
         } else {
-          System.out.println("PDF aún no disponible. Intento " + (attempt + 1) + " de " + maxRetries);
+          System.out.println("PDF not available. Tried " + (attempt + 1) + " of " + maxRetries);
           Thread.sleep(waitTime);
         }
       }
 
       if (!fileReady) {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF no disponible después de múltiples intentos");
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF not available after several attempts");
         return;
       }
 
