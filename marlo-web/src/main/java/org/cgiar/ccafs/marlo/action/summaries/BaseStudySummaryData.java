@@ -391,12 +391,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   }
 
   public String generateAndSendJson(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
-
+    System.out.println("Base summary Data line 394 Generate JsonMethod");
     final URLShortener urlShortener = new URLShortener();
     if ((projectExpectedStudyInfos != null) && !projectExpectedStudyInfos.isEmpty()) {
       projectExpectedStudyInfos
         .sort((p1, p2) -> p1.getProjectExpectedStudy().getId().compareTo(p2.getProjectExpectedStudy().getId()));
+      System.out.println("projectExpectedStudyInfos not null ");
+
       for (final ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfos) {
+        System.out.println("projectExpectedStudyInfos line 401 - for ");
 
         Long id = null;
         Integer year = null;
