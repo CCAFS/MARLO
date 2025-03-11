@@ -1378,12 +1378,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             fileWriter.write(jsonOutput);
             fileWriter.close();
 
-            Log.info("send microservice class: " + this.OICRsReportName);
+            System.out.println("send microservice class: " + this.OICRsReportName);
             this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
 
             return jsonOutput;
           } catch (final IOException e) {
-            Log.error("error generating json " + e);
+            System.out.println("error generating json " + e);
             return "{}";
           }
         }
@@ -2339,7 +2339,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       this.bucketName = this.config.getMicroserviceBucketname();
 
     } catch (final Exception e) {
-      Log.error("error getting report configuration data " + e);
+      System.out.println("error getting report configuration data " + e);
     }
   }
 }

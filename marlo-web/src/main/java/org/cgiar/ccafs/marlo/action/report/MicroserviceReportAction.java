@@ -44,7 +44,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.apache.struts2.ServletActionContext;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +110,7 @@ public class MicroserviceReportAction extends BaseAction {
         response.sendError(responseCode, "Failed to download PDF");
       }
     } catch (Exception e) {
+      System.out.println("Error downloading PDF: " + e);
       throw new RuntimeException("Error downloading PDF: " + e.getMessage(), e);
     }
   }
@@ -118,7 +118,8 @@ public class MicroserviceReportAction extends BaseAction {
   public String fetchPDF() {
     this.loadData();
     try {
-      logger.info("Fetching PDF from File Management: {} in {} bucket S3", OICRsReportName, bucketName);
+      System.out.println("Error downloading PDF: " + "Fetching PDF from File Management: {} in {} bucket S3" + " "
+        + OICRsReportName + " " + bucketName);
 
       URL url = new URL(OICRs_MS_FM_URL + "file-management/validation");
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -143,14 +144,14 @@ public class MicroserviceReportAction extends BaseAction {
             response.append(responseLine.trim());
           }
           String pdfUrl = this.parseResponse(response.toString());
-          logger.info("PDF URL obtained successfully: {}", pdfUrl);
+          System.out.println("PDF URL obtained successfully: {}" + pdfUrl);
           return pdfUrl;
         }
       } else {
         throw new RuntimeException("Failed to fetch PDF, response code: " + responseCode);
       }
     } catch (Exception e) {
-      logger.error("Error fetching PDF: ", e);
+      System.out.println("Error fetching PDF: " + e);
       throw new RuntimeException("Error fetching PDF", e);
     }
   }
@@ -186,7 +187,7 @@ public class MicroserviceReportAction extends BaseAction {
       OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
       s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
-      Log.error("error getting report configuration data " + e);
+      System.out.println("error getting report configuration data " + e);
     }
   }
 
@@ -204,7 +205,7 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public String sendOICRsQueueMessage() {
-    Log.info("microservice sendOICRsQueueMessage");
+    System.out.println("microservice sendOICRsQueueMessage");
     this.loadData(); // Load necessary data before processing
     String url = queueUrl;
     ConnectionFactory factory = new ConnectionFactory();
@@ -257,20 +258,20 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
-          Log.info("s3URL " + s3URL);
+          System.out.println("s3URL " + s3URL);
 
           this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {
-          Log.error("error getting pdf by URL " + e);
+          System.out.println("error getting pdf by URL " + e);
         }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
       KeyManagementException e) {
-      logger.error("Queue connection error: " + e.getMessage());
+      System.out.println("Queue connection error: " + e.getMessage());
       return ERROR;
     } catch (Exception e) {
-      logger.error("Message sending error: " + e.getMessage());
+      System.out.println("Message sending error: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;

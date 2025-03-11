@@ -287,7 +287,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
           .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
       }
     } catch (Exception e) {
-      LOG.info("Error getting project(s) for study: " + projectExpectedStudyID);
+      System.out.println("Error getting project(s) for study: " + projectExpectedStudyID);
     }
     fileName.append("OICR" + projectExpectedStudyID + "-");
     fileName.append(this.getSelectedCycle() + "-");
@@ -339,7 +339,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       projectExpectedStudyID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
-      LOG.info("Error getting project: expected study " + projectExpectedStudyID);
+      System.out.println("Error getting project: expected study " + projectExpectedStudyID);
 
       if (projectExpectedStudyID == null) {
         projectExpectedStudyID = (long) -1;
