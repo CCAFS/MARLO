@@ -1265,7 +1265,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             relatedLever = null;
           }
           contacts = contacts.replace("null", "");
-
+          System.out.println("Generate maps for json");
           /**
            * Generate Json
            */
@@ -1277,103 +1277,122 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           final Map<String, String> headerMap = new HashMap<>();
           final Map<String, String> footerMap = new HashMap<>();
 
-          final String templateData = "<html>Generated Report</html>";
-
-          jsonData.put("id", id);
-          jsonData.put("year", year);
-          jsonData.put("title", title);
-          jsonData.put("commissioningStudy", commissioningStudy);
-          jsonData.put("status", status);
-          jsonData.put("type", type);
-          jsonData.put("outcomeImpactStatement", outcomeImpactStatement);
-          jsonData.put("isContributionText", isContributionText);
-          jsonData.put("stageStudy", stageStudy);
-          jsonData.put("srfTargets", srfTargets);
-          jsonData.put("subIdos", subIdos);
-          jsonData.put("topLevelComments", topLevelComments);
-          jsonData.put("geographicScopes", geographicScopes);
-          jsonData.put("regions", removeLeadingSemicolon(regions));
-          jsonData.put("countries", removeLeadingSemicolon(countries));
-          jsonData.put("scopeComments", scopeComments);
-          jsonData.put("crps", crps);
-          jsonData.put("flagships", flagships);
-          jsonData.put("regionalPrograms", regionalPrograms);
-          jsonData.put("institutions", removeLeadingSemicolon(institutions));
-          jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
-          jsonData.put("referenceText", referenceText);
-          jsonData.put("quantification", quantification);
-          jsonData.put("genderRelevance", genderRelevance);
-          jsonData.put("youthRelevance", youthRelevance);
-          jsonData.put("capacityRelevance", capacityRelevance);
-          jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
-          jsonData.put("communicationsMaterial", communicationsMaterial);
-          jsonData.put("contacts", removeLeadingSemicolon(contacts));
-          jsonData.put("studyProjects", removeLeadingSemicolon(studyProjects));
-          jsonData.put("tagged", tagged);
-          jsonData.put("cgiarInnovation", cgiarInnovation);
-          jsonData.put("cgiarInnovations", cgiarInnovations);
-          jsonData.put("climateRelevance", climateRelevance);
-          jsonData.put("link", link);
-          jsonData.put("links", removeLeadingSemicolon(links));
-          jsonData.put("studyPolicies", studyPolicies);
-          jsonData.put("url", url);
-          jsonData.put("studiesReference", studiesReference);
-          jsonData.put("meliaPublications", meliaPublications);
-          jsonData.put("performanceIndicator", performanceIndicator);
-          jsonData.put("covidAnalysis", covidAnalysis);
-          jsonData.put("centers", removeLeadingSemicolon(centers));
-          jsonData.put("clusterAcronym", clusterAcronym);
-          jsonData.put("allianceOICRID", allianceOICRID);
-          jsonData.put("primaryAllianceLever", removeLeadingSemicolon(primaryAllianceLever));
-          jsonData.put("strategicOutcome", removeLeadingSemicolon(strategicOutcome));
-          jsonData.put("primarySDGcontribution", removeLeadingSemicolon(primarySDGcontribution));
-          jsonData.put("relatedLever", removeLeadingSemicolon(relatedLever));
-          jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
-          jsonData.put("hasCgiarContribution", hasCGIARContribution);
-          jsonData.put("impactArea", impactArea);
-          jsonData.put("publications", publications);
-          jsonData.put("tagAs", tagAs);
-          jsonData.put("clusterName", clusterName);
-          jsonData.put("leadPerson", leadPerson);
-          jsonData.put("isAllianceContribution", isAllianceContribution);
-          jsonData.put("ïmpactAreaCode", impactAreaCode);
-          jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
-          jsonData.put("timeCreation", this.getCurrentDate());
+          System.out.println("Put info in maps");
+          try {
+            jsonData.put("id", id);
+            jsonData.put("year", year);
+            jsonData.put("title", title);
+            jsonData.put("commissioningStudy", commissioningStudy);
+            jsonData.put("status", status);
+            jsonData.put("type", type);
+            jsonData.put("outcomeImpactStatement", outcomeImpactStatement);
+            jsonData.put("isContributionText", isContributionText);
+            jsonData.put("stageStudy", stageStudy);
+            jsonData.put("srfTargets", srfTargets);
+            jsonData.put("subIdos", subIdos);
+            jsonData.put("topLevelComments", topLevelComments);
+            jsonData.put("geographicScopes", geographicScopes);
+            jsonData.put("regions", removeLeadingSemicolon(regions));
+            jsonData.put("countries", removeLeadingSemicolon(countries));
+            jsonData.put("scopeComments", scopeComments);
+            jsonData.put("crps", crps);
+            jsonData.put("flagships", flagships);
+            jsonData.put("regionalPrograms", regionalPrograms);
+            jsonData.put("institutions", removeLeadingSemicolon(institutions));
+            jsonData.put("elaborationOutcomeImpactStatement", elaborationOutcomeImpactStatement);
+            jsonData.put("referenceText", referenceText);
+            jsonData.put("quantification", quantification);
+            jsonData.put("genderRelevance", genderRelevance);
+            jsonData.put("youthRelevance", youthRelevance);
+            jsonData.put("capacityRelevance", capacityRelevance);
+            jsonData.put("otherCrossCuttingDimensions", otherCrossCuttingDimensions);
+            jsonData.put("communicationsMaterial", communicationsMaterial);
+            jsonData.put("contacts", removeLeadingSemicolon(contacts));
+            jsonData.put("studyProjects", removeLeadingSemicolon(studyProjects));
+            jsonData.put("tagged", tagged);
+            jsonData.put("cgiarInnovation", cgiarInnovation);
+            jsonData.put("cgiarInnovations", cgiarInnovations);
+            jsonData.put("climateRelevance", climateRelevance);
+            jsonData.put("link", link);
+            jsonData.put("links", removeLeadingSemicolon(links));
+            jsonData.put("studyPolicies", studyPolicies);
+            jsonData.put("url", url);
+            jsonData.put("studiesReference", studiesReference);
+            jsonData.put("meliaPublications", meliaPublications);
+            jsonData.put("performanceIndicator", performanceIndicator);
+            jsonData.put("covidAnalysis", covidAnalysis);
+            jsonData.put("centers", removeLeadingSemicolon(centers));
+            jsonData.put("clusterAcronym", clusterAcronym);
+            jsonData.put("allianceOICRID", allianceOICRID);
+            jsonData.put("primaryAllianceLever", removeLeadingSemicolon(primaryAllianceLever));
+            jsonData.put("strategicOutcome", removeLeadingSemicolon(strategicOutcome));
+            jsonData.put("primarySDGcontribution", removeLeadingSemicolon(primarySDGcontribution));
+            jsonData.put("relatedLever", removeLeadingSemicolon(relatedLever));
+            jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
+            jsonData.put("hasCgiarContribution", hasCGIARContribution);
+            jsonData.put("impactArea", impactArea);
+            jsonData.put("publications", publications);
+            jsonData.put("tagAs", tagAs);
+            jsonData.put("clusterName", clusterName);
+            jsonData.put("leadPerson", leadPerson);
+            jsonData.put("isAllianceContribution", isAllianceContribution);
+            jsonData.put("ïmpactAreaCode", impactAreaCode);
+            jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
+            jsonData.put("timeCreation", this.getCurrentDate());
+          } catch (Exception e) {
+            System.out.println("error setting jsonData " + e);
+          }
 
           headerMap.put("height", "40mm");
           footerMap.put("height", "30mm");
+          try {
+            jsonOptions.put("format", "A3");
+            jsonOptions.put("orientation", "portrait");
+            jsonOptions.put("border", "0");
+            jsonOptions.put("zoomFactor", 1);
+            jsonOptions.put("header", headerMap);
+            jsonOptions.put("footer", footerMap);
+            jsonOptions.put("timeout", "300000");
+          } catch (Exception e) {
+            System.out.println("error setting jsonOptions " + e);
+          }
 
-          jsonOptions.put("format", "A3");
-          jsonOptions.put("orientation", "portrait");
-          jsonOptions.put("border", "0");
-          jsonOptions.put("zoomFactor", 1);
-          jsonOptions.put("header", headerMap);
-          jsonOptions.put("footer", footerMap);
-          jsonOptions.put("timeout", "300000");
-
-          jsonRoot.put("data", jsonData);
-          jsonRoot.put("options", jsonOptions);
+          try {
+            jsonRoot.put("data", jsonData);
+            jsonRoot.put("options", jsonOptions);
+          } catch (Exception e) {
+            System.out.println("Error setting jsonRoot info " + e);
+          }
           this.loadData();
 
-          this.OICRsReportName =
-            "AICCRA-OICR" + projectExpectedStudy.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+          try {
+            this.OICRsReportName =
+              "AICCRA-OICR" + projectExpectedStudy.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
 
-          jsonRoot.put("templateData", this.OICRsTemplateData);
-          jsonRoot.put("fileName", this.OICRsReportName);
-          jsonRoot.put("bucketName", this.bucketName);
+            jsonRoot.put("templateData", this.OICRsTemplateData);
+            jsonRoot.put("fileName", this.OICRsReportName);
+            jsonRoot.put("bucketName", this.bucketName);
+          } catch (Exception e) {
+            System.out.println("Error setting other json root information");
+          }
 
           String username = null, password = null;
           try {
             username = this.config.getMicroserviceUsername();
             password = this.config.getMicroservicePassword();
           } catch (final Exception e) {
-            Log.error("error getting conf credentials " + e);
+            System.out.println("error getting conf credentials " + e);
           }
-          final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-          jsonRoot.put("credentials", credentialsJson);
 
-          jsonMainRoot.put("data", jsonRoot);
-          jsonMainRoot.put("pattern", "pdf.generate");
+          try {
+            final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+            jsonRoot.put("credentials", credentialsJson);
+
+            jsonMainRoot.put("data", jsonRoot);
+            jsonMainRoot.put("pattern", "pdf.generate");
+          } catch (Exception e) {
+            System.out.println("Error setting jsonRoot and jsonMainRoot information " + e);
+          }
 
           try {
             final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
@@ -2328,6 +2347,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
 
   public void loadData() {
+    System.out.println("load configuration data");
     try {
       List<ReportConfiguration> reportConfigurations = new ArrayList<>();
       reportConfigurations = reportConfigurationManager.findAll();
