@@ -700,22 +700,54 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           cgiarInnovation = projectExpectedStudyInfo.getCgiarInnovation();
         }
         // Innovations
-        final List<ProjectExpectedStudyInnovation> studyInnovationList =
+        /*
+         * final List<ProjectExpectedStudyInnovation> studyInnovationList =
+         * projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+         * .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
+         * .collect(Collectors.toList());
+         * final Set<String> innovationSet = new HashSet<>();
+         * if ((studyInnovationList != null) && !studyInnovationList.isEmpty()) {
+         * for (final ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
+         * studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
+         * final String composedName = studyInnovation.getProjectInnovation().getComposedName();
+         * if ((composedName != null) && !composedName.isEmpty()) {
+         * innovationSet.add(composedName);
+         * }
+         * }
+         * cgiarInnovations = String.join(", ", innovationSet);
+         * }
+         */
+        // Innovations
+        List<ProjectExpectedStudyInnovation> studyInnovationList =
           projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
             .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
             .collect(Collectors.toList());
-        final Set<String> innovationSet = new HashSet<>();
-        if ((studyInnovationList != null) && !studyInnovationList.isEmpty()) {
-          for (final ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
-            studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
-            final String composedName = studyInnovation.getProjectInnovation().getComposedName();
-            if ((composedName != null) && !composedName.isEmpty()) {
-              innovationSet.add(composedName);
-            }
-          }
-          cgiarInnovations = String.join(", ", innovationSet);
 
+        List<Map<String, String>> innovationList = new ArrayList<>();
+
+        for (ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
+          studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
+          String composedName = studyInnovation.getProjectInnovation().getComposedName();
+          String code = studyInnovation.getProjectInnovation().getId() + "";
+          String pdf = "Comming soon";
+
+          if (composedName != null && !composedName.isEmpty()) {
+            Map<String, String> innovation = new HashMap<>();
+            innovation.put("code", code);
+            innovation.put("title", composedName);
+            innovation.put("pdf", pdf);
+            innovationList.add(innovation);
+          }
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+          cgiarInnovations = objectMapper.writeValueAsString(innovationList);
+        } catch (JsonProcessingException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
         // Elaboration of Outcome/Impact Statement
         if ((projectExpectedStudyInfo.getElaborationOutcomeImpactStatement() != null)
           && !projectExpectedStudyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
@@ -743,7 +775,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             for (final ProjectExpectedStudyReference reference : projectExpectedStudy.getReferences()) {
               if ((reference != null) && ((reference.getReference() != null) || (reference.getLink() != null))) {
                 final Map<String, Object> referenceMap = new LinkedHashMap<>(); // Maintain insertion order
-                referenceMap.put("code", count);
+                String countString = count + "";
+                referenceMap.put("code", countString);
                 referenceMap.put("title", reference.getReference());
                 referenceMap.put("link", reference.getLink());
                 referenceMap.put("externalAuthor", reference.getExternalAuthor());
@@ -754,7 +787,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
 
             // Convert the list to a JSON string
-            final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper = new ObjectMapper();
             try {
               studiesReference = objectMapper.writeValueAsString(referenceList);
             } catch (final JsonProcessingException e) {
@@ -826,7 +859,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
           // Convert list to JSON
-          final ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper = new ObjectMapper();
           try {
             String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
             // Append properly formatted JSON to the existing string
@@ -906,26 +939,32 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Expected Study Project Outcome list
         if ((projectExpectedStudyInfo.getProjectExpectedStudy() != null)
           && (projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes() != null)) {
-          projectExpectedStudyInfo.getProjectExpectedStudy().setCrpOutcomes(
-            new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes()
-              .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          projectExpectedStudyInfo.getProjectExpectedStudy()
+            .setCrpOutcomes(new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy()
+              .getProjectExpectedStudyCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
         }
 
-        if (projectExpectedStudyInfo.getProjectExpectedStudy().getCrpOutcomes() != null) {
-          for (final ProjectExpectedStudyCrpOutcome outcome : projectExpectedStudyInfo.getProjectExpectedStudy()
-            .getCrpOutcomes()) {
-            if ((outcome != null) && (outcome.getCrpOutcome() != null)
-              && (outcome.getCrpOutcome().getDescription() != null)) {
+        try {
+          List<String> crpOutcomeList = new ArrayList<>();
 
-              if (performanceIndicator == null) {
-                performanceIndicator = outcome.getCrpOutcome().getDescription();
-              } else {
-                performanceIndicator += "; " + outcome.getCrpOutcome().getDescription();
+          if (projectExpectedStudyInfo.getProjectExpectedStudy().getCrpOutcomes() != null) {
+            for (ProjectExpectedStudyCrpOutcome outcome : projectExpectedStudyInfo.getProjectExpectedStudy()
+              .getCrpOutcomes()) {
+              if (outcome != null && outcome.getCrpOutcome() != null
+                && outcome.getCrpOutcome().getDescription() != null) {
+                crpOutcomeList.add(outcome.getCrpOutcome().getDescription());
               }
             }
           }
 
+          objectMapper = new ObjectMapper();
+          performanceIndicator = objectMapper.writeValueAsString(crpOutcomeList);
+        } catch (Exception e) {
+          System.out.println("Error getting performance indicators: " + e.getMessage());
         }
+
+
         /*
          * Generate link url from parameters
          */
@@ -1181,7 +1220,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
           // Convert list to JSON
-          final ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper = new ObjectMapper();
           try {
             String publicationsJson = objectMapper.writeValueAsString(publicationsList);
 
@@ -1408,7 +1447,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
 
         try {
-          final ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper = new ObjectMapper();
           final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
           try {
             final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));

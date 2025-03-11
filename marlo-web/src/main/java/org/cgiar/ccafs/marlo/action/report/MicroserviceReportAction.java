@@ -82,16 +82,38 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public void downloadPDFByURL(String reportName, String reportURL) {
-    String pdfUrl = reportURL + "" + reportName;
+    String pdfUrl = reportURL + reportName;
     HttpServletResponse response = ServletActionContext.getResponse();
+    int maxRetries = 5;
+    int waitTime = 2000;
 
     try {
+      boolean fileReady = false;
+      for (int attempt = 0; attempt < maxRetries; attempt++) {
+        URL url = new URL(pdfUrl);
+        HttpURLConnection checkConnection = (HttpURLConnection) url.openConnection();
+        checkConnection.setRequestMethod("HEAD");
+
+        if (checkConnection.getResponseCode() == 200) {
+          fileReady = true;
+          break;
+        } else {
+          System.out.println("PDF aún no disponible. Intento " + (attempt + 1) + " de " + maxRetries);
+          Thread.sleep(waitTime);
+        }
+      }
+
+      if (!fileReady) {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF no disponible después de múltiples intentos");
+        return;
+      }
+
+      // Descargar el archivo
       URL url = new URL(pdfUrl);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");
 
-      int responseCode = connection.getResponseCode();
-      if (responseCode == 200) { // OK
+      if (connection.getResponseCode() == 200) {
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=\"" + reportName + "\"");
 
@@ -107,7 +129,7 @@ public class MicroserviceReportAction extends BaseAction {
           outputStream.flush();
         }
       } else {
-        response.sendError(responseCode, "Failed to download PDF");
+        response.sendError(connection.getResponseCode(), "Failed to download PDF");
       }
     } catch (Exception e) {
       System.out.println("Error downloading PDF: " + e);
@@ -211,6 +233,7 @@ public class MicroserviceReportAction extends BaseAction {
     ConnectionFactory factory = new ConnectionFactory();
     try {
       factory.setUri(url); // Set the connection URI
+      factory.setConnectionTimeout(60000);
       ObjectMapper objectMapper = new ObjectMapper();
 
       Map<String, Object> data;
