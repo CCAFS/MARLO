@@ -1035,11 +1035,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     + "\", \"strategicOutcome\": \"" + strategicOutcomeText + "\" }";
 
                   if ((primaryAllianceLever == null) || primaryAllianceLever.isEmpty()) {
-                    primaryAllianceLever = "[" + leverJson;
+                    primaryAllianceLever = leverJson;
                   } else if (!primaryAllianceLever.contains(name)) {
                     primaryAllianceLever += ", " + leverJson;
                   }
-
                 }
 
                 // Strategic outcome
@@ -1051,7 +1050,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   strategicOutcome = strategicOutcome.replace("null", "");
                 }
               }
-              primaryAllianceLever += "]";
 
             }
           }
