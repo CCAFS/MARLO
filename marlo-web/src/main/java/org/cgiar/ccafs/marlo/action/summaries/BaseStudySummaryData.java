@@ -68,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -416,7 +417,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           centers = null, clusterAcronym = null, clusterName = null, leadPerson = null, isAllianceContribution = null,
           allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null, primarySDGcontribution = null,
           relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null,
-          tagAs = null, globalTargets = null, impactAreaCode = null, reasonNotCgiarContribution = null;
+          tagAs = null, globalTargets = null, impactAreaCode = null, reasonNotCgiarContribution = null,
+          otherCrossCuttingSelection = null;
 
         Boolean isRegional = false, isNational = false;
         final ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyInfo.getProjectExpectedStudy();
@@ -584,13 +586,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               System.out.println("Error setting locations " + e);
             }
 
-            final String headquarter2 = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
-              .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
-                  && (location.getLocElement().getName() != null))
-                .map(location -> " | headquarter: " + location.getLocElement().getName()).findFirst())
-              .orElse("");
-
             final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .map(locations -> locations.stream()
                 .filter(location -> location.isHeadquater() && location.getLocElement() != null).map(location -> {
@@ -604,6 +599,29 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               "; " + projectExpectedStudyCenter.getInstitution().getComposedName() + institutionType + headquarter);
           }
           centers = String.join("", centersSet);
+        }
+
+        // Expected Study Center List
+        projectExpectedStudy.setCenters(new ArrayList<>());
+        if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null) {
+          final List<ProjectExpectedStudyPartnership> deList =
+            projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
+              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                && dp.getProjectExpectedStudyPartnerType().getId()
+                  .equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
+              .collect(Collectors.toList());
+          if ((deList != null) && !deList.isEmpty()) {
+            try {
+              Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
+            } catch (final Exception e) {
+              System.out.println("unable to sort dlist" + e);
+            }
+            projectExpectedStudy.setCenters(new ArrayList<>());
+            for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
+              projectExpectedStudy.getCenters().add(projectExpectedStudyPartnership);
+            }
+
+          }
         }
 
         // Geographic Scope comment
@@ -674,12 +692,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             final String institutionType =
               Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::getName).orElse(null);
 
-            final String headquarter = Optional.ofNullable(institution.getLocations())
-              .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
-                  && (location.getLocElement().getComposedName() != null))
-                .map(location -> location.getLocElement().getComposedName()).findFirst())
-              .orElse(null);
+            institution.setLocations(
+              institution.getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+            final String headquarter =
+              Optional.ofNullable(institution.getLocations()).map(locations -> locations.stream()
+                .filter(location -> location.isHeadquater() && location.getLocElement() != null).map(location -> {
+                  LocElement locElement = locElementManager.getLocElementById(location.getLocElement().getId());
+                  return (locElement != null && locElement.getName() != null) ? locElement.getName() : "";
+                }).filter(name -> !name.isEmpty()).findFirst().orElse("")).orElse("");
 
             return new InstitutionDTO(institution.getComposedName(), institutionType, headquarter);
           }).filter(Objects::nonNull).collect(Collectors.toList());
@@ -747,6 +768,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           // TODO Auto-generated catch block
           e.printStackTrace();
         }
+
+        // otherCrossCuttingSelection
+        otherCrossCuttingSelection = projectExpectedStudyInfo.getOtherCrossCuttingSelection();
 
         // Elaboration of Outcome/Impact Statement
         if ((projectExpectedStudyInfo.getElaborationOutcomeImpactStatement() != null)
@@ -980,17 +1004,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
             .collect(Collectors.toList());
         final Set<String> studyProjectSet = new HashSet<>();
-        /*
-         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
-         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym() != null) {
-         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
-         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym());
-         * } else {
-         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C"
-         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
-         * }
-         * }
-         */
+
 
         /**
          * Alliance Tab
@@ -1179,22 +1193,22 @@ public class BaseStudySummaryData extends BaseSummariesAction {
          */
 
         // Links
-        final List<ProjectExpectedStudyLink> linksList =
-          projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
-            .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
-            .collect(Collectors.toList());
-        final Set<String> linkSet = new HashSet<>();
-        if ((linksList != null) && !linksList.isEmpty()) {
-          linksList.sort((l1, l2) -> l1.getId().compareTo(l2.getId()));
-          for (final ProjectExpectedStudyLink projectExpectedStudyLink : linksList) {
-            if (!projectExpectedStudyLink.getLink().isEmpty() && (projectExpectedStudyLink.getLink() != null)) {
-              /*
-               * Get short url calling tinyURL service
-               */
-              linkSet.add("" + urlShortener.getShortUrlService(projectExpectedStudyLink.getLink()));
-            }
-          }
-          links = "[" + String.join("", linkSet) + "],";
+        try {
+          List<ProjectExpectedStudyLink> linksList =
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
+              .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase))
+              .sorted(Comparator.comparing(ProjectExpectedStudyLink::getId)).collect(Collectors.toList());
+
+          List<String> shortLinks =
+            linksList.stream().map(linkV -> linkV.getLink()).filter(linkV -> linkV != null && !linkV.isEmpty())
+              .map(urlShortener::getShortUrlService).distinct().collect(Collectors.toList());
+
+          objectMapper = new ObjectMapper();
+          objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+          links = objectMapper.writeValueAsString(shortLinks);
+
+        } catch (Exception e) {
+          System.out.println("Error processing links: " + e.getMessage());
         }
 
         // Expected Study Publications List
@@ -1292,23 +1306,27 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Shared clusters
         try {
-          if ((studyProjectList != null) && !studyProjectList.isEmpty()) {
+          List<String> studyProjectListJson = new ArrayList<>();
+
+          if (studyProjectList != null && !studyProjectList.isEmpty()) {
             for (final ExpectedStudyProject studyProject : studyProjectList) {
               if (studyProject.getProject().getAcronym() != null) {
-                if ((studyProjectSet != null)
-                  && !studyProjectSet.contains("; " + studyProject.getProject().getAcronym())) {
-                  studyProjectSet.add("; " + studyProject.getProject().getAcronym());
+                if (!studyProjectSet.contains(studyProject.getProject().getAcronym())) {
+                  studyProjectSet.add(studyProject.getProject().getAcronym());
+                  studyProjectListJson.add(studyProject.getProject().getAcronym());
                 }
               } else {
-                if ((studyProjectSet != null) && !studyProjectSet.contains("; C" + studyProject.getProject().getId())) {
-                  studyProjectSet.add("; C" + studyProject.getProject().getId());
+                String projectId = "C" + studyProject.getProject().getId();
+                if (!studyProjectSet.contains(projectId)) {
+                  studyProjectSet.add(projectId);
+                  studyProjectListJson.add(projectId);
                 }
               }
             }
           }
-          if ((studyProjectSet != null) && !studyProjectSet.isEmpty()) {
-            studyProjects = String.join("", studyProjectSet);
-          }
+
+          objectMapper = new ObjectMapper();
+          studyProjects = objectMapper.writeValueAsString(studyProjectListJson);
         } catch (Exception e) {
           System.out.println("Error in study projects " + e);
         }
@@ -1366,7 +1384,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("cgiarInnovations", cgiarInnovations);
           jsonData.put("climateRelevance", climateRelevance);
           jsonData.put("link", link);
-          jsonData.put("links", removeLeadingSemicolon(links));
+          jsonData.put("links", links);
           jsonData.put("studyPolicies", studyPolicies);
           jsonData.put("url", url);
           jsonData.put("studiesReference", studiesReference);
@@ -1388,8 +1406,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("clusterName", clusterName);
           jsonData.put("leadPerson", leadPerson);
           jsonData.put("isAllianceContribution", isAllianceContribution);
-          jsonData.put("ïmpactAreaCode", impactAreaCode);
+          jsonData.put("impactAreaCode", impactAreaCode);
           jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
+          jsonData.put("otherCrossCuttingSelection", otherCrossCuttingSelection);
           jsonData.put("timeCreation", this.getCurrentDate());
         } catch (Exception e) {
           System.out.println("error setting jsonData " + e);
