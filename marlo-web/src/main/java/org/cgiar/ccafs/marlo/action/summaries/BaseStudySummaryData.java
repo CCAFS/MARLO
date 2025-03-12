@@ -391,15 +391,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   }
 
   public String generateAndSendJson(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
-    System.out.println("Base summary Data line 394 Generate JsonMethod");
     final URLShortener urlShortener = new URLShortener();
     if ((projectExpectedStudyInfos != null) && !projectExpectedStudyInfos.isEmpty()) {
       projectExpectedStudyInfos
         .sort((p1, p2) -> p1.getProjectExpectedStudy().getId().compareTo(p2.getProjectExpectedStudy().getId()));
-      System.out.println("projectExpectedStudyInfos not null ");
 
       for (final ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfos) {
-        System.out.println("projectExpectedStudyInfos line 401 - for ");
 
         Long id = null;
         Integer year = null;
@@ -814,6 +811,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           && !projectExpectedStudyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
           elaborationOutcomeImpactStatement =
             this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
+          elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement.replace("<br>", " ");
         }
 
 
@@ -1196,10 +1194,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               for (final ProjectExpectedStudyGlobalTarget target : filteredGlobalTargets) {
                 if ((target.getGlobalTarget() != null) && (target.getGlobalTarget().getName() != null)
                   && (target.getGlobalTarget().getDescription() != null)) {
-                  globalTargets +=
-                    "; " + target.getGlobalTarget().getName() + ": " + target.getGlobalTarget().getDescription();
-                  final String formattedTarget =
-                    "; " + target.getGlobalTarget().getName() + ": " + target.getGlobalTarget().getDescription();
+                  globalTargets += "; " + target.getGlobalTarget().getName();
+                  final String formattedTarget = "; " + target.getGlobalTarget().getName();
 
                   if (!uniqueTargets.contains(formattedTarget)) {
                     uniqueTargets.add(formattedTarget);
@@ -1209,6 +1205,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
             }
           }
+          globalTargets = globalTargets.replace("null", "");
 
         } catch (final NullPointerException e) {
           Log.error("NullPointerException while getting Impact Areas", e);
@@ -1375,7 +1372,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         final Map<String, String> headerMap = new HashMap<>();
         final Map<String, String> footerMap = new HashMap<>();
 
-        System.out.println("Put info in maps");
         try {
           jsonData.put("id", id);
           jsonData.put("year", year);
@@ -1429,6 +1425,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
           jsonData.put("hasCgiarContribution", hasCGIARContribution);
           jsonData.put("impactArea", impactArea);
+          jsonData.put("globalTargets", globalTargets);
           jsonData.put("publications", publications);
           jsonData.put("tagAs", tagAs);
           jsonData.put("clusterName", clusterName);
@@ -1751,6 +1748,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
                 .map(InstitutionType::getName).map(name -> " | Type: " + name).orElse("");
             try {
+              projectExpectedStudyCenter.getInstitution().setLocations(projectExpectedStudyCenter.getInstitution()
+                .getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
               projectExpectedStudyCenter.getInstitution().getLocations()
                 .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
                   .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
