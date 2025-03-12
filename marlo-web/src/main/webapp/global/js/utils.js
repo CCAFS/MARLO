@@ -459,6 +459,19 @@ jQuery.fn.clearOptions = function(arrIds) {
   }
 };
 
+jQuery.fn.sanitizeInputs = function() {
+  return this.each(function() {
+    var $input = $(this);
+    var text = $input.val();
+    if (text) {
+      var sanitized = text.normalize("NFKD")
+                          .replace(/[\u{1D400}-\u{1D7FF}]/gu, "")
+                          .replace(/[^\u0000-\uFFFF]/g, "");
+      $input.val(sanitized);
+    }
+  });
+};
+
 function strip(html) {
   var tmp = document.createElement("DIV");
   tmp.innerHTML = html;

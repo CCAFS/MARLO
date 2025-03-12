@@ -1196,13 +1196,14 @@
       
         [#local isChecked = false]
 
-        [#if element?has_content && element[fieldName]?has_content && element[fieldName].id?has_content]
-          [#if isRadioButton]
+        [#if element?has_content && element[fieldName]?has_content ]
+
+          [#if isRadioButton && element[fieldName].id?has_content]
             [#if element[fieldName].id == radioItem.id]
               [#local isChecked = true /]
             [/#if]
           [#else]
-            [#list element[fieldName] as radioItemChecked]              
+            [#list element[fieldName] as radioItemChecked]
               [#if radioItemChecked.id == radioItem.id]
                 [#local isChecked = true /]
                 [#break /]
