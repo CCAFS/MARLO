@@ -1160,7 +1160,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Impact Area
         try {
-          final StringBuilder impactAreaBuilder = new StringBuilder();
           final StringBuilder globalTargetsBuilder = new StringBuilder();
 
           // Filter Impact Areas
@@ -1176,6 +1175,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             if ((filteredImpactAreas != null) && !filteredImpactAreas.isEmpty()) {
               final ImpactArea impactAreaTemp = filteredImpactAreas.get(0).getImpactArea();
               if ((impactAreaTemp != null) && (impactAreaTemp.getId() != null)) {
+                impactArea = impactAreaTemp.getName();
                 impactAreaCode = String.valueOf(impactAreaTemp.getId());
               }
             }
@@ -1191,7 +1191,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setGlobalTargets(filteredGlobalTargets);
 
             if (!filteredGlobalTargets.isEmpty()) {
-              // globalTargetsBuilder.append("<br><br>Global Targets:&nbsp;&nbsp;&nbsp;&nbsp;");
               final Set<String> uniqueTargets = new HashSet<>();
 
               for (final ProjectExpectedStudyGlobalTarget target : filteredGlobalTargets) {
@@ -1210,12 +1209,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
             }
           }
-
-          final String impactAreaResult = impactAreaBuilder.toString().trim();
-          final String globalTargetsResult = globalTargetsBuilder.toString().trim();
-
-          impactArea = (impactAreaResult.isEmpty() ? "" : impactAreaResult);
-          // + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
 
         } catch (final NullPointerException e) {
           Log.error("NullPointerException while getting Impact Areas", e);
