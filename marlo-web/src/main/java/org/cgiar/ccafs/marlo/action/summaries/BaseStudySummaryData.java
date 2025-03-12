@@ -80,6 +80,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -390,6 +392,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     }
   }
 
+  private String extractCodeFromName(String name) {
+    Pattern pattern = Pattern.compile("\\d+");
+    Matcher matcher = pattern.matcher(name);
+    return matcher.find() ? matcher.group() : "N/A";
+  }
+
   public String generateAndSendJson(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
     final URLShortener urlShortener = new URLShortener();
     if ((projectExpectedStudyInfos != null) && !projectExpectedStudyInfos.isEmpty()) {
@@ -475,9 +483,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName() + " - "
             + projectExpectedStudyInfo.getRepIndStageStudy().getDescription();
         }
-
-        // IsAllianceContribution
-
 
         // SubIdos
         final List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos()
@@ -811,7 +816,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           && !projectExpectedStudyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
           elaborationOutcomeImpactStatement =
             this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getElaborationOutcomeImpactStatement());
-          elaborationOutcomeImpactStatement = elaborationOutcomeImpactStatement.replace("<br>", " ");
         }
 
 
@@ -1046,104 +1050,114 @@ public class BaseStudySummaryData extends BaseSummariesAction {
          */
         try {
           if (projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
-            projectExpectedStudy.setAllianceLeversOutcomes(
-              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+
+            List<ProjectExpectedStudyAllianceLeversOutcome> allianceLeversList =
+              projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
                 .filter(
-                  o -> (o != null) && o.isActive() && (o.getId() != null) && o.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList())));
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if ((projectExpectedStudy.getAllianceLeversOutcomes() != null)
-              && !projectExpectedStudy.getAllianceLeversOutcomes().isEmpty()) {
-              for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : projectExpectedStudy
-                .getAllianceLeversOutcomes()) {
+            projectExpectedStudy.setAllianceLeversOutcomes(allianceLeversList);
 
-                // Primary alliance lever
-                if ((allianceLeverOutcome.getAllianceLever() != null)
-                  && (allianceLeverOutcome.getAllianceLever().getName() != null)
-                  && (allianceLeverOutcome.getAllianceLever().getDescription() != null)) {
+            if (!allianceLeversList.isEmpty()) {
+              List<Map<String, Object>> primaryLeverList = new ArrayList<>();
 
-                  final String name = allianceLeverOutcome.getAllianceLever().getName();
-                  final String description = allianceLeverOutcome.getAllianceLever().getDescription();
-                  final String strategicOutcomeText = null;
+              for (ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : allianceLeversList) {
+                if (allianceLeverOutcome.getAllianceLever() != null) {
+                  String name = allianceLeverOutcome.getAllianceLever().getName();
+                  String description = allianceLeverOutcome.getAllianceLever().getDescription();
 
-                  final String leverJson = "{ \"name\": \"" + name + "\", \"description\": \"" + description
-                    + "\", \"strategicOutcome\": \"" + strategicOutcomeText + "\" }";
+                  if (name != null && description != null) {
+                    Map<String, Object> leverMap = new HashMap<>();
+                    leverMap.put("name", name);
+                    leverMap.put("code", this.extractCodeFromName(name));
+                    leverMap.put("description", description);
 
-                  if ((primaryAllianceLever == null) || primaryAllianceLever.isEmpty()) {
-                    primaryAllianceLever = leverJson;
-                  } else if (!primaryAllianceLever.contains(name)) {
-                    primaryAllianceLever += ", " + leverJson;
+                    List<String> strategicOutcomes = allianceLeversList.stream()
+                      .filter(o -> o.getAllianceLever() != null && o.getAllianceLever().getName().equals(name))
+                      .map(o -> o.getAllianceLeverOutcome().getDescription())
+                      .filter(outcomeDescription -> outcomeDescription != null).distinct().collect(Collectors.toList());
+
+                    leverMap.put("strategicOutcome", strategicOutcomes);
+                    primaryLeverList.add(leverMap);
                   }
-                }
-
-                // Strategic outcome
-                if ((allianceLeverOutcome.getAllianceLeverOutcome() != null)
-                  && (allianceLeverOutcome.getAllianceLeverOutcome().getName() != null)
-                  && (allianceLeverOutcome.getAllianceLeverOutcome().getDescription() != null)) {
-                  strategicOutcome += "; " + allianceLeverOutcome.getAllianceLeverOutcome().getName() + ": "
-                    + allianceLeverOutcome.getAllianceLeverOutcome().getDescription();
-                  strategicOutcome = strategicOutcome.replace("null", "");
                 }
               }
 
+              objectMapper = new ObjectMapper();
+              objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+              primaryAllianceLever = objectMapper.writeValueAsString(primaryLeverList);
             }
           }
 
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
             projectExpectedStudy.setSdgAllianceLevers(null);
           }
-        } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+
+        } catch (Exception e) {
+          Logger log = LoggerFactory.getLogger(this.getClass());
+          log.error("Error processing primary alliance levers and strategic outcomes: ", e);
         }
 
         // Primary SDG contribution
         try {
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
-            projectExpectedStudy.setSdgAllianceLevers(
-              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
+            // Filtrar SDG Alliance Levers activos
+            List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLeversList =
+              projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
                 .filter(
-                  o -> (o != null) && o.isActive() && (o.getId() != null) && o.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList())));
-            if ((projectExpectedStudy.getSdgAllianceLevers() != null)
-              && !projectExpectedStudy.getSdgAllianceLevers().isEmpty()) {
-              for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : projectExpectedStudy
-                .getSdgAllianceLevers()) {
-                if ((sdgAllianceLever != null) && (sdgAllianceLever.getsDGContribution() != null)
-                  && (sdgAllianceLever.getsDGContribution() != null)
-                  && (sdgAllianceLever.getsDGContribution().getName() != null)) {
-                  String allianceLeverTemp = "";
-                  if ((sdgAllianceLever.getAllianceLever() != null)
-                    && (sdgAllianceLever.getAllianceLever().getName() != null)
-                    && (sdgAllianceLever.getAllianceLever().getDescription() != null)) {
-                    allianceLeverTemp = " (" + sdgAllianceLever.getAllianceLever().getName() + ") ";;
-                  }
-                  if (sdgAllianceLever.getIsPrimary()) {
-                    primarySDGcontribution +=
-                      "; " + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
-                    primarySDGcontribution = primarySDGcontribution.replace("null", "");
-                  } else {
-                    relatedSDGContribution += "" + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
-                    relatedSDGContribution = relatedSDGContribution.replace("null", "");
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-                    // Related levers
-                    if ((sdgAllianceLever.getAllianceLever() != null)
-                      && (sdgAllianceLever.getAllianceLever().getName() != null)
-                      && (sdgAllianceLever.getAllianceLever().getDescription() != null)
-                      && !relatedLever.contains(sdgAllianceLever.getAllianceLever().getName())) {
-                      relatedLever += "" + sdgAllianceLever.getAllianceLever().getName() + ": "
+            projectExpectedStudy.setSdgAllianceLevers(sdgAllianceLeversList);
+
+            if (!sdgAllianceLeversList.isEmpty()) {
+              List<String> primarySDGList = new ArrayList<>();
+              List<String> relatedSDGList = new ArrayList<>();
+              List<String> relatedLeverList = new ArrayList<>();
+
+              for (ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeversList) {
+                if (sdgAllianceLever.getsDGContribution() != null
+                  && sdgAllianceLever.getsDGContribution().getName() != null) {
+
+                  String allianceLeverTemp = "";
+                  if (sdgAllianceLever.getAllianceLever() != null
+                    && sdgAllianceLever.getAllianceLever().getName() != null) {
+                    allianceLeverTemp = "(" + sdgAllianceLever.getAllianceLever().getName() + ") ";
+                  }
+
+                  if (sdgAllianceLever.getIsPrimary()) {
+                    primarySDGList.add(allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName());
+                  } else {
+                    relatedSDGList.add(allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName());
+
+                    // Related levers como lista de Strings
+                    if (sdgAllianceLever.getAllianceLever() != null
+                      && sdgAllianceLever.getAllianceLever().getName() != null
+                      && sdgAllianceLever.getAllianceLever().getDescription() != null) {
+
+                      String relatedLeverEntry = sdgAllianceLever.getAllianceLever().getName() + ": "
                         + sdgAllianceLever.getAllianceLever().getDescription();
+
+                      if (!relatedLeverList.contains(relatedLeverEntry)) {
+                        relatedLeverList.add(relatedLeverEntry);
+                      }
                     }
                   }
                 }
               }
 
-              relatedLever = "[" + relatedLever + "],";
-              relatedSDGContribution = "[" + relatedSDGContribution + "],";
+              // Convertir listas a JSON Strings
+              objectMapper = new ObjectMapper();
+              objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
+              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGList);
+              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGList);
+              relatedLever = objectMapper.writeValueAsString(relatedLeverList);
             }
           }
-        } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+        } catch (Exception e) {
+          System.out.println("Error processing SDG Alliance Levers: " + e);
         }
 
 
@@ -1205,7 +1219,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
             }
           }
-          globalTargets = globalTargets.replace("null", "");
+          if (globalTargets != null) {
+            globalTargets = globalTargets.replace("null", "");
+          }
 
         } catch (final NullPointerException e) {
           Log.error("NullPointerException while getting Impact Areas", e);
@@ -1418,14 +1434,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("centers", removeLeadingSemicolon(centers));
           jsonData.put("clusterAcronym", clusterAcronym);
           jsonData.put("allianceOICRID", allianceOICRID);
-          jsonData.put("primaryAllianceLever", removeLeadingSemicolon(primaryAllianceLever));
+          jsonData.put("primaryAllianceLever", primaryAllianceLever);
           jsonData.put("strategicOutcome", removeLeadingSemicolon(strategicOutcome));
           jsonData.put("primarySDGcontribution", removeLeadingSemicolon(primarySDGcontribution));
           jsonData.put("relatedLever", removeLeadingSemicolon(relatedLever));
           jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
           jsonData.put("hasCgiarContribution", hasCGIARContribution);
           jsonData.put("impactArea", impactArea);
-          jsonData.put("globalTargets", globalTargets);
+          jsonData.put("globalTargets", removeLeadingSemicolon(globalTargets));
           jsonData.put("publications", publications);
           jsonData.put("tagAs", tagAs);
           jsonData.put("clusterName", clusterName);
