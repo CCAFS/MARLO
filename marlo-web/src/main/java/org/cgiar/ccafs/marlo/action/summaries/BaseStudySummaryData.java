@@ -626,7 +626,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     .equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
                 .sorted((p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()))
                 .collect(Collectors.toList());
-
+            projectExpectedStudy.setCenters(deList);
             if (!deList.isEmpty()) {
               List<Map<String, String>> centersList = deList.stream().map(partnership -> {
                 Map<String, String> centerMap = new HashMap<>();
@@ -1102,7 +1102,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Primary SDG contribution
         try {
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
-            // Filtrar SDG Alliance Levers activos
             List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLeversList =
               projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
                 .filter(
@@ -1120,18 +1119,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 if (sdgAllianceLever.getsDGContribution() != null
                   && sdgAllianceLever.getsDGContribution().getName() != null) {
 
-                  String allianceLeverTemp = "";
-                  if (sdgAllianceLever.getAllianceLever() != null
-                    && sdgAllianceLever.getAllianceLever().getName() != null) {
-                    allianceLeverTemp = "(" + sdgAllianceLever.getAllianceLever().getName() + ") ";
-                  }
-
                   if (sdgAllianceLever.getIsPrimary()) {
-                    primarySDGList.add(allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName());
+                    primarySDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                      + sdgAllianceLever.getsDGContribution().getName());
                   } else {
-                    relatedSDGList.add(allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName());
+                    relatedSDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                      + sdgAllianceLever.getsDGContribution().getName());
 
-                    // Related levers como lista de Strings
                     if (sdgAllianceLever.getAllianceLever() != null
                       && sdgAllianceLever.getAllianceLever().getName() != null
                       && sdgAllianceLever.getAllianceLever().getDescription() != null) {
@@ -1147,7 +1141,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 }
               }
 
-              // Convertir listas a JSON Strings
               objectMapper = new ObjectMapper();
               objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
