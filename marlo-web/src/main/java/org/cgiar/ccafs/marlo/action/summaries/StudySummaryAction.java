@@ -143,7 +143,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
-      System.out.println("specificity false");
 
       try {
         Resource reportResource = resourceManager
@@ -205,7 +204,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
         + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     } else {
       try {
-        System.out.println("Generate Json to send to microservice");
         this.generateAndSendJson(projectExpectedStudyInfos);
         bytesPDF = os.toByteArray();
       } catch (Exception e) {
