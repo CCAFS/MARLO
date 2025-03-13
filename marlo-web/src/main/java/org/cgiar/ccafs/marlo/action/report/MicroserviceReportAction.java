@@ -227,7 +227,6 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public String sendOICRsQueueMessage() {
-    System.out.println("microservice sendOICRsQueueMessage");
     this.loadData(); // Load necessary data before processing
     String url = queueUrl;
     ConnectionFactory factory = new ConnectionFactory();

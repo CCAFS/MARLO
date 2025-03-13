@@ -587,8 +587,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 centerMap.put("type", institutionType);
 
                 try {
-                  institution.getLocations().addAll(institution.getInstitutionsLocations().stream()
-                    .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
+                  if (institution != null) {
+                    institution.setLocations(new ArrayList<>());
+                    if (institution.getInstitutionsLocations() != null
+                      && !institution.getInstitutionsLocations().isEmpty()) {
+                      institution.getLocations().addAll(institution.getInstitutionsLocations().stream()
+                        .filter(o -> o.isActive()).collect(Collectors.toList()));
+                    }
+                  }
                 } catch (Exception e) {
                   System.out.println("Error setting locations: " + e);
                 }
@@ -1060,33 +1066,29 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setAllianceLeversOutcomes(allianceLeversList);
 
             if (!allianceLeversList.isEmpty()) {
-              List<Map<String, Object>> primaryLeverList = new ArrayList<>();
+              ProjectExpectedStudyAllianceLeversOutcome firstLeverOutcome = allianceLeversList.get(0);
 
-              for (ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : allianceLeversList) {
-                if (allianceLeverOutcome.getAllianceLever() != null) {
-                  String name = allianceLeverOutcome.getAllianceLever().getName();
-                  String description = allianceLeverOutcome.getAllianceLever().getDescription();
+              if (firstLeverOutcome.getAllianceLever() != null) {
+                Map<String, Object> primaryLeverMap = new LinkedHashMap<>();
+                String name = firstLeverOutcome.getAllianceLever().getName();
+                String description = firstLeverOutcome.getAllianceLever().getDescription();
 
-                  if (name != null && description != null) {
-                    Map<String, Object> leverMap = new HashMap<>();
-                    leverMap.put("name", name);
-                    leverMap.put("code", this.extractCodeFromName(name));
-                    leverMap.put("description", description);
+                primaryLeverMap.put("code", this.extractCodeFromName(name));
+                primaryLeverMap.put("name", name);
+                primaryLeverMap.put("description", description);
 
-                    List<String> strategicOutcomes = allianceLeversList.stream()
-                      .filter(o -> o.getAllianceLever() != null && o.getAllianceLever().getName().equals(name))
-                      .map(o -> o.getAllianceLeverOutcome().getDescription())
-                      .filter(outcomeDescription -> outcomeDescription != null).distinct().collect(Collectors.toList());
+                List<String> strategicOutcomes = allianceLeversList.stream()
+                  .filter(o -> o.getAllianceLever() != null
+                    && o.getAllianceLever().getId().equals(firstLeverOutcome.getAllianceLever().getId()))
+                  .map(o -> o.getAllianceLeverOutcome().getDescription()).filter(Objects::nonNull).distinct()
+                  .collect(Collectors.toList());
 
-                    leverMap.put("strategicOutcome", strategicOutcomes);
-                    primaryLeverList.add(leverMap);
-                  }
-                }
+                primaryLeverMap.put("strategicOutcome", strategicOutcomes);
+
+                objectMapper = new ObjectMapper();
+                objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+                primaryAllianceLever = objectMapper.writeValueAsString(primaryLeverMap);
               }
-
-              objectMapper = new ObjectMapper();
-              objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-              primaryAllianceLever = objectMapper.writeValueAsString(primaryLeverList);
             }
           }
 
@@ -1098,6 +1100,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           Logger log = LoggerFactory.getLogger(this.getClass());
           log.error("Error processing primary alliance levers and strategic outcomes: ", e);
         }
+
 
         // Primary SDG contribution
         try {
@@ -1369,7 +1372,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           relatedLever = null;
         }
         contacts = contacts.replace("null", "");
-        System.out.println("Generate maps for json");
         /**
          * Generate Json
          */
@@ -2459,7 +2461,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
 
   public void loadData() {
-    System.out.println("load configuration data");
     try {
       List<ReportConfiguration> reportConfigurations = new ArrayList<>();
       reportConfigurations = reportConfigurationManager.findAll();
