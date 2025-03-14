@@ -15,6 +15,8 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
 
   @Expose
   private String oicrTemplateData;
+  @Expose
+  private String innovationTemplateData;
 
   public ReportConfiguration() {
   }
@@ -24,6 +26,10 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
+  }
+
+  public String getInnovationTemplateData() {
+    return innovationTemplateData;
   }
 
   @Override
@@ -54,6 +60,10 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
     return false;
   }
 
+  public void setInnovationTemplateData(String innovationTemplateData) {
+    this.innovationTemplateData = innovationTemplateData;
+  }
+
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
@@ -62,5 +72,4 @@ public class ReportConfiguration extends MarloBaseEntity implements java.io.Seri
   public void setOicrTemplateData(String oicrTemplateData) {
     this.oicrTemplateData = oicrTemplateData;
   }
-
 }
