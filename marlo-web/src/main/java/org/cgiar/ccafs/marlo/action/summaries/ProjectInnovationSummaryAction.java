@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -516,19 +515,20 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         // Impact Area
         try {
           if (innovation.getProjectInnovationImpactAreas() != null) {
-            final List<ProjectInnovationImpactArea> filteredImpactAreas = innovation
-              .getProjectInnovationImpactAreas().stream().filter(o -> (o != null) && (o.getId() != null) && o.isActive()
-                && (o.getPhase() != null) && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
-              .collect(Collectors.toList());
-
-            innovation.setImpactAreas(filteredImpactAreas);
+            innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+              .collect(Collectors.toList())));
 
             // Impact area code
-            if ((filteredImpactAreas != null) && !filteredImpactAreas.isEmpty()) {
-              final ImpactArea impactAreaTemp = filteredImpactAreas.get(0).getImpactArea();
-              if ((impactAreaTemp != null) && (impactAreaTemp.getId() != null)) {
-                // impactArea = impactAreaTemp.getName();
-                impactAreaCode = String.valueOf(impactAreaTemp.getId());
+            if (innovation.getImpactAreas() != null && !innovation.getImpactAreas().isEmpty()) {
+              for (ProjectInnovationImpactArea impactAreaItem : innovation.getImpactAreas()) {
+                if (impactAreaItem != null && impactAreaItem.getId() != null) {
+                  if (impactAreaCode == null || impactAreaCode.isEmpty()) {
+                    impactAreaCode += String.valueOf(impactAreaItem.getId());
+                  } else {
+                    impactAreaCode += ", " + String.valueOf(impactAreaItem.getId());
+                  }
+                }
               }
             }
           }
