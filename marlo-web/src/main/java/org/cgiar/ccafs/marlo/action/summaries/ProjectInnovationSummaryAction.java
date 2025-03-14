@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -28,28 +29,57 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReferenceUrl;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationRegion;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
+import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
+import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
+import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
+import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -57,12 +87,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
@@ -96,12 +129,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private final ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
+  private final ReportConfigurationManager reportConfigurationManager;
+  private final MicroserviceReportAction microserviceReportAction;
 
 
   // Parameters
   private long startTime;
   private Long projectInnovationID;
   private ProjectInnovationInfo projectInnovationInfo;
+  private String innovationsTemplateData = null;
+  private String innovationsReportName = null;
+  private String bucketName = null;
 
   // XLSX bytes
   private byte[] bytesPDF;
@@ -119,7 +157,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectInnovationMilestoneManager projectInnovationMilestoneManager,
     ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
-    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager) {
+    ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
+    ReportConfigurationManager reportConfigurationManager, MicroserviceReportAction microserviceReportAction) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -131,6 +170,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationMilestoneManager = projectInnovationMilestoneManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
+    this.reportConfigurationManager = reportConfigurationManager;
+    this.microserviceReportAction = microserviceReportAction;
   }
 
   /**
@@ -211,49 +252,71 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         .getProjectInnovationInfo(this.getSelectedPhase());
     }
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    try {
-      Resource reportResource = resourceManager
-        .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectInnovationPDF.prpt"), MasterReport.class);
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-      String center = this.getLoggedCrp().getAcronym();
-      // Get datetime
-      ZonedDateTime timezone = ZonedDateTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
-      String zone = timezone.getOffset() + "";
-      if (zone.equals("Z")) {
-        zone = "+0";
+    if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
+
+      try {
+        Resource reportResource = resourceManager
+          .createDirectly(this.getClass().getResource("/pentaho/crp/ProjectInnovationPDF.prpt"), MasterReport.class);
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+        String center = this.getLoggedCrp().getAcronym();
+        // Get datetime
+        ZonedDateTime timezone = ZonedDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-d 'at' HH:mm ");
+        String zone = timezone.getOffset() + "";
+        if (zone.equals("Z")) {
+          zone = "+0";
+        }
+        String date = timezone.format(format) + "(GMT" + zone + ")";
+        // Set Main_Query
+        CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
+        String masterQueryName = "main";
+        TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
+        TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
+        sdf.addTable(masterQueryName, model);
+        masterReport.setDataFactory(cdf);
+        // Set i8n for pentaho
+        masterReport = this.addi8nParameters(masterReport);
+        // Get details band
+        ItemBand masteritemBand = masterReport.getItemBand();
+        // Create new empty subreport hash map
+        HashMap<String, Element> hm = new HashMap<String, Element>();
+        // method to get all the subreports in the prpt and store in the HashMap
+        this.getAllSubreports(hm, masteritemBand);
+        // Uncomment to see which Subreports are detecting the method getAllSubreports
+        // System.out.println("Pentaho SubReports: " + hm);
+        this.fillSubreport((SubReport) hm.get("project_innovation"), "project_innovation");
+        PdfReportUtil.createPDF(masterReport, os);
+        bytesPDF = os.toByteArray();
+        os.close();
+      } catch (Exception e) {
+        LOG.error("Error generating ProjectInnovation Summary: " + e.getMessage());
+        throw e;
       }
-      String date = timezone.format(format) + "(GMT" + zone + ")";
-      // Set Main_Query
-      CompoundDataFactory cdf = CompoundDataFactory.normalize(masterReport.getDataFactory());
-      String masterQueryName = "main";
-      TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(masterQueryName);
-      TypedTableModel model = this.getMasterTableModel(center, date, String.valueOf(this.getSelectedYear()));
-      sdf.addTable(masterQueryName, model);
-      masterReport.setDataFactory(cdf);
-      // Set i8n for pentaho
-      masterReport = this.addi8nParameters(masterReport);
-      // Get details band
-      ItemBand masteritemBand = masterReport.getItemBand();
-      // Create new empty subreport hash map
-      HashMap<String, Element> hm = new HashMap<String, Element>();
-      // method to get all the subreports in the prpt and store in the HashMap
-      this.getAllSubreports(hm, masteritemBand);
-      // Uncomment to see which Subreports are detecting the method getAllSubreports
-      // System.out.println("Pentaho SubReports: " + hm);
-      this.fillSubreport((SubReport) hm.get("project_innovation"), "project_innovation");
-      PdfReportUtil.createPDF(masterReport, os);
-      bytesPDF = os.toByteArray();
-      os.close();
-    } catch (Exception e) {
-      LOG.error("Error generating ProjectInnovation Summary: " + e.getMessage());
-      throw e;
+      // Calculate time of generation
+      long stopTime = System.currentTimeMillis();
+      stopTime = stopTime - startTime;
+      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
+        + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    } else {
+      // Specificity false
+      try {
+        this.generateAndSendJson();
+        bytesPDF = os.toByteArray();
+      } catch (Exception e) {
+        if (e.getClass().getName().contains("ClientAbortException")) {
+          System.out.println("Client aborted the connection: " + e.getMessage());
+        } else {
+          System.out.println("Exception while generating JSON: " + e.getMessage());
+          throw e;
+        }
+      } finally {
+        try {
+          os.close();
+        } catch (Exception e) {
+          System.out.println("Error closing output stream: " + e.getMessage());
+        }
+      }
     }
-    // Calculate time of generation
-    long stopTime = System.currentTimeMillis();
-    stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     return SUCCESS;
   }
 
@@ -270,10 +333,407 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     subReport.setDataFactory(cdf);
   }
 
+  public String generateAndSendJson() {
+    ObjectMapper objectMapper = new ObjectMapper();
+    final URLShortener urlShortener = new URLShortener();
+    Long id = null;
+
+    String innovationID = null;
+    Long projectID = null;
+    String transaction = null, phaseID = null, projectAcronym = null;
+    ProjectInnovation innovation = null;
+    Project project = null;
+    Phase phase = null;
+    boolean clearLead = false, haveRegions = false, haveCountries = false;
+    RepIndPhaseResearchPartnership repIndPhaseResearchPartnership = null;
+    RepIndStageInnovation repIndStageInnovation = null;
+    RepIndRegion repIndRegion = null;
+    RepIndInnovationType repIndInnovationType = null;
+    RepIndDegreeInnovation repIndDegreeInnovation = null;
+    Institution leadOrganization = null;
+    String geographicScopes = null, regions = null, countries = null;
+    List<ProjectInnovationOrganization> organizations = new ArrayList<>();
+    List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
+    List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
+    List<ProjectInnovationCrp> crps = new ArrayList<>();
+    List<ProjectInnovationCenter> centers = new ArrayList<>();
+    List<ProjectExpectedStudyInnovation> studies = new ArrayList<>();
+    List<ProjectInnovationMilestone> milestones = new ArrayList<>();
+    List<ProjectInnovationSubIdo> subIdos = new ArrayList<>();
+    List<ProjectInnovationShared> sharedInnovations = new ArrayList<>();
+    List<ProjectInnovationAllianceLevers> allianceLevers = new ArrayList<>();
+    List<ProjectInnovationSDG> sdgs = new ArrayList<>();
+    List<ProjectInnovationImpactArea> impactAreas = new ArrayList<>();
+    List<ProjectInnovationAllianceOrganization> allianceOrganizations = new ArrayList<>();
+    List<ProjectInnovationActor> actors = new ArrayList<>();
+    List<ProjectInnovationToolCategory> toolCategories = new ArrayList<>();
+    List<ProjectInnovationReference> references = new ArrayList<>();
+    List<ProjectInnovationReferenceUrl> referenceUrls = new ArrayList<>();
+    List<ProjectInnovationReferenceComplementarySolution> referenceComplementarySolutions = new ArrayList<>();
+    List<ProjectInnovationProjectOutcome> projectOutcomes = new ArrayList<>();
+    List<ProjectInnovationCrpOutcome> crpOutcomes = new ArrayList<>();
+    List<ProjectPartner> partners = new ArrayList<>();
+    List<Institution> partnerInstitutions = new ArrayList<>();
+    List<ProjectPartnerPerson> partnerPersons = new ArrayList<>();
+    List<Project> myProjects = new ArrayList<>();
+    List<GlobalUnit> crpList = new ArrayList<>();
+    List<ProjectInnovationPartnership> partnerships = new ArrayList<>();
+    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopeList = new ArrayList<>();
+
+    try {
+
+      innovationID = StringUtils.trim(this.getRequest().getParameter(APConstants.INNOVATION_REQUEST_ID));
+      transaction = this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null
+        ? StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID)) : null;
+      innovation = projectInnovationInfo.getProjectInnovation();
+      if (innovation != null) {
+        projectID = innovation.getProject().getId();
+        project = projectManager.getProjectById(projectID);
+        projectAcronym = project.getAcronym();
+        phase = this.getSelectedPhase();
+        phaseID = phase.getId().toString();
+
+
+        innovation.setProjectInnovationShareds(
+          innovation.getProjectInnovationShareds() != null ? innovation.getProjectInnovationShareds().stream()
+            .filter(ProjectInnovationShared::isActive).collect(Collectors.toSet()) : new HashSet<>());
+
+        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes() != null
+          ? innovation.getProjectInnovationGeographicScopes().stream().collect(Collectors.toList())
+          : new ArrayList<>());
+
+        innovation.setRegions(innovation.getProjectInnovationRegions() != null
+          ? innovation.getProjectInnovationRegions().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setCountries(innovation.getProjectInnovationCountries() != null
+          ? innovation.getProjectInnovationCountries().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setOrganizations(innovation.getProjectInnovationOrganizations() != null
+          ? innovation.getProjectInnovationOrganizations().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setDeliverables(innovation.getProjectInnovationDeliverables() != null
+          ? innovation.getProjectInnovationDeliverables().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setContributingOrganizations(innovation.getProjectInnovationContributingOrganization() != null
+          ? innovation.getProjectInnovationContributingOrganization().stream().collect(Collectors.toList())
+          : new ArrayList<>());
+
+        innovation.setCrps(innovation.getProjectInnovationCrps() != null
+          ? innovation.getProjectInnovationCrps().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setCenters(innovation.getProjectInnovationCenters() != null
+          ? innovation.getProjectInnovationCenters().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setStudies(innovation.getProjectExpectedStudyInnovations() != null
+          ? innovation.getProjectExpectedStudyInnovations().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setMilestones(innovation.getProjectInnovationMilestones() != null
+          ? innovation.getProjectInnovationMilestones().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setSubIdos(innovation.getProjectInnovationSubIdos() != null
+          ? innovation.getProjectInnovationSubIdos().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setAllianceLevers(innovation.getProjectInnovationAllianceLevers() != null
+          ? innovation.getProjectInnovationAllianceLevers().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setSdgs(innovation.getProjectInnovationSDGs() != null
+          ? innovation.getProjectInnovationSDGs().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setImpactAreas(innovation.getProjectInnovationImpactAreas() != null
+          ? innovation.getProjectInnovationImpactAreas().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setAllianceOrganizations(innovation.getProjectInnovationAllianceOrganizations() != null
+          ? innovation.getProjectInnovationAllianceOrganizations().stream().collect(Collectors.toList())
+          : new ArrayList<>());
+
+        innovation.setActors(innovation.getProjectInnovationActors() != null
+          ? innovation.getProjectInnovationActors().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setToolCategories(innovation.getProjectInnovationToolCategories() != null
+          ? innovation.getProjectInnovationToolCategories().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setReferences(innovation.getProjectInnovationReferences() != null
+          ? innovation.getProjectInnovationReferences().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls() != null
+          ? innovation.getProjectInnovationReferenceUrls().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation
+          .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions() != null
+            ? innovation.getProjectInnovationReferenceComplementarySolutions().stream().collect(Collectors.toList())
+            : new ArrayList<>());
+
+        innovation.setProjectOutcomes(innovation.getProjectInnovationProjectOutcomes() != null
+          ? innovation.getProjectInnovationProjectOutcomes().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        innovation.setCrpOutcomes(innovation.getProjectInnovationCrpOutcomes() != null
+          ? innovation.getProjectInnovationCrpOutcomes().stream().collect(Collectors.toList()) : new ArrayList<>());
+
+        // Geographic Scopes
+        boolean isNational = false;
+        boolean isRegional = false;
+
+        final List<ProjectInnovationGeographicScope> geographicScopeList =
+          innovation.getProjectInnovationGeographicScopes().stream()
+            .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+        final Set<String> geographicScopeSet = new HashSet<>();
+        if ((geographicScopeList != null) && !geographicScopeList.isEmpty()) {
+          for (final ProjectInnovationGeographicScope geographicScope : geographicScopeList) {
+            if (!geographicScope.getRepIndGeographicScope().getId().equals(this.getReportingIndGeographicScopeGlobal())
+              && !geographicScope.getRepIndGeographicScope().getId()
+                .equals(this.getReportingIndGeographicScopeRegional())) {
+              isNational = true;
+            }
+            if (geographicScope.getRepIndGeographicScope().getId()
+              .equals(this.getReportingIndGeographicScopeRegional())) {
+              isRegional = true;
+            }
+            geographicScopeSet.add(geographicScope.getRepIndGeographicScope().getName());
+          }
+          geographicScopes = String.join(", ", geographicScopeSet);
+        }
+
+        // Country(s)
+        if (isNational) {
+          final List<ProjectInnovationCountry> studyCountries =
+            this.projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), phase.getId()).stream()
+              .filter(le -> le.isActive() && (le.getLocElement().getLocElementType().getId() == 2))
+              .collect(Collectors.toList());
+          if ((studyCountries != null) && !studyCountries.isEmpty()) {
+            final Set<String> countriesSet = new HashSet<>();
+            for (final ProjectInnovationCountry projectInnovationCountry : studyCountries) {
+              countriesSet.add("; " + projectInnovationCountry.getLocElement().getName());
+            }
+            countries = String.join("", countriesSet);
+          }
+        }
+
+        // Region(s)
+        if (isRegional) {
+          final List<ProjectInnovationRegion> studyRegions = innovation.getProjectInnovationRegions().stream()
+            .filter(c -> c.isActive() && (c.getPhase() != null) && c.getPhase().equals(this.getSelectedPhase()))
+            .collect(Collectors.toList());
+          if ((studyRegions != null) && !studyRegions.isEmpty()) {
+            final Set<String> regionsSet = new HashSet<>();
+            for (final ProjectInnovationRegion projectInnovationRegion : studyRegions) {
+              regionsSet.add("; " + projectInnovationRegion.getLocElement().getName());
+            }
+            regions = String.join("", regionsSet);
+          }
+        }
+
+        sharedInnovations = new ArrayList<>(innovation.getSharedInnovations()); // getSharedInnovations()
+        organizations = innovation.getOrganizations(); // getOrganizations()
+        deliverables = innovation.getDeliverables(); // getDeliverables()
+        contributingOrganizations = innovation.getContributingOrganizations(); // getContributingOrganizations()
+        crps = innovation.getCrps(); // getCrps()
+        centers = innovation.getCenters(); // getCenters()
+        studies = innovation.getStudies(); // getStudies()
+        milestones = innovation.getMilestones(); // getMilestones()
+        subIdos = innovation.getSubIdos(); // getSubIdos()
+        allianceLevers = innovation.getAllianceLevers(); // getAllianceLevers()
+        sdgs = innovation.getSdgs(); // getSdgs()
+        impactAreas = innovation.getImpactAreas(); // getImpactAreas()
+        allianceOrganizations = innovation.getAllianceOrganizations(); // getAllianceOrganizations()
+        actors = innovation.getActors(); // getActors()
+        toolCategories = innovation.getToolCategories(); // getToolCategories()
+        references = innovation.getReferences(); // getReferences()
+        referenceUrls = innovation.getReferenceUrls(); // getReferenceUrls()
+        referenceComplementarySolutions = innovation.getReferenceComplementarySolutions(); // getReferenceComplementarySolutions()
+        projectOutcomes = innovation.getProjectOutcomes(); // getProjectOutcomes()
+        crpOutcomes = innovation.getCrpOutcomes(); // getCrpOutcomes()
+      }
+    } catch (Exception e) {
+      System.out.println("error setting innovation report variables " + e);
+    }
+
+    /**
+     * Generate Json
+     */
+    final Map<String, Object> jsonMainRoot = new HashMap<>();
+    final Map<String, Object> jsonRoot = new HashMap<>();
+    final Map<String, Object> jsonData = new HashMap<>();
+    final Map<String, Object> jsonOptions = new HashMap<>();
+    final Map<String, Object> jsonCredentials = new HashMap<>();
+    final Map<String, String> headerMap = new HashMap<>();
+    final Map<String, String> footerMap = new HashMap<>();
+
+    try {
+      jsonData.put("id", id);
+      jsonData.put("innovationID", innovationID);
+      jsonData.put("transaction", transaction);
+      jsonData.put("projectID", projectID);
+      jsonData.put("phaseID", phaseID);
+      jsonData.put("clearLead", clearLead);
+      jsonData.put("haveRegions", haveRegions);
+      jsonData.put("haveCountries", haveCountries);
+
+      jsonData.put("repIndPhaseResearchPartnership",
+        repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
+      jsonData.put("repIndStageInnovation", repIndStageInnovation != null ? repIndStageInnovation.getName() : null);
+      jsonData.put("repIndRegion", repIndRegion != null ? repIndRegion.getName() : null);
+      jsonData.put("repIndInnovationType", repIndInnovationType != null ? repIndInnovationType.getName() : null);
+      jsonData.put("repIndDegreeInnovation", repIndDegreeInnovation != null ? repIndDegreeInnovation.getName() : null);
+      jsonData.put("leadOrganization", leadOrganization != null ? leadOrganization.getComposedName() : null);
+
+      String geographicScopesJson =
+        objectMapper.writeValueAsString(geographicScopes != null ? geographicScopes : new ArrayList<>());
+      String regionsJson = objectMapper.writeValueAsString(regions != null ? regions : new ArrayList<>());
+      String countriesJson = objectMapper.writeValueAsString(countries != null ? countries : new ArrayList<>());
+      String organizationsJson =
+        objectMapper.writeValueAsString(organizations != null ? organizations : new ArrayList<>());
+      String deliverablesJson =
+        objectMapper.writeValueAsString(deliverables != null ? deliverables : new ArrayList<>());
+      String contributingOrganizationsJson = objectMapper
+        .writeValueAsString(contributingOrganizations != null ? contributingOrganizations : new ArrayList<>());
+      String crpsJson = objectMapper.writeValueAsString(crps != null ? crps : new ArrayList<>());
+      String centersJson = objectMapper.writeValueAsString(centers != null ? centers : new ArrayList<>());
+      String studiesJson = objectMapper.writeValueAsString(studies != null ? studies : new ArrayList<>());
+      String milestonesJson = objectMapper.writeValueAsString(milestones != null ? milestones : new ArrayList<>());
+      String subIdosJson = objectMapper.writeValueAsString(subIdos != null ? subIdos : new ArrayList<>());
+      String sharedInnovationsJson =
+        objectMapper.writeValueAsString(sharedInnovations != null ? sharedInnovations : new ArrayList<>());
+      String allianceLeversJson =
+        objectMapper.writeValueAsString(allianceLevers != null ? allianceLevers : new ArrayList<>());
+      String sdgsJson = objectMapper.writeValueAsString(sdgs != null ? sdgs : new ArrayList<>());
+      String impactAreasJson = objectMapper.writeValueAsString(impactAreas != null ? impactAreas : new ArrayList<>());
+      String allianceOrganizationsJson =
+        objectMapper.writeValueAsString(allianceOrganizations != null ? allianceOrganizations : new ArrayList<>());
+      String actorsJson = objectMapper.writeValueAsString(actors != null ? actors : new ArrayList<>());
+      String toolCategoriesJson =
+        objectMapper.writeValueAsString(toolCategories != null ? toolCategories : new ArrayList<>());
+      String referencesJson = objectMapper.writeValueAsString(references != null ? references : new ArrayList<>());
+      String referenceUrlsJson =
+        objectMapper.writeValueAsString(referenceUrls != null ? referenceUrls : new ArrayList<>());
+      String referenceComplementarySolutionsJson = objectMapper.writeValueAsString(
+        referenceComplementarySolutions != null ? referenceComplementarySolutions : new ArrayList<>());
+      String projectOutcomesJson =
+        objectMapper.writeValueAsString(projectOutcomes != null ? projectOutcomes : new ArrayList<>());
+      String crpOutcomesJson = objectMapper.writeValueAsString(crpOutcomes != null ? crpOutcomes : new ArrayList<>());
+      String partnersJson = objectMapper.writeValueAsString(partners != null ? partners : new ArrayList<>());
+      String partnerInstitutionsJson =
+        objectMapper.writeValueAsString(partnerInstitutions != null ? partnerInstitutions : new ArrayList<>());
+      String partnerPersonsJson =
+        objectMapper.writeValueAsString(partnerPersons != null ? partnerPersons : new ArrayList<>());
+      String myProjectsJson = objectMapper.writeValueAsString(myProjects != null ? myProjects : new ArrayList<>());
+      String crpListJson = objectMapper.writeValueAsString(crpList != null ? crpList : new ArrayList<>());
+      String partnershipsJson =
+        objectMapper.writeValueAsString(partnerships != null ? partnerships : new ArrayList<>());
+      String projectInnovationGeographicScopeListJson = objectMapper.writeValueAsString(
+        projectInnovationGeographicScopeList != null ? projectInnovationGeographicScopeList : new ArrayList<>());
+
+      jsonData.put("geographicScopes", geographicScopesJson);
+      jsonData.put("regions", regionsJson);
+      jsonData.put("countries", countriesJson);
+      jsonData.put("organizations", organizationsJson);
+      jsonData.put("deliverables", deliverablesJson);
+      jsonData.put("contributingOrganizations", contributingOrganizationsJson);
+      jsonData.put("crps", crpsJson);
+      jsonData.put("centers", centersJson);
+      jsonData.put("studies", studiesJson);
+      jsonData.put("milestones", milestonesJson);
+      jsonData.put("subIdos", subIdosJson);
+      jsonData.put("sharedInnovations", sharedInnovationsJson);
+      jsonData.put("allianceLevers", allianceLeversJson);
+      jsonData.put("sdgs", sdgsJson);
+      jsonData.put("impactAreas", impactAreasJson);
+      jsonData.put("allianceOrganizations", allianceOrganizationsJson);
+      jsonData.put("actors", actorsJson);
+      jsonData.put("toolCategories", toolCategoriesJson);
+      jsonData.put("references", referencesJson);
+      jsonData.put("referenceUrls", referenceUrlsJson);
+      jsonData.put("referenceComplementarySolutions", referenceComplementarySolutionsJson);
+      jsonData.put("projectOutcomes", projectOutcomesJson);
+      jsonData.put("crpOutcomes", crpOutcomesJson);
+      jsonData.put("partners", partnersJson);
+      jsonData.put("partnerInstitutions", partnerInstitutionsJson);
+      jsonData.put("partnerPersons", partnerPersonsJson);
+      jsonData.put("myProjects", myProjectsJson);
+      jsonData.put("crpList", crpListJson);
+      jsonData.put("partnerships", partnershipsJson);
+      jsonData.put("projectInnovationGeographicScopeList", projectInnovationGeographicScopeListJson);
+      jsonData.put("timeCreation", this.getCurrentDate());
+    } catch (Exception e) {
+      System.out.println("error setting jsonData " + e);
+    }
+
+    headerMap.put("height", "40mm");
+    footerMap.put("height", "30mm");
+    try {
+      jsonOptions.put("format", "A3");
+      jsonOptions.put("orientation", "portrait");
+      jsonOptions.put("border", "0");
+      jsonOptions.put("zoomFactor", 1);
+      jsonOptions.put("header", headerMap);
+      jsonOptions.put("footer", footerMap);
+      jsonOptions.put("timeout", "300000");
+    } catch (Exception e) {
+      System.out.println("error setting jsonOptions " + e);
+    }
+
+    try {
+      jsonRoot.put("data", jsonData);
+      jsonRoot.put("options", jsonOptions);
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot info " + e);
+    }
+    this.loadData();
+
+    try {
+      this.innovationsReportName =
+        "AICCRA-INNOVATION" + innovation.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+
+      jsonRoot.put("templateData", this.innovationsTemplateData);
+      jsonRoot.put("fileName", this.innovationsReportName);
+      jsonRoot.put("bucketName", this.bucketName);
+    } catch (Exception e) {
+      System.out.println("Error setting other json root information");
+    }
+
+    String username = null, password = null;
+    try {
+      username = this.config.getMicroserviceUsername();
+      password = this.config.getMicroservicePassword();
+    } catch (final Exception e) {
+      System.out.println("error getting conf credentials " + e);
+    }
+
+    try {
+      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+      jsonRoot.put("credentials", credentialsJson);
+
+      jsonMainRoot.put("data", jsonRoot);
+      jsonMainRoot.put("pattern", "pdf.generate");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot and jsonMainRoot information " + e);
+    }
+
+    try {
+      objectMapper = new ObjectMapper();
+      final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
+      try {
+        final FileWriter fileWriter = new FileWriter(new File("D:/innovations_Report.json"));
+        fileWriter.write(jsonOutput);
+        fileWriter.close();
+      } catch (Exception e) {
+        System.out.println("Generated just for local environments");
+      }
+
+      System.out.println("send microservice class: " + this.innovationsReportName);
+      this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
+
+      return jsonOutput;
+    } catch (final IOException e) {
+      System.out.println("error generating json " + e);
+      return "{}";
+    }
+  }
+
+
   public byte[] getBytesPDF() {
     return bytesPDF;
   }
-
 
   @Override
   public int getContentLength() {
@@ -285,6 +745,19 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return "application/pdf";
   }
 
+  public String getCurrentDate() {
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(TimeZone.getTimeZone("CET"));
+    return formatter.format(new Date());
+  }
+
+  public String getCurrentDateTime() {
+    LocalDateTime currentDateTime = LocalDateTime.now();
+    String formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+
+    return formattedDateTime;
+  }
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -292,6 +765,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     File file = new File(classLoader.getResource(fileName).getFile());
     return file;
   }
+
 
   @Override
   public String getFileName() {
@@ -312,7 +786,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     fileName.append(".pdf");
     return fileName.toString();
   }
-
 
   @Override
   public InputStream getInputStream() {
@@ -735,6 +1208,25 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       crps, genderFocusLevel, genderExplaniation, youthFocusLevel, youthExplaniation, project, oicr, centers,
       hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
     return model;
+  }
+
+  public void loadData() {
+    try {
+      List<ReportConfiguration> reportConfigurations = new ArrayList<>();
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        if (reportConfiguration.getInnovationTemplateData() != null) {
+          innovationsTemplateData = reportConfiguration.getInnovationTemplateData();
+        }
+
+      }
+
+      this.bucketName = this.config.getMicroserviceBucketname();
+
+    } catch (final Exception e) {
+      System.out.println("error getting report configuration data " + e);
+    }
   }
 
 

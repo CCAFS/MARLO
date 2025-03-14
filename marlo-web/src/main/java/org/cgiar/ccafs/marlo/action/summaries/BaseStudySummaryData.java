@@ -23,7 +23,6 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
@@ -33,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCenter;
@@ -57,8 +55,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -72,7 +68,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -92,7 +87,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
@@ -239,7 +233,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
   private final LocElementManager locElementManager;
-  private final RepIndStageInnovationManager repIndStageInnovationManager;
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String bucketName = null;
@@ -248,7 +241,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     ProjectManager projectManager, HTMLParser htmlParser,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
     MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
-    LocElementManager locElementManager, RepIndStageInnovationManager repIndStageInnovationManager) {
+    LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
@@ -256,7 +249,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
     this.locElementManager = locElementManager;
-    this.repIndStageInnovationManager = repIndStageInnovationManager;
   }
 
   /**
@@ -1533,95 +1525,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
     }
     return SUCCESS;
-  }
-
-  public String generateAndSendJsonForInnovations(List<ProjectInnovation> innovations) {
-    ObjectMapper objectMapper = new ObjectMapper();
-    ObjectNode rootNode = objectMapper.createObjectNode();
-    List<ObjectNode> innovationsJson = innovations.stream().map(innovation -> {
-      // load StageInnovation
-      if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
-        && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() != null) {
-        innovation.getProjectInnovationInfo().setRepIndStageInnovation(repIndStageInnovationManager
-          .getRepIndStageInnovationById(innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId()));
-      }
-
-      ObjectNode innovationNode = objectMapper.createObjectNode();
-      try {
-        innovationNode.put("id", innovation.getId());
-
-        innovationNode.put("title", innovation.getProjectInnovationInfo().getTitle());
-        innovationNode.put("stage", innovation.getProjectInnovationInfo().getRepIndStageInnovation().getName());
-        innovationNode.put("region", innovation.getProjectInnovationInfo().getRepIndRegion().getName());
-        innovationNode.put("leadOrganization", innovation.getProjectInnovationInfo().getLeadOrganization().getName());
-        innovationNode.put("degreeInnovation",
-          innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getName());
-        innovationNode.put("innovationType", innovation.getProjectInnovationInfo().getRepIndInnovationType().getName());
-        innovationNode.put("clearLead", innovation.getProjectInnovationInfo().getClearLead());
-
-        ProjectInnovationInfo innovationInfo = innovation.getProjectInnovationInfo(this.getSelectedPhase());
-
-        innovationNode.putPOJO("partnerships",
-          Optional.ofNullable(innovation.getProjectInnovationPartnerships()).orElse(Collections.emptySet()).stream()
-            .map(partner -> partner.getInstitution().getName()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("impactAreas",
-          Optional.ofNullable(innovation.getProjectInnovationImpactAreas()).orElse(Collections.emptySet()).stream()
-            .map(area -> area.getImpactArea().getName()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("sdgs",
-          Optional.ofNullable(innovation.getProjectInnovationSDGs()).orElse(Collections.emptySet()).stream()
-            .map(sdg -> sdg.getSdg().getShortName()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("references", Optional.ofNullable(innovation.getProjectInnovationReferences())
-          .orElse(Collections.emptySet()).stream().map(ref -> ref.getReference()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("actors",
-          Optional.ofNullable(innovation.getProjectInnovationActors()).orElse(Collections.emptySet()).stream()
-            .map(actor -> actor.getActor().getName()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("allianceLevers",
-          Optional.ofNullable(innovation.getProjectInnovationAllianceLevers()).orElse(Collections.emptySet()).stream()
-            .map(lever -> lever.getAllianceLever().getName()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("referenceUrls", Optional.ofNullable(innovation.getProjectInnovationReferenceUrls())
-          .orElse(Collections.emptySet()).stream().map(url -> url.getLink()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("scalingReadiness", Optional.ofNullable(innovationInfo.getReadinessScale()));
-
-        innovationNode.putPOJO("toolCategories", Optional.ofNullable(innovation.getProjectInnovationToolCategories())
-          .orElse(Collections.emptySet()).stream().map(tool -> tool.getToolCategory()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("subIdos",
-          Optional.ofNullable(innovation.getProjectInnovationSubIdos()).orElse(Collections.emptySet()).stream()
-            .map(subIdo -> subIdo.getSrfSubIdo().getDescription()).collect(Collectors.toList()));
-
-        innovationNode.putPOJO("sharedInnovations",
-          Optional.ofNullable(innovation.getProjectInnovationShareds()).orElse(Collections.emptySet()).stream()
-            .map(shared -> Optional.ofNullable(shared.getProject()).map(Project::getAcronym).orElse("Unknown Title"))
-            .collect(Collectors.toList()));
-      } catch (Exception e) {
-        System.out.println("error setting variables " + e);
-      }
-
-      return innovationNode;
-    }).collect(Collectors.toList());
-
-    rootNode.putPOJO("innovations", innovationsJson);
-
-    String jsonString = "";
-    try {
-      jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode);
-      objectMapper.writeValue(new File("innovations.json"), jsonString);
-
-      final FileWriter fileWriter = new FileWriter(new File("D:/Innovations_Report.json"));
-      fileWriter.write(jsonString);
-      fileWriter.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return jsonString;
   }
 
   public TypedTableModel getCaseStudiesTableModel(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {

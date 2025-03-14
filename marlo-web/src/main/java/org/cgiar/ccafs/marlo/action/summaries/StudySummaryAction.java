@@ -107,8 +107,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
     LocElementManager locElementManager, RepIndStageInnovationManager repIndStageInnovationManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
-      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager,
-      repIndStageInnovationManager);
+      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;

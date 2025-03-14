@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -82,7 +81,6 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
   private final LocElementManager locElementManager;
-  private final RepIndStageInnovationManager repIndStageInnovationManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -104,11 +102,9 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser htmlParser,
     ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     InstitutionManager institutionManager, MicroserviceReportAction microserviceReportAction,
-    ReportConfigurationManager reportConfigurationManager, LocElementManager locElementManager,
-    RepIndStageInnovationManager repIndStageInnovationManager) {
+    ReportConfigurationManager reportConfigurationManager, LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
-      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager,
-      repIndStageInnovationManager);
+      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.htmlParser = htmlParser;
@@ -117,7 +113,6 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
     this.locElementManager = locElementManager;
-    this.repIndStageInnovationManager = repIndStageInnovationManager;
   }
 
   @Override

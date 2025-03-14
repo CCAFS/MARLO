@@ -122,9 +122,6 @@
 			<interceptor name="privateStudy"
         class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateStudyInterceptor" />
         				
-			<interceptor name="privateInnovation"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateInnovationInterceptor" />				
-
 			<interceptor name="editPolicy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditPolicyInterceptor" />
 				
@@ -211,13 +208,6 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="privateStudy" />
-				<interceptor-ref name="defaultStack" />
-			</interceptor-stack>
-			
-      		<interceptor-stack name="publicInnovationStack">
-				<interceptor-ref name="i18nFile" />
-				<interceptor-ref name="validCrp" />
-				<interceptor-ref name="privateInnovation" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
