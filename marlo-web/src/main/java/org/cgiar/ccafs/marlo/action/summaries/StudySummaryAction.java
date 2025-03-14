@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
@@ -82,6 +83,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private GlobalUnitManager crpManager;
   private LocElementManager locElementManager;
+  private RepIndStageInnovationManager repIndStageInnovationManager;
   private String crp;
 
   // PDF bytes
@@ -103,9 +105,10 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     HTMLParser htmlParser, ProjectManager projectManager,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
     MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
-    LocElementManager locElementManager) {
+    LocElementManager locElementManager, RepIndStageInnovationManager repIndStageInnovationManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
-      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager);
+      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager,
+      repIndStageInnovationManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
@@ -114,6 +117,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
     this.locElementManager = locElementManager;
+    this.repIndStageInnovationManager = repIndStageInnovationManager;
   }
 
 

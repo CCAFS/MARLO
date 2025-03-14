@@ -157,6 +157,18 @@
 				<param name="contentDisposition">filename="${fileName}"</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/innovationSummary"
+			class="org.cgiar.ccafs.marlo.action.summaries.InnovationSummaryAction">
+			<interceptor-ref name="publicInnovationStack" />
+			<result name="success" type="stream">
+				<param name="inputName">inputStream</param>
+				     
+				<param name="contentType">${contentType}</param>
+				       
+				<param name="contentDisposition">filename="${fileName}"</param>
+			</result>
+		</action>
 
 		<action name="{crp}/projectHighlightsSummary"
 			class="org.cgiar.ccafs.marlo.action.summaries.ProjectHighlightsSummaryAction">
