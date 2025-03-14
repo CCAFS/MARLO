@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -338,7 +339,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     final URLShortener urlShortener = new URLShortener();
     Long id = null;
 
-    String innovationID = null;
+    String innovationID = null, title = null, narrative = null, innovationImportance = null, year = null,
+      impactAreaCode = null;
     Long projectID = null;
     String transaction = null, phaseID = null, projectAcronym = null;
     ProjectInnovation innovation = null;
@@ -383,8 +385,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     try {
 
       innovationID = StringUtils.trim(this.getRequest().getParameter(APConstants.INNOVATION_REQUEST_ID));
-      transaction = this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null
-        ? StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID)) : null;
       innovation = projectInnovationInfo.getProjectInnovation();
       if (innovation != null) {
         projectID = innovation.getProject().getId();
@@ -397,16 +397,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         innovation.setProjectInnovationShareds(
           innovation.getProjectInnovationShareds() != null ? innovation.getProjectInnovationShareds().stream()
             .filter(ProjectInnovationShared::isActive).collect(Collectors.toSet()) : new HashSet<>());
-
-        innovation.setGeographicScopes(innovation.getProjectInnovationGeographicScopes() != null
-          ? innovation.getProjectInnovationGeographicScopes().stream().collect(Collectors.toList())
-          : new ArrayList<>());
-
-        innovation.setRegions(innovation.getProjectInnovationRegions() != null
-          ? innovation.getProjectInnovationRegions().stream().collect(Collectors.toList()) : new ArrayList<>());
-
-        innovation.setCountries(innovation.getProjectInnovationCountries() != null
-          ? innovation.getProjectInnovationCountries().stream().collect(Collectors.toList()) : new ArrayList<>());
 
         innovation.setOrganizations(innovation.getProjectInnovationOrganizations() != null
           ? innovation.getProjectInnovationOrganizations().stream().collect(Collectors.toList()) : new ArrayList<>());
@@ -523,6 +513,36 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }
         }
 
+        // Impact Area
+        try {
+          if (innovation.getProjectInnovationImpactAreas() != null) {
+            final List<ProjectInnovationImpactArea> filteredImpactAreas = innovation
+              .getProjectInnovationImpactAreas().stream().filter(o -> (o != null) && (o.getId() != null) && o.isActive()
+                && (o.getPhase() != null) && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
+              .collect(Collectors.toList());
+
+            innovation.setImpactAreas(filteredImpactAreas);
+
+            // Impact area code
+            if ((filteredImpactAreas != null) && !filteredImpactAreas.isEmpty()) {
+              final ImpactArea impactAreaTemp = filteredImpactAreas.get(0).getImpactArea();
+              if ((impactAreaTemp != null) && (impactAreaTemp.getId() != null)) {
+                // impactArea = impactAreaTemp.getName();
+                impactAreaCode = String.valueOf(impactAreaTemp.getId());
+              }
+            }
+          }
+
+        } catch (final NullPointerException e) {
+          System.out.println("NullPointerException while getting Impact Areas" + e);
+        } catch (final Exception e) {
+          System.out.println("Unexpected error while getting Impact Areas" + e);
+        }
+
+        title = projectInnovationInfo.getTitle();
+        narrative = projectInnovationInfo.getNarrative();
+        innovationImportance = projectInnovationInfo.getInnovationImportance();
+        year = projectInnovationInfo.getYear() + "";
         sharedInnovations = new ArrayList<>(innovation.getSharedInnovations()); // getSharedInnovations()
         organizations = innovation.getOrganizations(); // getOrganizations()
         deliverables = innovation.getDeliverables(); // getDeliverables()
@@ -564,6 +584,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("innovationID", innovationID);
       jsonData.put("transaction", transaction);
       jsonData.put("projectID", projectID);
+      jsonData.put("clusterAcronym", projectAcronym);
+      jsonData.put("type", "AICCRA Innovation");
+      jsonData.put("title", title);
+      jsonData.put("narrative", narrative);
+      jsonData.put("innovationImportance", innovationImportance);
+      jsonData.put("year", year);
+      jsonData.put("impactAreaCode", impactAreaCode);
       jsonData.put("phaseID", phaseID);
       jsonData.put("clearLead", clearLead);
       jsonData.put("haveRegions", haveRegions);
@@ -577,10 +604,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("repIndDegreeInnovation", repIndDegreeInnovation != null ? repIndDegreeInnovation.getName() : null);
       jsonData.put("leadOrganization", leadOrganization != null ? leadOrganization.getComposedName() : null);
 
-      String geographicScopesJson =
-        objectMapper.writeValueAsString(geographicScopes != null ? geographicScopes : new ArrayList<>());
-      String regionsJson = objectMapper.writeValueAsString(regions != null ? regions : new ArrayList<>());
-      String countriesJson = objectMapper.writeValueAsString(countries != null ? countries : new ArrayList<>());
+
       String organizationsJson =
         objectMapper.writeValueAsString(organizations != null ? organizations : new ArrayList<>());
       String deliverablesJson =
@@ -623,9 +647,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       String projectInnovationGeographicScopeListJson = objectMapper.writeValueAsString(
         projectInnovationGeographicScopeList != null ? projectInnovationGeographicScopeList : new ArrayList<>());
 
-      jsonData.put("geographicScopes", geographicScopesJson);
-      jsonData.put("regions", regionsJson);
-      jsonData.put("countries", countriesJson);
+      jsonData.put("geographicScopes", geographicScopes);
+      jsonData.put("regions", regions);
+      jsonData.put("countries", countries);
       jsonData.put("organizations", organizationsJson);
       jsonData.put("deliverables", deliverablesJson);
       jsonData.put("contributingOrganizations", contributingOrganizationsJson);
@@ -682,7 +706,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     try {
       this.innovationsReportName =
-        "AICCRA-INNOVATION" + innovation.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+        "AICCRA-Innovation" + innovation.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
 
       jsonRoot.put("templateData", this.innovationsTemplateData);
       jsonRoot.put("fileName", this.innovationsReportName);
