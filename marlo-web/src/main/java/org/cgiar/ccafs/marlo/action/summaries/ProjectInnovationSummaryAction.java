@@ -89,6 +89,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -689,11 +690,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       List<Map<String, String>> contributingOrganizationsDTO = contributingOrganizations.stream().map(org -> {
         Map<String, String> dto = new HashMap<>();
 
-        dto.put("name",
-          Optional.ofNullable(org.getInstitution()).map(Institution::getComposedName).orElse("Not available"));
+        dto.put("name", Optional.ofNullable(org.getInstitution()).map(Institution::getComposedName).orElse(null));
 
         dto.put("type", Optional.ofNullable(org.getInstitution()).map(Institution::getInstitutionType)
-          .map(InstitutionType::getName).orElse("Not available"));
+          .map(InstitutionType::getName).orElse(null));
 
         try {
           if (org.getInstitution() != null) {
@@ -715,7 +715,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           locations -> locations.stream().filter(loc -> loc.isHeadquater() && loc.getLocElement() != null).map(loc -> {
             LocElement locElement = locElementManager.getLocElementById(loc.getLocElement().getId());
             return (locElement != null) ? locElement.getName() : null;
-          }).filter(Objects::nonNull).findFirst()).orElse("Not available");
+          }).filter(Objects::nonNull).findFirst()).orElse(null);
 
         dto.put("headquarter", headquarter);
 
@@ -743,7 +743,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           ? center.getInstitution().getName() : null);
 
         dto.put("type", Optional.ofNullable(center.getInstitution()).map(Institution::getInstitutionType)
-          .map(InstitutionType::getName).orElse("Not available"));
+          .map(InstitutionType::getName).orElse(null));
 
         try {
           if (center.getInstitution() != null) {
@@ -780,7 +780,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           locations -> locations.stream().filter(loc -> loc.isHeadquater() && loc.getLocElement() != null).map(loc -> {
             LocElement locElement = locElementManager.getLocElementById(loc.getLocElement().getId());
             return (locElement != null) ? locElement.getName() : null;
-          }).filter(Objects::nonNull).findFirst()).orElse("Not available");
+          }).filter(Objects::nonNull).findFirst()).orElse(null);
 
         dto.put("headquarter", headquarter);
 
@@ -825,7 +825,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             if (shared.getProject() != null && shared.getProject().getAcronym() != null) {
               sharedInnovationsList.add(shared.getProject().getAcronym());
             } else {
-              sharedInnovationsList.add("Not available");
+              sharedInnovationsList.add(null);
             }
           }
         }
@@ -845,7 +845,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           if (lever != null && lever.getAllianceLever() != null && lever.getAllianceLever().getName() != null) {
             allianceLeversList.add(lever.getAllianceLever().getName());
           } else {
-            allianceLeversList.add("Not available");
+            allianceLeversList.add(null);
           }
         }
       }
@@ -864,7 +864,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           if (sdgItem != null && sdgItem.getSdg() != null && sdgItem.getSdg().getShortName() != null) {
             sdgsList.add(sdgItem.getSdg().getShortName());
           } else {
-            sdgsList.add("Not available");
+            sdgsList.add(null);
           }
         }
       }
@@ -883,7 +883,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           if (area != null && area.getImpactArea() != null && area.getImpactArea().getName() != null) {
             impactAreasList.add(area.getImpactArea().getName());
           } else {
-            impactAreasList.add("Not available");
+            impactAreasList.add(null);
           }
         }
       }
@@ -953,7 +953,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         if (outcome != null && outcome.getCrpOutcome() != null && outcome.getCrpOutcome().getComposedName() != null) {
           return outcome.getCrpOutcome().getComposedName();
         } else {
-          return "Not available";
+          return null;
         }
       }).collect(Collectors.toList()) : new ArrayList<>();
 
@@ -1017,6 +1017,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     final Map<String, String> footerMap = new HashMap<>();
 
     try {
+      jsonData.put("type", "AICCRA Innovation");
       jsonData.put("id", innovationID);
       jsonData.put("projectID", projectID);
       jsonData.put("clusterAcronym", projectAcronym);
@@ -1068,7 +1069,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("crpList", crpListJson);
       jsonData.put("partnerships", partnershipsJson);
       jsonData.put("isAllianceContribution", isAllianceContribution);
-      jsonData.put("timeCreation", this.getCurrentDate());
+      jsonData.put("timeCreation", this.getCurrentDatev2());
     } catch (Exception e) {
       System.out.println("error setting jsonData " + e);
     }
@@ -1173,6 +1174,45 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   }
 
 
+  public String getCurrentDatev2() {
+    // Define the date format: "Monday, March 17, 2025, at 21:57"
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(TimeZone.getTimeZone("CET")); // Set timezone to CET
+
+    // Format the current date without ordinal suffix
+    String formattedDate = formatter.format(new Date());
+
+    // Extract the day of the month
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"), Locale.US);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    // Get the appropriate ordinal suffix (st, nd, rd, th)
+    String ordinal = this.getDayOrdinal(day);
+
+    // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
+    return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+  // Method to determine the ordinal suffix for a given day
+  private String getDayOrdinal(int day) {
+    // Special cases: 11th, 12th, 13th always use "th"
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+
+    // Determine suffix based on the last digit
+    switch (day % 10) {
+      case 1:
+        return "st"; // 1st, 21st, 31st
+      case 2:
+        return "nd"; // 2nd, 22nd
+      case 3:
+        return "rd"; // 3rd, 23rd
+      default:
+        return "th"; // 4th, 5th, ..., 24th, 25th, etc.
+    }
+  }
+
   @SuppressWarnings("unused")
   private File getFile(String fileName) {
     // Get file from resources folder
@@ -1216,6 +1256,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     model.addRow(new Object[] {center, date, year, projectInnovationID, this.getSelectedCycle()});
     return model;
   }
+
 
   private TypedTableModel getProjectInnovationTableModel() {
     TypedTableModel model = new TypedTableModel(
@@ -1624,7 +1665,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       hasMilestones, milestones, subIdos, deliverableLink, phaseID, loggedCenter, isNew});
     return model;
   }
-
 
   /**
    * Validate the Alliance center selection
