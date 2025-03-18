@@ -441,6 +441,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getStudyType() != null) {
           type = projectExpectedStudyInfo.getStudyType().getName();
           if (projectExpectedStudyInfo.getStudyType().getId().intValue() == 1) {
+            type = "Outcome Impact Case Report (OICR)";
           }
         }
         // Status
@@ -614,7 +615,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             studyCenters = objectMapper.writeValueAsString(centersList);
           } else {
-            studyCenters = "[]";
+            studyCenters = null;
           }
         } catch (Exception e) {
           System.out.println("Error generating centers JSON: " + e.getMessage());
@@ -662,7 +663,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
               centers = objectMapper.writeValueAsString(centersList);
             } else {
-              centers = "[]";
+              centers = null;
             }
           }
         } catch (Exception e) {
