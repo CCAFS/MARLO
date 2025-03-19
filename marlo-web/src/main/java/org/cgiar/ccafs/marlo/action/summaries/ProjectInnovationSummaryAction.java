@@ -33,6 +33,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
+import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
@@ -75,6 +76,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
+import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
@@ -158,6 +160,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final RepIndInnovationTypeManager repIndInnovationTypeManager;
   private final InstitutionManager institutionManager;
   private final LocElementManager locElementManager;
+  private final ScalingReadinessManager scalingReadinessManager;
 
   private final MicroserviceReportAction microserviceReportAction;
   // Parameters
@@ -188,7 +191,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ReportConfigurationManager reportConfigurationManager, MicroserviceReportAction microserviceReportAction,
     InstitutionManager institutionManager, LocElementManager locElementManager,
-    RepIndInnovationTypeManager repIndInnovationTypeManager) {
+    RepIndInnovationTypeManager repIndInnovationTypeManager, ScalingReadinessManager scalingReadinessManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -205,6 +208,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.institutionManager = institutionManager;
     this.locElementManager = locElementManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
+    this.scalingReadinessManager = scalingReadinessManager;
   }
 
 
@@ -394,7 +398,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       crpOutcomesJson = null, partnersJson = null, partnerInstitutionsJson = null, partnerPersonsJson = null,
       myProjectsJson = null, crpListJson = null, partnershipsJson = null, contributingOrganizationsJson = null,
       isAllianceContribution = null, organizationsJson = null, deliverablesJson = null, intellectualProperty = null,
-      hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null;
+      hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null, hasCgiarContribution = null,
+      reasonNotCgiarContribution = null, scalingReadiness = null;
 
     List<ProjectInnovationOrganization> organizations = new ArrayList<>();
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
@@ -448,6 +453,22 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         hasFurtherDevelopment =
           (projectInnovationInfo != null && projectInnovationInfo.getHasFurtherDevelopment() != null)
             ? (projectInnovationInfo.getHasFurtherDevelopment() ? "true" : "false") : null;
+        hasCgiarContribution =
+          (projectInnovationInfo != null && projectInnovationInfo.getHasCgiarContribution() != null)
+            ? (projectInnovationInfo.getHasCgiarContribution() ? "true" : "false") : null;
+        reasonNotCgiarContribution =
+          (projectInnovationInfo != null && projectInnovationInfo.getReasonNotCgiarContribution() != null)
+            ? projectInnovationInfo.getReasonNotCgiarContribution() : null;
+        try {
+          int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
+            ? projectInnovationInfo.getReadinessScale() : 0;
+          ScalingReadiness scalingReadinessObj = scalingReadinessManager.getScalingReadinessById(scalingReadinessId);
+          if (scalingReadinessObj != null && scalingReadinessObj.getComposedName() != null) {
+            scalingReadiness = scalingReadinessObj.getComposedName();
+          }
+        } catch (Exception e) {
+          System.out.println("error getting readiness scale " + e);
+        }
 
         try {
           innovation.setProjectInnovationShareds(
@@ -1044,9 +1065,23 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("clearLead", clearLead);
       jsonData.put("haveRegions", haveRegions);
       jsonData.put("haveCountries", haveCountries);
+
+      // Alliance tab
+      jsonData.put("sdgs", sdgsJson);
+      jsonData.put("allianceLevers", allianceLeversJson);
+      jsonData.put("intellectualProperty", intellectualProperty);
       jsonData.put("hasFurtherDevelopment", hasFurtherDevelopment);
       jsonData.put("hasLegalRestrictions", hasLegalRestrictions);
       jsonData.put("hasAssetPotential", hasAssetPotential);
+
+      // One CGIAR Alignment tab
+      jsonData.put("hasCgiarContribution", hasCgiarContribution);
+      jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
+      jsonData.put("impactAreas", impactAreasJson);
+
+      // Innovation Readiness tab
+      jsonData.put("scalingReadiness", scalingReadiness);
+
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
       jsonData.put("repIndStageInnovation", repIndStageInnovation != null ? repIndStageInnovation.getName() : null);
@@ -1068,9 +1103,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("milestones", milestonesJson);
       jsonData.put("subIdos", subIdosJson);
       jsonData.put("sharedInnovations", sharedInnovationsJson);
-      jsonData.put("allianceLevers", allianceLeversJson);
-      jsonData.put("sdgs", sdgsJson);
-      jsonData.put("impactAreas", impactAreasJson);
       jsonData.put("allianceOrganizations", allianceOrganizationsJson);
       jsonData.put("actors", actorsJson);
       jsonData.put("toolCategories", toolCategoriesJson);
