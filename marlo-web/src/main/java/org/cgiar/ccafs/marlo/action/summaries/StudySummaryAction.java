@@ -139,7 +139,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    if (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE)) {
+    if ((this.getCurrentUser() == null) || (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE))) {
       Log.info("specificity false");
 
       try {
