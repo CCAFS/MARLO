@@ -92,6 +92,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -399,7 +400,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       myProjectsJson = null, crpListJson = null, partnershipsJson = null, contributingOrganizationsJson = null,
       isAllianceContribution = null, organizationsJson = null, deliverablesJson = null, intellectualProperty = null,
       hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null, hasCgiarContribution = null,
-      reasonNotCgiarContribution = null, scalingReadiness = null;
+      beneficiariesNarrative = null, reasonNotCgiarContribution = null, scalingReadiness = null,
+      knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null;
 
     List<ProjectInnovationOrganization> organizations = new ArrayList<>();
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
@@ -459,6 +461,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         reasonNotCgiarContribution =
           (projectInnovationInfo != null && projectInnovationInfo.getReasonNotCgiarContribution() != null)
             ? projectInnovationInfo.getReasonNotCgiarContribution() : null;
+        beneficiariesNarrative =
+          (projectInnovationInfo != null && projectInnovationInfo.getBeneficiariesNarrative() != null)
+            ? projectInnovationInfo.getBeneficiariesNarrative() : null;
+        knowledgeMethodsAndToolsNarrative =
+          (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeMethodsAndToolsNarrative() != null)
+            ? projectInnovationInfo.getKnowledgeMethodsAndToolsNarrative() : null;
+        knowledgeResultsNarrative =
+          (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeResultsNarrative() != null)
+            ? projectInnovationInfo.getKnowledgeResultsNarrative() : null;
+
         try {
           int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
             ? projectInnovationInfo.getReadinessScale() : 0;
@@ -476,43 +488,76 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(ProjectInnovationShared::isActive).collect(Collectors.toSet()) : new HashSet<>());
 
           innovation.setOrganizations(innovation.getProjectInnovationOrganizations() != null
-            ? innovation.getProjectInnovationOrganizations().stream().collect(Collectors.toList()) : new ArrayList<>());
+            ? innovation.getProjectInnovationOrganizations().stream().collect(Collectors.toList()) : null);
 
           innovation.setDeliverables(innovation.getProjectInnovationDeliverables() != null
-            ? innovation.getProjectInnovationDeliverables().stream().collect(Collectors.toList()) : new ArrayList<>());
+            ? innovation.getProjectInnovationDeliverables().stream().collect(Collectors.toList()) : null);
 
 
           innovation.setStudies(innovation.getProjectExpectedStudyInnovations() != null
-            ? innovation.getProjectExpectedStudyInnovations().stream().collect(Collectors.toList())
-            : new ArrayList<>());
+            ? innovation.getProjectExpectedStudyInnovations().stream().collect(Collectors.toList()) : null);
 
           innovation.setMilestones(innovation.getProjectInnovationMilestones() != null
-            ? innovation.getProjectInnovationMilestones().stream().collect(Collectors.toList()) : new ArrayList<>());
+            ? innovation.getProjectInnovationMilestones().stream().collect(Collectors.toList()) : null);
 
           innovation.setSubIdos(innovation.getProjectInnovationSubIdos() != null
-            ? innovation.getProjectInnovationSubIdos().stream().collect(Collectors.toList()) : new ArrayList<>());
+            ? innovation.getProjectInnovationSubIdos().stream().collect(Collectors.toList()) : null);
 
           innovation.setAllianceOrganizations(innovation.getProjectInnovationAllianceOrganizations() != null
-            ? innovation.getProjectInnovationAllianceOrganizations().stream().collect(Collectors.toList())
-            : new ArrayList<>());
-
-          innovation.setActors(innovation.getProjectInnovationActors() != null
-            ? innovation.getProjectInnovationActors().stream().collect(Collectors.toList()) : new ArrayList<>());
-
-          innovation.setReferences(innovation.getProjectInnovationReferences() != null
-            ? innovation.getProjectInnovationReferences().stream().collect(Collectors.toList()) : new ArrayList<>());
-
-          innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls() != null
-            ? innovation.getProjectInnovationReferenceUrls().stream().collect(Collectors.toList()) : new ArrayList<>());
+            ? innovation.getProjectInnovationAllianceOrganizations().stream().collect(Collectors.toList()) : null);
 
           innovation
             .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions() != null
               ? innovation.getProjectInnovationReferenceComplementarySolutions().stream().collect(Collectors.toList())
-              : new ArrayList<>());
+              : null);
 
 
         } catch (Exception e) {
           Log.error("Error in general getting information variables");
+        }
+
+        // Innovations references
+        if (innovation.getProjectInnovationReferences() != null
+          && !innovation.getProjectInnovationReferences().isEmpty()) {
+          try {
+            Set<Long> referenceIds = new HashSet<>();
+
+            innovation.setReferences(innovation.getProjectInnovationReferences().stream()
+              .filter(o -> o.isActive() && o.getPhase() != null && phase.getId().equals(o.getPhase().getId()))
+              .filter(o -> o.getId() != null).sorted(Comparator.comparing(ProjectInnovationReference::getId))
+              .filter(o -> referenceIds.add(o.getId())).collect(Collectors.toList()));
+
+          } catch (Exception e) {
+            System.out.println("error setting references " + e);
+          }
+        }
+
+        try {
+          // Innovations references URL
+          if (innovation.getProjectInnovationReferenceUrls() != null
+            && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
+            try {
+              Set<Long> referenceUrlIds = new HashSet<>();
+
+              innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
+                .filter(o -> o.isActive() && o.getPhase() != null && phase.getId().equals(o.getPhase().getId()))
+                .filter(o -> o.getId() != null) // Evitar IDs nulos
+                .sorted(Comparator.comparing(ProjectInnovationReferenceUrl::getId)) // Ordenar por ID
+                .filter(o -> referenceUrlIds.add(o.getId())) // Agregar solo IDs únicos
+                .collect(Collectors.toList()));
+
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        } catch (Exception e) {
+          System.out.println("error setting references url " + e);
+        }
+
+        // Innovations actors
+        if (innovation.getProjectInnovationActors() != null) {
+          innovation.setActors(new ArrayList<>(innovation.getProjectInnovationActors().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Expected Study crp Outcome list
@@ -709,12 +754,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     // JSON list
     try {
-      organizationsJson = objectMapper.writeValueAsString(organizations != null ? organizations : new ArrayList<>());
+      organizationsJson = objectMapper.writeValueAsString(organizations != null ? organizations : null);
     } catch (Exception e) {
       System.out.println("error in organizations json " + e);
     }
     try {
-      deliverablesJson = objectMapper.writeValueAsString(deliverables != null ? deliverables : new ArrayList<>());
+      deliverablesJson = objectMapper.writeValueAsString(deliverables != null ? deliverables : null);
     } catch (Exception e) {
       System.out.println("error in deliverables json " + e);
     }
@@ -762,7 +807,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     try {
-      crpsJson = objectMapper.writeValueAsString(crps != null ? crps : new ArrayList<>());
+      crpsJson = objectMapper.writeValueAsString(crps != null ? crps : null);
     } catch (Exception e) {
       System.out.println("Error getting crps: " + e.getMessage());
       e.printStackTrace();
@@ -827,21 +872,21 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     try {
-      studiesJson = objectMapper.writeValueAsString(studies != null ? studies : new ArrayList<>());
+      studiesJson = objectMapper.writeValueAsString(studies != null ? studies : null);
     } catch (Exception e) {
       System.out.println("Error getting studies: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      milestonesJson = objectMapper.writeValueAsString(milestones != null ? milestones : new ArrayList<>());
+      milestonesJson = objectMapper.writeValueAsString(milestones != null ? milestones : null);
     } catch (Exception e) {
       System.out.println("Error getting milestones: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      subIdosJson = objectMapper.writeValueAsString(subIdos != null ? subIdos : new ArrayList<>());
+      subIdosJson = objectMapper.writeValueAsString(subIdos != null ? subIdos : null);
     } catch (Exception e) {
       System.out.println("Error getting subIdos: " + e.getMessage());
       e.printStackTrace();
@@ -929,21 +974,60 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       e.printStackTrace();
     }
 
-
     try {
-      allianceOrganizationsJson =
-        objectMapper.writeValueAsString(allianceOrganizations != null ? allianceOrganizations : new ArrayList<>());
+      Set<Map<String, String>> allianceOrganizationsSet = new HashSet<>();
+
+      if (allianceOrganizations != null) {
+        for (ProjectInnovationAllianceOrganization allianceOrg : allianceOrganizations) {
+          if (allianceOrg != null && allianceOrg.getInstitution() != null) {
+            Map<String, String> orgMap = new HashMap<>();
+            orgMap.put("name", allianceOrg.getInstitution().getComposedName());
+            orgMap.put("scalingPartner", allianceOrg.getScalingPartner() ? "true" : "false");
+            orgMap.put("type",
+              allianceOrg.getInstitution() != null && allianceOrg.getInstitution().getComposedNameType() != null
+                ? allianceOrg.getInstitution().getInstitutionType().getName() : null);
+
+            allianceOrganizationsSet.add(orgMap);
+          }
+        }
+      }
+
+      allianceOrganizationsJson = objectMapper.writeValueAsString(new ArrayList<>(allianceOrganizationsSet));
     } catch (Exception e) {
       System.out.println("Error getting allianceOrganizations: " + e.getMessage());
       e.printStackTrace();
     }
 
+
     try {
-      actorsJson = objectMapper.writeValueAsString(actors != null ? actors : new ArrayList<>());
+      // Convert the list of ProjectInnovationActor to the required JSON structure
+      List<Map<String, Object>> actorsList = new ArrayList<>();
+
+      if (actors != null) {
+        for (ProjectInnovationActor actor : actors) {
+          if (actor != null && actor.getActor() != null) {
+            Map<String, Object> actorMap = new HashMap<>();
+            actorMap.put("type", actor.getActor().getDescription());
+            actorMap.put("name", actor.getActor().getName());
+            actorMap.put("sexAgeNotApply", actor.getSexAgeNotApply() ? "Yes" : "No");
+            actorMap.put("womenYouth", actor.getWomenYouth() ? "Yes" : "No");
+            actorMap.put("womenNotYouth", actor.getWomenNotYouth() ? "Yes" : "No");
+            actorMap.put("menYouth", actor.getMenYouth() ? "Yes" : "No");
+            actorMap.put("menNotYouth", actor.getMenNotYouth() ? "Yes" : "No");
+            actorMap.put("nonbinaryYouth", actor.getNonbinaryYouth() ? "Yes" : "No");
+            actorMap.put("nonbinaryNotYouth", actor.getNonbinaryNotYouth() ? "Yes" : "No");
+            actorsList.add(actorMap);
+          }
+        }
+      }
+
+      // Convert the transformed list to JSON
+      actorsJson = objectMapper.writeValueAsString(actorsList);
     } catch (Exception e) {
       System.out.println("Error getting actors: " + e.getMessage());
       e.printStackTrace();
     }
+
 
     try {
       toolCategoriesJson = toolCategories != null && !toolCategories.isEmpty() ? toolCategories.stream()
@@ -954,30 +1038,52 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     try {
-      referencesJson = objectMapper.writeValueAsString(references != null ? references : new ArrayList<>());
+      List<Map<String, String>> referencesList = new ArrayList<>();
+
+      if (references != null) {
+        for (ProjectInnovationReference ref : references) {
+          if (ref != null) {
+            Map<String, String> refMap = new HashMap<>();
+            refMap.put("url", ref.getLink());
+            refMap.put("reference", ref.getReference());
+            refMap.put("deliverableCategory",
+              ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
+                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory() != null
+                  ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
+                    .getName()
+                  : null);
+            refMap.put("deliverableType", ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
+
+            referencesList.add(refMap);
+          }
+        }
+      }
+
+      referencesJson = objectMapper.writeValueAsString(referencesList);
     } catch (Exception e) {
       System.out.println("Error getting references: " + e.getMessage());
       e.printStackTrace();
     }
 
+
     try {
-      referenceUrlsJson = objectMapper.writeValueAsString(referenceUrls != null ? referenceUrls : new ArrayList<>());
+      referenceUrlsJson = objectMapper.writeValueAsString(referenceUrls != null ? referenceUrls : null);
     } catch (Exception e) {
       System.out.println("Error getting referenceUrls: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      referenceComplementarySolutionsJson = objectMapper.writeValueAsString(
-        referenceComplementarySolutions != null ? referenceComplementarySolutions : new ArrayList<>());
+      referenceComplementarySolutionsJson = objectMapper
+        .writeValueAsString(referenceComplementarySolutions != null ? referenceComplementarySolutions : null);
     } catch (Exception e) {
       System.out.println("Error getting referenceComplementarySolutions: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      projectOutcomesJson =
-        objectMapper.writeValueAsString(projectOutcomes != null ? projectOutcomes : new ArrayList<>());
+      projectOutcomesJson = objectMapper.writeValueAsString(projectOutcomes != null ? projectOutcomes : null);
     } catch (Exception e) {
       System.out.println("Error getting projectOutcomes: " + e.getMessage());
       e.printStackTrace();
@@ -990,7 +1096,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         } else {
           return null;
         }
-      }).collect(Collectors.toList()) : new ArrayList<>();
+      }).collect(Collectors.toList()) : null;
 
       crpOutcomesJson = objectMapper.writeValueAsString(crpOutcomesList);
     } catch (Exception e) {
@@ -999,7 +1105,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     try {
-      partnersJson = objectMapper.writeValueAsString(partners != null ? partners : new ArrayList<>());
+      partnersJson = objectMapper.writeValueAsString(partners != null ? partners : null);
     } catch (Exception e) {
       System.out.println("Error getting partners: " + e.getMessage());
       e.printStackTrace();
@@ -1007,35 +1113,35 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
     try {
       partnerInstitutionsJson =
-        objectMapper.writeValueAsString(partnerInstitutions != null ? partnerInstitutions : new ArrayList<>());
+        objectMapper.writeValueAsString(partnerInstitutions != null ? partnerInstitutions : null);
     } catch (Exception e) {
       System.out.println("Error getting partnerInstitutions: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      partnerPersonsJson = objectMapper.writeValueAsString(partnerPersons != null ? partnerPersons : new ArrayList<>());
+      partnerPersonsJson = objectMapper.writeValueAsString(partnerPersons != null ? partnerPersons : null);
     } catch (Exception e) {
       System.out.println("Error getting partnerPersons: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      myProjectsJson = objectMapper.writeValueAsString(myProjects != null ? myProjects : new ArrayList<>());
+      myProjectsJson = objectMapper.writeValueAsString(myProjects != null ? myProjects : null);
     } catch (Exception e) {
       System.out.println("Error getting myProjects: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      crpListJson = objectMapper.writeValueAsString(crpList != null ? crpList : new ArrayList<>());
+      crpListJson = objectMapper.writeValueAsString(crpList != null ? crpList : null);
     } catch (Exception e) {
       System.out.println("Error getting crpList: " + e.getMessage());
       e.printStackTrace();
     }
 
     try {
-      partnershipsJson = objectMapper.writeValueAsString(partnerships != null ? partnerships : new ArrayList<>());
+      partnershipsJson = objectMapper.writeValueAsString(partnerships != null ? partnerships : null);
     } catch (Exception e) {
       System.out.println("Error getting partnerships: " + e.getMessage());
       e.printStackTrace();
@@ -1065,6 +1171,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("clearLead", clearLead);
       jsonData.put("haveRegions", haveRegions);
       jsonData.put("haveCountries", haveCountries);
+      jsonData.put("actors", actorsJson);
+      jsonData.put("allianceOrganizations", allianceOrganizationsJson);
+      jsonData.put("beneficiariesNarrative", beneficiariesNarrative);
+      jsonData.put("knowledgeMethodsAndToolsNarrative", knowledgeMethodsAndToolsNarrative);
+      jsonData.put("knowledgeResultsNarrative", knowledgeResultsNarrative);
 
       // Alliance tab
       jsonData.put("sdgs", sdgsJson);
@@ -1080,7 +1191,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("impactAreas", impactAreasJson);
 
       // Innovation Readiness tab
-      jsonData.put("scalingReadiness", scalingReadiness);
+      jsonData.put("readinessScale", scalingReadiness);
 
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
@@ -1103,8 +1214,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("milestones", milestonesJson);
       jsonData.put("subIdos", subIdosJson);
       jsonData.put("sharedInnovations", sharedInnovationsJson);
-      jsonData.put("allianceOrganizations", allianceOrganizationsJson);
-      jsonData.put("actors", actorsJson);
       jsonData.put("toolCategories", toolCategoriesJson);
       jsonData.put("references", referencesJson);
       jsonData.put("referenceUrls", referenceUrlsJson);
