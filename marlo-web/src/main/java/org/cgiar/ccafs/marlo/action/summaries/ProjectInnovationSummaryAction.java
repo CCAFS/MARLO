@@ -393,7 +393,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       referenceUrlsJson = null, referenceComplementarySolutionsJson = null, projectOutcomesJson = null,
       crpOutcomesJson = null, partnersJson = null, partnerInstitutionsJson = null, partnerPersonsJson = null,
       myProjectsJson = null, crpListJson = null, partnershipsJson = null, contributingOrganizationsJson = null,
-      isAllianceContribution = null, organizationsJson = null, deliverablesJson = null;
+      isAllianceContribution = null, organizationsJson = null, deliverablesJson = null, intellectualProperty = null,
+      hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null;
 
     List<ProjectInnovationOrganization> organizations = new ArrayList<>();
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
@@ -436,6 +437,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         narrative = projectInnovationInfo.getNarrative();
         innovationImportance = projectInnovationInfo.getInnovationImportance();
         year = projectInnovationInfo.getYear() + "";
+        intellectualProperty =
+          (projectInnovationInfo != null && projectInnovationInfo.getIntellectualPropertyInstitution() != null)
+            ? projectInnovationInfo.getIntellectualPropertyInstitution().getAcronym() : null;
+        hasLegalRestrictions =
+          (projectInnovationInfo != null && projectInnovationInfo.getHasLegalRestrictions() != null)
+            ? (projectInnovationInfo.getHasLegalRestrictions() ? "true" : "false") : null;
+        hasAssetPotential = (projectInnovationInfo != null && projectInnovationInfo.getHasAssetPotential() != null)
+          ? (projectInnovationInfo.getHasAssetPotential() ? "true" : "false") : null;
+        hasFurtherDevelopment =
+          (projectInnovationInfo != null && projectInnovationInfo.getHasFurtherDevelopment() != null)
+            ? (projectInnovationInfo.getHasFurtherDevelopment() ? "true" : "false") : null;
 
         try {
           innovation.setProjectInnovationShareds(
@@ -841,13 +853,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       List<String> allianceLeversList = new ArrayList<>();
 
       if (allianceLevers != null) {
+        Set<String> uniqueLevers = new HashSet<>(); // Use a Set to avoid duplicates
         for (ProjectInnovationAllianceLevers lever : allianceLevers) {
           if (lever != null && lever.getAllianceLever() != null && lever.getAllianceLever().getName() != null) {
-            allianceLeversList.add(lever.getAllianceLever().getName());
+            uniqueLevers.add(lever.getAllianceLever().getName()); // Add only unique values
           } else {
-            allianceLeversList.add(null);
+            uniqueLevers.add(null); // Keep the logic of adding null if there is no name
           }
         }
+        allianceLeversList.addAll(uniqueLevers); // Transfer unique values to the final list
       }
 
       allianceLeversJson = objectMapper.writeValueAsString(allianceLeversList);
@@ -1030,6 +1044,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("clearLead", clearLead);
       jsonData.put("haveRegions", haveRegions);
       jsonData.put("haveCountries", haveCountries);
+      jsonData.put("hasFurtherDevelopment", hasFurtherDevelopment);
+      jsonData.put("hasLegalRestrictions", hasLegalRestrictions);
+      jsonData.put("hasAssetPotential", hasAssetPotential);
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
       jsonData.put("repIndStageInnovation", repIndStageInnovation != null ? repIndStageInnovation.getName() : null);
