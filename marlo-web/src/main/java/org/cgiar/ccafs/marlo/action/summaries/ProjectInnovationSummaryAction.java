@@ -1009,13 +1009,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             Map<String, Object> actorMap = new HashMap<>();
             actorMap.put("type", actor.getActor().getDescription());
             actorMap.put("name", actor.getActor().getName());
-            actorMap.put("sexAgeNotApply", actor.getSexAgeNotApply() ? "Yes" : "No");
-            actorMap.put("womenYouth", actor.getWomenYouth() ? "Yes" : "No");
-            actorMap.put("womenNotYouth", actor.getWomenNotYouth() ? "Yes" : "No");
-            actorMap.put("menYouth", actor.getMenYouth() ? "Yes" : "No");
-            actorMap.put("menNotYouth", actor.getMenNotYouth() ? "Yes" : "No");
-            actorMap.put("nonbinaryYouth", actor.getNonbinaryYouth() ? "Yes" : "No");
-            actorMap.put("nonbinaryNotYouth", actor.getNonbinaryNotYouth() ? "Yes" : "No");
+            actorMap.put("sexAgeNotApply", Boolean.TRUE.equals(actor.getSexAgeNotApply()) ? "Yes" : "No");
+            actorMap.put("womenYouth", Boolean.TRUE.equals(actor.getWomenYouth()) ? "Yes" : "No");
+            actorMap.put("womenNotYouth", Boolean.TRUE.equals(actor.getWomenNotYouth()) ? "Yes" : "No");
+            actorMap.put("menYouth", Boolean.TRUE.equals(actor.getMenYouth()) ? "Yes" : "No");
+            actorMap.put("menNotYouth", Boolean.TRUE.equals(actor.getMenNotYouth()) ? "Yes" : "No");
+            actorMap.put("nonbinaryYouth", Boolean.TRUE.equals(actor.getNonbinaryYouth()) ? "Yes" : "No");
+            actorMap.put("nonbinaryNotYouth", Boolean.TRUE.equals(actor.getNonbinaryNotYouth()) ? "Yes" : "No");
             actorsList.add(actorMap);
           }
         }
