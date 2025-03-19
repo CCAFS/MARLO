@@ -476,7 +476,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             ? projectInnovationInfo.getReadinessScale() : 0;
           ScalingReadiness scalingReadinessObj = scalingReadinessManager.getScalingReadinessById(scalingReadinessId);
           if (scalingReadinessObj != null && scalingReadinessObj.getComposedName() != null) {
-            scalingReadiness = scalingReadinessObj.getComposedName();
+            scalingReadiness = scalingReadinessObj.getComposedName().split(" - ")[0].trim();
           }
         } catch (Exception e) {
           System.out.println("error getting readiness scale " + e);
