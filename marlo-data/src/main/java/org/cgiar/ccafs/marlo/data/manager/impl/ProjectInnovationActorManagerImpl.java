@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationActorManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,13 +143,16 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
   private void saveProjectInnovationActorPhase(Phase next, Long innovationID,
     ProjectInnovationActor projectInnovationActor) {
     Phase phase = phaseDAO.find(next.getId());
+    List<ProjectInnovationActor> innovationActors = new ArrayList<>();
+    try {
+      innovationActors =
 
-    List<ProjectInnovationActor> innovationActors =
-
-      projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-        .filter(c -> c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
-        .collect(Collectors.toList());
-
+        projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
+          .filter(c -> c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      System.out.println("Error in ActorByInnovationAndPhase method");
+    }
     if (innovationActors.isEmpty()) {
       ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
       projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
