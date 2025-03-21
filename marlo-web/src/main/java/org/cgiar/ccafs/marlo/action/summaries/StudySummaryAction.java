@@ -279,7 +279,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     try {
       if (studyProjects != null && !studyProjects.isEmpty()) {
         fileName.append(studyProjects.replaceAll("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● ", "") + "-");
-      } else if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
+      } else if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.getProjectExpectedStudy() != null
+        && projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
         fileName.append(projectExpectedStudyInfo.getProjectExpectedStudy().getProject()
           .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
       }
