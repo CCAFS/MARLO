@@ -75,7 +75,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationReference> projectInnovationReferences =
-      this.getProjectInnovationReferenceByPhaseAndInnovation(innovationID, next.getId()).stream()
+      this.getProjectInnovationReferenceByPhaseAndInnovation(next.getId(), innovationID).stream()
         .filter(
           c -> c != null && c.getId() != null && c.getReference().equals(projectInnovationReference.getReference()))
         .collect(Collectors.toList());
@@ -146,7 +146,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationReference> projectInnovationReferences =
-      this.getProjectInnovationReferenceByPhaseAndInnovation(innovationID, next.getId()).stream()
+      this.getProjectInnovationReferenceByPhaseAndInnovation(next.getId(), innovationID).stream()
         .filter(
           c -> c != null && c.getId() != null && c.getReference().equals(projectInnovationReference.getReference()))
         .collect(Collectors.toList());

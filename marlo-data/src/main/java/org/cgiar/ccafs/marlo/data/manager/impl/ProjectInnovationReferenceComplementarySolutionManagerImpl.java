@@ -80,7 +80,7 @@ public class ProjectInnovationReferenceComplementarySolutionManagerImpl
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions =
-      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(innovationID, next.getId()).stream()
+      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(next.getId(), innovationID).stream()
         .filter(c -> c != null && c.getId() != null
           && c.getReference().equals(projectInnovationReferenceComplementarySolution.getReference()))
         .collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class ProjectInnovationReferenceComplementarySolutionManagerImpl
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationReferenceComplementarySolution> projectInnovationReferenceComplementarySolutions =
-      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(innovationID, next.getId()).stream()
+      this.getProjectInnovationReferenceComplementarySolutionByPhaseAndInnovation(next.getId(), innovationID).stream()
         .filter(c -> c != null && c.getId() != null
           && c.getReference().equals(projectInnovationReferenceComplementarySolution.getReference()))
         .collect(Collectors.toList());

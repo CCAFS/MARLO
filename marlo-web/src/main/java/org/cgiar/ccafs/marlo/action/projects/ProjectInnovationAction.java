@@ -2423,6 +2423,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     } catch (Exception e) {
       Log.error("Error saving actors " + e);
+      System.out.println("Error saving actors " + e);
     }
   }
 
@@ -3376,6 +3377,7 @@ public class ProjectInnovationAction extends BaseAction {
 
         ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
           new ProjectInnovationReferenceComplementarySolution();
+
         if (innovationReference.getId() != null) {
           innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
             .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
@@ -3448,10 +3450,12 @@ public class ProjectInnovationAction extends BaseAction {
           studyReference.setId(null);
         }
         ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
-        if (studyReference.getId() != null) {
-          studyReferenceSave =
-            this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
-        }
+        /*
+         * if (studyReference.getId() != null) {
+         * studyReferenceSave =
+         * this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+         * }
+         */
         studyReferenceSave.setProjectInnovation(projectInnovation);
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
@@ -3527,11 +3531,12 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
-          if (innovationReferenceUrl.getId() != null) {
-            innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
-              .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
-          }
-
+          /*
+           * if (innovationReferenceUrl.getId() != null) {
+           * innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
+           * .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
+           * }
+           */
           innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
           innovationReferenceUrlSave.setPhase(phase);
           innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
