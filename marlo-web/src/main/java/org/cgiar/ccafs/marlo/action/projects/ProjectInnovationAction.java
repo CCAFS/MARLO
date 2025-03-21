@@ -3363,50 +3363,55 @@ public class ProjectInnovationAction extends BaseAction {
     }
 
     // Save form Information
-    if (this.innovation.getReferenceComplementarySolutions() != null) {
-      for (final ProjectInnovationReferenceComplementarySolution innovationReference : this.innovation
-        .getReferenceComplementarySolutions()) {
+    try {
+      if (this.innovation.getReferenceComplementarySolutions() != null) {
+        for (final ProjectInnovationReferenceComplementarySolution innovationReference : this.innovation
+          .getReferenceComplementarySolutions()) {
 
-        if (innovationReference.getId() != null && innovationReference.getId() == -1) {
-          innovationReference.setId(null);
+          if (innovationReference.getId() != null && innovationReference.getId() == -1) {
+            innovationReference.setId(null);
+          }
+
+          if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() == -1) {
+            innovationReference.setInnovation(null);
+          }
+
+          ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
+            new ProjectInnovationReferenceComplementarySolution();
+
+          if (innovationReference.getId() != null) {
+            innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
+              .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
+          }
+
+          innovationReferenceSave.setProjectInnovation(projectInnovation);
+          innovationReferenceSave.setPhase(phase);
+          innovationReferenceSave.setReference(innovationReference.getReference());
+          innovationReferenceSave.setLink(innovationReference.getLink());
+          innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
+          innovationReferenceSave.setInnovation(innovationReference.getInnovation());
+          if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() != null
+            && innovationReference.getInnovation().getId() == -1) {
+            innovationReferenceSave.setInnovation(null);
+          }
+          innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
+          if (innovationReference.getDeliverableType() != null
+            && innovationReference.getDeliverableType().getId() != null
+            && innovationReference.getDeliverableType().getId() == -1) {
+            innovationReference.setDeliverableType(null);
+          }
+          innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
+
+          this.projectInnovationReferenceComplementarySolutionManager
+            .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
+          // This is to add innovationReferenceSave to generate correct
+          // auditlog.
+          this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
+
         }
-
-        if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() == -1) {
-          innovationReference.setInnovation(null);
-        }
-
-        ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
-          new ProjectInnovationReferenceComplementarySolution();
-
-        if (innovationReference.getId() != null) {
-          innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
-            .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
-        }
-
-        innovationReferenceSave.setProjectInnovation(projectInnovation);
-        innovationReferenceSave.setPhase(phase);
-        innovationReferenceSave.setReference(innovationReference.getReference());
-        innovationReferenceSave.setLink(innovationReference.getLink());
-        innovationReferenceSave.setEvidenceByDeliverable(innovationReference.getEvidenceByDeliverable());
-        innovationReferenceSave.setInnovation(innovationReference.getInnovation());
-        if (innovationReference.getInnovation() != null && innovationReference.getInnovation().getId() != null
-          && innovationReference.getInnovation().getId() == -1) {
-          innovationReferenceSave.setInnovation(null);
-        }
-        innovationReferenceSave.setDeliverable(innovationReference.getDeliverable());
-        if (innovationReference.getDeliverableType() != null && innovationReference.getDeliverableType().getId() != null
-          && innovationReference.getDeliverableType().getId() == -1) {
-          innovationReference.setDeliverableType(null);
-        }
-        innovationReferenceSave.setDeliverableType(innovationReference.getDeliverableType());
-
-        this.projectInnovationReferenceComplementarySolutionManager
-          .saveProjectInnovationReferenceComplementarySolution(innovationReferenceSave);
-        // This is to add innovationReferenceSave to generate correct
-        // auditlog.
-        this.innovation.getProjectInnovationReferenceComplementarySolutions().add(innovationReferenceSave);
-
       }
+    } catch (Exception e) {
+      Log.error("error saving reference complementary solution " + e);
     }
   }
 
@@ -3450,12 +3455,12 @@ public class ProjectInnovationAction extends BaseAction {
           studyReference.setId(null);
         }
         ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
-        /*
-         * if (studyReference.getId() != null) {
-         * studyReferenceSave =
-         * this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
-         * }
-         */
+
+        if (studyReference.getId() != null) {
+          studyReferenceSave =
+            this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+        }
+
         studyReferenceSave.setProjectInnovation(projectInnovation);
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
@@ -3511,7 +3516,7 @@ public class ProjectInnovationAction extends BaseAction {
 
         for (ProjectInnovationReferenceUrl innovationReferenceUrl : referencesPrev) {
           if ((innovation.getReferenceUrls() == null || innovation.getReferenceUrls().isEmpty())
-            || innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
+            || !innovation.getReferenceUrls().contains(innovationReferenceUrl)) {
             this.projectInnovationReferenceUrlManager
               .deleteProjectInnovationReferenceUrl(innovationReferenceUrl.getId());
           }
@@ -3531,12 +3536,12 @@ public class ProjectInnovationAction extends BaseAction {
           }
 
           ProjectInnovationReferenceUrl innovationReferenceUrlSave = new ProjectInnovationReferenceUrl();
-          /*
-           * if (innovationReferenceUrl.getId() != null) {
-           * innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
-           * .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
-           * }
-           */
+
+          if (innovationReferenceUrl.getId() != null) {
+            innovationReferenceUrlSave = this.projectInnovationReferenceUrlManager
+              .getProjectInnovationReferenceUrlById(innovationReferenceUrl.getId());
+          }
+
           innovationReferenceUrlSave.setProjectInnovation(projectInnovation);
           innovationReferenceUrlSave.setPhase(phase);
           innovationReferenceUrlSave.setReference(innovationReferenceUrl.getReference());
