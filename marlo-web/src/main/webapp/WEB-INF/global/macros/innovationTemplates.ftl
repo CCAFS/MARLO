@@ -19,7 +19,7 @@
       </div>      
 
       [#-- Buttons - Shared Clusters & Copy --]
-      <div class="col-md-4 generalInnovationsOptions">
+      <div class="col-md-3 generalInnovationsOptions">
         [#-- Shared Clusters --]
         <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
           <p><span class="glyphicon glyphicon-log-out"></span>[@s.text name="projectInnovations.shared" /]</p>
@@ -27,10 +27,10 @@
         </button>
 
         [#-- Copy --]
-        <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px; display: none;">
+        <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
           <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="projectInnovations.copylink" /]</p> 
         </button>
-        [#local summaryPDF = "${baseUrl}/projects/${crpSession}/projectInnovationsSummary.do?studyID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+        [#local summaryPDF = "${baseUrl}/summaries/${crpSession}/projectInnovationSummary.do?innovationID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
         [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
         <div class="message text-center" style="display:none; margin-top:6px;">[@s.text name="study.general.link.copy" /]</div>
 
