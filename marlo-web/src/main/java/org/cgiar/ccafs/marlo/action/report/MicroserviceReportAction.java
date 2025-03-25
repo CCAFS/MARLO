@@ -310,9 +310,13 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public void sendInnovationsQueueMessage(String json, String reportName) {
-    this.setInnovationsReportName(reportName);
-    this.setJsonData(json);
-    this.sendInnovationsQueueMessage();
+    try {
+      this.setInnovationsReportName(reportName);
+      this.setJsonData(json);
+      this.sendInnovationsQueueMessage();
+    } catch (Exception e) {
+      System.out.println("error in sendInnovationsQueueMessage " + e);
+    }
   }
 
   public String sendOICRsQueueMessage() {

@@ -1318,11 +1318,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       System.out.println("send microservice class: " + this.innovationsReportName);
       this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
 
-      return jsonOutput;
     } catch (final IOException e) {
       System.out.println("error generating json " + e);
-      return "{}";
     }
+
+    return SUCCESS;
   }
 
   public byte[] getBytesPDF() {
