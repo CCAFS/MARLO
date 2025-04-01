@@ -58,6 +58,15 @@
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-15" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=isOutcomeCaseStudy /]
       </div>
+
+      [#-- OICR Score --]
+      [#if action.hasSpecificities('feedback_active') && action.canManageFeedback(projectID)]
+        <div class="form-group">
+          [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" type="number" helpIcon=false required=false editable=editable isMainTitle=true /]
+        </div>
+      [/#if]
+
+      
       
       [#-- Who is commissioning this study --]
       [#if !isOutcomeCaseStudy]
@@ -669,13 +678,6 @@
             [@customForm.select name="${customName}.projectExpectedStudyInfo.tag.id" value="${(element.projectExpectedStudyInfo.tag.id)!-1}" className="setSelect2 studyTag" i18nkey="study.general.tag" listName="tagList" keyFieldName="id"  displayFieldName="tagName" required=false editable=(editable && isOutcomeCaseStudy && action.canAccessSuperAdmin()) && action.hasSpecificities('oicr_tag_field_manual_manage_active') /]
           </div>
         [/#if]
-      [/#if]
-
-      [#-- Score for MELIAs --]
-      [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
-        <div class="col-md-2">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" helpIcon=false required=false editable=editable /]
-        </div>
       [/#if]
 
       [#-- Status --]
