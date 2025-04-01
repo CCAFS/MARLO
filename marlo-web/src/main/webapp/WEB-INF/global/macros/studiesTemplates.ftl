@@ -53,20 +53,21 @@
             </div>
           </div>
         [/#if]
+        
+      
+      [#-- OICR Score --]
+      [#if (action.canAccessSuperAdmin() || action.isPMU()) && action.hasSpecificities('oicr_score_field_active')]
+        <div class="form-group row">
+          <div class="col-md-2 mb-4">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" type="number" helpIcon=false required=false editable=editable isMainTitle=true /]
+          </div>
+        </div>
+      [/#if]
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
         [@customForm.input name="${customName}.projectExpectedStudyInfo.title" i18nkey="study.generalInformation.title" help="study.generalInformation.title.help" className="limitWords-15" helpIcon=!isOutcomeCaseStudy required=true editable=editable isMainTitle=isOutcomeCaseStudy /]
       </div>
-
-      [#-- OICR Score --]
-      [#if action.hasSpecificities('feedback_active') && action.canManageFeedback(projectID)]
-        <div class="form-group">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" type="number" helpIcon=false required=false editable=editable isMainTitle=true /]
-        </div>
-      [/#if]
-
-      
       
       [#-- Who is commissioning this study --]
       [#if !isOutcomeCaseStudy]
