@@ -53,6 +53,16 @@
             </div>
           </div>
         [/#if]
+        
+      
+      [#-- OICR Score --]
+      [#if (action.canAccessSuperAdmin() || action.isPMU()) && action.hasSpecificities('oicr_score_field_active')]
+        <div class="form-group row">
+          <div class="col-md-2 mb-4">
+            [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" type="number" helpIcon=false required=false editable=editable isMainTitle=true /]
+          </div>
+        </div>
+      [/#if]
 
       [#-- 1. Title (up to 25 words) --]
       <div class="form-group">
@@ -671,13 +681,6 @@
         [/#if]
       [/#if]
 
-      [#-- Score for MELIAs --]
-      [#if !isOutcomeCaseStudy && action.hasSpecificities('melia_score_field_active')]
-        <div class="col-md-2">
-          [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" helpIcon=false required=false editable=editable /]
-        </div>
-      [/#if]
-
       [#-- Status --]
       <div class="${isOutcomeCaseStudy?string('col-md-2','col-md-3')}">
         [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
@@ -1052,7 +1055,7 @@
       </div>
       [#-- Number --]
       <div class="col-md-4">
-        [@customForm.input name="${customName}.number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive && additionalRequired) editable=editable /]
+        [@customForm.input name="${customName}.number" type="number" i18nkey="study.quantification.number" className="numericInput" required=(editable && reportingActive && additionalRequired) editable=editable /]
       </div>
       [#-- Unit --]
       <div class="col-md-4"> 
