@@ -87,7 +87,7 @@
       <tr class="subHeader">
         <th id="ids">[@s.text name="dashboard.studies.id" /]</th>
         <th id="studyProject">[@s.text name="project" /]</th>
-        <th id="studyTitles" >OICR/MELIA [@s.text name="dashboard.studies.title" /]</th>
+        <th id="studyTitles" >OICR [@s.text name="dashboard.studies.title" /]</th>
         <th id="studyType">[@s.text name="dashboard.studies.type" /]</th>
         [#--<th id="studyEDY">[@s.text name="project.deliverableList.deliverySummaryYear" /]</th>--]
       </tr>
