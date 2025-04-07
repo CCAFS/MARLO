@@ -388,7 +388,9 @@ span.login-input-container.username:hover i{
 
 .crps-select.show-select-bar{
   left: -135px;
+  /* Show navigation CRP bar
   display: none;
+  */
 }
 
 @media(max-width:767px){
@@ -544,9 +546,6 @@ p.login-description{
 
 /*end input animation*/
 
-.action-login{
-  display: none;
-}
 
 .button-pdf-modal{
   display: none;
