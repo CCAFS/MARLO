@@ -19,7 +19,7 @@
       </div>      
 
       [#-- Buttons - Shared Clusters & Copy --]
-      <div class="col-md-3 generalInnovationsOptions">
+      <div class="col-md-4 generalInnovationsOptions">
         [#-- Shared Clusters --]
         <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
           <p><span class="glyphicon glyphicon-log-out"></span>[@s.text name="projectInnovations.shared" /]</p>
