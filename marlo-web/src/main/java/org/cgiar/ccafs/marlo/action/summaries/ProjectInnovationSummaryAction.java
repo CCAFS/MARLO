@@ -614,11 +614,12 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             // Impact area code
             if (innovation.getImpactAreas() != null && !innovation.getImpactAreas().isEmpty()) {
               for (ProjectInnovationImpactArea impactAreaItem : innovation.getImpactAreas()) {
-                if (impactAreaItem != null && impactAreaItem.getId() != null) {
+                if (impactAreaItem != null && impactAreaItem.getImpactArea() != null
+                  && impactAreaItem.getImpactArea().getId() != null) {
                   if (impactAreaCode == null || impactAreaCode.isEmpty()) {
-                    impactAreaCode = String.valueOf(impactAreaItem.getId());
+                    impactAreaCode = String.valueOf(impactAreaItem.getImpactArea().getId());
                   } else {
-                    impactAreaCode += ", " + String.valueOf(impactAreaItem.getId());
+                    impactAreaCode += ", " + String.valueOf(impactAreaItem.getImpactArea().getId());
                   }
                 }
               }
