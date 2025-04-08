@@ -4392,8 +4392,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<GlobalUnitType> globalUnitTypes = this.globalUnitTypeManager.findAll();
 
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
-      globalUnitType.setGlobalUnitsList(globalUnitType.getGlobalUnits().stream()
-        .filter(c -> c.isActive() && c.getAcronym().equals("AICCRA")).collect(Collectors.toList()));
+      globalUnitType.setGlobalUnitsList(
+        globalUnitType.getGlobalUnits().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+      globalUnitType.getGlobalUnitsList().sort((i1, i2) -> i1.getAcronym().compareTo(i2.getAcronym()));
     }
 
     return globalUnitTypes;
@@ -6389,7 +6390,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null && this.getCurrentCrp().getId() == 45) {
+    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
+      && (this.getCurrentCrp().getId() == 45 || this.getCurrentCrp().getId() == 47)) {
       return true;
     } else {
       return false;
