@@ -302,8 +302,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         .getProjectInnovationInfo(this.getSelectedPhase());
     }
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    if ((this.getCurrentUser() != null)
-      && (this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE))) {
+
+    boolean generatePentahoReport =
+      this.getCurrentUser() == null || this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE);
+
+    if (generatePentahoReport) {
 
       try {
         Resource reportResource = resourceManager
