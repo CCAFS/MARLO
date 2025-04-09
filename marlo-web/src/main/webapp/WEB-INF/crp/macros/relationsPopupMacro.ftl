@@ -342,7 +342,7 @@
     [#if evidencies?has_content]
       [#-- Button --]
       <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-evidencies-${composedID}">
-        <span class="icon-20 evidences"></span> <strong>${evidencies?size}</strong> [#if labelText] OICRs / MELIAs[/#if]
+        <span class="icon-20 evidences"></span> <strong>${evidencies?size}</strong> [#if labelText] OICRs [/#if]
       </button>
 
       [#-- Modal --]

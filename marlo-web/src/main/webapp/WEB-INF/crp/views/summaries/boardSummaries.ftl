@@ -93,9 +93,9 @@
           "label":  "Studies Type",
           "name":   "studyType",
           "data" : [ 
-            { "label": "All",                 "value": "all"},
-            { "label": "Outcome/Impact Case Reports",  "value": "outcome_case_study"}, 
-            { "label": "Other Studies",              "value": "others"}
+            [#-- { "label": "All",                 "value": "all"}, --]
+            { "label": "Outcome/Impact Case Reports",  "value": "outcome_case_study"} 
+            [#-- { "label": "Other Studies",    "value": "others"} --]
           ] 
         }
       ]

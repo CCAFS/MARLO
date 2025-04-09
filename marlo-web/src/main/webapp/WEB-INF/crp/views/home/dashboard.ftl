@@ -171,7 +171,7 @@
           <div class="itemsTablet" id="studies">
             <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
             <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
-            <p class="textOICRs">OICRs & MELIAs</p>
+            <p class="textOICRs">OICRs</p>
           </div>
           [#if action.hasSpecificities('innovation_section_active') ]
             <div class="itemsTablet" id="innovations">
