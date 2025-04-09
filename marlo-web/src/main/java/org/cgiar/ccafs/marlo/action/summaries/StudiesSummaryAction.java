@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInfoManager;
@@ -79,6 +80,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
   private final InstitutionManager institutionManager;
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
+  private final LocElementManager locElementManager;
 
   // PDF bytes
   private byte[] bytesPDF;
@@ -100,9 +102,9 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
     ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager, HTMLParser htmlParser,
     ProjectManager projectManager, ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager,
     InstitutionManager institutionManager, MicroserviceReportAction microserviceReportAction,
-    ReportConfigurationManager reportConfigurationManager) {
+    ReportConfigurationManager reportConfigurationManager, LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
-      institutionManager, microserviceReportAction, reportConfigurationManager);
+      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyInfoManager = projectExpectedStudyInfoManager;
     this.htmlParser = htmlParser;
@@ -110,6 +112,7 @@ public class StudiesSummaryAction extends BaseStudySummaryData implements Summar
     this.institutionManager = institutionManager;
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
+    this.locElementManager = locElementManager;
   }
 
   @Override

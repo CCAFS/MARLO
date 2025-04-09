@@ -12,5 +12,8 @@
 		<property name="oicrTemplateData" type="string">
 			<column name="oicr_template_data" sql-type="TEXT" />
 		</property>		
+		<property name="innovationTemplateData" type="string">
+			<column name="innovation_template_data" sql-type="TEXT" />
+		</property>		
 	</class>
 </hibernate-mapping>
