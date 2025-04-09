@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -66,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,6 +81,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -228,6 +233,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private final InstitutionManager institutionManager;
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
+  private final LocElementManager locElementManager;
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String bucketName = null;
@@ -235,13 +241,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
-    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    LocElementManager locElementManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.htmlParser = htmlParser;
     this.projectExpectedStudyCountryManager = projectExpectedStudyCountryManager;
     this.institutionManager = institutionManager;
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
+    this.locElementManager = locElementManager;
   }
 
   /**
@@ -385,12 +393,18 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     }
   }
 
-  public String generateAndSendJson(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
+  private String extractCodeFromName(String name) {
+    Pattern pattern = Pattern.compile("\\d+");
+    Matcher matcher = pattern.matcher(name);
+    return matcher.find() ? matcher.group() : "N/A";
+  }
 
+  public String generateAndSendJson(List<ProjectExpectedStudyInfo> projectExpectedStudyInfos) {
     final URLShortener urlShortener = new URLShortener();
     if ((projectExpectedStudyInfos != null) && !projectExpectedStudyInfos.isEmpty()) {
       projectExpectedStudyInfos
         .sort((p1, p2) -> p1.getProjectExpectedStudy().getId().compareTo(p2.getProjectExpectedStudy().getId()));
+
       for (final ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfos) {
 
         Long id = null;
@@ -402,13 +416,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           regionalPrograms = null, institutions = null, elaborationOutcomeImpactStatement = null, referenceText = null,
           genderRelevance = null, youthRelevance = null, capacityRelevance = null, otherCrossCuttingDimensions = null,
           communicationsMaterial = null, contacts = null, studyProjects = null, tagged = null, cgiarInnovation = null,
-          cgiarInnovations = null, climateRelevance = null, link = null, links = null;
+          cgiarInnovations = null, climateRelevance = null, link = null, links = null, centers = null;
         final String studyPolicies = null, url = null;
         String studiesReference = null, meliaPublications = null, performanceIndicator = null, covidAnalysis = null,
-          centers = null, clusterAcronym = null, clusterName = null, leadPerson = null, isAllianceContribution = null,
-          allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null, primarySDGcontribution = null,
-          relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null, impactArea = null,
-          tagAs = null, globalTargets = null, impactAreaCode = null, reasonNotCgiarContribution = null;
+          studyCenters = null, clusterAcronym = null, clusterName = null, leadPerson = null,
+          isAllianceContribution = null, allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null,
+          primarySDGcontribution = null, relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null,
+          impactArea = null, tagAs = null, globalTargets = null, impactAreaCode = null,
+          reasonNotCgiarContribution = null, otherCrossCuttingSelection = null;
 
         Boolean isRegional = false, isNational = false;
         final ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyInfo.getProjectExpectedStudy();
@@ -427,6 +442,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         if (projectExpectedStudyInfo.getStudyType() != null) {
           type = projectExpectedStudyInfo.getStudyType().getName();
           if (projectExpectedStudyInfo.getStudyType().getId().intValue() == 1) {
+            type = "Outcome Impact Case Report (OICR)";
           }
         }
         // Status
@@ -467,11 +483,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           && (projectExpectedStudyInfo.getRepIndStageStudy().getName() != null)
           && (projectExpectedStudyInfo.getRepIndStageStudy().getDescription() != null)) {
           stageStudy = projectExpectedStudyInfo.getRepIndStageStudy().getName() + " - "
-            + projectExpectedStudyInfo.getRepIndStageStudy().getDescription();
+            + projectExpectedStudyInfo.getRepIndStageStudy().getDescriptionAF();
         }
-
-        // IsAllianceContribution
-
 
         // SubIdos
         final List<ProjectExpectedStudySubIdo> subIdosList = projectExpectedStudy.getProjectExpectedStudySubIdos()
@@ -558,34 +571,104 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
         // Centers(s)
-        final List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudy.getProjectExpectedStudyCenters()
-          .stream().filter(c -> c.isActive() && (c.getPhase() != null) && c.getPhase().equals(phase))
-          .collect(Collectors.toList());
-        if ((studyCenters != null) && !studyCenters.isEmpty()) {
-          final Set<String> centersSet = new HashSet<>();
-          for (final ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
+        try {
+          List<ProjectExpectedStudyCenter> studyCentersList = projectExpectedStudy.getProjectExpectedStudyCenters()
+            .stream().filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(phase))
+            .collect(Collectors.toList());
 
-            final String institutionType =
-              Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
-                .map(InstitutionType::getName).map(name -> " | Type: " + name).orElse("");
-            try {
-              projectExpectedStudyCenter.getInstitution().getLocations()
-                .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
-                  .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
-            } catch (final Exception e) {
-              Log.error("Error setting locations " + e);
-            }
-            final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
-              .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
-                  && (location.getLocElement().getName() != null))
-                .map(location -> " | headquarter: " + location.getLocElement().getName()).findFirst())
-              .orElse("");
+          if (!studyCentersList.isEmpty()) {
+            List<Map<String, String>> centersList = studyCentersList.stream().map(center -> {
+              Map<String, String> centerMap = new HashMap<>();
+              Institution institution = center.getInstitution();
 
-            centersSet.add(
-              "; " + projectExpectedStudyCenter.getInstitution().getComposedName() + institutionType + headquarter);
+              if (institution != null) {
+                centerMap.put("name", institution.getComposedName());
+
+                String institutionType = Optional.ofNullable(institution.getInstitutionType())
+                  .map(InstitutionType::getName).orElse("Not available");
+                centerMap.put("type", institutionType);
+
+                try {
+                  if (institution != null) {
+                    institution.setLocations(new ArrayList<>());
+                    if (institution.getInstitutionsLocations() != null
+                      && !institution.getInstitutionsLocations().isEmpty()) {
+                      institution.getLocations().addAll(institution.getInstitutionsLocations().stream()
+                        .filter(o -> o.isActive()).collect(Collectors.toList()));
+                    }
+                  }
+                } catch (Exception e) {
+                  System.out.println("Error setting locations: " + e);
+                }
+
+                String headquarter = Optional.ofNullable(institution.getLocations()).flatMap(locations -> locations
+                  .stream().filter(loc -> loc.isHeadquater() && loc.getLocElement() != null).map(loc -> {
+                    LocElement locElement = locElementManager.getLocElementById(loc.getLocElement().getId());
+                    return (locElement != null && locElement.getName() != null) ? locElement.getName() : "";
+                  }).filter(name -> !name.isEmpty()).findFirst()).orElse("Not available");
+                centerMap.put("headquarter", headquarter);
+              }
+
+              return centerMap;
+            }).collect(Collectors.toList());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            studyCenters = objectMapper.writeValueAsString(centersList);
+          } else {
+            studyCenters = null;
           }
-          centers = String.join("", centersSet);
+        } catch (Exception e) {
+          System.out.println("Error generating centers JSON: " + e.getMessage());
+        }
+
+        // Expected Study Center List
+        try {
+          projectExpectedStudy.setCenters(new ArrayList<>());
+
+          if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null) {
+            List<ProjectExpectedStudyPartnership> deList =
+              projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
+                .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+                  && dp.getProjectExpectedStudyPartnerType().getId()
+                    .equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
+                .sorted((p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()))
+                .collect(Collectors.toList());
+            projectExpectedStudy.setCenters(deList);
+            if (!deList.isEmpty()) {
+              List<Map<String, String>> centersList = deList.stream().map(partnership -> {
+                Map<String, String> centerMap = new HashMap<>();
+                Institution institution = partnership.getInstitution();
+
+                if (institution != null) {
+                  centerMap.put("name", institution.getComposedName());
+
+                  String institutionType = Optional.ofNullable(institution.getInstitutionType())
+                    .map(InstitutionType::getName).orElse("Not available");
+                  centerMap.put("type", institutionType);
+                  institution.setLocations(institution.getInstitutionsLocations().stream().filter(c -> c.isActive())
+                    .collect(Collectors.toList()));
+
+                  String headquarter = Optional.ofNullable(institution.getLocations())
+                    .flatMap(
+                      locations -> locations.stream().filter(loc -> loc.isHeadquater() && loc.getLocElement() != null)
+                        .map(loc -> loc.getLocElement().getComposedName()).findFirst())
+                    .orElse("Not available");
+                  centerMap.put("headquarter", headquarter);
+                }
+
+                return centerMap;
+              }).collect(Collectors.toList());
+
+              ObjectMapper objectMapper = new ObjectMapper();
+              objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+              centers = objectMapper.writeValueAsString(centersList);
+            } else {
+              centers = null;
+            }
+          }
+        } catch (Exception e) {
+          System.out.println("Error generating expected study centers JSON: " + e.getMessage());
         }
 
         // Geographic Scope comment
@@ -656,12 +739,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             final String institutionType =
               Optional.ofNullable(institution.getInstitutionType()).map(InstitutionType::getName).orElse(null);
 
-            final String headquarter = Optional.ofNullable(institution.getLocations())
-              .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
-                  && (location.getLocElement().getComposedName() != null))
-                .map(location -> location.getLocElement().getComposedName()).findFirst())
-              .orElse(null);
+            institution.setLocations(
+              institution.getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+
+            final String headquarter =
+              Optional.ofNullable(institution.getLocations()).map(locations -> locations.stream()
+                .filter(location -> location.isHeadquater() && location.getLocElement() != null).map(location -> {
+                  LocElement locElement = locElementManager.getLocElementById(location.getLocElement().getId());
+                  return (locElement != null && locElement.getName() != null) ? locElement.getName() : "";
+                }).filter(name -> !name.isEmpty()).findFirst().orElse("")).orElse("");
 
             return new InstitutionDTO(institution.getComposedName(), institutionType, headquarter);
           }).filter(Objects::nonNull).collect(Collectors.toList());
@@ -682,22 +768,57 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           cgiarInnovation = projectExpectedStudyInfo.getCgiarInnovation();
         }
         // Innovations
-        final List<ProjectExpectedStudyInnovation> studyInnovationList =
+        /*
+         * final List<ProjectExpectedStudyInnovation> studyInnovationList =
+         * projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+         * .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
+         * .collect(Collectors.toList());
+         * final Set<String> innovationSet = new HashSet<>();
+         * if ((studyInnovationList != null) && !studyInnovationList.isEmpty()) {
+         * for (final ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
+         * studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
+         * final String composedName = studyInnovation.getProjectInnovation().getComposedName();
+         * if ((composedName != null) && !composedName.isEmpty()) {
+         * innovationSet.add(composedName);
+         * }
+         * }
+         * cgiarInnovations = String.join(", ", innovationSet);
+         * }
+         */
+        // Innovations
+        List<ProjectExpectedStudyInnovation> studyInnovationList =
           projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
             .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
             .collect(Collectors.toList());
-        final Set<String> innovationSet = new HashSet<>();
-        if ((studyInnovationList != null) && !studyInnovationList.isEmpty()) {
-          for (final ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
-            studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
-            final String composedName = studyInnovation.getProjectInnovation().getComposedName();
-            if ((composedName != null) && !composedName.isEmpty()) {
-              innovationSet.add(composedName);
-            }
-          }
-          cgiarInnovations = String.join(", ", innovationSet);
 
+        List<Map<String, String>> innovationList = new ArrayList<>();
+
+        for (ProjectExpectedStudyInnovation studyInnovation : studyInnovationList) {
+          studyInnovation.getProjectInnovation().getProjectInnovationInfo(phase);
+          String composedName = studyInnovation.getProjectInnovation().getComposedName();
+          String code = studyInnovation.getProjectInnovation().getId() + "";
+          String pdf = "Comming soon";
+
+          if (composedName != null && !composedName.isEmpty()) {
+            Map<String, String> innovation = new HashMap<>();
+            innovation.put("code", code);
+            innovation.put("title", composedName);
+            innovation.put("pdf", pdf);
+            innovationList.add(innovation);
+          }
         }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+          cgiarInnovations = objectMapper.writeValueAsString(innovationList);
+        } catch (JsonProcessingException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+
+        // otherCrossCuttingSelection
+        otherCrossCuttingSelection = projectExpectedStudyInfo.getOtherCrossCuttingSelection();
+
         // Elaboration of Outcome/Impact Statement
         if ((projectExpectedStudyInfo.getElaborationOutcomeImpactStatement() != null)
           && !projectExpectedStudyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
@@ -725,7 +846,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             for (final ProjectExpectedStudyReference reference : projectExpectedStudy.getReferences()) {
               if ((reference != null) && ((reference.getReference() != null) || (reference.getLink() != null))) {
                 final Map<String, Object> referenceMap = new LinkedHashMap<>(); // Maintain insertion order
-                referenceMap.put("code", count);
+                String countString = count + "";
+                referenceMap.put("code", countString);
                 referenceMap.put("title", reference.getReference());
                 referenceMap.put("link", reference.getLink());
                 referenceMap.put("externalAuthor", reference.getExternalAuthor());
@@ -736,7 +858,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
 
             // Convert the list to a JSON string
-            final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper = new ObjectMapper();
             try {
               studiesReference = objectMapper.writeValueAsString(referenceList);
             } catch (final JsonProcessingException e) {
@@ -808,11 +930,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
           // Convert list to JSON
-          final ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper = new ObjectMapper();
           try {
             String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
-            // Remove unwanted backslashes if they appear
-            quantificationsJson = quantificationsJson.replace("\\", "");
             // Append properly formatted JSON to the existing string
             quantification.append(quantificationsJson);
 
@@ -824,7 +944,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Cluster Name
         if ((projectExpectedStudy.getProject().getProjecInfoPhase(phase) != null)
           && (projectExpectedStudy.getProject().getProjecInfoPhase(phase).getTitle() != null)) {
-          clusterName = projectExpectedStudy.getProject().getProjecInfoPhase(phase).getTitle();
+          clusterName = projectExpectedStudy.getProject().getAcronym();
         } else {
           clusterName = "C" + projectExpectedStudy.getProject().getId();
         }
@@ -851,48 +971,19 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Gender
         if (projectExpectedStudyInfo.getGenderLevel() != null) {
           genderRelevance = projectExpectedStudyInfo.getGenderLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getGenderLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getGenderLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeGender() != null)
-            && !projectExpectedStudyInfo.getDescribeGender().isEmpty()) {
-            genderRelevance += "<br>" + this.getText("study.achievementsGenderRelevance.readText") + ": "
-              + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeGender());
-          }
         }
         // Youth
         if (projectExpectedStudyInfo.getYouthLevel() != null) {
           youthRelevance = projectExpectedStudyInfo.getYouthLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getYouthLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getYouthLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeYouth() != null)
-            && !projectExpectedStudyInfo.getDescribeYouth().isEmpty()) {
-            youthRelevance += "<br>" + this.getText("study.achievementsYouthRelevance.readText") + ": "
-              + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeYouth());
-          }
         }
         // Capacity Development
         if (projectExpectedStudyInfo.getCapdevLevel() != null) {
           capacityRelevance = projectExpectedStudyInfo.getCapdevLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getCapdevLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getCapdevLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeCapdev() != null)
-            && !projectExpectedStudyInfo.getDescribeCapdev().isEmpty()) {
-            capacityRelevance += "<br>" + this.getText("study.generalInformation.achievementsCapDevRelevance.readText")
-              + ": " + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeCapdev());
-          }
         }
 
         // Climate change
         if (projectExpectedStudyInfo.getClimateChangeLevel() != null) {
           climateRelevance = projectExpectedStudyInfo.getClimateChangeLevel().getPowbName();
-          if (!projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(1l)
-            && !projectExpectedStudyInfo.getClimateChangeLevel().getId().equals(4l)
-            && (projectExpectedStudyInfo.getDescribeClimateChange() != null)
-            && !projectExpectedStudyInfo.getDescribeClimateChange().isEmpty()) {
-            climateRelevance +=
-              "<br>" + this.getText("study.generalInformation.achievementsClimateChangeRelevance.readText") + ": "
-                + this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getDescribeClimateChange());
-          }
         }
 
         if ((projectExpectedStudyInfo.getOtherCrossCuttingSelection() != null)
@@ -919,26 +1010,32 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Expected Study Project Outcome list
         if ((projectExpectedStudyInfo.getProjectExpectedStudy() != null)
           && (projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes() != null)) {
-          projectExpectedStudyInfo.getProjectExpectedStudy().setCrpOutcomes(
-            new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyCrpOutcomes()
-              .stream().filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          projectExpectedStudyInfo.getProjectExpectedStudy()
+            .setCrpOutcomes(new ArrayList<>(projectExpectedStudyInfo.getProjectExpectedStudy()
+              .getProjectExpectedStudyCrpOutcomes().stream()
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
         }
 
-        if (projectExpectedStudyInfo.getProjectExpectedStudy().getCrpOutcomes() != null) {
-          for (final ProjectExpectedStudyCrpOutcome outcome : projectExpectedStudyInfo.getProjectExpectedStudy()
-            .getCrpOutcomes()) {
-            if ((outcome != null) && (outcome.getCrpOutcome() != null)
-              && (outcome.getCrpOutcome().getDescription() != null)) {
+        try {
+          List<String> crpOutcomeList = new ArrayList<>();
 
-              if (performanceIndicator == null) {
-                performanceIndicator = outcome.getCrpOutcome().getDescription();
-              } else {
-                performanceIndicator += "; " + outcome.getCrpOutcome().getDescription();
+          if (projectExpectedStudyInfo.getProjectExpectedStudy().getCrpOutcomes() != null) {
+            for (ProjectExpectedStudyCrpOutcome outcome : projectExpectedStudyInfo.getProjectExpectedStudy()
+              .getCrpOutcomes()) {
+              if (outcome != null && outcome.getCrpOutcome() != null
+                && outcome.getCrpOutcome().getDescription() != null) {
+                crpOutcomeList.add(outcome.getCrpOutcome().getDescription());
               }
             }
           }
 
+          objectMapper = new ObjectMapper();
+          performanceIndicator = objectMapper.writeValueAsString(crpOutcomeList);
+        } catch (Exception e) {
+          System.out.println("Error getting performance indicators: " + e.getMessage());
         }
+
+
         /*
          * Generate link url from parameters
          */
@@ -954,123 +1051,111 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             .sorted((sp1, sp2) -> sp2.getProject().getId().compareTo(sp1.getProject().getId()))
             .collect(Collectors.toList());
         final Set<String> studyProjectSet = new HashSet<>();
-        /*
-         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject() != null) {
-         * if (projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym() != null) {
-         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● "
-         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getAcronym());
-         * } else {
-         * studyProjectSet.add("<br>&nbsp;&nbsp;&nbsp;&nbsp; ● C"
-         * + projectExpectedStudyInfo.getProjectExpectedStudy().getProject().getId());
-         * }
-         * }
-         */
+
 
         /**
          * Alliance Tab
          */
         try {
           if (projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes() != null) {
-            projectExpectedStudy.setAllianceLeversOutcomes(
-              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
+
+            List<ProjectExpectedStudyAllianceLeversOutcome> allianceLeversList =
+              projectExpectedStudy.getProjectExpectedStudyAllianceLeversOutcomes().stream()
                 .filter(
-                  o -> (o != null) && o.isActive() && (o.getId() != null) && o.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList())));
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-            if ((projectExpectedStudy.getAllianceLeversOutcomes() != null)
-              && !projectExpectedStudy.getAllianceLeversOutcomes().isEmpty()) {
-              for (final ProjectExpectedStudyAllianceLeversOutcome allianceLeverOutcome : projectExpectedStudy
-                .getAllianceLeversOutcomes()) {
+            projectExpectedStudy.setAllianceLeversOutcomes(allianceLeversList);
 
-                // Primary alliance lever
-                if ((allianceLeverOutcome.getAllianceLever() != null)
-                  && (allianceLeverOutcome.getAllianceLever().getName() != null)
-                  && (allianceLeverOutcome.getAllianceLever().getDescription() != null)) {
+            if (!allianceLeversList.isEmpty()) {
+              ProjectExpectedStudyAllianceLeversOutcome firstLeverOutcome = allianceLeversList.get(0);
 
-                  final String name = allianceLeverOutcome.getAllianceLever().getName();
-                  final String description = allianceLeverOutcome.getAllianceLever().getDescription();
-                  final String strategicOutcomeText = null;
+              if (firstLeverOutcome.getAllianceLever() != null) {
+                Map<String, Object> primaryLeverMap = new LinkedHashMap<>();
+                String name = firstLeverOutcome.getAllianceLever().getName();
+                String description = firstLeverOutcome.getAllianceLever().getDescription();
 
-                  final String leverJson = "{ \"name\": \"" + name + "\", \"description\": \"" + description
-                    + "\", \"strategicOutcome\": \"" + strategicOutcomeText + "\" }";
+                primaryLeverMap.put("code", this.extractCodeFromName(name));
+                primaryLeverMap.put("name", name);
+                primaryLeverMap.put("description", description);
 
-                  if ((primaryAllianceLever == null) || primaryAllianceLever.isEmpty()) {
-                    primaryAllianceLever = "[" + leverJson;
-                  } else if (!primaryAllianceLever.contains(name)) {
-                    primaryAllianceLever += ", " + leverJson;
-                  }
+                List<String> strategicOutcomes = allianceLeversList.stream()
+                  .filter(o -> o.getAllianceLever() != null
+                    && o.getAllianceLever().getId().equals(firstLeverOutcome.getAllianceLever().getId()))
+                  .map(o -> o.getAllianceLeverOutcome().getDescription()).filter(Objects::nonNull).distinct()
+                  .collect(Collectors.toList());
 
-                }
+                primaryLeverMap.put("strategicOutcome", strategicOutcomes);
 
-                // Strategic outcome
-                if ((allianceLeverOutcome.getAllianceLeverOutcome() != null)
-                  && (allianceLeverOutcome.getAllianceLeverOutcome().getName() != null)
-                  && (allianceLeverOutcome.getAllianceLeverOutcome().getDescription() != null)) {
-                  strategicOutcome += "; " + allianceLeverOutcome.getAllianceLeverOutcome().getName() + ": "
-                    + allianceLeverOutcome.getAllianceLeverOutcome().getDescription();
-                  strategicOutcome = strategicOutcome.replace("null", "");
-                }
+                objectMapper = new ObjectMapper();
+                objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+                primaryAllianceLever = objectMapper.writeValueAsString(primaryLeverMap);
               }
-              primaryAllianceLever += "]";
-
             }
           }
 
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
             projectExpectedStudy.setSdgAllianceLevers(null);
           }
-        } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+
+        } catch (Exception e) {
+          Logger log = LoggerFactory.getLogger(this.getClass());
+          log.error("Error processing primary alliance levers and strategic outcomes: ", e);
         }
+
 
         // Primary SDG contribution
         try {
           if (projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers() != null) {
-            projectExpectedStudy.setSdgAllianceLevers(
-              new ArrayList<>(projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
+            List<ProjectExpectedStudySdgAllianceLever> sdgAllianceLeversList =
+              projectExpectedStudy.getProjectExpectedStudySdgAllianceLevers().stream()
                 .filter(
-                  o -> (o != null) && o.isActive() && (o.getId() != null) && o.getPhase().getId().equals(phase.getId()))
-                .collect(Collectors.toList())));
-            if ((projectExpectedStudy.getSdgAllianceLevers() != null)
-              && !projectExpectedStudy.getSdgAllianceLevers().isEmpty()) {
-              for (final ProjectExpectedStudySdgAllianceLever sdgAllianceLever : projectExpectedStudy
-                .getSdgAllianceLevers()) {
-                if ((sdgAllianceLever != null) && (sdgAllianceLever.getsDGContribution() != null)
-                  && (sdgAllianceLever.getsDGContribution() != null)
-                  && (sdgAllianceLever.getsDGContribution().getName() != null)) {
-                  String allianceLeverTemp = "";
-                  if ((sdgAllianceLever.getAllianceLever() != null)
-                    && (sdgAllianceLever.getAllianceLever().getName() != null)
-                    && (sdgAllianceLever.getAllianceLever().getDescription() != null)) {
-                    allianceLeverTemp = " (" + sdgAllianceLever.getAllianceLever().getName() + ") ";;
-                  }
-                  if (sdgAllianceLever.getIsPrimary()) {
-                    primarySDGcontribution +=
-                      "; " + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
-                    primarySDGcontribution = primarySDGcontribution.replace("null", "");
-                  } else {
-                    relatedSDGContribution += "" + allianceLeverTemp + sdgAllianceLever.getsDGContribution().getName();
-                    relatedSDGContribution = relatedSDGContribution.replace("null", "");
+                  o -> o != null && o.isActive() && o.getId() != null && o.getPhase().getId().equals(phase.getId()))
+                .collect(Collectors.toList());
 
-                    // Related levers
-                    if ((sdgAllianceLever.getAllianceLever() != null)
-                      && (sdgAllianceLever.getAllianceLever().getName() != null)
-                      && (sdgAllianceLever.getAllianceLever().getDescription() != null)
-                      && !relatedLever.contains(sdgAllianceLever.getAllianceLever().getName())) {
-                      relatedLever += "" + sdgAllianceLever.getAllianceLever().getName() + ": "
+            projectExpectedStudy.setSdgAllianceLevers(sdgAllianceLeversList);
+
+            if (!sdgAllianceLeversList.isEmpty()) {
+              List<String> primarySDGList = new ArrayList<>();
+              List<String> relatedSDGList = new ArrayList<>();
+              List<String> relatedLeverList = new ArrayList<>();
+
+              for (ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeversList) {
+                if (sdgAllianceLever.getsDGContribution() != null
+                  && sdgAllianceLever.getsDGContribution().getName() != null) {
+
+                  if (sdgAllianceLever.getIsPrimary()) {
+                    primarySDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                      + sdgAllianceLever.getsDGContribution().getName());
+                  } else {
+                    relatedSDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                      + sdgAllianceLever.getsDGContribution().getName());
+
+                    if (sdgAllianceLever.getAllianceLever() != null
+                      && sdgAllianceLever.getAllianceLever().getName() != null
+                      && sdgAllianceLever.getAllianceLever().getDescription() != null) {
+
+                      String relatedLeverEntry = sdgAllianceLever.getAllianceLever().getName() + ": "
                         + sdgAllianceLever.getAllianceLever().getDescription();
+
+                      if (!relatedLeverList.contains(relatedLeverEntry)) {
+                        relatedLeverList.add(relatedLeverEntry);
+                      }
                     }
                   }
                 }
               }
 
-              relatedLever = "[" + relatedLever + "],";
-              relatedSDGContribution = "[" + relatedSDGContribution + "],";
+              objectMapper = new ObjectMapper();
+              objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
+              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGList);
+              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGList);
+              relatedLever = objectMapper.writeValueAsString(relatedLeverList);
             }
           }
-        } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+        } catch (Exception e) {
+          System.out.println("Error processing SDG Alliance Levers: " + e);
         }
 
 
@@ -1085,7 +1170,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Impact Area
         try {
-          final StringBuilder impactAreaBuilder = new StringBuilder();
           final StringBuilder globalTargetsBuilder = new StringBuilder();
 
           // Filter Impact Areas
@@ -1101,6 +1185,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             if ((filteredImpactAreas != null) && !filteredImpactAreas.isEmpty()) {
               final ImpactArea impactAreaTemp = filteredImpactAreas.get(0).getImpactArea();
               if ((impactAreaTemp != null) && (impactAreaTemp.getId() != null)) {
+                impactArea = impactAreaTemp.getName();
                 impactAreaCode = String.valueOf(impactAreaTemp.getId());
               }
             }
@@ -1116,16 +1201,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setGlobalTargets(filteredGlobalTargets);
 
             if (!filteredGlobalTargets.isEmpty()) {
-              // globalTargetsBuilder.append("<br><br>Global Targets:&nbsp;&nbsp;&nbsp;&nbsp;");
               final Set<String> uniqueTargets = new HashSet<>();
 
               for (final ProjectExpectedStudyGlobalTarget target : filteredGlobalTargets) {
                 if ((target.getGlobalTarget() != null) && (target.getGlobalTarget().getName() != null)
                   && (target.getGlobalTarget().getDescription() != null)) {
-                  globalTargets +=
-                    "; " + target.getGlobalTarget().getName() + ": " + target.getGlobalTarget().getDescription();
-                  final String formattedTarget =
-                    "; " + target.getGlobalTarget().getName() + ": " + target.getGlobalTarget().getDescription();
+                  globalTargets += "; " + target.getGlobalTarget().getName();
+                  final String formattedTarget = "; " + target.getGlobalTarget().getName();
 
                   if (!uniqueTargets.contains(formattedTarget)) {
                     uniqueTargets.add(formattedTarget);
@@ -1135,12 +1217,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               }
             }
           }
-
-          final String impactAreaResult = impactAreaBuilder.toString().trim();
-          final String globalTargetsResult = globalTargetsBuilder.toString().trim();
-
-          impactArea = (impactAreaResult.isEmpty() ? "" : impactAreaResult);
-          // + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
+          if (globalTargets != null) {
+            globalTargets = globalTargets.replace("null", "");
+          }
 
         } catch (final NullPointerException e) {
           Log.error("NullPointerException while getting Impact Areas", e);
@@ -1153,22 +1232,22 @@ public class BaseStudySummaryData extends BaseSummariesAction {
          */
 
         // Links
-        final List<ProjectExpectedStudyLink> linksList =
-          projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
-            .filter(s -> s.isActive() && (s.getPhase() != null) && s.getPhase().equals(phase))
-            .collect(Collectors.toList());
-        final Set<String> linkSet = new HashSet<>();
-        if ((linksList != null) && !linksList.isEmpty()) {
-          linksList.sort((l1, l2) -> l1.getId().compareTo(l2.getId()));
-          for (final ProjectExpectedStudyLink projectExpectedStudyLink : linksList) {
-            if (!projectExpectedStudyLink.getLink().isEmpty() && (projectExpectedStudyLink.getLink() != null)) {
-              /*
-               * Get short url calling tinyURL service
-               */
-              linkSet.add("" + urlShortener.getShortUrlService(projectExpectedStudyLink.getLink()));
-            }
-          }
-          links = "[" + String.join("", linkSet) + "],";
+        try {
+          List<ProjectExpectedStudyLink> linksList =
+            projectExpectedStudyInfo.getProjectExpectedStudy().getProjectExpectedStudyLinks().stream()
+              .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase))
+              .sorted(Comparator.comparing(ProjectExpectedStudyLink::getId)).collect(Collectors.toList());
+
+          List<String> shortLinks =
+            linksList.stream().map(linkV -> linkV.getLink()).filter(linkV -> linkV != null && !linkV.isEmpty())
+              .map(urlShortener::getShortUrlService).distinct().collect(Collectors.toList());
+
+          objectMapper = new ObjectMapper();
+          objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+          links = objectMapper.writeValueAsString(shortLinks);
+
+        } catch (Exception e) {
+          System.out.println("Error processing links: " + e.getMessage());
         }
 
         // Expected Study Publications List
@@ -1194,12 +1273,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
           // Convert list to JSON
-          final ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper = new ObjectMapper();
           try {
             String publicationsJson = objectMapper.writeValueAsString(publicationsList);
-
-            // Remove unwanted backslashes if they appear
-            publicationsJson = publicationsJson.replace("\\", "");
 
             // Append properly formatted JSON to the existing string
             publications.append("").append(publicationsJson);
@@ -1207,8 +1283,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           } catch (final JsonProcessingException e) {
             e.printStackTrace();
           }
+        }
 
-          // Partners persons
+        // Partners persons
+        try {
           if (projectExpectedStudy.getProjectExpectedStudyPartnerships() != null) {
 
             final List<ProjectExpectedStudyPartnership> deList =
@@ -1233,9 +1311,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
             }
           }
+        } catch (Exception e) {
+          System.out.println("error in Partners persons" + e);
+        }
 
 
-          final StringBuilder persons = new StringBuilder();
+        final StringBuilder persons = new StringBuilder();
+        try {
           final List<ProjectExpectedStudyPartnership> partnerships = projectExpectedStudy.getPartnerships();
           if ((partnerships != null) && !partnerships.isEmpty()) {
             final ProjectExpectedStudyPartnership partnerTemp = partnerships.get(0);
@@ -1257,44 +1339,53 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
           contacts += persons.toString().replace("null", "");
+        } catch (Exception e) {
+          System.out.println("Error in partnerships " + e);
+        }
 
-          // Shared clusters
-          if ((studyProjectList != null) && !studyProjectList.isEmpty()) {
+        // Shared clusters
+        try {
+          List<String> studyProjectListJson = new ArrayList<>();
+
+          if (studyProjectList != null && !studyProjectList.isEmpty()) {
             for (final ExpectedStudyProject studyProject : studyProjectList) {
               if (studyProject.getProject().getAcronym() != null) {
-                if ((studyProjectSet != null)
-                  && !studyProjectSet.contains("; " + studyProject.getProject().getAcronym())) {
-                  studyProjectSet.add("; " + studyProject.getProject().getAcronym());
+                if (!studyProjectSet.contains(studyProject.getProject().getAcronym())) {
+                  studyProjectSet.add(studyProject.getProject().getAcronym());
+                  studyProjectListJson.add(studyProject.getProject().getAcronym());
                 }
               } else {
-                if ((studyProjectSet != null) && !studyProjectSet.contains("; C" + studyProject.getProject().getId())) {
-                  studyProjectSet.add("; C" + studyProject.getProject().getId());
+                String projectId = "C" + studyProject.getProject().getId();
+                if (!studyProjectSet.contains(projectId)) {
+                  studyProjectSet.add(projectId);
+                  studyProjectListJson.add(projectId);
                 }
               }
             }
           }
-          if ((studyProjectSet != null) && !studyProjectSet.isEmpty()) {
-            studyProjects = String.join("", studyProjectSet);
-          }
 
-          if (relatedLever.isEmpty()) {
-            relatedLever = null;
-          }
-          contacts = contacts.replace("null", "");
+          objectMapper = new ObjectMapper();
+          studyProjects = objectMapper.writeValueAsString(studyProjectListJson);
+        } catch (Exception e) {
+          System.out.println("Error in study projects " + e);
+        }
 
-          /**
-           * Generate Json
-           */
-          final Map<String, Object> jsonMainRoot = new HashMap<>();
-          final Map<String, Object> jsonRoot = new HashMap<>();
-          final Map<String, Object> jsonData = new HashMap<>();
-          final Map<String, Object> jsonOptions = new HashMap<>();
-          final Map<String, Object> jsonCredentials = new HashMap<>();
-          final Map<String, String> headerMap = new HashMap<>();
-          final Map<String, String> footerMap = new HashMap<>();
+        if (relatedLever.isEmpty()) {
+          relatedLever = null;
+        }
+        contacts = contacts.replace("null", "");
+        /**
+         * Generate Json
+         */
+        final Map<String, Object> jsonMainRoot = new HashMap<>();
+        final Map<String, Object> jsonRoot = new HashMap<>();
+        final Map<String, Object> jsonData = new HashMap<>();
+        final Map<String, Object> jsonOptions = new HashMap<>();
+        final Map<String, Object> jsonCredentials = new HashMap<>();
+        final Map<String, String> headerMap = new HashMap<>();
+        final Map<String, String> footerMap = new HashMap<>();
 
-          final String templateData = "<html>Generated Report</html>";
-
+        try {
           jsonData.put("id", id);
           jsonData.put("year", year);
           jsonData.put("title", title);
@@ -1330,7 +1421,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("cgiarInnovations", cgiarInnovations);
           jsonData.put("climateRelevance", climateRelevance);
           jsonData.put("link", link);
-          jsonData.put("links", removeLeadingSemicolon(links));
+          jsonData.put("links", links);
           jsonData.put("studyPolicies", studyPolicies);
           jsonData.put("url", url);
           jsonData.put("studiesReference", studiesReference);
@@ -1340,25 +1431,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("centers", removeLeadingSemicolon(centers));
           jsonData.put("clusterAcronym", clusterAcronym);
           jsonData.put("allianceOICRID", allianceOICRID);
-          jsonData.put("primaryAllianceLever", removeLeadingSemicolon(primaryAllianceLever));
+          jsonData.put("primaryAllianceLever", primaryAllianceLever);
           jsonData.put("strategicOutcome", removeLeadingSemicolon(strategicOutcome));
           jsonData.put("primarySDGcontribution", removeLeadingSemicolon(primarySDGcontribution));
           jsonData.put("relatedLever", removeLeadingSemicolon(relatedLever));
           jsonData.put("relatedSDGContribution", removeLeadingSemicolon(relatedSDGContribution));
           jsonData.put("hasCgiarContribution", hasCGIARContribution);
           jsonData.put("impactArea", impactArea);
+          jsonData.put("globalTargets", removeLeadingSemicolon(globalTargets));
           jsonData.put("publications", publications);
           jsonData.put("tagAs", tagAs);
           jsonData.put("clusterName", clusterName);
           jsonData.put("leadPerson", leadPerson);
           jsonData.put("isAllianceContribution", isAllianceContribution);
-          jsonData.put("ïmpactAreaCode", impactAreaCode);
+          jsonData.put("impactAreaCode", impactAreaCode);
           jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
-          jsonData.put("timeCreation", this.getCurrentDate());
+          jsonData.put("otherCrossCuttingSelection", otherCrossCuttingSelection);
+          jsonData.put("timeCreation", this.getCurrentDatev2());
+        } catch (Exception e) {
+          System.out.println("error setting jsonData " + e);
+        }
 
-          headerMap.put("height", "40mm");
-          footerMap.put("height", "30mm");
-
+        headerMap.put("height", "40mm");
+        footerMap.put("height", "30mm");
+        try {
           jsonOptions.put("format", "A3");
           jsonOptions.put("orientation", "portrait");
           jsonOptions.put("border", "0");
@@ -1366,46 +1462,67 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonOptions.put("header", headerMap);
           jsonOptions.put("footer", footerMap);
           jsonOptions.put("timeout", "300000");
+        } catch (Exception e) {
+          System.out.println("error setting jsonOptions " + e);
+        }
 
+        try {
           jsonRoot.put("data", jsonData);
           jsonRoot.put("options", jsonOptions);
-          this.loadData();
+        } catch (Exception e) {
+          System.out.println("Error setting jsonRoot info " + e);
+        }
+        this.loadData();
 
+        try {
           this.OICRsReportName =
             "AICCRA-OICR" + projectExpectedStudy.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
 
           jsonRoot.put("templateData", this.OICRsTemplateData);
           jsonRoot.put("fileName", this.OICRsReportName);
           jsonRoot.put("bucketName", this.bucketName);
+        } catch (Exception e) {
+          System.out.println("Error setting other json root information");
+        }
 
-          String username = null, password = null;
-          try {
-            username = null;
-            password = null;
-          } catch (final Exception e) {
-            Log.error("error getting conf credentials " + e);
-          }
+        String username = null, password = null;
+        try {
+          username = this.config.getMicroserviceUsername();
+          password = this.config.getMicroservicePassword();
+        } catch (final Exception e) {
+          System.out.println("error getting conf credentials " + e);
+        }
+
+        try {
           final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
           jsonRoot.put("credentials", credentialsJson);
 
           jsonMainRoot.put("data", jsonRoot);
           jsonMainRoot.put("pattern", "pdf.generate");
+        } catch (Exception e) {
+          System.out.println("Error setting jsonRoot and jsonMainRoot information " + e);
+        }
 
+        try {
+          objectMapper = new ObjectMapper();
+          final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
           try {
-            final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
             final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
             fileWriter.write(jsonOutput);
             fileWriter.close();
-
-            Log.info("send microservice class: " + this.OICRsReportName);
-            this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
-
-            return jsonOutput;
-          } catch (final IOException e) {
-            Log.error("error generating json " + e);
-            return "{}";
+          } catch (Exception e) {
+            System.out.println("Generated just for local environments");
           }
+
+          System.out.println("send microservice class: " + this.OICRsReportName);
+          this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
+
+          return jsonOutput;
+        } catch (final IOException e) {
+          System.out.println("error generating json " + e);
+          return "{}";
         }
+
       }
 
     }
@@ -1644,6 +1761,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
                 .map(InstitutionType::getName).map(name -> " | Type: " + name).orElse("");
             try {
+              projectExpectedStudyCenter.getInstitution().setLocations(projectExpectedStudyCenter.getInstitution()
+                .getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
               projectExpectedStudyCenter.getInstitution().getLocations()
                 .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
                   .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
@@ -2309,6 +2428,46 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     return formattedDateTime;
   }
 
+  public String getCurrentDatev2() {
+    // Define the date format: "Monday, March 17, 2025, at 21:57"
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(TimeZone.getTimeZone("CET")); // Set timezone to CET
+
+    // Format the current date without ordinal suffix
+    String formattedDate = formatter.format(new Date());
+
+    // Extract the day of the month
+    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"), Locale.US);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    // Get the appropriate ordinal suffix (st, nd, rd, th)
+    String ordinal = this.getDayOrdinal(day);
+
+    // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
+    return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+
+  // Method to determine the ordinal suffix for a given day
+  private String getDayOrdinal(int day) {
+    // Special cases: 11th, 12th, 13th always use "th"
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+
+    // Determine suffix based on the last digit
+    switch (day % 10) {
+      case 1:
+        return "st"; // 1st, 21st, 31st
+      case 2:
+        return "nd"; // 2nd, 22nd
+      case 3:
+        return "rd"; // 3rd, 23rd
+      default:
+        return "th"; // 4th, 5th, ..., 24th, 25th, etc.
+    }
+  }
+
   /**
    * Validate the Alliance center selection
    *
@@ -2355,10 +2514,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
       }
 
-      this.bucketName = null;
+      this.bucketName = this.config.getMicroserviceBucketname();
 
     } catch (final Exception e) {
-      Log.error("error getting report configuration data " + e);
+      System.out.println("error getting report configuration data " + e);
     }
   }
 }

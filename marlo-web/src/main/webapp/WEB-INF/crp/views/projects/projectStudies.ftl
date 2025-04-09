@@ -184,7 +184,7 @@
             [#if reportingActive]
             <td class="text-center">
               [#if (item.projectExpectedStudyInfo.isPublic)!true ]
-              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/studySummary'][@s.param name='studyID']${item.id?c}[/@s.param][@s.param name='cycle']Reporting[/@s.param][@s.param name='year']${(actualPhase.year)!}[/@s.param][/@s.url]" target="__BLANK">
+              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/studySummary'][@s.param name='studyID']${item.id?c}[/@s.param][@s.param name='cycle']Reporting[/@s.param][@s.param name='year']${(actualPhase.year)!}[/@s.param][/@s.url]" target="_blank" >
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
               [#else]

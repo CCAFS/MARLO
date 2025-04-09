@@ -44,7 +44,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.apache.struts2.ServletActionContext;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +66,9 @@ public class MicroserviceReportAction extends BaseAction {
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String OICRs_MS_FM_URL = null;
+  private String innovationsTemplateData = null;
+  private String innovationsReportName = null;
+  private String INNOVATION_MS_FM_URL = null;
   private String s3URL = null;
 
   private String jsonData = null;
@@ -83,16 +85,38 @@ public class MicroserviceReportAction extends BaseAction {
   }
 
   public void downloadPDFByURL(String reportName, String reportURL) {
-    String pdfUrl = reportURL + "" + reportName;
+    String pdfUrl = reportURL + reportName;
     HttpServletResponse response = ServletActionContext.getResponse();
+    int maxRetries = 5;
+    int waitTime = 2000;
 
     try {
+      boolean fileReady = false;
+      for (int attempt = 0; attempt < maxRetries; attempt++) {
+        URL url = new URL(pdfUrl);
+        HttpURLConnection checkConnection = (HttpURLConnection) url.openConnection();
+        checkConnection.setRequestMethod("HEAD");
+
+        if (checkConnection.getResponseCode() == 200) {
+          fileReady = true;
+          break;
+        } else {
+          System.out.println("PDF not available. Tried " + (attempt + 1) + " of " + maxRetries);
+          Thread.sleep(waitTime);
+        }
+      }
+
+      if (!fileReady) {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF not available after several attempts");
+        return;
+      }
+
+      // Descargar el archivo
       URL url = new URL(pdfUrl);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("GET");
 
-      int responseCode = connection.getResponseCode();
-      if (responseCode == 200) { // OK
+      if (connection.getResponseCode() == 200) {
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "inline; filename=\"" + reportName + "\"");
 
@@ -108,9 +132,10 @@ public class MicroserviceReportAction extends BaseAction {
           outputStream.flush();
         }
       } else {
-        response.sendError(responseCode, "Failed to download PDF");
+        response.sendError(connection.getResponseCode(), "Failed to download PDF");
       }
     } catch (Exception e) {
+      System.out.println("Error downloading PDF: " + e);
       throw new RuntimeException("Error downloading PDF: " + e.getMessage(), e);
     }
   }
@@ -118,7 +143,8 @@ public class MicroserviceReportAction extends BaseAction {
   public String fetchPDF() {
     this.loadData();
     try {
-      logger.info("Fetching PDF from File Management: {} in {} bucket S3", OICRsReportName, bucketName);
+      System.out.println("Error downloading PDF: " + "Fetching PDF from File Management: {} in {} bucket S3" + " "
+        + OICRsReportName + " " + bucketName);
 
       URL url = new URL(OICRs_MS_FM_URL + "file-management/validation");
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -143,16 +169,20 @@ public class MicroserviceReportAction extends BaseAction {
             response.append(responseLine.trim());
           }
           String pdfUrl = this.parseResponse(response.toString());
-          logger.info("PDF URL obtained successfully: {}", pdfUrl);
+          System.out.println("PDF URL obtained successfully: {}" + pdfUrl);
           return pdfUrl;
         }
       } else {
         throw new RuntimeException("Failed to fetch PDF, response code: " + responseCode);
       }
     } catch (Exception e) {
-      logger.error("Error fetching PDF: ", e);
+      System.out.println("Error fetching PDF: " + e);
       throw new RuntimeException("Error fetching PDF", e);
     }
+  }
+
+  public String getInnovationsReportName() {
+    return innovationsReportName;
   }
 
   public String getJsonData() {
@@ -176,17 +206,21 @@ public class MicroserviceReportAction extends BaseAction {
         if (reportConfiguration.getOicrTemplateData() != null) {
           OICRsTemplateData = reportConfiguration.getOicrTemplateData();
         }
+        if (reportConfiguration.getOicrTemplateData() != null) {
+          innovationsTemplateData = reportConfiguration.getInnovationTemplateData();
+        }
 
       }
-      username = null;
-      password = null;
-      queueUrl = null;
-      queueName = null;
-      bucketName = null;
-      OICRs_MS_FM_URL = null;
-      s3URL = null;
+      username = config.getMicroserviceUsername();
+      password = config.getMicroservicePassword();
+      queueUrl = config.getMicroserviceQueueURL();
+      queueName = config.getMicroserviceQueueName();
+      bucketName = config.getMicroserviceBucketname();
+      OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
+      INNOVATION_MS_FM_URL = config.getMicroserviceReportingUrl();
+      s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
-      Log.error("error getting report configuration data " + e);
+      System.out.println("error getting report configuration data " + e);
     }
   }
 
@@ -203,13 +237,95 @@ public class MicroserviceReportAction extends BaseAction {
   public void prepare() throws Exception {
   }
 
-  public String sendOICRsQueueMessage() {
-    Log.info("microservice sendOICRsQueueMessage");
+  public String sendInnovationsQueueMessage() {
     this.loadData(); // Load necessary data before processing
     String url = queueUrl;
     ConnectionFactory factory = new ConnectionFactory();
     try {
       factory.setUri(url); // Set the connection URI
+      factory.setConnectionTimeout(60000);
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      Map<String, Object> data;
+      if (jsonData != null && !jsonData.isEmpty()) {
+        // If a pre-built JSON is provided, parse it directly
+        data = objectMapper.readValue(jsonData, Map.class);
+
+      } else {
+        // Manually construct the data object if jsonData is not provided
+        String link = "";
+
+        data = new HashMap<>();
+        data.put("pattern", "pdf.generate");
+
+        Map<String, Object> nestedData = new HashMap<>();
+        nestedData.put("templateData", innovationsTemplateData);
+
+        Map<String, String> linkData = new HashMap<>();
+        linkData.put("link", link);
+
+        nestedData.put("data", linkData);
+        nestedData.put("clusterAcronym", false);
+        nestedData.put("fileName", innovationsReportName);
+        nestedData.put("bucketName", bucketName);
+
+        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        nestedData.put("credentials", credentialsJson);
+        /*
+         * Map<String, String> credentials = new HashMap<>();
+         * credentials.put("username", username);
+         * credentials.put("password", password);
+         * nestedData.put("credentials", credentials);
+         */
+        data.put("data", nestedData);
+      }
+
+      try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
+        // Declare the queue to ensure it exists and is durable
+        channel.queueDeclare(queueName, true, false, false, null);
+
+        // Convert the data to JSON format
+        String message = objectMapper.writeValueAsString(data);
+
+        // Publish the message to the queue
+        channel.basicPublish("", queueName, null, message.getBytes());
+        try {
+          System.out.println("s3URL " + s3URL);
+
+          this.downloadPDFByURL(innovationsReportName, s3URL);
+        } catch (Exception e) {
+          System.out.println("error getting pdf by URL " + e);
+        }
+      }
+    } catch (URISyntaxException | NoSuchAlgorithmException |
+
+      KeyManagementException e) {
+      System.out.println("Queue connection error: " + e.getMessage());
+      return ERROR;
+    } catch (Exception e) {
+      System.out.println("Message sending error: " + e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  public void sendInnovationsQueueMessage(String json, String reportName) {
+    try {
+      this.setInnovationsReportName(reportName);
+      this.setJsonData(json);
+      this.sendInnovationsQueueMessage();
+    } catch (Exception e) {
+      System.out.println("error in sendInnovationsQueueMessage " + e);
+    }
+  }
+
+  public String sendOICRsQueueMessage() {
+    this.loadData(); // Load necessary data before processing
+    String url = queueUrl;
+    ConnectionFactory factory = new ConnectionFactory();
+    try {
+      factory.setUri(url); // Set the connection URI
+      factory.setConnectionTimeout(60000);
       ObjectMapper objectMapper = new ObjectMapper();
 
       Map<String, Object> data;
@@ -257,20 +373,20 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
-          Log.info("s3URL " + s3URL);
+          System.out.println("s3URL " + s3URL);
 
           this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {
-          Log.error("error getting pdf by URL " + e);
+          System.out.println("error getting pdf by URL " + e);
         }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
       KeyManagementException e) {
-      logger.error("Queue connection error: " + e.getMessage());
+      System.out.println("Queue connection error: " + e.getMessage());
       return ERROR;
     } catch (Exception e) {
-      logger.error("Message sending error: " + e.getMessage());
+      System.out.println("Message sending error: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
@@ -282,13 +398,19 @@ public class MicroserviceReportAction extends BaseAction {
     this.sendOICRsQueueMessage();
   }
 
+  public void setInnovationsReportName(String innovationsReportName) {
+    this.innovationsReportName = innovationsReportName;
+  }
+
   public void setJsonData(String jsonData) {
     this.jsonData = jsonData;
   }
 
+
   public void setOICRsReportName(String oICRsReportName) {
     OICRsReportName = oICRsReportName;
   }
+
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;

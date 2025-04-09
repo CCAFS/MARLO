@@ -350,6 +350,44 @@ function counterSharedCluster() {
   });
 }
 
+  // Copy URL Button event
+ $(".copyButton").click(function() {
+        var $button = $(this); // Get the clicked button
+        var $parent = $button.closest(".generalInnovationsOptions"); // Find the closest parent container
+        var $input = $parent.find(".urlInput"); // Locate the input field with the URL
+
+        if ($input.length) {
+            var textToCopy = $input.val().trim();
+
+            if (textToCopy) {
+                // Copy text to clipboard
+                var tempInput = $("<input>");
+                $("body").append(tempInput);
+                tempInput.val(textToCopy).select();
+                document.execCommand("copy");
+                tempInput.remove();
+
+                // Store original button text
+                var originalText = $button.html();
+
+                // Change button text to "Copied!"
+                $button.html('<span class="glyphicon glyphicon-ok"></span> Copied to clipboard!').css({
+                    "background-color": "#28a745",
+                    "color": "#fff",
+                    "border-color": "#28a745"
+                });
+
+                setTimeout(function() {
+                    $button.html(originalText).css({
+                        "background-color": "",
+                        "color": "",
+                        "border-color": ""
+                    });
+                }, 1000);
+            }
+        }
+    });
+
 function updateAllianceTab() {
   var $selectCenters = $('div[listname="innovation.centers"] select.elementType-institution');
 

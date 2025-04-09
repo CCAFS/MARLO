@@ -20,10 +20,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CaseStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
@@ -49,7 +51,6 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -81,6 +82,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
   private final ReportConfigurationManager reportConfigurationManager;
   private List<ProjectExpectedStudyInfo> projectExpectedStudyInfos = new ArrayList<>();
   private GlobalUnitManager crpManager;
+  private LocElementManager locElementManager;
+  private RepIndStageInnovationManager repIndStageInnovationManager;
   private String crp;
 
   // PDF bytes
@@ -101,9 +104,10 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     PhaseManager phaseManager, ResourceManager resourceManager, ProjectExpectedStudyManager projectExpectedStudyManager,
     HTMLParser htmlParser, ProjectManager projectManager,
     ProjectExpectedStudyCountryManager projectExpectedStudyCountryManager, InstitutionManager institutionManager,
-    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    LocElementManager locElementManager, RepIndStageInnovationManager repIndStageInnovationManager) {
     super(config, crpManager, phaseManager, projectManager, htmlParser, projectExpectedStudyCountryManager,
-      institutionManager, microserviceReportAction, reportConfigurationManager);
+      institutionManager, microserviceReportAction, reportConfigurationManager, locElementManager);
     this.resourceManager = resourceManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.htmlParser = htmlParser;
@@ -111,6 +115,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     this.institutionManager = institutionManager;
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
+    this.locElementManager = locElementManager;
+    this.repIndStageInnovationManager = repIndStageInnovationManager;
   }
 
 
@@ -130,7 +136,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
         .getProjectExpectedStudyInfo(this.getSelectedPhase()) == null) {
-      LOG.error("ProjectExpectedStudy " + projectExpectedStudyID + " Not found");
+      System.out.println("ProjectExpectedStudy " + projectExpectedStudyID + " Not found");
       return NOT_FOUND;
     } else {
       projectExpectedStudyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
@@ -139,8 +145,10 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     projectExpectedStudyInfos.add(projectExpectedStudyInfo);
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    if ((this.getCurrentUser() == null) || (this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE))) {
-      Log.info("specificity false");
+    boolean generatePentahoReport =
+      this.getCurrentUser() == null || this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE);
+
+    if (generatePentahoReport) {
 
       try {
         Resource reportResource = resourceManager
@@ -192,31 +200,30 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
         bytesPDF = os.toByteArray();
         os.close();
       } catch (Exception e) {
-        LOG.error("Error generating Study Summary: " + e.getMessage());
+        System.out.println("Error generating Study Summary: " + e.getMessage());
         throw e;
       }
       // Calculate time of generation
       long stopTime = System.currentTimeMillis();
       stopTime = stopTime - startTime;
-      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-        + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+      System.out.println("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser()
+        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
     } else {
       try {
-        Log.info("Generate Json to send to microservice");
         this.generateAndSendJson(projectExpectedStudyInfos);
         bytesPDF = os.toByteArray();
       } catch (Exception e) {
         if (e.getClass().getName().contains("ClientAbortException")) {
-          LOG.warn("Client aborted the connection: " + e.getMessage());
+          System.out.println("Client aborted the connection: " + e.getMessage());
         } else {
-          LOG.error("Exception while generating JSON: " + e.getMessage(), e);
+          System.out.println("Exception while generating JSON: " + e.getMessage());
           throw e;
         }
       } finally {
         try {
           os.close();
         } catch (Exception e) {
-          LOG.warn("Error closing output stream: " + e.getMessage());
+          System.out.println("Error closing output stream: " + e.getMessage());
         }
       }
 
@@ -285,7 +292,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
           .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
       }
     } catch (Exception e) {
-      LOG.info("Error getting project(s) for study: " + projectExpectedStudyID);
+      System.out.println("Error getting project(s) for study: " + projectExpectedStudyID);
     }
     fileName.append("OICR" + projectExpectedStudyID + "-");
     fileName.append(this.getSelectedCycle() + "-");
@@ -337,7 +344,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       projectExpectedStudyID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
-      LOG.info("Error getting project: expected study " + projectExpectedStudyID);
+      System.out.println("Error getting project: expected study " + projectExpectedStudyID);
 
       if (projectExpectedStudyID == null) {
         projectExpectedStudyID = (long) -1;
