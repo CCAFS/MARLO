@@ -611,25 +611,25 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 
-            // Impact area code
+            // Prepare list of impact area IDs
+            List<Long> impactAreaIds = new ArrayList<>();
+
             if (innovation.getImpactAreas() != null && !innovation.getImpactAreas().isEmpty()) {
               for (ProjectInnovationImpactArea impactAreaItem : innovation.getImpactAreas()) {
                 if (impactAreaItem != null && impactAreaItem.getImpactArea() != null
                   && impactAreaItem.getImpactArea().getId() != null) {
-                  if (impactAreaCode == null || impactAreaCode.isEmpty()) {
-                    impactAreaCode = String.valueOf(impactAreaItem.getImpactArea().getId());
-                  } else {
-                    impactAreaCode += ", " + String.valueOf(impactAreaItem.getImpactArea().getId());
-                  }
+                  impactAreaIds.add(impactAreaItem.getImpactArea().getId());
                 }
               }
             }
-          }
 
+            // Convert list to JSON string with brackets
+            impactAreaCode = objectMapper.writeValueAsString(impactAreaIds);
+          }
         } catch (final NullPointerException e) {
-          System.out.println("NullPointerException while getting Impact Areas" + e);
+          System.out.println("NullPointerException while getting Impact Areas: " + e);
         } catch (final Exception e) {
-          System.out.println("Unexpected error while getting Impact Areas" + e);
+          System.out.println("Unexpected error while getting Impact Areas: " + e);
         }
 
         // Innovations tool categories
@@ -1041,16 +1041,41 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         for (ProjectInnovationReference ref : references) {
           if (ref != null) {
             Map<String, String> refMap = new HashMap<>();
-            refMap.put("url", ref.getLink());
-            refMap.put("reference", ref.getReference());
-            refMap.put("deliverableCategory",
-              ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
-                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
-                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory() != null
-                  ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
-                    .getName()
+
+            // Evidence by deliverable
+            if (Boolean.TRUE.equals(ref.getEvidenceByDeliverable())) {
+              String link =
+                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+                  + ref.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+              refMap.put("url", link);
+
+              refMap.put("reference",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null ? "D"
+                  + ref.getDeliverable().getId() + " - " + ref.getDeliverable().getDeliverableInfo(phase).getTitle()
                   : null);
-            refMap.put("deliverableType", ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
+              refMap.put("deliverableCategory",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType()
+                    .getDeliverableCategory() != null
+                      ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
+                        .getName()
+                      : null);
+              refMap.put("deliverableType",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                    ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getName() : null);
+
+            } else {
+              // Evidence by link
+              refMap.put("url", ref.getLink());
+              refMap.put("reference", ref.getReference());
+              refMap.put("deliverableCategory",
+                ref.getDeliverableType() != null && ref.getDeliverableType().getDeliverableCategory() != null
+                  ? ref.getDeliverableType().getDeliverableCategory().getName() : null);
+              refMap.put("deliverableType",
+                ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
+            }
 
             referencesList.add(refMap);
           }
@@ -1071,19 +1096,41 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         for (ProjectInnovationReferenceUrl refUrl : referenceUrls) {
           if (refUrl != null) {
             Map<String, String> refMap = new HashMap<>();
-            refMap.put("url", refUrl.getLink());
-            refMap.put("reference", refUrl.getReference());
-            refMap.put("deliverableCategory",
-              refUrl.getDeliverable() != null && refUrl.getDeliverable().getDeliverableInfo(phase) != null
-                && refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
-                && refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType()
-                  .getDeliverableCategory() != null
-                    ? refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
-                      .getName()
-                    : null);
-            refMap.put("deliverableType",
-              refUrl.getDeliverableType() != null ? refUrl.getDeliverableType().getName() : null);
 
+            // Evidence by deliverable
+            if (Boolean.TRUE.equals(refUrl.getEvidenceByDeliverable())) {
+              String link =
+                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+                  + refUrl.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+              refMap.put("url", link);
+              refMap.put("reference",
+                refUrl.getDeliverable() != null && refUrl.getDeliverable().getDeliverableInfo(phase) != null
+                  ? "D" + refUrl.getDeliverable().getId() + " - "
+                    + refUrl.getDeliverable().getDeliverableInfo(phase).getTitle()
+                  : null);
+              refMap.put("deliverableCategory",
+                refUrl.getDeliverable() != null && refUrl.getDeliverable().getDeliverableInfo(phase) != null
+                  && refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                  && refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType()
+                    .getDeliverableCategory() != null
+                      ? refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
+                        .getName()
+                      : null);
+              refMap.put("deliverableType",
+                refUrl.getDeliverable() != null && refUrl.getDeliverable().getDeliverableInfo(phase) != null
+                  && refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                    ? refUrl.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getName() : null);
+            } else {
+
+              // Evidence by link
+              refMap.put("url", refUrl.getLink());
+              refMap.put("reference", refUrl.getReference());
+              refMap.put("deliverableCategory",
+                refUrl.getDeliverableType() != null && refUrl.getDeliverableType().getDeliverableCategory() != null
+                  ? refUrl.getDeliverableType().getDeliverableCategory().getName() : null);
+              refMap.put("deliverableType",
+                refUrl.getDeliverableType() != null ? refUrl.getDeliverableType().getName() : null);
+            }
             referenceUrlsList.add(refMap);
           }
         }
@@ -1103,16 +1150,42 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         for (ProjectInnovationReferenceComplementarySolution ref : referenceComplementarySolutions) {
           if (ref != null) {
             Map<String, String> refMap = new HashMap<>();
-            refMap.put("url", ref.getLink());
-            refMap.put("reference", ref.getReference());
-            refMap.put("deliverableCategory",
-              ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
-                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
-                && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory() != null
-                  ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
-                    .getName()
+
+            // Evidence by deliverable
+            if (Boolean.TRUE.equals(ref.getEvidenceByDeliverable())) {
+              String link =
+                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+                  + ref.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+              refMap.put("url", link);
+
+              refMap.put("reference",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null ? "D"
+                  + ref.getDeliverable().getId() + " - " + ref.getDeliverable().getDeliverableInfo(phase).getTitle()
                   : null);
-            refMap.put("deliverableType", ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
+              refMap.put("deliverableCategory",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType()
+                    .getDeliverableCategory() != null
+                      ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getDeliverableCategory()
+                        .getName()
+                      : null);
+              refMap.put("deliverableType",
+                ref.getDeliverable() != null && ref.getDeliverable().getDeliverableInfo(phase) != null
+                  && ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType() != null
+                    ? ref.getDeliverable().getDeliverableInfo(phase).getDeliverableType().getName() : null);
+
+            } else {
+              // Evidence by link
+              refMap.put("url", ref.getLink());
+              refMap.put("reference", ref.getReference());
+              refMap.put("deliverableCategory",
+                ref.getDeliverableType() != null && ref.getDeliverableType().getDeliverableCategory() != null
+                  ? ref.getDeliverableType().getDeliverableCategory().getName() : null);
+              refMap.put("deliverableType",
+                ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
+            }
+
             referenceComplementarySolutionsList.add(refMap);
           }
         }
