@@ -120,8 +120,8 @@
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditExpectedStudyInterceptor" />
 				
 			<interceptor name="privateStudy"
-        class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateStudyInterceptor" />				
-
+        class="org.cgiar.ccafs.marlo.interceptor.project.EditPrivateStudyInterceptor" />
+        				
 			<interceptor name="editPolicy"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditPolicyInterceptor" />
 				
