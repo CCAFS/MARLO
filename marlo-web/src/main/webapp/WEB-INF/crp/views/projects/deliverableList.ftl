@@ -53,7 +53,7 @@
       [@s.text name="deliverable.message"][/@s.text]
       <div class="form-group">
             <label for="">[@s.text name="Download Template" /]:</label>
-              <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2021.xlsx" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="35"/></a>
+              <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2025.xlsx" download><img src="${baseUrlCdn}/global/images/download-excel.png" height="35"/></a>
       </div>
     </p>
   </div>
@@ -89,7 +89,7 @@
       <p class="alertText">[@s.text name="deliverable.message"][/@s.text]</p>
     </div>
     <div class="ContainerDownload col-md-2">     
-    <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2022.xlsx">     
+    <a href="${baseUrlCdn}/global/documents/AICCRA_dissemination_templates_2025.xlsx">     
       <button class="DownloadButton " >
         <div class="IconDownloadButton">
           <img src="${baseUrlCdn}/global/images/icon-xls.png" height="33"/>
