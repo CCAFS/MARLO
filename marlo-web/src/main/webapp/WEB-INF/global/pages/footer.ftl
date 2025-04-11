@@ -43,7 +43,7 @@
     [/#if]
     
     [#-- Global Javascript --]
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20250227" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20250402" ></script>
     <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20250310" ></script>
     [#if logged]
       [#-- Pusher app --]

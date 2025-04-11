@@ -1104,8 +1104,6 @@ function initNumberField(fieldId, options = {}) {
     if (e.key === ',' || e.keyCode === 188) {
       e.preventDefault();
 
-      console.log('Coma detectada');
-
       const currentValue = this.value.replace(/,/g, '');
       this.value = formatWithCommas(currentValue) + '.';
 
