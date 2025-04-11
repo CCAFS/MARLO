@@ -51,6 +51,12 @@
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+
+    [#if moduleJS??]
+      [#list moduleJS as jsFile]
+        <script type="module" src="${jsFile}"></script>
+      [/#list]
+    [/#if]
     
     [#-- Changes on Save --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/changes.js?20220105" ></script>

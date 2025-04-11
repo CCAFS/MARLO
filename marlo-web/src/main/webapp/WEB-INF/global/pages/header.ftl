@@ -109,6 +109,65 @@
       })(window, document, "clarity", "script", "${clarityID}");
     </script>
 
+    [#-- Stencil test --]
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+
+    [#-- <script type="module" src="https://cdn.jsdelivr.net/gh/yecksin/marlo-stencil-components@main/dist/esm/marlo-stencil-components.js?v=2"></script> --]
+
+        <!-- React dependencies -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-transition-group/dist/react-transition-group.min.js" crossorigin></script>
+
+    <!-- Make ReactTransitionGroup available globally -->
+    <script>
+      window.ReactTransitionGroup = {
+        Transition: ReactTransitionGroup.Transition,
+        TransitionGroup: ReactTransitionGroup.TransitionGroup,
+        CSSTransition: ReactTransitionGroup.CSSTransition
+      };
+    </script>
+    
+    <!-- Load PrimeReact - CHANGED: Use full UMD bundle instead of individual components -->
+    <link rel="stylesheet" href="https://unpkg.com/primereact/resources/themes/lara-light-indigo/theme.css" />
+    <link rel="stylesheet" href="https://unpkg.com/primereact/resources/primereact.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+    
+    <!-- Use complete PrimeReact UMD bundle instead of individual components -->
+    <script src="https://unpkg.com/primereact/primereact.all.min.js"></script>
+    
+    <!-- Make PrimeReact available globally -->
+    <script>
+      // Create a complete mock of the style system
+      const createEmptyStyleHook = () => ({
+        bind: () => {},
+        unbind: () => {},
+        value: {}
+      });
+      
+      // Make sure all required objects exist globally
+      window.primereact = window.primereact || {};
+      window.pi = window.pi || {
+        chevrondown: 'pi pi-chevron-down',
+        times: 'pi pi-times',
+        search: 'pi pi-search'
+      };
+      
+      // Create a full set of mock styling functions
+      if (!window.primereact.core) {
+        window.primereact.core = {};
+      }
+      
+      window.primereact.core.useStyle = createEmptyStyleHook;
+      window.primereact.core.useMountEffect = function(fn) { setTimeout(fn, 0); };
+      window.primereact.core.ObjectUtils = window.primereact.core.ObjectUtils || { 
+        equals: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+        isEmpty: (value) => value === null || value === undefined || value === '' 
+      };
+    </script>
+
   </head>
   <body class="mode-${editable?string('editable', 'readOnly')}">
     [#if !(avoidHeader!false)]

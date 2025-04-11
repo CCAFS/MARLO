@@ -44,6 +44,8 @@ $(document).ready(function() {
   deliverablePartnersModule.init();
 
   feedbackAutoImplementation();
+
+  initTestDropdown();
 });
 
 function attachEvents() {
@@ -891,4 +893,24 @@ const evidencesModule = function () {
     init: init
   }
 
+}
+
+
+//
+
+function initTestDropdown() {
+  const dropdown = document.getElementById('test-select');
+        
+  // Set data for the dropdown
+  dropdown.data = [
+    { label: 'United States', value: 'us' },
+    { label: 'Canada', value: 'ca' },
+    { label: 'United Kingdom', value: 'uk' },
+    { label: 'Germany', value: 'de' }
+  ];
+    
+  // Listen for value changes
+  dropdown.addEventListener('valueChange', (event) => {
+    console.log('Selected value:', event.detail);
+  });
 }

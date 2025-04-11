@@ -9,6 +9,12 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250121"] /]
+[#assign moduleJS = [
+  "${baseUrlMedia}/js/dist/components/my-component.js",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js",
+  "${baseUrlMedia}/js/dist/components/mal-select.js"
+  ]
+/]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 

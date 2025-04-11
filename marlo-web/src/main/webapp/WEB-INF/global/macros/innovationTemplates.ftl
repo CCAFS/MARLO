@@ -809,6 +809,7 @@
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
+      <mal-select name="${customName}.institution.id" id="test-select" ></mal-select>
       [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /]
     </div>
     [#-- Checkbox - is a co-development --]
