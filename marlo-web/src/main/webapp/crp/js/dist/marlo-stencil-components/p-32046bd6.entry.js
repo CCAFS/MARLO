@@ -1,0 +1,2 @@
+import{r as c,h as s,H as e}from"./p-CZWClHa_.js";const t=":host{display:block}";const o=class{constructor(s){c(this,s)}render(){return s(e,{key:"452b946638723877bdccc1ddc318e9d26dac657f"},s("slot",{key:"2eee4d7341085ec90ba24dc9885fb79b2e020713"}))}};o.style=t;export{o as mal_input};
+//# sourceMappingURL=p-32046bd6.entry.js.map
