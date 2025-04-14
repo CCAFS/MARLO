@@ -900,14 +900,30 @@ const evidencesModule = function () {
 
 function initTestDropdown() {
   const dropdown = document.getElementById('test-select');
-        
-  // Set data for the dropdown
-  dropdown.data = [
-    { label: 'United States', value: 'us' },
-    { label: 'Canada', value: 'ca' },
-    { label: 'United Kingdom', value: 'uk' },
-    { label: 'Germany', value: 'de' }
-  ];
+
+  $.ajax({
+    url: `${baseURL}/getInstitutionsService.do`,
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      console.log('Data received:', data);
+      const options = data.institutions.map(item => {
+        return { label: item.name, value: item.id };
+      });
+      dropdown.data = options;
+
+      console.log('Data loaded successfully:', options);
+    },
+    error: function(xhr, status, error) {
+      console.error('Error loading data:', error);
+      // Add debug information to see what was actually returned
+      console.error('Response text:', xhr.responseText);
+      console.error('Status code:', xhr.status);
+    },
+    complete: function() {
+      // Initialize the dropdown with the loaded data
+    }
+  })
     
   // Listen for value changes
   dropdown.addEventListener('valueChange', (event) => {
