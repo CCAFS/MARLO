@@ -798,6 +798,7 @@
 
 [#macro organizationsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  
   <div id="organizationsInnovation-${(template?string('template', ''))}" class="organizationsInnovation form-group grayBlueBox ${class}">
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" className="indexTag" value=((element.id)?string)!"" editable=false display=false /]
@@ -809,8 +810,10 @@
     [#-- Input Organization name --]
     <div class="col-md-12">
       <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      <mal-select name="${customName}.institution.id" id="test-select" ></mal-select>
-      [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /]
+      [#local organizationId = (element.institution.id)!"" /]
+      
+      <mal-select name="${customName}.institution.id" id="test-select" data-value="${organizationId}" class="allianceOrganizations-institutions" ></mal-select> 
+      [#--  [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /] --]    
     </div>
     [#-- Checkbox - is a co-development --]
     <div class="col-md-12">
