@@ -74,6 +74,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1145,8 +1146,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setSdgAllianceLevers(sdgAllianceLeversList);
 
             if (!sdgAllianceLeversList.isEmpty()) {
-              List<String> primarySDGList = new ArrayList<>();
-              List<String> relatedSDGList = new ArrayList<>();
+              Set<String> primarySDGSet = new LinkedHashSet<>();
+              Set<String> relatedSDGSet = new LinkedHashSet<>();
               List<String> relatedLeverList = new ArrayList<>();
 
               for (ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeversList) {
@@ -1154,10 +1155,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   && sdgAllianceLever.getsDGContribution().getName() != null) {
 
                   if (sdgAllianceLever.getIsPrimary()) {
-                    primarySDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                    primarySDGSet.add(sdgAllianceLever.getsDGContribution().getCode() + " "
                       + sdgAllianceLever.getsDGContribution().getName());
                   } else {
-                    relatedSDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                    relatedSDGSet.add(sdgAllianceLever.getsDGContribution().getCode() + " "
                       + sdgAllianceLever.getsDGContribution().getName());
 
                     if (sdgAllianceLever.getAllianceLever() != null
@@ -1178,8 +1179,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               objectMapper = new ObjectMapper();
               objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGList);
-              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGList);
+              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGSet);
+              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGSet);
               relatedLever = objectMapper.writeValueAsString(relatedLeverList);
             }
           }
