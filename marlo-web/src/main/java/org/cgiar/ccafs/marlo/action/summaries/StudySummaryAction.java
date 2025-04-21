@@ -146,7 +146,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     boolean generatePentahoReport =
-      this.getCurrentUser() == null || this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE);
+      this.getCurrentUser() != null && this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE);
 
     if (generatePentahoReport) {
 

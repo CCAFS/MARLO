@@ -74,6 +74,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -237,6 +238,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private String OICRsTemplateData = null;
   private String OICRsReportName = null;
   private String bucketName = null;
+  private boolean activateShortURL = false;
 
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
@@ -680,7 +682,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           /*
            * Get short url calling tinyURL service
            */
-          scopeComments = urlShortener.detectAndShortenLinks(scopeComments);
+          if (activateShortURL) {
+            try {
+              scopeComments = urlShortener.detectAndShortenLinks(scopeComments);
+            } catch (Exception e) {
+              LOG.error("Error shortening URL: " + e.getMessage());
+            }
+          }
 
         }
         // Key Contributions
@@ -867,7 +875,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             /*
              * Get short url calling tinyURL service
              */
-            referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+            if (activateShortURL) {
+              try {
+                referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+              } catch (final Exception e) {
+                LOG.error("Failed to shorten URL: " + e.getMessage());
+              }
+            } else {
+              // If not using short URL, clean the HTML
+              referenceText = studiesReference;
+            }
           }
         } catch (final Exception e) {
           LOG.error("Failed to get new reference information: " + e.getMessage());
@@ -879,7 +896,11 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             if ((projectExpectedStudyInfo.getReferencesText() != null)
               && !projectExpectedStudyInfo.getReferencesText().trim().isEmpty()) {
               studiesReference = this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getReferencesText());
-              referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+              if (activateShortURL) {
+                referenceText = urlShortener.detectAndShortenLinks(studiesReference);
+              } else {
+                referenceText = studiesReference;
+              }
             }
           }
         } catch (final Exception e) {
@@ -889,12 +910,21 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // MELIA publications
         if (projectExpectedStudyInfo.getMELIAPublications() != null) {
           if (!projectExpectedStudyInfo.getMELIAPublications().contains(" ")) {
-            meliaPublications = urlShortener.detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications());
+            if (activateShortURL) {
+              meliaPublications = urlShortener.detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications());
+            } else {
+              meliaPublications = projectExpectedStudyInfo.getMELIAPublications();
+            }
           } else {
             try {
               final int firstSpace = projectExpectedStudyInfo.getMELIAPublications().indexOf(" ");
-              meliaPublications = urlShortener
-                .detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace));
+              if (activateShortURL) {
+                meliaPublications = urlShortener
+                  .detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace));
+              } else {
+                meliaPublications = projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace);
+              }
+              // Append the rest of the string after the first space
               meliaPublications += projectExpectedStudyInfo.getMELIAPublications().substring(firstSpace + 1);
             } catch (final Exception e) {
               throw e;
@@ -1116,8 +1146,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setSdgAllianceLevers(sdgAllianceLeversList);
 
             if (!sdgAllianceLeversList.isEmpty()) {
-              List<String> primarySDGList = new ArrayList<>();
-              List<String> relatedSDGList = new ArrayList<>();
+              Set<String> primarySDGSet = new LinkedHashSet<>();
+              Set<String> relatedSDGSet = new LinkedHashSet<>();
               List<String> relatedLeverList = new ArrayList<>();
 
               for (ProjectExpectedStudySdgAllianceLever sdgAllianceLever : sdgAllianceLeversList) {
@@ -1125,10 +1155,10 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                   && sdgAllianceLever.getsDGContribution().getName() != null) {
 
                   if (sdgAllianceLever.getIsPrimary()) {
-                    primarySDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                    primarySDGSet.add(sdgAllianceLever.getsDGContribution().getCode() + " "
                       + sdgAllianceLever.getsDGContribution().getName());
                   } else {
-                    relatedSDGList.add(sdgAllianceLever.getsDGContribution().getCode() + " "
+                    relatedSDGSet.add(sdgAllianceLever.getsDGContribution().getCode() + " "
                       + sdgAllianceLever.getsDGContribution().getName());
 
                     if (sdgAllianceLever.getAllianceLever() != null
@@ -1149,8 +1179,8 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               objectMapper = new ObjectMapper();
               objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGList);
-              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGList);
+              primarySDGcontribution = objectMapper.writeValueAsString(primarySDGSet);
+              relatedSDGContribution = objectMapper.writeValueAsString(relatedSDGSet);
               relatedLever = objectMapper.writeValueAsString(relatedLeverList);
             }
           }
@@ -1238,9 +1268,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(phase))
               .sorted(Comparator.comparing(ProjectExpectedStudyLink::getId)).collect(Collectors.toList());
 
-          List<String> shortLinks =
+
+          List<String> shortLinks = null;
+          if (activateShortURL) {
             linksList.stream().map(linkV -> linkV.getLink()).filter(linkV -> linkV != null && !linkV.isEmpty())
               .map(urlShortener::getShortUrlService).distinct().collect(Collectors.toList());
+          } else {
+            linksList.stream().map(linkV -> linkV.getLink()).filter(linkV -> linkV != null && !linkV.isEmpty())
+              .distinct().collect(Collectors.toList());
+          }
 
           objectMapper = new ObjectMapper();
           objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

@@ -27,8 +27,8 @@ function init() {
 setFormatInput();
 
 $('.targetUnit-block select').on('change', function(){
-  const selector = $(this).next('.targetValue-block').find('input').selector;
-  setFormatInput(selector, {isRecallMethod: true});
+  const selector = $(this).parents('.targetUnit-block').next('.targetValue-block').find('input').attr('name');
+  setFormatInput(`input[name="${selector}"]`, {isRecallMethod: true});
 })
 
 }
