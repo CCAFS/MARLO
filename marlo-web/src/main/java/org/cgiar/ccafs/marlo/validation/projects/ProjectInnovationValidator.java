@@ -1006,6 +1006,33 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
       ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
+      // Validate Impact Area Score
+      if (innovationInfo.getGenderScore() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.genderScore"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderScore",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (innovationInfo.getClimateChangeScore() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.climateChangeScore"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.climateChangeScore",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (innovationInfo.getFoodSecurityScore() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.foodSecurityScore"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.foodSecurityScore",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (innovationInfo.getEnvironmentalScore() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.environmentalScore"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.environmentalScore",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+      if (innovationInfo.getPovertyScore() == null) {
+        action.addMessage(action.getText("innovation.projectInnovationInfo.povertyScore"));
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.povertyScore",
+          InvalidFieldsMessages.EMPTYFIELD);
+      }
+
       if (innovationInfo.getHasCgiarContribution() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.hasCgiarContribution"));
         action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasCgiarContribution",
