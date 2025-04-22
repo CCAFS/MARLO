@@ -26,6 +26,8 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   private Deliverable deliverable;
   @Expose
   private DeliverableType deliverableType;
+  @Expose
+  private ImpactArea impactArea;
 
   public ProjectInnovationReference() {
   }
@@ -73,9 +75,14 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return externalAuthor;
   }
 
+  public ImpactArea getImpactArea() {
+    return impactArea;
+  }
+
   public String getLink() {
     return link;
   }
+
 
   @Override
   public String getLogDeatil() {
@@ -83,7 +90,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
-
 
   @Override
   public String getModificationJustification() {
@@ -141,6 +147,10 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
 
   public void setExternalAuthor(Boolean externalAuthor) {
     this.externalAuthor = externalAuthor;
+  }
+
+  public void setImpactArea(ImpactArea impactArea) {
+    this.impactArea = impactArea;
   }
 
   public void setLink(String link) {

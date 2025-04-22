@@ -95,6 +95,9 @@
 		<property name="clearLead" type="java.lang.Boolean">
 			<column name="is_clear_lead" />
 		</property>
+		<property name="innovationBundle" type="java.lang.Boolean">
+			<column name="is_innovation_bundle" />
+		</property>
 		<many-to-one name="leadOrganization"
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="lead_organization_id" />

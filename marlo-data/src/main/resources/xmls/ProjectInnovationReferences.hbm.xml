@@ -52,5 +52,10 @@
             name="projectInnovation">
             <column name="project_innovation_id" />
         </many-to-one>
+        <many-to-one class="org.cgiar.ccafs.marlo.data.model.ImpactArea"
+            fetch="select" 
+            name="impactArea">
+            <column name="impact_area_id" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

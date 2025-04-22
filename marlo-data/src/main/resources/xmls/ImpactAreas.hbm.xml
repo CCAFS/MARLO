@@ -13,6 +13,9 @@
     <property name="description" type="string" >
       <column name="description" sql-type="TEXT" />
     </property>
+    <property name="tag" type="string" >
+      <column name="tag" sql-type="TEXT" />
+    </property>
     <property name="icon" type="string" >
       <column name="icon" sql-type="TEXT" />
     </property>

@@ -160,6 +160,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
       projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
       projectInnovationReferenceAdd.setDeliverableType(projectInnovationReference.getDeliverableType());
+      projectInnovationReferenceAdd.setImpactArea(projectInnovationReference.getImpactArea());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
     }
 

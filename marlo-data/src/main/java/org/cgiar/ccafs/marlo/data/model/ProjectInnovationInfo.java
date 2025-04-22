@@ -86,6 +86,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Boolean clearLead;
+  @Expose
+  private Boolean innovationBundle;
 
   @Expose
   private String otherInnovationType;
@@ -278,6 +280,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasToolUrl;
   }
 
+  public Boolean getInnovationBundle() {
+    return innovationBundle;
+  }
+
   public String getInnovationImportance() {
     return innovationImportance;
   }
@@ -373,10 +379,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return readinessReason;
   }
 
+
   public Integer getReadinessScale() {
     return readinessScale;
   }
-
 
   public String getReasonKnowledgePotential() {
     return reasonKnowledgePotential;
@@ -529,6 +535,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setHasToolUrl(Boolean hasToolUrl) {
     this.hasToolUrl = hasToolUrl;
+  }
+
+  public void setInnovationBundle(Boolean innovationBundle) {
+    this.innovationBundle = innovationBundle;
   }
 
   public void setInnovationImportance(String innovationImportance) {
@@ -717,6 +727,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setAdaptativeResearchNarrative(projectInnovationInfoUpdate.getAdaptativeResearchNarrative());
     this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
     this.setClearLead(projectInnovationInfoUpdate.getClearLead());
+    this.setInnovationBundle(projectInnovationInfoUpdate.getInnovationBundle());
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
     this.setReasonNotCgiarContribution(projectInnovationInfoUpdate.getReasonNotCgiarContribution());

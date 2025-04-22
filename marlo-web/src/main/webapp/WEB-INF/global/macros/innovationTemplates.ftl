@@ -99,6 +99,20 @@
               [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="projectInnovations.narrative.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]         
             </div>
             
+            [#-- Innovation Bundle --]
+            <div class="form-group col-md-12">
+              [@customForm.labelText name="innovation.innovationBundle" text="projectInnovations.innovationBundle" required=true isMainTitle=true /]
+              [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle)! /]
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-yes" editable=editable /]
+                </div>
+                <div class="col-md-3">
+                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+              </div>
+            </div>
+            
             [#-- Phase of research and Stage of innovation - DEPRECIATED --] 
             [#-- <div class="form-group row">
               <div class="col-md-6 ">
@@ -514,6 +528,7 @@
   <div id="oneCGIAR" class="borderBox">
 
     [#-- reflect a contribution --]
+    [#-- 
     <div class="form-group">
       <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
       <div class="form-group col-md-12">
@@ -528,10 +543,10 @@
     </div>
 
 
-    [#-- Innovation importance --]
+    Innovation importance
     <div class="form-group linkToImpactAreas" style="display:${(((hasContributionToCGIAR?c) == 'true')&& (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};" >
 
-      [#-- Impact Areas --]
+      Impact Areas
       <div class="form-group  col-md-12">
         <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:[@customForm.req required=true /]</label>
         <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
@@ -539,47 +554,56 @@
       </div>
     </div>
 
-    [#-- Reason not provided --] 
+    Reason not provided
     <div class="form-group contributionToCGIARComment col-md-12" style="display:${((element.projectInnovationInfo??)&&((hasContributionToCGIAR?c) == 'false') && (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};">
       [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
     </div>
+    --]
     
-    
-    <label class="label--2">[@s.text name="projectInnovations.impactAreaScores" /]: [@customForm.req required=true /]</label>
-    <div class="note">
-      <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip"][/@]
+    <div class="form-group">
+      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]:</label>
+      <div class="note">
+        <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip" /]
+      </div>
     </div>
     
-    [#-- Gender --]
-    [@impactScoreRadioGroup 
-      fieldName="genderScore" 
-      fieldLabel="projectInnovation.oneCGIARAligment.genderScore" 
-      fieldValue=element.projectInnovationInfo.genderScore
-      editable=editable /]
-    
-    [@impactScoreRadioGroup 
-      fieldName="climateChangeScore" 
-      fieldLabel="projectInnovation.oneCGIARAligment.climateChangeScore" 
-      fieldValue=element.projectInnovationInfo.climateChangeScore
-      editable=editable /]
-    
-    [@impactScoreRadioGroup 
-      fieldName="foodSecurityScore" 
-      fieldLabel="projectInnovation.oneCGIARAligment.foodSecurityScore" 
-      fieldValue=element.projectInnovationInfo.foodSecurityScore
-      editable=editable /]
-    
-    [@impactScoreRadioGroup 
-      fieldName="environmentalScore" 
-      fieldLabel="projectInnovation.oneCGIARAligment.environmentalScore" 
-      fieldValue=element.projectInnovationInfo.environmentalScore 
-      editable=editable /]
-    
-    [@impactScoreRadioGroup 
-      fieldName="povertyScore" 
-      fieldLabel="projectInnovation.oneCGIARAligment.povertyScore" 
-      fieldValue=element.projectInnovationInfo.povertyScore
-      editable=editable /]
+    <div class="form-group">
+      [#-- Gender --]
+      [@impactScoreRadioGroup 
+        fieldName="genderScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.genderScore" 
+        fieldValue=element.projectInnovationInfo.genderScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="climateChangeScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.climateChangeScore" 
+        fieldValue=element.projectInnovationInfo.climateChangeScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="foodSecurityScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.nutritionScore" 
+        fieldValue=element.projectInnovationInfo.foodSecurityScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="environmentalScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.environmentScore" 
+        fieldValue=element.projectInnovationInfo.environmentalScore 
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="povertyScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" 
+        fieldValue=element.projectInnovationInfo.povertyScore
+        editable=editable /]
+        
+      <div class="note">
+        <span class="glyphicon"></span> [@s.text name="innovation.oneCGIAR.tooltip2"][/@]
+      </div>
+    </div>
+   
 
   </div>
 [/#macro]

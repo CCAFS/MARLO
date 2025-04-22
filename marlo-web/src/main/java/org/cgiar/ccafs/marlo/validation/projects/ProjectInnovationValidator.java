@@ -596,6 +596,13 @@ public class ProjectInnovationValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    if (innovationInfo.getInnovationBundle() == null) {
+      action.addMessage(action.getText("innovation.innovationBundle"));
+      action.addMissingField("innovation.innovationBundle");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationBundle",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+
     if (innovationInfo.getAreUsersDetermined() != null && innovationInfo.getAreUsersDetermined()) {
       // Validate actors
       if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
@@ -1033,27 +1040,27 @@ public class ProjectInnovationValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (innovationInfo.getHasCgiarContribution() == null) {
-        action.addMessage(action.getText("innovation.projectInnovationInfo.hasCgiarContribution"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasCgiarContribution",
-          InvalidFieldsMessages.EMPTYFIELD);
-      } else {
-        // When the has CGIAR contribution question is true
-        if (innovationInfo.getHasCgiarContribution()) {
-
-          if (projectInnovation.getImpactAreas() == null || projectInnovation.getImpactAreas().isEmpty()) {
-            action.addMessage(action.getText("innovation.impactAreas"));
-            action.getInvalidFields().put("list-innovation.impactAreas", InvalidFieldsMessages.EMPTYFIELD);
-          }
-          // When the CGIAR contribution is false
-        } else if (!innovationInfo.getHasCgiarContribution()
-          && !(this.isValidString(innovationInfo.getReasonNotCgiarContribution()))) {
-          action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotCgiarContribution"));
-          action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotCgiarContribution",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
-      }
+      /*
+       * if (innovationInfo.getHasCgiarContribution() == null) {
+       * action.addMessage(action.getText("innovation.projectInnovationInfo.hasCgiarContribution"));
+       * action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasCgiarContribution",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * } else {
+       * // When the has CGIAR contribution question is true
+       * if (innovationInfo.getHasCgiarContribution()) {
+       * if (projectInnovation.getImpactAreas() == null || projectInnovation.getImpactAreas().isEmpty()) {
+       * action.addMessage(action.getText("innovation.impactAreas"));
+       * action.getInvalidFields().put("list-innovation.impactAreas", InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * // When the CGIAR contribution is false
+       * } else if (!innovationInfo.getHasCgiarContribution()
+       * && !(this.isValidString(innovationInfo.getReasonNotCgiarContribution()))) {
+       * action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotCgiarContribution"));
+       * action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotCgiarContribution",
+       * InvalidFieldsMessages.EMPTYFIELD);
+       * }
+       * }
+       */
     }
     innovationOneCgiar = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationOneCgiar.length() > innovationAlliance.length())) {
