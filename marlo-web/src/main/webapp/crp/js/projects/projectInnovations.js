@@ -269,7 +269,10 @@ function attachEvents() {
   $('input[type="checkbox"][id*="lever-"]').on('change', updateIndexListCheckbox);
 
   //On change radio buttons - One CGIAR
-  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+  //$('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+
+  //On change radio buttons - Notes in Scores - One CGIAR
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
 }
 function AddRequired(){
@@ -523,7 +526,13 @@ function addImageToSelectImpactAreas() {
     });
 }
 
-function onDisplayItemsInOneCGIAR(){
+/**
+ * Function to display items in the CGIAR section based on the selected radio button.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function onDisplayItemsInOneCGIAR(){
   const $commentBox = $('.contributionToCGIARComment');
   const $selectImpactArea = $('.linkToImpactAreas');
   const $radioButton = $('input.radioType-contributionToCGIAR:checked');
@@ -539,6 +548,10 @@ function onDisplayItemsInOneCGIAR(){
     $commentBox.slideUp(400);
     
   }
+} */
+
+function onDisplayNotesInScores() {
+
 }
 
 function changeDisplayMessageInScaling() {
