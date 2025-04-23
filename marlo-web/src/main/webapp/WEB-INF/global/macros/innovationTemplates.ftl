@@ -316,63 +316,7 @@
             </div> 
             [/#if]
 
-            [#-- Anticipated users --]
-            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
-              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
-              <div class="col-md-12">
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
-                </div>
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
-                </div>
-              </div>
-              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
-                [#-- Actors --]
-                <div class="col-md-6 actorsBlock">
-                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="actorsList">
-                    [#list (element.actors)![] as actor]
-                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Organizations --]
-                <div class="col-md-6 organizationsBlock">
-                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="organizationsList">
-                    [#list (element.allianceOrganizations)![] as organization]
-                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Element item Template --]
-                <div style="display:none">
-                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
-                </div>
-
-              </div>
-                
-            </div>
-
+            
             [#-- Beneficiries --]
             <div class="form-group col-md-12">
               [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
@@ -714,6 +658,64 @@
           </div>
         </div>
       </div>
+      
+      [#-- Anticipated users --]
+            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
+              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
+              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
+              <div class="col-md-12">
+                <div class="col-md-4">
+                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                </div>
+                <div class="col-md-4">
+                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+              </div>
+              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
+                [#-- Actors --]
+                <div class="col-md-6 actorsBlock">
+                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
+                  <label class="note--2">
+                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
+                  </label>
+                  [#-- list of items --]
+                  <div class="actorsList">
+                    [#list (element.actors)![] as actor]
+                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
+                    [/#list]
+                  </div>
+                  [#if editable]
+                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Organizations --]
+                <div class="col-md-6 organizationsBlock">
+                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+                  <label class="note--2">
+                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
+                  </label>
+                  [#-- list of items --]
+                  <div class="organizationsList">
+                    [#list (element.allianceOrganizations)![] as organization]
+                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
+                    [/#list]
+                  </div>
+                  [#if editable]
+                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Element item Template --]
+                <div style="display:none">
+                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
+                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+                </div>
+
+              </div>
+                
+            </div>
+
 
       [#-- URLs: Tool website, publications, stories and more  --]
       <div class="form-group">
