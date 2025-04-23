@@ -506,7 +506,7 @@
     
     <div class="form-group">
       <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]:</label>
-      <div class="note">
+      <div class="note" style="align-items: unset;">
         <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip" /]
       </div>
     </div>
@@ -932,11 +932,12 @@
   </div>
 [/#macro]
 
-[#macro impactScoreRadioGroup fieldName fieldLabel fieldValue="" editable=editable]
+[#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
   <div class="form-group">
     <label class="label--2">
       [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
     </label>
+    [#local fieldValue = fieldValue!{}]
     <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
       [#if impactAreaScores?? && (impactAreaScores?size > 0)]
         [#list impactAreaScores as option]
@@ -946,7 +947,7 @@
               name="innovation.projectInnovationInfo.${fieldName}.id"
               value="${option.id}"
               label="${option.description}"
-              checked=(fieldValue?? && fieldValue.id == option.id)
+              checked=(fieldValue.id?? && fieldValue.id == option.id)
               cssClass="radioType-contributionToCGIAR"
               cssClassLabel="font-normal"
               editable=editable

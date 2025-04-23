@@ -3494,6 +3494,15 @@ button.ipGraph-btn {
 	margin-right: 1rem;
 }
 
+.form-group .note span.inner-note{
+	color: #5f5e5e;
+	font-size: 13px;
+}
+
+.form-group .note span.inner-note p{
+	margin: 0;
+}
+
 .note--2{
 	display: flex;
 	border-radius: 0.5rem;
