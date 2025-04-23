@@ -228,7 +228,7 @@
 
             [#-- Contributing Centers/ PPA partners  --]
             <div class="form-group contributionsCenters">
-              <label class="label--2">[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
+              <label class="label--2">[@s.text name="projectInnovations.contributingCenters.title" /]: [@customForm.req required=true /]</label>
               <div class="note">
                 <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] 
                 <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp; clicking here</a>[/@][/@]
