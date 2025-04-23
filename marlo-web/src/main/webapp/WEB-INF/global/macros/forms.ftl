@@ -1046,12 +1046,11 @@
       </div>
     </div>
     
-    [#local isGender = (element.gender)! /]
-    [#local isClimateChange = (element.climateChange)! /]
-    [#local isNutrition = (element.nutrition)! /]
-    [#local isEnvironmental = (element.environmental)! /]
-    [#local isPoverty = (element.poverty)! /]
-    [#local isInnovationReadiness = (element.innovationReadiness)! /]
+    [#local isClimateChange = (element.climateChange?has_content && element.climateChange?c == "true") /]
+    [#local isNutrition = (element.nutrition?has_content && element.nutrition?c == "true") /]
+    [#local isEnvironmental = (element.environmental?has_content && element.environmental?c == "true") /]
+    [#local isPoverty = (element.poverty?has_content && element.poverty?c == "true") /]
+    [#local isInnovationReadiness = (element.innovationReadiness?has_content && element.innovationReadiness?c == "true") /]
 
     <div class="col-md-12">
       <label class="col-md-12" style="margin-top: 15px;">
