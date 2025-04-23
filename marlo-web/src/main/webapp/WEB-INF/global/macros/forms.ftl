@@ -1045,6 +1045,46 @@
         </div>
       </div>
     </div>
+    
+    [#local isGender = (element.gender)! /]
+    [#local isClimateChange = (element.climateChange)! /]
+    [#local isNutrition = (element.nutrition)! /]
+    [#local isEnvironmental = (element.environmental)! /]
+    [#local isPoverty = (element.poverty)! /]
+    [#local isInnovationReadiness = (element.innovationReadiness)! /]
+
+    <div class="col-md-12">
+      <label class="col-md-12" style="margin-top: 15px;">
+        [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
+      </label>
+      <div class="col-md-12 row">
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender"
+            label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange"
+            label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition"
+            label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental"
+            label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty"
+            label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness"
+            label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
+        </div>
+      </div>
+    </div>
+
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
