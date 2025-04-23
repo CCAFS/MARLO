@@ -17,14 +17,5 @@
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>
-        <property name="oldType" type="boolean">
-            <column name="is_old_type" not-null="true" />
-        </property>
-        <property name="clarisaName" type="string">
-            <column name="clarisa_name" sql-type="TEXT" />
-        </property>
-        <property name="clarisaDescription" type="string">
-            <column name="clarisa_description" sql-type="TEXT" />
-        </property>
     </class>
 </hibernate-mapping>

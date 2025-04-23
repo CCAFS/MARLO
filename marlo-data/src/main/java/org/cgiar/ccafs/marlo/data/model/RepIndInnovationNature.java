@@ -13,22 +13,8 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
   private String name;
   @Expose
   private String definition;
-  @Expose
-  private Boolean oldType;
-  @Expose
-  private String clarisaName;
-  @Expose
-  private String clarisaDescription;
 
   public RepIndInnovationNature() {
-  }
-
-  public String getClarisaDescription() {
-    return clarisaDescription;
-  }
-
-  public String getClarisaName() {
-    return clarisaName;
   }
 
   public String getComposedName() {
@@ -47,18 +33,6 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
     return this.name;
   }
 
-  public Boolean getOldType() {
-    return oldType;
-  }
-
-  public void setClarisaDescription(String clarisaDescription) {
-    this.clarisaDescription = clarisaDescription;
-  }
-
-  public void setClarisaName(String clarisaName) {
-    this.clarisaName = clarisaName;
-  }
-
   public void setDefinition(String definition) {
     this.definition = definition;
   }
@@ -67,7 +41,4 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
     this.name = name;
   }
 
-  public void setOldType(Boolean oldType) {
-    this.oldType = oldType;
-  }
 }
