@@ -542,10 +542,6 @@
         fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" 
         fieldValue=element.projectInnovationInfo.povertyScore
         editable=editable /]
-        
-      <div class="note">
-        <span class="glyphicon"></span> [@s.text name="innovation.oneCGIAR.tooltip2"][/@]
-      </div>
     </div>
    
 
@@ -933,30 +929,37 @@
 [/#macro]
 
 [#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
-  <div class="form-group">
-    <label class="label--2">
-      [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
-    </label>
+  <div class="form-group col-md-12">
     [#local fieldValue = fieldValue!{}]
-    <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
-      [#if impactAreaScores?? && (impactAreaScores?size > 0)]
-        [#list impactAreaScores as option]
-          <div style="white-space: nowrap;">
-            [@customForm.radioFlat
-              id="${fieldName}-${option.id}"
-              name="innovation.projectInnovationInfo.${fieldName}.id"
-              value="${option.id}"
-              label="${option.description}"
-              checked=(fieldValue.id?? && fieldValue.id == option.id)
-              cssClass="radioType-contributionToCGIAR"
-              cssClassLabel="font-normal"
-              editable=editable
-            /]
-          </div>
-        [/#list]
-      [#else]
-        <p class="text-muted">No options available.</p>
-      [/#if]
+    <div class="col-md-5" style="padding-left: 0px;">
+      <label class="label--2">
+        [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
+      </label>
+      <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
+        [#if impactAreaScores?? && (impactAreaScores?size > 0)]
+          [#list impactAreaScores as option]
+            <div style="white-space: nowrap;">
+              [@customForm.radioFlat
+                id="${fieldName}-${option.id}"
+                name="innovation.projectInnovationInfo.${fieldName}.id"
+                value="${option.id}"
+                label="${option.description}"
+                checked=(fieldValue.id?? && fieldValue.id == option.id)
+                cssClass="radioType-contributionToCGIAR"
+                cssClassLabel="font-normal"
+                editable=editable
+              /]
+            </div>
+          [/#list]
+        [#else]
+          <p class="text-muted">No options available.</p>
+        [/#if]
+      </div>
+    </div>
+    <div class="col-md-7" style="padding-right: 0px;">
+      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
+        [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
+      </div>
     </div>
   </div>
 [/#macro]
