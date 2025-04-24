@@ -95,6 +95,9 @@
 		<property name="clearLead" type="java.lang.Boolean">
 			<column name="is_clear_lead" />
 		</property>
+		<property name="innovationBundle" type="java.lang.Boolean">
+			<column name="is_innovation_bundle" />
+		</property>
 		<many-to-one name="leadOrganization"
 			class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
 			<column name="lead_organization_id" />
@@ -187,5 +190,30 @@
         <property name="areUsersDetermined" type="java.lang.Boolean">
             <column name="are_users_determined" not-null="true" />
         </property>
+        <many-to-one name="genderScore"
+            class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
+            fetch="select">
+            <column name="gender_score_id" />
+        </many-to-one>
+        <many-to-one name="climateChangeScore"
+            class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
+            fetch="select">
+            <column name="climate_change_score_id" />
+        </many-to-one>
+        <many-to-one name="foodSecurityScore"
+            class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
+            fetch="select">
+            <column name="food_security_score_id" />
+        </many-to-one>
+        <many-to-one name="environmentalScore"
+            class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
+            fetch="select">
+            <column name="environmental_score_id" />
+        </many-to-one>
+        <many-to-one name="povertyScore"
+            class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
+            fetch="select">
+            <column name="poverty_jobs_score_id" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>

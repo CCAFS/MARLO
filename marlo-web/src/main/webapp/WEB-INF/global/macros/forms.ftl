@@ -539,10 +539,10 @@
 [/#macro]
 
 
-[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" canComment=true inline=true columns=0]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassContainer="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
   <div class="feedback-flex-items radioFlat-flex"></div>
-  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
+  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')} ${cssClassContainer} ">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
     <label for="${id}" class="radio-label ${cssClassLabel}">
@@ -1044,6 +1044,48 @@
           </div>            
         </div>
       </div>
+    </div>
+    
+    [#local isClimateChange = (element.climateChange?has_content && element.climateChange?c == "true") /]
+    [#local isNutrition = (element.nutrition?has_content && element.nutrition?c == "true") /]
+    [#local isEnvironmental = (element.environmental?has_content && element.environmental?c == "true") /]
+    [#local isPoverty = (element.poverty?has_content && element.poverty?c == "true") /]
+    [#local isInnovationReadiness = (element.innovationReadiness?has_content && element.innovationReadiness?c == "true") /]
+
+    <div class="col-md-12">
+      <label class="col-md-12" style="margin-top: 15px;">
+        [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
+      </label>
+      <div class="col-md-10 row">
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender"
+            label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange"
+            label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition"
+            label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental"
+            label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty"
+            label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
+        </div>
+        <div class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness"
+            label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]         
     </div>
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]

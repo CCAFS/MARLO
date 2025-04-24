@@ -26,10 +26,23 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
   private Deliverable deliverable;
   @Expose
   private DeliverableType deliverableType;
+  @Expose
+  private Boolean gender;
+  @Expose
+  private Boolean climateChange;
+  @Expose
+  private Boolean nutrition;
+  @Expose
+  private Boolean environmental;
+  @Expose
+  private Boolean poverty;
+  @Expose
+  private Boolean innovationReadiness;
+  @Expose
+  private String evidenceSource;
 
   public ProjectInnovationReference() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -57,6 +70,10 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return true;
   }
 
+  public Boolean getClimateChange() {
+    return climateChange;
+  }
+
   public Deliverable getDeliverable() {
     return deliverable;
   }
@@ -65,12 +82,28 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return deliverableType;
   }
 
+  public Boolean getEnvironmental() {
+    return environmental;
+  }
+
   public Boolean getEvidenceByDeliverable() {
     return evidenceByDeliverable;
   }
 
+  public String getEvidenceSource() {
+    return evidenceSource;
+  }
+
   public Boolean getExternalAuthor() {
     return externalAuthor;
+  }
+
+  public Boolean getGender() {
+    return gender;
+  }
+
+  public Boolean getInnovationReadiness() {
+    return innovationReadiness;
   }
 
   public String getLink() {
@@ -84,7 +117,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return sb.toString();
   }
 
-
   @Override
   public String getModificationJustification() {
     return "";
@@ -97,8 +129,16 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return u;
   }
 
+  public Boolean getNutrition() {
+    return nutrition;
+  }
+
   public Phase getPhase() {
     return phase;
+  }
+
+  public Boolean getPoverty() {
+    return poverty;
   }
 
   public ProjectInnovation getProjectInnovation() {
@@ -127,6 +167,10 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return true;
   }
 
+  public void setClimateChange(Boolean climateChange) {
+    this.climateChange = climateChange;
+  }
+
   public void setDeliverable(Deliverable deliverable) {
     this.deliverable = deliverable;
   }
@@ -135,12 +179,28 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     this.deliverableType = deliverableType;
   }
 
+  public void setEnvironmental(Boolean environmental) {
+    this.environmental = environmental;
+  }
+
   public void setEvidenceByDeliverable(Boolean evidenceByDeliverable) {
     this.evidenceByDeliverable = evidenceByDeliverable;
   }
 
+  public void setEvidenceSource(String evidenceSource) {
+    this.evidenceSource = evidenceSource;
+  }
+
   public void setExternalAuthor(Boolean externalAuthor) {
     this.externalAuthor = externalAuthor;
+  }
+
+  public void setGender(Boolean gender) {
+    this.gender = gender;
+  }
+
+  public void setInnovationReadiness(Boolean innovationReadiness) {
+    this.innovationReadiness = innovationReadiness;
   }
 
   public void setLink(String link) {
@@ -152,8 +212,16 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
 
   }
 
+  public void setNutrition(Boolean nutrition) {
+    this.nutrition = nutrition;
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void setPoverty(Boolean poverty) {
+    this.poverty = poverty;
   }
 
   public void setProjectInnovation(ProjectInnovation projectInnovation) {

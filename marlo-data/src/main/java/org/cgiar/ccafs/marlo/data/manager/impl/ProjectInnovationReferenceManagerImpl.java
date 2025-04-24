@@ -160,6 +160,13 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
       projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
       projectInnovationReferenceAdd.setDeliverableType(projectInnovationReference.getDeliverableType());
+      projectInnovationReferenceAdd.setGender(projectInnovationReference.getGender());
+      projectInnovationReferenceAdd.setClimateChange(projectInnovationReference.getClimateChange());
+      projectInnovationReferenceAdd.setNutrition(projectInnovationReference.getNutrition());
+      projectInnovationReferenceAdd.setEnvironmental(projectInnovationReference.getEnvironmental());
+      projectInnovationReferenceAdd.setPoverty(projectInnovationReference.getPoverty());
+      projectInnovationReferenceAdd.setInnovationReadiness(projectInnovationReference.getInnovationReadiness());
+      projectInnovationReferenceAdd.setEvidenceSource(projectInnovationReference.getEvidenceSource());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
     }
 

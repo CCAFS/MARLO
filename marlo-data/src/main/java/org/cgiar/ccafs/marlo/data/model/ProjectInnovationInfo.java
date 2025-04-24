@@ -86,6 +86,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Boolean clearLead;
+  @Expose
+  private Boolean innovationBundle;
 
   @Expose
   private String otherInnovationType;
@@ -141,6 +143,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherAllianceLever;
   @Expose
   private String otherToolNarrative;
+  @Expose
+  private ImpactAreaScore genderScore;
+  @Expose
+  private ImpactAreaScore climateChangeScore;
+  @Expose
+  private ImpactAreaScore foodSecurityScore;
+  @Expose
+  private ImpactAreaScore environmentalScore;
+  @Expose
+  private ImpactAreaScore povertyScore;
 
   public ProjectInnovationInfo() {
   }
@@ -204,12 +216,24 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   }
 
 
+  public ImpactAreaScore getClimateChangeScore() {
+    return climateChangeScore;
+  }
+
   public String getDescriptionStage() {
     return descriptionStage;
   }
 
+  public ImpactAreaScore getEnvironmentalScore() {
+    return environmentalScore;
+  }
+
   public String getEvidenceLink() {
     return evidenceLink;
+  }
+
+  public ImpactAreaScore getFoodSecurityScore() {
+    return foodSecurityScore;
   }
 
   public String getGenderExplaniation() {
@@ -218,6 +242,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+  public ImpactAreaScore getGenderScore() {
+    return genderScore;
   }
 
   public Boolean getHasAssetPotential() {
@@ -250,6 +278,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public Boolean getHasToolUrl() {
     return hasToolUrl;
+  }
+
+  public Boolean getInnovationBundle() {
+    return innovationBundle;
   }
 
   public String getInnovationImportance() {
@@ -331,6 +363,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return phase;
   }
 
+  public ImpactAreaScore getPovertyScore() {
+    return povertyScore;
+  }
+
   public ProjectExpectedStudy getProjectExpectedStudy() {
     return projectExpectedStudy;
   }
@@ -342,6 +378,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public String getReadinessReason() {
     return readinessReason;
   }
+
 
   public Integer getReadinessScale() {
     return readinessScale;
@@ -366,7 +403,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public RepIndDegreeInnovation getRepIndDegreeInnovation() {
     return repIndDegreeInnovation;
   }
-
 
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
@@ -437,12 +473,24 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.clearLead = clearLead;
   }
 
+  public void setClimateChangeScore(ImpactAreaScore climateChangeScore) {
+    this.climateChangeScore = climateChangeScore;
+  }
+
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
 
+  public void setEnvironmentalScore(ImpactAreaScore environmentalScore) {
+    this.environmentalScore = environmentalScore;
+  }
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
+  }
+
+  public void setFoodSecurityScore(ImpactAreaScore foodSecurityScore) {
+    this.foodSecurityScore = foodSecurityScore;
   }
 
   public void setGenderExplaniation(String genderExplaniation) {
@@ -451,6 +499,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
+  }
+
+  public void setGenderScore(ImpactAreaScore genderScore) {
+    this.genderScore = genderScore;
   }
 
   public void setHasAssetPotential(Boolean hasAssetPotential) {
@@ -483,6 +535,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setHasToolUrl(Boolean hasToolUrl) {
     this.hasToolUrl = hasToolUrl;
+  }
+
+  public void setInnovationBundle(Boolean innovationBundle) {
+    this.innovationBundle = innovationBundle;
   }
 
   public void setInnovationImportance(String innovationImportance) {
@@ -548,6 +604,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void setPovertyScore(ImpactAreaScore povertyScore) {
+    this.povertyScore = povertyScore;
   }
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
@@ -667,6 +727,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setAdaptativeResearchNarrative(projectInnovationInfoUpdate.getAdaptativeResearchNarrative());
     this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
     this.setClearLead(projectInnovationInfoUpdate.getClearLead());
+    this.setInnovationBundle(projectInnovationInfoUpdate.getInnovationBundle());
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
     this.setReasonNotCgiarContribution(projectInnovationInfoUpdate.getReasonNotCgiarContribution());
@@ -695,6 +756,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
     this.setOtherToolNarrative(projectInnovationInfoUpdate.getOtherToolNarrative());
     this.setKnowledgeMethodsAndToolsNarrative(projectInnovationInfoUpdate.getKnowledgeMethodsAndToolsNarrative());
+    this.setGenderScore(projectInnovationInfoUpdate.getGenderScore());
+    this.setClimateChangeScore(projectInnovationInfoUpdate.getClimateChangeScore());
+    this.setFoodSecurityScore(projectInnovationInfoUpdate.getFoodSecurityScore());
+    this.setEnvironmentalScore(projectInnovationInfoUpdate.getEnvironmentalScore());
+    this.setPovertyScore(projectInnovationInfoUpdate.getPovertyScore());
+    this.setGenderScore(projectInnovationInfoUpdate.getGenderScore());
+    this.setClimateChangeScore(projectInnovationInfoUpdate.getClimateChangeScore());
+    this.setFoodSecurityScore(projectInnovationInfoUpdate.getFoodSecurityScore());
+    this.setEnvironmentalScore(projectInnovationInfoUpdate.getEnvironmentalScore());
+    this.setPovertyScore(projectInnovationInfoUpdate.getPovertyScore());
   }
 }
 

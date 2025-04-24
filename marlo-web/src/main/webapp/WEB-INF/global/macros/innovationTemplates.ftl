@@ -99,6 +99,20 @@
               [@customForm.textArea name="innovation.projectInnovationInfo.narrative"  i18nkey="projectInnovations.narrative"  placeholder="" className="limitWords-80" help="projectInnovations.narrative.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]         
             </div>
             
+            [#-- Innovation Bundle --]
+            <div class="form-group col-md-12">
+              [@customForm.labelText name="innovation.innovationBundle" text="projectInnovations.innovationBundle" required=true isMainTitle=true /]
+              [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle)! /]
+              <div class="col-md-12">
+                <div class="col-md-3">
+                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-yes" editable=editable /]
+                </div>
+                <div class="col-md-3">
+                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+              </div>
+            </div>
+            
             [#-- Phase of research and Stage of innovation - DEPRECIATED --] 
             [#-- <div class="form-group row">
               <div class="col-md-6 ">
@@ -214,7 +228,7 @@
 
             [#-- Contributing Centers/ PPA partners  --]
             <div class="form-group contributionsCenters">
-              <label class="label--2">[@s.text name="projectInnovations.contributingCenters" /]: [@customForm.req required=true /]</label>
+              <label class="label--2">[@s.text name="projectInnovations.contributingCenters.title" /]: [@customForm.req required=true /]</label>
               <div class="note">
                 <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] 
                 <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp; clicking here</a>[/@][/@]
@@ -302,63 +316,7 @@
             </div> 
             [/#if]
 
-            [#-- Anticipated users --]
-            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
-              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
-              <div class="col-md-12">
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
-                </div>
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
-                </div>
-              </div>
-              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
-                [#-- Actors --]
-                <div class="col-md-6 actorsBlock">
-                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="actorsList">
-                    [#list (element.actors)![] as actor]
-                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Organizations --]
-                <div class="col-md-6 organizationsBlock">
-                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="organizationsList">
-                    [#list (element.allianceOrganizations)![] as organization]
-                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Element item Template --]
-                <div style="display:none">
-                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
-                </div>
-
-              </div>
-                
-            </div>
-
+            
             [#-- Beneficiries --]
             <div class="form-group col-md-12">
               [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
@@ -387,12 +345,6 @@
   [#local customName = "${name}"/]
 
   <div id="alliance" class="borderBox clearfix">
-    [#-- SDG Targets --]
-    <div class="form-group">
-      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
-      <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
-      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
-    </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
       [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true isMainTitle=true /]
@@ -514,6 +466,7 @@
   <div id="oneCGIAR" class="borderBox">
 
     [#-- reflect a contribution --]
+    [#-- 
     <div class="form-group">
       <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.contributionToCGIAR" /]:[@customForm.req required=(editable) /]</label>
       <div class="form-group col-md-12">
@@ -528,10 +481,10 @@
     </div>
 
 
-    [#-- Innovation importance --]
+    Innovation importance
     <div class="form-group linkToImpactAreas" style="display:${(((hasContributionToCGIAR?c) == 'true')&& (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};" >
 
-      [#-- Impact Areas --]
+      Impact Areas
       <div class="form-group  col-md-12">
         <label class="label--2 col-md-12">[@s.text name="projectInnovations.oneCGIARAligment.impactAreas" /]:[@customForm.req required=true /]</label>
         <label>[@s.text name="projectInnovations.oneCGIARAligment.impactAreas.subtitle" /]</label>
@@ -539,10 +492,59 @@
       </div>
     </div>
 
-    [#-- Reason not provided --] 
+    Reason not provided
     <div class="form-group contributionToCGIARComment col-md-12" style="display:${((element.projectInnovationInfo??)&&((hasContributionToCGIAR?c) == 'false') && (element.projectInnovationInfo.hasCgiarContribution??))?string('block','none')};">
       [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
     </div>
+    --]
+
+    [#-- SDG Targets --]
+    <div class="form-group">
+      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets" /]:[@customForm.req required=true /]</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]</label>
+      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
+    </div>
+    
+    <div class="form-group">
+      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]:</label>
+      <div class="note" style="align-items: unset;">
+        <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip" /]
+      </div>
+    </div>
+    
+    <div class="form-group">
+      [#-- Gender --]
+      [@impactScoreRadioGroup 
+        fieldName="genderScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.genderScore" 
+        fieldValue=element.projectInnovationInfo.genderScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="climateChangeScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.climateChangeScore" 
+        fieldValue=element.projectInnovationInfo.climateChangeScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="foodSecurityScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.nutritionScore" 
+        fieldValue=element.projectInnovationInfo.foodSecurityScore
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="environmentalScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.environmentScore" 
+        fieldValue=element.projectInnovationInfo.environmentalScore 
+        editable=editable /]
+      
+      [@impactScoreRadioGroup 
+        fieldName="povertyScore" 
+        fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" 
+        fieldValue=element.projectInnovationInfo.povertyScore
+        editable=editable /]
+    </div>
+   
 
   </div>
 [/#macro]
@@ -653,6 +655,64 @@
           </div>
         </div>
       </div>
+      
+      [#-- Anticipated users --]
+            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
+              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
+              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
+              <div class="col-md-12">
+                <div class="col-md-4">
+                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+                </div>
+                <div class="col-md-4">
+                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+                </div>
+              </div>
+              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
+                [#-- Actors --]
+                <div class="col-md-6 actorsBlock">
+                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
+                  <label class="note--2">
+                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
+                  </label>
+                  [#-- list of items --]
+                  <div class="actorsList">
+                    [#list (element.actors)![] as actor]
+                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
+                    [/#list]
+                  </div>
+                  [#if editable]
+                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Organizations --]
+                <div class="col-md-6 organizationsBlock">
+                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+                  <label class="note--2">
+                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
+                  </label>
+                  [#-- list of items --]
+                  <div class="organizationsList">
+                    [#list (element.allianceOrganizations)![] as organization]
+                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
+                    [/#list]
+                  </div>
+                  [#if editable]
+                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
+                    <div class="clearfix"></div>
+                  [/#if]
+                </div>
+                [#-- Element item Template --]
+                <div style="display:none">
+                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
+                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+                </div>
+
+              </div>
+                
+            </div>
+
 
       [#-- URLs: Tool website, publications, stories and more  --]
       <div class="form-group">
@@ -866,5 +926,42 @@
         
     </div>
     <div class="clearfix"></div>
+  </div>
+[/#macro]
+
+[#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
+  <div class="form-group col-md-12">
+    [#local fieldValue = fieldValue!{}]
+    <div class="col-md-5" style="padding-left: 0px;">
+      <label class="label--2">
+        [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
+      </label>
+      <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
+        [#if impactAreaScores?? && (impactAreaScores?size > 0)]
+          [#list impactAreaScores as option]
+            <div>
+              [@customForm.radioFlat
+                id="${fieldName}-${option.id}"
+                name="innovation.projectInnovationInfo.${fieldName}.id"
+                value="${option.id}"
+                label="${option.description}"
+                checked=(fieldValue.id?? && fieldValue.id == option.id)
+                cssClass="radioType-contributionToCGIAR"
+                cssClassContainer="padding-left-0"
+                cssClassLabel="font-normal"
+                editable=editable
+              /]
+            </div>
+          [/#list]
+        [#else]
+          <p class="text-muted">No options available.</p>
+        [/#if]
+      </div>
+    </div>
+    <div class="col-md-7" style="padding-right: 0px;">
+      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
+        [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
+      </div>
+    </div>
   </div>
 [/#macro]

@@ -34,6 +34,8 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
   private String description;
   @Expose
   private String icon;
+  @Expose
+  private String tag;
   private List<GlobalTarget> globalTargets;
 
   public ImpactArea() {
@@ -62,6 +64,10 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
     return name;
   }
 
+  public String getTag() {
+    return tag;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -78,4 +84,7 @@ public class ImpactArea extends MarloAuditableEntity implements java.io.Serializ
     this.name = name;
   }
 
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
 }

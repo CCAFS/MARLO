@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ImpactAreaScoreManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
@@ -96,6 +97,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
+import org.cgiar.ccafs.marlo.data.model.ImpactAreaScore;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
@@ -273,6 +275,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
+  private ImpactAreaScoreManager impactAreaScoreManager;
   // Variables
   private long projectID;
   private long innovationID;
@@ -336,6 +339,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<DeliverableType> deliverableSubTypes;
   private List<ProjectInnovation> innovationList;
   private List<Institution> contributingPartnerList;
+  private List<ImpactAreaScore> impactAreaScores;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -386,7 +390,7 @@ public class ProjectInnovationAction extends BaseAction {
     ToolFunctionCategoryManager toolFunctionCategoryManager,
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -458,7 +462,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
-
+    this.impactAreaScoreManager = impactAreaScoreManager;
   }
 
   /**
@@ -642,6 +646,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<ImpactArea> getImpactAreaList() {
     return impactAreaList;
+  }
+
+  public List<ImpactAreaScore> getImpactAreaScores() {
+    return impactAreaScores;
   }
 
   public ProjectInnovation getInnovation() {
@@ -1406,6 +1414,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       try {
+        this.impactAreaScores = this.impactAreaScoreManager.findAll();
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
           .filter(i -> i != null && i.isActive() && i.getProjectInnovationInfo(this.getActualPhase()) != null
@@ -2065,6 +2074,11 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+        innovation.getProjectInnovationInfo().setGenderScore(null);
+        innovation.getProjectInnovationInfo().setClimateChangeScore(null);
+        innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
+        innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
+        innovation.getProjectInnovationInfo().setPovertyScore(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
@@ -3465,6 +3479,14 @@ public class ProjectInnovationAction extends BaseAction {
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
         studyReferenceSave.setLink(studyReference.getLink());
+
+        studyReferenceSave.setGender(studyReference.getGender());
+        studyReferenceSave.setClimateChange(studyReference.getClimateChange());
+        studyReferenceSave.setNutrition(studyReference.getNutrition());
+        studyReferenceSave.setEnvironmental(studyReference.getEnvironmental());
+        studyReferenceSave.setPoverty(studyReference.getPoverty());
+        studyReferenceSave.setInnovationReadiness(studyReference.getInnovationReadiness());
+        studyReferenceSave.setEvidenceSource(studyReference.getEvidenceSource());
         boolean externalAutor = false;
         if (studyReference.getEvidenceByDeliverable() != null) {
           externalAutor = true;
@@ -3903,6 +3925,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setImpactAreaList(List<ImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
+  }
+
+  public void setImpactAreaScores(List<ImpactAreaScore> impactAreaScores) {
+    this.impactAreaScores = impactAreaScores;
   }
 
   public void setInnovation(ProjectInnovation innovation) {

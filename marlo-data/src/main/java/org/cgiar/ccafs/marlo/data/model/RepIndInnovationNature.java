@@ -40,5 +40,5 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
   public void setName(String name) {
     this.name = name;
   }
-}
 
+}

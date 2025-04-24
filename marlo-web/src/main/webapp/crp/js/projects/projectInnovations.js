@@ -27,9 +27,10 @@ $(document).ready(function() {
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
+  
   // Add image to Impact Areas
-  $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
-  addImageToSelectImpactAreas();
+  /* $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
+  addImageToSelectImpactAreas(); */
 
   // Change display message in Scaling
   $('input[name="innovation.projectInnovationInfo.readinessScale"]').on('change', changeDisplayMessageInScaling);
@@ -269,7 +270,10 @@ function attachEvents() {
   $('input[type="checkbox"][id*="lever-"]').on('change', updateIndexListCheckbox);
 
   //On change radio buttons - One CGIAR
-  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+  //$('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+
+  //On change radio buttons - Notes in Scores - One CGIAR
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
 }
 function AddRequired(){
@@ -490,7 +494,13 @@ function displayInnerOtherInput() {
   }
 }
 
-function addImageToSelectImpactAreas() {
+/**
+ * Function to add image to the impact areas in the select list.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function addImageToSelectImpactAreas() {
   
     const $listRender = $('div[listname="innovation.impactAreas"] .panel-body li.relationElement');
   
@@ -521,9 +531,15 @@ function addImageToSelectImpactAreas() {
       }
   
     });
-}
+} */
 
-function onDisplayItemsInOneCGIAR(){
+/**
+ * Function to display items in the CGIAR section based on the selected radio button.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function onDisplayItemsInOneCGIAR(){
   const $commentBox = $('.contributionToCGIARComment');
   const $selectImpactArea = $('.linkToImpactAreas');
   const $radioButton = $('input.radioType-contributionToCGIAR:checked');
@@ -538,6 +554,17 @@ function onDisplayItemsInOneCGIAR(){
     $selectImpactArea.not(content).slideDown("slow");
     $commentBox.slideUp(400);
     
+  }
+} */
+
+function onDisplayNotesInScores() {
+  const $nameInput = $(this).attr('name');
+  const $valueInput = $(this).val();
+
+  if($valueInput == "3") {
+    $(`div.note[name="${$nameInput}"]`).slideDown("slow");
+  } else {
+    $(`div.note[name="${$nameInput}"]`).slideUp(400);
   }
 }
 

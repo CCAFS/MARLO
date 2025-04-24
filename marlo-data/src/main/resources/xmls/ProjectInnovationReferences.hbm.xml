@@ -52,5 +52,26 @@
             name="projectInnovation">
             <column name="project_innovation_id" />
         </many-to-one>
+        <property name="gender" type="java.lang.Boolean">
+            <column name="is_gender" />
+        </property>
+        <property name="climateChange" type="java.lang.Boolean">
+            <column name="is_climate_change" />
+        </property>
+        <property name="nutrition" type="java.lang.Boolean">
+            <column name="is_nutrition" />
+        </property>
+        <property name="environmental" type="java.lang.Boolean">
+            <column name="is_environmental" />
+        </property>
+        <property name="poverty" type="java.lang.Boolean">
+            <column name="is_poverty" />
+        </property>
+        <property name="innovationReadiness" type="java.lang.Boolean">
+            <column name="is_innovation_readiness" />
+        </property>
+        <property name="evidenceSource" type="string">
+            <column name="evidence_source" sql-type="TEXT" />
+        </property>
     </class>
 </hibernate-mapping>
