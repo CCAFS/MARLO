@@ -1056,7 +1056,7 @@
       <label class="col-md-12" style="margin-top: 15px;">
         [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
       </label>
-      <div class="col-md-12 row">
+      <div class="col-md-10 row">
         <div class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender"
             label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
@@ -1083,7 +1083,10 @@
         </div>
       </div>
     </div>
-
+    
+    <div class="form-group">
+      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]         
+    </div>
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
