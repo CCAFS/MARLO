@@ -939,7 +939,7 @@
       <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
         [#if impactAreaScores?? && (impactAreaScores?size > 0)]
           [#list impactAreaScores as option]
-            <div style="white-space: nowrap;">
+            <div>
               [@customForm.radioFlat
                 id="${fieldName}-${option.id}"
                 name="innovation.projectInnovationInfo.${fieldName}.id"
@@ -947,6 +947,7 @@
                 label="${option.description}"
                 checked=(fieldValue.id?? && fieldValue.id == option.id)
                 cssClass="radioType-contributionToCGIAR"
+                cssClassContainer="padding-left-0"
                 cssClassLabel="font-normal"
                 editable=editable
               /]

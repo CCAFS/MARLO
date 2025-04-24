@@ -539,10 +539,10 @@
 [/#macro]
 
 
-[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" canComment=true inline=true columns=0]
+[#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassContainer="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
   <div class="feedback-flex-items radioFlat-flex"></div>
-  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')}">
+  <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')} ${cssClassContainer} ">
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
     <label for="${id}" class="radio-label ${cssClassLabel}">
