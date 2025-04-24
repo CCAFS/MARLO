@@ -345,12 +345,6 @@
   [#local customName = "${name}"/]
 
   <div id="alliance" class="borderBox clearfix">
-    [#-- SDG Targets --]
-    <div class="form-group">
-      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.sdgTargets" /]:[@customForm.req required=true /]</label>
-      <label>[@s.text name="projectInnovations.alliance.sdgTargets.subtitle" /]</label>
-      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
-    </div>
     [#-- Alliance Research Theme --]
     <div class="form-group radioToCheckbox ">
       [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true isMainTitle=true /]
@@ -503,6 +497,13 @@
       [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIAR.reasonToNoProvided"  helpIcon=false className="limitWords-200" required=(editable) editable=editable /]
     </div>
     --]
+
+    [#-- SDG Targets --]
+    <div class="form-group">
+      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets" /]:[@customForm.req required=true /]</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]</label>
+      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
+    </div>
     
     <div class="form-group">
       <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]:</label>
