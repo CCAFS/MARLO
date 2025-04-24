@@ -3479,6 +3479,14 @@ public class ProjectInnovationAction extends BaseAction {
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
         studyReferenceSave.setLink(studyReference.getLink());
+
+        studyReferenceSave.setGender(studyReference.getGender());
+        studyReferenceSave.setClimateChange(studyReference.getClimateChange());
+        studyReferenceSave.setNutrition(studyReference.getNutrition());
+        studyReferenceSave.setEnvironmental(studyReference.getEnvironmental());
+        studyReferenceSave.setPoverty(studyReference.getPoverty());
+        studyReferenceSave.setInnovationReadiness(studyReference.getInnovationReadiness());
+        studyReferenceSave.setEvidenceSource(studyReference.getEvidenceSource());
         boolean externalAutor = false;
         if (studyReference.getEvidenceByDeliverable() != null) {
           externalAutor = true;

@@ -667,6 +667,28 @@ public class ProjectInnovationValidator extends BaseValidator {
           for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
             ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
             if (reference != null) {
+              // Validate Reference Innovation Readiness Level
+              if ((reference.getGender() == null || !reference.getGender())
+                && (reference.getClimateChange() == null || !reference.getClimateChange())
+                && (reference.getNutrition() == null || !reference.getNutrition())
+                && (reference.getEnvironmental() == null || !reference.getEnvironmental())
+                && (reference.getPoverty() == null || !reference.getPoverty())
+                && (reference.getInnovationReadiness() == null || !reference.getInnovationReadiness())) {
+                action.addMessage("References ");
+                action.getInvalidFields().put("input-innovation.references[" + i + "].gender",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.getInvalidFields().put("input-innovation.references[" + i + "].climanteChange",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.getInvalidFields().put("input-innovation.references[" + i + "].nutrition",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.getInvalidFields().put("input-innovation.references[" + i + "].environmental",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.getInvalidFields().put("input-innovation.references[" + i + "].poverty",
+                  InvalidFieldsMessages.EMPTYFIELD);
+                action.getInvalidFields().put("input-innovation.references[" + i + "].innovationReadiness",
+                  InvalidFieldsMessages.EMPTYFIELD);
+              }
+
               // Evidence by deliverable false
               if (reference.getEvidenceByDeliverable() != null && !reference.getEvidenceByDeliverable()) {
                 if (reference.getReference() == null || !this.isValidString(reference.getReference())) {
