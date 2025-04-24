@@ -27,9 +27,10 @@ $(document).ready(function() {
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
+  
   // Add image to Impact Areas
-  $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
-  addImageToSelectImpactAreas();
+  /* $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
+  addImageToSelectImpactAreas(); */
 
   // Change display message in Scaling
   $('input[name="innovation.projectInnovationInfo.readinessScale"]').on('change', changeDisplayMessageInScaling);
@@ -493,7 +494,13 @@ function displayInnerOtherInput() {
   }
 }
 
-function addImageToSelectImpactAreas() {
+/**
+ * Function to add image to the impact areas in the select list.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function addImageToSelectImpactAreas() {
   
     const $listRender = $('div[listname="innovation.impactAreas"] .panel-body li.relationElement');
   
@@ -524,7 +531,7 @@ function addImageToSelectImpactAreas() {
       }
   
     });
-}
+} */
 
 /**
  * Function to display items in the CGIAR section based on the selected radio button.
