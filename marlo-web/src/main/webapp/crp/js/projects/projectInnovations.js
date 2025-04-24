@@ -561,9 +561,6 @@ function onDisplayNotesInScores() {
   const $nameInput = $(this).attr('name');
   const $valueInput = $(this).val();
 
-  console.log($nameInput);
-  console.log($valueInput);
-
   if($valueInput == "3") {
     $(`div.note[name="${$nameInput}"]`).slideDown("slow");
   } else {
