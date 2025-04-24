@@ -1017,27 +1017,27 @@ public class ProjectInnovationValidator extends BaseValidator {
       // Validate Impact Area Score
       if (innovationInfo.getGenderScore() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.genderScore"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderScore",
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.genderScore.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (innovationInfo.getClimateChangeScore() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.climateChangeScore"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.climateChangeScore",
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.climateChangeScore.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (innovationInfo.getFoodSecurityScore() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.foodSecurityScore"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.foodSecurityScore",
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.foodSecurityScore.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (innovationInfo.getEnvironmentalScore() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.environmentalScore"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.environmentalScore",
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.environmentalScore.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
       if (innovationInfo.getPovertyScore() == null) {
         action.addMessage(action.getText("innovation.projectInnovationInfo.povertyScore"));
-        action.getInvalidFields().put("input-innovation.projectInnovationInfo.povertyScore",
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.povertyScore.id",
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
