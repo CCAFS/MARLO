@@ -8,7 +8,8 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20240517"
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20240517",
+  "${baseUrlCdn}/global/css/customDataTable.css"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -81,32 +82,40 @@
     <thead>
       <tr class="subHeader">
         [#-- ID --]
-        <th id="tb-id" width="1%">ID</th>
+        <th id="tb-id" width="1%" rowspan="1">ID</th>
         [#-- Title --]
-        <th id="tb-title" width="10%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-title" width="30%" rowspan="1">[@s.text name="projectInnovations.table.title" /]</th>
         [#-- Type --]
-        <th id="tb-type" width="10%">[@s.text name="projectInnovations.table.type" /]</th>
+        <th id="tb-type" width="10%" rowspan="1">[@s.text name="projectInnovations.table.type" /]</th>
         [#-- Nature --]
-        <th id="tb-stage" width="10%">[@s.text name="projectInnovations.table.nature" /]</th>
+        <th id="tb-stage" width="10%" rowspan="1">[@s.text name="projectInnovations.table.nature" /]</th>
         [#-- Readiness Level --]
-        <th id="tb-readinessLevel" width="12%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
+        <th id="tb-readinessLevel" width="15%" rowspan="1">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
         [#-- Year --]
-        <th id="tb-year" width="5%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th id="tb-year" width="5%" rowspan="1">[@s.text name="projectInnovations.table.year" /]</th>
         [#if action.hasSpecificities('feedback_active') ]
           [#-- Feedback Status --]
-          <th id="feedbackStatus" width="10%">Feedback Status</th>
+          <th id="feedbackStatus" width="10%" rowspan="1">Feedback Status</th>
         [/#if]
         [#--  <th class="owner" width="10%">Owner</th>  --]
+        [#-- Action --]
         [#if currentTable]
-        [#-- Missing fields --]
-        <th id="tb-missingFields" width="1%"><p style="display: none;">Innovation RF</p></th>
+          <th class="no-sort" colspan="3">Action</th>
+        [#else]
+          <th class="no-sort" colspan="1" width="1%"></th>
         [/#if]
-        [#-- Summary PDF download --]
+
+        [#-- Hidden column Don't remove it is neccesary for the library --]
+        <th style="display: none"></th>
+        
+        [#--
+        [#if currentTable]
+        <th id="tb-missingFields" class="no-sort" width="1%"><p style="display: none;">Innovation RF</p></th>
+        [/#if]
         <th id="tb-projectDownload" width="1%" class="no-sort"></th>
         [#if currentTable]
-        [#-- Remove --]
         <th id="tb-remove" width="1%" class="no-sort"></th>
-        [/#if]
+        [/#if] --]
       </tr>
     </thead>
     <tbody>
@@ -119,6 +128,12 @@
         [#local isNew = (action.isInnovationNew(innovation.id))!false ]
         [#-- Owner --]
         [#local isOwner = (innovation.project.id == projectID)!false]
+
+        [#local shortTitle]
+          [#if innovation.projectInnovationInfo.title?has_content]
+            [@utils.wordCutter string=(innovation.projectInnovationInfo.title)!"" maxPos=120 /]
+          [/#if]
+        [/#local]
         <tr>
           [#-- ID --]
           <td class="tb-id text-center">
@@ -127,10 +142,10 @@
           [#-- Title --]
           <td class="tb-title">
             [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if] 
-            <a href="${tsURL}">[@utils.tableText value=(innovation.projectInnovationInfo.title)!"" /]</a>
+            <a href="${tsURL}">[@utils.tableText value=shortTitle /]</a>
           </td>
           [#-- Type --]
-          <td>
+          <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.repIndInnovationType.name)!"" /]
           </td>
           [#-- Nature --]
@@ -140,6 +155,7 @@
           [#-- Readiness Level --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.readinessScale-1)!"" /]
+          </td>
           [#-- Year --]
           <td class="text-center">
             [@utils.tableText value=(innovation.projectInnovationInfo.year)!"" /]
@@ -155,7 +171,7 @@
                     </td>  --]
           [#-- Missing fields --]
           [#if currentTable]
-          <td>
+          <td class="text-center">
             [#if isThisComplete]
               <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span> 
             [#else]
@@ -171,39 +187,40 @@
           </td>
           [#-- Remove --]
           [#if currentTable]
-          <td class="text-center">
-            [#if canEdit && isOwner ]
-              <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >
-               [#--<a id="remove-innovation" class="remove-innovation" href="[@s.url namespace="/projects" action="${(crpSession)!}/deleteInnovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="" > --]
-                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
-              </a>
-              <div id="removeItem-${innovation_index}" class="modal fade" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      [@s.form action="deleteInnovation.do"]
-                        <div class="modal-header">
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 class="modal-title">Remove this item <br /> <small>${(innovation.projectInnovationInfo.title)!}</small> </h4>
-                        </div>
-                        <div class="modal-body">
-                          [@customForm.textArea name="justification" i18nkey="projectInnovations.removeJustification" required=false className="removeJustification"/]
-                          <input type="hidden"  name="innovationID" value="${(innovation.id)!}" />
-                          <input type="hidden"  name="projectID" value="${(projectID)!}" />
-                          <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                          <button type="submit" class="btn btn-danger">Remove</button>
-                        </div>
-                      [/@s.form]
+            <td class="text-center">
+              [#if canEdit && isOwner ]
+                <a id="removeElement-${(innovation.id)!}" class="removeElementList" href="#" title="" data-toggle="modal" data-target="#removeItem-${innovation_index}" >
+                [#--<a id="remove-innovation" class="remove-innovation" href="[@s.url namespace="/projects" action="${(crpSession)!}/deleteInnovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" title="" > --]
+                  <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectInnovations.table.remove" /]" /> 
+                </a>
+                <div id="removeItem-${innovation_index}" class="modal fade" tabindex="-1" role="dialog">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        [@s.form action="deleteInnovation.do"]
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Remove this item <br /> <small>${(innovation.projectInnovationInfo.title)!}</small> </h4>
+                          </div>
+                          <div class="modal-body">
+                            [@customForm.textArea name="justification" i18nkey="projectInnovations.removeJustification" required=false className="removeJustification"/]
+                            <input type="hidden"  name="innovationID" value="${(innovation.id)!}" />
+                            <input type="hidden"  name="projectID" value="${(projectID)!}" />
+                            <input type="hidden"  name="phaseID"  value="${(actualPhase.id)!}"/>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                          </div>
+                        [/@s.form]
+                      </div>
                     </div>
-                  </div>
-              </div>
-            [#else]
-              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectInnovations.table.cantDelete" /]" />
-            [/#if]
-          </td>
+                </div>
+              [#else]
+                <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectInnovations.table.cantDelete" /]" />
+              [/#if]
+            </td>
           [/#if]
+          <td style="display: none"></td>
         </tr>
       [/#list]
     [#else]
@@ -211,6 +228,8 @@
         <td class="text-center" colspan="[#if currentTable]9[#else]6[/#if]">
           <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
         </td>
+        [#-- Don't remove it is neccesary for the library --]
+        <td style="display: none"></td>
       </tr>
     [/#if]
     </tbody>

@@ -11,75 +11,80 @@ $(document).ready(function() {
 });
 
 function addDataTable() {
-
-  $('table').each(function(i,table) {
-
-    if ($(table).find('thead th').length === 0) {
-      console.warn('Skipping DataTables initialization for a table without headers.');
+  $('table').each(function(i, table) {
+    // Skip empty tables or tables without proper structure
+    if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
+      console.warn('Skipping DataTables initialization for invalid table structure.');
       return;
     }
 
+    if ($(table).find('tbody tr').length === 0) {
+      console.warn('Table is empty. Skipping DataTables initialization.');
+      return;
+    }
+
+    // Prevent re-initialization
     if ($.fn.dataTable.isDataTable(table)) {
-      return; // Prevent re-initialization
+      return;
     }
 
-    var columns = $(table).find('th').length;
-    console.log(columns);
-
-    noSortColumns = $(table).find('th.no-sort').map(function() {
-      let index = $(this).index();
-      return index < columns ? index : null;
-    }).get().filter(index => index !== null);
-
-    // Ensure noSortColumns is a valid array
-    if (!Array.isArray(noSortColumns)) {
-        noSortColumns = [];
-    }
-
-    console.log('No-sort columns:', noSortColumns); // Debugging
+    // Get total number of columns
+    var columns = $(table).find('thead th').length;
+    
+    // Find columns with no-sort class
+    var noSortColumns = [];
+    $(table).find('thead th.no-sort').each(function() {
+      noSortColumns.push($(this).index());
+    });
 
     try {
-      $(table).dataTable({
-        "bPaginate": true, // This option enable the table pagination
-        "bLengthChange": true, // This option disables the select table size option
-        "bFilter": true, // This option enable the search
-        "bSort": true, // this option enable the sort of contents by columns
-        "bAutoWidth": false, // This option enables the auto adjust columns width
-        "iDisplayLength": 50,// Number of rows to show on the table
+      $(table).DataTable({
+        "bPaginate": true,
+        "bLengthChange": true, 
+        "bFilter": true,
+        "bSort": true,
+        "bAutoWidth": false,
+        "iDisplayLength": 50,
         "language": {
-          searchPlaceholder: "Search...",
+          "searchPlaceholder": "Search...",
           "emptyTable": "No entries entered into the system yet."
         },
-        "order": $(table).find('th').length > 1 ? [[1, 'desc']] : [],
-        "aoColumnDefs": noSortColumns.length > 0 ? [
+        // Set default sorting only if there are enough columns
+        "order": columns > 1 ? [[1, 'desc']] : [],
+        // Set column definitions only if there are no-sort columns
+        "columnDefs": noSortColumns.length > 0 ? [
           {
-            "bSortable": false,
-            "aTargets": noSortColumns
-          },
-          {
-            "sType": "natural",
-            "aTargets": [0]
+            "targets": noSortColumns,
+            "orderable": false
           }
-        ] : [] // Prevent errors if no columns are defined
+        ] : []
       });
+
+      // Add styles to the table
+      var $table = $(table);
+      var $wrapper = $table.closest('.dataTables_wrapper');
+      
+      if ($wrapper.length) {
+        var iconSearch = $("<div></div>").addClass("iconSearch");
+        var $filter = $wrapper.find('.dataTables_filter');
+        
+        if ($filter.length) {
+          iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
+          $filter.parent().prepend(iconSearch);
+        }
+        
+        var $length = $wrapper.find('.dataTables_length');
+        if ($length.length) {
+          $length.parent().css({
+            "position": "absolute",
+            "bottom": "8px",
+            "margin-left": "43%",
+            "z-index": "1"
+          });
+        }
+      }
     } catch (error) {
       console.error('Error initializing DataTables:', error);
-      
     }
-
-  //Add styles to the table
-  var iconSearch = $("<div></div>").addClass("iconSearch");
-  var divDataTables_filter = $('.dataTables_filter').parent();
-  iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-  iconSearch.prependTo(divDataTables_filter);
-  var divDataTables_length =$('.dataTables_length').parent();
-  divDataTables_length.css("position", "absolute");
-  divDataTables_length.css("bottom", "8px");
-  divDataTables_length.css("margin-left", "43%");
-  divDataTables_length.css("z-index", "1");
-
   });
-
-
-
 }
