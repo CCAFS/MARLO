@@ -17,7 +17,6 @@
 		<junit.version>4.13.2</junit.version>
 		<logback-classic.version>1.2.13</logback-classic.version>
 		<janino.version>2.7.8</janino.version>
-		<rhino.version>1.7R3</rhino.version>
 		<javax.inject.version>1</javax.inject.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
@@ -306,11 +305,6 @@
 				<groupId>org.codehaus.janino</groupId>
 				<artifactId>janino</artifactId>
 				<version>${janino.version}</version>
-			</dependency>
-			<dependency>
-			    <groupId>org.mozilla</groupId>
-			    <artifactId>rhino</artifactId>
-			    <version>${rhino.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
