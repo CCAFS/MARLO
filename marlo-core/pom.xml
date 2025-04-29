@@ -147,7 +147,7 @@
 		</dependency>
 
 	</dependencies>
-
+<!--  
 	<repositories>
 		<repository>
 			<id>springsource-milestones</id>
@@ -155,7 +155,7 @@
 			<url>https://oss.sonatype.org/content/repositories/springsource-milestones</url>
 		</repository>
 	</repositories>
-
+-->
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<defaultGoal>tomcat7:run</defaultGoal>

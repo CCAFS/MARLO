@@ -142,6 +142,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -4393,7 +4394,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
       globalUnitType.setGlobalUnitsList(globalUnitType.getGlobalUnits().stream()
-        .filter(c -> c.isActive() && c.getAcronym().equals("AICCRA")).collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getAcronym().contains("AICCRA")).collect(Collectors.toList()));
     }
 
     return globalUnitTypes;
