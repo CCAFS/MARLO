@@ -152,6 +152,34 @@ form .form-group.margin-panel {
   background-color: #fcfcfc;
 }
 
+.inno-scale {
+  display: inline-flex;  
+  height: 20px;
+  word-wrap: break-word;
+  text-align: center;
+  justify-content: center;
+  width: 20px;
+  color: white;
+  font-weight: bold;
+  border-radius: 100%;
+}
+
+.inno-scale span{
+  align-content: center;
+}
+
+.inno-scale-9 { background-color: #7AB800; }
+.inno-scale-8 { background-color: #6BAE17; }
+.inno-scale-7 { background-color: #5EA42B; }
+.inno-scale-6 { background-color: #509B40; }
+.inno-scale-5 { background-color: #439255; }
+.inno-scale-4 { background-color: #368A6A; }
+.inno-scale-3 { background-color: #28817F; }
+.inno-scale-2 { background-color: #1B7793; }
+.inno-scale-1 { background-color: #0D6EA8; }
+.inno-scale-0 { background-color: #0065BD; }
+
+
 .addInnovation a {
   color: #fff;
   text-decoration: initial;
