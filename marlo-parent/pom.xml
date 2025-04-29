@@ -114,13 +114,14 @@
 	<!-- 			</snapshots> -->
 	<!-- 		</repository> -->
 	<!-- 	</repositories> -->
-
+<!--  
 	<repositories>
 		<repository>
 			<id>pentaho-repo</id>
 			<url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
 		</repository>
 	</repositories>
+	-->
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>

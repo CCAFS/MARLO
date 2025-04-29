@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.OrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -44,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
@@ -103,6 +105,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.OrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
@@ -114,6 +117,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
@@ -276,6 +280,9 @@ public class ProjectInnovationAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
+  private OrganizationRoleManager organizationRoleManager;
+  private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
+
   // Variables
   private long projectID;
   private long innovationID;
@@ -340,6 +347,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ProjectInnovation> innovationList;
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
+  private List<OrganizationRole> organizationRoles;
+  private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -390,7 +399,9 @@ public class ProjectInnovationAction extends BaseAction {
     ToolFunctionCategoryManager toolFunctionCategoryManager,
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
-    DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager) {
+    DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
+    OrganizationRoleManager organizationRoleManager,
+    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -463,6 +474,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.institutionLocationManager = institutionLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.impactAreaScoreManager = impactAreaScoreManager;
+    this.organizationRoleManager = organizationRoleManager;
+    this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
   }
 
   /**
@@ -698,6 +711,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Project> getMyProjects() {
     return myProjects;
+  }
+
+  public List<OrganizationRole> getOrganizationRoles() {
+    return organizationRoles;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
@@ -1430,6 +1447,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.scalingReadinessList = this.scalingReadinessManager.findAll();
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+        this.organizationRoles = this.organizationRoleManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());
@@ -3978,6 +3996,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setOrganizationRoles(List<OrganizationRole> organizationRoles) {
+    this.organizationRoles = organizationRoles;
   }
 
   public void setOrganizationTypeList(List<RepIndOrganizationType> organizationTypeList) {

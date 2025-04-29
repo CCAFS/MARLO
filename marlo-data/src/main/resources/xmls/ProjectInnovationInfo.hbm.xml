@@ -181,6 +181,9 @@
         <property name="hasToolUrl" type="java.lang.Boolean">
             <column name="has_tool_url" not-null="true" />
         </property>
+        <property name="hasSpecifiedOutputCountries" type="java.lang.Boolean">
+            <column name="has_specified_output_countries" not-null="true" />
+        </property>
         <property name="reasonNotToolUrl" type="string">
             <column name="reason_not_tool_url" sql-type="TEXT" />
         </property>

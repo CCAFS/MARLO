@@ -1,0 +1,13 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Apr 28 20:50:32 COT 2025
+https\://mvnrepository.com/artifact/org.springframework/spring-jms/.error=
+https\://mvnrepository.com/artifact/org.springframework/spring-jms/.lastUpdated=1745891432505
+https\://oss.sonatype.org/content/repositories/springsource-milestones/.error=
+file\://C\:\\Users\\kenji\\Documents\\workspace-spring-tool-suite-4-4.13.0.RELEASE\\MARLO\\marlo-web/src/main/resources/libs/.lastUpdated=1745891432228
+https\://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/.lastUpdated=1745891432323
+https\://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts/.error=
+https\://repo.maven.apache.org/maven2/.lastUpdated=1745891432430
+https\://repo.maven.apache.org/maven2/.error=
+https\://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/.lastUpdated=1731681862522
+file\://C\:\\Users\\kenji\\Documents\\workspace-spring-tool-suite-4-4.13.0.RELEASE\\MARLO\\marlo-web/src/main/resources/libs/.error=
+https\://oss.sonatype.org/content/repositories/springsource-milestones/.lastUpdated=1745891197954

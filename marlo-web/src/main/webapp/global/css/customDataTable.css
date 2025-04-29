@@ -86,6 +86,11 @@ table.dataTable tr.even td.sorting_3 {
   background-color: white;
 }
 
+table.dataTable tr:hover td {
+  background-color: #f0f0f0 !important;
+}
+
+
 table.dataTable thead th {
   text-align: center;
   font-size: 13px;

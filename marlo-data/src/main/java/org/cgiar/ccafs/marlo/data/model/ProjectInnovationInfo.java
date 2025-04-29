@@ -108,6 +108,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Boolean hasFurtherDevelopment;
   @Expose
+  private Boolean hasSpecifiedOutputCountries;
+  @Expose
   private String otherIntellectualProperty;
   @Expose
   private String innovationImportance;
@@ -276,6 +278,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasMilestones;
   }
 
+  public Boolean getHasSpecifiedOutputCountries() {
+    return hasSpecifiedOutputCountries;
+  }
+
   public Boolean getHasToolUrl() {
     return hasToolUrl;
   }
@@ -375,10 +381,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return projectInnovation;
   }
 
+
   public String getReadinessReason() {
     return readinessReason;
   }
-
 
   public Integer getReadinessScale() {
     return readinessScale;
@@ -531,6 +537,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
+  }
+
+  public void setHasSpecifiedOutputCountries(Boolean hasSpecifiedOutputCountries) {
+    this.hasSpecifiedOutputCountries = hasSpecifiedOutputCountries;
   }
 
   public void setHasToolUrl(Boolean hasToolUrl) {
@@ -766,6 +776,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setFoodSecurityScore(projectInnovationInfoUpdate.getFoodSecurityScore());
     this.setEnvironmentalScore(projectInnovationInfoUpdate.getEnvironmentalScore());
     this.setPovertyScore(projectInnovationInfoUpdate.getPovertyScore());
+    this.setHasSpecifiedOutputCountries(projectInnovationInfoUpdate.getHasSpecifiedOutputCountries());
   }
 }
 
