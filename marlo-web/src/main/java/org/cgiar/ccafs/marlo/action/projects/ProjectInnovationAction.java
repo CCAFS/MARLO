@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
@@ -116,6 +117,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
@@ -279,6 +281,7 @@ public class ProjectInnovationAction extends BaseAction {
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
   private OrganizationRoleManager organizationRoleManager;
+  private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
 
   // Variables
   private long projectID;
@@ -345,6 +348,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
   private List<OrganizationRole> organizationRoles;
+  private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -396,7 +400,8 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
-    OrganizationRoleManager organizationRoleManager) {
+    OrganizationRoleManager organizationRoleManager,
+    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -470,6 +475,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.deliverableInfoManager = deliverableInfoManager;
     this.impactAreaScoreManager = impactAreaScoreManager;
     this.organizationRoleManager = organizationRoleManager;
+    this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
   }
 
   /**
