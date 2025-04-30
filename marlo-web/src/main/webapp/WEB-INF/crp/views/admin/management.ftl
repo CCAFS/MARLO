@@ -195,7 +195,7 @@
       [/#if]
       [#-- Hidden Parameters --]
       <span class="usersType" style="display:none">programUser</span>
-      <span class="usersRole" style="display:none">${fplRole.id}</span> 
+      <span class="usersRole" style="display:none">${(fplRole.id)!}</span> 
     </div>
     
     [#-- Managers  --]
@@ -225,7 +225,7 @@
         [/#if]
         [#-- Hidden Parameters --]
         <span class="usersType" style="display:none">programUser</span>
-        <span class="usersRole" style="display:none">${fpmRole.id}</span> 
+        <span class="usersRole" style="display:none">${(fpmRole.id)!}</span> 
       </div>
     </div>
     
