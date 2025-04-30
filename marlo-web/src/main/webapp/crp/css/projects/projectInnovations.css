@@ -15,12 +15,21 @@
   margin-bottom: 8px;
 }
 
-.col-md-1 {
+form .col-md-1 {
   padding-left: 0;
   margin-bottom: 15px;
 }
 
-.col-md-1 .radioFlat {
+form .col-md-1 .radioFlat {
+  padding-left: 0;
+}
+
+form .col-md-3 {
+  padding-left: 0;
+  margin-bottom: 15px;
+}
+
+form .col-md-3 .radioFlat {
   padding-left: 0;
 }
 
