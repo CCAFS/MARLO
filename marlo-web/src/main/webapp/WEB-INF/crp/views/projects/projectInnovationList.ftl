@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20241218",
+  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20250430",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20240517",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250430",
   "${baseUrlCdn}/global/css/customDataTable.css"
   ] /]
 [#assign currentSection = "projects" /]
@@ -84,9 +84,9 @@
         [#-- ID --]
         <th id="tb-id" width="1%" rowspan="1">ID</th>
         [#-- Title --]
-        <th id="tb-title" width="30%" rowspan="1">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-title" width="32.5%" rowspan="1">[@s.text name="projectInnovations.table.title" /]</th>
         [#-- Type --]
-        <th id="tb-type" width="10%" rowspan="1">[@s.text name="projectInnovations.table.type" /]</th>
+        <th id="tb-type" width="15%" rowspan="1">[@s.text name="projectInnovations.table.type" /]</th>
         [#-- Nature --]
         <th id="tb-stage" width="10%" rowspan="1">[@s.text name="projectInnovations.table.nature" /]</th>
         [#-- Readiness Level --]
@@ -100,9 +100,9 @@
         [#--  <th class="owner" width="10%">Owner</th>  --]
         [#-- Action --]
         [#if currentTable]
-          <th class="no-sort" colspan="3">Action</th>
+          <th class="no-sort" colspan="3" width="11.5%">Action</th>
         [#else]
-          <th class="no-sort" colspan="1" width="1%"></th>
+          <th class="no-sort" colspan="1" width="11.5%">Action</th>
         [/#if]
 
         [#-- Hidden column Don't remove it is neccesary for the library --]
@@ -129,6 +129,12 @@
         [#-- Owner --]
         [#local isOwner = (innovation.project.id == projectID)!false]
 
+        [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
+
+        [#local isScalingReadines = innovation.projectInnovationInfo.readinessScale?has_content!false ]
+          
+        [#local scaleReadiness = (innovation.projectInnovationInfo.readinessScale-1)!"" ]
+
         [#local shortTitle]
           [#if innovation.projectInnovationInfo.title?has_content]
             [@utils.wordCutter string=(innovation.projectInnovationInfo.title)!"" maxPos=120 /]
@@ -154,7 +160,13 @@
           </td>
           [#-- Readiness Level --]
           <td class="text-center">
-            [@utils.tableText value=(innovation.projectInnovationInfo.readinessScale-1)!"" /]
+            [#if isScalingReadines]
+              <span class="inno-scale inno-scale-${scaleReadiness}">[@utils.tableText value=scaleReadiness /]</span>
+              <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
+            [#else]
+              [@utils.tableText value=(innovation.projectInnovationInfo.readinessLevel.name)!"" /]
+            [/#if]
+
           </td>
           [#-- Year --]
           <td class="text-center">

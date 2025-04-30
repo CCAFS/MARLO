@@ -91,13 +91,15 @@
   <ul>
     <li>
       <ul>
-        [#list managers as item]
-          <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-            <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
-              [@s.text name=item.name/]
-            </a>
-          </li>
-        [/#list] 
+        [#if managers?has_content]
+          [#list managers as item]
+            <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+              <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
+                [@s.text name=item.name/]
+              </a>
+            </li>
+          [/#list] 
+        [/#if]
       </ul>
     </li>
   </ul> 

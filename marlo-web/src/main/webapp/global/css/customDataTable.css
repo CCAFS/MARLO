@@ -20,6 +20,28 @@ table tr:first-child th:last-child{
 
 .dataTables_wrapper {
   margin-bottom: 30px;
+  margin-top: 30px;
+  position: relative;
+}
+
+.dataTables_wrapper .row:nth-child(1) {
+  width: 100%;
+}
+
+.dataTables_wrapper .row:nth-child(1) div {
+  padding-left: 0;
+}
+
+.dataTables_wrapper .row:nth-child(2) {
+  margin: 0;
+}
+
+.dataTables_wrapper .row:nth-child(3) {
+  margin-top: 15px !important;
+}
+
+.dataTables_wrapper .row:nth-child(4) {
+  margin-top: 15px !important;
 }
 
 #deliverables_wrapper.dataTables_wrapper {
@@ -178,6 +200,40 @@ table.dataTable a {
 .subHeader {
     background-color: #8ea786;
 }
+
+/* Specific to innovations table */
+
+#table-innovations_wrapper .row:nth-child(1) div[class^="col-"]:last-child {
+  width: 100%;
+}
+
+#table-innovations_wrapper .iconSearch{
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  right: 0;
+  border-radius: 0px 4px 4px 0px;
+  display: flex;
+}
+
+#table-innovations_filter.dataTables_filter{
+  float: left !important;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+#table-innovations_filter.dataTables_filter label{
+  width: 100%;
+}
+
+#table-innovations_filter.dataTables_filter label input{
+  height: 30px;
+  width: 100%;
+  margin-left: 0;
+}
+
+/* Responsive Design */
 
 @media only screen and (max-width:768px){
 	
