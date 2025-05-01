@@ -15,21 +15,18 @@
   margin-bottom: 8px;
 }
 
-form .col-md-1 {
+.innovationTabs .col-md-1,
+.innovationTabs .col-md-2,
+.innovationTabs .col-md-3,
+.innovationTabs .col-md-4 {
   padding-left: 0;
   margin-bottom: 15px;
 }
 
-form .col-md-1 .radioFlat {
-  padding-left: 0;
-}
-
-form .col-md-3 {
-  padding-left: 0;
-  margin-bottom: 15px;
-}
-
-form .col-md-3 .radioFlat {
+.innovationTabs .col-md-1 .radioFlat,
+.innovationTabs .col-md-2 .radioFlat,
+.innovationTabs .col-md-3 .radioFlat,
+.innovationTabs .col-md-4 .radioFlat {
   padding-left: 0;
 }
 

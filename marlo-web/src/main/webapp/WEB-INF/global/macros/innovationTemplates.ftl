@@ -199,17 +199,32 @@
               [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
-              <label for="" class="label--2">[@s.text name="projectInnovations.geographicScopeTopic" /]:[@customForm.req required=(editable && reportingActive) /]
-                <div>
-                    [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
-                </div>
+              [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" required=(editable && reportingActive) isMainTitle=true /]
+              [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
               </label>
               <div class="form-group ('','simpleBox') geographicScopeInput">
-                <div class="form-group row">
-                  <div class="form-group col-md-4">
+                <div class="form-group">
+                  <div class="form-group col-md-12">
+                    [#local existGeographicScope = element.geographicScopes[0]??  /]
+                    [#if existGeographicScope]
+                      [@customForm.input name="innovation.geographicScopes[0].id" editable=false display=false value="${element.geographicScopes[0].id}" /]
+                    [/#if]
+
                     [#-- Geographic Scope --]
-                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /]
+                    [#list geographicScopeList as geoScope]
+                      [#local isChecked = false /]
+                      [#if ((existGeographicScope) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id))]
+                        [#local isChecked = true /]
+                      [/#if]
+                      [#local isYetDetermined = geoScope.id == 6 /]
+                      <div class="col-md-${isYetDetermined?string('4','2')}">
+                        [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
+                      </div>
+                    [/#list]
+                    [#-- [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /] --]
                   </div>
+                  [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
+                  
                   <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
                     [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
