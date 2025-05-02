@@ -77,6 +77,20 @@ public class ProjectInnovationContributingOrganizationRoleMySQLDAO
 
   @Override
   public ProjectInnovationContributingOrganizationRole
+    findByContributingOrganizationRoleBycontributingOrganizationIdAndRole(long contributingOrganizationId,
+      long roleId) {
+    String query = "from " + ProjectInnovationContributingOrganizationRole.class.getName()
+      + " WHERE is_active=1 and innovation_contributing_organization_id=" + contributingOrganizationId
+      + " AND organization_role=" + roleId;
+    List<ProjectInnovationContributingOrganizationRole> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list.get(0);
+    }
+    return null;
+  }
+
+  @Override
+  public ProjectInnovationContributingOrganizationRole
     save(ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRole) {
     if (projectInnovationContributingOrganizationRole.getId() == null) {
       super.saveEntity(projectInnovationContributingOrganizationRole);

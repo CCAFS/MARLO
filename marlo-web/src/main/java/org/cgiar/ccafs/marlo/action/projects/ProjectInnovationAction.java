@@ -1184,6 +1184,12 @@ public class ProjectInnovationAction extends BaseAction {
               .sorted(
                 (o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()))
               .collect(Collectors.toList())));
+
+          for (ProjectInnovationContributingOrganization contributingOrtganization : innovation
+            .getContributingOrganizations()) {
+            contributingOrtganization.setContributingOrganizationRoles(new ArrayList<>(contributingOrtganization
+              .getProjectInnovationContributingOrganizationRoles().stream().collect(Collectors.toList())));
+          }
         }
 
         // Innovation Crp list
@@ -2547,6 +2553,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Project Innovation Alliance Organizations
    * 
@@ -2713,6 +2720,10 @@ public class ProjectInnovationAction extends BaseAction {
 
           projectInnovationContributingOrganizationManager
             .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+
+          this.saveOrganizationroles(innovationOrganizationSave,
+            innovationOrganization.getProjectInnovationContributingOrganizationRoles());
+
           // This is to add innovationOrganizationSave to generate correct auditlog.
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
         }
@@ -3040,9 +3051,35 @@ public class ProjectInnovationAction extends BaseAction {
                 .remove(projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationID));
             }
           } catch (Exception e) {
-
+            logger.error("unable to delete milestone", e);
           }
 
+        }
+      }
+    }
+  }
+
+  public void saveOrganizationroles(ProjectInnovationContributingOrganization organization,
+    Set<ProjectInnovationContributingOrganizationRole> roles) {
+
+    if (roles != null && !roles.isEmpty()) {
+      for (ProjectInnovationContributingOrganizationRole existingRole : organization
+        .getProjectInnovationContributingOrganizationRoles()) {
+        if (!roles.contains(existingRole)) {
+          projectInnovationContributingOrganizationRoleManager
+            .deleteProjectInnovationContributingOrganizationRole(existingRole.getId());
+        }
+      }
+
+      for (ProjectInnovationContributingOrganizationRole role : roles) {
+        if (role.getId() == null) {
+          ProjectInnovationContributingOrganizationRole roleSave = new ProjectInnovationContributingOrganizationRole();
+          roleSave.setProjectInnovationContributingOrganization(organization);
+          roleSave.setOrganizationRole(role.getOrganizationRole());
+
+          projectInnovationContributingOrganizationRoleManager
+            .saveProjectInnovationContributingOrganizationRole(roleSave);
+          organization.getProjectInnovationContributingOrganizationRoles().add(roleSave);
         }
       }
     }
