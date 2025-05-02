@@ -759,6 +759,56 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
         ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
+        // Validate Knowledge sharing and scaling potential
+        if (innovationInfo.getCheaperAlternatives() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.cheaperAlternatives"));
+          action.addMissingField("innovation.projectInnovationInfo.cheaperAlternatives");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.cheaperAlternatives",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getSimplerUse() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.simplerUse"));
+          action.addMissingField("innovation.projectInnovationInfo.simplerUse");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.simplerUse",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getPerformBetter() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.performBetter"));
+          action.addMissingField("innovation.projectInnovationInfo.performBetter");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.performBetter",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getInnovationDesirable() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.innovationDesirable"));
+          action.addMissingField("innovation.projectInnovationInfo.innovationDesirable");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationDesirable",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getInnovationCommercially() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.innovationCommercially"));
+          action.addMissingField("innovation.projectInnovationInfo.innovationCommercially");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationCommercially",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getInnovationCommercially() != null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.commerciallyNarrative"));
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.commerciallyNarrative",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getInnovationSupported() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.innovationSupported"));
+          action.addMissingField("innovation.projectInnovationInfo.innovationSupported");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationSupported",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+        if (innovationInfo.getEvidenceUptake() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.evidenceUptake"));
+          action.addMissingField("innovation.projectInnovationInfo.evidenceUptake");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.evidenceUptake",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+
         if (projectInnovation.getToolCategories() != null && !projectInnovation.getToolCategories().isEmpty()
           && projectInnovation.getToolCategories().get(0) != null
           && projectInnovation.getToolCategories().get(0).getId() != null
