@@ -199,6 +199,10 @@ form .form-group.margin-panel {
   display: block;
 }
 
+div.nationalBlock {
+  margin-bottom: 45px;
+}
+
 div.nationalBlock div.selectList span.selection{
   height: 50px;
 }

@@ -199,9 +199,10 @@
               [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
-              [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" required=(editable && reportingActive) isMainTitle=true /]
+              [#local hasSpecifiedOutputCountries = element.projectInnovationInfo.hasSpecifiedOutputCountries /]
+
+              [@customForm.labelText name="projectInnovations.geographicScope" text="projectInnovations.geographicScope" required=(editable && reportingActive) isMainTitle=true /]
               [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
-              </label>
               <div class="form-group ('','simpleBox') geographicScopeInput">
                 <div class="form-group">
                   <div class="form-group col-md-12">
@@ -217,7 +218,7 @@
                         [#local isChecked = true /]
                       [/#if]
                       [#local isYetDetermined = geoScope.id == 6 /]
-                      <div class="col-md-${isYetDetermined?string('4','2')}">
+                      <div class="col-md-${isYetDetermined?string('4','2')}" style="margin-bottom: 0px;">
                         [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
                       </div>
                     [/#list]
@@ -237,17 +238,15 @@
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
                     [#local geographicCountrySpecific = element.projectInnovationInfo.hasSpecifiedOutputCountries!false /]
                     [#-- Regional scope --]
-                    [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
-                    [#-- Regional scope --]
                     [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
 
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
-                      <div class="col-md-3">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=false  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
+                      <div class="col-md-1">
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
                       </div>
-                      <div class="col-md-3">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=false cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
+                      <div class="col-md-1">
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
                       </div>
                     </div>
                     <div class="col-md-12 block-hasSpecifiedOutputCountries" style="display:${(geographicCountrySpecific)?string('block','none')}">
