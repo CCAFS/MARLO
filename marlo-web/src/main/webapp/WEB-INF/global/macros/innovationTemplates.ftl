@@ -542,7 +542,7 @@
     [#-- SDG Targets --]
     <div class="form-group">
       <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets" /]:[@customForm.req required=true /]</label>
-      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]:</label>
       [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
     </div>
     
@@ -973,7 +973,7 @@
 [#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
   <div class="form-group col-md-12">
     [#local fieldValue = fieldValue!{}]
-    <div class="col-md-5" style="padding-left: 0px;">
+    <div class="col-md-6" style="padding-left: 0px;">
       <label class="label--2">
         [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
       </label>
@@ -999,8 +999,8 @@
         [/#if]
       </div>
     </div>
-    <div class="col-md-7" style="padding-right: 0px;">
-      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
+    <div class="col-md-6" style="padding-right: 0px;">
+      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')}; font-size: 10px; line-height: 15px;" >
         [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
       </div>
     </div>

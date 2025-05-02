@@ -58,8 +58,11 @@ ul.nav li a {
   border-radius: 0 0 0;
   padding: 7px 19px !important;
   padding-left: 10px !important;
-  padding-right: 32px !important;
+  padding-right: 28px !important;
+  font-size: 13px;
   border: 1px solid #f1f1f1;
+  height: 62px;
+  align-content: center;
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
@@ -81,13 +84,13 @@ ul.nav li a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
   /* background-size: 15px; */
-  background-position: 97% -20%;
+  background-position: 97% -150%;
 }
 
 .nav-tabs li.toSubmit a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
-  background-position: 97% 110%;
+  background-position: 97% 210%;
 }
 
 table tr {
