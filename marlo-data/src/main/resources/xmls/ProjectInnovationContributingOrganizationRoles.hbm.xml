@@ -9,7 +9,7 @@
             <generator class="identity" />
         </id>
         <many-to-one name="projectInnovationContributingOrganization" class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization" fetch="select">
-            <column name="innovation_contributing_organization_id " />
+            <column name="innovation_contributing_organization_id" />
         </many-to-one>
         <property name="organizationRole" type="string" >
             <column name="organization_role" sql-type="TEXT" />

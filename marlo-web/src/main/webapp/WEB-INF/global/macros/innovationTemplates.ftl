@@ -102,13 +102,14 @@
             [#-- Innovation Bundle --]
             <div class="form-group col-md-12">
               [@customForm.labelText name="innovation.innovationBundle" text="projectInnovations.innovationBundle" required=true isMainTitle=true /]
+              [@customForm.labelText name="innovation.innovationBundle.helpText" text="projectInnovations.innovationBundle.helpText"  /]
               [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle)! /]
               <div class="col-md-12">
                 <div class="col-md-3">
-                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-yes" editable=editable /]
+                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
                 <div class="col-md-3">
-                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label-no" editable=editable /]
+                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
               </div>
             </div>
@@ -198,24 +199,64 @@
               [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
-              <label for="" class="label--2">[@s.text name="projectInnovations.geographicScopeTopic" /]:[@customForm.req required=(editable && reportingActive) /]
-                <div>
-                    [@customForm.helpLabel name="study.generalInformation.geographicScopeTopic.note" showIcon=false isNote=true editable=editable/]
-                </div>
+              [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" required=(editable && reportingActive) isMainTitle=true /]
+              [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
               </label>
               <div class="form-group ('','simpleBox') geographicScopeInput">
-                <div class="form-group row">
-                  <div class="form-group col-md-4">
+                <div class="form-group">
+                  <div class="form-group col-md-12">
+                    [#local existGeographicScope = element.geographicScopes[0]??  /]
+                    [#if existGeographicScope]
+                      [@customForm.input name="innovation.geographicScopes[0].id" editable=false display=false value="${element.geographicScopes[0].id}" /]
+                    [/#if]
+
                     [#-- Geographic Scope --]
-                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /]
+                    [#list geographicScopeList as geoScope]
+                      [#local isChecked = false /]
+                      [#if ((existGeographicScope) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id))]
+                        [#local isChecked = true /]
+                      [/#if]
+                      [#local isYetDetermined = geoScope.id == 6 /]
+                      <div class="col-md-${isYetDetermined?string('4','2')}">
+                        [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
+                      </div>
+                    [/#list]
+                    [#-- [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /] --]
                   </div>
-                  <div class="form-group nationalBlock col-md-4" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+
+                  [#if isNational || isRegional]
+                    <div class="geographicScopeMessage">
+                      [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
+                    </div>
+                  [/#if]
+
+                  <div class="form-group nationalBlock col-md-12" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
                     [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
                   </div>
-                  <div class="form-group regionalBlock col-md-4" style="display:${(isRegional)?string('block','none')}">
+                  <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
+                    [#local geographicCountrySpecific = element.projectInnovationInfo.hasSpecifiedOutputCountries!false /]
+                    [#-- Regional scope --]
+                    [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
                     [#-- Regional scope --]
                     [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
+
+                    <div class="col-md-12">
+                      [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
+                      <div class="col-md-3">
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=false  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
+                      </div>
+                      <div class="col-md-3">
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=false cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
+                      </div>
+                    </div>
+                    <div class="col-md-12 block-hasSpecifiedOutputCountries" style="display:${(geographicCountrySpecific)?string('block','none')}">
+                      [#-- Multinational, National and Subnational scope --]
+                      [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
+                      [#-- Multinational, National and Subnational scope --]
+                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
+                    </div>
+                      
                   </div>
                   [#--  
                   <div class="form-group col-md-12">
@@ -501,7 +542,7 @@
     [#-- SDG Targets --]
     <div class="form-group">
       <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets" /]:[@customForm.req required=true /]</label>
-      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]</label>
+      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]:</label>
       [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
     </div>
     
@@ -932,7 +973,7 @@
 [#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
   <div class="form-group col-md-12">
     [#local fieldValue = fieldValue!{}]
-    <div class="col-md-5" style="padding-left: 0px;">
+    <div class="col-md-6" style="padding-left: 0px;">
       <label class="label--2">
         [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
       </label>
@@ -958,8 +999,8 @@
         [/#if]
       </div>
     </div>
-    <div class="col-md-7" style="padding-right: 0px;">
-      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
+    <div class="col-md-6" style="padding-right: 0px;">
+      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')}; font-size: 10px; line-height: 15px;" >
         [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
       </div>
     </div>

@@ -3499,6 +3499,10 @@ button.ipGraph-btn {
 	font-size: 13px;
 }
 
+.form-group .note span.inner-note ul{
+	padding-left: 15px;
+}
+
 .form-group .note span.inner-note p{
 	margin: 0;
 }

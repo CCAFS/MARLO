@@ -118,27 +118,27 @@
           <ul class="nav nav-tabs" role="tablist">
 
             [#assign isInnovationGeneralInformationComplete = (action.isInnovationGeneralInformationComplete())!false /]
-            <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md ${isInnovationGeneralInformationComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md ${isInnovationGeneralInformationComplete?then('submitted','toSubmit')}">
               <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.general" /]</a>
             </li>
 
             [#assign isInnovationAllianceAlignmentComplete = (action.isInnovationAllianceAlignmentComplete())!false /]
-            <li role="presentation" class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
             [#assign isInnovationOneCgiarAlignmentComplete = (action.isInnovationOneCgiarAlignmentComplete())!false /]
-            <li role="presentation" class="[#if indexTab==3]active[/#if] col-md ${isInnovationOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==3]active[/#if] col-md ${isInnovationOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
               <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
             [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
-            <li role="presentation" class="[#if indexTab==4]active[/#if] col-md ${isInnovationReadinessComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationReadinessComplete?then('submitted','toSubmit')}">
               <a href="#innovationReadiness" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationReadiness" /]</a>
             </li>
 
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
-            <li role="presentation" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
               <a href="#innovationSharing" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationSharing" /]</a>
             </li>
           </ul>

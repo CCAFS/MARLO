@@ -10,6 +10,11 @@ $(document).ready(function() {
 
     $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
   });
+
+  $('input.radioType-geographicScopes').on("change", function() {
+    console.log("this", this);
+    setGeographicScope2(this);
+  });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
@@ -401,9 +406,11 @@ function updateAllianceTab() {
         if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
           //remove disabled class alliance tab
           $('#allianceTab').slideDown();
+          $('li[role="presentation"]').css('width', "20%");
         } else {
           //add disabled class alliance tab
           $('#allianceTab').slideUp();
+          $('li[role="presentation"]').css('width', "25%");
         }
 
     }, 1000);
