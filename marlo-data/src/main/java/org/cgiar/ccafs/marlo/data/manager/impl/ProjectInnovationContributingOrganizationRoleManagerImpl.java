@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectInnovationContributingOrganizationRoleManagerImpl implements ProjectInnovationContributingOrganizationRoleManager {
+public class ProjectInnovationContributingOrganizationRoleManagerImpl
+  implements ProjectInnovationContributingOrganizationRoleManager {
 
 
   private ProjectInnovationContributingOrganizationRoleDAO projectInnovationContributingOrganizationRoleDAO;
@@ -36,22 +37,27 @@ public class ProjectInnovationContributingOrganizationRoleManagerImpl implements
 
 
   @Inject
-  public ProjectInnovationContributingOrganizationRoleManagerImpl(ProjectInnovationContributingOrganizationRoleDAO projectInnovationContributingOrganizationRoleDAO) {
+  public ProjectInnovationContributingOrganizationRoleManagerImpl(
+    ProjectInnovationContributingOrganizationRoleDAO projectInnovationContributingOrganizationRoleDAO) {
     this.projectInnovationContributingOrganizationRoleDAO = projectInnovationContributingOrganizationRoleDAO;
 
 
   }
 
   @Override
-  public void deleteProjectInnovationContributingOrganizationRole(long projectInnovationContributingOrganizationRoleId) {
+  public void
+    deleteProjectInnovationContributingOrganizationRole(long projectInnovationContributingOrganizationRoleId) {
 
-    projectInnovationContributingOrganizationRoleDAO.deleteProjectInnovationContributingOrganizationRole(projectInnovationContributingOrganizationRoleId);
+    projectInnovationContributingOrganizationRoleDAO
+      .deleteProjectInnovationContributingOrganizationRole(projectInnovationContributingOrganizationRoleId);
   }
 
   @Override
-  public boolean existProjectInnovationContributingOrganizationRole(long projectInnovationContributingOrganizationRoleID) {
+  public boolean
+    existProjectInnovationContributingOrganizationRole(long projectInnovationContributingOrganizationRoleID) {
 
-    return projectInnovationContributingOrganizationRoleDAO.existProjectInnovationContributingOrganizationRole(projectInnovationContributingOrganizationRoleID);
+    return projectInnovationContributingOrganizationRoleDAO
+      .existProjectInnovationContributingOrganizationRole(projectInnovationContributingOrganizationRoleID);
   }
 
   @Override
@@ -62,13 +68,23 @@ public class ProjectInnovationContributingOrganizationRoleManagerImpl implements
   }
 
   @Override
-  public ProjectInnovationContributingOrganizationRole getProjectInnovationContributingOrganizationRoleById(long projectInnovationContributingOrganizationRoleID) {
+  public ProjectInnovationContributingOrganizationRole
+    findByContributingOrganizationRoleBycontributingOrganizationIdAndRole(long contributingOrganizationId,
+      long roleId) {
+    return projectInnovationContributingOrganizationRoleDAO
+      .findByContributingOrganizationRoleBycontributingOrganizationIdAndRole(contributingOrganizationId, roleId);
+  }
+
+  @Override
+  public ProjectInnovationContributingOrganizationRole
+    getProjectInnovationContributingOrganizationRoleById(long projectInnovationContributingOrganizationRoleID) {
 
     return projectInnovationContributingOrganizationRoleDAO.find(projectInnovationContributingOrganizationRoleID);
   }
 
   @Override
-  public ProjectInnovationContributingOrganizationRole saveProjectInnovationContributingOrganizationRole(ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRole) {
+  public ProjectInnovationContributingOrganizationRole saveProjectInnovationContributingOrganizationRole(
+    ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRole) {
 
     return projectInnovationContributingOrganizationRoleDAO.save(projectInnovationContributingOrganizationRole);
   }

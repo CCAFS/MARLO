@@ -27,7 +27,7 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
   @Expose
   private Institution institution;
 
-  private Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRole =
+  private Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles =
     new HashSet<ProjectInnovationContributingOrganizationRole>(0);
   private List<ProjectInnovationContributingOrganizationRole> contributingOrganizationRoles;
 
@@ -98,8 +98,8 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return projectInnovation;
   }
 
-  public Set<ProjectInnovationContributingOrganizationRole> getProjectInnovationContributingOrganizationRole() {
-    return projectInnovationContributingOrganizationRole;
+  public Set<ProjectInnovationContributingOrganizationRole> getProjectInnovationContributingOrganizationRoles() {
+    return projectInnovationContributingOrganizationRoles;
   }
 
 
@@ -142,8 +142,8 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     this.projectInnovation = projectInnovation;
   }
 
-  public void setProjectInnovationContributingOrganizationRole(
-    Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRole) {
-    this.projectInnovationContributingOrganizationRole = projectInnovationContributingOrganizationRole;
+  public void setProjectInnovationContributingOrganizationRoles(
+    Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles) {
+    this.projectInnovationContributingOrganizationRoles = projectInnovationContributingOrganizationRoles;
   }
 }

@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_contributing_organization_roles DROP FOREIGN KEY innovation_contributing_org_roles_org_roles_FK;
+ALTER TABLE project_innovation_contributing_organization_roles ADD CONSTRAINT innovation_contributing_organization_roles_FK FOREIGN KEY (organization_role) REFERENCES organization_roles(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
