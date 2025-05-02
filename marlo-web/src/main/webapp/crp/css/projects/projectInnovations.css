@@ -63,6 +63,7 @@ ul.nav li a {
   border: 1px solid #f1f1f1;
   height: 62px;
   align-content: center;
+  text-align: center;
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
