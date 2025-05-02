@@ -10,6 +10,11 @@ $(document).ready(function() {
 
     $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
   });
+
+  $('input.radioType-geographicScopes').on("change", function() {
+    console.log("this", this);
+    setGeographicScope2(this);
+  });
   setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');

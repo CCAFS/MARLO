@@ -1374,3 +1374,58 @@ function setGeographicScope(component) {
     $nationalBlock.slideUp();
   }
 }
+
+function setGeographicScope2(component) {
+  var $value = $(component).val();
+  var $partner = $(component).parents('.geographicScopeBlock');
+  
+  var $message = $('div.geographicScopeMessage');
+
+  var $regionalBlock = $partner.find('.regionalBlock');
+  var $nationalBlock = $partner.find('.nationalBlock');
+
+  var $isRegional = $value == 2;
+  var $isMultiNational = $value == 3;
+  var $isNational = $value == 4;
+  var $isSubNational = $value == 5;
+
+  if ($isRegional) {
+    $regionalBlock.slideDown();
+    $message.slideDown();
+  } else {
+    $regionalBlock.slideUp();
+    $message.slideUp();
+    // Clean selected region
+    $regionalBlock.find("select").val("-1").trigger('change');
+  }
+
+  if ($isMultiNational || $isNational || $isSubNational) {
+    if ($isMultiNational) {
+      $nationalBlock.find("select").select2({
+        maximumSelectionLength: 0,
+        placeholder: "Select a country(ies)",
+        templateResult: formatStateCountries,
+        templateSelection: formatStateCountries,
+        width: '100%'
+      });
+    } else {
+      var countries = ($nationalBlock.find("select").val()) || [];
+      if (countries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
+      $nationalBlock.find("select").select2({
+        maximumSelectionLength: 1,
+        placeholder: "Select a country",
+        templateResult: formatStateCountries,
+        templateSelection: formatStateCountries,
+        width: '100%'
+      });
+    }
+    $nationalBlock.slideDown();
+    $message.slideDown();
+  } else {
+    $nationalBlock.slideUp();
+    $message.slideUp();
+  }
+
+}
