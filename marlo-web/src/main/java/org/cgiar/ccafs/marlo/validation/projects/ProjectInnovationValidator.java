@@ -421,7 +421,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     if (haveRegions) {
       // Validate Regions
-      if (projectInnovation.getRegions() == null) {
+      if (projectInnovation.getRegions() == null || projectInnovation.getRegions().isEmpty()) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.region"));
           action.addMissingField("projectInnovations.region");
