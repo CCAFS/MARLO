@@ -23,6 +23,14 @@
   margin-bottom: 15px;
 }
 
+.innovationTabs .col-md-4 {
+  width: 33.33333333% !important;
+}
+
+.innovationTabs .col-md-6 {
+  width: 50% !important;
+}
+
 .innovationTabs .col-md-1 .radioFlat,
 .innovationTabs .col-md-2 .radioFlat,
 .innovationTabs .col-md-3 .radioFlat,
@@ -61,7 +69,7 @@ ul.nav li a {
   padding-right: 28px !important;
   font-size: 13px;
   border: 1px solid #f1f1f1;
-  height: 62px;
+  height: 54px;
   align-content: center;
   text-align: center;
 }
@@ -85,13 +93,13 @@ ul.nav li a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
   /* background-size: 15px; */
-  background-position: 97% -150%;
+  background-position: 97% -60%;
 }
 
 .nav-tabs li.toSubmit a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
-  background-position: 97% 210%;
+  background-position: 97% 155%;
 }
 
 table tr {
@@ -199,25 +207,28 @@ form .form-group.margin-panel {
   display: block;
 }
 
-div.nationalBlock {
-  margin-bottom: 45px;
+div.countriesControlStyle div.selectList {
+  position: relative;
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
-div.nationalBlock div.selectList span.selection{
+div.countriesControlStyle div.selectList span.selection{
   height: 50px;
 }
 
-div.nationalBlock div.selectList .select2-search__field {
+div.countriesControlStyle div.selectList .select2-search__field {
   position: absolute;
   top: -30px;
   left: 15px;
 }
 
-div.nationalBlock div.selectList span.selection span.select2-selection{
+div.countriesControlStyle div.selectList span.selection span.select2-selection{
   position: relative;
+  width: 100%;
 }
 
-div.nationalBlock div.selectList span.selection span.select2-selection::before{
+div.countriesControlStyle div.selectList span.selection span.select2-selection::before{
   content: "";
   position: absolute;
   top: 50%;
@@ -227,7 +238,7 @@ div.nationalBlock div.selectList span.selection span.select2-selection::before{
   text-align: center !important;
 }
 
-div.nationalBlock div.selectList .select2-container--default .select2-selection__arrow {
+div.countriesControlStyle div.selectList .select2-container--default .select2-selection__arrow {
   height: 26px;
   position: absolute;
   top: 1px;
@@ -235,7 +246,7 @@ div.nationalBlock div.selectList .select2-container--default .select2-selection_
   width: 20px;
 }
 
-div.nationalBlock div.selectList .select2-container--default .select2-selection__arrow b {
+div.countriesControlStyle div.selectList .select2-container--default .select2-selection__arrow b {
   border-color: #888 transparent transparent transparent;
   border-style: solid;
   border-width: 5px 4px 0 4px;
@@ -248,7 +259,7 @@ div.nationalBlock div.selectList .select2-container--default .select2-selection_
   width: 0;
 }
 
-div.nationalBlock div.selectList span.selection span.select2-selection ul{
+div.countriesControlStyle div.selectList span.selection span.select2-selection ul{
   position: absolute;
   top: 30px;
   overflow:visible;
@@ -353,6 +364,10 @@ div.nationalBlock div.selectList span.selection span.select2-selection ul{
 
 .grayBlueBox .elementsListComponent .panel-body{
   border-left: none;
+}
+
+.panel-body {
+  width: 100%;
 }
 
 .projectInnovationsPartners .removePartnerItem{

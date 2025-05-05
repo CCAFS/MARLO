@@ -5,19 +5,30 @@ $(document).ready(function() {
 
 
   // Add Geographic Scope
-  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+  /*   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
     setGeographicScope(this);
 
     $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
-  });
+  }); */
 
   $('input.radioType-geographicScopes').on("change", function() {
     console.log("this", this);
     setGeographicScope2(this);
+    $('select.countriesSelect').each(function(i, element) {
+      dynamicMarginToSelectedRender(element);
+    });
   });
-  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
-  $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
+  $('select.countriesSelect').on('change', function() {
+    dynamicMarginToSelectedRender(this);
+  });
+
+  $('select.countriesSelect').each(function(i, element) {
+    dynamicMarginToSelectedRender(element);
+  });
+  //setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  //$('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
 
   // Activate Popup
   popups();
@@ -296,7 +307,6 @@ function addSelect2() {
   });
 
   $('form select.countriesSelect').select2({
-      maximumSelectionLength: 0,
       placeholder: "Select a country",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
@@ -961,6 +971,29 @@ const evidencesModule = function () {
 
   return {
     init: init
+  }
+
+}
+
+function dynamicMarginToSelectedRender(select){
+  const $select = $(select);
+
+  if(!$select.length) {
+    console.warn('Invalid element passed to dynamicMarginToSelectedRender');
+    return;
+  }
+  const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
+  const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
+
+  console.log($selectedMultiple);
+  console.log($rendered);
+  console.log($rendered.children().length);
+
+  if($rendered.children().length > 0){
+    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+  } else {
+    $selectedMultiple.css('margin-bottom','0');
+
   }
 
 }

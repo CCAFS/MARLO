@@ -231,14 +231,14 @@
                     </div>
                   [/#if]
 
-                  <div class="form-group nationalBlock col-md-12" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+                  <div class="form-group nationalBlock col-md-12" style="display:${(isNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
-                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
+                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-6 countriesControlStyle" isFlex=true /]
                   </div>
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
                     [#local geographicCountrySpecific = element.projectInnovationInfo.hasSpecifiedOutputCountries!false /]
                     [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
+                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false cssClassContainer="col-md-6" isFlex=true /]
 
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
@@ -253,7 +253,7 @@
                       [#-- Multinational, National and Subnational scope --]
                       [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
                       [#-- Multinational, National and Subnational scope --]
-                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
+                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-6 countriesControlStyle" isFlex=true /]
                     </div>
                       
                   </div>
@@ -275,13 +275,13 @@
               </div>
               
               [#-- Contributing Centers --]
-              <div class="col-md-6">
+              <div class="col-md-12">
                 [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
               </div>
 
               [#-- External Contributing Centers --]
-              <div class="col-md-6 top-five-contributing">
-                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=true maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" /]
+              <div class="col-md-12 top-five-contributing">
+                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=false maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" /]
               </div>
 
             </div>
@@ -354,13 +354,7 @@
               [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
               --]
             </div> 
-            [/#if]
-
-            
-            [#-- Beneficiries --]
-            <div class="form-group col-md-12">
-              [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
-            </div>      
+            [/#if]      
 
             [#--  Contact person    --]
             <div class="form-group stageProcessOne col-md-12">
@@ -694,6 +688,11 @@
             [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
           </div>
         </div>
+      </div>
+
+      [#-- Beneficiries --]
+      <div class="form-group col-md-12">
+        [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
       </div>
       
       [#-- Anticipated users --]
