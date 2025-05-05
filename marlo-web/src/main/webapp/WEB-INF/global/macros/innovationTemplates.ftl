@@ -238,7 +238,7 @@
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
                     [#local geographicCountrySpecific = element.projectInnovationInfo.hasSpecifiedOutputCountries!false /]
                     [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false cssClassContainer="col-md-6" isFlex=true /]
+                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true cssClassContainer="col-md-6" isFlex=true /]
 
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
