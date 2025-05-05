@@ -12,7 +12,6 @@ $(document).ready(function() {
   }); */
 
   $('input.radioType-geographicScopes').on("change", function() {
-    console.log("this", this);
     setGeographicScope2(this);
     $('select.countriesSelect').each(function(i, element) {
       dynamicMarginToSelectedRender(element);
@@ -984,10 +983,6 @@ function dynamicMarginToSelectedRender(select){
   }
   const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
   const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
-
-  console.log($selectedMultiple);
-  console.log($rendered);
-  console.log($rendered.children().length);
 
   if($rendered.children().length > 0){
     $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
