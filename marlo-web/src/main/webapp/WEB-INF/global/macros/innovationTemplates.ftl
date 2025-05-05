@@ -199,7 +199,7 @@
               [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
-              [#local hasSpecifiedOutputCountries = element.projectInnovationInfo.hasSpecifiedOutputCountries /]
+                [#local hasSpecifiedOutputCountries = element.projectInnovationInfo.hasSpecifiedOutputCountries!"" /]
 
               [@customForm.labelText name="projectInnovations.geographicScope" text="projectInnovations.geographicScope" required=(editable && reportingActive) isMainTitle=true /]
               [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
@@ -243,10 +243,10 @@
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
                       <div class="col-md-1">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
                       </div>
                       <div class="col-md-1">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
                       </div>
                     </div>
                     <div class="col-md-12 block-hasSpecifiedOutputCountries" style="display:${(geographicCountrySpecific)?string('block','none')}">

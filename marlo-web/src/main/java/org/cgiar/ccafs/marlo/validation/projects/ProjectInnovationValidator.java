@@ -400,7 +400,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (!resultProgessValidate) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.geographicScope"));
-          action.getInvalidFields().put("list-innovation.geographicScopes",
+          action.getInvalidFields().put("input-innovation.geographicScopes[0].repIndGeographicScope.id",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
           action.addMissingField("projectInnovations.geographicScope");
         }
