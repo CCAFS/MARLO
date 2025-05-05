@@ -2198,6 +2198,11 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
+      if (innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries() != null
+        && innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()) {
+        haveCountries = true;
+      }
+
       if (haveRegions) {
         // Save the Regions List
         this.saveRegions(innovationDB, phase);
