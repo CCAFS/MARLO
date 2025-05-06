@@ -643,6 +643,27 @@
         [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
       </div>
 
+      [#-- Knowledge Sharing and Scaling Potential --]
+      <div class="form-group">
+        <div class="col-md-12">
+          <label class="col-md-12 label--2">[@s.text name="projectInnovations.sharing.knowledge" /]:</label>
+        </div>
+        <div class="col-md-12 padding-left-2">
+          [#-- Technical excellence --]
+          <label class="label--2 col-md-12 blueLightColor">
+            [@s.text name="projectInnovations.sharing.technicalExcellence" /]:
+          </label>
+          [#-- Demand and Investment --]
+          <label class="label--2 col-md-12 blueLightColor">
+            [@s.text name="projectInnovations.sharing.demand&Investment" /]:
+          </label>
+          [#-- Sustained use --]
+          <label class="label--2 col-md-12 blueLightColor">
+            [@s.text name="projectInnovations.sharing.sustainedUse" /]:
+          </label>
+        </div>
+      </div>
+
       [#-- hasKnowledgePotential --]
       <div class="col-md-12">
         [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
@@ -666,14 +687,6 @@
       [#-- knowledge support the outreach --]
       <div class="col-md-12">
         [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
-      </div>
-
-      [#-- Knowledge Sharing and Scaling Potential --]
-      <div class="form-group">
-        <div class="col-md-12">
-          <label class="col-md-12 label--2">[@s.text name="projectInnovations.sharing.knowledge" /]:</label>
-        </div>
-        [#local hasKnowledgeMethodsAndToolsText = "hasKnowledgeMethodsAndTools" /]    
       </div>
 
       [#-- About the innovation --]
