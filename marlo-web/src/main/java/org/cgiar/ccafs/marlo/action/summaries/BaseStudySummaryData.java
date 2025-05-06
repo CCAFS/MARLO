@@ -917,15 +917,17 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           } else {
             try {
-              final int firstSpace = projectExpectedStudyInfo.getMELIAPublications().indexOf(" ");
-              if (activateShortURL) {
-                meliaPublications = urlShortener
-                  .detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace));
-              } else {
-                meliaPublications = projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace);
+              if (projectExpectedStudyInfo.getMELIAPublications() != null) {
+                final int firstSpace = projectExpectedStudyInfo.getMELIAPublications().indexOf(" ");
+                if (activateShortURL) {
+                  meliaPublications = urlShortener
+                    .detectAndShortenLinks(projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace));
+                } else {
+                  meliaPublications = projectExpectedStudyInfo.getMELIAPublications().substring(0, firstSpace);
+                }
+                // Append the rest of the string after the first space
+                meliaPublications += projectExpectedStudyInfo.getMELIAPublications().substring(firstSpace + 1);
               }
-              // Append the rest of the string after the first space
-              meliaPublications += projectExpectedStudyInfo.getMELIAPublications().substring(firstSpace + 1);
             } catch (final Exception e) {
               throw e;
             }
@@ -948,23 +950,28 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
           final List<QuantificationDTO> quantificationsList = new ArrayList<>();
 
-          for (final ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy
-            .getQuantifications()) {
-            if ((quantificationItem.getQuantificationType().getName() != null)
-              || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
-              || (quantificationItem.getComments() != null)) {
-              quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
-                quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
-                quantificationItem.getComments()));
+          if (projectExpectedStudy.getQuantifications() != null) {
+            for (final ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy
+              .getQuantifications()) {
+              if ((quantificationItem != null && quantificationItem.getQuantificationType() != null
+                && quantificationItem.getQuantificationType().getName() != null)
+                || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
+                || (quantificationItem.getComments() != null)) {
+                quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
+                  quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
+                  quantificationItem.getComments()));
+              }
             }
           }
 
           // Convert list to JSON
           objectMapper = new ObjectMapper();
           try {
-            String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
-            // Append properly formatted JSON to the existing string
-            quantification.append(quantificationsJson);
+            if (quantificationsList != null) {
+              String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
+              // Append properly formatted JSON to the existing string
+              quantification.append(quantificationsJson);
+            }
 
           } catch (final JsonProcessingException e) {
             e.printStackTrace();
