@@ -1046,6 +1046,7 @@
       </div>
     </div>
     
+    [#local isGender = (element.gender?has_content && element.gender?c == "true") /]
     [#local isClimateChange = (element.climateChange?has_content && element.climateChange?c == "true") /]
     [#local isNutrition = (element.nutrition?has_content && element.nutrition?c == "true") /]
     [#local isEnvironmental = (element.environmental?has_content && element.environmental?c == "true") /]
