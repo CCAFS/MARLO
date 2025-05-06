@@ -567,6 +567,25 @@
   [/#if]
 [/#macro]
 
+[#macro likertScale id name label="" i18nkey="" scaleNumber=5 disabled=false editable=true required=false value="" checked=true cssClass="" cssClassLabel="" inline=true]
+  <div class="feedback-flex-items"></div>
+  <div class="likertScale col-md-12 ${cssClass}">
+    <label class="col-md-12">
+      [@s.text name=label /][@req required=required && editable /]
+    </label>
+    [#if editable]
+      [#list 1..scaleNumber as i]
+        [#local isChecked = (value?has_content && value == i)!false /]
+        <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
+          [@radioFlat id="${id}-${i}" name="${name}" i18nkey=i label=i disabled="${disabled?string}" editable=editable value="${i}" checked=isChecked canComment=false inline=true /]
+        </div> 
+      [/#list]
+    [#else]
+
+    [/#if]
+  </div>
+[/#macro]
+
 [#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
