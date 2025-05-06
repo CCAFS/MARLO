@@ -786,11 +786,11 @@ public class ProjectInnovationValidator extends BaseValidator {
           action.getInvalidFields().put("input-innovation.projectInnovationInfo.foreseeBarriers",
             InvalidFieldsMessages.EMPTYFIELD);
         } else {
-          if (innovationInfo.getForeseeBarriers()) {
-            if (!(this.isValidString(innovationInfo.getScalingBarriers()))) {
-              action.addMessage(action.getText("innovation.projectInnovationInfo.scalingBarriers"));
-              action.addMissingField("innovation.projectInnovationInfo.scalingBarriers");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.scalingBarriers",
+          if (Boolean.TRUE.equals(innovationInfo.getForeseeBarriers())) {
+            if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
+              action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
+              action.addMissingField("innovation.projectInnovationInfo.knowledgeResultsNarrative");
+              action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }

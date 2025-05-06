@@ -171,8 +171,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private Integer evidenceUptake;
   @Expose
   private Boolean foreseeBarriers;
-  @Expose
-  private String scalingBarriers;
 
   public ProjectInnovationInfo() {
   }
@@ -480,10 +478,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndStageInnovation;
   }
 
-  public String getScalingBarriers() {
-    return scalingBarriers;
-  }
-
   public String getShortTitle() {
     return shortTitle;
   }
@@ -774,16 +768,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndStageInnovation = repIndStageInnovation;
   }
 
-
-  public void setScalingBarriers(String scalingBarriers) {
-    this.scalingBarriers = scalingBarriers;
-  }
-
-
   public void setShortTitle(String shortTitle) {
     this.shortTitle = shortTitle;
   }
-
 
   public void setSimplerUse(Integer simplerUse) {
     this.simplerUse = simplerUse;
@@ -889,7 +876,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setInnovationCommercially(projectInnovationInfoUpdate.getInnovationCommercially());
     this.setInnovationSupported(projectInnovationInfoUpdate.getInnovationSupported());
     this.setEvidenceUptake(projectInnovationInfoUpdate.getEvidenceUptake());
-    this.setScalingBarriers(projectInnovationInfoUpdate.getScalingBarriers());
     this.setForeseeBarriers(projectInnovationInfoUpdate.getForeseeBarriers());
   }
 }
