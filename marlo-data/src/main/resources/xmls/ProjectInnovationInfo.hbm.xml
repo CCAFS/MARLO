@@ -214,6 +214,12 @@
         <property name="evidenceUptake" type="java.lang.Integer">
             <column name="is_evidence_uptake"/>
         </property>
+        <property name="foreseeBarriers" type="java.lang.Boolean">
+            <column name="is_foresee_barriers " not-null="true" />
+        </property>
+        <property name="scalingBarriers" type="string">
+            <column name="scaling_barriers_narrative " sql-type="TEXT" />
+        </property>
         <many-to-one name="genderScore"
             class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
             fetch="select">
