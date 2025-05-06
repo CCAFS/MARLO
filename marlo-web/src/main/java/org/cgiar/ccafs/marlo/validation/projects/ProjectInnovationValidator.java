@@ -779,6 +779,23 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
         ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
+        // Validate foresee barriers
+        if (innovationInfo.getForeseeBarriers() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.foreseeBarriers"));
+          action.addMissingField("innovation.projectInnovationInfo.foreseeBarriers");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.foreseeBarriers",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (innovationInfo.getForeseeBarriers()) {
+            if (!(this.isValidString(innovationInfo.getScalingBarriers()))) {
+              action.addMessage(action.getText("innovation.projectInnovationInfo.scalingBarriers"));
+              action.addMissingField("innovation.projectInnovationInfo.scalingBarriers");
+              action.getInvalidFields().put("input-innovation.projectInnovationInfo.scalingBarriers",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        }
+
         // Validate Knowledge sharing and scaling potential
         if (innovationInfo.getCheaperAlternatives() == null) {
           action.addMessage(action.getText("innovation.projectInnovationInfo.cheaperAlternatives"));
