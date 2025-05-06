@@ -449,6 +449,10 @@ div.projectInnovationsPartners div.usersBlock{
   display: contents;
 }
 
+.scaling__container .scaling__item div.radioFlat {
+  padding-left: 20px;
+}
+
 .scaling__item input[type="radio"].radio-input.scalingInnovation__item__value +.radio-label{
   width: 4rem;
   height: 4rem;

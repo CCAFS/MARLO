@@ -586,10 +586,6 @@
 [#macro innovationReadiness element name index=-1 template=false]
   <div id="readiness" class="borderBox clearfix">
     <div class="form-group">
-      [#-- Innovation Scaling Readiness --]
-      <div class="form-group">
-        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
-      </div>
 
       [#-- Innovation importance --]
       <div class="form-group col-md-12">
@@ -637,6 +633,16 @@
   <div id="funding" class="borderBox clearfix">
     <div class="form-group">
 
+      [#-- Innovation Scaling Readiness --]
+      <div class="form-group">
+        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
+      </div>
+
+      [#-- knowledgeResultsNarrative --]
+      <div class="col-md-12">
+        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
+      </div>
+
       [#-- Knowledge Sharing and Scaling Potential --]
       <div class="form-group">
         <div class="col-md-12">
@@ -658,10 +664,6 @@
           [#-- knowledgeToolUsesNarrative --]
           <div class="col-md-12">
             [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=false editable=editable /]
-          </div>
-          [#-- knowledgeResultsNarrative --]
-          <div class="col-md-12">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
           </div>
           [#-- hasKnowledgePotential --]
           <div class="col-md-12">
@@ -928,7 +930,7 @@
     [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
 
     <div class="scaling__container">
-      <div class="scaling__line col-md-12"></div>
+      <div class="scaling__line col-md-11"></div>
       [#if listName?has_content]
         [#list listName as item]
           <div class="col-md-1 scaling__item">
