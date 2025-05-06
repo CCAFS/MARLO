@@ -156,19 +156,19 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private ImpactAreaScore povertyScore;
   @Expose
-  private Boolean cheaperAlternatives;
+  private Integer cheaperAlternatives;
   @Expose
-  private Boolean simplerUse;
+  private Integer simplerUse;
   @Expose
-  private Boolean performBetter;
+  private Integer performBetter;
   @Expose
-  private Boolean innovationDesirable;
+  private Integer innovationDesirable;
   @Expose
-  private Boolean innovationCommercially;
+  private Integer innovationCommercially;
   @Expose
-  private Boolean innovationSupported;
+  private Integer innovationSupported;
   @Expose
-  private Boolean evidenceUptake;
+  private Integer evidenceUptake;
 
   public ProjectInnovationInfo() {
   }
@@ -227,10 +227,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return beneficiariesNarrative;
   }
 
-  public Boolean getCheaperAlternatives() {
+  public Integer getCheaperAlternatives() {
     return cheaperAlternatives;
   }
-
 
   public Boolean getClearLead() {
     return clearLead;
@@ -252,7 +251,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return evidenceLink;
   }
 
-  public Boolean getEvidenceUptake() {
+  public Integer getEvidenceUptake() {
     return evidenceUptake;
   }
 
@@ -312,11 +311,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationBundle;
   }
 
-  public Boolean getInnovationCommercially() {
+  public Integer getInnovationCommercially() {
     return innovationCommercially;
   }
 
-  public Boolean getInnovationDesirable() {
+  public Integer getInnovationDesirable() {
     return innovationDesirable;
   }
 
@@ -328,7 +327,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationNumber;
   }
 
-  public Boolean getInnovationSupported() {
+  public Integer getInnovationSupported() {
     return innovationSupported;
   }
 
@@ -375,9 +374,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return u;
   }
 
+
   public String getNarrative() {
     return narrative;
   }
+
 
   public String getOtherAllianceLever() {
     return otherAllianceLever;
@@ -395,12 +396,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherIntellectualProperty;
   }
 
-
   public String getOtherToolNarrative() {
     return otherToolNarrative;
   }
 
-  public Boolean getPerformBetter() {
+  public Integer getPerformBetter() {
     return performBetter;
   }
 
@@ -476,7 +476,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return shortTitle;
   }
 
-  public Boolean getSimplerUse() {
+  public Integer getSimplerUse() {
     return simplerUse;
   }
 
@@ -517,7 +517,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.beneficiariesNarrative = beneficiariesNarrative;
   }
 
-  public void setCheaperAlternatives(Boolean cheaperAlternatives) {
+  public void setCheaperAlternatives(Integer cheaperAlternatives) {
     this.cheaperAlternatives = cheaperAlternatives;
   }
 
@@ -541,7 +541,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.evidenceLink = evidenceLink;
   }
 
-  public void setEvidenceUptake(Boolean evidenceUptake) {
+  public void setEvidenceUptake(Integer evidenceUptake) {
     this.evidenceUptake = evidenceUptake;
   }
 
@@ -601,11 +601,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationBundle = innovationBundle;
   }
 
-  public void setInnovationCommercially(Boolean innovationCommercially) {
+  public void setInnovationCommercially(Integer innovationCommercially) {
     this.innovationCommercially = innovationCommercially;
   }
 
-  public void setInnovationDesirable(Boolean innovationDesirable) {
+  public void setInnovationDesirable(Integer innovationDesirable) {
     this.innovationDesirable = innovationDesirable;
   }
 
@@ -617,13 +617,14 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationNumber = innovationNumber;
   }
 
-  public void setInnovationSupported(Boolean innovationSupported) {
+  public void setInnovationSupported(Integer innovationSupported) {
     this.innovationSupported = innovationSupported;
   }
 
   public void setIntellectualPropertyInstitution(Institution intellectualPropertyInstitution) {
     this.intellectualPropertyInstitution = intellectualPropertyInstitution;
   }
+
 
   public void setKnowledgeCollaboration(String knowledgeCollaboration) {
     this.knowledgeCollaboration = knowledgeCollaboration;
@@ -674,7 +675,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.otherToolNarrative = otherToolNarrative;
   }
 
-  public void setPerformBetter(Boolean performBetter) {
+  public void setPerformBetter(Integer performBetter) {
     this.performBetter = performBetter;
   }
 
@@ -714,57 +715,71 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.reasonNotKnowledgePotential = reasonNotKnowledgePotential;
   }
 
+
   public void setReasonNotToolUrl(String reasonNotToolUrl) {
     this.reasonNotToolUrl = reasonNotToolUrl;
   }
+
 
   public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
 
+
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
+
 
   public void setRepIndInnovationNature(RepIndInnovationNature repIndInnovationNature) {
     this.repIndInnovationNature = repIndInnovationNature;
   }
 
+
   public void setRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
     this.repIndInnovationType = repIndInnovationType;
   }
+
 
   public void setRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership) {
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
   }
 
+
   public void setRepIndRegion(RepIndRegion repIndRegion) {
     this.repIndRegion = repIndRegion;
   }
+
 
   public void setRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation) {
     this.repIndStageInnovation = repIndStageInnovation;
   }
 
+
   public void setShortTitle(String shortTitle) {
     this.shortTitle = shortTitle;
   }
 
-  public void setSimplerUse(Boolean simplerUse) {
+
+  public void setSimplerUse(Integer simplerUse) {
     this.simplerUse = simplerUse;
   }
+
 
   public void setTitle(String title) {
     this.title = title;
   }
 
+
   public void setYear(Long year) {
     this.year = year;
   }
 
+
   public void setYouthExplaniation(String youthExplaniation) {
     this.youthExplaniation = youthExplaniation;
   }
+
 
   public void setYouthFocusLevel(RepIndGenderYouthFocusLevel youthFocusLevel) {
     this.youthFocusLevel = youthFocusLevel;
