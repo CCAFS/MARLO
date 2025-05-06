@@ -643,6 +643,31 @@
         [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
       </div>
 
+      [#-- hasKnowledgePotential --]
+      <div class="col-md-12">
+        [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
+        [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
+        [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
+
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>
+
+        <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
+          [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
+        </div>
+        <div class="col-md-12 block-no-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(!hasKnowledgePotential))?then('block','none')};">
+          [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided" helpIcon=false className="limitWords-500" required=(editable) editable=editable /] 
+        </div>
+      </div>
+      [#-- knowledge support the outreach --]
+      <div class="col-md-12">
+        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
+      </div>
+
       [#-- Knowledge Sharing and Scaling Potential --]
       <div class="form-group">
         <div class="col-md-12">
@@ -652,45 +677,21 @@
       </div>
 
       [#-- About the innovation --]
-      <div class="form-group">
+      [#--        <div class="form-group">
         <label class="label--2 col-md-12 blueLightColor">
           [@s.text name="projectInnovations.sharing.aboutTheTool" /]:
         </label>
         <div class="col-md-12 padding-left-2">
-          [#-- Objetive --]
+          -- Objetive --
           <div class="col-md-12">
             [@customForm.elementsListComponent name="${customName}.toolCategories" elementType="toolCategory" elementList=(element.toolCategories)![] label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
           </div>
-          [#-- knowledgeToolUsesNarrative --]
+          -- knowledgeToolUsesNarrative 
           <div class="col-md-12">
             [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=false editable=editable /]
           </div>
-          [#-- hasKnowledgePotential --]
-          <div class="col-md-12">
-            [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
-            [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
-            [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
-
-            <div class="col-md-1">
-              [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
-            </div>
-            <div class="col-md-1">
-              [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
-            </div>
-
-            <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
-              [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
-            </div>
-            <div class="col-md-12 block-no-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(!hasKnowledgePotential))?then('block','none')};">
-             [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided" helpIcon=false className="limitWords-500" required=(editable) editable=editable /] 
-            </div>
-          </div>
-          [#-- knowledge support the outreach --]
-          <div class="col-md-12">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
-          </div>
         </div>
-      </div>
+      </div>  --]
 
       [#-- Beneficiries --]
       <div class="form-group col-md-12">
