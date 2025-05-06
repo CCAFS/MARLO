@@ -1388,13 +1388,18 @@ function setGeographicScope2(component) {
   var $isMultiNational = $value == 3;
   var $isNational = $value == 4;
   var $isSubNational = $value == 5;
+  var $isGlobal = $value == 1;
+  var $isYetToBeDefined = $value == 6;
+
+  if($isGlobal || $isYetToBeDefined) {
+    $message.slideUp();
+  }
 
   if ($isRegional) {
     $regionalBlock.slideDown();
     $message.slideDown();
   } else {
     $regionalBlock.slideUp();
-    $message.slideUp();
     // Clean selected region
     $regionalBlock.find("select").val("-1").trigger('change');
   }
@@ -1425,7 +1430,6 @@ function setGeographicScope2(component) {
     $message.slideDown();
   } else {
     $nationalBlock.slideUp();
-    $message.slideUp();
   }
 
 }

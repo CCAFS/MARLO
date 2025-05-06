@@ -400,7 +400,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (!resultProgessValidate) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.geographicScope"));
-          action.getInvalidFields().put("list-innovation.geographicScopes",
+          action.getInvalidFields().put("input-innovation.geographicScopes[0].repIndGeographicScope.id",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
           action.addMissingField("projectInnovations.geographicScope");
         }
@@ -421,12 +421,32 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     if (haveRegions) {
       // Validate Regions
-      if (projectInnovation.getRegions() == null) {
+      if (projectInnovation.getRegions() == null || projectInnovation.getRegions().isEmpty()) {
         if (struts) {
           action.addMessage(action.getText("projectInnovations.region"));
           action.addMissingField("projectInnovations.region");
           action.getInvalidFields().put("list-innovation.regions",
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"regions"}));
+        }
+      }
+
+      // Validate specify output
+      if (innovationInfo.getHasSpecifiedOutputCountries() == null) {
+        action.addMessage(action.getText("innovation.hasSpecifiedOutputCountries"));
+        action.addMissingField("innovation.hasSpecifiedOutputCountries");
+        action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasSpecifiedOutputCountries",
+          InvalidFieldsMessages.EMPTYFIELD);
+      } else {
+        if (innovationInfo.getHasSpecifiedOutputCountries()) {
+          // Validate countries
+          if (projectInnovation.getCountriesIds() == null || projectInnovation.getCountriesIds().isEmpty()) {
+            if (struts) {
+              action.addMessage(action.getText("innovation.countries"));
+              action.addMissingField("innovation.countries");
+              action.getInvalidFields().put("input-innovation.countriesIds",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+            }
+          }
         }
       }
     }
