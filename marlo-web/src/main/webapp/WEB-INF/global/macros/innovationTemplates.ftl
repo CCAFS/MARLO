@@ -638,6 +638,24 @@
         [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
       </div>
 
+      [#-- Foresee barriers --]
+      <div class="form-group col-md-12">
+        <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /]</label>
+        [#local foreseeBarriersText = "foreseeBarriers" /]
+        [#local foreseeBarriers = (element.projectInnovationInfo.foreseeBarriers)! /]  
+
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${foreseeBarriersText}-yes" name="${customName}.projectInnovationInfo.foreseeBarriers" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-1">
+          [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-no" editable=editable /]
+        </div>
+        [#-- knowledgeToolUsesNarrative --]
+        <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers))?then('block','none')};">
+          [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=false editable=editable /]
+        </div>
+      </div>  
+
       [#-- knowledgeResultsNarrative --]
       <div class="col-md-12">
         [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
@@ -712,9 +730,7 @@
             [@customForm.elementsListComponent name="${customName}.toolCategories" elementType="toolCategory" elementList=(element.toolCategories)![] label="projectInnovations.sharing.aboutTheTool.objetive" listName="toolCategoryList" keyFieldName="id" displayFieldName="name" required=false /]
           </div>
           -- knowledgeToolUsesNarrative 
-          <div class="col-md-12">
-            [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=false editable=editable /]
-          </div>
+
         </div>
       </div>  --]
 
