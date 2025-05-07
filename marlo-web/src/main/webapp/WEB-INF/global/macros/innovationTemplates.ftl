@@ -596,33 +596,6 @@
       <div class="form-group">
         [@customForm.textArea name="${name}.projectInnovationInfo.readinessReason" i18nkey="projectInnovations.readiness.reason" help="projectInnovations.readiness.reason.help" helpIcon=false className="limitWords-80" required=true isNote=true showTitle=true isMainTitle=true editable=editable isWidthFull=true /]
       </div>
-
-      [#-- Evidence and Reference --]
-      <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true /]
-        <br>
-        <div class="col-md-12">
-          <div class="referenceBlock">
-            <div class="referenceListReadiness">
-              [#if element.references?has_content]
-                [#list element.references as reference]
-                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
-                [/#list]
-              [/#if]
-            </div>
-            [#if editable]
-            <div class="addButtonReferenceReadiness bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Reference </div>
-            <div class="clearfix"></div>
-            [/#if]
-          </div>
-          [#-- Element item Template --]
-          <div style="display:none">
-            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness" /]
-          </div>
-        </div>
-          
-        
-      </div>
     </div>
   </div>
 [/#macro]
@@ -640,7 +613,7 @@
 
       [#-- Foresee barriers --]
       <div class="form-group col-md-12">
-        <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /]</label>
+        <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /][@customForm.req required=editanle /]</label>
         [#local foreseeBarriersText = "foreseeBarriers" /]
         [#local foreseeBarriers = (element.projectInnovationInfo.foreseeBarriers)! /]  
 
@@ -652,7 +625,7 @@
         </div>
         [#-- knowledgeToolUsesNarrative --]
         <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers))?then('block','none')};">
-          [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=false editable=editable /]
+          [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
         </div>
       </div>  
 
@@ -733,74 +706,73 @@
 
         </div>
       </div>  --]
+      
+      [#-- Anticipated users --]
+      <div class="form-group col-md-12 block-innovationAnticipatedUsers">
+        [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" twoPoints=false required=true isMainTitle=true /]
+        [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
+        <div class="col-md-12">
+          <div class="col-md-4">
+            [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+          </div>
+          <div class="col-md-4">
+            [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+          </div>
+        </div>
+        <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
+          [#-- Actors --]
+          <div class="col-md-12 actorsBlock">
+            <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
+            <label class="note--2">
+              <span class="inner-note">[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</span>
+            </label>
+            [#-- list of items --]
+            <div class="actorsList">
+              [#list (element.actors)![] as actor]
+                [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
+              [/#list]
+            </div>
+            [#if editable]
+              <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
+              <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Organizations --]
+          <div class="col-md-12 organizationsBlock">
+            <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+            <label class="note--2">
+              <p>[@s.text name="projectInnovations.anticipatedUsers.organizations.help" /]</p>
+            </label>
+            [#-- list of items --]
+            <div class="organizationsList">
+              [#list (element.allianceOrganizations)![] as organization]
+                [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
+              [/#list]
+            </div>
+            [#if editable]
+              <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
+              <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
+            [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+          </div>
+
+        </div>
+          
+      </div>
 
       [#-- Beneficiries --]
       <div class="form-group col-md-12">
         [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
       </div>
       
-      [#-- Anticipated users --]
-            <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-              [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" required=true isMainTitle=true /]
-              [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
-              <div class="col-md-12">
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
-                </div>
-                <div class="col-md-4">
-                  [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
-                </div>
-              </div>
-              <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
-                [#-- Actors --]
-                <div class="col-md-6 actorsBlock">
-                  <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="actorsList">
-                    [#list (element.actors)![] as actor]
-                      [@actorsMacro name="innovation.actors" element=actor index=actor_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addActors bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add actor </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Organizations --]
-                <div class="col-md-6 organizationsBlock">
-                  <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
-                  <label class="note--2">
-                    <p>[@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">clicking here</a>[/@][/@]</p>
-                  </label>
-                  [#-- list of items --]
-                  <div class="organizationsList">
-                    [#list (element.allianceOrganizations)![] as organization]
-                      [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
-                    [/#list]
-                  </div>
-                  [#if editable]
-                    <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
-                    <div class="clearfix"></div>
-                  [/#if]
-                </div>
-                [#-- Element item Template --]
-                <div style="display:none">
-                  [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-                  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
-                </div>
-
-              </div>
-                
-            </div>
-
-
       [#-- URLs: Tool website, publications, stories and more  --]
-      <div class="form-group">
+      [#--        <div class="form-group">
         <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.urls" /]:</label>
-        [#-- hasToolUrl ---]
+        #-- hasToolUrl ---
         <div class="col-md-12 padding-left-2">
           [@customForm.labelText name="innovation.hasToolUrl" text="projectInnovations.sharing.urls.tool" /]
           [#local hasToolUrlText = "hasToolUrl" /]
@@ -813,10 +785,10 @@
             [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.hasToolUrl" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
           </div>
 
-          [#-- If yes - Evidence/Reference --]
+          #-- If yes - Evidence/Reference --
           <div class="col-md-12 block-yes-${hasToolUrlText}" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) && (hasToolUrl))?then('block','none')};">
             <label class="note--2" style="width:100%"><p class="col-md-12">[@s.text name="projectInnovations.sharing.urls.tool.help" /]</p></label>
-            [#-- List URLs --]
+            #-- List URLs --
             <div class="form-group">
               <div class="col-md-12">
                 <div class="referenceBlock">
@@ -832,7 +804,7 @@
                   <div class="clearfix"></div>
                   [/#if]
                 </div>
-                [#-- Element item Template --]
+                #-- Element item Template --
                 <div style="display:none">
                   [@customForm.evidence name="innovation.referenceUrls" element={} index=-1 template=true class="Url" /]
                 </div>
@@ -840,23 +812,23 @@
             </div>
           </div>
             
-          [#-- If not - reasonNotToolUrl --]
+          #-- If not - reasonNotToolUrl --
           <div class="col-md-12 block-no-${hasToolUrlText}" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) && (!hasToolUrl))?then('block','none')};">
             [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotToolUrl" i18nkey="projectInnovations.sharing.urls.reasonNoProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
           </div>
         </div>
-      </div>
+      </div>  --]
 
       [#-- Collaboration with other innovations --]
-      <div class="form-group">
+      [#--        <div class="form-group">
         <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.collaboration" /]:</label>
         <div class="col-md-12 padding-left-2">
-          [#-- knowledgeCollaboration --]
+          #-- knowledgeCollaboration --
           <div class="col-md-12">
             <label class="note--2"><p>[@s.text name="projectInnovations.sharing.collaboration.help" /]</p></label>
             [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeCollaboration" i18nkey="projectInnovations.sharing.collaboration.knowledgeCollaboration" helpIcon=false className="limitWords-200" required=false editable=editable /]  
           </div>
-          [#-- urls Complementary Solutions --]
+          #-- urls Complementary Solutions --
           <div class="col-md-12">
             [@customForm.labelText name="innovation.hasComplementarySolutions" text="projectInnovations.sharing.collaboration.complementarySolutions" /]
             <div class="col-md-12">
@@ -873,11 +845,36 @@
                 <div class="clearfix"></div>
                 [/#if]
               </div>
-              [#-- Element item Template --]
+              #-- Element item Template --
               <div style="display:none">
                 [@customForm.evidence name="innovation.referenceComplementarySolutions" element={} index=-1 template=true  class="Complementary" isDeliverable=false /]
               </div>
             </div>
+          </div>
+        </div>
+      </div>  --]
+
+      [#-- Evidence and Reference --]
+      <div class="form-group">
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true twoPoints=false /]
+        <br>
+        <div class="col-md-12">
+          <div class="referenceBlock">
+            <div class="referenceListReadiness">
+              [#if element.references?has_content]
+                [#list element.references as reference]
+                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
+                [/#list]
+              [/#if]
+            </div>
+            [#if editable]
+            <div class="addButtonReferenceReadiness bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence </div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness" /]
           </div>
         </div>
       </div>

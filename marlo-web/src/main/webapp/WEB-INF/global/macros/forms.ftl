@@ -1115,9 +1115,9 @@
     
 [/#macro]
 
-[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false className="" classNameLabel="" ]
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false twoPoints=true className="" classNameLabel="" ]
   <div class="feedback-flex-items col-md-12 ${className}">
-    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]:[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon /]</label>
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]${twoPoints?then(':','')}[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon /]</label>
     <div class="commentNumberContainer">
       <div class="numberOfCommentsBubble">
         <p></p>
