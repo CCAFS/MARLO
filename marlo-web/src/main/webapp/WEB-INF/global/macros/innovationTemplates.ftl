@@ -103,7 +103,7 @@
             <div class="form-group col-md-12">
               [@customForm.labelText name="innovation.innovationBundle" text="projectInnovations.innovationBundle" required=true isMainTitle=true /]
               [@customForm.labelText name="innovation.innovationBundle.helpText" text="projectInnovations.innovationBundle.helpText"  /]
-              [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle)! /]
+              [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle?has_content && innovation.projectInnovationInfo.innovationBundle?c == "true") /]
               <div class="col-md-12">
                 <div class="col-md-3">
                   [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
@@ -654,24 +654,24 @@
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.technicalExcellence" /]:
           </label>
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" value=(element.projectInnovationInfo.cheaperAlternatives) label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(element.projectInnovationInfo.simplerUse) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(element.projectInnovationInfo.performBetter) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
 
           [#-- Demand and Investment --]
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.demand&Investment" /]:
           </label>
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(element.projectInnovationInfo.innovationDesirable) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(element.projectInnovationInfo.innovationCommercially) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable /]
           
           [#-- Sustained use --]
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.sustainedUse" /]:
           </label>
 
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(element.projectInnovationInfo.innovationSupported) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(element.projectInnovationInfo.evidenceUptake) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable /]
           
         </div>
       </div>
