@@ -366,6 +366,21 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   border-left: none;
 }
 
+.grayBlueBox .innerOptions .col-md-1, 
+.grayBlueBox .innerOptions .col-md-2, 
+.grayBlueBox .innerOptions .col-md-3, 
+.grayBlueBox .innerOptions .col-md-4,
+.grayBlueBox .innerOptions .col-md-5,
+.grayBlueBox .innerOptions .col-md-6,
+.grayBlueBox .innerOptions .col-md-7,
+.grayBlueBox .innerOptions .col-md-8,
+.grayBlueBox .innerOptions .col-md-9,
+.grayBlueBox .innerOptions .col-md-10,
+.grayBlueBox .innerOptions .col-md-11{
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .panel-body {
   width: 100%;
 }
