@@ -164,6 +164,10 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
       projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
       projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
+      projectInnovationActorAdd.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
+      projectInnovationActorAdd.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
+      projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
+      projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
       projectInnovationActorAdd.setPhase(phase);
       projectInnovationActorDAO.save(projectInnovationActorAdd);
     }
