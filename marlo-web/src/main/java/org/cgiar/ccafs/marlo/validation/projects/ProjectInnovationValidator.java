@@ -59,6 +59,12 @@ public class ProjectInnovationValidator extends BaseValidator {
   private Boolean clearLead = false;
   private InstitutionManager institutionManager;
 
+  boolean hasGender = false;
+  boolean hasNutrition = false;
+  boolean hasClimate = false;
+  boolean hasEnvironmental = false;
+  boolean hasPoverty = false;
+
   String innovationGeneral = "";
   String innovationAlliance = "";
   String innovationOneCgiar = "";
@@ -668,6 +674,49 @@ public class ProjectInnovationValidator extends BaseValidator {
          * action.getInvalidFields().put("input-innovation.references", InvalidFieldsMessages.EMPTYFIELD);
          * }
          */
+
+      }
+
+      innovationReadiness = action.getMissingFields().toString();
+      if (projectInnovation.getId() != null && (innovationReadiness.length() > innovationOneCgiar.length())) {
+        BaseAction.getIsInnovationReadinessCompleteMap().put("" + projectInnovation.getId(), "1");
+      }
+    } catch (Exception e) {
+      Log.error("error validating InnovationReadiness tab ");
+    }
+  }
+
+  /**
+   * Validate the data of the Innovation Rights tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectInnovation An specific projectInnovation
+   * @param saving related action
+   */
+  public void validateInnovationRights(BaseAction action, Project project, ProjectInnovation projectInnovation,
+    boolean saving) {
+    try {
+      if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
+        ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+
+        // Validate foresee barriers
+        if (innovationInfo.getForeseeBarriers() == null) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.foreseeBarriers"));
+          action.addMissingField("innovation.projectInnovationInfo.foreseeBarriers");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.foreseeBarriers",
+            InvalidFieldsMessages.EMPTYFIELD);
+        } else {
+          if (Boolean.TRUE.equals(innovationInfo.getForeseeBarriers())) {
+            if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
+              action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
+              action.addMissingField("innovation.projectInnovationInfo.knowledgeResultsNarrative");
+              action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+        }
+
         // Validate Readiness scale
         if (innovationInfo.getReadinessScale() == null) {
           action.addMessage("Readiness scale");
@@ -675,17 +724,54 @@ public class ProjectInnovationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
+        // Validate scores
+        boolean markMissingScore = false;
+        if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 2) {
+          markMissingScore = true;
+        }
+        if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 2) {
+          markMissingScore = true;
+        }
+        if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 2) {
+          markMissingScore = true;
+        }
+        if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 2) {
+          markMissingScore = true;
+        }
+        if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 2) {
+          markMissingScore = true;
+        }
+
+        // Validate References
         if (projectInnovation.getReferences() != null && !projectInnovation.getReferences().isEmpty()) {
           for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
             ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
             if (reference != null) {
+
+              if (Boolean.TRUE.equals(reference.getGender())) {
+                hasGender = true;
+              }
+              if (Boolean.TRUE.equals(reference.getNutrition())) {
+                hasNutrition = true;
+              }
+              if (Boolean.TRUE.equals(reference.getClimateChange())) {
+                hasClimate = true;
+              }
+              if (Boolean.TRUE.equals(reference.getEnvironmental())) {
+                hasEnvironmental = true;
+              }
+              if (Boolean.TRUE.equals(reference.getPoverty())) {
+                hasPoverty = true;
+              }
+
               // Validate Reference Innovation Readiness Level
-              if ((reference.getGender() == null || !reference.getGender())
+              if (((reference.getGender() == null || !reference.getGender())
                 && (reference.getClimateChange() == null || !reference.getClimateChange())
                 && (reference.getNutrition() == null || !reference.getNutrition())
                 && (reference.getEnvironmental() == null || !reference.getEnvironmental())
                 && (reference.getPoverty() == null || !reference.getPoverty())
-                && (reference.getInnovationReadiness() == null || !reference.getInnovationReadiness())) {
+                && (reference.getInnovationReadiness() == null || !reference.getInnovationReadiness()))
+                || (markMissingScore)) {
                 action.addMessage("References ");
                 action.getInvalidFields().put("input-innovation.references[" + i + "].gender",
                   InvalidFieldsMessages.EMPTYFIELD);
@@ -754,47 +840,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
         }
 
-      }
-
-      innovationReadiness = action.getMissingFields().toString();
-      if (projectInnovation.getId() != null && (innovationReadiness.length() > innovationOneCgiar.length())) {
-        BaseAction.getIsInnovationReadinessCompleteMap().put("" + projectInnovation.getId(), "1");
-      }
-    } catch (Exception e) {
-      Log.error("error validating InnovationReadiness tab ");
-    }
-  }
-
-  /**
-   * Validate the data of the Innovation Rights tab
-   *
-   * @param action base action
-   * @param project related project
-   * @param projectInnovation An specific projectInnovation
-   * @param saving related action
-   */
-  public void validateInnovationRights(BaseAction action, Project project, ProjectInnovation projectInnovation,
-    boolean saving) {
-    try {
-      if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
-        ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
-
-        // Validate foresee barriers
-        if (innovationInfo.getForeseeBarriers() == null) {
-          action.addMessage(action.getText("innovation.projectInnovationInfo.foreseeBarriers"));
-          action.addMissingField("innovation.projectInnovationInfo.foreseeBarriers");
-          action.getInvalidFields().put("input-innovation.projectInnovationInfo.foreseeBarriers",
-            InvalidFieldsMessages.EMPTYFIELD);
-        } else {
-          if (Boolean.TRUE.equals(innovationInfo.getForeseeBarriers())) {
-            if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
-              action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
-              action.addMissingField("innovation.projectInnovationInfo.knowledgeResultsNarrative");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-        }
 
         // Validate Knowledge sharing and scaling potential
         if (innovationInfo.getCheaperAlternatives() == null) {
@@ -864,7 +909,7 @@ public class ProjectInnovationValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
-          if (Boolean.TRUE.equals(!innovationInfo.getHasKnowledgePotential())
+          if ((innovationInfo.getHasKnowledgePotential() != null)
             && !(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
             action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotKnowledgePotential"));
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotKnowledgePotential",

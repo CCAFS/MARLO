@@ -126,7 +126,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String knowledgeResultsNarrative;
   @Expose
-  private Boolean hasKnowledgePotential;
+  private RepIndOptions hasKnowledgePotential;
   @Expose
   private String reasonNotKnowledgePotential;
   @Expose
@@ -293,7 +293,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasKnowledgeMethodsAndTools;
   }
 
-  public Boolean getHasKnowledgePotential() {
+
+  public RepIndOptions getHasKnowledgePotential() {
     return hasKnowledgePotential;
   }
 
@@ -368,6 +369,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
@@ -380,7 +382,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     u.setId(new Long(3));
     return u;
   }
-
 
   public String getNarrative() {
     return narrative;
@@ -587,7 +588,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.hasKnowledgeMethodsAndTools = hasKnowledgeMethodsAndTools;
   }
 
-  public void setHasKnowledgePotential(Boolean hasKnowledgePotential) {
+  public void setHasKnowledgePotential(RepIndOptions hasKnowledgePotential) {
     this.hasKnowledgePotential = hasKnowledgePotential;
   }
 
@@ -615,6 +616,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationCommercially = innovationCommercially;
   }
 
+
   public void setInnovationDesirable(Integer innovationDesirable) {
     this.innovationDesirable = innovationDesirable;
   }
@@ -622,7 +624,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   public void setInnovationImportance(String innovationImportance) {
     this.innovationImportance = innovationImportance;
   }
-
 
   public void setInnovationNumber(Long innovationNumber) {
     this.innovationNumber = innovationNumber;
@@ -705,9 +706,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.projectInnovation = projectInnovation;
   }
 
+
   public void setReadinessReason(String readinessReason) {
     this.readinessReason = readinessReason;
   }
+
 
   public void setReadinessScale(Integer readinessScale) {
     this.readinessScale = readinessScale;
@@ -758,11 +761,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
   }
 
-
   public void setRepIndRegion(RepIndRegion repIndRegion) {
     this.repIndRegion = repIndRegion;
   }
-
 
   public void setRepIndStageInnovation(RepIndStageInnovation repIndStageInnovation) {
     this.repIndStageInnovation = repIndStageInnovation;
