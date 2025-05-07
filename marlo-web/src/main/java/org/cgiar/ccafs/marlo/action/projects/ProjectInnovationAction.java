@@ -2138,6 +2138,7 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
         innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
         innovation.getProjectInnovationInfo().setPovertyScore(null);
+        innovation.getProjectInnovationInfo().setHasKnowledgePotential(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
