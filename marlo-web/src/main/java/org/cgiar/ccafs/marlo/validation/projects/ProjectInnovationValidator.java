@@ -857,14 +857,14 @@ public class ProjectInnovationValidator extends BaseValidator {
 
         // HasKnowledgePotential
         if (innovationInfo.getHasKnowledgePotential() != null) {
-          if (innovationInfo.getHasKnowledgePotential()
+          if (Boolean.TRUE.equals(innovationInfo.getHasKnowledgePotential())
             && !(this.isValidString(innovationInfo.getReasonKnowledgePotential()))) {
             action.addMessage(action.getText("innovation.projectInnovationInfo.reasonKnowledgePotential"));
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonKnowledgePotential",
               InvalidFieldsMessages.EMPTYFIELD);
           }
 
-          if (!innovationInfo.getHasKnowledgePotential()
+          if (Boolean.TRUE.equals(!innovationInfo.getHasKnowledgePotential())
             && !(this.isValidString(innovationInfo.getReasonNotKnowledgePotential()))) {
             action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotKnowledgePotential"));
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotKnowledgePotential",
@@ -880,7 +880,8 @@ public class ProjectInnovationValidator extends BaseValidator {
 
         // Has tool URL
         if (innovationInfo.getHasToolUrl() != null) {
-          if (!innovationInfo.getHasToolUrl() && !(this.isValidString(innovationInfo.getReasonNotToolUrl()))) {
+          if (Boolean.TRUE.equals(!innovationInfo.getHasToolUrl())
+            && !(this.isValidString(innovationInfo.getReasonNotToolUrl()))) {
             action.addMessage(action.getText("innovation.projectInnovationInfo.reasonNotToolUrl"));
             action.getInvalidFields().put("input-innovation.projectInnovationInfo.reasonNotToolUrl",
               InvalidFieldsMessages.EMPTYFIELD);

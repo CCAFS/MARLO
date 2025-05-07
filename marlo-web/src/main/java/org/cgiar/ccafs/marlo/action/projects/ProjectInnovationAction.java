@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationNatureManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOptionsManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
@@ -149,6 +150,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationNature;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndOptions;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
@@ -282,6 +284,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ImpactAreaScoreManager impactAreaScoreManager;
   private OrganizationRoleManager organizationRoleManager;
   private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
+  private RepIndOptionsManager repIndOptionsManager;
 
   // Variables
   private long projectID;
@@ -348,6 +351,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
   private List<OrganizationRole> organizationRoles;
+  private List<RepIndOptions> optionList;
   private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
@@ -401,7 +405,8 @@ public class ProjectInnovationAction extends BaseAction {
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
     OrganizationRoleManager organizationRoleManager,
-    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager) {
+    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager,
+    RepIndOptionsManager repIndOptionsManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -476,6 +481,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.impactAreaScoreManager = impactAreaScoreManager;
     this.organizationRoleManager = organizationRoleManager;
     this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
+    this.repIndOptionsManager = repIndOptionsManager;
   }
 
   /**
@@ -711,6 +717,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Project> getMyProjects() {
     return myProjects;
+  }
+
+  public List<RepIndOptions> getOptionList() {
+    return optionList;
   }
 
   public List<OrganizationRole> getOrganizationRoles() {
@@ -1454,6 +1464,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
         this.organizationRoles = this.organizationRoleManager.findAll();
+        this.optionList = this.repIndOptionsManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());
@@ -2494,6 +2505,7 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Project Innovation Alliance Levers
    * 
@@ -2581,7 +2593,6 @@ public class ProjectInnovationAction extends BaseAction {
       Log.error("Error saving alliance levers " + e);
     }
   }
-
 
   /**
    * Save Project Innovation Alliance Organizations
@@ -4063,6 +4074,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setOptionList(List<RepIndOptions> optionList) {
+    this.optionList = optionList;
   }
 
   public void setOrganizationRoles(List<OrganizationRole> organizationRoles) {
