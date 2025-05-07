@@ -170,7 +170,7 @@
             <column name="knowledge_results_narrative" sql-type="TEXT" />
         </property>
         <property name="hasKnowledgePotential" type="java.lang.Boolean">
-            <column name="has_knowledge_potential" not-null="true" />
+            <column name="has_knowledge_potential_id" not-null="true" />
         </property>
         <property name="reasonKnowledgePotential" type="string">
             <column name="reason_knowledge_potential" sql-type="TEXT" />
