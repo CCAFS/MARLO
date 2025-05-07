@@ -671,20 +671,20 @@
       <div class="col-md-12">
         [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
         [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
-        [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential)! /]    
+        [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]    
 
         <div class="col-md-1">
-          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes" value="1" checked=(hasKnowledgePotential == 1) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
+        </div>
+        <div class="col-md-3">
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yesW" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes with adaptations" value="2" checked=(hasKnowledgePotential == 2) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
         </div>
         <div class="col-md-1">
-          [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??) &&(!hasKnowledgePotential)) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
-        <div class="col-md-12 block-yes-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential))?then('block','none')};">
+        <div class="col-md-12 block-w-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential == '2'))?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
-        </div>
-        <div class="col-md-12 block-no-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(!hasKnowledgePotential))?then('block','none')};">
-          [@customForm.textArea name="${customName}.projectInnovationInfo.reasonNotKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonNoProvided" helpIcon=false className="limitWords-500" required=(editable) editable=editable /] 
         </div>
       </div>
       [#-- knowledge support the outreach --]

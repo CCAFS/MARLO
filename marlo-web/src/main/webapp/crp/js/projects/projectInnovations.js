@@ -274,6 +274,16 @@ function attachEvents() {
 
   })
 
+  $('input[name="innovation.projectInnovationInfo.hasKnowledgePotential.id"]').on('change', function() {
+    var selected = this.value;
+    console.log(selected);
+    if(selected == 2) {
+      $('.block-w-hasKnowledgePotential').slideDown();
+    } else {
+      $('.block-w-hasKnowledgePotential').slideUp();
+    }
+  });
+
   //On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
