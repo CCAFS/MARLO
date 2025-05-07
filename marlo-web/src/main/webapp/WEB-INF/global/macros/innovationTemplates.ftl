@@ -654,7 +654,7 @@
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.technicalExcellence" /]:
           </label>
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.technicalExcellence" id="${customName}.projectInnovationInfo.technicalExcellence" label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
           [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
           [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
 
