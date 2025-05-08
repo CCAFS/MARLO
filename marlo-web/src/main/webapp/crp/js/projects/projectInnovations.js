@@ -59,6 +59,19 @@ $(document).ready(function() {
   //init partners methods
   deliverablePartnersModule.init();
 
+  // Run initial check
+  dynamicStatusCheckedForEvidences();
+
+  // Listen for changes to impact area scores
+  $('input[name^="innovation.projectInnovationInfo"][name$=".id"]').on("change", function() {
+    dynamicStatusCheckedForEvidences();
+  });
+  
+  // Listen for changes to readiness scale
+  $('input[name="innovation.projectInnovationInfo.readinessScale"]').on("change", function() {
+    dynamicStatusCheckedForEvidences();
+  });
+
   feedbackAutoImplementation();
 });
 
@@ -1001,4 +1014,58 @@ function dynamicMarginToSelectedRender(select){
 
   }
 
+}
+
+function dynamicStatusCheckedForEvidences() {
+  // Define impact areas to check
+  const impactAreas = [
+    { name: "genderScore", displayName: "Gender equality" },
+    { name: "climateChangeScore", displayName: "Climate change" },
+    { name: "foodSecurityScore", displayName: "Food security" },
+    { name: "environmentalScore", displayName: "Environmental health" },
+    { name: "povertyScore", displayName: "Poverty reduction" }
+  ];
+  
+  // Initialize messages array
+  const messages = [];
+  
+  // Check for score of 2 in any impact area
+  impactAreas.forEach(area => {
+    const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
+    if (scoreElement.length > 0 && scoreElement.val() == 3) {
+      messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
+    }
+  });
+  
+  // Check the innovation readiness scale value
+  const readinessElement = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked');
+  if (readinessElement.length > 0) {
+    const readinessValue = parseInt(readinessElement.val());
+    if (readinessValue > 2) {
+      messages.push(`Provide at least one evidence for innovation readiness level.`);
+    }
+  }
+  
+  // Update the status label content
+  const statusLabel = $(".statusEvidenceInImpactArea");
+  const contentElement = statusLabel.find(".contentInformation");
+
+  
+  if (messages.length > 0) {
+    // Show label with message list
+    statusLabel.show();
+    
+    // Create list if multiple messages, otherwise show single message
+    if (messages.length > 1) {
+      contentElement.html("<ul style='margin: 5px 0; padding-left: 20px;'>" + 
+                         messages.map(msg => `<li>${msg}</li>`).join("") + 
+                         "</ul>");
+    } else {
+      contentElement.html(`<p>${messages[0]}</p>`);
+    }
+    
+  } else {
+    // Hide the label when no conditions are met
+    statusLabel.hide();
+  }
 }
