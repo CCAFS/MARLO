@@ -984,7 +984,7 @@
       </div>
       <div class="col-md-6">
         <div class="col-md-12">
-          [@customForm.input name="${customName}.number" value=(element.number) className="targetValueNumber" type="number" required=false editable=true i18nkey="projectInnovations.anticipatedUsers.organizations.number" /]
+          [@customForm.input name="${customName}.number" className="targetValueNumber" type="number" required=false editable=true i18nkey="projectInnovations.anticipatedUsers.organizations.number" /]
         </div>
       </div>
     </div>
