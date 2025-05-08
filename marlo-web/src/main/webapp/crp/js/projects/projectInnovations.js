@@ -72,6 +72,17 @@ $(document).ready(function() {
     dynamicStatusCheckedForEvidences();
   });
 
+  // Update status when evidence checkboxes change
+  $('.referenceListReadiness').on('change', 'input[type="checkbox"]', function() {
+    dynamicStatusCheckedForEvidences();
+  });
+  
+  // Also run when evidence items are added or removed
+  $('.addButtonReferenceReadiness, .removeButtonReferenceReadiness').on('click', function() {
+    // Small delay to ensure DOM is updated
+    setTimeout(dynamicStatusCheckedForEvidences, 100);
+  });
+
   feedbackAutoImplementation();
 });
 
@@ -1019,31 +1030,72 @@ function dynamicMarginToSelectedRender(select){
 function dynamicStatusCheckedForEvidences() {
   // Define impact areas to check
   const impactAreas = [
-    { name: "genderScore", displayName: "Gender equality" },
-    { name: "climateChangeScore", displayName: "Climate change" },
-    { name: "foodSecurityScore", displayName: "Food security" },
-    { name: "environmentalScore", displayName: "Environmental health" },
-    { name: "povertyScore", displayName: "Poverty reduction" }
+    { name: "genderScore", displayName: "Gender equality", displayReference: "gender" },
+    { name: "climateChangeScore", displayName: "Climate change", displayReference: "climateChange" },
+    { name: "foodSecurityScore", displayName: "Food security", displayReference: "nutrition" },
+    { name: "environmentalScore", displayName: "Environmental health", displayReference: "environmental" },
+    { name: "povertyScore", displayName: "Poverty reduction", displayReference: "poverty" },
   ];
   
   // Initialize messages array
   const messages = [];
+
+  // Track which impact areas need evidence
+  const areasNeedingEvidence = [];
   
   // Check for score of 2 in any impact area
   impactAreas.forEach(area => {
     const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
     if (scoreElement.length > 0 && scoreElement.val() == 3) {
+      areasNeedingEvidence.push(area.displayReference);
       messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
     }
   });
   
   // Check the innovation readiness scale value
   const readinessElement = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked');
+  let readinessNeedsEvidence = false;
+  
   if (readinessElement.length > 0) {
     const readinessValue = parseInt(readinessElement.val());
     if (readinessValue > 2) {
+      readinessNeedsEvidence = true;
       messages.push(`Provide at least one evidence for innovation readiness level.`);
     }
+  }
+
+  const evidences = $('.referenceListReadiness .evidences')
+
+  if (evidences.length > 0) {
+    evidences.each(function(index, element) {
+      const $element = $(element);
+
+      const $typeCheckboxes = $element.find('input[type="checkbox"]:checked');
+
+      console.log($typeCheckboxes);
+      
+      $typeCheckboxes.each(function() {
+        const checkboxId = $(this).attr('id');
+        
+        // Remove messages for impact areas that have evidence
+        areasNeedingEvidence.forEach((area, index) => {
+          if (checkboxId && checkboxId.includes(area)) {
+            // Remove this message as evidence is provided
+            areasNeedingEvidence.splice(index, 1);
+            messages.splice(index, 1);
+          }
+        });
+        
+        // Remove readiness message if evidence is provided
+        if (readinessNeedsEvidence && checkboxId && checkboxId.includes('innovationReadiness')) {
+          // Find and remove the readiness message
+          const readinessIndex = messages.findIndex(msg => msg.includes('innovation readiness level.'));
+          if (readinessIndex !== -1) {
+            messages.splice(readinessIndex, 1);
+          }
+        }
+      });
+    });
   }
   
   // Update the status label content
