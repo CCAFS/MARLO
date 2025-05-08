@@ -3610,6 +3610,16 @@ button.ipGraph-btn {
 	display: inline-block;
 }
 
+.note--3 {
+	background-color: #fed56610;
+	border-left: 5px solid #fed566;
+}
+
+.note--3 span::before{
+	color: #fed566;
+	font-size: 1.6rem;
+}
+
 #outputs #addOutputBlock {
 	text-align: center;
 	margin-bottom: 30px;
