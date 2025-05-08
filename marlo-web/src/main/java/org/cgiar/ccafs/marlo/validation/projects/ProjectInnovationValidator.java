@@ -775,7 +775,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                 action.addMessage("References ");
                 action.getInvalidFields().put("input-innovation.references[" + i + "].gender",
                   InvalidFieldsMessages.EMPTYFIELD);
-                action.getInvalidFields().put("input-innovation.references[" + i + "].climanteChange",
+                action.getInvalidFields().put("input-innovation.references[" + i + "].climateChange",
                   InvalidFieldsMessages.EMPTYFIELD);
                 action.getInvalidFields().put("input-innovation.references[" + i + "].nutrition",
                   InvalidFieldsMessages.EMPTYFIELD);
