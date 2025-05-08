@@ -856,8 +856,9 @@
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true twoPoints=false /]
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true twoPoints=false classNameLabel="blueLightColor" isNoteCss="note" /]
         <br>
+        <label class="note--2 note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-question-sign"></span> <p>Problem available</p></label>
         <div class="col-md-12">
           <div class="referenceBlock">
             <div class="referenceListReadiness">

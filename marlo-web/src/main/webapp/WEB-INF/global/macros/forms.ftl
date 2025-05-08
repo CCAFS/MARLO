@@ -667,7 +667,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false]
+[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false isNoteCss=""]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -676,7 +676,8 @@
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
       [#if isNote]
-        <div class="note--2 note--2__margin-none col-md-12"><p>${nameValue}</p></div>
+        [#local cssInfo = (isNoteCss?has_content)?string(isNoteCss,'note--2  note--2__margin-none col-md-12') /]
+        <div class="${cssInfo}"><p>${nameValue}</p></div>
       [#else]
         <br /><i class="helpLabel">${nameValue}</i>
       [/#if]
@@ -1129,9 +1130,9 @@
     
 [/#macro]
 
-[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false twoPoints=true className="" classNameLabel="" ]
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false twoPoints=true className="" classNameLabel="" isNoteCss="" ]
   <div class="feedback-flex-items col-md-12 ${className}">
-    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]${twoPoints?then(':','')}[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon /]</label>
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]${twoPoints?then(':','')}[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon isNoteCss=isNoteCss /]</label>
     <div class="commentNumberContainer">
       <div class="numberOfCommentsBubble">
         <p></p>
