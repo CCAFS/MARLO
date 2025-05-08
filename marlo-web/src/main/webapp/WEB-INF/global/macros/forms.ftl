@@ -567,6 +567,25 @@
   [/#if]
 [/#macro]
 
+[#macro likertScale id name label="" i18nkey="" scaleNumber=5 disabled=false editable=true required=false value="" checked=true cssClass="" cssClassLabel="" inline=true]
+  <div class="feedback-flex-items"></div>
+  <div class="likertScale col-md-12 ${cssClass}">
+    <label class="col-md-12">
+      [@s.text name=label /][@req required=required && editable /]
+    </label>
+    [#if editable]
+      [#list 1..scaleNumber as i]
+        [#local isChecked = (value?has_content && value == i)!false /]
+        <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
+          [@radioFlat id="${id}-${i}" name="${name}" i18nkey=i label=i disabled="${disabled?string}" editable=editable value="${i}" checked=isChecked canComment=false inline=true /]
+        </div> 
+      [/#list]
+    [#else]
+
+    [/#if]
+  </div>
+[/#macro]
+
 [#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
@@ -634,7 +653,7 @@
   </div>
 [/#macro]
 
-[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false]
+[#macro helpLabel name="" paramText="" showIcon=true isNote=false editable=true helpMore=false isNoteCss=""]
   [#local nameValue][@s.text name="${name}"][@s.param]${paramText}[/@s.param][/@s.text][/#local]
   [#--  Help Text --]
   [#if nameValue?has_content && editable]
@@ -643,7 +662,8 @@
       <span class="hint" style="display:none" title="${nameValue}"> [HINT] </span>
     [#else]
       [#if isNote]
-        <div class="note--2 note--2__margin-none col-md-12"><p>${nameValue}</p></div>
+        [#local cssInfo = (isNoteCss?has_content)?string(isNoteCss,'note--2  note--2__margin-none col-md-12') /]
+        <div class="${cssInfo}"><p>${nameValue}</p></div>
       [#else]
         <br /><i class="helpLabel">${nameValue}</i>
       [/#if]
@@ -1046,6 +1066,7 @@
       </div>
     </div>
     
+    [#local isGender = (element.gender?has_content && element.gender?c == "true") /]
     [#local isClimateChange = (element.climateChange?has_content && element.climateChange?c == "true") /]
     [#local isNutrition = (element.nutrition?has_content && element.nutrition?c == "true") /]
     [#local isEnvironmental = (element.environmental?has_content && element.environmental?c == "true") /]
@@ -1056,36 +1077,30 @@
       <label class="col-md-12" style="margin-top: 15px;">
         [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
       </label>
-      <div class="col-md-10 row">
-        <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender"
-            label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
+      <div class="col-md-12">
+        <div style="width: 12%;" class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender" label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
         </div>
         <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange"
-            label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
+          [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange" label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
         </div>
         <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition"
-            label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
+          [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition" label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
         </div>
         <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental"
-            label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
+          [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental" label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
         </div>
         <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty"
-            label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
+          [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty" label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
         </div>
-        <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness"
-            label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
+        <div style="width: 20%;" class="col-md-2">
+          [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness" label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
         </div>
       </div>
     </div>
     
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]         
+      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=true editable=editable isMainTitle=false isWidthFull=true /]         
     </div>
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]
@@ -1095,9 +1110,9 @@
     
 [/#macro]
 
-[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false className="" classNameLabel="" ]
+[#macro labelText name text="" helpText="" required=false isMainTitle=false isNote=false showIcon=false twoPoints=true className="" classNameLabel="" isNoteCss="" ]
   <div class="feedback-flex-items col-md-12 ${className}">
-    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]:[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon /]</label>
+    <label for="${name}" class="${isMainTitle?string('label--2','')} ${classNameLabel}">[@s.text name=text /]${twoPoints?then(':','')}[@req required=required /] [@helpLabel name="${helpText}" isNote=isNote showIcon=showIcon isNoteCss=isNoteCss /]</label>
     <div class="commentNumberContainer">
       <div class="numberOfCommentsBubble">
         <p></p>

@@ -169,9 +169,7 @@
         <property name="knowledgeResultsNarrative" type="string">
             <column name="knowledge_results_narrative" sql-type="TEXT" />
         </property>
-        <property name="hasKnowledgePotential" type="java.lang.Boolean">
-            <column name="has_knowledge_potential" not-null="true" />
-        </property>
+
         <property name="reasonKnowledgePotential" type="string">
             <column name="reason_knowledge_potential" sql-type="TEXT" />
         </property>
@@ -193,27 +191,35 @@
         <property name="areUsersDetermined" type="java.lang.Boolean">
             <column name="are_users_determined" not-null="true" />
         </property>
-        <property name="cheaperAlternatives" type="boolean">
-            <column name="is_cheaper_alternatives" not-null="true" />
+        <property name="cheaperAlternatives" type="java.lang.Integer">
+            <column name="is_cheaper_alternatives" />
         </property>
-        <property name="simplerUse" type="boolean">
-            <column name="is_simpler_use" not-null="true" />
+        <property name="simplerUse" type="java.lang.Integer">
+            <column name="is_simpler_use" />
         </property>
-        <property name="performBetter" type="boolean">
-            <column name="is_perform_better" not-null="true" />
+        <property name="performBetter" type="java.lang.Integer">
+            <column name="is_perform_better" />
         </property>
-        <property name="innovationDesirable" type="boolean">
-            <column name="is_innovation_desirable" not-null="true" />
+        <property name="innovationDesirable" type="java.lang.Integer">
+            <column name="is_innovation_desirable" />
         </property>
-        <property name="innovationCommercially" type="boolean">
-            <column name="is_innovation_commercially" not-null="true" />
+        <property name="innovationCommercially" type="java.lang.Integer">
+            <column name="is_innovation_commercially" />
         </property>
-        <property name="innovationSupported" type="boolean">
-            <column name="is_innovation_supported" not-null="true" />
+        <property name="innovationSupported" type="java.lang.Integer">
+            <column name="is_innovation_supported" />
         </property>
-        <property name="evidenceUptake" type="boolean">
-            <column name="is_evidence_uptake" not-null="true" />
+        <property name="evidenceUptake" type="java.lang.Integer">
+            <column name="is_evidence_uptake"/>
         </property>
+        <property name="foreseeBarriers" type="java.lang.Boolean">
+            <column name="is_foresee_barriers " not-null="true" />
+        </property>
+        <many-to-one name="hasKnowledgePotential"
+            class="org.cgiar.ccafs.marlo.data.model.RepIndOptions"
+            fetch="select">
+            <column name="has_knowledge_potential_id" />
+        </many-to-one>
         <many-to-one name="genderScore"
             class="org.cgiar.ccafs.marlo.data.model.ImpactAreaScore"
             fetch="select">

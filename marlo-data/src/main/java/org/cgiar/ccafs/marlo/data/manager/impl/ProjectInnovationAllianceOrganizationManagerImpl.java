@@ -175,6 +175,7 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
         .setOrganizationName(projectInnovationAllianceOrganization.getOrganizationName());
       projectInnovationAllianceOrganizationAdd
         .setScalingPartner(projectInnovationAllianceOrganization.getScalingPartner());
+      projectInnovationAllianceOrganizationAdd.setNumber(projectInnovationAllianceOrganization.getNumber());
       projectInnovationAllianceOrganizationAdd
         .setProjectInnovation(projectInnovationAllianceOrganization.getProjectInnovation());
       projectInnovationAllianceOrganizationAdd.setPhase(phase);

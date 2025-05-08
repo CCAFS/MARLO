@@ -77,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationNatureManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOptionsManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
@@ -149,6 +150,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationNature;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndOptions;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
@@ -282,6 +284,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ImpactAreaScoreManager impactAreaScoreManager;
   private OrganizationRoleManager organizationRoleManager;
   private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
+  private RepIndOptionsManager repIndOptionsManager;
 
   // Variables
   private long projectID;
@@ -348,6 +351,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
   private List<OrganizationRole> organizationRoles;
+  private List<RepIndOptions> optionList;
   private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
@@ -401,7 +405,8 @@ public class ProjectInnovationAction extends BaseAction {
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
     OrganizationRoleManager organizationRoleManager,
-    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager) {
+    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager,
+    RepIndOptionsManager repIndOptionsManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -476,6 +481,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.impactAreaScoreManager = impactAreaScoreManager;
     this.organizationRoleManager = organizationRoleManager;
     this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
+    this.repIndOptionsManager = repIndOptionsManager;
   }
 
   /**
@@ -711,6 +717,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Project> getMyProjects() {
     return myProjects;
+  }
+
+  public List<RepIndOptions> getOptionList() {
+    return optionList;
   }
 
   public List<OrganizationRole> getOrganizationRoles() {
@@ -1454,6 +1464,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
         this.organizationRoles = this.organizationRoleManager.findAll();
+        this.optionList = this.repIndOptionsManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());
@@ -2127,6 +2138,7 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
         innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
         innovation.getProjectInnovationInfo().setPovertyScore(null);
+        innovation.getProjectInnovationInfo().setHasKnowledgePotential(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
@@ -2347,16 +2359,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       // Clean text fields according to the boolean selection
-      // Has knowledge potential true
-      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
-        innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(null);
-      }
-      // Has knowledge potential false
-      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
-        innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
-      }
+
       // Has tool URL true
       if (innovation.getProjectInnovationInfo().getHasToolUrl() != null
         && innovation.getProjectInnovationInfo().getHasToolUrl()) {
@@ -2480,6 +2483,10 @@ public class ProjectInnovationAction extends BaseAction {
           innovationActorSave.setActor(innovationActor.getActor());
           innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
           innovationActorSave.setProjectInnovation(projectInnovation);
+          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
           innovationActorSave.setPhase(phase);
 
           projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
@@ -2493,6 +2500,7 @@ public class ProjectInnovationAction extends BaseAction {
       System.out.println("Error saving actors " + e);
     }
   }
+
 
   /**
    * Save Project Innovation Alliance Levers
@@ -2582,7 +2590,6 @@ public class ProjectInnovationAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Project Innovation Alliance Organizations
    * 
@@ -2650,6 +2657,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
           innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
           innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+          innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
           innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
           innovationAllianceOrganizationSave.setPhase(phase);
 
@@ -4063,6 +4071,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setOptionList(List<RepIndOptions> optionList) {
+    this.optionList = optionList;
   }
 
   public void setOrganizationRoles(List<OrganizationRole> organizationRoles) {

@@ -126,7 +126,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String knowledgeResultsNarrative;
   @Expose
-  private Boolean hasKnowledgePotential;
+  private RepIndOptions hasKnowledgePotential;
   @Expose
   private String reasonNotKnowledgePotential;
   @Expose
@@ -156,19 +156,21 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private ImpactAreaScore povertyScore;
   @Expose
-  private Boolean cheaperAlternatives;
+  private Integer cheaperAlternatives;
   @Expose
-  private Boolean simplerUse;
+  private Integer simplerUse;
   @Expose
-  private Boolean performBetter;
+  private Integer performBetter;
   @Expose
-  private Boolean innovationDesirable;
+  private Integer innovationDesirable;
   @Expose
-  private Boolean innovationCommercially;
+  private Integer innovationCommercially;
   @Expose
-  private Boolean innovationSupported;
+  private Integer innovationSupported;
   @Expose
-  private Boolean evidenceUptake;
+  private Integer evidenceUptake;
+  @Expose
+  private Boolean foreseeBarriers;
 
   public ProjectInnovationInfo() {
   }
@@ -227,10 +229,9 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return beneficiariesNarrative;
   }
 
-  public Boolean getCheaperAlternatives() {
+  public Integer getCheaperAlternatives() {
     return cheaperAlternatives;
   }
-
 
   public Boolean getClearLead() {
     return clearLead;
@@ -252,12 +253,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return evidenceLink;
   }
 
-  public Boolean getEvidenceUptake() {
+  public Integer getEvidenceUptake() {
     return evidenceUptake;
   }
 
   public ImpactAreaScore getFoodSecurityScore() {
     return foodSecurityScore;
+  }
+
+  public Boolean getForeseeBarriers() {
+    return foreseeBarriers;
   }
 
   public String getGenderExplaniation() {
@@ -288,7 +293,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasKnowledgeMethodsAndTools;
   }
 
-  public Boolean getHasKnowledgePotential() {
+
+  public RepIndOptions getHasKnowledgePotential() {
     return hasKnowledgePotential;
   }
 
@@ -312,11 +318,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationBundle;
   }
 
-  public Boolean getInnovationCommercially() {
+  public Integer getInnovationCommercially() {
     return innovationCommercially;
   }
 
-  public Boolean getInnovationDesirable() {
+  public Integer getInnovationDesirable() {
     return innovationDesirable;
   }
 
@@ -328,7 +334,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return innovationNumber;
   }
 
-  public Boolean getInnovationSupported() {
+  public Integer getInnovationSupported() {
     return innovationSupported;
   }
 
@@ -363,10 +369,12 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -395,12 +403,11 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherIntellectualProperty;
   }
 
-
   public String getOtherToolNarrative() {
     return otherToolNarrative;
   }
 
-  public Boolean getPerformBetter() {
+  public Integer getPerformBetter() {
     return performBetter;
   }
 
@@ -476,7 +483,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return shortTitle;
   }
 
-  public Boolean getSimplerUse() {
+  public Integer getSimplerUse() {
     return simplerUse;
   }
 
@@ -517,7 +524,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.beneficiariesNarrative = beneficiariesNarrative;
   }
 
-  public void setCheaperAlternatives(Boolean cheaperAlternatives) {
+  public void setCheaperAlternatives(Integer cheaperAlternatives) {
     this.cheaperAlternatives = cheaperAlternatives;
   }
 
@@ -541,12 +548,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.evidenceLink = evidenceLink;
   }
 
-  public void setEvidenceUptake(Boolean evidenceUptake) {
+  public void setEvidenceUptake(Integer evidenceUptake) {
     this.evidenceUptake = evidenceUptake;
   }
 
   public void setFoodSecurityScore(ImpactAreaScore foodSecurityScore) {
     this.foodSecurityScore = foodSecurityScore;
+  }
+
+  public void setForeseeBarriers(Boolean foreseeBarriers) {
+    this.foreseeBarriers = foreseeBarriers;
   }
 
   public void setGenderExplaniation(String genderExplaniation) {
@@ -577,7 +588,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.hasKnowledgeMethodsAndTools = hasKnowledgeMethodsAndTools;
   }
 
-  public void setHasKnowledgePotential(Boolean hasKnowledgePotential) {
+  public void setHasKnowledgePotential(RepIndOptions hasKnowledgePotential) {
     this.hasKnowledgePotential = hasKnowledgePotential;
   }
 
@@ -601,11 +612,12 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationBundle = innovationBundle;
   }
 
-  public void setInnovationCommercially(Boolean innovationCommercially) {
+  public void setInnovationCommercially(Integer innovationCommercially) {
     this.innovationCommercially = innovationCommercially;
   }
 
-  public void setInnovationDesirable(Boolean innovationDesirable) {
+
+  public void setInnovationDesirable(Integer innovationDesirable) {
     this.innovationDesirable = innovationDesirable;
   }
 
@@ -617,7 +629,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.innovationNumber = innovationNumber;
   }
 
-  public void setInnovationSupported(Boolean innovationSupported) {
+  public void setInnovationSupported(Integer innovationSupported) {
     this.innovationSupported = innovationSupported;
   }
 
@@ -674,7 +686,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.otherToolNarrative = otherToolNarrative;
   }
 
-  public void setPerformBetter(Boolean performBetter) {
+  public void setPerformBetter(Integer performBetter) {
     this.performBetter = performBetter;
   }
 
@@ -694,45 +706,56 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.projectInnovation = projectInnovation;
   }
 
+
   public void setReadinessReason(String readinessReason) {
     this.readinessReason = readinessReason;
   }
+
 
   public void setReadinessScale(Integer readinessScale) {
     this.readinessScale = readinessScale;
   }
 
+
   public void setReasonKnowledgePotential(String reasonKnowledgePotential) {
     this.reasonKnowledgePotential = reasonKnowledgePotential;
   }
+
 
   public void setReasonNotCgiarContribution(String reasonNotCgiarContribution) {
     this.reasonNotCgiarContribution = reasonNotCgiarContribution;
   }
 
+
   public void setReasonNotKnowledgePotential(String reasonNotKnowledgePotential) {
     this.reasonNotKnowledgePotential = reasonNotKnowledgePotential;
   }
+
 
   public void setReasonNotToolUrl(String reasonNotToolUrl) {
     this.reasonNotToolUrl = reasonNotToolUrl;
   }
 
+
   public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
+
 
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
 
+
   public void setRepIndInnovationNature(RepIndInnovationNature repIndInnovationNature) {
     this.repIndInnovationNature = repIndInnovationNature;
   }
 
+
   public void setRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
     this.repIndInnovationType = repIndInnovationType;
   }
+
 
   public void setRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership) {
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -750,7 +773,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.shortTitle = shortTitle;
   }
 
-  public void setSimplerUse(Boolean simplerUse) {
+  public void setSimplerUse(Integer simplerUse) {
     this.simplerUse = simplerUse;
   }
 
@@ -854,6 +877,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setInnovationCommercially(projectInnovationInfoUpdate.getInnovationCommercially());
     this.setInnovationSupported(projectInnovationInfoUpdate.getInnovationSupported());
     this.setEvidenceUptake(projectInnovationInfoUpdate.getEvidenceUptake());
+    this.setForeseeBarriers(projectInnovationInfoUpdate.getForeseeBarriers());
   }
 }
 

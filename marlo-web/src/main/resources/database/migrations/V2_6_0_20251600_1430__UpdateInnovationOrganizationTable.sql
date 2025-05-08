@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_alliance_organizations ADD number int NULL;

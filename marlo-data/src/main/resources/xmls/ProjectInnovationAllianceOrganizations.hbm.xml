@@ -20,6 +20,9 @@
         <property name="scalingPartner" type="java.lang.Boolean">
             <column name="is_scaling_partner" />
         </property>
+        <property name="number" type="java.lang.Integer">
+            <column name="number" />
+        </property>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

@@ -36,6 +36,8 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
   private Boolean scalingPartner;
   @Expose
   private Institution institution;
+  @Expose
+  private Integer number;
 
   public ProjectInnovationAllianceOrganization() {
   }
@@ -75,6 +77,10 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
     return sb.toString();
   }
 
+  public Integer getNumber() {
+    return number;
+  }
+
   public String getOrganizationName() {
     return organizationName;
   }
@@ -97,6 +103,10 @@ public class ProjectInnovationAllianceOrganization extends MarloAuditableEntity
 
   public void setInstitutionType(InstitutionType institutionType) {
     this.institutionType = institutionType;
+  }
+
+  public void setNumber(Integer number) {
+    this.number = number;
   }
 
   public void setOrganizationName(String organizationName) {

@@ -820,7 +820,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           cgiarInnovations = objectMapper.writeValueAsString(innovationList);
         } catch (JsonProcessingException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
 
@@ -944,29 +943,30 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         // Quantifications
         final StringBuilder quantification = new StringBuilder();
         if (projectExpectedStudy.getProjectExpectedStudyQuantifications() != null) {
-          projectExpectedStudy
-            .setQuantifications(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          try {
+            projectExpectedStudy
+              .setQuantifications(new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyQuantifications().stream()
+                .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
 
-          final List<QuantificationDTO> quantificationsList = new ArrayList<>();
+            final List<QuantificationDTO> quantificationsList = new ArrayList<>();
 
-          if (projectExpectedStudy.getQuantifications() != null) {
-            for (final ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy
-              .getQuantifications()) {
-              if ((quantificationItem != null && quantificationItem.getQuantificationType() != null
-                && quantificationItem.getQuantificationType().getName() != null)
-                || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
-                || (quantificationItem.getComments() != null)) {
-                quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
-                  quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
-                  quantificationItem.getComments()));
+            if (projectExpectedStudy.getQuantifications() != null) {
+              for (final ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy
+                .getQuantifications()) {
+                if (quantificationItem != null && ((quantificationItem.getQuantificationType() != null
+                  && quantificationItem.getQuantificationType().getName() != null)
+                  || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
+                  || (quantificationItem.getComments() != null))) {
+                  quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
+                    quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
+                    quantificationItem.getComments()));
+                }
               }
             }
-          }
 
-          // Convert list to JSON
-          objectMapper = new ObjectMapper();
-          try {
+            // Convert list to JSON
+            objectMapper = new ObjectMapper();
+
             if (quantificationsList != null) {
               String quantificationsJson = objectMapper.writeValueAsString(quantificationsList);
               // Append properly formatted JSON to the existing string
@@ -1035,7 +1035,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Covid Analysis
         if (projectExpectedStudyInfo.getHasCovidAnalysis() != null) {
-          if (projectExpectedStudyInfo.getHasCovidAnalysis()) {
+          if (Boolean.TRUE.equals(projectExpectedStudyInfo.getHasCovidAnalysis())) {
             covidAnalysis = "Yes";
           } else {
             covidAnalysis = "No";
@@ -1076,8 +1076,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         /*
          * Generate link url from parameters
          */
-        if ((projectExpectedStudyInfo.getIsPublic() != null) && projectExpectedStudyInfo.getIsPublic()
-          && (projectExpectedStudyInfo.getPhase() != null) && (this.getBaseUrl() != null)) {
+        if (Boolean.TRUE.equals((projectExpectedStudyInfo.getIsPublic() != null)
+          && projectExpectedStudyInfo.getIsPublic() && (projectExpectedStudyInfo.getPhase() != null))
+          && (this.getBaseUrl() != null)) {
           link = this.getBaseUrl() + "/projects/" + this.getCrpSession() + "/studySummary.do?studyID="
             + projectExpectedStudyInfo.getProjectExpectedStudy().getId() + "&cycle=Reporting&year=" + phase.getYear();
         }
@@ -1161,7 +1162,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 if (sdgAllianceLever.getsDGContribution() != null
                   && sdgAllianceLever.getsDGContribution().getName() != null) {
 
-                  if (sdgAllianceLever.getIsPrimary()) {
+                  if (Boolean.TRUE.equals(sdgAllianceLever.getIsPrimary())) {
                     primarySDGSet.add(sdgAllianceLever.getsDGContribution().getCode() + " "
                       + sdgAllianceLever.getsDGContribution().getName());
                   } else {
@@ -1202,7 +1203,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Has CGIAR Contribution
         if (projectExpectedStudyInfo.getHasCgiarContribution() != null) {
-          hasCGIARContribution = projectExpectedStudyInfo.getHasCgiarContribution() ? "Yes" : "No";
+          hasCGIARContribution = Boolean.TRUE.equals(projectExpectedStudyInfo.getHasCgiarContribution()) ? "Yes" : "No";
         }
 
         // Impact Area
