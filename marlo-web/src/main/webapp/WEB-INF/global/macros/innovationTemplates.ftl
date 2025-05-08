@@ -898,11 +898,11 @@
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" value=((element.id)?string)!"" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
-    <div class="col-md-12">
+    <div class="col-md-12 select--flex padding-bottom-1">
       <div class="col-md-6">
         [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
       </div>
-      <div class="col-md-6 checkbox-sexAgeNotApply">
+      <div class="col-md-6 checkbox-sexAgeNotApply align-content-end">
         [@customForm.checkBoxFlat id="${customName}.sexAgeNotApply" name="${customName}.sexAgeNotApply" label="projectInnovations.anticipatedUsers.actors.sexAgeNotApply" value="true" checked=sexAgeNotApply editable=true cssClass="sexAgeNotApply" /]
       </div>
     </div>
@@ -913,20 +913,20 @@
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
         [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]
-        <div class="col-md-6 innerOptions">
-          <div class="col-md-7">
+        <div class="col-md-5 innerOptions select--flex">
+          <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isWomanWithYouth editable=true /]
           </div>
-          <div class="col-md-5">
-            [@customForm.input name="${customName}.womenYouthNumber" value=(element.womenYouthNumber) className="number" required=false editable=true showTitle=false /]
+          <div class="col-md-6 align-content-end">
+            [@customForm.input name="${customName}.womenYouthNumber" value=(element.womenYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
           </div>
         </div>
-        <div class="col-md-6 innerOptions">
-          <div class="col-md-7">
+        <div class="col-md-7 innerOptions select--flex">
+          <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isWomanNotYouth editable=true /]
           </div>
-          <div class="col-md-5">
-            [@customForm.input name="${customName}.womenNotYouthNumber" value=(element.womenNotYouthNumber) className="number" required=false editable=true showTitle=false /] 
+          <div class="col-md-6 align-content-end">
+            [@customForm.input name="${customName}.womenNonYouthNumber" value=(element.womenNonYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /] 
           </div>
         </div>
       </div>
@@ -934,20 +934,20 @@
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [#local isMenWithYouth = ((element.menYouth??) && (element.menYouth == true)) /] 
         [#local isMenNotYouth = ((element.menNotYouth??) && (element.menNotYouth == true)) /]
-        <div class="col-md-6 innerOptions">
-          <div class="col-md-7">
+        <div class="col-md-5 innerOptions select--flex">
+          <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isMenWithYouth editable=true /]
           </div>
-          <div class="col-md-5">
-            [@customForm.input name="${customName}.menYouthNumber" value=(element.menYouthNumber) className="number" required=false editable=true showTitle=false /]
+          <div class="col-md-6 align-content-end">
+            [@customForm.input name="${customName}.menYouthNumber" value=(element.menYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
           </div> 
         </div>
-        <div class="col-md-6 innerOptions">
-          <div class="col-md-7">
+        <div class="col-md-7 innerOptions select--flex">
+          <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isMenNotYouth editable=true /]
           </div>
-          <div class="col-md-5">
-            [@customForm.input name="${customName}.menNotYouthNumber" value=(element.menNotYouthNumber) className="number" required=false editable=true showTitle=false /]
+          <div class="col-md-6 align-content-end">
+            [@customForm.input name="${customName}.menNonYouthNumber" value=(element.menNonYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
           </div>
         </div>
       </div>
@@ -978,14 +978,20 @@
     --]
     [#-- Input Organization name --]
     <div class="col-md-12">
-      <label>[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</label>
-      [@customForm.select name="${customName}.institution.id" showTitle=false  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /]
+      <div class="col-md-6">
+        [@customForm.select name="${customName}.institution.id" label="projectInnovations.anticipatedUsers.organizations.name"  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /]
+      </div>
+      <div class="col-md-6">
+        <div class="col-md-12">
+          [@customForm.input name="${customName}.number" value=(element.number) className="targetValueNumber" type="number" required=false editable=true i18nkey="projectInnovations.anticipatedUsers.organizations.number" /]
+        </div>
+      </div>
     </div>
     [#-- Checkbox - is a co-development --]
-    <div class="col-md-12">
+    [#--      <div class="col-md-12">
       [#local isCoDevelopment = ((element.scalingPartner??) && (element.scalingPartner == true)) /]
       [@customForm.checkBoxFlat id="${customName}.scalingPartner" name="${customName}.scalingPartner" label="projectInnovations.anticipatedUsers.organizations.coDevelopment" value="true" checked=isCoDevelopment editable=true /]
-    </div>
+    </div>  --]
 
     [#-- Remove --]
     [#if editable]<div class="removeElement sm removeIcon removeOrganization ${class}" title="Remove"></div>[/#if]

@@ -366,6 +366,10 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   border-left: none;
 }
 
+.grayBlueBox .innerOptions {
+  padding-left: 0;
+}
+
 .grayBlueBox .innerOptions .col-md-1, 
 .grayBlueBox .innerOptions .col-md-2, 
 .grayBlueBox .innerOptions .col-md-3, 

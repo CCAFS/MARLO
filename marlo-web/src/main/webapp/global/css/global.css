@@ -837,6 +837,27 @@ input.targetValueNumber{
 	border-left: 1px solid #ccc;
 }
 
+.input:has(input[type="number"].targetValueNumber)::after {
+	content: attr(data-targetunit) '#';
+	height: 27px;
+	width: 27px;
+	background-color: #a39e9e1c;
+	position: absolute;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid #ccc;
+}
+
+input[type="number"].targetValueNumber::-webkit-inner-spin-button,
+input[type="number"].targetValueNumber::-webkit-outer-spin-button {
+	appearance: none;
+	-moz-appearance: textfield;
+	-webkit-appearance: none;
+	margin: 0;
+}
+
 .halfPartBlock .checkbox input {
 	width: 15px;
 	/* margin-left: 20px; */
@@ -8404,6 +8425,14 @@ img.qaOptionsComment {
 
 .padding-left-0{
 	padding-left: 0 !important;
+}
+
+.padding-bottom-1{
+	padding-bottom: 1rem !important;
+}
+
+.align-content-end {
+	align-content: end;
 }
 
 
