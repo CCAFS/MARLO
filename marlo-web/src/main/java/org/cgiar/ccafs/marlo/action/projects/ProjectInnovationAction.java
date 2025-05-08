@@ -2483,6 +2483,10 @@ public class ProjectInnovationAction extends BaseAction {
           innovationActorSave.setActor(innovationActor.getActor());
           innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
           innovationActorSave.setProjectInnovation(projectInnovation);
+          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
           innovationActorSave.setPhase(phase);
 
           projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
@@ -2653,6 +2657,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
           innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
           innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+          innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
           innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
           innovationAllianceOrganizationSave.setPhase(phase);
 
