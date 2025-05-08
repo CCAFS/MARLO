@@ -432,7 +432,7 @@ function updateAllianceTab() {
           $('li[role="presentation"]').css('width', "25%");
         }
 
-    }, 1000);
+    }, 100);
 
 }  
 
@@ -588,9 +588,9 @@ function onDisplayNotesInScores() {
   const $valueInput = $(this).val();
 
   if($valueInput == "3") {
-    $(`div.note[name="${$nameInput}"]`).slideDown("slow");
+    $(`div.note[name="${$nameInput}"]`).slideDown();
   } else {
-    $(`div.note[name="${$nameInput}"]`).slideUp(400);
+    $(`div.note[name="${$nameInput}"]`).slideUp();
   }
 }
 
