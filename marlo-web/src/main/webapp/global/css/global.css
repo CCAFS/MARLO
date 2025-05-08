@@ -188,6 +188,11 @@ input.disabled {
 	opacity: 0.6;
 }
 
+a[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;	
+}
+
 .inputSelected {
 	border-radius: 4px;
 	background-color: #f1f1f1 !important;
