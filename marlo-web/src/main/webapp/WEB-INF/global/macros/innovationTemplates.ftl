@@ -919,7 +919,7 @@
             [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isWomanWithYouth editable=true /]
           </div>
           <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenYouthNumber" value=(element.womenYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
+            [@customForm.input name="${customName}.womenYouthNumber"  className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
           </div>
         </div>
         <div class="col-md-7 innerOptions select--flex">
@@ -927,7 +927,7 @@
             [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isWomanNotYouth editable=true /]
           </div>
           <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenNonYouthNumber" value=(element.womenNonYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /] 
+            [@customForm.input name="${customName}.womenNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /] 
           </div>
         </div>
       </div>
@@ -940,7 +940,7 @@
             [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isMenWithYouth editable=true /]
           </div>
           <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.menYouthNumber" value=(element.menYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
+            [@customForm.input name="${customName}.menYouthNumber"  className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
           </div> 
         </div>
         <div class="col-md-7 innerOptions select--flex">
@@ -948,7 +948,7 @@
             [@customForm.checkBoxFlat id="${customName}.menNotYouth" name="${customName}.menNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isMenNotYouth editable=true /]
           </div>
           <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.menNonYouthNumber" value=(element.menNonYouthNumber) className="targetValueNumber" type="number" required=false editable=true showTitle=false /]
+            [@customForm.input name="${customName}.menNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
           </div>
         </div>
       </div>
