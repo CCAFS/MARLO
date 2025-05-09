@@ -106,10 +106,10 @@
               [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle?has_content && innovation.projectInnovationInfo.innovationBundle?c == "true") /]
               <div class="col-md-12">
                 <div class="col-md-3">
-                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
+                  [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
                 <div class="col-md-3">
-                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
+                  [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
               </div>
             </div>
@@ -1049,7 +1049,7 @@
 [#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
   <div class="form-group col-md-12">
     [#local fieldValue = fieldValue!{}]
-    <div class="col-md-6" style="padding-left: 0px;">
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xlg-5 col-xxlg-4" style="padding-left: 0px;">
       <label class="label--2">
         [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
       </label>
@@ -1075,8 +1075,8 @@
         [/#if]
       </div>
     </div>
-    <div class="col-md-6" style="padding-right: 0px;">
-      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')}; font-size: 10px; line-height: 15px;" >
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xlg-7 col-xxlg-8" style="padding-right: 0px;">
+      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
         [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
       </div>
     </div>
