@@ -1354,7 +1354,8 @@ function setGeographicScope(component) {
         placeholder: "Select a country(ies)",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
@@ -1366,10 +1367,12 @@ function setGeographicScope(component) {
         placeholder: "Select a country",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
     }
     $nationalBlock.slideDown();
+    $message.slideDown();
   } else {
     $nationalBlock.slideUp();
   }
@@ -1391,13 +1394,12 @@ function setGeographicScope2(component) {
   var $isGlobal = $value == 1;
   var $isYetToBeDefined = $value == 6;
 
-  if($isGlobal || $isYetToBeDefined) {
+  if($isGlobal || $isYetToBeDefined || $isRegional) {
     $message.slideUp();
   }
 
   if ($isRegional) {
     $regionalBlock.slideDown();
-    $message.slideDown();
   } else {
     $regionalBlock.slideUp();
     // Clean selected region
@@ -1406,12 +1408,18 @@ function setGeographicScope2(component) {
 
   if ($isMultiNational || $isNational || $isSubNational) {
     if ($isMultiNational) {
+
+      if (countries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
+
       $nationalBlock.find("select").select2({
         maximumSelectionLength: 0,
         placeholder: "Select a country(ies)",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
@@ -1423,8 +1431,10 @@ function setGeographicScope2(component) {
         placeholder: "Select a country",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
+
     }
     $nationalBlock.slideDown();
     $message.slideDown();

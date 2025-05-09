@@ -225,11 +225,9 @@
                     [#-- [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /] --]
                   </div>
 
-                  [#if isNational || isRegional]
-                    <div class="geographicScopeMessage">
-                      [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
-                    </div>
-                  [/#if]
+                  <div class="geographicScopeMessage" style="display:${(isNational)?string('block','none')}">
+                    [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
+                  </div>
 
                   <div class="form-group nationalBlock col-md-12" style="display:${(isNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
@@ -631,7 +629,7 @@
 
       [#-- knowledgeResultsNarrative --]
       <div class="col-md-12">
-        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=true editable=editable /]
+        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=false editable=editable /]
       </div>
 
       [#-- Knowledge Sharing and Scaling Potential --]
@@ -669,7 +667,7 @@
 
       [#-- hasKnowledgePotential --]
       <div class="col-md-12">
-        [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" /]
+        [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" required=true /]
         [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
         [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]    
 
