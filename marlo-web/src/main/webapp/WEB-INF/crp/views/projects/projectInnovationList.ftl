@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20250430",
+  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20250509",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20250430",
-  "${baseUrlCdn}/global/css/customDataTable.css"
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250509",
+  "${baseUrlCdn}/global/css/customDataTable.css?20250509"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]

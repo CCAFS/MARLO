@@ -69,7 +69,7 @@ ul.nav li a {
   padding-right: 28px !important;
   font-size: 13px;
   border: 1px solid #f1f1f1;
-  height: 54px;
+  height: 48px;
   align-content: center;
   text-align: center;
 }
@@ -93,13 +93,13 @@ ul.nav li a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
   /* background-size: 15px; */
-  background-position: 97% -60%;
+  background-position: 97% -35%;
 }
 
 .nav-tabs li.toSubmit a {
   background-image: url(../../../global/images/submitted.png?20190411);
   background-repeat: no-repeat;
-  background-position: 97% 155%;
+  background-position: 97% 125%;
 }
 
 table tr {
