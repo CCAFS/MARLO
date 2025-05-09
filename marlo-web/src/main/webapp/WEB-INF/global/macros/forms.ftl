@@ -17,7 +17,7 @@
       [#-- Condition to add input group to field --]
       [#local isTargetValueNumber = className?contains("targetValueNumber") ]
       [#if inputGroupText != ""]<div class="input-group"><span class="input-group-addon">${inputGroupText}</span>[/#if]
-      <input type="${type}" id="${name}" name="${name}" value="${customValue}" class="form-control input-sm ${className} ${required?string('required','optional')} ${disabled?string('fieldDisabled', '')}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if] [#if placeholder?has_content]placeholder="[@s.text name=placeholder /]"[/#if]  />
+      <input type="${type}" id="${name}" name="${name}" value="${customValue}" class="form-control input-sm ${className} ${required?string('required','optional')} ${disabled?string('fieldDisabled', '')}" [#if readOnly] readonly="readonly"[/#if] [#if disabled]disabled="disabled"[/#if] [#if placeholder?has_content]placeholder="[@s.text name=placeholder /]"[/#if] [#if type == "number"]step="1" oninput="this.value = Math.floor(this.value)"[/#if]  />
       [#if inputGroupText != ""]</div>[/#if]
       [#-- End condition --]
     [#else]
@@ -1078,7 +1078,7 @@
         [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
       </label>
       <div class="col-md-12">
-        <div style="width: 12%;" class="col-md-2">
+        <div style="width: 10% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender" label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
         </div>
         <div class="col-md-2">
@@ -1093,14 +1093,14 @@
         <div class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty" label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
         </div>
-        <div style="width: 20%;" class="col-md-2">
+        <div style="width: 23% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness" label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
         </div>
       </div>
     </div>
     
     <div class="form-group">
-      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=true editable=editable isMainTitle=false isWidthFull=true /]         
+      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=false editable=editable isMainTitle=false isWidthFull=true /]         
     </div>
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]

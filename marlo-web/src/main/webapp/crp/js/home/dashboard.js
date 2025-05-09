@@ -1002,6 +1002,9 @@ var divDataTables_filter = $('.dataTables_filter').parent();
 iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
 iconSearch.prependTo(divDataTables_filter);
 
+var divDataTables_filterParent = $(divDataTables_filter).parent();
+divDataTables_filterParent.removeClass('row');
+
 
 var divDataTables_length = $('.dataTables_length').parent();
 divDataTables_length.css("position", "absolute");
