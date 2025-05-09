@@ -921,6 +921,14 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
 
         // HasKnowledgePotential
+        if (innovationInfo.getHasKnowledgePotential() == null || (innovationInfo.getHasKnowledgePotential() != null
+          && innovationInfo.getHasKnowledgePotential().getId() == null)) {
+          action.addMessage(action.getText("innovation.projectInnovationInfo.hasKnowledgePotential.id"));
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.hasKnowledgePotential.id",
+            InvalidFieldsMessages.EMPTYFIELD);
+        }
+
+        // HasKnowledgePotential
         if ((innovationInfo.getHasKnowledgePotential() != null
           && innovationInfo.getHasKnowledgePotential().getId() != null
           && innovationInfo.getHasKnowledgePotential().getId() == 2)
@@ -940,13 +948,13 @@ public class ProjectInnovationValidator extends BaseValidator {
          * InvalidFieldsMessages.EMPTYFIELD);
          * }
          */
-
-        if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
-          action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
-          action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
+        /*
+         * if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
+         * action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
+         * action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
         // Has tool URL
         if (innovationInfo.getHasToolUrl() != null) {
           if (Boolean.TRUE.equals(!innovationInfo.getHasToolUrl())
