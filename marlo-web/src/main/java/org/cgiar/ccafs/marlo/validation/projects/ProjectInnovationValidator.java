@@ -414,10 +414,12 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     } else {
       for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation.getGeographicScopes()) {
-        if (innovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+        if (innovationGeographicScope != null && innovationGeographicScope.getRepIndGeographicScope() != null
+          && innovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
           haveRegions = true;
         }
-        if (innovationGeographicScope.getRepIndGeographicScope().getId() != 1
+        if (innovationGeographicScope != null && innovationGeographicScope.getRepIndGeographicScope() != null
+          && innovationGeographicScope.getRepIndGeographicScope().getId() != 1
           && innovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
           haveCountries = true;
         }
@@ -726,16 +728,16 @@ public class ProjectInnovationValidator extends BaseValidator {
 
         // Validate scores
         boolean markMissingScore = false;
-        if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 2) {
+        if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 3) {
           markMissingScore = true;
         }
-        if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 2) {
+        if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 3) {
           markMissingScore = true;
         }
-        if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 2) {
+        if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 3) {
           markMissingScore = true;
         }
-        if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 2) {
+        if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 3) {
           markMissingScore = true;
         }
         if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 2) {
@@ -775,7 +777,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                 action.addMessage("References ");
                 action.getInvalidFields().put("input-innovation.references[" + i + "].gender",
                   InvalidFieldsMessages.EMPTYFIELD);
-                action.getInvalidFields().put("input-innovation.references[" + i + "].climanteChange",
+                action.getInvalidFields().put("input-innovation.references[" + i + "].climateChange",
                   InvalidFieldsMessages.EMPTYFIELD);
                 action.getInvalidFields().put("input-innovation.references[" + i + "].nutrition",
                   InvalidFieldsMessages.EMPTYFIELD);

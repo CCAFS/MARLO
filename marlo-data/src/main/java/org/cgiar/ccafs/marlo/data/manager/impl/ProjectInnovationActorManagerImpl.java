@@ -151,7 +151,7 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
           .filter(c -> c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
           .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in ActorByInnovationAndPhase method");
+      System.out.println("Error in ActorByInnovationAndPhase method" + e);
     }
     if (innovationActors.isEmpty()) {
       ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
@@ -170,6 +170,30 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
       projectInnovationActorAdd.setPhase(phase);
       projectInnovationActorDAO.save(projectInnovationActorAdd);
+    } else {
+      for (ProjectInnovationActor projectInnovationActorDel : innovationActors) {
+        try {
+          projectInnovationActorDAO.deleteProjectInnovationActor(projectInnovationActorDel.getId());
+        } catch (Exception e) {
+          System.out.println("Error delete ActorByInnovationAndPhase method" + e);
+        }
+        ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
+        projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
+        projectInnovationActorAdd.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
+        projectInnovationActorAdd.setMenYouth(projectInnovationActor.getMenYouth());
+        projectInnovationActorAdd.setMenNotYouth(projectInnovationActor.getMenNotYouth());
+        projectInnovationActorAdd.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
+        projectInnovationActorAdd.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
+        projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
+        projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
+        projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
+        projectInnovationActorAdd.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
+        projectInnovationActorAdd.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
+        projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
+        projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
+        projectInnovationActorAdd.setPhase(phase);
+        projectInnovationActorDAO.save(projectInnovationActorAdd);
+      }
     }
     if (phase.getNext() != null) {
       this.saveProjectInnovationActorPhase(phase.getNext(), innovationID, projectInnovationActor);
