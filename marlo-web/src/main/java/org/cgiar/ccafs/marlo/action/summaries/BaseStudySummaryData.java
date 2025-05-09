@@ -953,14 +953,18 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             if (projectExpectedStudy.getQuantifications() != null) {
               for (final ProjectExpectedStudyQuantification quantificationItem : projectExpectedStudy
                 .getQuantifications()) {
-                if (quantificationItem != null && ((quantificationItem.getQuantificationType() != null
-                  && quantificationItem.getQuantificationType().getName() != null)
-                  || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
-                  || (quantificationItem.getComments() != null))) {
+                if (quantificationItem != null
+                  && ((quantificationItem.getQuantificationType() != null
+                    && quantificationItem.getQuantificationType().getName() != null)
+                    || (quantificationItem.getNumber() != null) || (quantificationItem.getTargetUnit() != null)
+                    || (quantificationItem.getComments() != null))
+                  && quantificationItem.getQuantificationType() != null
+                  && quantificationItem.getQuantificationType().getName() != null) {
                   quantificationsList.add(new QuantificationDTO(quantificationItem.getQuantificationType().getName(),
                     quantificationItem.getNumber() + "", quantificationItem.getTargetUnit() + "",
                     quantificationItem.getComments()));
                 }
+
               }
             }
 
@@ -973,7 +977,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               quantification.append(quantificationsJson);
             }
 
-          } catch (final JsonProcessingException e) {
+          } catch (Exception e) {
             e.printStackTrace();
           }
         }
@@ -990,7 +994,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           leadPerson = projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase()).getUser()
             .getComposedNameWithoutEmail();
-        } catch (final Exception e) {
+        } catch (Exception e) {
           Log.error("error getting leader " + e);
         }
 
@@ -1259,9 +1263,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             globalTargets = globalTargets.replace("null", "");
           }
 
-        } catch (final NullPointerException e) {
-          Log.error("NullPointerException while getting Impact Areas", e);
-        } catch (final Exception e) {
+        } catch (Exception e) {
           Log.error("Unexpected error while getting Impact Areas", e);
         }
 
@@ -1324,7 +1326,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             // Append properly formatted JSON to the existing string
             publications.append("").append(publicationsJson);
 
-          } catch (final JsonProcessingException e) {
+          } catch (Exception e) {
             e.printStackTrace();
           }
         }

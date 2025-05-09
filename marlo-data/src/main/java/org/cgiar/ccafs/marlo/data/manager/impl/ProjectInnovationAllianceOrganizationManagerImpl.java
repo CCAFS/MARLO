@@ -190,7 +190,7 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
           projectInnovationAllianceOrganizationDAO
             .deleteProjectInnovationAllianceOrganization(projectInnovationAllianceOrganizationDel.getId());
         } catch (Exception e) {
-          // TODO: handle exception
+          System.out.println("Error in InnovationAllianceOrganizationPhase method" + e);
         }
         ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationAdd =
           new ProjectInnovationAllianceOrganization();

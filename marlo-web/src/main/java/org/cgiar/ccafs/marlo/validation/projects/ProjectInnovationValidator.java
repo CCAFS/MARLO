@@ -59,12 +59,6 @@ public class ProjectInnovationValidator extends BaseValidator {
   private Boolean clearLead = false;
   private InstitutionManager institutionManager;
 
-  boolean hasGender = false;
-  boolean hasNutrition = false;
-  boolean hasClimate = false;
-  boolean hasEnvironmental = false;
-  boolean hasPoverty = false;
-
   String innovationGeneral = "";
   String innovationAlliance = "";
   String innovationOneCgiar = "";
@@ -656,12 +650,13 @@ public class ProjectInnovationValidator extends BaseValidator {
       if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
         ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
-        if (!(this.isValidString(innovationInfo.getReadinessReason()))) {
-          action.addMessage("innovation.projectInnovationInfo.readinessReason");
-          action.getInvalidFields().put("input-innovation.projectInnovationInfo.readinessReason",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-
+        /*
+         * if (!(this.isValidString(innovationInfo.getReadinessReason()))) {
+         * action.addMessage("innovation.projectInnovationInfo.readinessReason");
+         * action.getInvalidFields().put("input-innovation.projectInnovationInfo.readinessReason",
+         * InvalidFieldsMessages.EMPTYFIELD);
+         * }
+         */
         /*
          * if (!(this.isValidString(innovationInfo.getInnovationImportance()))) {
          * action.addMessage(action.getText("innovation.projectInnovationInfo.innovationImportance"));
@@ -727,44 +722,65 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
 
         // Validate scores
+        boolean needsGender = false;
+        boolean needsClimateChange = false;
+        boolean needsFoodSecurity = false;
+        boolean needsEnvironmentalScore = false;
+        boolean needsPovertyScore = false;
         boolean markMissingScore = false;
         if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 3) {
-          markMissingScore = true;
+          needsGender = true;
         }
         if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 3) {
-          markMissingScore = true;
+          needsClimateChange = true;
         }
         if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 3) {
-          markMissingScore = true;
+          needsFoodSecurity = true;
         }
         if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 3) {
-          markMissingScore = true;
+          needsEnvironmentalScore = true;
         }
-        if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 2) {
-          markMissingScore = true;
+        if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 3) {
+          needsPovertyScore = true;
         }
+
+        boolean foundGender = false;
+        boolean foundNutrition = false;
+        boolean foundClimateChange = false;
+        boolean foundEnvironmental = false;
+        boolean foundPoverty = false;
 
         // Validate References
         if (projectInnovation.getReferences() != null && !projectInnovation.getReferences().isEmpty()) {
-          for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
-            ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
+
+          for (ProjectInnovationReference reference : projectInnovation.getReferences()) {
             if (reference != null) {
 
               if (Boolean.TRUE.equals(reference.getGender())) {
-                hasGender = true;
+                foundGender = true;
               }
               if (Boolean.TRUE.equals(reference.getNutrition())) {
-                hasNutrition = true;
+                foundNutrition = true;
               }
               if (Boolean.TRUE.equals(reference.getClimateChange())) {
-                hasClimate = true;
+                foundClimateChange = true;
               }
               if (Boolean.TRUE.equals(reference.getEnvironmental())) {
-                hasEnvironmental = true;
+                foundEnvironmental = true;
               }
               if (Boolean.TRUE.equals(reference.getPoverty())) {
-                hasPoverty = true;
+                foundPoverty = true;
               }
+            }
+          }
+
+          markMissingScore = (needsGender && !foundGender) || (needsFoodSecurity && !foundNutrition)
+            || (needsClimateChange && !foundClimateChange) || (needsEnvironmentalScore && !foundEnvironmental)
+            || (needsPovertyScore && !foundPoverty);
+
+          for (int i = 0; i < projectInnovation.getReferences().size(); i++) {
+            ProjectInnovationReference reference = projectInnovation.getReferences().get(i);
+            if (reference != null) {
 
               // Validate Reference Innovation Readiness Level
               if (((reference.getGender() == null || !reference.getGender())
