@@ -13,6 +13,8 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
   private String name;
   @Expose
   private String definition;
+  @Expose
+  private Boolean oldType;
 
   public RepIndInnovationNature() {
   }
@@ -33,12 +35,20 @@ public class RepIndInnovationNature extends MarloAuditableEntity implements java
     return this.name;
   }
 
+  public Boolean getOldType() {
+    return oldType;
+  }
+
   public void setDefinition(String definition) {
     this.definition = definition;
   }
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setOldType(Boolean oldType) {
+    this.oldType = oldType;
   }
 
 }

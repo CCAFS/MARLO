@@ -1651,8 +1651,9 @@ public class ProjectInnovationAction extends BaseAction {
         Log.error("error deleting elements from " + e);
       }
 
-      innovationTypeList = repIndInnovationTypeManager.findAll().stream()
-        .filter(t -> t != null && t.getOldType() == false).collect(Collectors.toList());
+      // Innovation Type
+      innovationTypeList = repIndInnovationTypeManager.findAll().stream().filter(t -> t != null && !t.getOldType())
+        .collect(Collectors.toList());
 
       if (innovation.getProjectInnovationInfo() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
@@ -1676,7 +1677,33 @@ public class ProjectInnovationAction extends BaseAction {
         Log.error("error getting list " + e);
       }
 
-      innovationNatureList = repIndInnovationNatureManager.findAll();
+      // Innovation Nature
+      innovationNatureList = repIndInnovationNatureManager.findAll().stream().filter(t -> t != null && !t.getOldType())
+        .collect(Collectors.toList());
+
+      if (innovation.getProjectInnovationInfo() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() != null) {
+        long innovationNatureID = innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId();
+        RepIndInnovationNature innovationNatureDB =
+          repIndInnovationNatureManager.getRepIndInnovationNatureById(innovationNatureID);
+        if (innovationNatureList != null && !innovationNatureList.contains(innovationNatureDB)) {
+          innovationNatureList.add(innovationNatureDB);
+        }
+      }
+
+      try {
+        RepIndInnovationNature innovationNatureOther = repIndInnovationNatureManager.getRepIndInnovationNatureById(4);
+        if (innovationNatureOther != null && innovationNatureList.contains(innovationNatureOther)) {
+          innovationNatureList.remove(innovationNatureOther);
+          innovationNatureList.add(innovationNatureOther);
+
+        }
+      } catch (Exception e) {
+        Log.error("error getting list " + e);
+      }
+
+
       focusLevelList = focusLevelManager.findAll();
       organizationTypeList = repIndOrganizationTypeManager.findAll();
       contributionCrpList = repIndContributionOfCrpManager.findAll();

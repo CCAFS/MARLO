@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationM
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -155,13 +156,15 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
   private void saveProjectInnovationAllianceOrganizationPhase(Phase next, Long innovationID,
     ProjectInnovationAllianceOrganization projectInnovationAllianceOrganization) {
     Phase phase = phaseDAO.find(next.getId());
-
-    List<ProjectInnovationAllianceOrganization> innovationAllianceOrganizations =
-
-      projectInnovationAllianceOrganizationDAO
+    List<ProjectInnovationAllianceOrganization> innovationAllianceOrganizations = new ArrayList<>();
+    try {
+      innovationAllianceOrganizations = projectInnovationAllianceOrganizationDAO
         .getProjectInnovationAllianceOrganizationsByInnovationAndPhase(innovationID, phase.getId()).stream()
         .filter(c -> c.getInstitution().getId().equals(projectInnovationAllianceOrganization.getInstitution().getId()))
         .collect(Collectors.toList());
+    } catch (Exception e) {
+      System.out.println("Error in InnovationAllianceOrganizationPhase( method" + e);
+    }
 
     if (innovationAllianceOrganizations.isEmpty()) {
       ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationAdd =
@@ -181,6 +184,31 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
       projectInnovationAllianceOrganizationAdd.setPhase(phase);
 
       projectInnovationAllianceOrganizationDAO.save(projectInnovationAllianceOrganizationAdd);
+    } else {
+      for (ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationDel : innovationAllianceOrganizations) {
+        try {
+          projectInnovationAllianceOrganizationDAO
+            .deleteProjectInnovationAllianceOrganization(projectInnovationAllianceOrganizationDel.getId());
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
+        ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationAdd =
+          new ProjectInnovationAllianceOrganization();
+        projectInnovationAllianceOrganizationAdd.setPhase(phase);
+        projectInnovationAllianceOrganizationAdd
+          .setInstitutionType(projectInnovationAllianceOrganization.getInstitutionType());
+        projectInnovationAllianceOrganizationAdd.setInstitution(projectInnovationAllianceOrganization.getInstitution());
+        projectInnovationAllianceOrganizationAdd
+          .setOrganizationName(projectInnovationAllianceOrganization.getOrganizationName());
+        projectInnovationAllianceOrganizationAdd
+          .setScalingPartner(projectInnovationAllianceOrganization.getScalingPartner());
+        projectInnovationAllianceOrganizationAdd.setNumber(projectInnovationAllianceOrganization.getNumber());
+        projectInnovationAllianceOrganizationAdd
+          .setProjectInnovation(projectInnovationAllianceOrganization.getProjectInnovation());
+        projectInnovationAllianceOrganizationAdd.setPhase(phase);
+
+        projectInnovationAllianceOrganizationDAO.save(projectInnovationAllianceOrganizationAdd);
+      }
     }
     if (phase.getNext() != null) {
       this.saveProjectInnovationAllianceOrganizationPhase(phase.getNext(), innovationID,
