@@ -1266,6 +1266,18 @@ function initNumberField(fieldId, options = {}) {
 
 (function($) {
 
+  if (!$ || !$.fn || !$.fn.select2) {
+    console.warn('Select2 not found. Please include Select2 library.');
+    return;
+  }
+
+  // Then check if the AMD module is available
+  if (!$.fn.select2.amd) {
+    console.warn('Select2 AMD modules not available. You may be using a different version of Select2.');
+    return;
+  }
+
+
 	var Defaults = $.fn.select2.amd.require('select2/defaults');
   
   $.extend(Defaults.defaults, {
