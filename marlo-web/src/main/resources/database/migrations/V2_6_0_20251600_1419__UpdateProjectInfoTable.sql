@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD has_specified_output_countries tinyint(1) NULL;

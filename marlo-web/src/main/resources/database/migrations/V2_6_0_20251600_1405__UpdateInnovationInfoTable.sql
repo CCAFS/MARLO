@@ -1,0 +1,11 @@
+ALTER TABLE project_innovation_info ADD gender_score_id bigint(20) NULL;
+ALTER TABLE project_innovation_info ADD climate_change_score_id bigint(20) NULL;
+ALTER TABLE project_innovation_info ADD food_security_score_id bigint(20) NULL;
+ALTER TABLE project_innovation_info ADD environmental_score_id bigint(20) NULL;
+ALTER TABLE project_innovation_info ADD poverty_jobs_score_id bigint(20) NULL;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_impact_area_scores_FK FOREIGN KEY (gender_score_id) REFERENCES impact_area_scores(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_impact_area_scores_FK_1 FOREIGN KEY (climate_change_score_id) REFERENCES impact_area_scores(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_impact_area_scores_FK_2 FOREIGN KEY (food_security_score_id) REFERENCES impact_area_scores(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_activities_FK FOREIGN KEY (environmental_score_id) REFERENCES activities(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_impact_area_scores_FK_3 FOREIGN KEY (environmental_score_id) REFERENCES impact_area_scores(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE project_innovation_info ADD CONSTRAINT project_innovation_info_impact_area_scores_FK_4 FOREIGN KEY (poverty_jobs_score_id) REFERENCES impact_area_scores(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

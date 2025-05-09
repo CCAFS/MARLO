@@ -5,14 +5,29 @@ $(document).ready(function() {
 
 
   // Add Geographic Scope
-  $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
+  /*   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {
     setGeographicScope(this);
 
     $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
-  });
-  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+  }); */
 
-  $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
+  $('input.radioType-geographicScopes').on("change", function() {
+    setGeographicScope2(this);
+    $('select.countriesSelect').each(function(i, element) {
+      dynamicMarginToSelectedRender(element);
+    });
+  });
+
+  $('select.countriesSelect').on('change', function() {
+    dynamicMarginToSelectedRender(this);
+  });
+
+  $('select.countriesSelect').each(function(i, element) {
+    dynamicMarginToSelectedRender(element);
+  });
+  //setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+
+  //$('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
 
   // Activate Popup
   popups();
@@ -27,9 +42,10 @@ $(document).ready(function() {
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
+  
   // Add image to Impact Areas
-  $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
-  addImageToSelectImpactAreas();
+  /* $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
+  addImageToSelectImpactAreas(); */
 
   // Change display message in Scaling
   $('input[name="innovation.projectInnovationInfo.readinessScale"]').on('change', changeDisplayMessageInScaling);
@@ -42,6 +58,30 @@ $(document).ready(function() {
 
   //init partners methods
   deliverablePartnersModule.init();
+
+  // Run initial check
+  dynamicStatusCheckedForEvidences();
+
+  // Listen for changes to impact area scores
+  $('input[name^="innovation.projectInnovationInfo"][name$=".id"]').on("change", function() {
+    dynamicStatusCheckedForEvidences();
+  });
+  
+  // Listen for changes to readiness scale
+  $('input[name="innovation.projectInnovationInfo.readinessScale"]').on("change", function() {
+    dynamicStatusCheckedForEvidences();
+  });
+
+  // Update status when evidence checkboxes change
+  $('.referenceListReadiness').on('change', 'input[type="checkbox"]', function() {
+    dynamicStatusCheckedForEvidences();
+  });
+  
+  // Also run when evidence items are added or removed
+  $('.addButtonReferenceReadiness, .removeButtonReferenceReadiness').on('click', function() {
+    // Small delay to ensure DOM is updated
+    setTimeout(dynamicStatusCheckedForEvidences, 100);
+  });
 
   feedbackAutoImplementation();
 });
@@ -258,6 +298,16 @@ function attachEvents() {
 
   })
 
+  $('input[name="innovation.projectInnovationInfo.hasKnowledgePotential.id"]').on('change', function() {
+    var selected = this.value;
+    console.log(selected);
+    if(selected == 2) {
+      $('.block-w-hasKnowledgePotential').slideDown();
+    } else {
+      $('.block-w-hasKnowledgePotential').slideUp();
+    }
+  });
+
   //On change radio buttons
   $('input[class*="radioType-"]').on('change', onChangeRadioButton);
 
@@ -269,7 +319,10 @@ function attachEvents() {
   $('input[type="checkbox"][id*="lever-"]').on('change', updateIndexListCheckbox);
 
   //On change radio buttons - One CGIAR
-  $('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+  //$('input.radioType-contributionToCGIAR').on('change', onDisplayItemsInOneCGIAR);
+
+  //On change radio buttons - Notes in Scores - One CGIAR
+  $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
 }
 function AddRequired(){
@@ -287,11 +340,45 @@ function addSelect2() {
   });
 
   $('form select.countriesSelect').select2({
-      maximumSelectionLength: 0,
       placeholder: "Select a country",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
+      dropdownPosition: "above",
       width: '100%'
+  });
+
+  var $nationalBlock = $('.nationalBlock');
+  // Handle dropdown positioning on click instead of select2:open
+  $nationalBlock.find("select").on('click', function() {
+    // Wait a short moment for Select2 to finish rendering the dropdown
+    setTimeout(() => {
+      const dropdown = $('.select2-dropdown');
+      const select2Container = $(this).closest('.select2-container');
+      const select2Options = $('.select2-results__options');
+
+      if(select2Options.length === 0) return;
+
+      // Fix positioning for the dropdown
+      if(select2Options.length === 1 && $(select2Options[0]).attr('aria-live') === 'assertive') {
+    // Override dropdown position to show below
+    dropdown.removeClass('select2-dropdown--above').addClass('select2-dropdown--below');
+    select2Container.removeClass('select2-container--above').addClass('select2-container--below');
+    
+    // Explicitly position the dropdown below the container
+    dropdown.css({
+      'top': select2Container.outerHeight() + 'px',
+      'bottom': 'auto',
+      'position': 'absolute'
+    });
+    
+    // Adjust height to match available options
+    const optionsHeight = dropdown.find('.select2-results__options li').length * 36; // Approximate height per option
+    dropdown.find('.select2-results').css({
+      'max-height': optionsHeight + 'px',
+      'height': 'auto'
+    });
+      }
+    }, 10); // Slightly longer timeout to ensure dropdown is rendered
   });
 
 }
@@ -397,12 +484,14 @@ function updateAllianceTab() {
         if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
           //remove disabled class alliance tab
           $('#allianceTab').slideDown();
+          $('li[role="presentation"]').css('width', "20%");
         } else {
           //add disabled class alliance tab
           $('#allianceTab').slideUp();
+          $('li[role="presentation"]').css('width', "25%");
         }
 
-    }, 1000);
+    }, 100);
 
 }  
 
@@ -490,7 +579,13 @@ function displayInnerOtherInput() {
   }
 }
 
-function addImageToSelectImpactAreas() {
+/**
+ * Function to add image to the impact areas in the select list.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function addImageToSelectImpactAreas() {
   
     const $listRender = $('div[listname="innovation.impactAreas"] .panel-body li.relationElement');
   
@@ -521,9 +616,15 @@ function addImageToSelectImpactAreas() {
       }
   
     });
-}
+} */
 
-function onDisplayItemsInOneCGIAR(){
+/**
+ * Function to display items in the CGIAR section based on the selected radio button.
+ * DEPRECATED: This function is no longer used in the codebase.
+ * The reason is the section were It was used was removed from the project.
+ * Section: old version of One CGIAR Aligment
+ */
+/* function onDisplayItemsInOneCGIAR(){
   const $commentBox = $('.contributionToCGIARComment');
   const $selectImpactArea = $('.linkToImpactAreas');
   const $radioButton = $('input.radioType-contributionToCGIAR:checked');
@@ -538,6 +639,17 @@ function onDisplayItemsInOneCGIAR(){
     $selectImpactArea.not(content).slideDown("slow");
     $commentBox.slideUp(400);
     
+  }
+} */
+
+function onDisplayNotesInScores() {
+  const $nameInput = $(this).attr('name');
+  const $valueInput = $(this).val();
+
+  if($valueInput == "3") {
+    $(`div.note[name="${$nameInput}"]`).slideDown();
+  } else {
+    $(`div.note[name="${$nameInput}"]`).slideUp();
   }
 }
 
@@ -929,4 +1041,118 @@ const evidencesModule = function () {
     init: init
   }
 
+}
+
+function dynamicMarginToSelectedRender(select){
+  const $select = $(select);
+
+  if(!$select.length) {
+    console.warn('Invalid element passed to dynamicMarginToSelectedRender');
+    return;
+  }
+  const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
+  const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
+
+  if($rendered.children().length > 0){
+    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+  } else {
+    $selectedMultiple.css('margin-bottom','0');
+
+  }
+
+}
+
+function dynamicStatusCheckedForEvidences() {
+  // Define impact areas to check
+  const impactAreas = [
+    { name: "genderScore", displayName: "Gender equality", displayReference: "gender" },
+    { name: "climateChangeScore", displayName: "Climate change", displayReference: "climateChange" },
+    { name: "foodSecurityScore", displayName: "Food security", displayReference: "nutrition" },
+    { name: "environmentalScore", displayName: "Environmental health", displayReference: "environmental" },
+    { name: "povertyScore", displayName: "Poverty reduction", displayReference: "poverty" },
+  ];
+  
+  // Initialize messages array
+  const messages = [];
+
+  // Track which impact areas need evidence
+  const areasNeedingEvidence = [];
+  
+  // Check for score of 2 in any impact area
+  impactAreas.forEach(area => {
+    const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
+    if (scoreElement.length > 0 && scoreElement.val() == 3) {
+      areasNeedingEvidence.push(area.displayReference);
+      messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
+    }
+  });
+  
+  // Check the innovation readiness scale value
+  const readinessElement = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked');
+  let readinessNeedsEvidence = false;
+  
+  if (readinessElement.length > 0) {
+    const readinessValue = parseInt(readinessElement.val());
+    if (readinessValue > 2) {
+      readinessNeedsEvidence = true;
+      messages.push(`Provide at least one evidence for innovation readiness level.`);
+    }
+  }
+
+  const evidences = $('.referenceListReadiness .evidences')
+
+  if (evidences.length > 0) {
+    evidences.each(function(index, element) {
+      const $element = $(element);
+
+      const $typeCheckboxes = $element.find('input[type="checkbox"]:checked');
+
+      console.log($typeCheckboxes);
+      
+      $typeCheckboxes.each(function() {
+        const checkboxId = $(this).attr('id');
+        
+        // Remove messages for impact areas that have evidence
+        areasNeedingEvidence.forEach((area, index) => {
+          if (checkboxId && checkboxId.includes(area)) {
+            // Remove this message as evidence is provided
+            areasNeedingEvidence.splice(index, 1);
+            messages.splice(index, 1);
+          }
+        });
+        
+        // Remove readiness message if evidence is provided
+        if (readinessNeedsEvidence && checkboxId && checkboxId.includes('innovationReadiness')) {
+          // Find and remove the readiness message
+          const readinessIndex = messages.findIndex(msg => msg.includes('innovation readiness level.'));
+          if (readinessIndex !== -1) {
+            messages.splice(readinessIndex, 1);
+          }
+        }
+      });
+    });
+  }
+  
+  // Update the status label content
+  const statusLabel = $(".statusEvidenceInImpactArea");
+  const contentElement = statusLabel.find(".contentInformation");
+
+  
+  if (messages.length > 0) {
+    // Show label with message list
+    statusLabel.show();
+    
+    // Create list if multiple messages, otherwise show single message
+    if (messages.length > 1) {
+      contentElement.html("<ul style='margin: 5px 0; padding-left: 20px;'>" + 
+                         messages.map(msg => `<li>${msg}</li>`).join("") + 
+                         "</ul>");
+    } else {
+      contentElement.html(`<p>${messages[0]}</p>`);
+    }
+    
+  } else {
+    // Hide the label when no conditions are met
+    statusLabel.hide();
+  }
 }

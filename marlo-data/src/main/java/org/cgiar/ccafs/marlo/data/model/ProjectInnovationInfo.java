@@ -86,6 +86,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   @Expose
   private Boolean clearLead;
+  @Expose
+  private Boolean innovationBundle;
 
   @Expose
   private String otherInnovationType;
@@ -106,6 +108,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private Boolean hasFurtherDevelopment;
   @Expose
+  private Boolean hasSpecifiedOutputCountries;
+  @Expose
   private String otherIntellectualProperty;
   @Expose
   private String innovationImportance;
@@ -122,7 +126,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   @Expose
   private String knowledgeResultsNarrative;
   @Expose
-  private Boolean hasKnowledgePotential;
+  private RepIndOptions hasKnowledgePotential;
   @Expose
   private String reasonNotKnowledgePotential;
   @Expose
@@ -141,6 +145,32 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherAllianceLever;
   @Expose
   private String otherToolNarrative;
+  @Expose
+  private ImpactAreaScore genderScore;
+  @Expose
+  private ImpactAreaScore climateChangeScore;
+  @Expose
+  private ImpactAreaScore foodSecurityScore;
+  @Expose
+  private ImpactAreaScore environmentalScore;
+  @Expose
+  private ImpactAreaScore povertyScore;
+  @Expose
+  private Integer cheaperAlternatives;
+  @Expose
+  private Integer simplerUse;
+  @Expose
+  private Integer performBetter;
+  @Expose
+  private Integer innovationDesirable;
+  @Expose
+  private Integer innovationCommercially;
+  @Expose
+  private Integer innovationSupported;
+  @Expose
+  private Integer evidenceUptake;
+  @Expose
+  private Boolean foreseeBarriers;
 
   public ProjectInnovationInfo() {
   }
@@ -199,17 +229,40 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return beneficiariesNarrative;
   }
 
+  public Integer getCheaperAlternatives() {
+    return cheaperAlternatives;
+  }
+
   public Boolean getClearLead() {
     return clearLead;
   }
 
+  public ImpactAreaScore getClimateChangeScore() {
+    return climateChangeScore;
+  }
 
   public String getDescriptionStage() {
     return descriptionStage;
   }
 
+  public ImpactAreaScore getEnvironmentalScore() {
+    return environmentalScore;
+  }
+
   public String getEvidenceLink() {
     return evidenceLink;
+  }
+
+  public Integer getEvidenceUptake() {
+    return evidenceUptake;
+  }
+
+  public ImpactAreaScore getFoodSecurityScore() {
+    return foodSecurityScore;
+  }
+
+  public Boolean getForeseeBarriers() {
+    return foreseeBarriers;
   }
 
   public String getGenderExplaniation() {
@@ -218,6 +271,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public RepIndGenderYouthFocusLevel getGenderFocusLevel() {
     return genderFocusLevel;
+  }
+
+  public ImpactAreaScore getGenderScore() {
+    return genderScore;
   }
 
   public Boolean getHasAssetPotential() {
@@ -236,7 +293,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasKnowledgeMethodsAndTools;
   }
 
-  public Boolean getHasKnowledgePotential() {
+
+  public RepIndOptions getHasKnowledgePotential() {
     return hasKnowledgePotential;
   }
 
@@ -248,8 +306,24 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return hasMilestones;
   }
 
+  public Boolean getHasSpecifiedOutputCountries() {
+    return hasSpecifiedOutputCountries;
+  }
+
   public Boolean getHasToolUrl() {
     return hasToolUrl;
+  }
+
+  public Boolean getInnovationBundle() {
+    return innovationBundle;
+  }
+
+  public Integer getInnovationCommercially() {
+    return innovationCommercially;
+  }
+
+  public Integer getInnovationDesirable() {
+    return innovationDesirable;
   }
 
   public String getInnovationImportance() {
@@ -258,6 +332,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public Long getInnovationNumber() {
     return innovationNumber;
+  }
+
+  public Integer getInnovationSupported() {
+    return innovationSupported;
   }
 
   public Institution getIntellectualPropertyInstitution() {
@@ -291,10 +369,12 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return sb.toString();
   }
 
+
   @Override
   public String getModificationJustification() {
     return "";
   }
+
 
   @Override
   public User getModifiedBy() {
@@ -327,8 +407,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return otherToolNarrative;
   }
 
+  public Integer getPerformBetter() {
+    return performBetter;
+  }
+
   public Phase getPhase() {
     return phase;
+  }
+
+  public ImpactAreaScore getPovertyScore() {
+    return povertyScore;
   }
 
   public ProjectExpectedStudy getProjectExpectedStudy() {
@@ -367,7 +455,6 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     return repIndDegreeInnovation;
   }
 
-
   public RepIndGeographicScope getRepIndGeographicScope() {
     return repIndGeographicScope;
   }
@@ -394,6 +481,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public String getShortTitle() {
     return shortTitle;
+  }
+
+  public Integer getSimplerUse() {
+    return simplerUse;
   }
 
   public String getTitle() {
@@ -433,16 +524,40 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.beneficiariesNarrative = beneficiariesNarrative;
   }
 
+  public void setCheaperAlternatives(Integer cheaperAlternatives) {
+    this.cheaperAlternatives = cheaperAlternatives;
+  }
+
   public void setClearLead(Boolean clearLead) {
     this.clearLead = clearLead;
+  }
+
+  public void setClimateChangeScore(ImpactAreaScore climateChangeScore) {
+    this.climateChangeScore = climateChangeScore;
   }
 
   public void setDescriptionStage(String descriptionStage) {
     this.descriptionStage = descriptionStage;
   }
 
+  public void setEnvironmentalScore(ImpactAreaScore environmentalScore) {
+    this.environmentalScore = environmentalScore;
+  }
+
   public void setEvidenceLink(String evidenceLink) {
     this.evidenceLink = evidenceLink;
+  }
+
+  public void setEvidenceUptake(Integer evidenceUptake) {
+    this.evidenceUptake = evidenceUptake;
+  }
+
+  public void setFoodSecurityScore(ImpactAreaScore foodSecurityScore) {
+    this.foodSecurityScore = foodSecurityScore;
+  }
+
+  public void setForeseeBarriers(Boolean foreseeBarriers) {
+    this.foreseeBarriers = foreseeBarriers;
   }
 
   public void setGenderExplaniation(String genderExplaniation) {
@@ -451,6 +566,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
+  }
+
+  public void setGenderScore(ImpactAreaScore genderScore) {
+    this.genderScore = genderScore;
   }
 
   public void setHasAssetPotential(Boolean hasAssetPotential) {
@@ -469,7 +588,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.hasKnowledgeMethodsAndTools = hasKnowledgeMethodsAndTools;
   }
 
-  public void setHasKnowledgePotential(Boolean hasKnowledgePotential) {
+  public void setHasKnowledgePotential(RepIndOptions hasKnowledgePotential) {
     this.hasKnowledgePotential = hasKnowledgePotential;
   }
 
@@ -481,8 +600,25 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.hasMilestones = hasMilestones;
   }
 
+  public void setHasSpecifiedOutputCountries(Boolean hasSpecifiedOutputCountries) {
+    this.hasSpecifiedOutputCountries = hasSpecifiedOutputCountries;
+  }
+
   public void setHasToolUrl(Boolean hasToolUrl) {
     this.hasToolUrl = hasToolUrl;
+  }
+
+  public void setInnovationBundle(Boolean innovationBundle) {
+    this.innovationBundle = innovationBundle;
+  }
+
+  public void setInnovationCommercially(Integer innovationCommercially) {
+    this.innovationCommercially = innovationCommercially;
+  }
+
+
+  public void setInnovationDesirable(Integer innovationDesirable) {
+    this.innovationDesirable = innovationDesirable;
   }
 
   public void setInnovationImportance(String innovationImportance) {
@@ -491,6 +627,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setInnovationNumber(Long innovationNumber) {
     this.innovationNumber = innovationNumber;
+  }
+
+  public void setInnovationSupported(Integer innovationSupported) {
+    this.innovationSupported = innovationSupported;
   }
 
   public void setIntellectualPropertyInstitution(Institution intellectualPropertyInstitution) {
@@ -546,8 +686,16 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.otherToolNarrative = otherToolNarrative;
   }
 
+  public void setPerformBetter(Integer performBetter) {
+    this.performBetter = performBetter;
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void setPovertyScore(ImpactAreaScore povertyScore) {
+    this.povertyScore = povertyScore;
   }
 
   public void setProjectExpectedStudy(ProjectExpectedStudy projectExpectedStudy) {
@@ -558,45 +706,56 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.projectInnovation = projectInnovation;
   }
 
+
   public void setReadinessReason(String readinessReason) {
     this.readinessReason = readinessReason;
   }
+
 
   public void setReadinessScale(Integer readinessScale) {
     this.readinessScale = readinessScale;
   }
 
+
   public void setReasonKnowledgePotential(String reasonKnowledgePotential) {
     this.reasonKnowledgePotential = reasonKnowledgePotential;
   }
+
 
   public void setReasonNotCgiarContribution(String reasonNotCgiarContribution) {
     this.reasonNotCgiarContribution = reasonNotCgiarContribution;
   }
 
+
   public void setReasonNotKnowledgePotential(String reasonNotKnowledgePotential) {
     this.reasonNotKnowledgePotential = reasonNotKnowledgePotential;
   }
+
 
   public void setReasonNotToolUrl(String reasonNotToolUrl) {
     this.reasonNotToolUrl = reasonNotToolUrl;
   }
 
+
   public void setRepIndDegreeInnovation(RepIndDegreeInnovation repIndDegreeInnovation) {
     this.repIndDegreeInnovation = repIndDegreeInnovation;
   }
+
 
   public void setRepIndGeographicScope(RepIndGeographicScope repIndGeographicScope) {
     this.repIndGeographicScope = repIndGeographicScope;
   }
 
+
   public void setRepIndInnovationNature(RepIndInnovationNature repIndInnovationNature) {
     this.repIndInnovationNature = repIndInnovationNature;
   }
 
+
   public void setRepIndInnovationType(RepIndInnovationType repIndInnovationType) {
     this.repIndInnovationType = repIndInnovationType;
   }
+
 
   public void setRepIndPhaseResearchPartnership(RepIndPhaseResearchPartnership repIndPhaseResearchPartnership) {
     this.repIndPhaseResearchPartnership = repIndPhaseResearchPartnership;
@@ -612,6 +771,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public void setShortTitle(String shortTitle) {
     this.shortTitle = shortTitle;
+  }
+
+  public void setSimplerUse(Integer simplerUse) {
+    this.simplerUse = simplerUse;
   }
 
   public void setTitle(String title) {
@@ -667,6 +830,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setAdaptativeResearchNarrative(projectInnovationInfoUpdate.getAdaptativeResearchNarrative());
     this.setProjectExpectedStudy(projectInnovationInfoUpdate.getProjectExpectedStudy());
     this.setClearLead(projectInnovationInfoUpdate.getClearLead());
+    this.setInnovationBundle(projectInnovationInfoUpdate.getInnovationBundle());
     this.setLeadOrganization(projectInnovationInfoUpdate.getLeadOrganization());
     this.setHasMilestones(projectInnovationInfoUpdate.getHasMilestones());
     this.setReasonNotCgiarContribution(projectInnovationInfoUpdate.getReasonNotCgiarContribution());
@@ -695,6 +859,25 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
     this.setOtherToolNarrative(projectInnovationInfoUpdate.getOtherToolNarrative());
     this.setKnowledgeMethodsAndToolsNarrative(projectInnovationInfoUpdate.getKnowledgeMethodsAndToolsNarrative());
+    this.setGenderScore(projectInnovationInfoUpdate.getGenderScore());
+    this.setClimateChangeScore(projectInnovationInfoUpdate.getClimateChangeScore());
+    this.setFoodSecurityScore(projectInnovationInfoUpdate.getFoodSecurityScore());
+    this.setEnvironmentalScore(projectInnovationInfoUpdate.getEnvironmentalScore());
+    this.setPovertyScore(projectInnovationInfoUpdate.getPovertyScore());
+    this.setGenderScore(projectInnovationInfoUpdate.getGenderScore());
+    this.setClimateChangeScore(projectInnovationInfoUpdate.getClimateChangeScore());
+    this.setFoodSecurityScore(projectInnovationInfoUpdate.getFoodSecurityScore());
+    this.setEnvironmentalScore(projectInnovationInfoUpdate.getEnvironmentalScore());
+    this.setPovertyScore(projectInnovationInfoUpdate.getPovertyScore());
+    this.setHasSpecifiedOutputCountries(projectInnovationInfoUpdate.getHasSpecifiedOutputCountries());
+    this.setCheaperAlternatives(projectInnovationInfoUpdate.getCheaperAlternatives());
+    this.setSimplerUse(projectInnovationInfoUpdate.getSimplerUse());
+    this.setPerformBetter(projectInnovationInfoUpdate.getPerformBetter());
+    this.setInnovationDesirable(projectInnovationInfoUpdate.getInnovationDesirable());
+    this.setInnovationCommercially(projectInnovationInfoUpdate.getInnovationCommercially());
+    this.setInnovationSupported(projectInnovationInfoUpdate.getInnovationSupported());
+    this.setEvidenceUptake(projectInnovationInfoUpdate.getEvidenceUptake());
+    this.setForeseeBarriers(projectInnovationInfoUpdate.getForeseeBarriers());
   }
 }
 

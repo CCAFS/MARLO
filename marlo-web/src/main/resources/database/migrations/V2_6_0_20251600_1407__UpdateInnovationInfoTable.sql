@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD is_innovation_bundle tinyint(1) NULL;

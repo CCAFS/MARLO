@@ -188,6 +188,11 @@ input.disabled {
 	opacity: 0.6;
 }
 
+a[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;	
+}
+
 .inputSelected {
 	border-radius: 4px;
 	background-color: #f1f1f1 !important;
@@ -835,6 +840,27 @@ input.targetValueNumber{
 	align-items: center;
 	justify-content: center;
 	border-left: 1px solid #ccc;
+}
+
+.input:has(input[type="number"].targetValueNumber)::after {
+	content: attr(data-targetunit) '#';
+	height: 27px;
+	width: 27px;
+	background-color: #a39e9e1c;
+	position: absolute;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid #ccc;
+}
+
+input[type="number"].targetValueNumber::-webkit-inner-spin-button,
+input[type="number"].targetValueNumber::-webkit-outer-spin-button {
+	appearance: none;
+	-moz-appearance: textfield;
+	-webkit-appearance: none;
+	margin: 0;
 }
 
 .halfPartBlock .checkbox input {
@@ -3477,6 +3503,7 @@ button.ipGraph-btn {
 	line-height: 20px;
 	text-align: left;
 	border-left: 5px solid #40AAD4;
+	padding: 0.3125rem 0.625rem 0.3125rem 0.9375rem;
 	margin-bottom: 6px;
 	max-width: 100%;
 	width: 100%;
@@ -3487,11 +3514,48 @@ button.ipGraph-btn {
 	margin-left: 0.5rem;
 }
 
+.note__margin-none{
+	margin: 0;
+}
+
+.note p{
+	color: #5F5E5E;
+	font-size: 11px;
+	font-weight: 300;
+	margin: 5px 0;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.note ul{
+	width: 100%;
+	text-align: left;
+}
+
+.note ul li{
+    color: #5F5E5E;
+    font-weight: 300;
+	font-size: 11px;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 .form-group .note span {
 	color: #40AAD4;
 	font-size: 20px;
 	margin-left: 0;
 	margin-right: 1rem;
+}
+
+.form-group .note span.inner-note{
+	color: #5f5e5e;
+	font-size: 13px;
+}
+
+.form-group .note span.inner-note ul{
+	padding-left: 15px;
+}
+
+.form-group .note span.inner-note p{
+	margin: 0;
 }
 
 .note--2{
@@ -3544,6 +3608,16 @@ button.ipGraph-btn {
 
 .note span {
 	display: inline-block;
+}
+
+.note--3 {
+	background-color: #fed56610;
+	border-left: 5px solid #fed566;
+}
+
+.note--3 span::before{
+	color: #fed566;
+	font-size: 1.6rem;
 }
 
 #outputs #addOutputBlock {
@@ -8391,6 +8465,14 @@ img.qaOptionsComment {
 
 .padding-left-0{
 	padding-left: 0 !important;
+}
+
+.padding-bottom-1{
+	padding-bottom: 1rem !important;
+}
+
+.align-content-end {
+	align-content: end;
 }
 
 

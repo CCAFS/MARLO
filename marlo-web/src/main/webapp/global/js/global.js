@@ -1354,7 +1354,8 @@ function setGeographicScope(component) {
         placeholder: "Select a country(ies)",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
@@ -1366,11 +1367,79 @@ function setGeographicScope(component) {
         placeholder: "Select a country",
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
-        width: '100%'
+        width: '100%',
+        dropdownPosition: "above"
       });
     }
     $nationalBlock.slideDown();
+    $message.slideDown();
   } else {
     $nationalBlock.slideUp();
   }
+}
+
+function setGeographicScope2(component) {
+  var $value = $(component).val();
+  var $partner = $(component).parents('.geographicScopeBlock');
+  
+  var $message = $('div.geographicScopeMessage');
+
+  var $regionalBlock = $partner.find('.regionalBlock');
+  var $nationalBlock = $partner.find('.nationalBlock');
+
+  var $isRegional = $value == 2;
+  var $isMultiNational = $value == 3;
+  var $isNational = $value == 4;
+  var $isSubNational = $value == 5;
+  var $isGlobal = $value == 1;
+  var $isYetToBeDefined = $value == 6;
+
+  if($isGlobal || $isYetToBeDefined || $isRegional) {
+    $message.slideUp();
+  }
+
+  if ($isRegional) {
+    $regionalBlock.slideDown();
+  } else {
+    $regionalBlock.slideUp();
+    // Clean selected region
+    $regionalBlock.find("select").val("-1").trigger('change');
+  }
+
+  if ($isMultiNational || $isNational || $isSubNational) {
+    if ($isMultiNational) {
+
+      if (countries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
+
+      $nationalBlock.find("select").select2({
+        maximumSelectionLength: 0,
+        placeholder: "Select a country(ies)",
+        templateResult: formatStateCountries,
+        templateSelection: formatStateCountries,
+        width: '100%',
+        dropdownPosition: "above"
+      });
+    } else {
+      var countries = ($nationalBlock.find("select").val()) || [];
+      if (countries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
+      $nationalBlock.find("select").select2({
+        maximumSelectionLength: 1,
+        placeholder: "Select a country",
+        templateResult: formatStateCountries,
+        templateSelection: formatStateCountries,
+        width: '100%',
+        dropdownPosition: "above"
+      });
+
+    }
+    $nationalBlock.slideDown();
+    $message.slideDown();
+  } else {
+    $nationalBlock.slideUp();
+  }
+
 }

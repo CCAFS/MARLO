@@ -43,6 +43,14 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
   private Boolean nonbinaryNotYouth;
   @Expose
   private Boolean sexAgeNotApply;
+  @Expose
+  private Integer menYouthNumber;
+  @Expose
+  private Integer menNonYouthNumber;
+  @Expose
+  private Integer womenYouthNumber;
+  @Expose
+  private Integer womenNonYouthNumber;
 
   public ProjectInnovationActor() {
   }
@@ -79,12 +87,20 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return sb.toString();
   }
 
+  public Integer getMenNonYouthNumber() {
+    return menNonYouthNumber;
+  }
+
   public Boolean getMenNotYouth() {
     return menNotYouth;
   }
 
   public Boolean getMenYouth() {
     return menYouth;
+  }
+
+  public Integer getMenYouthNumber() {
+    return menYouthNumber;
   }
 
   public Boolean getNonbinaryNotYouth() {
@@ -107,6 +123,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return sexAgeNotApply;
   }
 
+  public Integer getWomenNonYouthNumber() {
+    return womenNonYouthNumber;
+  }
+
   public Boolean getWomenNotYouth() {
     return womenNotYouth;
   }
@@ -115,8 +135,16 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return womenYouth;
   }
 
+  public Integer getWomenYouthNumber() {
+    return womenYouthNumber;
+  }
+
   public void setActor(Actor actor) {
     this.actor = actor;
+  }
+
+  public void setMenNonYouthNumber(Integer menNonYouthNumber) {
+    this.menNonYouthNumber = menNonYouthNumber;
   }
 
   public void setMenNotYouth(Boolean menNotYouth) {
@@ -125,6 +153,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
 
   public void setMenYouth(Boolean menYouth) {
     this.menYouth = menYouth;
+  }
+
+  public void setMenYouthNumber(Integer menYouthNumber) {
+    this.menYouthNumber = menYouthNumber;
   }
 
   public void setNonbinaryNotYouth(Boolean nonbinaryNotYouth) {
@@ -147,6 +179,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     this.sexAgeNotApply = sexAgeNotApply;
   }
 
+  public void setWomenNonYouthNumber(Integer womenNonYouthNumber) {
+    this.womenNonYouthNumber = womenNonYouthNumber;
+  }
+
   public void setWomenNotYouth(Boolean womenNotYouth) {
     this.womenNotYouth = womenNotYouth;
   }
@@ -155,9 +191,12 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     this.womenYouth = womenYouth;
   }
 
+  public void setWomenYouthNumber(Integer womenYouthNumber) {
+    this.womenYouthNumber = womenYouthNumber;
+  }
+
   @Override
   public String toString() {
     return "Actors [id=" + this.getId() + ", innovationId=" + projectInnovation.getId() + "]";
   }
 }
-

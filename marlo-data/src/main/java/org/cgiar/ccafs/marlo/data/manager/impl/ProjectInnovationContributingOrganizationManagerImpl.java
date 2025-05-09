@@ -17,9 +17,11 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationDAO;
+import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationRoleDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,14 +38,17 @@ public class ProjectInnovationContributingOrganizationManagerImpl
 
 
   private ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO;
+  private ProjectInnovationContributingOrganizationRoleDAO projectInnovationContributingOrganizationRoleDAO;
   // Managers
   private PhaseDAO phaseDAO;
 
   @Inject
   public ProjectInnovationContributingOrganizationManagerImpl(
-    ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO, PhaseDAO phaseDAO) {
+    ProjectInnovationContributingOrganizationDAO projectInnovationContributingOrganizationDAO, PhaseDAO phaseDAO,
+    ProjectInnovationContributingOrganizationRoleDAO projectInnovationContributingOrganizationRoleDAO) {
     this.projectInnovationContributingOrganizationDAO = projectInnovationContributingOrganizationDAO;
     this.phaseDAO = phaseDAO;
+    this.projectInnovationContributingOrganizationRoleDAO = projectInnovationContributingOrganizationRoleDAO;
   }
 
 
@@ -78,8 +83,8 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     projectInnovationContributingOrganizationDAO
       .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
   }
-  
-   public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
+
+  public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     Phase phase = phaseDAO.find(next.getId());
 
@@ -92,6 +97,38 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     for (ProjectInnovationContributingOrganization projectInnovationContributingOrganizationDB : projectInnovationContributingOrganizations) {
       projectInnovationContributingOrganizationDAO
         .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationDB.getId());
+    }
+
+    // Delete organization role
+    try {
+      ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRoleDelete = null;
+      ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRolePrev = null;
+
+      if (projectInnovationContributingOrganization.getContributingOrganizationRoles() != null
+        && !projectInnovationContributingOrganization.getContributingOrganizationRoles().isEmpty()) {
+        for (ProjectInnovationContributingOrganizationRole role : projectInnovationContributingOrganization
+          .getContributingOrganizationRoles()) {
+          try {
+            projectInnovationContributingOrganizationRolePrev = projectInnovationContributingOrganizationRoleDAO
+              .findByContributingOrganizationRoleBycontributingOrganizationIdAndRole(
+                projectInnovationContributingOrganization.getId(), role.getOrganizationRole().getId());
+          } catch (Exception e) {
+            // Exist record
+          }
+
+          if (projectInnovationContributingOrganizationRolePrev == null) {
+            projectInnovationContributingOrganizationRoleDelete = new ProjectInnovationContributingOrganizationRole();
+            projectInnovationContributingOrganizationRoleDelete
+              .setProjectInnovationContributingOrganization(projectInnovationContributingOrganization);
+            projectInnovationContributingOrganizationRoleDelete.setOrganizationRole(role.getOrganizationRole());
+
+            projectInnovationContributingOrganizationRoleDAO.deleteProjectInnovationContributingOrganizationRole(
+              projectInnovationContributingOrganizationRoleDelete.getId());
+          }
+        }
+      }
+
+    } catch (Exception e) {
     }
 
     if (phase.getNext() != null) {
@@ -121,6 +158,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     return projectInnovationContributingOrganizationDAO.find(projectInnovationContributingOrganizationID);
   }
 
+
   @Override
   public ProjectInnovationContributingOrganization
     getProjectInnovationContributingOrganizationById(long projectInnovationId, long institutionId, long phaseId) {
@@ -129,8 +167,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       .getProjectInnovationContributingOrganization(projectInnovationId, institutionId, phaseId);
   }
 
-
-   @Override
+  @Override
   public ProjectInnovationContributingOrganization saveProjectInnovationContributingOrganization(
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
 
@@ -157,6 +194,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     return projectInnovationContributing;
   }
 
+
   public void saveProjectInnovationContributingPhase(Phase next, long innovationid,
     ProjectInnovationContributingOrganization projectInnovationContributing) {
 
@@ -175,6 +213,37 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       projectInnovationContributingAdd.setPhase(phase);
       projectInnovationContributingAdd.setInstitution(projectInnovationContributing.getInstitution());
       projectInnovationContributingOrganizationDAO.save(projectInnovationContributingAdd);
+    }
+
+    // Save organization role
+    try {
+      ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRoleSave = null;
+      ProjectInnovationContributingOrganizationRole projectInnovationContributingOrganizationRolePrev = null;
+      if (projectInnovationContributing.getContributingOrganizationRoles() != null
+        && !projectInnovationContributing.getContributingOrganizationRoles().isEmpty()) {
+        for (ProjectInnovationContributingOrganizationRole role : projectInnovationContributing
+          .getContributingOrganizationRoles()) {
+
+          try {
+            projectInnovationContributingOrganizationRolePrev = projectInnovationContributingOrganizationRoleDAO
+              .findByContributingOrganizationRoleBycontributingOrganizationIdAndRole(
+                projectInnovationContributing.getId(), role.getOrganizationRole().getId());
+          } catch (Exception e) {
+            // Exist record
+          }
+
+          if (projectInnovationContributingOrganizationRolePrev == null) {
+            projectInnovationContributingOrganizationRoleSave = new ProjectInnovationContributingOrganizationRole();
+            projectInnovationContributingOrganizationRoleSave
+              .setProjectInnovationContributingOrganization(projectInnovationContributing);
+            projectInnovationContributingOrganizationRoleSave.setOrganizationRole(role.getOrganizationRole());
+
+            projectInnovationContributingOrganizationRoleDAO.save(projectInnovationContributingOrganizationRoleSave);
+          }
+        }
+      }
+
+    } catch (Exception e) {
     }
 
     if (phase.getNext() != null) {

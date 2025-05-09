@@ -29,11 +29,13 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
+import org.cgiar.ccafs.marlo.data.manager.ImpactAreaScoreManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
+import org.cgiar.ccafs.marlo.data.manager.OrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -43,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
@@ -74,6 +77,7 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndGenderYouthFocusLevelManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationNatureManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.RepIndOptionsManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndOrganizationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPhaseResearchPartnershipManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
@@ -96,11 +100,13 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
+import org.cgiar.ccafs.marlo.data.model.ImpactAreaScore;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.OrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
@@ -112,6 +118,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
@@ -143,6 +150,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationNature;
 import org.cgiar.ccafs.marlo.data.model.RepIndInnovationType;
+import org.cgiar.ccafs.marlo.data.model.RepIndOptions;
 import org.cgiar.ccafs.marlo.data.model.RepIndOrganizationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndPhaseResearchPartnership;
 import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
@@ -273,6 +281,11 @@ public class ProjectInnovationAction extends BaseAction {
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
+  private ImpactAreaScoreManager impactAreaScoreManager;
+  private OrganizationRoleManager organizationRoleManager;
+  private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
+  private RepIndOptionsManager repIndOptionsManager;
+
   // Variables
   private long projectID;
   private long innovationID;
@@ -336,6 +349,10 @@ public class ProjectInnovationAction extends BaseAction {
   private List<DeliverableType> deliverableSubTypes;
   private List<ProjectInnovation> innovationList;
   private List<Institution> contributingPartnerList;
+  private List<ImpactAreaScore> impactAreaScores;
+  private List<OrganizationRole> organizationRoles;
+  private List<RepIndOptions> optionList;
+  private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -386,7 +403,10 @@ public class ProjectInnovationAction extends BaseAction {
     ToolFunctionCategoryManager toolFunctionCategoryManager,
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
-    DeliverableInfoManager deliverableInfoManager) {
+    DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
+    OrganizationRoleManager organizationRoleManager,
+    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager,
+    RepIndOptionsManager repIndOptionsManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -458,7 +478,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
-
+    this.impactAreaScoreManager = impactAreaScoreManager;
+    this.organizationRoleManager = organizationRoleManager;
+    this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
+    this.repIndOptionsManager = repIndOptionsManager;
   }
 
   /**
@@ -644,6 +667,10 @@ public class ProjectInnovationAction extends BaseAction {
     return impactAreaList;
   }
 
+  public List<ImpactAreaScore> getImpactAreaScores() {
+    return impactAreaScores;
+  }
+
   public ProjectInnovation getInnovation() {
     return innovation;
   }
@@ -690,6 +717,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Project> getMyProjects() {
     return myProjects;
+  }
+
+  public List<RepIndOptions> getOptionList() {
+    return optionList;
+  }
+
+  public List<OrganizationRole> getOrganizationRoles() {
+    return organizationRoles;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
@@ -1159,6 +1194,12 @@ public class ProjectInnovationAction extends BaseAction {
               .sorted(
                 (o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()))
               .collect(Collectors.toList())));
+
+          for (ProjectInnovationContributingOrganization contributingOrtganization : innovation
+            .getContributingOrganizations()) {
+            contributingOrtganization.setContributingOrganizationRoles(new ArrayList<>(contributingOrtganization
+              .getProjectInnovationContributingOrganizationRoles().stream().collect(Collectors.toList())));
+          }
         }
 
         // Innovation Crp list
@@ -1406,6 +1447,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       try {
+        this.impactAreaScores = this.impactAreaScoreManager.findAll();
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
           .filter(i -> i != null && i.isActive() && i.getProjectInnovationInfo(this.getActualPhase()) != null
@@ -1421,6 +1463,8 @@ public class ProjectInnovationAction extends BaseAction {
         this.scalingReadinessList = this.scalingReadinessManager.findAll();
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+        this.organizationRoles = this.organizationRoleManager.findAll();
+        this.optionList = this.repIndOptionsManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());
@@ -1607,8 +1651,59 @@ public class ProjectInnovationAction extends BaseAction {
         Log.error("error deleting elements from " + e);
       }
 
-      innovationTypeList = repIndInnovationTypeManager.findAll();
-      innovationNatureList = repIndInnovationNatureManager.findAll();
+      // Innovation Type
+      innovationTypeList = repIndInnovationTypeManager.findAll().stream().filter(t -> t != null && !t.getOldType())
+        .collect(Collectors.toList());
+
+      if (innovation.getProjectInnovationInfo() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null) {
+        long innovationTypeID = innovation.getProjectInnovationInfo().getRepIndInnovationType().getId();
+        RepIndInnovationType innovationTypeDB =
+          repIndInnovationTypeManager.getRepIndInnovationTypeById(innovationTypeID);
+        if (innovationTypeList != null && !innovationTypeList.contains(innovationTypeDB)) {
+          innovationTypeList.add(innovationTypeDB);
+        }
+      }
+
+      try {
+        RepIndInnovationType innovationTypeOther = repIndInnovationTypeManager.getRepIndInnovationTypeById(6);
+        if (innovationTypeOther != null && innovationTypeList.contains(innovationTypeOther)) {
+          innovationTypeList.remove(innovationTypeOther);
+          innovationTypeList.add(innovationTypeOther);
+
+        }
+      } catch (Exception e) {
+        Log.error("error getting list " + e);
+      }
+
+      // Innovation Nature
+      innovationNatureList = repIndInnovationNatureManager.findAll().stream().filter(t -> t != null && !t.getOldType())
+        .collect(Collectors.toList());
+
+      if (innovation.getProjectInnovationInfo() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
+        && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() != null) {
+        long innovationNatureID = innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId();
+        RepIndInnovationNature innovationNatureDB =
+          repIndInnovationNatureManager.getRepIndInnovationNatureById(innovationNatureID);
+        if (innovationNatureList != null && !innovationNatureList.contains(innovationNatureDB)) {
+          innovationNatureList.add(innovationNatureDB);
+        }
+      }
+
+      try {
+        RepIndInnovationNature innovationNatureOther = repIndInnovationNatureManager.getRepIndInnovationNatureById(4);
+        if (innovationNatureOther != null && innovationNatureList.contains(innovationNatureOther)) {
+          innovationNatureList.remove(innovationNatureOther);
+          innovationNatureList.add(innovationNatureOther);
+
+        }
+      } catch (Exception e) {
+        Log.error("error getting list " + e);
+      }
+
+
       focusLevelList = focusLevelManager.findAll();
       organizationTypeList = repIndOrganizationTypeManager.findAll();
       contributionCrpList = repIndContributionOfCrpManager.findAll();
@@ -2065,6 +2160,12 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+        innovation.getProjectInnovationInfo().setGenderScore(null);
+        innovation.getProjectInnovationInfo().setClimateChangeScore(null);
+        innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
+        innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
+        innovation.getProjectInnovationInfo().setPovertyScore(null);
+        innovation.getProjectInnovationInfo().setHasKnowledgePotential(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
@@ -2134,6 +2235,11 @@ public class ProjectInnovationAction extends BaseAction {
             haveCountries = true;
           }
         }
+      }
+
+      if (innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries() != null
+        && innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()) {
+        haveCountries = true;
       }
 
       if (haveRegions) {
@@ -2280,16 +2386,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       // Clean text fields according to the boolean selection
-      // Has knowledge potential true
-      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential()) {
-        innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(null);
-      }
-      // Has knowledge potential false
-      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() != null
-        && innovation.getProjectInnovationInfo().getHasKnowledgePotential() == false) {
-        innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
-      }
+
       // Has tool URL true
       if (innovation.getProjectInnovationInfo().getHasToolUrl() != null
         && innovation.getProjectInnovationInfo().getHasToolUrl()) {
@@ -2413,6 +2510,10 @@ public class ProjectInnovationAction extends BaseAction {
           innovationActorSave.setActor(innovationActor.getActor());
           innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
           innovationActorSave.setProjectInnovation(projectInnovation);
+          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
           innovationActorSave.setPhase(phase);
 
           projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
@@ -2426,6 +2527,7 @@ public class ProjectInnovationAction extends BaseAction {
       System.out.println("Error saving actors " + e);
     }
   }
+
 
   /**
    * Save Project Innovation Alliance Levers
@@ -2582,6 +2684,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
           innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
           innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+          innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
           innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
           innovationAllianceOrganizationSave.setPhase(phase);
 
@@ -2681,6 +2784,10 @@ public class ProjectInnovationAction extends BaseAction {
 
           projectInnovationContributingOrganizationManager
             .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+
+          this.saveOrganizationroles(innovationOrganizationSave,
+            innovationOrganization.getProjectInnovationContributingOrganizationRoles());
+
           // This is to add innovationOrganizationSave to generate correct auditlog.
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
         }
@@ -2852,32 +2959,33 @@ public class ProjectInnovationAction extends BaseAction {
 
       List<ProjectInnovationGeographicScope> scopePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
       for (ProjectInnovationGeographicScope innovationScope : scopePrev) {
-        if (innovation.getGeographicScopes() == null || !innovation.getGeographicScopes().contains(innovationScope)) {
-          projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(innovationScope.getId());
-        }
+        // if (innovation.getGeographicScopes() == null || !innovation.getGeographicScopes().contains(innovationScope))
+        // {
+        projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(innovationScope.getId());
+        // }
       }
     }
 
     // Save form Information
     if (innovation.getGeographicScopes() != null) {
       for (ProjectInnovationGeographicScope innovationScope : innovation.getGeographicScopes()) {
-        if (innovationScope.getId() == null) {
-          ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
-          innovationScopeSave.setProjectInnovation(projectInnovation);
-          innovationScopeSave.setPhase(phase);
+        // if (innovationScope.getId() == null) {
+        ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
+        innovationScopeSave.setProjectInnovation(projectInnovation);
+        innovationScopeSave.setPhase(phase);
 
-          RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-            .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
+        RepIndGeographicScope repIndGeographicScope =
+          repIndGeographicScopeManager.getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
 
-          innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+        innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
 
-          projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
-          // This is to add innovationCrpSave to generate correct auditlog.
-          innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
-        }
+        projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
+        // This is to add innovationCrpSave to generate correct auditlog.
+        innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
+        // }
       }
     }
   }
@@ -3008,9 +3116,35 @@ public class ProjectInnovationAction extends BaseAction {
                 .remove(projectInnovationMilestoneManager.getProjectInnovationMilestoneById(innovationID));
             }
           } catch (Exception e) {
-
+            logger.error("unable to delete milestone", e);
           }
 
+        }
+      }
+    }
+  }
+
+  public void saveOrganizationroles(ProjectInnovationContributingOrganization organization,
+    Set<ProjectInnovationContributingOrganizationRole> roles) {
+
+    if (roles != null && !roles.isEmpty()) {
+      for (ProjectInnovationContributingOrganizationRole existingRole : organization
+        .getProjectInnovationContributingOrganizationRoles()) {
+        if (!roles.contains(existingRole)) {
+          projectInnovationContributingOrganizationRoleManager
+            .deleteProjectInnovationContributingOrganizationRole(existingRole.getId());
+        }
+      }
+
+      for (ProjectInnovationContributingOrganizationRole role : roles) {
+        if (role.getId() == null) {
+          ProjectInnovationContributingOrganizationRole roleSave = new ProjectInnovationContributingOrganizationRole();
+          roleSave.setProjectInnovationContributingOrganization(organization);
+          roleSave.setOrganizationRole(role.getOrganizationRole());
+
+          projectInnovationContributingOrganizationRoleManager
+            .saveProjectInnovationContributingOrganizationRole(roleSave);
+          organization.getProjectInnovationContributingOrganizationRoles().add(roleSave);
         }
       }
     }
@@ -3465,6 +3599,14 @@ public class ProjectInnovationAction extends BaseAction {
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
         studyReferenceSave.setLink(studyReference.getLink());
+
+        studyReferenceSave.setGender(studyReference.getGender());
+        studyReferenceSave.setClimateChange(studyReference.getClimateChange());
+        studyReferenceSave.setNutrition(studyReference.getNutrition());
+        studyReferenceSave.setEnvironmental(studyReference.getEnvironmental());
+        studyReferenceSave.setPoverty(studyReference.getPoverty());
+        studyReferenceSave.setInnovationReadiness(studyReference.getInnovationReadiness());
+        studyReferenceSave.setEvidenceSource(studyReference.getEvidenceSource());
         boolean externalAutor = false;
         if (studyReference.getEvidenceByDeliverable() != null) {
           externalAutor = true;
@@ -3905,6 +4047,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.impactAreaList = impactAreaList;
   }
 
+  public void setImpactAreaScores(List<ImpactAreaScore> impactAreaScores) {
+    this.impactAreaScores = impactAreaScores;
+  }
+
   public void setInnovation(ProjectInnovation innovation) {
     this.innovation = innovation;
   }
@@ -3952,6 +4098,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setMyProjects(List<Project> myProjects) {
     this.myProjects = myProjects;
+  }
+
+  public void setOptionList(List<RepIndOptions> optionList) {
+    this.optionList = optionList;
+  }
+
+  public void setOrganizationRoles(List<OrganizationRole> organizationRoles) {
+    this.organizationRoles = organizationRoles;
   }
 
   public void setOrganizationTypeList(List<RepIndOrganizationType> organizationTypeList) {

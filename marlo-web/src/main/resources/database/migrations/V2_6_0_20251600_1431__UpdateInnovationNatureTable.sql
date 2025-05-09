@@ -1,0 +1,1 @@
+ALTER TABLE rep_ind_innovation_natures ADD is_old_type tinyint(1) NULL

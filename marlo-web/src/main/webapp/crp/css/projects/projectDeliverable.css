@@ -715,10 +715,6 @@ form#CCAFS_deliverableList {
   width: 30%;
 }
 
-tr:hover td {
-  background-color: #f0f0f0 !important;
-}
-
 .fundingSource-container span {
   display: block;
 }

@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info DROP COLUMN scaling_barriers_narrative;
