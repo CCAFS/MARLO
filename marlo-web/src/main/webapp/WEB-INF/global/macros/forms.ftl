@@ -973,14 +973,16 @@
       <p class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</p>
     </span>
     <span class="col-md-8 col-lg-8 col-xlg-7 col-xxlg-6">
+    <p>${(element[type][customElementType])!}</p>
       [#if isEditable]
         [#if listCheckbox?has_content]
           <div class="checkbox-list">
             <strong class="col-md-12">${(subtitleCheckbox)}:</strong>
             [#list listCheckbox as checkbox]
               <div class="checkbox-list-item col-md-3">
-                [#local isChecked = (checkbox.id == element[type][customElementType][checkbox.name])!false /]
-                [@checkBoxFlat id="${customName}.checkbox-${checkbox.id}" name="${customName}.${customElementType}.${checkbox.name}" label="${checkbox.name}" disabled=false editable=true value="true" checked=isChecked cssClass="" cssClassLabel=""/]
+                [#local checkboxName = (checkbox.name!checkbox.name)?lower_case /]
+                [#local isChecked = element[checkboxName]!false /]
+                [@checkBoxFlat id="${customName}.${checkboxName}" name="${customName}.${checkboxName}" label="${checkbox.name}" disabled=false editable=true value="true" checked=isChecked cssClass="" cssClassLabel=""/]
               </div>
             [/#list]
         [/#if] 
