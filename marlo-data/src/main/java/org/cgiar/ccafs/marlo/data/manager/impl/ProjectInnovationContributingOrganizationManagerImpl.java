@@ -175,10 +175,32 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       projectInnovationContributingAdd.setProjectInnovation(projectInnovationContributing.getProjectInnovation());
       projectInnovationContributingAdd.setPhase(phase);
       projectInnovationContributingAdd.setInstitution(projectInnovationContributing.getInstitution());
+      projectInnovationContributingAdd.setScaling(projectInnovationContributing.getScaling());
+      projectInnovationContributingAdd.setDemand(projectInnovationContributing.getDemand());
+      projectInnovationContributingAdd.setInnovation(projectInnovationContributing.getInnovation());
+      projectInnovationContributingAdd.setOther(projectInnovationContributing.getOther());
       projectInnovationContributingOrganizationDAO.save(projectInnovationContributingAdd);
+    } else {
+      try {
+        for (ProjectInnovationContributingOrganization projectInnovationContributingDB : projectInnovatioCrps) {
+          projectInnovationContributingDB.setProjectInnovation(projectInnovationContributing.getProjectInnovation());
+          projectInnovationContributingDB.setPhase(phase);
+          projectInnovationContributingDB.setInstitution(projectInnovationContributing.getInstitution());
+          projectInnovationContributingDB.setScaling(projectInnovationContributing.getScaling());
+          projectInnovationContributingDB.setDemand(projectInnovationContributing.getDemand());
+          projectInnovationContributingDB.setInnovation(projectInnovationContributing.getInnovation());
+          projectInnovationContributingDB.setOther(projectInnovationContributing.getOther());
+          projectInnovationContributingOrganizationDAO.save(projectInnovationContributingDB);
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+
+      }
     }
 
-    if (phase.getNext() != null) {
+    if (phase.getNext() != null)
+
+    {
       this.saveProjectInnovationContributingPhase(phase.getNext(), innovationid, projectInnovationContributing);
     }
   }

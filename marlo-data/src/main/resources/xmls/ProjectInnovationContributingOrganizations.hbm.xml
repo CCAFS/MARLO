@@ -17,5 +17,18 @@
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" />
         </many-to-one>
+        <property name="scaling" type="java.lang.Boolean">
+	       <column name="is_scaling" />
+	    </property>
+	    <property name="demand" type="java.lang.Boolean">
+	       <column name="is_demand" />
+	    </property>
+	    <property name="innovation" type="java.lang.Boolean">
+	       <column name="is_innovation" />
+	    </property>
+	    <property name="other" type="java.lang.Boolean">
+	       <column name="is_other" />
+	    </property>
+        
     </class>
 </hibernate-mapping>
