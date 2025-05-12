@@ -3,10 +3,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
 /**
@@ -27,9 +23,6 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
   @Expose
   private Institution institution;
 
-  private Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles =
-    new HashSet<ProjectInnovationContributingOrganizationRole>(0);
-  private List<ProjectInnovationContributingOrganizationRole> contributingOrganizationRoles;
 
   public ProjectInnovationContributingOrganization() {
   }
@@ -60,11 +53,6 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
   public String getComposedName() {
     return this.getInstitution().getComposedName();
   }
-
-  public List<ProjectInnovationContributingOrganizationRole> getContributingOrganizationRoles() {
-    return contributingOrganizationRoles;
-  }
-
 
   public Institution getInstitution() {
     return institution;
@@ -98,11 +86,6 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return projectInnovation;
   }
 
-  public Set<ProjectInnovationContributingOrganizationRole> getProjectInnovationContributingOrganizationRoles() {
-    return projectInnovationContributingOrganizationRoles;
-  }
-
-
   public Institution getRelationship() {
     return institution;
   }
@@ -118,11 +101,6 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
   @Override
   public boolean isActive() {
     return true;
-  }
-
-  public void setContributingOrganizationRoles(
-    List<ProjectInnovationContributingOrganizationRole> contributingOrganizationRoles) {
-    this.contributingOrganizationRoles = contributingOrganizationRoles;
   }
 
   public void setInstitution(Institution institution) {
@@ -142,8 +120,4 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     this.projectInnovation = projectInnovation;
   }
 
-  public void setProjectInnovationContributingOrganizationRoles(
-    Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles) {
-    this.projectInnovationContributingOrganizationRoles = projectInnovationContributingOrganizationRoles;
-  }
 }

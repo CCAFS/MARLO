@@ -17,14 +17,5 @@
         <many-to-one name="institution" class="org.cgiar.ccafs.marlo.data.model.Institution" fetch="select">
             <column name="institution_id" />
         </many-to-one>
-        <set name="projectInnovationContributingOrganizationRoles"
-            table="project_innovation_contributing_organization_roles" inverse="true" lazy="true"
-            fetch="select">
-            <key>
-                <column name="innovation_contributing_organization_id" />
-            </key>
-            <one-to-many
-                class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole" />
-        </set>
     </class>
 </hibernate-mapping>
