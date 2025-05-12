@@ -171,28 +171,26 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setPhase(phase);
       projectInnovationActorDAO.save(projectInnovationActorAdd);
     } else {
-      for (ProjectInnovationActor projectInnovationActorDel : innovationActors) {
+      for (ProjectInnovationActor projectInnovationActorCopy : innovationActors) {
         try {
-          projectInnovationActorDAO.deleteProjectInnovationActor(projectInnovationActorDel.getId());
+          projectInnovationActorCopy.setWomenYouth(projectInnovationActor.getWomenYouth());
+          projectInnovationActorCopy.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
+          projectInnovationActorCopy.setMenYouth(projectInnovationActor.getMenYouth());
+          projectInnovationActorCopy.setMenNotYouth(projectInnovationActor.getMenNotYouth());
+          projectInnovationActorCopy.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
+          projectInnovationActorCopy.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
+          projectInnovationActorCopy.setActor(projectInnovationActor.getActor());
+          projectInnovationActorCopy.setProjectInnovation(projectInnovationActor.getProjectInnovation());
+          projectInnovationActorCopy.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
+          projectInnovationActorCopy.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
+          projectInnovationActorCopy.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
+          projectInnovationActorCopy.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
+          projectInnovationActorCopy.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
+          projectInnovationActorCopy.setPhase(phase);
+          projectInnovationActorDAO.save(projectInnovationActorCopy);
         } catch (Exception e) {
           System.out.println("Error delete ActorByInnovationAndPhase method" + e);
         }
-        ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
-        projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
-        projectInnovationActorAdd.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
-        projectInnovationActorAdd.setMenYouth(projectInnovationActor.getMenYouth());
-        projectInnovationActorAdd.setMenNotYouth(projectInnovationActor.getMenNotYouth());
-        projectInnovationActorAdd.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
-        projectInnovationActorAdd.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
-        projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
-        projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
-        projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
-        projectInnovationActorAdd.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
-        projectInnovationActorAdd.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
-        projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
-        projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
-        projectInnovationActorAdd.setPhase(phase);
-        projectInnovationActorDAO.save(projectInnovationActorAdd);
       }
     }
     if (phase.getNext() != null) {

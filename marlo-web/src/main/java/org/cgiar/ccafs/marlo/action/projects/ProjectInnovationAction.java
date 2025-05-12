@@ -2748,25 +2748,36 @@ public class ProjectInnovationAction extends BaseAction {
     if (innovation.getContributingOrganizations() != null) {
       for (ProjectInnovationContributingOrganization innovationOrganization : innovation
         .getContributingOrganizations()) {
-        if (innovationOrganization.getId() == null) {
-          ProjectInnovationContributingOrganization innovationOrganizationSave =
-            new ProjectInnovationContributingOrganization();
-          innovationOrganizationSave.setProjectInnovation(projectInnovation);
-          innovationOrganizationSave.setPhase(phase);
-          innovationOrganizationSave.setScaling(innovationOrganization.getScaling());
-          innovationOrganizationSave.setDemand(innovationOrganization.getDemand());
-          innovationOrganizationSave.setInnovation(innovationOrganization.getInnovation());
-          innovationOrganizationSave.setOther(innovationOrganization.getOther());
+        ProjectInnovationContributingOrganization innovationOrganizationSave = null;
+        if (innovationOrganization.getId() != null) {
+          innovationOrganizationSave = projectInnovationContributingOrganizationManager
+            .getProjectInnovationContributingOrganizationById(innovationOrganization.getId());
+        }
 
-          Institution institution =
-            institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+        if (innovationOrganizationSave == null) {
+          innovationOrganizationSave = new ProjectInnovationContributingOrganization();
+        }
 
+        innovationOrganizationSave.setProjectInnovation(projectInnovation);
+        innovationOrganizationSave.setPhase(phase);
+        innovationOrganizationSave.setScaling(innovationOrganization.getScaling());
+        innovationOrganizationSave.setDemand(innovationOrganization.getDemand());
+        innovationOrganizationSave.setInnovation(innovationOrganization.getInnovation());
+        innovationOrganizationSave.setOther(innovationOrganization.getOther());
+
+        Institution institution = null;
+        if (innovationOrganization.getInstitution() != null) {
+          institution = institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+        }
+        if (institution != null) {
           innovationOrganizationSave.setInstitution(institution);
+        }
 
-          projectInnovationContributingOrganizationManager
-            .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+        projectInnovationContributingOrganizationManager
+          .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
 
-          // This is to add innovationOrganizationSave to generate correct auditlog.
+        // This is to add innovationOrganizationSave to generate correct auditlog.
+        if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
         }
       }
