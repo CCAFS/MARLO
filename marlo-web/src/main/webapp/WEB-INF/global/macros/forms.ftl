@@ -688,7 +688,8 @@
   [#return '']
 [/#function]
 
-[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" ]
+[#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" hasInnerCheckbox=false argsInnerCheckbox={}]
+  
   [#attempt]
     [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
   [#recover]
@@ -715,8 +716,22 @@
       <div class="loading listComponentLoading" style="display:none"></div>
       <ul class="list">
         [#if elementList?has_content]
-          [#if hasPrimary]<label class="primary-label">[#if editable]Set as primary [#else] Primary[/#if]</label>[/#if]
-          [#list elementList as item][@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary/][/#list]
+          [#if hasPrimary]
+            <label class="primary-label">
+              [#if editable]Set as primary[#else]Primary[/#if]
+            </label>
+          [/#if]
+          [#list elementList as item]
+            [#if hasPrimary]
+              [@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary /]
+            [#else]
+              [#if hasInnerCheckbox]
+                [@listElementMacroWithCheckbox name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel argsInnerCheckbox=argsInnerCheckbox /]
+              [#else]
+                [@listElementMacro name=name element=item type=elementType id=id index=item_index keyFieldName=keyFieldName displayFieldName=displayFieldName indexLevel=indexLevel hasPrimary=hasPrimary /]
+              [/#if]
+            [/#if]
+          [/#list]
         [/#if]
       </ul>
       [#if editable || forceEditable]
@@ -731,9 +746,15 @@
       [/#if]
     </div>
     [#-- Element item Template --]
-    <ul style="display:none">
-      [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
-    </ul>
+    [#if hasInnerCheckbox]
+      <ul style="display:none">
+        [@listElementMacroWithCheckbox name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true isEditable=(editable || forceEditable) argsInnerCheckbox=argsInnerCheckbox /]
+      </ul>
+    [#else]
+      <ul style="display:none">
+        [@listElementMacro name="${name}" element={} type=elementType id=id index=-1 indexLevel=indexLevel template=true hasPrimary=hasPrimary onlyElementIDs=onlyElementIDs isEditable=(editable || forceEditable) /]
+      </ul>
+    [/#if]
     <input type="hidden" name="${name}[]"/>
   </div>
     <div class="commentNumberContainer">
@@ -926,6 +947,46 @@
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
   [/#if]
+[/#macro]
+
+[#macro listElementMacroWithCheckbox element name type id="" index=-1 keyFieldName="id" displayFieldName="composedName" template=false indexLevel=1 isEditable=true argsInnerCheckbox={} ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  [#local composedID = "${type}" /]
+  [#if id?has_content]
+    [#local composedID = "${type}-${id}" /]
+  [/#if]
+
+  [#local listCheckbox = (argsInnerCheckbox.listCheckbox)![] /] 
+  [#local subtitleElement = argsInnerCheckbox.subtitleElement!'Element Selected' /]
+  [#local subtitleCheckbox = argsInnerCheckbox.subtitleCheckbox!'Checkboxes Available' /]
+  [#local customElementType = argsInnerCheckbox.elementType!"elementType" /]
+
+  <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel} col-md-12">
+    [#-- Hidden Inputs --]
+    <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
+    <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
+    [#-- Remove button --]
+    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#-- Title --]
+    <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
+      <strong>${(subtitleElement)}:</strong>
+      <p class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</p>
+    </span>
+    <span class="col-md-8 col-lg-8 col-xlg-7 col-xxlg-6">
+      [#if isEditable]
+        [#if listCheckbox?has_content]
+          <div class="checkbox-list">
+            <strong class="col-md-12">${(subtitleCheckbox)}:</strong>
+            [#list listCheckbox as checkbox]
+              <div class="checkbox-list-item col-md-3">
+                [#local isChecked = (checkbox.id == element[type][customElementType][checkbox.name])!false /]
+                [@checkBoxFlat id="${customName}.checkbox-${checkbox.id}" name="${customName}.${customElementType}.${checkbox.name}" label="${checkbox.name}" disabled=false editable=true value="true" checked=isChecked cssClass="" cssClassLabel=""/]
+              </div>
+            [/#list]
+        [/#if] 
+      [#else]        
+      [/#if]
+  </li>
 [/#macro]
 
 [#macro helpViewMore name=""]
