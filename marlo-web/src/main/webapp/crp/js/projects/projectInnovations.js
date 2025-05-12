@@ -324,6 +324,20 @@ function attachEvents() {
   //On change radio buttons - Notes in Scores - One CGIAR
   $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
+  // Use event delegation to handle "Other" checkbox changes for both existing and new elements
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[id$="other"]', function() {
+    const $element = $(this).closest('.relationElement');
+    
+    if(this.checked) {
+      $element.find('input[type="checkbox"]').not(this).attr("onclick", "return false").addClass('disabled').prop("checked", false);
+    } else {
+      $element.find('input[type="checkbox"]').not(this).attr("onclick", "").removeClass('disabled').prop("checked", false);
+    }
+  });
+
+  // Trigger change on existing elements to initialize their state
+  $('div[listname="innovation.contributingOrganizations"] .relationElement input[id$="other"]').trigger('change');
+
 }
 function AddRequired(){
   if ($('#isClearLeadToAddRequired').is(":checked")) {
