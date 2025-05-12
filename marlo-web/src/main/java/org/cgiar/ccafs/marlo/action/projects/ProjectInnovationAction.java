@@ -2753,6 +2753,10 @@ public class ProjectInnovationAction extends BaseAction {
             new ProjectInnovationContributingOrganization();
           innovationOrganizationSave.setProjectInnovation(projectInnovation);
           innovationOrganizationSave.setPhase(phase);
+          innovationOrganizationSave.setScaling(innovationOrganization.getScaling());
+          innovationOrganizationSave.setDemand(innovationOrganization.getDemand());
+          innovationOrganizationSave.setInnovation(innovationOrganization.getInnovation());
+          innovationOrganizationSave.setOther(innovationOrganization.getOther());
 
           Institution institution =
             institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
