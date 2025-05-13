@@ -133,6 +133,11 @@ function attachEvents() {
       // Update indexes
       updateIndexes();
 
+      // Also call onAddDataRelatedToCheckboxGender for each checkbox to set up initial state
+      $newItem.find('input[type="checkbox"].check-gender').each(function(_i,_e) {
+        onAddDataRelatedToCheckboxGender.call(this);
+      });
+
     }
 
     function removeActor() {
@@ -167,6 +172,24 @@ function attachEvents() {
       } else {
         $blockSexAgeNotApply.slideDown();
       }
+    }
+
+    function onAddDataRelatedToCheckboxGender() {
+      const $checkboxGender = $(this);
+      const $relatedInputNumber = $checkboxGender.parents('.innerOptions').find(`input[type="number"]`);
+
+      $relatedInputNumber.on('change', function() {
+
+        const inputValue = $(this).val().trim();
+        
+        // If input has a value, ensure the checkbox is checked
+        if (inputValue !== '') {
+          $checkboxGender.prop('checked', true);
+        } 
+        else {
+          $checkboxGender.prop('checked', false);
+        }
+      });
     }
 
   })();
@@ -1120,8 +1143,6 @@ function dynamicStatusCheckedForEvidences() {
       const $element = $(element);
 
       const $typeCheckboxes = $element.find('input[type="checkbox"]:checked');
-
-      console.log($typeCheckboxes);
       
       $typeCheckboxes.each(function() {
         const checkboxId = $(this).attr('id');
