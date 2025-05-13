@@ -167,7 +167,32 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setPoverty(projectInnovationReference.getPoverty());
       projectInnovationReferenceAdd.setInnovationReadiness(projectInnovationReference.getInnovationReadiness());
       projectInnovationReferenceAdd.setEvidenceSource(projectInnovationReference.getEvidenceSource());
+      projectInnovationReferenceAdd.setDeliverable(projectInnovationReference.getDeliverable());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
+    } else {
+      try {
+        for (ProjectInnovationReference projectInnovationReferenceClone : projectInnovationReferences) {
+          projectInnovationReferenceClone.setProjectInnovation(projectInnovationReference.getProjectInnovation());
+          projectInnovationReferenceClone.setPhase(phase);
+          projectInnovationReferenceClone.setReference(projectInnovationReference.getReference());
+          projectInnovationReferenceClone.setLink(projectInnovationReference.getLink());
+          projectInnovationReferenceClone
+            .setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
+          projectInnovationReferenceClone.setExternalAuthor(projectInnovationReference.getExternalAuthor());
+          projectInnovationReferenceClone.setDeliverableType(projectInnovationReference.getDeliverableType());
+          projectInnovationReferenceClone.setGender(projectInnovationReference.getGender());
+          projectInnovationReferenceClone.setClimateChange(projectInnovationReference.getClimateChange());
+          projectInnovationReferenceClone.setNutrition(projectInnovationReference.getNutrition());
+          projectInnovationReferenceClone.setEnvironmental(projectInnovationReference.getEnvironmental());
+          projectInnovationReferenceClone.setPoverty(projectInnovationReference.getPoverty());
+          projectInnovationReferenceClone.setInnovationReadiness(projectInnovationReference.getInnovationReadiness());
+          projectInnovationReferenceClone.setEvidenceSource(projectInnovationReference.getEvidenceSource());
+          projectInnovationReferenceClone.setDeliverable(projectInnovationReference.getDeliverable());
+          projectInnovationReferenceDAO.save(projectInnovationReferenceClone);
+        }
+      } catch (Exception e) {
+        System.out.println();
+      }
     }
 
     /*
