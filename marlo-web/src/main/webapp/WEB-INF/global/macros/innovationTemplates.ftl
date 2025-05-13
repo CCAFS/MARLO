@@ -82,7 +82,12 @@
                 <small class="pull-right"><a href="${guideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #C1 Innovations  -  Guideline </a> </small>
               </div>
             </div>
-            <hr /> --] 
+            <hr /> --]
+
+            [#-- Note --]
+            <div class="note--2">
+              <p>[@s.text name="projectInnovations.generalInformation.help" /]</p>
+            </div> 
           
             [#-- Title --]
             <div class="form-group">
@@ -105,10 +110,10 @@
               [@customForm.labelText name="innovation.innovationBundle.helpText" text="projectInnovations.innovationBundle.helpText"  /]
               [#local isInnovationBundle = ((innovation.projectInnovationInfo?has_content)&&(innovation.projectInnovationInfo.innovationBundle?has_content && innovation.projectInnovationInfo.innovationBundle?c == "true")) /]
               <div class="col-md-12">
-                <div class="col-md-3">
+                <div class="col-md-3 radioFlat-flex">
                   [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 radioFlat-flex">
                   [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
                 </div>
               </div>
@@ -218,7 +223,7 @@
                         [#local isChecked = true /]
                       [/#if]
                       [#local isYetDetermined = geoScope.id == 6 /]
-                      <div class="col-md-${isYetDetermined?string('4','2')}" style="margin-bottom: 0px;">
+                      <div class="col-md-${isYetDetermined?string('4','2')} radioFlat-flex" style="margin-bottom: 0px;">
                         [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
                       </div>
                     [/#list]
@@ -336,7 +341,7 @@
             
             [#-- Link to Performance Indicators --]
             <div class="form-group col-md-12">
-              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive isMainTitle=true /]
+              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive isMainTitle=true cssClassContainer="margin-buttom-0" /]
               <div class="note left">
                 <span class="glyphicon glyphicon-question-sign"></span>
                 [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]  
@@ -371,6 +376,7 @@
                     [@s.text name="projectInnovations.communications.contacts.help2" /]
                   </a>
               </div>
+              <label for="">[@customForm.text name="projectInnovations.communications.indicateResponsablePartner" readText=!editable/]:</label>
               <div class="projectInnovationsPartners">
                 [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=1 /]
               </div>
