@@ -360,9 +360,6 @@ function attachEvents() {
     }
   });
 
-  // Trigger change on existing elements to initialize their state
-  $('div[listname="innovation.contributingOrganizations"] .relationElement input[id$="other"]').trigger('change');
-
 }
 function AddRequired(){
   if ($('#isClearLeadToAddRequired').is(":checked")) {
