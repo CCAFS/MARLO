@@ -1380,7 +1380,6 @@ function setGeographicScope(component) {
       });
     }
     $nationalBlock.slideDown();
-    $message.slideDown();
   } else {
     $nationalBlock.slideUp();
   }

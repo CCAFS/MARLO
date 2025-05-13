@@ -393,8 +393,8 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   display: none;
 }
 
-div.projectInnovationsPartners div.usersBlock{
-  display: initial;
+div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
+  padding-left: 15px;
 }
 
 .sdgImage{
