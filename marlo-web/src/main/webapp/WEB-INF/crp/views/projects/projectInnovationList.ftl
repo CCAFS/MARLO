@@ -131,12 +131,12 @@
 
         [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
 
-        [#local isScalingReadines = innovation.projectInnovationInfo.readinessScale?has_content!false ]
+        [#local isScalingReadines = ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.readinessScale?has_content))!false ]
           
         [#local scaleReadiness = (innovation.projectInnovationInfo.readinessScale-1)!"" ]
 
         [#local shortTitle]
-          [#if innovation.projectInnovationInfo.title?has_content]
+          [#if ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.title?has_content))]
             [@utils.wordCutter string=(innovation.projectInnovationInfo.title)!"" maxPos=120 /]
           [/#if]
         [/#local]

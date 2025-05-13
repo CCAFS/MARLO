@@ -103,7 +103,7 @@
             <div class="form-group col-md-12">
               [@customForm.labelText name="innovation.innovationBundle" text="projectInnovations.innovationBundle" required=true isMainTitle=true /]
               [@customForm.labelText name="innovation.innovationBundle.helpText" text="projectInnovations.innovationBundle.helpText"  /]
-              [#local isInnovationBundle = (innovation.projectInnovationInfo.innovationBundle?has_content && innovation.projectInnovationInfo.innovationBundle?c == "true") /]
+              [#local isInnovationBundle = ((innovation.projectInnovationInfo?has_content)&&(innovation.projectInnovationInfo.innovationBundle?has_content && innovation.projectInnovationInfo.innovationBundle?c == "true")) /]
               <div class="col-md-12">
                 <div class="col-md-3">
                   [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
@@ -199,14 +199,14 @@
               [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
               [#local isSubNational =   findElementID(geographicScopeElement,  action.reportingIndGeographicScopeSubNational) /]
               
-                [#local hasSpecifiedOutputCountries = element.projectInnovationInfo.hasSpecifiedOutputCountries!"" /]
+              [#local hasSpecifiedOutputCountries = ((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??))?then(element.projectInnovationInfo.hasSpecifiedOutputCountries,"") /]
 
               [@customForm.labelText name="projectInnovations.geographicScope" text="projectInnovations.geographicScope" required=(editable && reportingActive) isMainTitle=true /]
               [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
               <div class="form-group ('','simpleBox') geographicScopeInput">
                 <div class="form-group">
                   <div class="form-group col-md-12">
-                    [#local existGeographicScope = element.geographicScopes[0]??  /]
+                    [#local existGeographicScope = element.geographicScopes?? && element.geographicScopes[0]??  /]
                     [#if existGeographicScope]
                       [@customForm.input name="innovation.geographicScopes[0].id" editable=false display=false value="${element.geographicScopes[0].id}" /]
                     [/#if]
@@ -214,7 +214,7 @@
                     [#-- Geographic Scope --]
                     [#list geographicScopeList as geoScope]
                       [#local isChecked = false /]
-                      [#if ((existGeographicScope) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id))]
+                      [#if ((existGeographicScope) && (element.geographicScopes[0].repIndGeographicScope??) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id))]
                         [#local isChecked = true /]
                       [/#if]
                       [#local isYetDetermined = geoScope.id == 6 /]
@@ -234,17 +234,17 @@
                     [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-6 countriesControlStyle" isFlex=true /]
                   </div>
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
-                    [#local geographicCountrySpecific = element.projectInnovationInfo.hasSpecifiedOutputCountries!false /]
+                    [#local geographicCountrySpecific = (element.projectInnovationInfo?? && element.projectInnovationInfo.hasSpecifiedOutputCountries??)?then(element.projectInnovationInfo.hasSpecifiedOutputCountries, false) /]
                     [#-- Regional scope --]
                     [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true cssClassContainer="col-md-6" isFlex=true /]
 
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
                       <div class="col-md-1">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
                       </div>
                       <div class="col-md-1">
-                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
+                        [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
                       </div>
                     </div>
                     <div class="col-md-12 block-hasSpecifiedOutputCountries" style="display:${(geographicCountrySpecific)?string('block','none')}">
@@ -551,37 +551,43 @@
         <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip" /]
       </div>
     </div>
+
+    [#local genderScoreValue = (element.projectInnovationInfo.genderScore)!{} /]
+    [#local climateChangeScoreValue = (element.projectInnovationInfo.climateChangeScore)!{} /]
+    [#local foodSecurityScoreValue = (element.projectInnovationInfo.foodSecurityScore)!{} /]
+    [#local environmentalScoreValue = (element.projectInnovationInfo.environmentalScore)!{} /]
+    [#local povertyScoreValue = (element.projectInnovationInfo.povertyScore)!{} /]
     
     <div class="form-group">
       [#-- Gender --]
       [@impactScoreRadioGroup 
         fieldName="genderScore" 
         fieldLabel="projectInnovations.oneCGIARAligment.genderScore" 
-        fieldValue=element.projectInnovationInfo.genderScore
+        fieldValue=genderScoreValue
         editable=editable /]
       
       [@impactScoreRadioGroup 
         fieldName="climateChangeScore" 
         fieldLabel="projectInnovations.oneCGIARAligment.climateChangeScore" 
-        fieldValue=element.projectInnovationInfo.climateChangeScore
+        fieldValue=climateChangeScoreValue
         editable=editable /]
       
       [@impactScoreRadioGroup 
         fieldName="foodSecurityScore" 
         fieldLabel="projectInnovations.oneCGIARAligment.nutritionScore" 
-        fieldValue=element.projectInnovationInfo.foodSecurityScore
+        fieldValue=foodSecurityScoreValue
         editable=editable /]
       
       [@impactScoreRadioGroup 
         fieldName="environmentalScore" 
         fieldLabel="projectInnovations.oneCGIARAligment.environmentScore" 
-        fieldValue=element.projectInnovationInfo.environmentalScore 
+        fieldValue=environmentalScoreValue
         editable=editable /]
       
       [@impactScoreRadioGroup 
         fieldName="povertyScore" 
         fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" 
-        fieldValue=element.projectInnovationInfo.povertyScore
+        fieldValue=povertyScoreValue
         editable=editable /]
     </div>
    
@@ -651,24 +657,36 @@
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.technicalExcellence" /]:
           </label>
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" value=(element.projectInnovationInfo.cheaperAlternatives) label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(element.projectInnovationInfo.simplerUse) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(element.projectInnovationInfo.performBetter) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
+
+          [#local cheaperAlternativesValue = (element.projectInnovationInfo.cheaperAlternatives)!{} /]
+          [#local simplerUseValue = (element.projectInnovationInfo.simplerUse)!{} /]
+          [#local performBetterValue = (element.projectInnovationInfo.performBetter)!{} /]
+
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" value=(cheaperAlternativesValue) label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(simplerUseValue) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(performBetterValue) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
 
           [#-- Demand and Investment --]
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.demand&Investment" /]:
           </label>
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(element.projectInnovationInfo.innovationDesirable) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(element.projectInnovationInfo.innovationCommercially) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable /]
+          
+          [#local innovationDesirableValue = (element.projectInnovationInfo.innovationDesirable)!{} /]
+          [#local innovationCommerciallyValue = (element.projectInnovationInfo.innovationCommercially)!{} /]
+
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(innovationDesirableValue) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(innovationCommerciallyValue) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable /]
           
           [#-- Sustained use --]
           <label class="label--2 col-md-12 blueLightColor">
             [@s.text name="projectInnovations.sharing.sustainedUse" /]:
           </label>
 
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(element.projectInnovationInfo.innovationSupported) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(element.projectInnovationInfo.evidenceUptake) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable /]
+          [#local innovationSupportedValue = (element.projectInnovationInfo.innovationSupported)!{} /]
+          [#local evidenceUptakeValue = (element.projectInnovationInfo.evidenceUptake)!{} /]
+
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(innovationSupportedValue) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(evidenceUptakeValue) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable /]
           
         </div>
       </div>
