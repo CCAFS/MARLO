@@ -35,7 +35,6 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.IntellectualPropertyRightsInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
-import org.cgiar.ccafs.marlo.data.manager.OrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
@@ -45,7 +44,6 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
@@ -106,7 +104,6 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.IntellectualPropertyRightsInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
-import org.cgiar.ccafs.marlo.data.model.OrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
@@ -118,7 +115,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganizationRole;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
@@ -282,8 +278,6 @@ public class ProjectInnovationAction extends BaseAction {
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
-  private OrganizationRoleManager organizationRoleManager;
-  private ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager;
   private RepIndOptionsManager repIndOptionsManager;
 
   // Variables
@@ -350,9 +344,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ProjectInnovation> innovationList;
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
-  private List<OrganizationRole> organizationRoles;
   private List<RepIndOptions> optionList;
-  private List<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -404,8 +396,6 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
-    OrganizationRoleManager organizationRoleManager,
-    ProjectInnovationContributingOrganizationRoleManager projectInnovationContributingOrganizationRoleManager,
     RepIndOptionsManager repIndOptionsManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
@@ -479,8 +469,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.institutionLocationManager = institutionLocationManager;
     this.deliverableInfoManager = deliverableInfoManager;
     this.impactAreaScoreManager = impactAreaScoreManager;
-    this.organizationRoleManager = organizationRoleManager;
-    this.projectInnovationContributingOrganizationRoleManager = projectInnovationContributingOrganizationRoleManager;
     this.repIndOptionsManager = repIndOptionsManager;
   }
 
@@ -721,10 +709,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<RepIndOptions> getOptionList() {
     return optionList;
-  }
-
-  public List<OrganizationRole> getOrganizationRoles() {
-    return organizationRoles;
   }
 
   public List<RepIndOrganizationType> getOrganizationTypeList() {
@@ -1194,12 +1178,6 @@ public class ProjectInnovationAction extends BaseAction {
               .sorted(
                 (o1, o2) -> o1.getInstitution().getComposedName().compareTo(o2.getInstitution().getComposedName()))
               .collect(Collectors.toList())));
-
-          for (ProjectInnovationContributingOrganization contributingOrtganization : innovation
-            .getContributingOrganizations()) {
-            contributingOrtganization.setContributingOrganizationRoles(new ArrayList<>(contributingOrtganization
-              .getProjectInnovationContributingOrganizationRoles().stream().collect(Collectors.toList())));
-          }
         }
 
         // Innovation Crp list
@@ -1463,7 +1441,6 @@ public class ProjectInnovationAction extends BaseAction {
         this.scalingReadinessList = this.scalingReadinessManager.findAll();
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
-        this.organizationRoles = this.organizationRoleManager.findAll();
         this.optionList = this.repIndOptionsManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
@@ -2771,24 +2748,36 @@ public class ProjectInnovationAction extends BaseAction {
     if (innovation.getContributingOrganizations() != null) {
       for (ProjectInnovationContributingOrganization innovationOrganization : innovation
         .getContributingOrganizations()) {
-        if (innovationOrganization.getId() == null) {
-          ProjectInnovationContributingOrganization innovationOrganizationSave =
-            new ProjectInnovationContributingOrganization();
-          innovationOrganizationSave.setProjectInnovation(projectInnovation);
-          innovationOrganizationSave.setPhase(phase);
+        ProjectInnovationContributingOrganization innovationOrganizationSave = null;
+        if (innovationOrganization.getId() != null) {
+          innovationOrganizationSave = projectInnovationContributingOrganizationManager
+            .getProjectInnovationContributingOrganizationById(innovationOrganization.getId());
+        }
 
-          Institution institution =
-            institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+        if (innovationOrganizationSave == null) {
+          innovationOrganizationSave = new ProjectInnovationContributingOrganization();
+        }
 
+        innovationOrganizationSave.setProjectInnovation(projectInnovation);
+        innovationOrganizationSave.setPhase(phase);
+        innovationOrganizationSave.setScaling(innovationOrganization.getScaling());
+        innovationOrganizationSave.setDemand(innovationOrganization.getDemand());
+        innovationOrganizationSave.setInnovation(innovationOrganization.getInnovation());
+        innovationOrganizationSave.setOther(innovationOrganization.getOther());
+
+        Institution institution = null;
+        if (innovationOrganization.getInstitution() != null) {
+          institution = institutionManager.getInstitutionById(innovationOrganization.getInstitution().getId());
+        }
+        if (institution != null) {
           innovationOrganizationSave.setInstitution(institution);
+        }
 
-          projectInnovationContributingOrganizationManager
-            .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
+        projectInnovationContributingOrganizationManager
+          .saveProjectInnovationContributingOrganization(innovationOrganizationSave);
 
-          this.saveOrganizationroles(innovationOrganizationSave,
-            innovationOrganization.getProjectInnovationContributingOrganizationRoles());
-
-          // This is to add innovationOrganizationSave to generate correct auditlog.
+        // This is to add innovationOrganizationSave to generate correct auditlog.
+        if (innovation.getProjectInnovationContributingOrganization() != null) {
           innovation.getProjectInnovationContributingOrganization().add(innovationOrganizationSave);
         }
       }
@@ -3119,32 +3108,6 @@ public class ProjectInnovationAction extends BaseAction {
             logger.error("unable to delete milestone", e);
           }
 
-        }
-      }
-    }
-  }
-
-  public void saveOrganizationroles(ProjectInnovationContributingOrganization organization,
-    Set<ProjectInnovationContributingOrganizationRole> roles) {
-
-    if (roles != null && !roles.isEmpty()) {
-      for (ProjectInnovationContributingOrganizationRole existingRole : organization
-        .getProjectInnovationContributingOrganizationRoles()) {
-        if (!roles.contains(existingRole)) {
-          projectInnovationContributingOrganizationRoleManager
-            .deleteProjectInnovationContributingOrganizationRole(existingRole.getId());
-        }
-      }
-
-      for (ProjectInnovationContributingOrganizationRole role : roles) {
-        if (role.getId() == null) {
-          ProjectInnovationContributingOrganizationRole roleSave = new ProjectInnovationContributingOrganizationRole();
-          roleSave.setProjectInnovationContributingOrganization(organization);
-          roleSave.setOrganizationRole(role.getOrganizationRole());
-
-          projectInnovationContributingOrganizationRoleManager
-            .saveProjectInnovationContributingOrganizationRole(roleSave);
-          organization.getProjectInnovationContributingOrganizationRoles().add(roleSave);
         }
       }
     }
@@ -4102,10 +4065,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setOptionList(List<RepIndOptions> optionList) {
     this.optionList = optionList;
-  }
-
-  public void setOrganizationRoles(List<OrganizationRole> organizationRoles) {
-    this.organizationRoles = organizationRoles;
   }
 
   public void setOrganizationTypeList(List<RepIndOrganizationType> organizationTypeList) {

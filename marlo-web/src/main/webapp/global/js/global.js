@@ -955,6 +955,14 @@ function onSelectElement() {
   $list.find('li.relationElement').each(function (i, element) {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
+    // Find all labels in the element and ensure they have the correct 'for' attribute
+    $(element).find('label').each(function() {
+      var $label = $(this);
+      var $input = $label.closest('.inputsFlat').find('input');
+      if ($input.length) {
+      $label.attr('for', $input.attr('id'));
+      }
+    });
   });
   $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
   //Validate if is a primary radioButton group

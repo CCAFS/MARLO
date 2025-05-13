@@ -170,6 +170,8 @@ public class ProjectInnovationListAction extends BaseAction {
     ProjectInnovationInfo projectInnovationInfo = new ProjectInnovationInfo(projectInnovation, this.getActualPhase(),
       "", "", "", "", "", "", new Long(this.getActualPhase().getYear()));
 
+    // Default selection for the innovation bundle in Innovation creation
+    projectInnovationInfo.setInnovationBundle(false);
     projectInnovationInfoManager.saveProjectInnovationInfo(projectInnovationInfo);
 
     innovationID = projectInnovation.getId();

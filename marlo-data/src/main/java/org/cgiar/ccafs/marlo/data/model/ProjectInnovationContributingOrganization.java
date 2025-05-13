@@ -3,10 +3,6 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.gson.annotations.Expose;
 
 /**
@@ -26,10 +22,14 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
 
   @Expose
   private Institution institution;
-
-  private Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles =
-    new HashSet<ProjectInnovationContributingOrganizationRole>(0);
-  private List<ProjectInnovationContributingOrganizationRole> contributingOrganizationRoles;
+  @Expose
+  private Boolean scaling;
+  @Expose
+  private Boolean demand;
+  @Expose
+  private Boolean innovation;
+  @Expose
+  private Boolean other;
 
   public ProjectInnovationContributingOrganization() {
   }
@@ -61,15 +61,18 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return this.getInstitution().getComposedName();
   }
 
-  public List<ProjectInnovationContributingOrganizationRole> getContributingOrganizationRoles() {
-    return contributingOrganizationRoles;
+  public Boolean getDemand() {
+    return demand;
   }
 
+
+  public Boolean getInnovation() {
+    return innovation;
+  }
 
   public Institution getInstitution() {
     return institution;
   }
-
 
   @Override
   public String getLogDeatil() {
@@ -90,6 +93,10 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return u;
   }
 
+  public Boolean getOther() {
+    return other;
+  }
+
   public Phase getPhase() {
     return phase;
   }
@@ -98,13 +105,12 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return projectInnovation;
   }
 
-  public Set<ProjectInnovationContributingOrganizationRole> getProjectInnovationContributingOrganizationRoles() {
-    return projectInnovationContributingOrganizationRoles;
-  }
-
-
   public Institution getRelationship() {
     return institution;
+  }
+
+  public Boolean getScaling() {
+    return scaling;
   }
 
   @Override
@@ -120,9 +126,12 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     return true;
   }
 
-  public void setContributingOrganizationRoles(
-    List<ProjectInnovationContributingOrganizationRole> contributingOrganizationRoles) {
-    this.contributingOrganizationRoles = contributingOrganizationRoles;
+  public void setDemand(Boolean demand) {
+    this.demand = demand;
+  }
+
+  public void setInnovation(Boolean innovation) {
+    this.innovation = innovation;
   }
 
   public void setInstitution(Institution institution) {
@@ -134,6 +143,10 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
 
   }
 
+  public void setOther(Boolean other) {
+    this.other = other;
+  }
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
@@ -142,8 +155,7 @@ public class ProjectInnovationContributingOrganization extends MarloBaseEntity
     this.projectInnovation = projectInnovation;
   }
 
-  public void setProjectInnovationContributingOrganizationRoles(
-    Set<ProjectInnovationContributingOrganizationRole> projectInnovationContributingOrganizationRoles) {
-    this.projectInnovationContributingOrganizationRoles = projectInnovationContributingOrganizationRoles;
+  public void setScaling(Boolean scaling) {
+    this.scaling = scaling;
   }
 }

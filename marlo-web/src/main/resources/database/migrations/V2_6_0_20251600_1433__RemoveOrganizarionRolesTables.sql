@@ -1,0 +1,2 @@
+DROP TABLE project_innovation_contributing_organization_roles;
+DROP TABLE organization_roles;

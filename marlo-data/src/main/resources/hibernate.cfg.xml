@@ -469,8 +469,6 @@
   <mapping resource="xmls/ProjectInnovationToolCategories.hbm.xml"/>
   <mapping resource="xmls/ReportConfigurations.hbm.xml"/>
   <mapping resource="xmls/ImpactAreaScores.hbm.xml"/>
-  <mapping resource="xmls/OrganizationRoles.hbm.xml"/>
-  <mapping resource="xmls/ProjectInnovationContributingOrganizationRoles.hbm.xml"/>
   <mapping resource="xmls/RepIndOptions.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
