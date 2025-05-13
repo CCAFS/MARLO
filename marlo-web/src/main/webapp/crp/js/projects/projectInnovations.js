@@ -165,10 +165,12 @@ function attachEvents() {
       const $element = $(this);
       const $blockSexAgeNotApply = $element.parents('.actorsInnovation').find('.block-sexAgeNotApply');
       const $checkboxSexAgeNotApply = $blockSexAgeNotApply.find('input[type="checkbox"]');
+      const $inputSexAgeNotApply = $blockSexAgeNotApply.find('input[type="number"]');
 
       if($element.is(':checked')) {
         $blockSexAgeNotApply.slideUp();
         $checkboxSexAgeNotApply.prop('checked', false);
+        $inputSexAgeNotApply.val('');
       } else {
         $blockSexAgeNotApply.slideDown();
       }
