@@ -371,8 +371,6 @@ function initialStateCheckboxOtherContributingOrganizations() {
     const $element = $(element);
     const $parentElement = $element.closest('.relationElement');
 
-    console.log($parentElement);
-
     if($element.is(':checked')) {
       $parentElement.find('input[type="checkbox"]').not($element).attr("onclick", "return false").addClass('disabled');
     } else {

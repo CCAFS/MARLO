@@ -1416,7 +1416,7 @@ function setGeographicScope2(component) {
   if ($isMultiNational || $isNational || $isSubNational) {
     if ($isMultiNational) {
 
-      if (countries.length > 1) {
+      if (countries.length > 0) {
         $nationalBlock.find("select").val(null).trigger('change');
       }
 
@@ -1430,7 +1430,8 @@ function setGeographicScope2(component) {
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
-      if (countries.length > 1) {
+      
+      if (countries.length == 1) {
         $nationalBlock.find("select").val(null).trigger('change');
       }
       $nationalBlock.find("select").select2({
