@@ -170,7 +170,6 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
       deliverableActivitysAdd.setDeliverable(deliverableActivity.getDeliverable());
       deliverableActivitysAdd.setPhase(phase);
       deliverableActivitysAdd.setActivity(deliverableActivity.getActivity());
-      deliverableActivitysAdd.setId(null);
       deliverableActivityDAO.save(deliverableActivitysAdd);
     }
     if (phase.getNext() != null) {
