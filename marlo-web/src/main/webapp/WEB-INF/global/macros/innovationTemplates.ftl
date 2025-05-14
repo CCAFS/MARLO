@@ -85,7 +85,7 @@
             <hr /> --]
 
             [#-- Note --]
-            <div class="note--2">
+            <div class="note">
               <p>[@s.text name="projectInnovations.generalInformation.help" /]</p>
             </div> 
           
@@ -213,7 +213,9 @@
                   <div class="form-group col-md-12">
                     [#local existGeographicScope = element.geographicScopes?? && element.geographicScopes[0]??  /]
                     [#if existGeographicScope]
-                      [@customForm.input name="innovation.geographicScopes[0].id" editable=false display=false value="${element.geographicScopes[0].id}" /]
+                      [#local geographicScopeID = (element.geographicScopes[0].id!"")?string /]
+
+                      [@customForm.input name="innovation.geographicScopes[0].id" editable=false display=false value=geographicScopeID /]
                     [/#if]
 
                     [#-- Geographic Scope --]
@@ -236,19 +238,19 @@
 
                   <div class="form-group nationalBlock col-md-12" style="display:${(isNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
-                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-6 countriesControlStyle" isFlex=true /]
+                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
                   </div>
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
                     [#local geographicCountrySpecific = (element.projectInnovationInfo?? && element.projectInnovationInfo.hasSpecifiedOutputCountries??)?then(element.projectInnovationInfo.hasSpecifiedOutputCountries, false) /]
                     [#-- Regional scope --]
-                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true cssClassContainer="col-md-6" isFlex=true /]
+                    [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=true cssClassContainer="col-md-12" isFlex=true /]
 
                     <div class="col-md-12">
                       [@customForm.labelText name="geographicCountrySpecific" text="projectInnovations.geographicCountrySpecific" required=true /]
-                      <div class="col-md-1">
+                      <div class="col-md-1 radioFlat-flex">
                         [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
                       </div>
-                      <div class="col-md-1">
+                      <div class="col-md-1 radioFlat-flex">
                         [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
                       </div>
                     </div>
@@ -256,7 +258,7 @@
                       [#-- Multinational, National and Subnational scope --]
                       [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
                       [#-- Multinational, National and Subnational scope --]
-                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-6 countriesControlStyle" isFlex=true /]
+                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
                     </div>
                       
                   </div>

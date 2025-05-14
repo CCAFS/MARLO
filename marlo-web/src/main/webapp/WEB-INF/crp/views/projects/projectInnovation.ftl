@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250512",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250514",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
@@ -56,8 +56,8 @@
 [/#if]
 
 
-[#-- Helptext --]
-[@utilities.helpBox name="projectInnovations.generalInformation.help" /]
+[#-- Helptext - DEPRECATED - NEW VERSION IN SYSTEM --]
+[#-- [@utilities.helpBox name="projectInnovations.generalInformation.help" /] --]
 
 <section class="container">
   <div class="row">

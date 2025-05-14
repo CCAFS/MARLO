@@ -1141,19 +1141,19 @@
         [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
       </label>
       <div class="col-md-12">
-        <div style="width: 10% !important;" class="col-md-2">
+        <div style="width: 11% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender" label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
         </div>
         <div class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange" label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
         </div>
-        <div class="col-md-2">
+        <div style="width: 12% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition" label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
         </div>
-        <div class="col-md-2">
+        <div style="width: 16% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental" label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
         </div>
-        <div class="col-md-2">
+        <div style="width: 11% !important;" class="col-md-2">
           [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty" label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
         </div>
         <div style="width: 23% !important;" class="col-md-2">
