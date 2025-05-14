@@ -360,7 +360,27 @@ function attachEvents() {
     }
   });
 
+  initialStateCheckboxOtherContributingOrganizations();
+
 }
+
+function initialStateCheckboxOtherContributingOrganizations() {
+  const $elements = $('div[listname="innovation.contributingOrganizations"] .relationElement').find('input[id$="other"]');
+
+  $elements.each(function(_index, element) {
+    const $element = $(element);
+    const $parentElement = $element.closest('.relationElement');
+
+    console.log($parentElement);
+
+    if($element.is(':checked')) {
+      $parentElement.find('input[type="checkbox"]').not($element).attr("onclick", "return false").addClass('disabled');
+    } else {
+      $parentElement.find('input[type="checkbox"]').not($element).attr("onclick", "").removeClass('disabled');
+    }
+  })
+}
+
 function AddRequired(){
   if ($('#isClearLeadToAddRequired').is(":checked")) {
     $('.top-five-contributing').find('.requiredTag').show();
