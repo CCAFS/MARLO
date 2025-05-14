@@ -85,7 +85,7 @@
             <hr /> --]
 
             [#-- Note --]
-            <div class="note--2">
+            <div class="note">
               <p>[@s.text name="projectInnovations.generalInformation.help" /]</p>
             </div> 
           

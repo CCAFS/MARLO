@@ -56,8 +56,8 @@
 [/#if]
 
 
-[#-- Helptext --]
-[@utilities.helpBox name="projectInnovations.generalInformation.help" /]
+[#-- Helptext - DEPRECATED - NEW VERSION IN SYSTEM --]
+[#-- [@utilities.helpBox name="projectInnovations.generalInformation.help" /] --]
 
 <section class="container">
   <div class="row">
