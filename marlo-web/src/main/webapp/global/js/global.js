@@ -955,6 +955,14 @@ function onSelectElement() {
   $list.find('li.relationElement').each(function (i, element) {
     var indexLevel = $(element).classParam('indexLevel');
     $(element).setNameIndexes(indexLevel, i);
+    // Find all labels in the element and ensure they have the correct 'for' attribute
+    $(element).find('label').each(function() {
+      var $label = $(this);
+      var $input = $label.closest('.inputsFlat').find('input');
+      if ($input.length) {
+      $label.attr('for', $input.attr('id'));
+      }
+    });
   });
   $element.find('label.radio-label').attr('for', $element.find('label.radio-label').parents('.radioFlat').find('input').attr("id"));
   //Validate if is a primary radioButton group
@@ -1372,7 +1380,6 @@ function setGeographicScope(component) {
       });
     }
     $nationalBlock.slideDown();
-    $message.slideDown();
   } else {
     $nationalBlock.slideUp();
   }
@@ -1409,7 +1416,7 @@ function setGeographicScope2(component) {
   if ($isMultiNational || $isNational || $isSubNational) {
     if ($isMultiNational) {
 
-      if (countries.length > 1) {
+      if (countries.length > 0) {
         $nationalBlock.find("select").val(null).trigger('change');
       }
 
@@ -1423,7 +1430,8 @@ function setGeographicScope2(component) {
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
-      if (countries.length > 1) {
+      
+      if (countries.length == 1) {
         $nationalBlock.find("select").val(null).trigger('change');
       }
       $nationalBlock.find("select").select2({

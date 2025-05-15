@@ -133,6 +133,11 @@ function attachEvents() {
       // Update indexes
       updateIndexes();
 
+      // Also call onAddDataRelatedToCheckboxGender for each checkbox to set up initial state
+      $newItem.find('input[type="checkbox"].check-gender').each(function(_i,_e) {
+        onAddDataRelatedToCheckboxGender.call(this);
+      });
+
     }
 
     function removeActor() {
@@ -160,13 +165,33 @@ function attachEvents() {
       const $element = $(this);
       const $blockSexAgeNotApply = $element.parents('.actorsInnovation').find('.block-sexAgeNotApply');
       const $checkboxSexAgeNotApply = $blockSexAgeNotApply.find('input[type="checkbox"]');
+      const $inputSexAgeNotApply = $blockSexAgeNotApply.find('input[type="number"]');
 
       if($element.is(':checked')) {
         $blockSexAgeNotApply.slideUp();
         $checkboxSexAgeNotApply.prop('checked', false);
+        $inputSexAgeNotApply.val('');
       } else {
         $blockSexAgeNotApply.slideDown();
       }
+    }
+
+    function onAddDataRelatedToCheckboxGender() {
+      const $checkboxGender = $(this);
+      const $relatedInputNumber = $checkboxGender.parents('.innerOptions').find(`input[type="number"]`);
+
+      $relatedInputNumber.on('change', function() {
+
+        const inputValue = $(this).val().trim();
+        
+        // If input has a value, ensure the checkbox is checked
+        if (inputValue !== '') {
+          $checkboxGender.prop('checked', true);
+        } 
+        else {
+          $checkboxGender.prop('checked', false);
+        }
+      });
     }
 
   })();
@@ -324,7 +349,32 @@ function attachEvents() {
   //On change radio buttons - Notes in Scores - One CGIAR
   $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
+  // Use event delegation to handle "Other" checkbox changes for both existing and new elements
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[id$="other"]', function() {
+    const $element = $(this).closest('.relationElement');
+    
+    if(this.checked) {
+      $element.find('input[type="checkbox"]').not(this).prop("checked", false);
+    } else {
+      $element.find('input[type="checkbox"]').not(this).prop("checked", false);
+    }
+  });
+
+  // On change checkbox buttons - Contributing Organizations except "Other"
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[type="checkbox"]', function() {
+    const $element = $(this).closest('.relationElement');
+    const $checkboxOther = $element.find('input[id$="other"]');
+    const $checkboxContributingOrganizations = $element.find('input[type="checkbox"]').not($checkboxOther);
+    const $checkboxContributingOrganizationsChecked = $checkboxContributingOrganizations.filter(':checked');
+
+    if($checkboxContributingOrganizationsChecked.length > 0) {
+      $checkboxOther.prop("checked", false);
+    }
+  });
+
+
 }
+
 function AddRequired(){
   if ($('#isClearLeadToAddRequired').is(":checked")) {
     $('.top-five-contributing').find('.requiredTag').show();
@@ -491,7 +541,7 @@ function updateAllianceTab() {
           $('li[role="presentation"]').css('width', "25%");
         }
 
-    }, 100);
+    }, 500);
 
 }  
 
@@ -1106,8 +1156,6 @@ function dynamicStatusCheckedForEvidences() {
       const $element = $(element);
 
       const $typeCheckboxes = $element.find('input[type="checkbox"]:checked');
-
-      console.log($typeCheckboxes);
       
       $typeCheckboxes.each(function() {
         const checkboxId = $(this).attr('id');

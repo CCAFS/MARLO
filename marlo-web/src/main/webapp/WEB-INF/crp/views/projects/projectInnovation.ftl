@@ -4,11 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250509",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250515",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250509"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250513"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -56,8 +56,8 @@
 [/#if]
 
 
-[#-- Helptext --]
-[@utilities.helpBox name="projectInnovations.generalInformation.help" /]
+[#-- Helptext - DEPRECATED - NEW VERSION IN SYSTEM --]
+[#-- [@utilities.helpBox name="projectInnovations.generalInformation.help" /] --]
 
 <section class="container">
   <div class="row">
@@ -123,7 +123,7 @@
             </li>
 
             [#assign isInnovationAllianceAlignmentComplete = (action.isInnovationAllianceAlignmentComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
+            <li role="presentation" style="display: ${isAllianceContribution?then('block','none')}; width:${isAllianceContribution?then('20%','25%')}; " class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
@@ -133,7 +133,7 @@
             </li>
 
             [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationReadinessComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md toSubmit">
               <a href="#innovationReadiness" role="tab" data-toggle="tab" disabled class="no-button-label-disabled">[@s.text name="projectInnovations.tab.bundleComposition" /][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /]</a>
             </li>
 

@@ -16,9 +16,11 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
@@ -35,14 +37,17 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
 
 
   private DeliverableActivityDAO deliverableActivityDAO;
+  private ActivityDAO ActivityDAO;
   private PhaseDAO phaseDAO;
   // Managers
 
 
   @Inject
-  public DeliverableActivityManagerImpl(DeliverableActivityDAO deliverableActivityDAO, PhaseDAO phaseDAO) {
+  public DeliverableActivityManagerImpl(DeliverableActivityDAO deliverableActivityDAO, PhaseDAO phaseDAO,
+    ActivityDAO activityDAO) {
     this.deliverableActivityDAO = deliverableActivityDAO;
     this.phaseDAO = phaseDAO;
+    this.ActivityDAO = activityDAO;
   }
 
   @Override
@@ -169,8 +174,21 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
       DeliverableActivity deliverableActivitysAdd = new DeliverableActivity();
       deliverableActivitysAdd.setDeliverable(deliverableActivity.getDeliverable());
       deliverableActivitysAdd.setPhase(phase);
-      deliverableActivitysAdd.setActivity(deliverableActivity.getActivity());
-      deliverableActivitysAdd.setId(null);
+
+
+      // Get activity by phase
+      try {
+        Activity activity =
+          deliverableActivity.getActivity() != null && deliverableActivity.getActivity().getComposeID() != null
+            ? ActivityDAO.getActivitiesByComposedID(deliverableActivity.getActivity().getComposeID(), phase.getId())
+              .stream().findFirst().orElse(null)
+            : null;
+
+        deliverableActivitysAdd.setActivity(activity != null ? activity : deliverableActivity.getActivity());
+      } catch (Exception e) {
+        deliverableActivitysAdd.setActivity(deliverableActivity.getActivity());
+      }
+
       deliverableActivityDAO.save(deliverableActivitysAdd);
     }
     if (phase.getNext() != null) {

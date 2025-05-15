@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,18 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   }
 
   @Override
+  public List<Activity> getActivitiesByComposedID(String composedID, long phaseId) {
+    String query = "from " + Activity.class.getName() + " where composed_id=" + composedID + " and id_phase=" + phaseId
+      + " and is_active=1";
+    List<Activity> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return Collections.emptyList();
+  }
+
+
+  @Override
   public int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId) {
 
     StringBuilder query = new StringBuilder();
@@ -105,7 +118,6 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     return activity;
 
   }
-
 
   @Override
   public List<Activity> getActivitiesByProject(long projectId, long phaseId) {

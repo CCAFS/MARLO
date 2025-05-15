@@ -62,8 +62,18 @@ public interface ActivityDAO {
    * @return a list from Activity null if no exist records
    */
   List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
-   /* This method obtains the number of existing activities, by deliverable and phase
+
+  /**
+   * This method gets activities by a given activity composedID and phase.
    * 
+   * @param composedID is the composed identifier.
+   * @param phaseId is the phase identifier.
+   * @return a list from Activity null if no exist records
+   */
+  public List<Activity> getActivitiesByComposedID(String composedID, long phaseId);
+
+  /*
+   * This method obtains the number of existing activities, by deliverable and phase
    * @param deliverableId deliverable identifier.
    * @param phaseId phase identifier.
    * @return number of existing activities
