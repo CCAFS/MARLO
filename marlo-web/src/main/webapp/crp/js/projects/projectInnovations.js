@@ -533,15 +533,17 @@ function updateAllianceTab() {
 
         if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
           //remove disabled class alliance tab
+          console.log("remove disabled class alliance tab");	
           $('#allianceTab').slideDown();
           $('li[role="presentation"]').css('width', "20%");
         } else {
           //add disabled class alliance tab
+          console.log("add disabled class alliance tab");
           $('#allianceTab').slideUp();
           $('li[role="presentation"]').css('width', "25%");
         }
 
-    }, 100);
+    }, 500);
 
 }  
 

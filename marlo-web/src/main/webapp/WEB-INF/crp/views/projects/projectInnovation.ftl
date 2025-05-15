@@ -123,7 +123,7 @@
             </li>
 
             [#assign isInnovationAllianceAlignmentComplete = (action.isInnovationAllianceAlignmentComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" style="display:${isAllianceContribution?then('block','none')}" id="allianceTab">
+            <li role="presentation" style="display: ${isAllianceContribution?then('block','none')}; width:${isAllianceContribution?then('20%','25%')}; " class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
