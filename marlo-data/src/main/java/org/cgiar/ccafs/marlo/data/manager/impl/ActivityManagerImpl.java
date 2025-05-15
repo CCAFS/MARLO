@@ -178,27 +178,33 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
+  public List<Activity> getActivitiesByComposedID(String composedID, long phaseId) {
+    return activityDAO.getActivitiesByComposedID(composedID, phaseId);
+  }
+
+
+  @Override
   public int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId) {
     return activityDAO.getActivitiesByDeliverableAndPhaseQuantity(deliverableId, phaseId);
   }
-
 
   @Override
   public List<Activity> getActivitiesByProject(long projectId, long phaseId) {
     return activityDAO.getActivitiesByProject(projectId, phaseId);
   }
 
+
   @Override
   public int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId) {
     return activityDAO.getActivitiesByProjectAndUserQuantity(projectId, phaseId, projectPersonId);
   }
-
 
   @Override
   public Activity getActivityById(long activityID) {
 
     return activityDAO.find(activityID);
   }
+
 
   private ProjectPartnerPerson getPartnerPerson(Phase phase, ProjectPartnerPerson projectPartnerPerson) {
     if (projectPartnerPerson != null) {
@@ -214,7 +220,6 @@ public class ActivityManagerImpl implements ActivityManager {
     }
     return null;
   }
-
 
   @Override
   public Activity saveActivity(Activity activity) {
