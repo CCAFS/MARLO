@@ -84,6 +84,8 @@ $(document).ready(function() {
   });
 
   feedbackAutoImplementation();
+
+  initTestDropdown();
 });
 
 function attachEvents() {
@@ -211,9 +213,9 @@ function attachEvents() {
       const $template = $('#organizationsInnovation-template');
 
       // remove select2 data to avoid corruption in clone process
-      if ($template.find('select').data('select2')) {
+/*       if ($template.find('select').data('select2')) {
         $template.find('select').select2("destroy");
-      }
+      } */
 
       const $newItem = $template.clone(true).removeAttr('id');
       $newItem.find('input, select, input[type="checkbox"]').each(function(_i,e) {
@@ -223,10 +225,12 @@ function attachEvents() {
       $newItem.find('label').each(function(_i,e) {
         e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
-      // Add select2 to select2 library
+/*       // Add select2 to select2 library
       $template.find('select').select2();
-      $newItem.find('select').select2();
+      $newItem.find('select').select2(); */
 
+      $newItem.find('.allianceOrganizations-institutions')[0].data = $template.find('.allianceOrganizations-institutions')[0].data;
+    
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
       // Update indexes
@@ -1203,4 +1207,44 @@ function dynamicStatusCheckedForEvidences() {
     // Hide the label when no conditions are met
     statusLabel.hide();
   }
+}
+
+function initTestDropdown() {
+  const dropdowns = document.querySelectorAll('.allianceOrganizations-institutions');
+
+  $.ajax({
+    url: `${baseURL}/getInstitutionsService.do`,
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      console.log('Data received:', data);
+      const options = data.institutions.map(item => {
+        return { label: item.name, value: item.id };
+      });
+      
+      // Apply data to all dropdowns with the class
+      dropdowns.forEach(dropdown => {
+        dropdown.data = options;
+        
+        // Set initial value if available
+        const initialValue = dropdown.getAttribute("data-value");
+        if (initialValue) {
+          dropdown.value = parseInt(initialValue);
+        }
+        
+        // Listen for value changes
+        dropdown.addEventListener('valueChange', (event) => {
+          console.log('Selected value:', event.detail);
+        });
+      });
+
+      console.log('Data loaded successfully for all dropdowns');
+    },
+    error: function(xhr, status, error) {
+      console.error('Error loading data:', error);
+      console.error('Response text:', xhr.responseText);
+      console.error('Status code:', xhr.status);
+    }
+  });
+
 }
