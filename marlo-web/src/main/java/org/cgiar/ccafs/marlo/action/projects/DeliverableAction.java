@@ -3107,6 +3107,11 @@ public class DeliverableAction extends BaseAction {
         }
 
         deliverableActivity.setDeliverable(deliverableManager.getDeliverableById(deliverableID));
+        try {
+          deliverableActivity.setActivity(activityManager.getActivityById(deliverableActivity.getActivity().getId()));
+        } catch (Exception e) {
+          logger.error("unable to get activity", e);
+        }
         deliverableActivity.setPhase(this.getActualPhase());
         deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
         // This add projectFocus to generate correct auditlog.
