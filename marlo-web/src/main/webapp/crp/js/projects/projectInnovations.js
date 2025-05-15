@@ -354,29 +354,25 @@ function attachEvents() {
     const $element = $(this).closest('.relationElement');
     
     if(this.checked) {
-      $element.find('input[type="checkbox"]').not(this).attr("onclick", "return false").addClass('disabled').prop("checked", false);
+      $element.find('input[type="checkbox"]').not(this).prop("checked", false);
     } else {
-      $element.find('input[type="checkbox"]').not(this).attr("onclick", "").removeClass('disabled').prop("checked", false);
+      $element.find('input[type="checkbox"]').not(this).prop("checked", false);
     }
   });
 
-  initialStateCheckboxOtherContributingOrganizations();
+  // On change checkbox buttons - Contributing Organizations except "Other"
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[type="checkbox"]', function() {
+    const $element = $(this).closest('.relationElement');
+    const $checkboxOther = $element.find('input[id$="other"]');
+    const $checkboxContributingOrganizations = $element.find('input[type="checkbox"]').not($checkboxOther);
+    const $checkboxContributingOrganizationsChecked = $checkboxContributingOrganizations.filter(':checked');
 
-}
-
-function initialStateCheckboxOtherContributingOrganizations() {
-  const $elements = $('div[listname="innovation.contributingOrganizations"] .relationElement').find('input[id$="other"]');
-
-  $elements.each(function(_index, element) {
-    const $element = $(element);
-    const $parentElement = $element.closest('.relationElement');
-
-    if($element.is(':checked')) {
-      $parentElement.find('input[type="checkbox"]').not($element).attr("onclick", "return false").addClass('disabled');
-    } else {
-      $parentElement.find('input[type="checkbox"]').not($element).attr("onclick", "").removeClass('disabled');
+    if($checkboxContributingOrganizationsChecked.length > 0) {
+      $checkboxOther.prop("checked", false);
     }
-  })
+  });
+
+
 }
 
 function AddRequired(){
