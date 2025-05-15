@@ -133,7 +133,7 @@
             </li>
 
             [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationReadinessComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md toSubmit">
               <a href="#innovationReadiness" role="tab" data-toggle="tab" disabled class="no-button-label-disabled">[@s.text name="projectInnovations.tab.bundleComposition" /][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /]</a>
             </li>
 
