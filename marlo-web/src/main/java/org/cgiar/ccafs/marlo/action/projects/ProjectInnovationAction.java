@@ -1674,7 +1674,8 @@ public class ProjectInnovationAction extends BaseAction {
         if (innovationNatureOther != null && innovationNatureList.contains(innovationNatureOther)) {
           innovationNatureList.remove(innovationNatureOther);
           innovationNatureList.add(innovationNatureOther);
-
+        } else {
+          innovationNatureList.add(innovationNatureOther);
         }
       } catch (Exception e) {
         Log.error("error getting list " + e);
