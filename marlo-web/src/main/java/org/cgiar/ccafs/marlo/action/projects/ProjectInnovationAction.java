@@ -1338,6 +1338,10 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        if (innovation.getAllianceOrganizations() != null && !innovation.getAllianceOrganizations().isEmpty()) {
+          innovation.getAllianceOrganizations().sort(Comparator.comparing(o -> o.getId()));
+        }
+
         // Innovations actors
         if (innovation.getProjectInnovationActors() != null) {
           innovation.setActors(new ArrayList<>(innovation.getProjectInnovationActors().stream()
