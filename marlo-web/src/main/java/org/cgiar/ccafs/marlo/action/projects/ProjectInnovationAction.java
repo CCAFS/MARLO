@@ -2208,13 +2208,18 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getGeographicScopes() != null) {
         for (ProjectInnovationGeographicScope projectInnovationGeographicScope : innovation.getGeographicScopes()) {
 
-          if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-            haveRegions = true;
-          }
+          if (projectInnovationGeographicScope != null
+            && projectInnovationGeographicScope.getRepIndGeographicScope() != null
+            && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != null) {
 
-          if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-            && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-            haveCountries = true;
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
+              haveRegions = true;
+            }
+
+            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
+              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+              haveCountries = true;
+            }
           }
         }
       }
@@ -2966,20 +2971,23 @@ public class ProjectInnovationAction extends BaseAction {
     // Save form Information
     if (innovation.getGeographicScopes() != null) {
       for (ProjectInnovationGeographicScope innovationScope : innovation.getGeographicScopes()) {
-        // if (innovationScope.getId() == null) {
-        ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
-        innovationScopeSave.setProjectInnovation(projectInnovation);
-        innovationScopeSave.setPhase(phase);
 
-        RepIndGeographicScope repIndGeographicScope =
-          repIndGeographicScopeManager.getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
+        if (innovationScope != null && innovationScope.getRepIndGeographicScope() != null
+          && innovationScope.getRepIndGeographicScope().getId() != null) {
+          ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
+          innovationScopeSave.setProjectInnovation(projectInnovation);
+          innovationScopeSave.setPhase(phase);
 
-        innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+          RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
+            .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
+          if (repIndGeographicScope != null) {
+            innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
 
-        projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
-        // This is to add innovationCrpSave to generate correct auditlog.
-        innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
-        // }
+            projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
+            // This is to add innovationCrpSave to generate correct auditlog.
+            innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
+          }
+        }
       }
     }
   }
