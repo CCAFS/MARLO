@@ -25,6 +25,12 @@ $(document).ready(function() {
   $('select.countriesSelect').each(function(i, element) {
     dynamicMarginToSelectedRender(element);
   });
+
+  $('input.radioType-geographicScopes').each(function(i, element) {
+    if($(element).is(':checked')) {
+      setGeographicScope2(element);
+    }
+  })
   //setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   //$('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');

@@ -1287,92 +1287,106 @@ function initNumberField(fieldId, options = {}) {
  	var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
     
   AttachBody.prototype._positionDropdown = function() {
-   
+     
     var $window = $(window);
    
-		var isCurrentlyAbove = this.$dropdown.hasClass('select2-dropdown--above');
-		var isCurrentlyBelow = this.$dropdown.hasClass('select2-dropdown--below');
+    var isCurrentlyAbove = this.$dropdown.hasClass('select2-dropdown--above');
+    var isCurrentlyBelow = this.$dropdown.hasClass('select2-dropdown--below');
    
-		var newDirection = null;
+    var newDirection = null;
    
-		var offset = this.$container.offset();
+    var offset = this.$container.offset();
+
    
-		offset.bottom = offset.top + this.$container.outerHeight(false);
-		
-		var container = {
-    		height: this.$container.outerHeight(false)
-		};
+    offset.bottom = offset.top + this.$container.outerHeight(false);
+    
+    var container = {
+      height: this.$container.outerHeight(false)
+    };
     
     container.top = offset.top;
     container.bottom = offset.top + container.height;
 
+    // Force recalculation of dropdown height before positioning
+    // This ensures any dynamic content changes are accounted for
+    this.$dropdown.css('display', 'block');
+    
+    var self = this;
     var dropdown = {
-      height: this.$dropdown.outerHeight(false)
+      height: this.$dropdown.outerHeight(true)
     };
 
-    var viewport = {
-      top: $window.scrollTop(),
-      bottom: $window.scrollTop() + $window.height()
-    };
-
-    var enoughRoomAbove = viewport.top < (offset.top - dropdown.height);
-    var enoughRoomBelow = viewport.bottom > (offset.bottom + dropdown.height);
+    // Make sure we have the latest size of the dropdown content
+    var $results = this.$dropdown.find('.select2-results__options');
     
-    var css = {
-      left: offset.left,
-      top: container.bottom
-    };
+    // Add a small delay to ensure content is fully rendered before calculating height
+    setTimeout(function() {
+      if ($results.length) {
+        // Refresh scroll height
+        $results.scrollTop(0);
+        dropdown.height = $results.outerHeight(true);
+      }
+      
+      var viewport = {
+        top: $window.scrollTop(),
+        bottom: $window.scrollTop() + $window.height()
+      };
 
-    // Determine what the parent element is to use for calciulating the offset
-    var $offsetParent = this.$dropdownParent;
+      var enoughRoomAbove = viewport.top < (offset.top - dropdown.height);
+      var enoughRoomBelow = viewport.bottom > (offset.bottom + dropdown.height);
+      
+      var css = {
+        left: offset.left,
+        top: container.bottom
+      };
 
-    // For statically positoned elements, we need to get the element
-    // that is determining the offset
-    if ($offsetParent.css('position') === 'static') {
-      $offsetParent = $offsetParent.offsetParent();
-    }
+      // Determine what the parent element is to use for calculating the offset
+      var $offsetParent = self.$dropdownParent;
 
-    var parentOffset = $offsetParent.offset();
+      // For statically positioned elements, we need to get the element
+      // that is determining the offset
+      if ($offsetParent.css('position') === 'static') {
+        $offsetParent = $offsetParent.offsetParent();
+      }
 
-    css.top -= parentOffset.top
-    css.left -= parentOffset.left;
-    
-    var dropdownPositionOption = this.options.get('dropdownPosition');
-    
-		if (dropdownPositionOption === 'above' || dropdownPositionOption === 'below') {
-    
-    		newDirection = dropdownPositionOption;
-    
-    } else {
-    		
+      var parentOffset = $offsetParent.offset();
+
+      css.top -= parentOffset.top
+      css.left -= parentOffset.left;
+      
+      var dropdownPositionOption = self.options.get('dropdownPosition');
+      
+      if (dropdownPositionOption === 'above' || dropdownPositionOption === 'below') {
+        newDirection = dropdownPositionOption;
+      } else {
+        
         if (!isCurrentlyAbove && !isCurrentlyBelow) {
-      			newDirection = 'below';
-    		}
+          newDirection = 'below';
+        }
 
-    		if (!enoughRoomBelow && enoughRoomAbove && !isCurrentlyAbove) {
-      		newDirection = 'above';
-    		} else if (!enoughRoomAbove && enoughRoomBelow && isCurrentlyAbove) {
-      		newDirection = 'below';
-    		}
-    
-    }
+        if (!enoughRoomBelow && enoughRoomAbove && !isCurrentlyAbove) {
+          newDirection = 'above';
+        } else if (!enoughRoomAbove && enoughRoomBelow && isCurrentlyAbove) {
+          newDirection = 'below';
+        }
+      }
 
-    if (newDirection == 'above' ||
+      if (newDirection == 'above' ||
         (isCurrentlyAbove && newDirection !== 'below')) {
-      css.top = container.top - parentOffset.top - dropdown.height;
-    }
+        css.top = container.top - parentOffset.top - dropdown.height;
+      }
 
-    if (newDirection != null) {
-      this.$dropdown
-        .removeClass('select2-dropdown--below select2-dropdown--above')
-        .addClass('select2-dropdown--' + newDirection);
-      this.$container
-        .removeClass('select2-container--below select2-container--above')
-        .addClass('select2-container--' + newDirection);
-    }
+      if (newDirection != null) {
+        self.$dropdown
+          .removeClass('select2-dropdown--below select2-dropdown--above')
+          .addClass('select2-dropdown--' + newDirection);
+        self.$container
+          .removeClass('select2-container--below select2-container--above')
+          .addClass('select2-container--' + newDirection);
+      }
 
-    this.$dropdownContainer.css(css);
-   
+      self.$dropdownContainer.css(css);
+    }, 0);
   };
   
 })(window.jQuery);
