@@ -65,7 +65,7 @@ public class GetInstitutions extends BaseAction {
             institutionMap.put("id", institution.getId());
             institutionMap.put("name", institution.getName());
             institutionMap.put("acronym", institution.getAcronym());
-            institutionMap.put("composedName", institution.getComposedName());
+            institutionMap.put("composedName", institution.getComposedNameType());
             institutionMap.put("type", institution.getInstitutionType().getName());
             institutions.add(institutionMap);
         }
