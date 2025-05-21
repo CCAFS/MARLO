@@ -118,8 +118,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
           <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>
-
-          [#if reportingActive]
+          [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination")]
             [#--  FAIR LEGEND --]
             <div class="form-group col-md-12 legendContent">
               <div class="col-md-12 fairDiagram" >[@s.text name="project.deliverableList.fairExplanation" /] </div>
