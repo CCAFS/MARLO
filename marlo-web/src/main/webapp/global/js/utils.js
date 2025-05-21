@@ -1319,8 +1319,6 @@ function initNumberField(fieldId, options = {}) {
           return;
         }
 
-        console.log('Positioning dropdown with custom logic');
-
         var self = this;
         var $window = $(window);
 
