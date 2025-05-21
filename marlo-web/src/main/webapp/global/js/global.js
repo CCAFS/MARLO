@@ -1414,6 +1414,17 @@ function setGeographicScope2(component) {
   }
 
   if ($isMultiNational || $isNational || $isSubNational) {
+    var Utils = $.fn.select2.amd.require('select2/utils');
+    var Dropdown = $.fn.select2.amd.require('select2/dropdown');
+    var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
+    var CustomAttachBody = $.fn.select2.amd.require('select2/dropdown/customAttachBody');
+
+    // Decorate the base Dropdown adapter with AttachBody and your custom adapter
+    var CustomDropdownAdapter = Utils.Decorate(
+      Utils.Decorate(Dropdown, AttachBody),
+      CustomAttachBody
+    );
+    
     if ($isMultiNational) {
 
       if (countries.length > 0) {
@@ -1426,7 +1437,8 @@ function setGeographicScope2(component) {
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
         width: '100%',
-        dropdownPosition: "above"
+        dropdownPosition: "above",
+        dropdownAdapter: CustomDropdownAdapter
       });
     } else {
       var countries = ($nationalBlock.find("select").val()) || [];
@@ -1440,7 +1452,8 @@ function setGeographicScope2(component) {
         templateResult: formatStateCountries,
         templateSelection: formatStateCountries,
         width: '100%',
-        dropdownPosition: "above"
+        dropdownPosition: "above",
+        dropdownAdapter: CustomDropdownAdapter
       });
 
     }
