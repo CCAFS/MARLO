@@ -827,6 +827,18 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
         dto.put("headquarter", headquarter);
 
+        Boolean isScaling = org.getScaling();
+        dto.put("isScaling", this.booleanToString(isScaling));
+        
+        Boolean isDemand = org.getDemand();
+        dto.put("isDemand", this.booleanToString(isDemand));
+        
+        Boolean isInnovation = org.getInnovation();
+        dto.put("isInnovation", this.booleanToString(isInnovation));
+        
+        Boolean isOther = org.getOther();
+        dto.put("isOther", this.booleanToString(isOther));
+
         return dto;
       }).collect(Collectors.toList());
 
