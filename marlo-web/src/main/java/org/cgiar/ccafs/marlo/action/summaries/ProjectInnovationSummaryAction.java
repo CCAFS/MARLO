@@ -1132,6 +1132,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
                 ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
             }
 
+            refMap.put("gender", this.booleanToString(ref.getGender()));
+            refMap.put("climateChange", this.booleanToString(ref.getClimateChange()));
+            refMap.put("nutrition", this.booleanToString(ref.getNutrition()));
+            refMap.put("enviromental", this.booleanToString(ref.getEnvironmental()));
+            refMap.put("poverty", this.booleanToString(ref.getPoverty()));
+            refMap.put("innovationReadiness", this.booleanToString(ref.getInnovationReadiness()));
+
             referencesList.add(refMap);
           }
         }
