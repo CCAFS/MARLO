@@ -415,7 +415,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributingOrganizationsJson = null, isAllianceContribution = null, deliverablesJson = null,
       intellectualProperty = null, hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null,
       hasCgiarContribution = null, beneficiariesNarrative = null, reasonNotCgiarContribution = null,
-      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null;
+      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null, 
+      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null, povertyScore = null,
+      knowledgeToolUsesNarrative = null, foreseeBarriers = null,
+      cheaperAlternatives = null, simplerUse = null, performBetter = null, innovationDesirable = null, innovationCommercially = null, innovationSupported = null, evidenceUptake = null;
 
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
     List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
@@ -472,6 +475,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         knowledgeResultsNarrative =
           (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeResultsNarrative() != null)
             ? projectInnovationInfo.getKnowledgeResultsNarrative() : null;
+        knowledgeToolUsesNarrative = 
+          (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeToolUsesNarrative() != null)
+            ? projectInnovationInfo.getKnowledgeToolUsesNarrative() : null;
 
         try {
           int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
@@ -608,8 +614,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }
         }
 
-        // Impact Area
-        try {
+        // Impact Area - Old Version
+        /*try {
           if (innovation.getProjectInnovationImpactAreas() != null) {
             innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
@@ -633,6 +639,32 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           System.out.println("NullPointerException while getting Impact Areas: " + e);
         } catch (final Exception e) {
           System.out.println("Unexpected error while getting Impact Areas: " + e);
+        } */
+
+        // Impact Area - New version
+        // Gender score
+        if (innovation.getProjectInnovationInfo().getGenderScore() != null) {
+          genderScore = innovation.getProjectInnovationInfo().getGenderScore().getDescription();
+        }
+        
+        // Climate change score
+        if (innovation.getProjectInnovationInfo().getClimateChangeScore() != null) {
+          climateChangeScore = innovation.getProjectInnovationInfo().getClimateChangeScore().getDescription();
+        }
+
+        // Food security score
+        if (innovation.getProjectInnovationInfo().getFoodSecurityScore() != null) {
+          foodSecurityScore = innovation.getProjectInnovationInfo().getFoodSecurityScore().getDescription();
+        }
+
+        // Environment score
+        if (innovation.getProjectInnovationInfo().getEnvironmentalScore() != null) {
+          enviromentalScore = innovation.getProjectInnovationInfo().getEnvironmentalScore().getDescription();
+        }
+
+        // Poverty score
+        if (innovation.getProjectInnovationInfo().getPovertyScore() != null) {
+          povertyScore = innovation.getProjectInnovationInfo().getPovertyScore().getDescription();
         }
 
         // Innovations tool categories
@@ -755,6 +787,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         // Is Alliance Contribution
         isAllianceContribution = Boolean.TRUE.equals(this.isAllianceSelected(innovation)) ? "Yes" : "No";
 
+        // has foresee barriers
+        foreseeBarriers = Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getForeseeBarriers()) ? "Yes" : "No";
+
       }
     } catch (Exception e) {
       System.out.println("error setting innovation report variables " + e);
@@ -799,6 +834,18 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }).filter(Objects::nonNull).findFirst()).orElse(null);
 
         dto.put("headquarter", headquarter);
+
+        Boolean isScaling = org.getScaling();
+        dto.put("isScaling", this.booleanToString(isScaling));
+        
+        Boolean isDemand = org.getDemand();
+        dto.put("isDemand", this.booleanToString(isDemand));
+        
+        Boolean isInnovation = org.getInnovation();
+        dto.put("isInnovation", this.booleanToString(isInnovation));
+        
+        Boolean isOther = org.getOther();
+        dto.put("isOther", this.booleanToString(isOther));
 
         return dto;
       }).collect(Collectors.toList());
@@ -986,6 +1033,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             orgMap.put("type",
               allianceOrg.getInstitution() != null && allianceOrg.getInstitution().getComposedNameType() != null
                 ? allianceOrg.getInstitution().getInstitutionType().getName() : null);
+            orgMap.put("howMany", allianceOrg.getNumber().toString());
 
             allianceOrganizationsSet.add(orgMap);
           }
@@ -1011,11 +1059,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             actorMap.put("name", actor.getActor().getName());
             actorMap.put("sexAgeNotApply", Boolean.TRUE.equals(actor.getSexAgeNotApply()) ? "Yes" : "No");
             actorMap.put("womenYouth", Boolean.TRUE.equals(actor.getWomenYouth()) ? "Yes" : "No");
+            actorMap.put("womenYouthNumber", actor.getWomenYouthNumber());
             actorMap.put("womenNotYouth", Boolean.TRUE.equals(actor.getWomenNotYouth()) ? "Yes" : "No");
+            actorMap.put("womenNotYouthNumber", actor.getWomenNonYouthNumber());
             actorMap.put("menYouth", Boolean.TRUE.equals(actor.getMenYouth()) ? "Yes" : "No");
+            actorMap.put("menYouthNumber", actor.getMenYouthNumber());
             actorMap.put("menNotYouth", Boolean.TRUE.equals(actor.getMenNotYouth()) ? "Yes" : "No");
-            actorMap.put("nonbinaryYouth", Boolean.TRUE.equals(actor.getNonbinaryYouth()) ? "Yes" : "No");
-            actorMap.put("nonbinaryNotYouth", Boolean.TRUE.equals(actor.getNonbinaryNotYouth()) ? "Yes" : "No");
+            actorMap.put("menNotYouthNumber", actor.getMenNonYouthNumber());
+            //actorMap.put("nonbinaryYouth", Boolean.TRUE.equals(actor.getNonbinaryYouth()) ? "Yes" : "No");
+            //actorMap.put("nonbinaryNotYouth", Boolean.TRUE.equals(actor.getNonbinaryNotYouth()) ? "Yes" : "No");
             actorsList.add(actorMap);
           }
         }
@@ -1079,6 +1131,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               refMap.put("deliverableType",
                 ref.getDeliverableType() != null ? ref.getDeliverableType().getName() : null);
             }
+
+            refMap.put("gender", this.booleanToString(ref.getGender()));
+            refMap.put("climateChange", this.booleanToString(ref.getClimateChange()));
+            refMap.put("nutrition", this.booleanToString(ref.getNutrition()));
+            refMap.put("enviromental", this.booleanToString(ref.getEnvironmental()));
+            refMap.put("poverty", this.booleanToString(ref.getPoverty()));
+            refMap.put("innovationReadiness", this.booleanToString(ref.getInnovationReadiness()));
 
             referencesList.add(refMap);
           }
@@ -1293,9 +1352,25 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("hasCgiarContribution", hasCgiarContribution);
       jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
       jsonData.put("impactArea", this.normalizeJson(impactAreasJson));
+      jsonData.put("genderScore", genderScore);
+      jsonData.put("environmentalScore", enviromentalScore);
+      jsonData.put("povertyScore", povertyScore);
+      jsonData.put("climateChangeScore", climateChangeScore);
+      jsonData.put("foodSecurityScore", foodSecurityScore);
 
       // Innovation Readiness tab
       jsonData.put("readinessScale", scalingReadiness);
+
+      // Knowledge sharing tab
+      jsonData.put("scalingBarriers", knowledgeToolUsesNarrative);
+      jsonData.put("cheaperAlternatives",cheaperAlternatives);
+      jsonData.put("simplerUse",simplerUse);
+      jsonData.put("performBetter",performBetter);
+      jsonData.put("innovationDesirable",innovationDesirable);
+      jsonData.put("innovationCommercially",innovationCommercially);
+      jsonData.put("innovationSupported",innovationSupported);
+      jsonData.put("evidenceUptake",evidenceUptake);
+      jsonData.put("foreseeBarriers",foreseeBarriers);
 
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
