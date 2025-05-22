@@ -4,18 +4,11 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250519",
-  "${baseUrlCdn}/global/js/fieldsValidation.js?20250519",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250521",
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
-
-[#assign moduleJS = [
-  "${baseUrlMedia}/js/dist/components/my-component.js",
-  "${baseUrlMedia}/js/dist/components/mal-multiselect.js",
-  "${baseUrlMedia}/js/dist/components/mal-select.js"
-  ] /]
-
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250519-1"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250519"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
