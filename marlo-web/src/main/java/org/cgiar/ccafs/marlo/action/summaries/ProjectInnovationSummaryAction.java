@@ -415,7 +415,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributingOrganizationsJson = null, isAllianceContribution = null, deliverablesJson = null,
       intellectualProperty = null, hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null,
       hasCgiarContribution = null, beneficiariesNarrative = null, reasonNotCgiarContribution = null,
-      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null;
+      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null, 
+      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null, povertyScore = null;
 
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
     List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
@@ -608,8 +609,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }
         }
 
-        // Impact Area
-        try {
+        // Impact Area - Old Version
+        /*try {
           if (innovation.getProjectInnovationImpactAreas() != null) {
             innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
@@ -633,6 +634,32 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           System.out.println("NullPointerException while getting Impact Areas: " + e);
         } catch (final Exception e) {
           System.out.println("Unexpected error while getting Impact Areas: " + e);
+        } */
+
+        // Impact Area - New version
+        // Gender score
+        if (innovation.getProjectInnovationInfo().getGenderScore() != null) {
+          genderScore = innovation.getProjectInnovationInfo().getGenderScore().getDescription();
+        }
+        
+        // Climate change score
+        if (innovation.getProjectInnovationInfo().getClimateChangeScore() != null) {
+          climateChangeScore = innovation.getProjectInnovationInfo().getClimateChangeScore().getDescription();
+        }
+
+        // Food security score
+        if (innovation.getProjectInnovationInfo().getFoodSecurityScore() != null) {
+          foodSecurityScore = innovation.getProjectInnovationInfo().getFoodSecurityScore().getDescription();
+        }
+
+        // Environment score
+        if (innovation.getProjectInnovationInfo().getEnvironmentalScore() != null) {
+          enviromentalScore = innovation.getProjectInnovationInfo().getEnvironmentalScore().getDescription();
+        }
+
+        // Poverty score
+        if (innovation.getProjectInnovationInfo().getPovertyScore() != null) {
+          povertyScore = innovation.getProjectInnovationInfo().getPovertyScore().getDescription();
         }
 
         // Innovations tool categories
@@ -1293,6 +1320,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("hasCgiarContribution", hasCgiarContribution);
       jsonData.put("reasonNotCgiarContribution", reasonNotCgiarContribution);
       jsonData.put("impactArea", this.normalizeJson(impactAreasJson));
+      jsonData.put("genderScore", genderScore);
+      jsonData.put("environmentalScore", enviromentalScore);
+      jsonData.put("povertyScore", povertyScore);
+      jsonData.put("climateChangeScore", climateChangeScore);
+      jsonData.put("foodSecurityScore", foodSecurityScore);
 
       // Innovation Readiness tab
       jsonData.put("readinessScale", scalingReadiness);
