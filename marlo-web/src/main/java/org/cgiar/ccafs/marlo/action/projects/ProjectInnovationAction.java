@@ -2646,7 +2646,8 @@ public class ProjectInnovationAction extends BaseAction {
           try {
             if (innovationAllianceOrganization != null && (innovationAllianceOrganization.getNumber() != null
               || (innovationAllianceOrganization.getInstitution() != null
-                && innovationAllianceOrganization.getInstitution().getId() != null))) {
+                && innovationAllianceOrganization.getInstitution().getId() != null
+                && innovationAllianceOrganization.getInstitution().getId() != -1))) {
               saveProcess = true;
             }
           } catch (Exception e) {
