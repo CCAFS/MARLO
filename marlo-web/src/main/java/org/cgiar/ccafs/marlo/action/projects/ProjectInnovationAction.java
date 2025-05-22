@@ -2641,45 +2641,60 @@ public class ProjectInnovationAction extends BaseAction {
         for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
           .getAllianceOrganizations()) {
 
-          if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
-            innovationAllianceOrganization.setId(null);
-          }
-
-          if (innovationAllianceOrganization.getInstitutionType() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
-            innovationAllianceOrganization.setInstitutionType(null);
-          }
-          if (innovationAllianceOrganization.getInstitution() != null
-            && innovationAllianceOrganization.getInstitution().getId() != null
-            && innovationAllianceOrganization.getInstitution().getId() == -1) {
-            innovationAllianceOrganization.setInstitution(null);
-          }
-
-          ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
-            new ProjectInnovationAllianceOrganization();
+          // Validate alliance organization info fields
+          boolean saveProcess = false;
           try {
-            if (innovationAllianceOrganization.getId() != null) {
-              innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
-                .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+            if (innovationAllianceOrganization != null && (innovationAllianceOrganization.getNumber() != null
+              || (innovationAllianceOrganization.getInstitution() != null
+                && innovationAllianceOrganization.getInstitution().getId() != null))) {
+              saveProcess = true;
             }
           } catch (Exception e) {
-            logger.error("unable to get old alliance organizations", e);
+            saveProcess = true;
+            logger.error("unable to get alliance organization info fields", e);
           }
 
-          innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
-          innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
-          innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
-          innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
-          innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
-          innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
-          innovationAllianceOrganizationSave.setPhase(phase);
+          if (saveProcess && innovationAllianceOrganization != null) {
+            if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
+              innovationAllianceOrganization.setId(null);
+            }
 
-          projectInnovationAllianceOrganizationManager
-            .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
-          // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
-          innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+            if (innovationAllianceOrganization.getInstitutionType() != null
+              && innovationAllianceOrganization.getInstitutionType().getId() != null
+              && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
+              innovationAllianceOrganization.setInstitutionType(null);
+            }
+            if (innovationAllianceOrganization.getInstitution() != null
+              && innovationAllianceOrganization.getInstitution().getId() != null
+              && innovationAllianceOrganization.getInstitution().getId() == -1) {
+              innovationAllianceOrganization.setInstitution(null);
+            }
 
+            ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
+              new ProjectInnovationAllianceOrganization();
+            try {
+              if (innovationAllianceOrganization.getId() != null) {
+                innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
+                  .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old alliance organizations", e);
+            }
+
+            innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
+            innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
+            innovationAllianceOrganizationSave
+              .setOrganizationName(innovationAllianceOrganization.getOrganizationName());
+            innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+            innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
+            innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
+            innovationAllianceOrganizationSave.setPhase(phase);
+
+            projectInnovationAllianceOrganizationManager
+              .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
+            // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
+            innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+          }
         }
       }
     } catch (Exception e) {
