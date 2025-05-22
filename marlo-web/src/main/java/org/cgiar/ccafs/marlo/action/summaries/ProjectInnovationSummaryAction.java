@@ -416,7 +416,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       intellectualProperty = null, hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null,
       hasCgiarContribution = null, beneficiariesNarrative = null, reasonNotCgiarContribution = null,
       scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null, 
-      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null, povertyScore = null;
+      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null, povertyScore = null,
+      knowledgeToolUsesNarrative = null, foreseeBarriers = null,
+      cheaperAlternatives = null, simplerUse = null, performBetter = null, innovationDesirable = null, innovationCommercially = null, innovationSupported = null, evidenceUptake = null;
 
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
     List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
@@ -473,6 +475,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         knowledgeResultsNarrative =
           (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeResultsNarrative() != null)
             ? projectInnovationInfo.getKnowledgeResultsNarrative() : null;
+        knowledgeToolUsesNarrative = 
+          (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeToolUsesNarrative() != null)
+            ? projectInnovationInfo.getKnowledgeToolUsesNarrative() : null;
 
         try {
           int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
@@ -781,6 +786,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
         // Is Alliance Contribution
         isAllianceContribution = Boolean.TRUE.equals(this.isAllianceSelected(innovation)) ? "Yes" : "No";
+
+        // has foresee barriers
+        foreseeBarriers = Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getForeseeBarriers()) ? "Yes" : "No";
 
       }
     } catch (Exception e) {
@@ -1345,6 +1353,17 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       // Innovation Readiness tab
       jsonData.put("readinessScale", scalingReadiness);
+
+      // Knowledge sharing tab
+      jsonData.put("scalingBarriers", knowledgeToolUsesNarrative);
+      jsonData.put("cheaperAlternatives",cheaperAlternatives);
+      jsonData.put("simplerUse",simplerUse);
+      jsonData.put("performBetter",performBetter);
+      jsonData.put("innovationDesirable",innovationDesirable);
+      jsonData.put("innovationCommercially",innovationCommercially);
+      jsonData.put("innovationSupported",innovationSupported);
+      jsonData.put("evidenceUptake",evidenceUptake);
+      jsonData.put("foreseeBarriers",foreseeBarriers);
 
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
