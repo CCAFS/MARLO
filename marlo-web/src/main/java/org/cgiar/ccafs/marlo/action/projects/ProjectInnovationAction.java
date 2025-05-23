@@ -2477,36 +2477,54 @@ public class ProjectInnovationAction extends BaseAction {
             && innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
           }
-          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
+          boolean saveActorProcess = false;
           try {
-            if (innovationActor.getId() != null) {
-              innovationActorSave =
-                projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+            if (innovationActor != null && (innovationActor.getWomenYouth() != null
+              || innovationActor.getWomenNotYouth() != null || innovationActor.getMenYouth() != null
+              || innovationActor.getMenNotYouth() != null || innovationActor.getNonbinaryYouth() != null
+              || innovationActor.getNonbinaryNotYouth() != null || innovationActor.getWomenYouthNumber() != null
+              || innovationActor.getWomenNonYouthNumber() != null || innovationActor.getMenYouthNumber() != null
+              || innovationActor.getMenNonYouthNumber() != null || innovationActor.getSexAgeNotApply() != null
+              || (innovationActor.getActor() != null && innovationActor.getActor().getId() != null))) {
+              saveActorProcess = true;
             }
           } catch (Exception e) {
-            logger.error("unable to get old actors", e);
+            saveActorProcess = true;
+            logger.error("unable to validate actor fields", e);
           }
+          if (saveActorProcess) {
+            ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
-          innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
-          innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
-          innovationActorSave.setMenYouth(innovationActor.getMenYouth());
-          innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
-          innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
-          innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
-          innovationActorSave.setActor(innovationActor.getActor());
-          innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
-          innovationActorSave.setProjectInnovation(projectInnovation);
-          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
-          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
-          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
-          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
-          innovationActorSave.setPhase(phase);
+            try {
+              if (innovationActor.getId() != null) {
+                innovationActorSave =
+                  projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old actors", e);
+            }
 
-          projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
-          // This is to add innovationActorSave to generate correct auditlog.
-          innovation.getProjectInnovationActors().add(innovationActorSave);
+            innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
+            innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
+            innovationActorSave.setMenYouth(innovationActor.getMenYouth());
+            innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
+            innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
+            innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
+            innovationActorSave.setActor(innovationActor.getActor());
+            innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
+            innovationActorSave.setProjectInnovation(projectInnovation);
+            innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+            innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+            innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+            innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
+            innovationActorSave.setPhase(phase);
 
+            projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
+            // This is to add innovationActorSave to generate correct auditlog.
+            innovation.getProjectInnovationActors().add(innovationActorSave);
+
+          }
         }
       }
     } catch (Exception e) {
@@ -2641,45 +2659,61 @@ public class ProjectInnovationAction extends BaseAction {
         for (ProjectInnovationAllianceOrganization innovationAllianceOrganization : innovation
           .getAllianceOrganizations()) {
 
-          if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
-            innovationAllianceOrganization.setId(null);
-          }
-
-          if (innovationAllianceOrganization.getInstitutionType() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() != null
-            && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
-            innovationAllianceOrganization.setInstitutionType(null);
-          }
-          if (innovationAllianceOrganization.getInstitution() != null
-            && innovationAllianceOrganization.getInstitution().getId() != null
-            && innovationAllianceOrganization.getInstitution().getId() == -1) {
-            innovationAllianceOrganization.setInstitution(null);
-          }
-
-          ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
-            new ProjectInnovationAllianceOrganization();
+          // Validate alliance organization info fields
+          boolean saveProcess = false;
           try {
-            if (innovationAllianceOrganization.getId() != null) {
-              innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
-                .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+            if (innovationAllianceOrganization != null && (innovationAllianceOrganization.getNumber() != null
+              || (innovationAllianceOrganization.getInstitution() != null
+                && innovationAllianceOrganization.getInstitution().getId() != null
+                && innovationAllianceOrganization.getInstitution().getId() != -1))) {
+              saveProcess = true;
             }
           } catch (Exception e) {
-            logger.error("unable to get old alliance organizations", e);
+            saveProcess = true;
+            logger.error("unable to get alliance organization info fields", e);
           }
 
-          innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
-          innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
-          innovationAllianceOrganizationSave.setOrganizationName(innovationAllianceOrganization.getOrganizationName());
-          innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
-          innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
-          innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
-          innovationAllianceOrganizationSave.setPhase(phase);
+          if (saveProcess && innovationAllianceOrganization != null) {
+            if (innovationAllianceOrganization.getId() != null && innovationAllianceOrganization.getId() == -1) {
+              innovationAllianceOrganization.setId(null);
+            }
 
-          projectInnovationAllianceOrganizationManager
-            .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
-          // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
-          innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+            if (innovationAllianceOrganization.getInstitutionType() != null
+              && innovationAllianceOrganization.getInstitutionType().getId() != null
+              && innovationAllianceOrganization.getInstitutionType().getId() == -1) {
+              innovationAllianceOrganization.setInstitutionType(null);
+            }
+            if (innovationAllianceOrganization.getInstitution() != null
+              && innovationAllianceOrganization.getInstitution().getId() != null
+              && innovationAllianceOrganization.getInstitution().getId() == -1) {
+              innovationAllianceOrganization.setInstitution(null);
+            }
 
+            ProjectInnovationAllianceOrganization innovationAllianceOrganizationSave =
+              new ProjectInnovationAllianceOrganization();
+            try {
+              if (innovationAllianceOrganization.getId() != null) {
+                innovationAllianceOrganizationSave = projectInnovationAllianceOrganizationManager
+                  .getProjectInnovationAllianceOrganizationById(innovationAllianceOrganization.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old alliance organizations", e);
+            }
+
+            innovationAllianceOrganizationSave.setInstitutionType(innovationAllianceOrganization.getInstitutionType());
+            innovationAllianceOrganizationSave.setInstitution(innovationAllianceOrganization.getInstitution());
+            innovationAllianceOrganizationSave
+              .setOrganizationName(innovationAllianceOrganization.getOrganizationName());
+            innovationAllianceOrganizationSave.setScalingPartner(innovationAllianceOrganization.getScalingPartner());
+            innovationAllianceOrganizationSave.setNumber(innovationAllianceOrganization.getNumber());
+            innovationAllianceOrganizationSave.setProjectInnovation(projectInnovation);
+            innovationAllianceOrganizationSave.setPhase(phase);
+
+            projectInnovationAllianceOrganizationManager
+              .saveProjectInnovationAllianceOrganization(innovationAllianceOrganizationSave);
+            // This is to add innovationAllianceOrganizationSave to generate correct auditlog.
+            innovation.getProjectInnovationAllianceOrganizations().add(innovationAllianceOrganizationSave);
+          }
         }
       }
     } catch (Exception e) {

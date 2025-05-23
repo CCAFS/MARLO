@@ -1265,114 +1265,161 @@ function initNumberField(fieldId, options = {}) {
 }
 
 (function($) {
-
-  if (!$ || !$.fn || !$.fn.select2) {
-    console.warn('Select2 not found. Please include Select2 library.');
+  if (!$.fn.select2 || !$.fn.select2.amd) {
+    console.warn('Select2 or its AMD module is not available.');
     return;
   }
 
-  // Then check if the AMD module is available
-  if (!$.fn.select2.amd) {
-    console.warn('Select2 AMD modules not available. You may be using a different version of Select2.');
-    return;
-  }
+    // Define the custom adapter module
+  $.fn.select2.amd.define('select2/dropdown/customAttachBody', [
+    'jquery',
+    '../utils',
+    'select2/dropdown/attachBody',
+    'select2/dropdown/closeOnSelect',
+  ], function($, Utils, AttachBody, CloseOnSelect) {
+    function CustomAttachBody ( decorated, $element, options) {
+
+        // Create options object with get method if not exists
+        if (!options) {
+          options = {};
+        }
+
+        if (typeof options.get !== 'function') {
+          options.get = function (key) {
+            return options[key] || null;
+          };
+        }
+
+        // Call base constructor
+        decorated.call(this, $element, options);
+
+    }
+
+    Utils.Extend(CustomAttachBody, AttachBody);
+
+    // Re‑attach base handlers and ensure close-on-select still works
+    CustomAttachBody.prototype.bind = function(decorated, container, $container) {
+      decorated.call(this, container, $container);
+      var self = this;
+      container.on('results:select', function(evt) {
+        self._hideDropdown(); 
+        container.trigger('close');
+      });
+    };
+
+    CustomAttachBody.prototype.render = function(decorated) {
+      var $wrapper = $('<span></span>');
+      var $dropdown = decorated.call(this);
+      if (!$dropdown.jquery) {
+        throw new Error('render: decorated must return jQuery');
+      }
+      $wrapper.append($dropdown);
+      this.$dropdownContainer = $wrapper;
+      return $wrapper;
+    }
 
 
-	var Defaults = $.fn.select2.amd.require('select2/defaults');
-  
-  $.extend(Defaults.defaults, {
-  	dropdownPosition: 'auto'
+    CustomAttachBody.prototype._positionDropdown = function () {
+
+      // Your custom positioning logic here
+      // Ensure that 'this.options' is properly defined
+      if (!this.options || typeof this.options.get !== 'function') {
+        console.warn('Select2 options are not properly configured.');
+        return;
+      }
+
+      var self = this;
+      var $window = $(window);
+
+      // Safely access options with fallback
+      var dropdownPositionOption = 'auto';
+      if (this.options && typeof this.options.get === 'function') {
+        dropdownPositionOption = this.options.get('dropdownPosition') || 'auto';
+      }
+
+      var isCurrentlyAbove = this.$dropdown.hasClass('select2-dropdown--above');
+      var isCurrentlyBelow = this.$dropdown.hasClass('select2-dropdown--below');
+
+      var offset = this.$container.offset();
+      offset.bottom = offset.top + this.$container.outerHeight(false);
+
+      var container = {
+        height: this.$container.outerHeight(false),
+        top: offset.top,
+        bottom: offset.top + this.$container.outerHeight(false)
+      };
+
+      this.$dropdown.css('display', 'block');
+
+      var dropdown = {
+        height: this.$dropdown.outerHeight(true)
+      };
+
+      var $results = this.$dropdown.find('.select2-results__options');
+
+      setTimeout(function () {
+        if ($results.length) {
+          $results.scrollTop(0);
+          dropdown.height = $results.outerHeight(true);
+        }
+
+        var viewport = {
+          top: $window.scrollTop(),
+          bottom: $window.scrollTop() + $window.height()
+        };
+
+        var enoughRoomAbove = viewport.top < (offset.top - dropdown.height);
+        var enoughRoomBelow = viewport.bottom > (offset.bottom + dropdown.height);
+
+        var css = {
+          left: offset.left,
+          top: container.bottom
+        };
+
+        var $offsetParent = self.$dropdownParent;
+        if ($offsetParent.css('position') === 'static') {
+          $offsetParent = $offsetParent.offsetParent();
+        }
+
+        var parentOffset = $offsetParent.offset();
+        css.top -= parentOffset.top;
+        css.left -= parentOffset.left;
+
+        var newDirection = null;
+        if (dropdownPositionOption === 'above' || dropdownPositionOption === 'below') {
+          newDirection = dropdownPositionOption;
+        } else {
+          if (!isCurrentlyAbove && !isCurrentlyBelow) {
+            newDirection = 'below';
+          }
+
+          if (!enoughRoomBelow && enoughRoomAbove && !isCurrentlyAbove) {
+            newDirection = 'above';
+          } else if (!enoughRoomAbove && enoughRoomBelow && isCurrentlyAbove) {
+            newDirection = 'below';
+          }
+        }
+
+        if (newDirection === 'above' ||
+          (isCurrentlyAbove && newDirection !== 'below')) {
+          css.top = container.top - parentOffset.top - dropdown.height;
+        }
+
+        if (newDirection != null) {
+          self.$dropdown
+            .removeClass('select2-dropdown--below select2-dropdown--above')
+            .addClass('select2-dropdown--' + newDirection);
+          self.$container
+            .removeClass('select2-container--below select2-container--above')
+            .addClass('select2-container--' + newDirection);
+        }
+
+        self.$dropdownContainer.css(css);
+      }, 0);
+    }
+
+
+    return  CustomAttachBody;
   });
-  
- 	var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
-    
-  AttachBody.prototype._positionDropdown = function() {
-   
-    var $window = $(window);
-   
-		var isCurrentlyAbove = this.$dropdown.hasClass('select2-dropdown--above');
-		var isCurrentlyBelow = this.$dropdown.hasClass('select2-dropdown--below');
-   
-		var newDirection = null;
-   
-		var offset = this.$container.offset();
-   
-		offset.bottom = offset.top + this.$container.outerHeight(false);
-		
-		var container = {
-    		height: this.$container.outerHeight(false)
-		};
-    
-    container.top = offset.top;
-    container.bottom = offset.top + container.height;
 
-    var dropdown = {
-      height: this.$dropdown.outerHeight(false)
-    };
-
-    var viewport = {
-      top: $window.scrollTop(),
-      bottom: $window.scrollTop() + $window.height()
-    };
-
-    var enoughRoomAbove = viewport.top < (offset.top - dropdown.height);
-    var enoughRoomBelow = viewport.bottom > (offset.bottom + dropdown.height);
-    
-    var css = {
-      left: offset.left,
-      top: container.bottom
-    };
-
-    // Determine what the parent element is to use for calciulating the offset
-    var $offsetParent = this.$dropdownParent;
-
-    // For statically positoned elements, we need to get the element
-    // that is determining the offset
-    if ($offsetParent.css('position') === 'static') {
-      $offsetParent = $offsetParent.offsetParent();
-    }
-
-    var parentOffset = $offsetParent.offset();
-
-    css.top -= parentOffset.top
-    css.left -= parentOffset.left;
-    
-    var dropdownPositionOption = this.options.get('dropdownPosition');
-    
-		if (dropdownPositionOption === 'above' || dropdownPositionOption === 'below') {
-    
-    		newDirection = dropdownPositionOption;
-    
-    } else {
-    		
-        if (!isCurrentlyAbove && !isCurrentlyBelow) {
-      			newDirection = 'below';
-    		}
-
-    		if (!enoughRoomBelow && enoughRoomAbove && !isCurrentlyAbove) {
-      		newDirection = 'above';
-    		} else if (!enoughRoomAbove && enoughRoomBelow && isCurrentlyAbove) {
-      		newDirection = 'below';
-    		}
-    
-    }
-
-    if (newDirection == 'above' ||
-        (isCurrentlyAbove && newDirection !== 'below')) {
-      css.top = container.top - parentOffset.top - dropdown.height;
-    }
-
-    if (newDirection != null) {
-      this.$dropdown
-        .removeClass('select2-dropdown--below select2-dropdown--above')
-        .addClass('select2-dropdown--' + newDirection);
-      this.$container
-        .removeClass('select2-container--below select2-container--above')
-        .addClass('select2-container--' + newDirection);
-    }
-
-    this.$dropdownContainer.css(css);
-   
-  };
-  
 })(window.jQuery);

@@ -84,7 +84,14 @@ function getInputElement(fieldName,message) {
       // validate if it's select
       elementQuery = $("select[name='" + fieldName + "']");
       if($(elementQuery).exists()) {
-        $(elementQuery).parent().addClass("missingSelect");
+        $parent = $(elementQuery).parent();
+        // find an inner span.selection if exists add other type of class
+        var $spanSelector = $parent.find('span.selection');
+        if($spanSelector) {
+          $spanSelector.find('span.select2-selection').addClass('missingSelect2');
+        } else {
+          $(elementQuery).parent().addClass("missingSelect"); 
+        }
       }
     }
 
