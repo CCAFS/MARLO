@@ -2477,36 +2477,54 @@ public class ProjectInnovationAction extends BaseAction {
             && innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
           }
-          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
+          boolean saveActorProcess = false;
           try {
-            if (innovationActor.getId() != null) {
-              innovationActorSave =
-                projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+            if (innovationActor != null && (innovationActor.getWomenYouth() != null
+              || innovationActor.getWomenNotYouth() != null || innovationActor.getMenYouth() != null
+              || innovationActor.getMenNotYouth() != null || innovationActor.getNonbinaryYouth() != null
+              || innovationActor.getNonbinaryNotYouth() != null || innovationActor.getWomenYouthNumber() != null
+              || innovationActor.getWomenNonYouthNumber() != null || innovationActor.getMenYouthNumber() != null
+              || innovationActor.getMenNonYouthNumber() != null || innovationActor.getSexAgeNotApply() != null
+              || (innovationActor.getActor() != null && innovationActor.getActor().getId() != null))) {
+              saveActorProcess = true;
             }
           } catch (Exception e) {
-            logger.error("unable to get old actors", e);
+            saveActorProcess = true;
+            logger.error("unable to validate actor fields", e);
           }
+          if (saveActorProcess) {
+            ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
-          innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
-          innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
-          innovationActorSave.setMenYouth(innovationActor.getMenYouth());
-          innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
-          innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
-          innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
-          innovationActorSave.setActor(innovationActor.getActor());
-          innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
-          innovationActorSave.setProjectInnovation(projectInnovation);
-          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
-          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
-          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
-          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
-          innovationActorSave.setPhase(phase);
+            try {
+              if (innovationActor.getId() != null) {
+                innovationActorSave =
+                  projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old actors", e);
+            }
 
-          projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
-          // This is to add innovationActorSave to generate correct auditlog.
-          innovation.getProjectInnovationActors().add(innovationActorSave);
+            innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
+            innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
+            innovationActorSave.setMenYouth(innovationActor.getMenYouth());
+            innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
+            innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
+            innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
+            innovationActorSave.setActor(innovationActor.getActor());
+            innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
+            innovationActorSave.setProjectInnovation(projectInnovation);
+            innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+            innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+            innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+            innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
+            innovationActorSave.setPhase(phase);
 
+            projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
+            // This is to add innovationActorSave to generate correct auditlog.
+            innovation.getProjectInnovationActors().add(innovationActorSave);
+
+          }
         }
       }
     } catch (Exception e) {
