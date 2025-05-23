@@ -6730,6 +6730,11 @@ span.errorTag {
 	border: 1px solid #F44;
 }
 
+.missingSelect2 {
+	border: 1px solid #F44 !important;
+	border-radius: 6px;
+}
+
 div#projectsList {
 	position: relative;
 }

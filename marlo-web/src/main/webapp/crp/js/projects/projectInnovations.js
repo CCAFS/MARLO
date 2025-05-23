@@ -25,6 +25,12 @@ $(document).ready(function() {
   $('select.countriesSelect').each(function(i, element) {
     dynamicMarginToSelectedRender(element);
   });
+
+  $('input.radioType-geographicScopes').each(function(i, element) {
+    if($(element).is(':checked')) {
+      setGeographicScope2(element);
+    }
+  })
   //setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
 
   //$('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
@@ -1100,16 +1106,18 @@ function dynamicMarginToSelectedRender(select){
     console.warn('Invalid element passed to dynamicMarginToSelectedRender');
     return;
   }
-  const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
-  const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
+  
+  // Add a delay to ensure DOM elements are fully rendered
+  setTimeout(() => {
+    const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
+    const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
 
-  if($rendered.children().length > 0){
-    $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
-  } else {
-    $selectedMultiple.css('margin-bottom','0');
-
-  }
-
+    if($rendered.children().length > 0){
+      $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+    } else {
+      $selectedMultiple.css('margin-bottom','0');
+    }
+  }, 10); // 100ms delay to allow rendering to complete
 }
 
 function dynamicStatusCheckedForEvidences() {
