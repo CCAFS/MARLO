@@ -478,6 +478,27 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         knowledgeToolUsesNarrative = 
           (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeToolUsesNarrative() != null)
             ? projectInnovationInfo.getKnowledgeToolUsesNarrative() : null;
+        cheaperAlternatives = 
+          (projectInnovationInfo != null && projectInnovationInfo.getCheaperAlternatives() != null)
+            ? projectInnovationInfo.getCheaperAlternatives().toString() : null; 
+        simplerUse = 
+          (projectInnovationInfo != null && projectInnovationInfo.getSimplerUse() != null)
+            ? projectInnovationInfo.getSimplerUse().toString() : null; 
+        performBetter = 
+          (projectInnovationInfo != null && projectInnovationInfo.getPerformBetter() != null)
+            ? projectInnovationInfo.getPerformBetter().toString() : null; 
+        innovationDesirable = 
+          (projectInnovationInfo != null && projectInnovationInfo.getInnovationDesirable() != null)
+            ? projectInnovationInfo.getInnovationDesirable().toString() : null; 
+        innovationCommercially = 
+          (projectInnovationInfo != null && projectInnovationInfo.getInnovationCommercially() != null)
+            ? projectInnovationInfo.getInnovationCommercially().toString() : null; 
+        innovationSupported = 
+          (projectInnovationInfo != null && projectInnovationInfo.getInnovationSupported() != null)
+            ? projectInnovationInfo.getInnovationSupported().toString() : null; 
+        evidenceUptake = 
+          (projectInnovationInfo != null && projectInnovationInfo.getEvidenceUptake() != null)
+            ? projectInnovationInfo.getEvidenceUptake().toString() : null;
 
         try {
           int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
