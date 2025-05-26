@@ -561,6 +561,7 @@ function getWOSInfo() {
     let makeRequest = true;
 
     link = $('#doi-bridge').val();
+    handle = $('#handle-bridge').val();
     console.log("doi value: " + link);
     if (!link) {
       console.log("no doi value");
@@ -584,6 +585,7 @@ function getWOSInfo() {
         url: baseURL + '/metadataByWOS.do',
         data: {
           wosLink: link,
+          handle: handle,
           deliverableID: product
           // phaseID: phaseID,
           // financeCode: financeCode,
@@ -610,13 +612,59 @@ function getWOSInfo() {
             updateWOSFields(data.response);
             $('#WOSModalBtn').show('slow');
             $('#output-wos').html('Found metadata successfully in Web of Science.');
-            if (data.response.altmetricInfo != undefined && data.response.altmetricInfo != "null" && data.response.altmetricInfo != "") {
-              if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
+
+            // First, check the original 'altmetricInfo' structure
+            if (
+              data.response.altmetricInfo !== undefined &&
+              data.response.altmetricInfo !== "null" &&
+              data.response.altmetricInfo !== ""
+            ) {
+              // Check if the small image is available
+              if (
+                data.response.altmetricInfo.imageSmall !== undefined &&
+                data.response.altmetricInfo.imageSmall !== "null" &&
+                data.response.altmetricInfo.imageSmall !== ""
+              ) {
+                // Set the image source and show it
                 $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
                 $('.altmetricImg').show('slow');
-                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId != "null" && data.response.altmetricInfo.altmetricId != "") {
-                  $('.altmetricURL').attr("href", "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId);
+            
+                // Set the Altmetric URL if the ID is available
+                if (
+                  data.response.altmetricInfo.altmetricId !== undefined &&
+                  data.response.altmetricInfo.altmetricId !== "null" &&
+                  data.response.altmetricInfo.altmetricId !== ""
+                ) {
+                  $('.altmetricURL').attr(
+                    "href",
+                    "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId
+                  );
                 }
+              }
+            }
+            
+            // If 'altmetricInfo' is not present or invalid, check the new 'handle_altmetric' structure
+            else if (
+              data.response.handle_altmetric !== undefined &&
+              data.response.handle_altmetric.images !== undefined &&
+              data.response.handle_altmetric.images.small !== undefined &&
+              data.response.handle_altmetric.images.small !== "null" &&
+              data.response.handle_altmetric.images.small !== ""
+            ) {
+              // Set the image source and show it from 'handle_altmetric'
+              $('.altmetricImg').attr('src', data.response.handle_altmetric.images.small);
+              $('.altmetricImg').show('slow');
+            
+              // Set the Altmetric URL if the altmetric_id is available
+              if (
+                data.response.handle_altmetric.altmetric_id !== undefined &&
+                data.response.handle_altmetric.altmetric_id !== "null" &&
+                data.response.handle_altmetric.altmetric_id !== ""
+              ) {
+                $('.altmetricURL').attr(
+                  "href",
+                  "https://www.altmetric.com/details/" + data.response.handle_altmetric.altmetric_id
+                );
               }
             }
           } else {
