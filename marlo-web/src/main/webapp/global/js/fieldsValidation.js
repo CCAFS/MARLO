@@ -92,6 +92,14 @@ function getInputElement(fieldName,message) {
         } else {
           $(elementQuery).parent().addClass("missingSelect"); 
         }
+
+        //Primefaces select 
+        let $selectPrime = $(elementQuery).parent('.p-dropdown');
+
+        if($selectPrime.length > 0) {
+          $selectPrime.addClass('missingSelect2');
+          $selectPrime.attr("title", message);
+        }
       }
     }
 

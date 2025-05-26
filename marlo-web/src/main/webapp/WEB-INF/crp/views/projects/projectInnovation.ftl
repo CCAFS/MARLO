@@ -8,6 +8,14 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]
+
+[#assign moduleJS = [
+  "${baseUrlMedia}/js/dist/components/my-component.js",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js",
+  "${baseUrlMedia}/js/dist/components/mal-select.js"
+] /]
+
+
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250519"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]

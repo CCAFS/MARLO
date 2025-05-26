@@ -791,3 +791,14 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
     width: 100% !important;
   }
 }
+
+/* Primefaces CSS - REMOVED AFTER CORRECT INTEGRATION */
+.p-dropdown {
+  width: 100%;
+}
+
+.p-dropdown .p-dropdown-label {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  padding: 0.4rem 0.75rem;
+}
