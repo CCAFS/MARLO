@@ -130,7 +130,7 @@
             </div>  --]
             
             [#-- Innovation nature --]
-            <div class="form-group ">  
+            <div class="form-group col-md-12">  
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationNature.id" label="" i18nkey="projectInnovations.innovationNature" listName="innovationNatureList" keyFieldName="id" displayFieldName="composedName" required=true help="projectInnovations.innovationNature.helpText" isNote=true helpIcon=false className="innovationNatureSelect" editable=editable isMainTitle=true /]
             </div>
 
