@@ -40,8 +40,8 @@ public class CanDeleteDeliverableWithSharedTrainees extends BaseAction {
 
   private static final long serialVersionUID = -8182788196525839215L;
   private Map<String, Object> canDelete;
-  private long deliverableID;
-  private long phaseID;
+  private long deliverableID = 0;
+  private long phaseID = 0;
   private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
   private final Logger logger = LoggerFactory.getLogger(CanDeleteDeliverableWithSharedTrainees.class);
 
@@ -59,7 +59,7 @@ public class CanDeleteDeliverableWithSharedTrainees extends BaseAction {
       // Check if the shared cluster trainees specificity is active
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
         // Check if there is no submission in progress phase
-        if (!this.isProgressActive()) {
+        if (!this.isProgressActive() && deliverableID != 0 && phaseID != 0) {
           // Retrieve deliverable cluster participants
           List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
             .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
@@ -96,8 +96,13 @@ public class CanDeleteDeliverableWithSharedTrainees extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    deliverableID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]));
-    phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+    if (parameters.get(APConstants.DELIVERABLE_ID).isDefined()) {
+      deliverableID =
+        Long.parseLong(StringUtils.trim(parameters.get(APConstants.DELIVERABLE_ID).getMultipleValues()[0]));
+    }
+    if (parameters.get(APConstants.PHASE_ID).isDefined()) {
+      phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
+    }
   }
 
   public void setCanDelete(Map<String, Object> canDelete) {
