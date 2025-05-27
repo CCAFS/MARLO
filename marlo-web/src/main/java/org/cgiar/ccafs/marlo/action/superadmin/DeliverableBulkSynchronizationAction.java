@@ -81,6 +81,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
   private List<GlobalUnit> crps;
   private long selectedPhaseID;
   private Phase phase;
+  private String handle;
 
   @Inject
   public DeliverableBulkSynchronizationAction(APConfig config, DeliverableManager deliverableManager,
@@ -147,6 +148,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
             .findFirst().orElse(null);
           if (doiMetadataElement != null) {
             link = doiMetadataElement.getElementValue();
+            handle = link;
           }
         }
       }
@@ -195,7 +197,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
           if (link != null) {
             LOG.debug("Synchronizing deliverable : " + id);
             try {
-              this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, link);
+              this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, link, handle);
             } catch (IOException ioe) {
               ioe.printStackTrace();
             }
