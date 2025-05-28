@@ -97,8 +97,11 @@ function addDataTable() {
   iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
   iconSearch.prependTo(divDataTables_filter);
   var divDataTables_length =$('.dataTables_length').parent();
-  divDataTables_length.css("position", "absolute");
-  divDataTables_length.css("bottom", "8px");
-  divDataTables_length.css("margin-left", "43%");
-  divDataTables_length.css("z-index", "1");
+  divDataTables_length.css({
+    "position": "absolute",
+    "bottom": "8px",
+    "margin-left": "43%",
+    "z-index": "1",
+    "width": "25%"
+  });
 }

@@ -3,9 +3,11 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230306",
+  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230528",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314",
+  "${baseUrlCdn}/global/css/customDataTable.css?20250528"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]
@@ -114,21 +116,32 @@
     <thead>
       <tr>
         <th class="id" >ID</th> 
-        <th class="name">Study Title</th>
-        <th class="type">Type</th>
+        <th class="name" width="35%">Study Title</th>
+        [#-- <th class="type">Type</th> --]
+        <th class="levelOfMaturity">Level of maturity</th>
         <th class="owner">Owner</th>
         <th class="year">Year</th>
         [#if action.hasSpecificities('feedback_active') ]
           <th id="feedbackStatus">Feedback Status</th>
         [/#if]
         <th class="status">Status</th>
-        [#if reportingActive]
-        <th id="projectDownload" class="no-sort"></th>
+
+        [#-- Action --]
+        [#if !previousTable]
+        <th class="no-sort" colspan="3">Action</th>
+        [#else]
+        <th class="no-sort" colspan="1">Action</th>
         [/#if]
+
+        [#--          
+        <th id="projectDownload" class="no-sort"></th>
         [#if !previousTable]
         <th><p style="display: none;">Studies RF</p></th>
         <th class="removeHighlight"></th> 
-        [/#if]
+        [/#if]  --]
+
+        [#-- Hidden column Don't remove it is neccesary for the library --]
+        <th style="display: none"></th>
       </tr>
     </thead>
     <tbody>
@@ -144,6 +157,12 @@
           [#local isOwner = (item.project.id == projectID)!false]
           [#-- Is new --]
           [#local isNew = (action.isEvidenceNew(item.id)) /]
+
+          [#local shortTitle]
+            [#if item.projectExpectedStudyInfo.title?has_content]
+              [@utils.wordCutter string=(item.projectExpectedStudyInfo.title)!"" maxPos=120 /]
+            [/#if]  
+          [/#local]
           <tr>
             <td class="id" >
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
@@ -156,11 +175,11 @@
               [#if reportingActive && !oldFormat && (item.projectExpectedStudyInfo.year == actualPhase.year) && isOwner && !isThisComplete]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
                 [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
-                [@utils.tableText value=(item.projectExpectedStudyInfo.title)!"" /]
+                [@utils.tableText value=shortTitle /]
               [#if !oldFormat]</a>[/#if]
             </td>
-            <td class="type">
-              [@utils.tableText value=(item.projectExpectedStudyInfo.studyType.name)!"" /]
+            <td class="type text-center">
+              [@utils.tableText value=(item.projectExpectedStudyInfo.repIndStageStudy.name)!"" /]
             </td>
             <td class="owner text-center">
               [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else]
@@ -173,7 +192,7 @@
               [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /]
             </td>
             [#if action.hasSpecificities('feedback_active') ]
-              <td class="feedbackStatus">
+              <td class="feedbackStatus text-center">
                 [@utils.tableText value=(item.commentStatus)!"" /]
               </td>
             [/#if]
@@ -181,7 +200,6 @@
               [@utils.tableText value=(item.projectExpectedStudyInfo.statusName)!"" /]
             </td>
             [#-- Summary PDF download --]
-            [#if reportingActive]
             <td class="text-center">
               [#if (item.projectExpectedStudyInfo.isPublic)!true ]
               <a href="[@s.url namespace="/projects" action='${(crpSession)!}/studySummary'][@s.param name='studyID']${item.id?c}[/@s.param][@s.param name='cycle']Reporting[/@s.param][@s.param name='year']${(actualPhase.year)!}[/@s.param][/@s.url]" target="_blank" >
@@ -191,7 +209,7 @@
                 <img src="${baseUrlCdn}/global/images/private-page-icon.png" alt="Private" />
               [/#if]
             </td>
-            [/#if]
+            [#-- Actions only available for active OICRs --]
             [#if !previousTable]
             <td>
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
@@ -231,7 +249,9 @@
                 <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectStudies.cantDeleteCaseStudy" /]" />
               [/#if]
             </td>
-            [/#if] 
+            [/#if]
+            <td style="display: none"></td>
+               
           </tr> 
         [/#list]
     [/#if]  
