@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20250509",
+  "${baseUrlMedia}/js/projects/projectInnovationsList.js?20250528",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectInnovations.css?20250514",
-  "${baseUrlCdn}/global/css/customDataTable.css?20250509"
+  "${baseUrlCdn}/global/css/customDataTable.css?20250528"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -174,7 +174,7 @@
           </td>
           [#-- Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
-              <td class="feedbackStatus">
+              <td class="feedbackStatus text-center">
                 [@utils.tableText value=(innovation.commentStatus)!"" /]
               </td>
           [/#if]
@@ -235,15 +235,8 @@
           <td style="display: none"></td>
         </tr>
       [/#list]
-    [#else]
-      <tr>
-        <td class="text-center" colspan="[#if currentTable]9[#else]6[/#if]">
-          <i style="opacity:0.5">[@s.text name="global.prefilledWhenAvailable"/]</i>
-        </td>
-        [#-- Don't remove it is neccesary for the library --]
-        <td style="display: none"></td>
-      </tr>
     [/#if]
     </tbody>
   </table>
+  <div class="clearfix"></div>
 [/#macro]
