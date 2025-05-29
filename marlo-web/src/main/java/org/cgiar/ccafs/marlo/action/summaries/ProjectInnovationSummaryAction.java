@@ -1429,8 +1429,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     headerMap.put("height", "40mm");
     footerMap.put("height", "30mm");
     try {
-      jsonOptions.put("height", "297mm");
-      jsonOptions.put("width", "210mm");
+      jsonOptions.put("format", "A4");
+      //jsonOptions.put("height", "297mm");
+      //jsonOptions.put("width", "210mm");
       jsonOptions.put("orientation", "portrait");
       jsonOptions.put("border", "0");
       jsonOptions.put("zoomFactor", 1);
