@@ -297,20 +297,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return startDate;
   }
 
-  /**
-   * Returns the start year of the project, or 0 if the start date is null.
-   *
-   * @return the start year of the project
-   */
-  public int getStartYear() {
-    if (startDate != null) {
-      Calendar calendarStart = Calendar.getInstance();
-      calendarStart.setTime(this.startDate);
-      return calendarStart.get(Calendar.YEAR);
-    }
-    return 0;
-  }
-
   public Long getStatus() {
     return status;
   }
@@ -369,7 +355,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
         // Add to the year 2029
         calendarEnd.set(Calendar.YEAR, this.getEndYear());
       } else {
-        calendarEnd.set(Calendar.YEAR, this.getStartYear());
+        calendarEnd.set(Calendar.YEAR, 2023);
       }
 
       while (year <= calendarEnd.get(Calendar.YEAR)) {
