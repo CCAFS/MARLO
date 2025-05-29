@@ -1218,10 +1218,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
    * @return
    * @throws IOException
    */
-  public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+  public boolean saveInfo(Long phaseId, Long deliverableId, String link, String handle) throws IOException {
     this.phaseId = phaseId;
     this.deliverableId = deliverableId;
     this.link = link;
+    this.handle = handle;
 
     this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
 

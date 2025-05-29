@@ -657,7 +657,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
    *
@@ -669,6 +668,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     this.synthesisFlagships.append(flagship);
   }
+
 
   public void addUsers() {
     if (this.usersToActive != null) {
@@ -710,7 +710,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
-
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
@@ -734,6 +733,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return permission;
 
   }
+
 
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
@@ -784,11 +784,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
-
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
   }
+
 
   /**
    * Validate if the current user can approve feedback draft comments
@@ -1467,7 +1467,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   /**
    * Validate the user permission to replay or react to a comment
    * note: The difference with the function canManageFeedbackOld is that the code block
@@ -1532,6 +1531,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
      */
     return response;
   }
+
 
   /**
    * Validate the user permission to replay or react to a comment
@@ -1912,10 +1912,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_ACTIVITES_MODULE;
   }
 
-
   public String crpDeliverableIntellectualAsset() {
     return APConstants.CRP_DELIVERABLES_INTELLECTUAL_ASSET;
   }
+
 
   public String crpLocationCsvActivities() {
     return APConstants.CRP_LOCATION_CSV_ACTIVITIES;
@@ -4148,7 +4148,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return feedbackBIReportName;
   }
 
-
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -4188,6 +4187,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * Get the Global Unit Type
@@ -4233,10 +4233,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
+
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
@@ -4336,7 +4336,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<Integer> getInnovationsYears(Long innovation) {
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
       .filter(c -> c != null && c.getProjectInnovation() != null
@@ -4364,6 +4363,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     allYears.add(this.getActualPhase().getYear());
     return allYears;
   }
+
 
   public HashMap<String, String> getInvalidFields() {
     return this.invalidFields;
@@ -6390,11 +6390,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null && (this.getCurrentCrp().getId() == 45 || this.getCurrentCrp().getId() == 47)) {
+    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
+      && (this.getCurrentCrp().getId() == 45 || this.getCurrentCrp().getId() == 47)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  /**
+   * Determines whether the current entity is allowed to extend based on the given project information.
+   * <p>
+   * This method checks if the project end year is greater than the year of the current actual phase.
+   * If either the project information, the actual phase, or their relevant fields are null, the method returns false.
+   * </p>
+   *
+   * @param projectInfo the project information object to evaluate; may be null
+   * @return {@code true} if the project end year is greater than the current actual phase year, {@code false} otherwise
+   */
+  public boolean isAllowedToExtend(ProjectInfo projectInfo) {
+    if (projectInfo == null) {
+      return false;
+    }
+    Integer projectEndYear = projectInfo.getEndYear();
+    Phase actualPhase = getActualPhase();
+    if (actualPhase == null) {
+      return false;
+    }
+    Integer actualPhaseYear = actualPhase.getYear();
+    return projectEndYear > actualPhaseYear;
   }
 
   /**

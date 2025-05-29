@@ -2136,6 +2136,15 @@ public class DeliverableAction extends BaseAction {
         }
       }
 
+      // Validate if is possible to extend the deliverable based on the project end date
+      if (project.getProjectInfo() != null && !this.isAllowedToExtend(project.getProjectInfo())
+        && deliverable.getDeliverableInfo() != null && deliverable.getDeliverableInfo().getStatus() != null
+        && !deliverable.getDeliverableInfo().getStatus()
+          .equals(Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()))) {
+        status.remove(ProjectStatusEnum.Extended.getStatusId());
+      }
+
+
       studyTypeList = new ArrayList<>();
       studyTypeList = studyTypeManager.findAll();
 
