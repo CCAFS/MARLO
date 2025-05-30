@@ -561,6 +561,7 @@ function getWOSInfo() {
     let makeRequest = true;
 
     link = $('#doi-bridge').val();
+    handle = $('#handle-bridge').val();
     console.log("doi value: " + link);
     if (!link) {
       console.log("no doi value");
@@ -584,6 +585,7 @@ function getWOSInfo() {
         url: baseURL + '/metadataByWOS.do',
         data: {
           wosLink: link,
+          handle: handle,
           deliverableID: product
           // phaseID: phaseID,
           // financeCode: financeCode,
@@ -601,36 +603,101 @@ function getWOSInfo() {
 
         },
         success: function (data) {
-          if (data.jsonStringResponse != undefined && data.jsonStringResponse != "null") {
-            // console.log('%cUpdate','background: #222; color: #37ff73');
-            // console.log("data.jsonStringResponse",data.jsonStringResponse);            
-            if (data.response == undefined) {            
+          if (data.jsonStringResponse !== undefined && data.jsonStringResponse !== "null") {
+        
+            if (data.response === undefined) {
               data.response = JSON.parse(data.jsonStringResponse);
             }
+       
             updateWOSFields(data.response);
             $('#WOSModalBtn').show('slow');
             $('#output-wos').html('Found metadata successfully in Web of Science.');
-            if (data.response.altmetricInfo != undefined && data.response.altmetricInfo != "null" && data.response.altmetricInfo != "") {
-              if (data.response.altmetricInfo.imageSmall != undefined && data.response.altmetricInfo.imageSmall != "null" && data.response.altmetricInfo.imageSmall != "") {
+        
+            // === Option 1: Original structure ===
+            if (
+              data.response.altmetricInfo !== undefined &&
+              data.response.altmetricInfo !== "null" &&
+              data.response.altmetricInfo !== ""
+            ) {
+              if (
+                data.response.altmetricInfo.imageSmall !== undefined &&
+                data.response.altmetricInfo.imageSmall !== "null" &&
+                data.response.altmetricInfo.imageSmall !== ""
+              ) {
                 $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
                 $('.altmetricImg').show('slow');
-                if (data.response.altmetricInfo.altmetricId != undefined && data.response.altmetricInfo.altmetricId != "null" && data.response.altmetricInfo.altmetricId != "") {
-                  $('.altmetricURL').attr("href", "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId);
+        
+                if (
+                  data.response.altmetricInfo.altmetricId !== undefined &&
+                  data.response.altmetricInfo.altmetricId !== "null" &&
+                  data.response.altmetricInfo.altmetricId !== ""
+                ) {
+                  $('.altmetricURL').attr(
+                    "href",
+                    "https://www.altmetric.com/details/" + data.response.altmetricInfo.altmetricId
+                  );
                 }
               }
             }
+        
+            // === Option 2: From 'handle_altmetric' ===
+            else if (
+              data.response.handle_altmetric !== undefined &&
+              data.response.handle_altmetric !== null &&
+              data.response.handle_altmetric.images !== undefined &&
+              data.response.handle_altmetric.images.small !== undefined &&
+              data.response.handle_altmetric.images.small !== "null" &&
+              data.response.handle_altmetric.images.small !== ""
+            ) {
+              $('.altmetricImg').attr('src', data.response.handle_altmetric.images.small);
+              $('.altmetricImg').show('slow');
+        
+              if (
+                data.response.handle_altmetric.altmetric_id !== undefined &&
+                data.response.handle_altmetric.altmetric_id !== "null" &&
+                data.response.handle_altmetric.altmetric_id !== ""
+              ) {
+                $('.altmetricURL').attr(
+                  "href",
+                  "https://www.altmetric.com/details/" + data.response.handle_altmetric.altmetric_id
+                );
+              }
+            }
+        
+            // === Option 3: New structure under DOI_Info.altmetric ===
+            else if (
+              data.response.DOI_Info !== undefined &&
+              data.response.DOI_Info !== null &&
+              data.response.DOI_Info.altmetric !== undefined &&
+              data.response.DOI_Info.altmetric !== null &&
+              data.response.DOI_Info.altmetric.images !== undefined &&
+              data.response.DOI_Info.altmetric.images.small !== undefined &&
+              data.response.DOI_Info.altmetric.images.small !== "null" &&
+              data.response.DOI_Info.altmetric.images.small !== ""
+            ) {
+              $('.altmetricImg').attr('src', data.response.DOI_Info.altmetric.images.small);
+              $('.altmetricImg').show('slow');
+        
+              if (
+                data.response.DOI_Info.altmetric.altmetric_id !== undefined &&
+                data.response.DOI_Info.altmetric.altmetric_id !== "null" &&
+                data.response.DOI_Info.altmetric.altmetric_id !== ""
+              ) {
+                $('.altmetricURL').attr(
+                  "href",
+                  "https://www.altmetric.com/details/" + data.response.DOI_Info.altmetric.altmetric_id
+                );
+              }
+            }
+        
           } else {
             errorRequestH();
           }
-
-
         },
         error: function (e) {
           errorRequestH();
         },
         complete: function () {
-          // console.log("complete"); 
-          $('#output-wos').show('slow');
           $('#output-wos').show('slow');
           $('.loading-WOS-container').hide("slow");
           $('#A4NH_deliverable_save').prop('disabled', false);
