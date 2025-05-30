@@ -2,7 +2,7 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
 [#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="" currentTable=true projectID=0]
-  <table class="deliverableList" id="deliverables">
+  <table class="deliverableList table table-striped table-hover" id="deliverables">
     <thead>
       <tr class="subHeader">
         <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -26,10 +26,16 @@
         
         <th id="deliverableResponsible">[@s.text name="project.deliverable.responsible.person" /]</th>
         
+        [#--          
         [#if currentTable]
         <th id="deliverableRF"><p style="display: none;">Deliverable RF</p></th>
         <th id="deliverableRemove"></th>
+        [/#if]  --]
+        [#if currentTable]
+          <th class="no-sort" colspan="2">Action</th>
         [/#if]
+
+        <th style="display: none"></th>
       </tr>
     </thead>
     <tbody>
@@ -46,13 +52,13 @@
 
         <tr>
           [#-- ID --]
-          <td class="deliverableId">
+          <td class="deliverableId vertical-align-middle">
             <a href="[@s.url namespace=namespace action=defaultAction][@s.param name='deliverableID']${deliverable.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               D${deliverable.id}
             </a>
           </td>
           [#-- Deliverable Title --]
-          <td class="left">
+          <td class="left vertical-align-middle">
             [#-- Hidden title to sort correctly by title --]
             <span class="hidden">${deliverable.deliverableInfo.title!''}</span>
             [#-- Draft Tag --]
@@ -81,11 +87,11 @@
             [/#if]
           </td>
           [#-- Deliverable Type --]
-          <td >
+          <td class="text-center vertical-align-middle">
             ${(deliverable.deliverableInfo.deliverableType.name?capitalize)!'None'}
           </td>
           [#-- Deliverable Year --]
-          <td class="text-center">
+          <td class="text-center vertical-align-middle">
             [#if deliverable.deliverableInfo.year== -1]
               None
             [#else]
@@ -105,16 +111,16 @@
 
           </td>
           [#-- Deliverable owner --]
-          <td class="owner text-center">
+          <td class="owner text-center vertical-align-middle">
             [#if isOwner] <nobr>This Cluster</nobr>  [#else][#if deliverable.owner?has_content]${deliverable.owner}[#else]Not defined[/#if][/#if]
           </td>
           [#-- Deliverable shared with --]
-          <td class="owner text-center">
+          <td class="owner text-center vertical-align-middle">
             [#if deliverable.sharedWithProjects?has_content]${deliverable.sharedWithProjects}[#else]Not shared[/#if]
           </td>
           [#if isReportingActive]
             [#-- Deliverable FAIR compliance --]
-            <td class="fair text-center">
+            <td class="fair text-center vertical-align-middle">
             [#if deliverable.deliverableInfo.requeriedFair()]
               <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>
               <span class="[#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">A</span>
@@ -127,13 +133,13 @@
           [/#if]
           [#-- Feedback status --]
           [#if action.hasSpecificities('feedback_active') ]
-            <td class="text-center">
+            <td class="text-center vertical-align-middle">
               ${(deliverable.commentStatus)!}
             </td>
           [/#if]
    
           [#-- Deliverable Status --]
-          <td class="text-center">
+          <td class="text-center vertical-align-middle">
             [#attempt]
               <div class="status-container">
                 <div class="status-indicator ${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}" title="${(deliverable.deliverableInfo.getStatusName(action.getActualPhase()))!'None'}"></div>
@@ -147,7 +153,7 @@
           [#-- Deliverable Duplicated --]
           [#if action.hasSpecificities('duplicated_deliverables_functionality_active') ]
           
-           <td class="text-center">
+           <td class="text-center vertical-align-middle">
             [#if (deliverable.deliverableInfo.duplicated)?has_content ]
               [#if (deliverable.deliverableInfo.duplicated)]
                 <span class="icon-20 icon-duplicated" title="Duplicated"></span>
@@ -163,14 +169,14 @@
           
           [#-- Deliverable required fields --]
           [#if currentTable]
-            <td class="text-center">
+            <td class="text-center vertical-align-middle">
               [#if isDeliverableComplete]
                 <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span>
               [#else]
                 <span class="icon-20 icon-uncheck" title="[@s.text name="project.deliverableList.requiredStatus.incomplete" /]"><p style="display: none;">Incomplete</p></span>
               [/#if]
             </td>
-            <td class="text-center">
+            <td class="text-center vertical-align-middle">
               [#-- Remove icon --]              
               [#if isDeliverableNew && isOwner && canDeleteDeliverableWithSharedTrainees]             
                 <a id="removeDeliverable-${deliverable.id}" class="removeDeliverable" href="${baseUrl}/projects/${crpSession}/deleteDeliverable.do?deliverableID=${deliverable.id}&phaseID=${(actualPhase.id)!}" title="Remove deliverable">
@@ -188,6 +194,8 @@
               [/#if]
               </td>
           [/#if]
+
+          <th style="display: none"></th>
         </tr>
       [/#list]
       [/#if]

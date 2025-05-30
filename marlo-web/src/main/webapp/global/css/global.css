@@ -2563,6 +2563,10 @@ h3.contentSubTitle {
 	margin: 4px 0;
 }
 
+.vertical-align-middle {
+	vertical-align: middle !important;
+}
+
 .fullPartBlock {
 	padding: 0px 0px 15px 0;
 	width: 100%;
