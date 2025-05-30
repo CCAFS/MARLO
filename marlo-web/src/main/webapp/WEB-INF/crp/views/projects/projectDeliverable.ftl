@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240723",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20250526",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?202505230",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
