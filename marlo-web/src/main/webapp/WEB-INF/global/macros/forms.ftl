@@ -691,10 +691,18 @@
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" hasInnerCheckbox=false argsInnerCheckbox={}]
   
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
+    [#if orderById]
+      [#local elementList = (elementList?sort_by("id"))![] /] 
+    [#else]
+      [#local elementList = (elementList)![] /] 
+    [/#if]
   [#recover]
-    [#local list = [] /] 
+    [#local elementList = [] /] 
   [/#attempt]
+
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#-- Compose ID for the element --]
   
   [#local composedID = "${elementType}" /]
   [#if id?has_content]
