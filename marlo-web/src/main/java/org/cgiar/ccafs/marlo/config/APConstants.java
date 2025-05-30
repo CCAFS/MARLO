@@ -149,6 +149,7 @@ public final class APConstants {
   public static final String FEEDBACK_REPLAY_USERNAME = "feedback_replay_username";
   public static final String FEEDBACK_COMMENT_REACTION = "feedback_comment_reaction";
   public static final String FEEDBACK_RESPONSE = "feedback_response";
+  public static final String FEEDBACK_NEW_COMMENT_FIELD_ACTIVE = "feedback_new_comment_field_active";
   public static final String TIP_NOTIFICATION_EMAIL_ACTIVE = "tip_notification_email_active";
   public static final String INNOVATION_SECTION_ACTIVE = "innovation_section_active";
 
