@@ -21,6 +21,17 @@ const CustomSortableList = (container, options = {}) => {
 
     $(container).sortable({
         start: function(event, ui) {
+
+            // Add placeholder settings
+            $(ui.placeholder).css({
+                'background-color': '#f7f7f70a',
+                'border': '1px dashed #ccc',
+                'visibility': 'visible',
+                'height': `${$(ui.item).outerHeight()}px`,
+                'width': `${$(ui.item).outerWidth()}px`
+            });
+
+            // Check if the initial order element ID length matches the current order element ID length
             const currentOrderElementIdLength = $(container).find('li.relationElement').length;
             if (currentOrderElementIdLength === initialOrderElementIdLength) {
                 return;
