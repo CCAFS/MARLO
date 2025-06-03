@@ -102,6 +102,7 @@
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID!-1)?c)!"false"}</span>
 <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!"false"}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!"false"}</span>
+<span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
 
 <span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>

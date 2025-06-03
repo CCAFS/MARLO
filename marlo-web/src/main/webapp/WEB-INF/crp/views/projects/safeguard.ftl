@@ -59,6 +59,7 @@
   <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
   <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
   <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
+  <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
