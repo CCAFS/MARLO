@@ -593,6 +593,10 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   .innovationTabs .col-sm-12 {
     width: 100% !important;
   }
+
+  .generalInnovationsOptions{
+    top: 0;
+  }
 }
 
 /* MIN-WIDTH 992px */
