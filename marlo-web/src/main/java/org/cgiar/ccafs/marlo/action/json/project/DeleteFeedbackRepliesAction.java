@@ -28,7 +28,9 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -62,6 +64,7 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    boolean newModel = true;
     // @param = commentID
 
     delete = new HashMap<String, Object>();
@@ -75,19 +78,48 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
             long localID = qaReply.getId();
 
             FeedbackQAComment comment = new FeedbackQAComment();
-            comment = commentManager.findAll().stream().filter(c -> c != null && c.getReply() != null
-              && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
-              .get(0);
-            if (comment != null && comment.getId() != null) {
-              // comment.setStatus(FeedbackStatusEnum.Agreed.getStatus());
-              comment.setApprovalDate(null);
-              comment.setReply(null);
-              comment.setUserApproval(null);
-              FeedbackStatus feedbackStatusApproved =
-                feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
-              comment.setFeedbackStatus(feedbackStatusApproved);
-              commentManager.saveFeedbackQAComment(comment);
+            if (newModel) {
+              Optional<FeedbackQAComment> optionalComment = commentManager.findAll().stream()
+                .filter(c -> c != null && c.getReplies() != null
+                  && c.getReplies().stream().anyMatch(r -> r != null && r.getId() != null && r.getId().equals(localID)))
+                .findFirst();
+
+              if (optionalComment.isPresent()) {
+                comment = optionalComment.get();
+
+                // Eliminar solo la respuesta que coincide
+                List<FeedbackQAReply> updatedReplies = comment.getReplies().stream()
+                  .filter(r -> r == null || r.getId() == null || !r.getId().equals(localID))
+                  .collect(Collectors.toList());
+
+                comment.setReplies(updatedReplies);
+                comment.setApprovalDate(null);
+                comment.setUserApproval(null);
+
+                FeedbackStatus feedbackStatusApproved =
+                  feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
+                comment.setFeedbackStatus(feedbackStatusApproved);
+
+                commentManager.saveFeedbackQAComment(comment);
+              }
+
+            } else {
+              comment = commentManager.findAll().stream().filter(c -> c != null && c.getReply() != null
+                && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
+                .get(0);
+
+              if (comment != null && comment.getId() != null) {
+                // comment.setStatus(FeedbackStatusEnum.Agreed.getStatus());
+                comment.setApprovalDate(null);
+                comment.setReply(null);
+                comment.setUserApproval(null);
+                FeedbackStatus feedbackStatusApproved =
+                  feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
+                comment.setFeedbackStatus(feedbackStatusApproved);
+                commentManager.saveFeedbackQAComment(comment);
+              }
             }
+
           }
         } catch (Exception e) {
           logger.error("unable to remove reaction", e);

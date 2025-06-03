@@ -45,6 +45,7 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    boolean newModel = true;
     int totalComments = 0, answeredComments = 0;
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
@@ -87,15 +88,24 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
               totalComments = feedbackComments.size();
 
               try {
-                feedbackComments = feedbackComments.stream()
-                  .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                    && f.getPhase().getId().equals(phaseId)
+                if (newModel) {
+                  feedbackComments = feedbackComments.stream().filter(f -> f != null && f.getPhase() != null
+                    && f.getPhase().getId() != null && f.getPhase().getId().equals(phaseId)
+                    && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                      && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                      || (f.getFeedbackStatus() != null && f.getReplies() != null && !f.getReplies().isEmpty())))
+                    .collect(Collectors.toList());
+
+                } else {
+                  feedbackComments = feedbackComments.stream().filter(f -> f != null && f.getPhase() != null
+                    && f.getPhase().getId() != null && f.getPhase().getId().equals(phaseId)
                     && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
                       && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
                       || (f.getFeedbackStatus() != null && f.getReply() != null)))
-                  .collect(Collectors.toList());
-                if (feedbackComments != null) {
-                  answeredComments = feedbackComments.size();
+                    .collect(Collectors.toList());
+                  if (feedbackComments != null) {
+                    answeredComments = feedbackComments.size();
+                  }
                 }
               } catch (Exception e) {
                 logger.error("unable to get list of filters comments", e);
