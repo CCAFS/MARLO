@@ -20,12 +20,18 @@
         <property name="commentDate" type="timestamp">
             <column name="comment_date" />
         </property>
-        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
+        <many-to-one name="reply"
+            class="org.cgiar.ccafs.marlo.data.model.FeedbackQAReply"
             fetch="select">
-            <key>
-                <column name="reply_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
-        </set>
+            <column name="reply_id" />
+        </many-to-one>
+        <many-to-one name="feedbackComment"
+            class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" fetch="select">
+            <column name="comment_id" />
+        </many-to-one>
+        <many-to-one name="feedbackStatus"
+            class="org.cgiar.ccafs.marlo.data.model.FeedbackStatus" fetch="select">
+            <column name="status_id" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>

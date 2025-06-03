@@ -4,10 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.Expose;
@@ -27,8 +24,13 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
 
   @Expose
   private Date commentDate;
-  private Set<FeedbackQAComment> feedbackQAComments = new HashSet<FeedbackQAComment>(0);
-  private List<FeedbackQAComment> qaComments;
+  @Expose
+  private FeedbackQAComment feedbackComment;
+  @Expose
+  private FeedbackQAReply reply;
+  @Expose
+  private FeedbackStatus feedbackStatus;
+
 
   public FeedbackQAReply() {
   }
@@ -55,8 +57,12 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return commentDate;
   }
 
-  public Set<FeedbackQAComment> getFeedbackQAComments() {
-    return feedbackQAComments;
+  public FeedbackQAComment getFeedbackComment() {
+    return feedbackComment;
+  }
+
+  public FeedbackStatus getFeedbackStatus() {
+    return feedbackStatus;
   }
 
   @Override
@@ -78,8 +84,8 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return u;
   }
 
-  public List<FeedbackQAComment> getQaComments() {
-    return qaComments;
+  public FeedbackQAReply getReply() {
+    return reply;
   }
 
   public User getUser() {
@@ -99,8 +105,12 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     this.commentDate = commentDate;
   }
 
-  public void setFeedbackQAComments(Set<FeedbackQAComment> feedbackQAComments) {
-    this.feedbackQAComments = feedbackQAComments;
+  public void setFeedbackComment(FeedbackQAComment feedbackComment) {
+    this.feedbackComment = feedbackComment;
+  }
+
+  public void setFeedbackStatus(FeedbackStatus feedbackStatus) {
+    this.feedbackStatus = feedbackStatus;
   }
 
   @Override
@@ -108,13 +118,11 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     // TODO Auto-generated method stub
   }
 
-  public void setQaComments(List<FeedbackQAComment> qaComments) {
-    this.qaComments = qaComments;
+  public void setReply(FeedbackQAReply reply) {
+    this.reply = reply;
   }
 
   public void setUser(User user) {
     this.user = user;
   }
-
 }
-
