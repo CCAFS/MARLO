@@ -1,4 +1,4 @@
-const CustomSortableList = (container, options = {}) => {
+const CustomSortableList = (container) => {
     if(!container) {
         console.warn("Container element is required for CustomSortableList.");
         return;
@@ -10,19 +10,38 @@ const CustomSortableList = (container, options = {}) => {
         const $item = $(item);
         const $elementInput = $item.find("input.elementID")[0];
         const $elementID = $elementInput ? $elementInput.value : '';
-
-        console.log("elementID: ", $item.find("input.elementID"));
-        console.log("Initial element ID at index " + index + ": " + $elementID);
         
         initialOrderElementId.push($elementID);
     });
 
     const initialOrderElementIdLength = initialOrderElementId.length;
 
+    let placeholderInitialized = false;
+
     $(container).sortable({
-        start: function(event, ui) {
+        create: function(_event, _ui) {
+
+            //Add icon of dragabble to items
+            const $items = $(container).find('li.relationElement');
+            $items.each(function(index, item) {
+                const $item = $(item);
+                if ($item.find('.sortElement').css('display') === 'none') {
+                    $item.find('.sortElement').css('display', 'block');
+                }
+            });
+
+            //Add icon of dragabble to template item
+            const $itemsTemplate = $(container).parents('.elementsListComponent').find('li.relationElement-template');
+
+            if( $itemsTemplate.length > 0 || $itemsTemplate.find('.sortElement').css('display') === 'none') {
+                $itemsTemplate.find('.sortElement').css('display', 'block');
+            }
+
+        },
+        start: function(_event, ui) {
 
             // Add placeholder settings
+            if (!placeholderInitialized) {
             $(ui.placeholder).css({
                 'background-color': '#f7f7f70a',
                 'border': '1px dashed #ccc',
@@ -30,6 +49,9 @@ const CustomSortableList = (container, options = {}) => {
                 'height': `${$(ui.item).outerHeight()}px`,
                 'width': `${$(ui.item).outerWidth()}px`
             });
+
+            placeholderInitialized = true;
+            }
 
             // Check if the initial order element ID length matches the current order element ID length
             const currentOrderElementIdLength = $(container).find('li.relationElement').length;
@@ -44,7 +66,7 @@ const CustomSortableList = (container, options = {}) => {
                 }
             }
         },
-        stop: function(event, ui) {
+        stop: function(_event, _ui) {
             $(container).find('li.relationElement').each(function(index, item) {
                 const $item = $(item);
                 const $elementInput = $item.find("input.elementID")[0];
