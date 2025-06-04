@@ -20,11 +20,6 @@
         <property name="commentDate" type="timestamp">
             <column name="comment_date" />
         </property>
-        <many-to-one name="reply"
-            class="org.cgiar.ccafs.marlo.data.model.FeedbackQAReply"
-            fetch="select">
-            <column name="reply_id" />
-        </many-to-one>
         <many-to-one name="feedbackComment"
             class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" fetch="select">
             <column name="comment_id" />

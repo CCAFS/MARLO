@@ -27,8 +27,6 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
   @Expose
   private FeedbackQAComment feedbackComment;
   @Expose
-  private FeedbackQAReply reply;
-  @Expose
   private FeedbackStatus feedbackStatus;
 
 
@@ -84,10 +82,6 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return u;
   }
 
-  public FeedbackQAReply getReply() {
-    return reply;
-  }
-
   public User getUser() {
     return user;
   }
@@ -116,10 +110,6 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
-  }
-
-  public void setReply(FeedbackQAReply reply) {
-    this.reply = reply;
   }
 
   public void setUser(User user) {

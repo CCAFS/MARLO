@@ -18,11 +18,11 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackQAReplyManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
+import org.cgiar.ccafs.marlo.data.model.FeedbackQAReply;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -100,8 +100,12 @@ public class SaveFeedbackReplyAction extends BaseAction {
       }
 
       date = new Date();
-      if (date != null) {
-        feedbackReply.setCommentDate(date);
+      feedbackReply.setCommentDate(date);
+
+      try {
+        feedbackReply.setFeedbackComment(commentQAManager.getFeedbackQACommentById(commentId));
+      } catch (Exception e) {
+        logger.error("unable to set FeedbackQAComment object", e);
       }
 
       feedbackReply = commentManager.saveFeedbackComment(feedbackReply);
