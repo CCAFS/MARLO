@@ -389,7 +389,7 @@ public class ProjectInnovationListAction extends BaseAction {
                       boolean isAgreed =
                         statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
 
-                      return (isDisagreedOrClarificationNeeded && f.getReply() != null) || isAgreed;
+                      return (isDisagreedOrClarificationNeeded && f.getReplies() != null) || isAgreed;
                     }).collect(Collectors.toList());
 
                     answeredComments += filteredComments.size();

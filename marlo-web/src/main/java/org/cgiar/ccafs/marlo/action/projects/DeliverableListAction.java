@@ -299,7 +299,7 @@ public class DeliverableListAction extends BaseAction {
                         && f.getPhase().getId().equals(this.getActualPhase().getId())
                         && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
                           .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                          || (f.getFeedbackStatus() != null && f.getReply() != null)))
+                          || (f.getFeedbackStatus() != null && f.getReplies() != null)))
                       .collect(Collectors.toList());
                     if (comments != null) {
                       answeredComments += comments.size();
