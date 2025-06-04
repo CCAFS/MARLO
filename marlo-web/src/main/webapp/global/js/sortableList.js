@@ -16,8 +16,6 @@ const CustomSortableList = (container) => {
 
     const initialOrderElementIdLength = initialOrderElementId.length;
 
-    let placeholderInitialized = false;
-
     $(container).sortable({
         create: function(_event, _ui) {
 
@@ -37,11 +35,19 @@ const CustomSortableList = (container) => {
                 $itemsTemplate.find('.sortElement').css('display', 'block');
             }
 
+            //Add instructions for drag and drop
+            const $parentPrincipalParent = $(container).parents('.elementsListComponent');
+            if ($parentPrincipalParent.length > 0) {
+                const $instructions = $parentPrincipalParent.find('.panel-head');
+                if ($instructions.length > 0) {
+                    $instructions.append('<div class="sortableInstructions"><span class="sortIcon--2"></span><span><b>Draggable option active:</b> You can now sort the items in the list by dragging them. When you save, the items will be saved in the order you see them.</span></div>');
+                }
+            }
+
         },
         start: function(_event, ui) {
 
             // Add placeholder settings
-            if (!placeholderInitialized) {
             $(ui.placeholder).css({
                 'background-color': '#f7f7f70a',
                 'border': '1px dashed #ccc',
@@ -49,9 +55,6 @@ const CustomSortableList = (container) => {
                 'height': `${$(ui.item).outerHeight()}px`,
                 'width': `${$(ui.item).outerWidth()}px`
             });
-
-            placeholderInitialized = true;
-            }
 
             // Check if the initial order element ID length matches the current order element ID length
             const currentOrderElementIdLength = $(container).find('li.relationElement').length;
