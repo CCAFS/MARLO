@@ -691,10 +691,18 @@
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" hasInnerCheckbox=false argsInnerCheckbox={}]
   
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
+    [#if orderById]
+      [#local elementList = (elementList?sort_by("id"))![] /] 
+    [#else]
+      [#local elementList = (elementList)![] /] 
+    [/#if]
   [#recover]
-    [#local list = [] /] 
+    [#local elementList = [] /] 
   [/#attempt]
+
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#-- Compose ID for the element --]
   
   [#local composedID = "${elementType}" /]
   [#if id?has_content]
@@ -942,7 +950,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
@@ -966,7 +977,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
       <strong>${(subtitleElement)}:</strong>
