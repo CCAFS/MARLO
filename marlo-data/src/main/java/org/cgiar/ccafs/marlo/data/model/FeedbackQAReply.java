@@ -28,7 +28,12 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
   private FeedbackQAComment feedbackComment;
   @Expose
   private FeedbackStatus feedbackStatus;
-
+  @Expose
+  private User userApproval;
+  @Expose
+  private Date approvalDate;
+  @Expose
+  private Phase phase;
 
   public FeedbackQAReply() {
   }
@@ -45,6 +50,10 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     Map<String, Object> map = oMapper.convertValue(this, Map.class);
 
     return map;
+  }
+
+  public Date getApprovalDate() {
+    return approvalDate;
   }
 
   public String getComment() {
@@ -82,13 +91,25 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     return u;
   }
 
+  public Phase getPhase() {
+    return phase;
+  }
+
   public User getUser() {
     return user;
+  }
+
+  public User getUserApproval() {
+    return userApproval;
   }
 
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setApprovalDate(Date approvalDate) {
+    this.approvalDate = approvalDate;
   }
 
   public void setComment(String comment) {
@@ -112,7 +133,15 @@ public class FeedbackQAReply extends MarloBaseEntity implements java.io.Serializ
     // TODO Auto-generated method stub
   }
 
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public void setUserApproval(User userApproval) {
+    this.userApproval = userApproval;
   }
 }

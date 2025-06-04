@@ -146,7 +146,13 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   if (newModel) {
                     List<Map<String, Object>> replyList = new ArrayList<>();
 
-                    if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
+                    if (comment.getId() != null && comment.getFeedbackReplies() != null
+                      && !comment.getFeedbackReplies().isEmpty()) {
+                      comment.setReplies(comment.getFeedbackReplies().stream()
+                        .filter(
+                          r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null
+                            && r.getFeedbackComment().getId().equals(comment.getId()))
+                        .collect(Collectors.toList()));
                       for (FeedbackQAReply reply : comment.getReplies()) {
 
                         replyMap.put("id", reply.getId() != null ? reply.getId() : "");
@@ -326,7 +332,13 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   if (newModel) {
                     List<Map<String, Object>> replyList = new ArrayList<>();
 
-                    if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
+                    if (comment.getFeedbackReplies() != null && !comment.getFeedbackReplies().isEmpty()) {
+
+                      comment.setReplies(comment.getFeedbackReplies().stream()
+                        .filter(
+                          r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null
+                            && r.getFeedbackComment().getId().equals(comment.getId()))
+                        .collect(Collectors.toList()));
                       for (FeedbackQAReply reply : comment.getReplies()) {
 
                         replyMap.put("id", reply.getId() != null ? reply.getId() : "");

@@ -80,14 +80,16 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
             FeedbackQAComment comment = new FeedbackQAComment();
             if (newModel) {
               Optional<FeedbackQAComment> optionalComment = commentManager.findAll().stream()
-                .filter(c -> c != null && c.getReplies() != null
-                  && c.getReplies().stream().anyMatch(r -> r != null && r.getId() != null && r.getId().equals(localID)))
+                .filter(c -> c != null && c.getFeedbackReplies() != null && c.getFeedbackReplies().stream()
+                  .anyMatch(r -> r != null && r.getId() != null && r.getId().equals(localID)))
                 .findFirst();
 
               if (optionalComment.isPresent()) {
                 comment = optionalComment.get();
+                comment.setReplies(comment.getFeedbackReplies().stream()
+                  .filter(r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null)
+                  .collect(Collectors.toList()));
 
-                // Eliminar solo la respuesta que coincide
                 List<FeedbackQAReply> updatedReplies = comment.getReplies().stream()
                   .filter(r -> r == null || r.getId() == null || !r.getId().equals(localID))
                   .collect(Collectors.toList());

@@ -260,7 +260,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
                       boolean isAgreed =
                         statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
 
-                      return (isDisagreedOrClarificationNeeded && f.getReplies() != null) || isAgreed;
+                      return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null) || isAgreed;
                     }).collect(Collectors.toList());
 
                     answeredComments += filteredComments.size();

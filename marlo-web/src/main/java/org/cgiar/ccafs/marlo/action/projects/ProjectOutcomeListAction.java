@@ -343,7 +343,7 @@ public class ProjectOutcomeListAction extends BaseAction {
                     comments = comments.stream()
                       .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
                         .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                        || (f.getFeedbackStatus() != null && f.getReplies() != null)))
+                        || (f.getFeedbackStatus() != null && f.getFeedbackReplies() != null)))
                       .collect(Collectors.toList());
                     if (comments != null) {
                       answeredComments += comments.size();

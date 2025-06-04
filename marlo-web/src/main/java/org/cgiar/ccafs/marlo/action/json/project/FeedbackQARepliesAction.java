@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -73,7 +74,12 @@ public class FeedbackQARepliesAction extends BaseAction {
       FeedbackQAComment comment = commentManager.getFeedbackQACommentById(commentId);
 
       if (newModel) {
-        if (comment != null && comment.getReplies() != null && !comment.getReplies().isEmpty()) {
+        if (comment != null && comment.getFeedbackReplies() != null && !comment.getFeedbackReplies().isEmpty()) {
+
+          comment.setReplies(comment
+            .getFeedbackReplies().stream().filter(r -> r != null && r.getFeedbackComment() != null
+              && r.getFeedbackComment().getId() != null && r.getFeedbackComment().getId().equals(comment.getId()))
+            .collect(Collectors.toList()));
           replies = new ArrayList<>();
           for (FeedbackQAReply r : comment.getReplies()) {
             if (r != null && r.getId() != null) {

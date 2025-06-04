@@ -99,6 +99,17 @@ public class FeedbackManagementAction extends BaseAction {
             fieldSave.setParentFieldDescription(fields.getParentFieldDescription());
           }
 
+          try {
+            if (fieldSave.getGlobalUnit() != null) {
+              fieldSave.setGlobalUnit(fields.getGlobalUnit());
+            } else {
+              fieldSave.setGlobalUnit(this.getCurrentGlobalUnit());
+            }
+          } catch (Exception e) {
+            // If the global unit is not set, then it will be set to null
+            fieldSave.setGlobalUnit(null);
+          }
+
           fieldsManager.saveInternalQaCommentableFields(fieldSave);
 
         }

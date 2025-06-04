@@ -93,7 +93,8 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
                     && f.getPhase().getId() != null && f.getPhase().getId().equals(phaseId)
                     && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
                       && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                      || (f.getFeedbackStatus() != null && f.getReplies() != null && !f.getReplies().isEmpty())))
+                      || (f.getFeedbackStatus() != null && f.getFeedbackReplies() != null
+                        && !f.getFeedbackReplies().isEmpty())))
                     .collect(Collectors.toList());
 
                 } else {
