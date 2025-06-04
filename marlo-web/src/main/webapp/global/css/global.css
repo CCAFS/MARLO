@@ -1046,6 +1046,19 @@ img.icon {
 	color: #816565;
 }
 
+.sortIcon {
+  background-image: url(../../global/images/icon-draggable.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 12px;
+  height: 20.25px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: pointer;
+  margin: 0.5em;
+}
+
 .addLink {
 	margin: 15px 5px 12px 0px;
 	text-align: right;

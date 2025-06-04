@@ -950,7 +950,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
@@ -974,7 +977,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
       <strong>${(subtitleElement)}:</strong>
