@@ -603,33 +603,30 @@ function getWOSInfo() {
 
         },
         success: function (data) {
-          if (data.jsonStringResponse != undefined && data.jsonStringResponse != "null") {
-            // console.log('%cUpdate','background: #222; color: #37ff73');
-            // console.log("data.jsonStringResponse",data.jsonStringResponse);            
-            if (data.response == undefined) {            
+          if (data.jsonStringResponse !== undefined && data.jsonStringResponse !== "null") {
+        
+            if (data.response === undefined) {
               data.response = JSON.parse(data.jsonStringResponse);
             }
+       
             updateWOSFields(data.response);
             $('#WOSModalBtn').show('slow');
             $('#output-wos').html('Found metadata successfully in Web of Science.');
-
-            // First, check the original 'altmetricInfo' structure
+        
+            // === Option 1: Original structure ===
             if (
               data.response.altmetricInfo !== undefined &&
               data.response.altmetricInfo !== "null" &&
               data.response.altmetricInfo !== ""
             ) {
-              // Check if the small image is available
               if (
                 data.response.altmetricInfo.imageSmall !== undefined &&
                 data.response.altmetricInfo.imageSmall !== "null" &&
                 data.response.altmetricInfo.imageSmall !== ""
               ) {
-                // Set the image source and show it
                 $('.altmetricImg').attr('src', data.response.altmetricInfo.imageSmall);
                 $('.altmetricImg').show('slow');
-            
-                // Set the Altmetric URL if the ID is available
+        
                 if (
                   data.response.altmetricInfo.altmetricId !== undefined &&
                   data.response.altmetricInfo.altmetricId !== "null" &&
@@ -642,20 +639,19 @@ function getWOSInfo() {
                 }
               }
             }
-            
-            // If 'altmetricInfo' is not present or invalid, check the new 'handle_altmetric' structure
+        
+            // === Option 2: From 'handle_altmetric' ===
             else if (
               data.response.handle_altmetric !== undefined &&
+              data.response.handle_altmetric !== null &&
               data.response.handle_altmetric.images !== undefined &&
               data.response.handle_altmetric.images.small !== undefined &&
               data.response.handle_altmetric.images.small !== "null" &&
               data.response.handle_altmetric.images.small !== ""
             ) {
-              // Set the image source and show it from 'handle_altmetric'
               $('.altmetricImg').attr('src', data.response.handle_altmetric.images.small);
               $('.altmetricImg').show('slow');
-            
-              // Set the Altmetric URL if the altmetric_id is available
+        
               if (
                 data.response.handle_altmetric.altmetric_id !== undefined &&
                 data.response.handle_altmetric.altmetric_id !== "null" &&
@@ -667,18 +663,41 @@ function getWOSInfo() {
                 );
               }
             }
+        
+            // === Option 3: New structure under DOI_Info.altmetric ===
+            else if (
+              data.response.DOI_Info !== undefined &&
+              data.response.DOI_Info !== null &&
+              data.response.DOI_Info.altmetric !== undefined &&
+              data.response.DOI_Info.altmetric !== null &&
+              data.response.DOI_Info.altmetric.images !== undefined &&
+              data.response.DOI_Info.altmetric.images.small !== undefined &&
+              data.response.DOI_Info.altmetric.images.small !== "null" &&
+              data.response.DOI_Info.altmetric.images.small !== ""
+            ) {
+              $('.altmetricImg').attr('src', data.response.DOI_Info.altmetric.images.small);
+              $('.altmetricImg').show('slow');
+        
+              if (
+                data.response.DOI_Info.altmetric.altmetric_id !== undefined &&
+                data.response.DOI_Info.altmetric.altmetric_id !== "null" &&
+                data.response.DOI_Info.altmetric.altmetric_id !== ""
+              ) {
+                $('.altmetricURL').attr(
+                  "href",
+                  "https://www.altmetric.com/details/" + data.response.DOI_Info.altmetric.altmetric_id
+                );
+              }
+            }
+        
           } else {
             errorRequestH();
           }
-
-
         },
         error: function (e) {
           errorRequestH();
         },
         complete: function () {
-          // console.log("complete"); 
-          $('#output-wos').show('slow');
           $('#output-wos').show('slow');
           $('.loading-WOS-container').hide("slow");
           $('#A4NH_deliverable_save').prop('disabled', false);

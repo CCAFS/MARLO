@@ -19,6 +19,7 @@
   <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
   <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
   <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+  <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
   <input type="hidden" id="sectionNameToFeedback" value="study" />
 
 
