@@ -162,6 +162,59 @@ public class FeedbackQACommentsAction extends BaseAction {
                 replyMap.put("date", "");
               }
 
+              replyMap.put("approvalUserName",
+                (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
+                  && reply.getUserApproval().getLastName() != null)
+                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+              if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
+                String dateString = reply.getApprovalDate().toString();
+                fieldsMap.put("approvalDate", dateString);
+              } else {
+                fieldsMap.put("approvalDate", "");
+              }
+
+              if (reply.getFeedbackStatus() != null) {
+
+                String statusText = null;
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()))) {
+                  statusText = "0";
+                }
+                if (reply.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Agreed.getStatusId();
+                }
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.ClarificatioNeeded.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
+                }
+                /*
+                 * if (comment.getFeedbackStatus().getId()
+                 * .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                 * statusText = FeedbackStatusEnum.Draft.getStatusId();
+                 * }
+                 */
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Admitted.getStatusId();
+                }
+                /*
+                 * if (comment.getStatus().equalsIgnoreCase("rejected")) {
+                 * statusText = "5";
+                 * }
+                 */
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Dismissed.getStatusId();
+                }
+                if (reply.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                  statusText = "";
+                }
+
+                fieldsMap.put("status", statusText);
+              } else {
+                fieldsMap.put("status", "");
+              }
+
               replyList.add(replyMap);
             }
           }
@@ -330,6 +383,59 @@ public class FeedbackQACommentsAction extends BaseAction {
                 replyMap.put("date_reply", reply.getCommentDate().toString());
               } else {
                 replyMap.put("date_reply", "");
+              }
+
+              replyMap.put("approvalUserName",
+                (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
+                  && reply.getUserApproval().getLastName() != null)
+                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+              if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
+                String dateString = reply.getApprovalDate().toString();
+                fieldsMap.put("approvalDate", dateString);
+              } else {
+                fieldsMap.put("approvalDate", "");
+              }
+
+              if (reply.getFeedbackStatus() != null) {
+
+                String statusText = null;
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()))) {
+                  statusText = "0";
+                }
+                if (reply.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Agreed.getStatusId();
+                }
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.ClarificatioNeeded.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
+                }
+                /*
+                 * if (comment.getFeedbackStatus().getId()
+                 * .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                 * statusText = FeedbackStatusEnum.Draft.getStatusId();
+                 * }
+                 */
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Admitted.getStatusId();
+                }
+                /*
+                 * if (comment.getStatus().equalsIgnoreCase("rejected")) {
+                 * statusText = "5";
+                 * }
+                 */
+                if (reply.getFeedbackStatus().getId()
+                  .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))) {
+                  statusText = FeedbackStatusEnum.Dismissed.getStatusId();
+                }
+                if (reply.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                  statusText = "";
+                }
+
+                fieldsMap.put("status", statusText);
+              } else {
+                fieldsMap.put("status", "");
               }
 
               replyList.add(replyMap);

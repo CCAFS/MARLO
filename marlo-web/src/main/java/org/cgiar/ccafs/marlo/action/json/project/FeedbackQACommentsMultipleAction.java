@@ -95,7 +95,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
             Map<String, Object> commentsUp = new HashMap<>();
 
             Map<String, Object> fieldsMap;
-            Map<String, Object> replyMap;
+
             fieldId = field.getId();
             long fieldIdLocal = fieldId;
 
@@ -126,7 +126,6 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                 String frontName = "";
                 for (FeedbackQAComment comment : feedbackComments) {
                   fieldsMap = new HashMap<String, Object>();
-                  replyMap = new HashMap<String, Object>();
 
                   if (comment.getField() != null && comment.getField().getFieldDescription() != null) {
                     commentsUp.put("frontName", comment.getField().getFieldDescription());
@@ -149,11 +148,12 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     if (comment.getId() != null && comment.getFeedbackReplies() != null
                       && !comment.getFeedbackReplies().isEmpty()) {
                       comment.setReplies(comment.getFeedbackReplies().stream()
-                        .filter(
-                          r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null
-                            && r.getFeedbackComment().getId().equals(comment.getId()))
-                        .collect(Collectors.toList()));
+                        .filter(r -> r != null && r.getFeedbackComment() != null).collect(Collectors.toList()));
+                      Map<String, Object> replyMap;
+
+
                       for (FeedbackQAReply reply : comment.getReplies()) {
+                        replyMap = new HashMap<String, Object>();
 
                         replyMap.put("id", reply.getId() != null ? reply.getId() : "");
                         replyMap.put("text", reply.getComment() != null ? reply.getComment() : "");
@@ -169,7 +169,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                       }
                     }
 
-                    fieldsMap.put("replies", replyList); // nota el cambio de clave: ahora es "replies" (plural)
+                    fieldsMap.put("reply", replyList);
 
                   } else {
                     // Old model
@@ -329,77 +329,107 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                   } else {
                     fieldsMap.put("endTrackDate", "");
                   }
-                  if (newModel) {
-                    List<Map<String, Object>> replyList = new ArrayList<>();
 
-                    if (comment.getFeedbackReplies() != null && !comment.getFeedbackReplies().isEmpty()) {
-
-                      comment.setReplies(comment.getFeedbackReplies().stream()
-                        .filter(
-                          r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null
-                            && r.getFeedbackComment().getId().equals(comment.getId()))
-                        .collect(Collectors.toList()));
-                      for (FeedbackQAReply reply : comment.getReplies()) {
-
-                        replyMap.put("id", reply.getId() != null ? reply.getId() : "");
-                        replyMap.put("text", reply.getComment() != null ? reply.getComment() : "");
-                        replyMap.put("userName",
-                          (reply.getUser() != null && reply.getUser().getFirstName() != null
-                            && reply.getUser().getLastName() != null)
-                              ? reply.getUser().getFirstName() + " " + reply.getUser().getLastName() : "");
-                        replyMap.put("userID",
-                          (reply.getUser() != null && reply.getUser().getId() != null) ? reply.getUser().getId() : "");
-                        replyMap.put("date", (reply.getCommentDate() != null) ? reply.getCommentDate().toString() : "");
-
-                        replyList.add(replyMap);
-                      }
-                    }
-
-                    // Este será el nuevo campo en lugar de "reply"
-                    fieldsMap.put("replies", replyList);
-
-                  } else {
-                    // Old model
-                    if (comment.getReply() != null && comment.getReply().getId() != null) {
-                      FeedbackQAReply reply = new FeedbackQAReply();
-                      if (feedbackQAReplyManager.existFeedbackComment(comment.getReply().getId())) {
-                        reply = feedbackQAReplyManager.getFeedbackCommentById(comment.getReply().getId());
-                      }
-                      if (reply != null) {
-                        if (reply.getId() != null) {
-                          replyMap.put("id", reply.getId());
-                        } else {
-                          replyMap.put("id", "");
-                        }
-                        if (reply.getComment() != null) {
-                          replyMap.put("text", reply.getComment());
-                        } else {
-                          replyMap.put("text", "");
-                        }
-                        if (reply.getUser() != null && reply.getUser().getFirstName() != null
-                          && reply.getUser().getLastName() != null) {
-                          replyMap.put("userName",
-                            reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
-                        } else {
-                          replyMap.put("userName", "");
-                        }
-                        if (reply.getUser() != null && reply.getUser().getId() != null) {
-                          replyMap.put("userID", reply.getUser().getId());
-                        } else {
-                          replyMap.put("userID", "");
-                        }
-                        if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
-                          String dateString = reply.getCommentDate().toString();
-                          replyMap.put("date", dateString);
-                        } else {
-                          replyMap.put("date", "");
-                        }
-                      }
-                    }
-                  }
-
+                  /*
+                   * if (newModel) {
+                   * List<Map<String, Object>> replyList = new ArrayList<>();
+                   * if (comment.getReplies() != null && !comment.getReplies().isEmpty()) {
+                   * for (FeedbackQAReply reply : comment.getReplies()) {
+                   * replyMap.put("id", reply.getId() != null ? reply.getId() : "");
+                   * replyMap.put("text", reply.getComment() != null ? reply.getComment() : "");
+                   * replyMap.put("userName",
+                   * (reply.getUser() != null && reply.getUser().getFirstName() != null
+                   * && reply.getUser().getLastName() != null)
+                   * ? reply.getUser().getFirstName() + " " + reply.getUser().getLastName() : "");
+                   * replyMap.put("userID",
+                   * (reply.getUser() != null && reply.getUser().getId() != null) ? reply.getUser().getId() : "");
+                   * replyMap.put("date", (reply.getCommentDate() != null) ? reply.getCommentDate().toString() : "");
+                   * replyMap.put("approvalUserName",
+                   * (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
+                   * && reply.getUserApproval().getLastName() != null)
+                   * ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName()
+                   * : "");
+                   * if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
+                   * String dateString = reply.getApprovalDate().toString();
+                   * fieldsMap.put("approvalDate", dateString);
+                   * } else {
+                   * fieldsMap.put("approvalDate", "");
+                   * }
+                   * if (reply.getFeedbackStatus() != null) {
+                   * String statusText = null;
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()))) {
+                   * statusText = "0";
+                   * }
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId()))) {
+                   * statusText = FeedbackStatusEnum.Agreed.getStatusId();
+                   * }
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.ClarificatioNeeded.getStatusId()))) {
+                   * statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
+                   * }
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()))) {
+                   * statusText = FeedbackStatusEnum.Admitted.getStatusId();
+                   * }
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))) {
+                   * statusText = FeedbackStatusEnum.Dismissed.getStatusId();
+                   * }
+                   * if (reply.getFeedbackStatus().getId()
+                   * .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                   * statusText = "";
+                   * }
+                   * fieldsMap.put("status", statusText);
+                   * } else {
+                   * fieldsMap.put("status", "");
+                   * }
+                   * replyList.add(replyMap);
+                   * }
+                   * }
+                   * fieldsMap.put("replies", replyList);
+                   * } else {
+                   * if (comment.getReply() != null && comment.getReply().getId() != null) {
+                   * FeedbackQAReply reply = new FeedbackQAReply();
+                   * if (feedbackQAReplyManager.existFeedbackComment(comment.getReply().getId())) {
+                   * reply = feedbackQAReplyManager.getFeedbackCommentById(comment.getReply().getId());
+                   * }
+                   * if (reply != null) {
+                   * if (reply.getId() != null) {
+                   * replyMap.put("id", reply.getId());
+                   * } else {
+                   * replyMap.put("id", "");
+                   * }
+                   * if (reply.getComment() != null) {
+                   * replyMap.put("text", reply.getComment());
+                   * } else {
+                   * replyMap.put("text", "");
+                   * }
+                   * if (reply.getUser() != null && reply.getUser().getFirstName() != null
+                   * && reply.getUser().getLastName() != null) {
+                   * replyMap.put("userName",
+                   * reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
+                   * } else {
+                   * replyMap.put("userName", "");
+                   * }
+                   * if (reply.getUser() != null && reply.getUser().getId() != null) {
+                   * replyMap.put("userID", reply.getUser().getId());
+                   * } else {
+                   * replyMap.put("userID", "");
+                   * }
+                   * if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
+                   * String dateString = reply.getCommentDate().toString();
+                   * replyMap.put("date", dateString);
+                   * } else {
+                   * replyMap.put("date", "");
+                   * }
+                   * }
+                   * }
+                   * }
+                   */
                   // reply
-                  fieldsMap.put("reply", replyMap);
+                  // fieldsMap.put("reply", replyMap);
 
                   // comment
                   commentsUp.put(count + "", fieldsMap);
@@ -420,7 +450,9 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
             }
           }
         }
-      } catch (Exception e) {
+      } catch (
+
+      Exception e) {
         logger.error("unable to get feedback comments", e);
         fields = new ArrayList<>();
       }
