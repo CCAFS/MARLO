@@ -28,10 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -48,7 +45,7 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
   private static final long serialVersionUID = -4335064142194555431L;
   private final Logger logger = LoggerFactory.getLogger(DeleteFeedbackRepliesAction.class);
   private Map<String, Object> delete;
-  private Long commentId;
+  private Long replyId;
   private FeedbackQAReplyManager replyQAManager;
   private FeedbackQACommentManager commentManager;
   private FeedbackStatusManager feedbackStatusManager;
@@ -64,72 +61,38 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    boolean newModel = true;
-    // @param = commentID
+    // @param = replyId
 
     delete = new HashMap<String, Object>();
-    if (commentId != null) {
+    if (replyId != null) {
       FeedbackQAReply qaReply = new FeedbackQAReply();
+
       try {
-        qaReply = replyQAManager.getFeedbackCommentById(commentId);
+        qaReply = replyQAManager.getFeedbackCommentById(replyId);
 
-        try {
-          if (qaReply != null && qaReply.getId() != null) {
-            long localID = qaReply.getId();
+        if (qaReply != null && qaReply.getId() != null) {
 
-            FeedbackQAComment comment = new FeedbackQAComment();
-            if (newModel) {
-              Optional<FeedbackQAComment> optionalComment = commentManager.findAll().stream()
-                .filter(c -> c != null && c.getFeedbackReplies() != null && c.getFeedbackReplies().stream()
-                  .anyMatch(r -> r != null && r.getId() != null && r.getId().equals(localID)))
-                .findFirst();
+          FeedbackQAComment comment = new FeedbackQAComment();
 
-              if (optionalComment.isPresent()) {
-                comment = optionalComment.get();
-                comment.setReplies(comment.getFeedbackReplies().stream()
-                  .filter(r -> r != null && r.getFeedbackComment() != null && r.getFeedbackComment().getId() != null)
-                  .collect(Collectors.toList()));
+          comment = qaReply.getFeedbackComment();
+          if (comment != null && comment.getId() != null) {
 
-                List<FeedbackQAReply> updatedReplies = comment.getReplies().stream()
-                  .filter(r -> r == null || r.getId() == null || !r.getId().equals(localID))
-                  .collect(Collectors.toList());
+            comment.setApprovalDate(null);
+            comment.setUserApproval(null);
 
-                comment.setReplies(updatedReplies);
-                comment.setApprovalDate(null);
-                comment.setUserApproval(null);
+            FeedbackStatus feedbackStatusApproved =
+              feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
+            comment.setFeedbackStatus(feedbackStatusApproved);
 
-                FeedbackStatus feedbackStatusApproved =
-                  feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
-                comment.setFeedbackStatus(feedbackStatusApproved);
-
-                commentManager.saveFeedbackQAComment(comment);
-              }
-
-            } else {
-              comment = commentManager.findAll().stream().filter(c -> c != null && c.getReply() != null
-                && c.getReply().getId() != null && c.getReply().getId().equals(localID)).collect(Collectors.toList())
-                .get(0);
-
-              if (comment != null && comment.getId() != null) {
-                // comment.setStatus(FeedbackStatusEnum.Agreed.getStatus());
-                comment.setApprovalDate(null);
-                comment.setReply(null);
-                comment.setUserApproval(null);
-                FeedbackStatus feedbackStatusApproved =
-                  feedbackStatusManager.getFeedbackStatusById(Long.valueOf(FeedbackStatusEnum.Admitted.getStatusId()));
-                comment.setFeedbackStatus(feedbackStatusApproved);
-                commentManager.saveFeedbackQAComment(comment);
-              }
-            }
-
+            commentManager.saveFeedbackQAComment(comment);
           }
-        } catch (Exception e) {
-          logger.error("unable to remove reaction", e);
+
         }
       } catch (Exception e) {
         delete.put("delete", false);
         logger.error("unable to get qaComment", e);
       }
+
       if (qaReply != null && qaReply.getId() != null) {
         replyQAManager.deleteFeedbackComment(qaReply.getId());
         delete.put("delete", true);
@@ -153,11 +116,11 @@ public class DeleteFeedbackRepliesAction extends BaseAction {
 
     try {
       if (parameters.get(APConstants.COMMENT_REQUEST_ID).isDefined()) {
-        commentId =
+        replyId =
           Long.parseLong(StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0]));
       }
     } catch (Exception e) {
-      logger.error("unable to get commentID", e);
+      logger.error("unable to get replyId", e);
     }
   }
 
