@@ -1254,7 +1254,6 @@
   [/#if]
 
   <div id="qaCommentReply-${name}[${index}]" class="qaCommentReplyBlock" index="${index}"  style="position:relative">
-    <!--  [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]  -->
     <div class="commentCheckContainer">
       <div class="commentContainer">
         <div class="commentTitle"></div>
@@ -1268,16 +1267,22 @@
         </div>
       </div>      
     </div>
+
+    <div class="repliesDisplayArea" style="margin-left: 20px; border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px;">
+        </div>
     <div class="replyContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="replyTextContainer">
+      
+      <div class="replyTextContainer" style="display:none;"> [#-- Ocultado o puedes eliminar este div completo --]
         <div class="replyTitle"></div>
         <p class="replyReadonly"></p>
+        [#-- Este .deleteReplyBtn era para el reply único; ya no es necesario aquí. --]
         <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
+
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
-    <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
+    
     <div class="buttonsContainer">
       <div class="optionsContainer">
         <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
@@ -1293,8 +1298,7 @@
         [/#if]
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
-      <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
-    </div>
+      </div>
     <br>
   </div>
 [/#macro]
