@@ -468,23 +468,7 @@ function attachEventsFeedback() {
 		// block.find('.editCommentBtn').show();
 	});
 
-  $(document).off('click', '.deleteActualReplyBtn').on('click', '.deleteActualReplyBtn', function(event) {
-         event.preventDefault(); 
-         let $clickedButton = $(this); 
-         let replyIdToDelete = $clickedButton.data('reply-id');
-         let commentNameForContext = $clickedButton.data('comment-name');
 
-         if (!replyIdToDelete || !commentNameForContext) {
-             console.error("MARLO Feedback: Missing replyId or commentName for deleting reply. Button:", $clickedButton);
-             alert("Error: Could not identify the reply to delete.");
-             return;
-         }
-
-         if (confirm('Are you sure you want to delete this reply? This action cannot be undone.')) {
-             $clickedButton.prop('disabled', true).text('Deleting...');
-             deleteQAReply(replyIdToDelete, commentNameForContext, this);
-         }
-     });
 
 }
 
@@ -679,353 +663,277 @@ function hideShowOptionButtons(block, status) {
 }
 
 // Multiple comments-replies
-// Your file: feedbackAutoImplementation.js
-// All comments are in English as requested.
-
-// ... (other global variables like qaComments, userID, userCanManageFeedback, userCanLeaveComments etc.) ...
-
-// IMPORTANT for Step 7 (Handling Reply Statuses with Icons):
-// You will need a way to map status IDs to icon images/classes later.
-// For now, this function focuses on displaying replies and current status text.
-// Also, ensure 'feedback_statuses_list' (or a similar structure you might use for icons)
-// is available if needed for determining which icons to show based on current reply status.
-
 function loadCommentsByUser(name) {
-    try {
-        name = name.replace(/\[[^\]]*\]$/, ''); 
-        let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
-        qaPopup2.hide(); 
+	try {
+		// Removes the last index in brackets, i.e: [0]
+		name = name.replace(/\[[^\]]*\]$/, '');
 
-        if (qaComments.length > 0) {
-            for (let i = 0; i < qaComments.length; i++) { 
-                if (qaComments[i].frontName == name) {
-                    let commentsInGroup = qaComments[i]; 
-                    let commentKeys = Object.keys(commentsInGroup).filter(key => !isNaN(parseInt(key))); 
-                    
-                    let commentEmpty = [];
-                    let statusArray = false;
+		// These two lines are used to hide the body where the comments will be displayed since the body is initialized with a display none.
+		let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+		qaPopup2.hide();
 
-                    if (userCanApproveFeedback == 'false') {
-                        commentKeys.forEach(function(key) {
-                            if (commentsInGroup[key] && commentsInGroup[key].status) { // Check if comment object and status exist
-                                commentEmpty.push(commentsInGroup[key].status);
-                            }
-                        });
-                        statusArray = commentEmpty.length > 0 && commentEmpty.every((el) => el == '6');
-                    }
+		if (qaComments.length > 0) {
+			for (let i = 0; i < qaComments.length; i++) {
+				if (qaComments[i].frontName == name) {
+					let commentsLength = Object.keys(qaComments[i]).length;
+					let commentEmpty = []
+					let statusArray = false;
 
-                    if (!statusArray) { 
-                        qaPopup2.show(); 
+					if (userCanApproveFeedback == 'false') {
+						for (let j = 0; j < commentsLength; j++) {
+							if (qaComments[i][j] !== undefined) {
+								commentEmpty.push(qaComments[i][j].status);
+							}
+						}
+						statusArray = commentEmpty.every((el) => el == '6');
+					}
 
-                        commentKeys.forEach(function(j) { // Iterate using actual numeric keys from commentKeys
-                            let currentCommentData = commentsInGroup[j]; 
-                            let $commentBlock = $(`div[id="qaCommentReply-${name}[${j}]"]`); // Use exact ID selector
 
-                            if (j != "0") { 
-                                // This assumes the label for "New comment" is only for the very first input box
-                                // and subsequent cloned blocks for actual comments shouldn't show it if they reuse that textarea.
-                                // However, your main comment display logic later hides textarea[id="New comment"] anyway.
-                                // $commentBlock.find('textarea[id="New comment"]').prev('label').hide(); 
-                            }
+					if (!statusArray) {
+						// These two lines are used to display the body where the comments will be displayed since the body is initialized with a display none.
+						let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+						qaPopup2.show();
 
-                            // =================================================================================
-                            // CRITICAL SECTION FOR FIXING "SECOND COMMENT NOT SHOWING"
-                            // =================================================================================
-                            if (!$commentBlock.length) { // Use .length to check if jQuery object found elements
-                                // THIS IS WHERE THE PROBLEM OF "SECOND COMMENT NOT SHOWING" LIKELY IS.
-                                // Your original logic for cloning the #qaTemplate and appending it to the DOM
-                                // MUST be correctly implemented here.
-                                // The 'console.warn' below will tell you if it's failing to find pre-existing blocks.
+						for (let j = 0; j < commentsLength; j++) {
+							if (qaComments[i][j] !== undefined) {
+								let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
 
-                                console.warn(`MARLO Feedback: Comment block 'qaCommentReply-${name}[${j}]' not found in DOM. Attempting to clone.`);
-                                
-                                // --- YOUR CLONING LOGIC MUST GO HERE ---
-                                // This is a placeholder based on your original code structure.
-                                // YOU NEED TO VERIFY AND COMPLETE THIS WITH YOUR ACTUAL, WORKING CLONING CODE.
-                                let containerQaPopupForCloning = $(`div[id^="containerQaPopup-${name}"]`); // Your popup container
-                                let commentReplyBlockTemplate = containerQaPopupForCloning.siblings('#qaTemplate').find('.qaCommentReplyBlock'); // Path to your template element
+								if (j != 0) {
+									block.find('textarea[id="New comment"]').prev().hide();
+								}
 
-                                if (!commentReplyBlockTemplate.length) {
-                                     console.error("MARLO Feedback: #qaTemplate or .qaCommentReplyBlock within it not found for cloning. Cannot create new comment blocks.");
-                                     return; // or continue to next 'j' if appropriate
-                                }
-                                
-                                // Determine where to append the new block
-                                let $lastCommentBlockInPopup = qaPopup2.find(`.qaCommentReplyBlock[name^="${name}"]`).last();
 
-                                let $newBlock = commentReplyBlockTemplate.first().clone(true); // Clone the template
-                                $newBlock.attr('id', `qaCommentReply-${name}[${j}]`); // Set the specific ID
-                                $newBlock.attr('index', j); // Set the index attribute
-                                $newBlock.attr('name', `${name}[${j}]`); // It might be useful to set the name attribute on the block itself
 
-                                // Update 'name' attributes for all relevant elements INSIDE $newBlock
-                                // This is crucial for your event handlers that use $(this).attr('name')
-                                $newBlock.find('.sendCommentContainer').attr('name', `${name}[${j}]`);
-                                $newBlock.find('.sendReplyContainer').attr('name', `${name}[${j}]`);
-                                // ... and for ALL other elements inside the block that need a specific name for index 'j'
-                                // (deleteCommentBtn, containerSentCommentBtn, agreeCommentBtn, etc.)
-                                // Example:
-                                $newBlock.find('.deleteCommentBtn').attr('name', `${name}[${j}]`);
-                                $newBlock.find('.agreeCommentBtn').attr('name', `${name}[${j}]`);
-                                // Add all necessary .attr('name', ...) calls here for elements within $newBlock
+								if (!block.exists()) {
+									let qaPopup = $(`div[id^="containerQaPopup-${name}"]`);
+									let commentReplyBlock = qaPopup.siblings('#qaTemplate').find('.qaPopup').children()[2];
+									let lastBlock = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock').last();
+									let newBlock = $(commentReplyBlock).clone(true).attr('id', `qaCommentReply-${name}[${j}]`);
 
-                                if ($lastCommentBlockInPopup.length) {
-                                    $newBlock.insertAfter($lastCommentBlockInPopup);
-                                } else {
-                                    // If qaPopup2 is the correct container to append to (e.g., the body of the popup)
-                                    qaPopup2.append($newBlock); 
-                                }
-                                $newBlock.show(); // Ensure the new block is visible
 
-                                $commentBlock = $newBlock; // CRITICAL: Update $commentBlock to reference the NEWLY CREATED element!
-                                console.log("MARLO Feedback: Cloned and appended new comment block:", $commentBlock.attr('id'));
-                                // =================================================================================
-                                // END OF CRITICAL CLONING SECTION
-                                // =================================================================================
-                            }
-                            
-                            // Setting up the main comment's content
-                            $commentBlock.find('textarea[id="New comment"]').hide(); // Hides the main "New comment" input area after a comment is loaded
-                            $commentBlock.find('textarea[id="New comment"]').next().next('p.charCount').hide();
-                            $commentBlock.find('.commentContainer').show();
-                            $commentBlock.find('.commentContainer .commentTitle').html(`Comment by ${currentCommentData.userName} at ${currentCommentData.date}`);
-                            $commentBlock.find('.commentContainer p.commentReadonly').html(`${currentCommentData.comment}`);
-                            $commentBlock.find('.commentContainer textarea.editCommentReadonly').html(`${currentCommentData.comment}`);
-                            $commentBlock.find('.sendCommentContainer').hide(); // This is for the main "New comment" field, should be hidden when displaying a comment
+									newBlock.attr('index', `${j}`);
+									newBlock.find('.sendCommentContainer').attr('name', `${name}[${j}]`);
+									newBlock.find('.sendReplyContainer').attr('name', `${name}[${j}]`);
+									newBlock.find('.addCommentContainer').attr('name', `${name}`);
+									newBlock.find('.addCommentContainer').attr('index', `${j}`);
+									newBlock.find('.deleteCommentBtn').attr('name', `${name}[${j}]`);
+									newBlock.find('.containerSentCommentBtn').attr('name', `${name}[${j}]`);
 
-                            // Assigning IDs and attributes
-                            $commentBlock.find('.commentContainer').attr({'userName': currentCommentData.userName, 'email': currentCommentData.email, 'comment': currentCommentData.comment, 'isTracking': currentCommentData.isTracking, 'status': currentCommentData.status});
-                            $commentBlock.find('.deleteCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.containerSentCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.sendReplyContainer').attr('commentId', currentCommentData.commentId); 
-                            $commentBlock.find('.agreeCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.disagreeCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.clarificationCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.correctCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.dismissCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.replyCommentBtn').attr('commentId', currentCommentData.commentId); // Button to show reply textarea
-                            $commentBlock.find('.editCommentReadonly').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.commentReadonly').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.editCommentBtn').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.commentCheckContainer').attr('commentId', currentCommentData.commentId);
-                            $commentBlock.attr('commentId', currentCommentData.commentId);
-                            $commentBlock.find('.track_icon').attr('commentId', currentCommentData.commentId).attr('name', `${name}[${j}]`); // Added name to track_icon for context
+									if (block.last().attr('newComment') != 'true') {
+										newBlock.attr('newComment', 'true');
+										newBlock.insertAfter(lastBlock).hide().show();
+									}
+									// block = $(`div[id^="qaPopup-${name}["]`).find('.qaCommentReplyBlock');
+									block = newBlock;
+								}
 
-                            // === JS MODIFICATION (Step 2: Prepare replies display area) ===
-                            let $repliesDisplayArea = $commentBlock.find('.repliesDisplayArea');
-                            if (!$repliesDisplayArea.length) {
-                                console.error("MARLO Feedback: The '.repliesDisplayArea' container was not found in comment block:", $commentBlock.attr('id'));
-                            }
-                            $repliesDisplayArea.empty();
-                            // === END OF JS MODIFICATION (Step 2) ===
 
-                            // === JS MODIFICATION (Step 3 & Refined Step 7: Iterate, display replies, with placeholder for status icons) ===
-                            if (currentCommentData.reply && Array.isArray(currentCommentData.reply) && currentCommentData.reply.length > 0) {
-                                $repliesDisplayArea.show(); 
 
-                                currentCommentData.reply.forEach(function(individualReply, replyIndex) {
-                                    let r_id = individualReply.id;
-                                    let r_text = individualReply.text || "(No content)";
-                                    let r_userName = individualReply.userName || "Unknown User";
-                                    let r_userID = individualReply.userID;
-                                    let r_date = individualReply.date || "No date";
+								block.find('textarea[id="New comment"]').hide();
+								block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
+								block.find('.commentContainer').show();
+								block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+								block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
+								block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
+								block.find('.sendCommentContainer').hide();
+								if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
+								if (qaComments[i][j].reply.userID == userID && qaComments[i][j].status != '6') block.find('.deleteReplyBtn').show();
+								if (userCanApproveFeedback == 'false' && userCanManageFeedback == 'true' && userCanLeaveComments == 'true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
+								if (userCanManageFeedback == 'false') {
+								}
+								block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
+								block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
+								block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
+								block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.clarificationCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.correctCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.dismissCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.replyCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.editCommentReadonly').attr('commentId', qaComments[i][j].commentId);
+								block.find('.commentReadonly').attr('commentId', qaComments[i][j].commentId);
+								block.find('.editCommentBtn').attr('commentId', qaComments[i][j].commentId);
+								block.find('.commentCheckContainer').attr('commentId', qaComments[i][j].commentId);
+								block.attr('commentId', qaComments[i][j].commentId);
+								block.find('.track_icon').attr('commentId', qaComments[i][j].commentId);
 
-                                    let r_statusDisplay = "No status assigned";
-                                    if (individualReply.statusName) {
-                                        r_statusDisplay = individualReply.statusName;
-                                    } else if (typeof individualReply.statusId !== 'undefined' && individualReply.statusId !== null) {
-                                        r_statusDisplay = `Status ID: ${individualReply.statusId}`; // Fallback, ideally map ID to name
-                                    }
 
-                                    let r_approvalInfo = "";
-                                    if (individualReply.approvalUserName && individualReply.approvalDate) {
-                                        r_approvalInfo = ` (Approved by: ${individualReply.approvalUserName} on ${individualReply.approvalDate})`;
-                                    } else if (individualReply.userApprovalId && individualReply.approvalDate) {
-                                        r_approvalInfo = ` (Approved by User ID: ${individualReply.userApprovalId} on ${individualReply.approvalDate})`;
-                                    } else if (individualReply.approvalDate) {
-                                        r_approvalInfo = ` (Approved on ${individualReply.approvalDate})`;
-                                    }
+								if (qaComments[i][j].userID != userID || usercanTrackComments == 'false' || qaComments[i][j].status == '6') {
+									block.find('.track_icon').hide();
+								} else {
+									block.find('.track_icon').show();
+								}
 
-                                    // HTML structure for reply, mimicking comment structure, indented
-                                    let replyHtmlString = `
-                                        <div class="individual-reply-item" data-reply-id="${r_id}" style="margin-left: 25px; margin-bottom: 15px; padding:10px; border: 1px solid #ddd; background-color: #fdfdfd; border-radius: 3px;">
-                                            <div class="reply-commentContainer"> 
-                                                <div class="reply-commentTitle" style="font-weight:bold; color: #333; margin-bottom: 5px; font-size:0.95em;">
-                                                    Reply by ${r_userName} 
-                                                    <span style="font-weight:normal; color: #777; font-size:0.9em;"> - ${r_date}</span>
-                                                </div>
-                                                <p class="reply-commentReadonly" style="white-space: pre-wrap; margin-bottom: 8px;">${r_text}</p>
-                                                
-                                                <div class="reply-footer-area" style="font-size:0.9em; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span class="reply-status-display"><strong>Status:</strong> ${r_statusDisplay}${r_approvalInfo}</span>
-                                                    <span class="reply-status-icons-placeholder" data-reply-id="${r_id}" data-current-status-id="${individualReply.statusId || ''}">
-                                                        </span>
-                                                </div>
-                                            </div>
-                                    `; // HTML string continues
+								if (qaComments[i][j].isTracking == true) {
+									block.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`);
+									block.find('.track_icon').attr('title', `Stop tracking comment`);
+								} else {
+									block.find('.track_icon').attr('src', `${baseURL}/global/images/tracking.png`);
+								}
 
-                                    if (r_userID == userID) { 
-                                        replyHtmlString += `
-                                            <div style="margin-top: 8px; text-align: right;">
-                                                <button class="deleteActualReplyBtn" 
-                                                        data-reply-id="${r_id}" 
-                                                        data-comment-name="${name}[${j}]"  // Pass specific comment block name
-                                                        style="background-color: #ffdddd; border: 1px solid #ffc0c0; color: #d8000c; padding: 3px 10px; font-size: 0.8em; cursor: pointer; border-radius: 3px;">
-                                                    Delete Reply
-                                                </button>
-                                            </div>
-                                        `;
-                                    }
-                                    replyHtmlString += `</div>`; // Close .individual-reply-item
-                                    $repliesDisplayArea.append(replyHtmlString);
-                                });
-                            } else {
-                                $repliesDisplayArea.html('<p style="font-style:italic; color:#6c757d; padding: 8px 0;">No replies for this comment yet.</p>');
-                                $repliesDisplayArea.show();
-                            }
-                            // === END OF JS MODIFICATION (Step 3 & Refined Step 7) ===
 
-                            // === JS MODIFICATION (Step 5: Manage "Add New Reply" section) ===
-                            let $replyTextarea = $commentBlock.find('textarea[id="Reply"]');
-                            let $replyTextareaContainer = $replyTextarea.parent(); 
-                            let $sendNewReplyButtonContainer = $commentBlock.find('div.sendReplyContainer');
 
-                            if (userCanLeaveComments == 'true') { 
-                                let currentCommentStatus = String(currentCommentData.status); 
-                                let commentAllowsNewReplies = true; 
 
-                                if (currentCommentStatus === '4' || currentCommentStatus === '6') { 
-                                    commentAllowsNewReplies = false;
-                                }
-                                // const openForReplyStatuses = ['0', '1', '2', '']; 
-                                // if (!openForReplyStatuses.includes(currentCommentStatus)) {
-                                //     commentAllowsNewReplies = false;
-                                // }
 
-                                if (commentAllowsNewReplies) {
-                                    $replyTextareaContainer.show(); 
-                                    $replyTextarea.val('');         
-                                    $replyTextarea.prop('disabled', false); 
 
-                                    $sendNewReplyButtonContainer.attr('commentId', currentCommentData.commentId); 
-                                    $sendNewReplyButtonContainer.show();
-                                    $sendNewReplyButtonContainer.css('pointer-events', 'auto'); 
-                                    $sendNewReplyButtonContainer.find('img.sendComment').css('opacity', '1');
-                                } else {
-                                    $replyTextareaContainer.hide();
-                                    $sendNewReplyButtonContainer.hide();
-                                }
-                            } else {
-                                $replyTextareaContainer.hide();
-                                $sendNewReplyButtonContainer.hide();
-                            }
-                            // === END OF JS MODIFICATION (Step 5) ===
+								if (qaComments[i][j].status) {
+									block.find('.containerReactionComment').show();
+									block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status) + `${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);
+								} if (qaComments[i][j].status == '') {
+									block.find('.containerReactionComment').hide();
+									block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+								}
 
-                            // === OLD CODE FOR HANDLING A SINGLE REPLY (Should remain commented out or be deleted) ===
-                            /*
-                            // ... (all the old logic for replyLength, populating .replyTextContainer for a single reply, etc.) ...
-                            */
-                            // === END OF OLD CODE ===
+								if (userCanLeaveComments == 'true') {
+									let btnsContainer = block.find('.buttonsContainer');
+									let addBtn = block.find('.addCommentContainer');
+									const index = commentsLength - 2;
 
-                            // Your existing logic for comment display based on its own status and permissions continues here
-                            if (currentCommentData.userID != userID || usercanTrackComments == 'false' || currentCommentData.status == '6') {
-                                $commentBlock.find('.track_icon').hide();
-                            } else {
-                                $commentBlock.find('.track_icon').show();
-                            }
+									if (addBtn.attr('index') == index) {
+										btnsContainer.show();
+										addBtn.show();
+										let blockDup = $(`div[id="qaCommentReply-${name}[${j + 1}]"]`);
+										if (blockDup.length != 0) {
+											btnsContainer.hide();
+											addBtn.hide();
+										}
+									} else {
+										btnsContainer.hide();
+										addBtn.hide();
+									}
+								} else {
+									// let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+									let commentReadonly = $('.containerLeftComment');
+									block.find('.editCommentBtn').remove();
+									commentReadonly.hide();
+									// if(qaComments[i][j].status == '') {
+									// commentReadonly.hide();
+									// }
+								}
 
-                            if (currentCommentData.isTracking == true) {
-                                $commentBlock.find('.track_icon').attr('src', `${baseURL}/global/images/yellow_tracking.png`);
-                                $commentBlock.find('.track_icon').attr('title', `Stop tracking comment`);
-                            } else {
-                                $commentBlock.find('.track_icon').attr('src', `${baseURL}/global/images/tracking.png`);
-                                $commentBlock.find('.track_icon').attr('title', `Track your comment`);
-                            }
-                            
-                            if (currentCommentData.status && currentCommentData.status !== '') {
-                                $commentBlock.find('.containerReactionComment').show();
-                                $commentBlock.find('.containerReactionComment p.reactionComment').html(reactionName(currentCommentData.status) + `${currentCommentData.approvalUserName} at ${currentCommentData.approvalDate}`);
-                            } else if (currentCommentData.status === '') { 
-                                $commentBlock.find('.containerReactionComment').hide();
-                                $commentBlock.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${currentCommentData.userName} at ${currentCommentData.date}`);
-                            } else { 
-                                 $commentBlock.find('.containerReactionComment').hide();
-                            }
-                            
-                            if (userCanLeaveComments == 'true') {
-                                let btnsContainer = $commentBlock.find('.buttonsContainer'); // This contains options for main comment
-                                let addCommentBtnOnBlock = $commentBlock.find('.addCommentContainer'); // The "Add Comment" button on THIS block
+								if (userCanApproveFeedback == 'false') {
+									let commentReadonly = $(`div[commentID="${qaComments[i][j].commentId}"].qaCommentReplyBlock`);
+									let commentCheckContainer = $(`div[commentID="${qaComments[i][j].commentId}"].commentCheckContainer`);
+									let deleteCommentBtn = $(`div[commentID="${qaComments[i][j].commentId}"].deleteCommentBtn`);
 
-                                // Determine if this is the last *actual* comment object in the current group
-                                const actualCommentObjectsInGroup = Object.values(commentsInGroup).filter(item => typeof item === 'object' && item.hasOwnProperty('commentId'));
-                                let isLastActualCommentInGroup = false;
-                                if (actualCommentObjectsInGroup.length > 0 && currentCommentData.commentId === actualCommentObjectsInGroup[actualCommentObjectsInGroup.length - 1].commentId) {
-                                    isLastActualCommentInGroup = true;
-                                }
+									if (qaComments[i][j].status == '6') {
 
-                                if (isLastActualCommentInGroup) {
-                                    // Show the "Add Comment" button only on the last comment block of the field
-                                    // This assumes 'addCommentContainer' is for adding a new MAIN comment to the field
-                                    addCommentBtnOnBlock.show(); 
-                                    // btnsContainer might also need to be shown if it holds addCommentBtnOnBlock or related UI
-                                    btnsContainer.show(); 
-                                } else {
-                                    addCommentBtnOnBlock.hide();
-                                    // Consider if btnsContainer should also be hidden if addCommentBtnOnBlock is its main purpose here
-                                    // This logic seems to be for the "Add new comment to field" button
-                                }
-                            } else {
-                                // $commentBlock.find('.editCommentBtn').remove(); 
-                                // $('.containerLeftComment').hide(); // Risky global selector
-                            }
+										if (j == (commentsLength - 2)) {
+											commentReadonly.show();
+											commentCheckContainer.hide()
+											block.find('.addCommentContainer').show();
+											deleteCommentBtn.remove();
+										}
+										else {
+											commentReadonly.hide();
+										}
+									}
+									block.find('.dismissCommentBtn').hide();
+									block.find('.correctCommentBtn').hide();
+								}
 
-                            if (userCanApproveFeedback == 'false') {
-                                $commentBlock.find('.dismissCommentBtn').hide();
-                                $commentBlock.find('.correctCommentBtn').hide();
-                            }
+								if (userCanManageFeedback == 'true') {
+									block.find('.buttonsContainer').show();
+									block.find('.optionsContainer').css('display', 'flex');
+								} else {
+									block.find('img.agreeCommentBtn').remove();
+									block.find('img.disagreeCommentBtn').remove();
+									block.find('img.clarificationCommentBtn').remove();
+								}
 
-                            if (userCanManageFeedback == 'true') {
-                                $commentBlock.find('.buttonsContainer').show(); // Ensure action buttons for comment are visible
-                                $commentBlock.find('.optionsContainer').css('display', 'flex');
-                            } else {
-                                $commentBlock.find('img.agreeCommentBtn').remove();
-                                $commentBlock.find('img.disagreeCommentBtn').remove();
-                                $commentBlock.find('img.clarificationCommentBtn').remove();
-                            }
+								if (userCanLeaveComments == 'true' && userCanManageFeedback == 'false') {
+									block.find('.buttonsContainer').show();
+									block.find('.optionsContainer').css('display', 'flex');
+								}
 
-                            if (userCanLeaveComments == 'true' && userCanManageFeedback == 'false') {
-                                $commentBlock.find('.buttonsContainer').show();
-                                $commentBlock.find('.optionsContainer').css('display', 'flex');
-                            }
-                            
-                            // CRITICAL: Review hideShowOptionButtons.
-                            // Ensure its logic for textarea[id="Reply"] and .sendReplyContainer
-                            // does not conflict with the Step 5 logic implemented above.
-                            hideShowOptionButtons($commentBlock, currentCommentData.status);
 
-                            let editCommentReadonly = $commentBlock.find('.editCommentReadonly');
-                            if (editCommentReadonly.css('display') === 'block' && userCanLeaveComments == 'true') {
-                                showEditComment($commentBlock, currentCommentData.commentId , 1);
-                            }
-                        }); // End of commentKeys.forEach (was for let j = 0...)
-                    } else { // statusArray is true (all comments dismissed and user cannot approve)
-                        // Your original logic for when all comments are dismissed
-                        commentKeys.forEach(function(k) { // Iterate using actual numeric keys
-                             let blockToHide = $(`div[id="qaCommentReply-${name}[${k}]"]`);
-                             blockToHide.hide();
-                             if (k == commentKeys[0]) { // If it's the first of the dismissed comments (e.g., "0")
-                                 addNewComment(); // Check what addNewComment() does, ensure it's appropriate
-                             }
-                        });
-                    }
-                } // End if (qaComments[i].frontName == name)
-            } // End for (let i = 0; ...)
-        } // End if (qaComments.length > 0)
-    } catch (error) {
-        console.error("Error in loadCommentsByUser:", error); 
-        // Consider if getQAComments() should always be called or if there's more specific error recovery
-        getQAComments(); 
-    }
+								hideShowOptionButtons(block, qaComments[i][j].status);
+
+								//EXTREME CASE: Close popup in an edit operation
+								//If a comment it's being edit and the user close the popup, it would be able to edit
+								let editCommentReadonly = block.find('.editCommentReadonly');
+
+								//Validates if a edit textarea is display
+								if (editCommentReadonly.css('display') === 'block' && userCanLeaveComments == 'true') {
+									showEditComment(block, qaComments[i][j].commentId , 1);
+								}
+								
+								//
+
+								let replyLength = Object.keys(qaComments[i][j].reply).length;
+
+								if (replyLength !== 0) {
+									block.find('textarea[id="Reply"]').parent().hide();
+									block.find('.replyContainer').css('display', 'flex');
+									block.find('.replyTextContainer').show();
+									block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
+									block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
+									block.find('.replyCommentBtn').hide();
+									block.find('.sendReplyContainer').hide();
+								} else {
+									if (qaComments[i][j].status && qaComments[i][j].status != '') {
+										if (qaComments[i][j].status == '1') {
+											block.find('textarea[id="Reply"]').parent().show();
+											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextContainer').hide();
+											block.find('.replyCommentBtn').hide();
+											block.find('.sendReplyContainer').show();
+										} if (qaComments[i][j].status == '4') {
+											block.find('textarea[id="Reply"]').parent().hide();
+											block.find('.replyContainer').hide();
+											block.find('.replyTextContainer').hide();
+											block.find('.replyCommentBtn').hide();
+											block.find('.sendReplyContainer').show();
+										} if (qaComments[i][j].status == '0') {
+											block.find('textarea[id="Reply"]').parent().show();
+											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextContainer').hide();
+											block.find('.replyCommentBtn').hide();
+											block.find('.sendReplyContainer').show();
+										} if (qaComments[i][j].status == '2') {
+											block.find('textarea[id="Reply"]').parent().show();
+											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextContainer').hide();
+											block.find('.replyCommentBtn').hide();
+											block.find('.sendReplyContainer').show();
+										} if (qaComments[i][j].status == '6') {
+											block.find('textarea[id="Reply"]').parent().show();
+											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextContainer').hide();
+											block.find('.replyCommentBtn').hide();
+											block.find('.sendReplyContainer').show();
+										}
+
+									} else {
+										block.find('.replyCommentBtn').hide();
+									}
+								}
+							}
+						}
+					} else {
+						for (let j = 0; j < commentsLength; j++) {
+							if (qaComments[i][j] !== undefined) {
+								let block = $(`div[id^="qaCommentReply-${name}[${j}]"]`);
+								block.hide();
+								if (j == 0) {
+									addNewComment()
+								}
+							}
+						}
+					}
+				} else {
+					// These two lines are used to hide the body where the comments will be displayed since the body is initialized with a display none.
+					//let qaPopup2 = $(`.qaPopup[id^="qaPopup-${name}"]`);
+					//qaPopup2.hide();
+				}
+			}
+		}
+	} catch (error) {
+		console.log(error)
+		getQAComments();
+	}
 }
 
 runaddfeedbackFlexItemsClass = true;
