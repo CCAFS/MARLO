@@ -502,31 +502,40 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void deleteLocElements(ProjectInnovation innovation, Phase phase, boolean isCountry) {
-    if (isCountry) {
-      if (innovation.getProjectInnovationCountries() != null && innovation.getProjectInnovationCountries().size() > 0) {
+    try {
+      if (isCountry) {
+        if (innovation.getProjectInnovationCountries() != null
+          && !innovation.getProjectInnovationCountries().isEmpty()) {
 
-        List<ProjectInnovationCountry> regionPrev = new ArrayList<>(innovation.getProjectInnovationCountries().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          List<ProjectInnovationCountry> regionPrev =
+            new ArrayList<>(innovation.getProjectInnovationCountries().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        for (ProjectInnovationCountry policyRegion : regionPrev) {
+          for (ProjectInnovationCountry policyRegion : regionPrev) {
+            if (policyRegion != null && policyRegion.getId() != null) {
+              projectInnovationCountryManager.deleteProjectInnovationCountry(policyRegion.getId());
+            }
 
-          projectInnovationCountryManager.deleteProjectInnovationCountry(policyRegion.getId());
+          }
+        }
+      } else {
+        if (innovation.getProjectInnovationRegions() != null && !innovation.getProjectInnovationRegions().isEmpty()) {
+
+          List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+          for (ProjectInnovationRegion policyRegion : regionPrev) {
+            if (policyRegion != null && policyRegion.getId() != null) {
+              projectInnovationRegionManager.deleteProjectInnovationRegion(policyRegion.getId());
+            }
+
+          }
 
         }
       }
-    } else {
-      if (innovation.getProjectInnovationRegions() != null && innovation.getProjectInnovationRegions().size() > 0) {
-
-        List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-        for (ProjectInnovationRegion policyRegion : regionPrev) {
-
-          projectInnovationRegionManager.deleteProjectInnovationRegion(policyRegion.getId());
-
-        }
-
-      }
+    } catch (Exception e) {
+      logger.error("Error deleting LocElements for innovation: " + innovation.getId() + " in phase: " + phase.getId(),
+        e);
     }
   }
 
