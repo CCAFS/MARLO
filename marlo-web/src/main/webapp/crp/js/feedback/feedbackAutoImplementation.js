@@ -1,4 +1,4 @@
-var textareaComment, parentID, projectID, phaseID, userID, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
+var textareaComment, parentID, projectID, phaseID, userID, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, isFeedbackNewCommentFieldActive, textareaReply, newData;
 var sectionName = $('#sectionNameToFeedback').val();
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
@@ -21,6 +21,7 @@ function feedbackAutoImplementation() {
 	console.log('userCanLeaveComments: ' + userCanLeaveComments)
 	console.log('userCanApproveFeedback: ' + userCanApproveFeedback)
 	isFeedbackActive = $('#isFeedbackActive').html();
+	isFeedbackNewCommentFieldActive = $('#isFeedbackNewCommentFieldActive').html();
 	attachEventsFeedback();
 
 	// Get section id from URL
@@ -117,6 +118,13 @@ function attachEventsFeedback() {
 		loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
 	}
 
+
+	// Check if the new comment field is active and hide in qaComments with comments
+	if(qaComments.length > 0) {
+		qaComments.forEach(comment => {
+			displayNewCommentBoxFieldActive(comment.frontName);
+		})
+	}
 
 	$('.track_icon').click(function() {
 		var currentSrc = $(this).attr('src');
@@ -1296,3 +1304,16 @@ function sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name
 	});
 }
 
+function displayNewCommentBoxFieldActive(name) {
+	let qaPopupBlock = $(`.qaPopup[id^="qaPopup-${name}"]`).parent('.containerQaPopup');
+	
+	if(qaPopupBlock){
+		if(isFeedbackNewCommentFieldActive == 'true') {
+			qaPopupBlock.find('.containerLeftComment').show();
+		} else {
+			qaPopupBlock.find('.containerLeftComment').hide();
+		}
+	}
+
+
+}
