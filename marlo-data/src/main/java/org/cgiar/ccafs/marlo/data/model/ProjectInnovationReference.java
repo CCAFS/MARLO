@@ -162,11 +162,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return hashBuilder.hashCode();
   }
 
-  @Override
-  public boolean isActive() {
-    return true;
-  }
-
   public void setClimateChange(Boolean climateChange) {
     this.climateChange = climateChange;
   }
