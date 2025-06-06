@@ -863,7 +863,7 @@ const evidencesModule = function () {
     }
 
     const $newItem = $template.clone(true).removeAttr('id');
-    $newItem.find('input, select').each(function(_i,e) {
+    $newItem.find('input, select, textarea').each(function(_i,e) {
       e.name = (e.name).replace("_TEMPLATE_", "");
       e.id = (e.id).replace("_TEMPLATE_", "");
     });
