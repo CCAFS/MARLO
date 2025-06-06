@@ -1385,30 +1385,29 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
-        // Innovations references URL
-        if (innovation.getProjectInnovationReferenceUrls() != null
-          && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
-          try {
-            innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-
-        // Innovations references Complementary solutions
-        if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
-          && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
-          try {
-            innovation
-              .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
-                .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
+        /*
+         * if (innovation.getProjectInnovationReferenceUrls() != null
+         * && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
+         * try {
+         * innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
+         * .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+         * .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+         * } catch (Exception e) {
+         * e.printStackTrace();
+         * }
+         * }
+         * if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
+         * && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
+         * try {
+         * innovation
+         * .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
+         * .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+         * .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+         * } catch (Exception e) {
+         * e.printStackTrace();
+         * }
+         * }
+         */
 
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
@@ -2205,8 +2204,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveImpactAreas(innovationDB, phase);
       this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
-      this.saveReferenceUrls(innovationDB, phase);
-      this.saveReferenceComplementarySolution(innovationDB, phase);
+      // this.saveReferenceUrls(innovationDB, phase);
+      // this.saveReferenceComplementarySolution(innovationDB, phase);
       this.saveAllianceOrganizations(innovationDB, phase);
       this.saveActors(innovationDB, phase);
       this.saveToolCategories(innovationDB, phase);
