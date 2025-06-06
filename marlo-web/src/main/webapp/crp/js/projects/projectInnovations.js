@@ -403,39 +403,6 @@ function addSelect2() {
       width: '100%'
   });
 
-  var $nationalBlock = $('.nationalBlock');
-  // Handle dropdown positioning on click instead of select2:open
-  $nationalBlock.find("select").on('click', function() {
-    // Wait a short moment for Select2 to finish rendering the dropdown
-    setTimeout(() => {
-      const dropdown = $('.select2-dropdown');
-      const select2Container = $(this).closest('.select2-container');
-      const select2Options = $('.select2-results__options');
-
-      if(select2Options.length === 0) return;
-
-      // Fix positioning for the dropdown
-      if(select2Options.length === 1 && $(select2Options[0]).attr('aria-live') === 'assertive') {
-    // Override dropdown position to show below
-    dropdown.removeClass('select2-dropdown--above').addClass('select2-dropdown--below');
-    select2Container.removeClass('select2-container--above').addClass('select2-container--below');
-    
-    // Explicitly position the dropdown below the container
-    dropdown.css({
-      'top': select2Container.outerHeight() + 'px',
-      'bottom': 'auto',
-      'position': 'absolute'
-    });
-    
-    // Adjust height to match available options
-    const optionsHeight = dropdown.find('.select2-results__options li').length * 36; // Approximate height per option
-    dropdown.find('.select2-results').css({
-      'max-height': optionsHeight + 'px',
-      'height': 'auto'
-    });
-      }
-    }, 10); // Slightly longer timeout to ensure dropdown is rendered
-  });
 
 }
 
