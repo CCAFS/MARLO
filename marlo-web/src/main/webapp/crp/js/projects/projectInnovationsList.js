@@ -18,11 +18,6 @@ function addDataTable() {
       return;
     }
 
-    if ($(table).find('tbody tr').length === 0) {
-      console.warn('Table is empty. Skipping DataTables initialization.');
-      return;
-    }
-
     // Prevent re-initialization
     if ($.fn.dataTable.isDataTable(table)) {
       return;
@@ -47,7 +42,7 @@ function addDataTable() {
         "iDisplayLength": 50,
         "language": {
           "searchPlaceholder": "Search...",
-          "emptyTable": "No entries entered into the system yet."
+          "emptyTable": "No innovation entries entered into the system yet."
         },
         // Set default sorting only if there are enough columns
         "order": columns > 1 ? [[1, 'desc']] : [],
@@ -79,7 +74,8 @@ function addDataTable() {
             "position": "absolute",
             "bottom": "8px",
             "margin-left": "43%",
-            "z-index": "1"
+            "z-index": "1",
+            "width": "25%"
           });
         }
       }

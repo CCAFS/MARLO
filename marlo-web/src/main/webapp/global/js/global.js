@@ -1434,8 +1434,14 @@ function setGeographicScope2(component) {
   } else {
     $regionalBlock.slideUp();
     // Clean selected region
-    $regionalBlock.find("select").val("-1").trigger('change');
-
+    $regionalBlock.find("select").val(null).trigger('change');
+    $regionalBlock.find("ul.list li.relationElement").remove();
+    //resrt options in the regional select
+    $regionalBlock.find("select").find("option").each(function () {
+      if ($(this).val() != "-1") {
+        $(this).prop("disabled", false);
+      }
+    });
     $hasSpecifiedOutputCountriesBlock.find("select").val(null).trigger('change');
   }
 
@@ -1444,10 +1450,6 @@ function setGeographicScope2(component) {
     if ($isMultiNational) {
 
       $nationalBlock.find("select").select2('destroy');
-
-      if (countries.length > 0) {
-        $nationalBlock.find("select").val(null).trigger('change');
-      }
 
       $nationalBlock.find("select").select2({
         maximumSelectionLength: 0,
@@ -1459,13 +1461,8 @@ function setGeographicScope2(component) {
         dropdownAdapter: CustomDropdownAdapter
       });
     } else {
-      var countries = ($nationalBlock.find("select").val()) || [];
 
       $nationalBlock.find("select").select2('destroy');
-
-      if (countries.length > 0) {
-        $nationalBlock.find("select").val(null).trigger('change');
-      }
 
       $nationalBlock.find("select").select2({
         maximumSelectionLength: 1,
@@ -1482,6 +1479,14 @@ function setGeographicScope2(component) {
     $message.slideDown();
   } else {
     $nationalBlock.slideUp();
+
+    var countries = ($nationalBlock.find("select").val()) || [];
+
+    console.log("Countries: " + countries);
+
+    if (countries.length > 0) {
+      $nationalBlock.find("select").val(null).trigger('change');
+    }
   }
 
 }

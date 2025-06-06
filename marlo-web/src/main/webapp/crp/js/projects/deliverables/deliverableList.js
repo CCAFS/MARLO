@@ -249,6 +249,7 @@ $('.containerpreviousDeliverables input[type="checkbox"]').change(function() {
   divDataTables_length.css("bottom", "8px");
   divDataTables_length.css("margin-left", "45%");
   divDataTables_length.css("z-index", "1");
+  divDataTables_length.css("width", "25%");
   pTag.addClass("LastSearches");
   pTag2.addClass("LastSearches");
 

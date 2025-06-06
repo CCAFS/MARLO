@@ -21,6 +21,9 @@
         <property name="externalAuthor" type="java.lang.Boolean">
             <column name="is_external_author" />
         </property>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
         <property name="active" type="boolean">
             <column name="is_active" not-null="true" />
         </property>

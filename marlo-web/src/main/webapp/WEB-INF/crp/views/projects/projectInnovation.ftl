@@ -4,7 +4,7 @@
 [#-- TODO: Remove unused pageLibs--]
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250521",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250606",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
 ] /]

@@ -94,6 +94,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private Long deliverableId;
   private Long phaseId;
   private boolean hasHandle;
+  private String handle;
 
   // Managers
   private DeliverableMetadataExternalSourcesManager deliverableMetadataExternalSourcesManager;
@@ -255,6 +256,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
     // If there are parameters, take its values
     try {
       String incomingUrl = StringUtils.stripToEmpty(parameters.get(APConstants.WOS_LINK).getMultipleValues()[0]);
+      handle = StringUtils.stripToEmpty(parameters.get(APConstants.HANDLE).getMultipleValues()[0]);
       this.link = DOIService.tryGetDoiName(incomingUrl);
       this.deliverableId = Long.valueOf(
         StringUtils.stripToEmpty(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
@@ -265,13 +267,56 @@ public class DeliverableMetadataByWOS extends BaseAction {
       this.deliverableId = 0L;
     }
 
-    if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
-      JsonElement response = this.readWOSDataFromClarisa();
+    JsonElement response = null;
+
+    try {
+      if (!this.link.isEmpty() && DOIService.REGEXP_PLAINDOI.matcher(this.link).lookingAt()) {
+        // Try fetching from Clarisa using DOI logic
+        try {
+          response = this.readWOSDataFromClarisa();
+        } catch (Exception e) {
+          LOG.error("Error reading WOS data with DOI method: " + e.getMessage());
+        }
+
+        // Fallback to handle-based method if DOI fetch failed
+        if (response == null || response.isJsonNull()) {
+          try {
+            response = this.readWOSDataFromClarisa2();
+            hasHandle = true;
+          } catch (Exception e) {
+            LOG.error("Error in fallback using handle/link: " + e.getMessage());
+          }
+        }
+
+      } else if (!this.link.isEmpty() && this.link.contains("handle")) {
+        // Try handle-based retrieval directly
+        try {
+          response = this.readWOSDataFromClarisa2();
+          hasHandle = true;
+        } catch (Exception e) {
+          LOG.error("Error reading WOS data using handle-based method: " + e.getMessage());
+        }
+
+      } else {
+        // Generic fallback case when link does not match known patterns
+        try {
+          response = this.readWOSDataFromClarisa2();
+        } catch (Exception e) {
+          LOG.error("Error reading WOS data using default fallback method: " + e.getMessage());
+        }
+      }
+
+    } catch (Exception outer) {
+      // Catch any unexpected exception in the entire process
+      LOG.error("Unexpected error during WOS metadata fetch: " + outer.getMessage());
+    }
+
+    // Convert to JSON string (even if response is null)
+    try {
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
-    } else if (!this.link.isEmpty() && this.link.contains("handle")) {
-      JsonElement response = this.readWOSDataFromClarisa2();
-      this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
-      hasHandle = true;
+    } catch (Exception e) {
+      LOG.error("Error serializing JSON response: " + e.getMessage());
+      this.jsonStringResponse = null;
     }
 
   }
@@ -296,26 +341,66 @@ public class DeliverableMetadataByWOS extends BaseAction {
     return element;
   }
 
-  private JsonElement readWOSDataFromClarisa2() throws IOException {
-    URL clarisaUrl = new URL(config.getClarisaWOSLink2().replace("{1}", this.link));
-    String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
-    String encoded = Base64.encodeBase64String(loginData.getBytes());
-    HttpURLConnection conn = null;
-    if (this.hasSpecificities(APConstants.HANDLE_WOS_SERVICE_ACTIVE)) {
-      conn = (HttpURLConnection) clarisaUrl.openConnection();
-      conn.setRequestProperty("Authorization", "Basic " + encoded);
-    }
+  /**
+   * Attempts to read WOS data from the Clarisa service using either the provided link or handle.
+   * <p>
+   * The method first tries using the {@code link} field. If the link is null, empty,
+   * or the request does not succeed (e.g., response code >= 300), it will then attempt
+   * to fetch the data using the {@code handle} field.
+   * <p>
+   * The request is authenticated via HTTP Basic Auth using credentials configured in the application.
+   * This method handles all exceptions internally and will return {@code null} or {@code JsonNull.INSTANCE}
+   * in case of errors or if no data is available.
+   *
+   * @return a {@link JsonElement} representing the fetched data, or {@code null}/{@code JsonNull.INSTANCE}
+   *         if the data could not be retrieved.
+   */
+  private JsonElement readWOSDataFromClarisa2() {
+    String[] sources = {this.link, this.handle};
     JsonElement element = null;
 
-    if (conn != null && conn.getResponseCode() < 300) {
-      try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObject = parser.parse(reader).getAsJsonObject();
+    for (String source : sources) {
+      // Skip empty or null sources
+      if (source == null || source.isEmpty()) {
+        continue;
+      }
 
-        element = this.transformObjectToHandle(jsonObject);
+      // Check if the WOS service is active
+      if (!this.hasSpecificities(APConstants.HANDLE_WOS_SERVICE_ACTIVE)) {
+        break;
+      }
 
-      } catch (FileNotFoundException fnfe) {
-        element = JsonNull.INSTANCE;
+      try {
+        // Build the Clarisa URL using the configured pattern and current source
+        String urlStr = config.getClarisaWOSLink2().replace("{1}", source);
+        URL clarisaUrl = new URL(urlStr);
+
+        // Build the Authorization header using Basic Auth
+        String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
+        String encoded = Base64.encodeBase64String(loginData.getBytes());
+
+        HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
+        conn.setRequestProperty("Authorization", "Basic " + encoded);
+
+        // Proceed only if response code is successful (under 300)
+        if (conn.getResponseCode() < 300) {
+          try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(reader).getAsJsonObject();
+
+            // Transform the result into the expected handle object
+            element = this.transformObjectToHandle(jsonObject);
+            break; // Exit loop on success
+          } catch (FileNotFoundException fnfe) {
+            // Clarisa responded with 200 but no content was found
+            element = JsonNull.INSTANCE;
+            break;
+          }
+        }
+
+      } catch (Exception e) {
+        // Log and continue with the next source if any exception occurs
+        LOG.error("Error retrieving data from Clarisa using value: " + source);
       }
     }
 
@@ -1133,10 +1218,11 @@ public class DeliverableMetadataByWOS extends BaseAction {
    * @return
    * @throws IOException
    */
-  public boolean saveInfo(Long phaseId, Long deliverableId, String link) throws IOException {
+  public boolean saveInfo(Long phaseId, Long deliverableId, String link, String handle) throws IOException {
     this.phaseId = phaseId;
     this.deliverableId = deliverableId;
     this.link = link;
+    this.handle = handle;
 
     this.response = new Gson().fromJson(this.readWOSDataFromClarisa(), MetadataWOSModel.class);
 
