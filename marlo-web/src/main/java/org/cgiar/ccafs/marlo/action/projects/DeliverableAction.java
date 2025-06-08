@@ -2416,8 +2416,8 @@ public class DeliverableAction extends BaseAction {
         if (this.hasSpecificities(this.feedbackModule())) {
 
           feedbackComments = new ArrayList<>();
-          feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
+          feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+            .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
             .collect(Collectors.toList());
 
           List<FeedbackQAComment> FeedbackQACommentTemp =

@@ -351,7 +351,9 @@ public class ProjectInnovationListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      commentableFields = feedbackQACommentableFieldsManager.findBySectionName("innovation");
+      commentableFields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+        .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+        .collect(Collectors.toList());
 
       if (projectInnovations != null && !projectInnovations.isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {

@@ -2033,8 +2033,8 @@ public class ProjectInnovationAction extends BaseAction {
     try {
       if (this.hasSpecificities(this.feedbackModule())) {
         feedbackComments = new ArrayList<>();
-        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+        feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+          .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
           .collect(Collectors.toList());
         if (feedbackComments != null) {
           for (FeedbackQACommentableFields field : feedbackComments) {

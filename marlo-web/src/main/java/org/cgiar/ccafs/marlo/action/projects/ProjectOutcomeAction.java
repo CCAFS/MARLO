@@ -1653,7 +1653,9 @@ public class ProjectOutcomeAction extends BaseAction {
     try {
       if (this.hasSpecificities(this.feedbackModule())) {
         feedbackComments = new ArrayList<>();
-        feedbackComments = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
+        feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+          .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+          .collect(Collectors.toList());
 
         if (feedbackComments != null) {
           List<FeedbackQAComment> feedbackQACommentToSearchComments =

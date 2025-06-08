@@ -21,6 +21,8 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
   private FeedbackPermission feedbackPermission;
   @Expose
   private ClusterType clusterType;
+  @Expose
+  private GlobalUnit globalUnit;
 
   public FeedbackRolesPermission() {
   }
@@ -42,6 +44,10 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
 
   public FeedbackPermission getFeedbackPermission() {
     return feedbackPermission;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -66,6 +72,7 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
     return role;
   }
 
+
   @Override
   public boolean isActive() {
     // TODO Auto-generated method stub
@@ -87,13 +94,16 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
     this.feedbackPermission = feedbackPermission;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
 
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
 
   }
-
 
   public void setRole(Role role) {
     this.role = role;

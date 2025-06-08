@@ -50,19 +50,23 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
     Long fieldId = null;
-    List<FeedbackQAComment> feedbackComments = new ArrayList<>();
+    List<FeedbackQAComment> feedbackComments = null;
     List<FeedbackQACommentableFields> fields = new ArrayList<>();
 
     // @param = sectionName/parentID/phaseID/fieldDescription
     if (sectionName != null && parentId != null && phaseId != null && fieldDescription != null) {
       try {
-        fields =
-          feedbackQACommentableFieldsManager.findAll().stream()
-            .filter(qa -> qa != null && qa.isActive() && qa.getSectionName() != null
-              && qa.getSectionName().equals(sectionName) && qa.getFieldDescription() != null
-              && qa.getFieldDescription().equals(fieldDescription))
+        try {
+          fields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName)
+              && qa.getFieldDescription() != null && qa.getFieldDescription().equals(fieldDescription))
             .collect(Collectors.toList());
-
+        } catch (Exception e) {
+          feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName)
+              && qa.getFieldDescription() != null && qa.getFieldDescription().equals(fieldDescription))
+            .collect(Collectors.toList());
+        }
         if (fields != null && !fields.isEmpty()) {
           for (FeedbackQACommentableFields field : fields) {
             fieldId = field.getId();
@@ -70,17 +74,29 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
             // Get comments for field
             if (fieldId != null && commentManager.findAll() != null) {
-              feedbackComments
-                .addAll(commentManager.findAll().stream()
+              feedbackComments = new ArrayList<>();
+              try {
+                feedbackComments
+                  .addAll(commentManager.getFeedbackQACommentsByPhaseAndParentId(phaseId, parentId).stream()
+                    .filter(c -> c.getField() != null && c.getField().getId() != null
+                      && c.getField().getId().equals(fieldIdLocal) && c.getFeedbackStatus() != null
+                      && c.getFeedbackStatus().getId() != null
+                      // &&
+                      // !c.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                      && !c.getFeedbackStatus().getId()
+                        .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))
+                    .collect(Collectors.toList()));
+              } catch (Exception e) {
+                feedbackComments.addAll(commentManager.findAll().stream()
                   .filter(c -> c.getField() != null && c.getField().getId() != null
                     && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
                     && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId
-                    && c.getFeedbackStatus() != null
+                    && c.getFeedbackStatus() != null && c.getFeedbackStatus().getId() != null
                     // && !c.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
                     && !c.getFeedbackStatus().getId()
                       .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))
                   .collect(Collectors.toList()));
-
+              }
             }
 
             // Get comment without reply and approbation
@@ -89,19 +105,15 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
 
               try {
                 if (newModel) {
-                  feedbackComments = feedbackComments.stream().filter(f -> f != null && f.getPhase() != null
-                    && f.getPhase().getId() != null && f.getPhase().getId().equals(phaseId)
-                    && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
-                      && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                  feedbackComments = feedbackComments.stream().filter(f -> f != null
+                    && ((f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
                       || (f.getFeedbackStatus() != null && f.getFeedbackReplies() != null
                         && !f.getFeedbackReplies().isEmpty())))
                     .collect(Collectors.toList());
 
                 } else {
-                  feedbackComments = feedbackComments.stream().filter(f -> f != null && f.getPhase() != null
-                    && f.getPhase().getId() != null && f.getPhase().getId().equals(phaseId)
-                    && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
-                      && f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                  feedbackComments = feedbackComments.stream().filter(f -> f != null
+                    && ((f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
                       || (f.getFeedbackStatus() != null && f.getReply() != null)))
                     .collect(Collectors.toList());
                   if (feedbackComments != null) {

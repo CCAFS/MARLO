@@ -24,5 +24,9 @@
             fetch="select">
             <column name="feedback_permission_id" not-null="true" />
         </many-to-one>
+        <many-to-one name="globalUnit"
+            class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id" not-null="true" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>

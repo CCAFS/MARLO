@@ -82,10 +82,15 @@ public class FeedbackQACommentsAction extends BaseAction {
     if (sectionName != null && parentId != null && phaseId != null
       && feedbackQACommentableFieldsManager.findAll() != null) {
       try {
-        fields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(
-            qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-          .collect(Collectors.toList());
+        try {
+          fields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+            .collect(Collectors.toList());
+        } catch (Exception e) {
+          fields = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+            .collect(Collectors.toList());
+        }
 
         if (fields != null && !fields.isEmpty()) {
           for (FeedbackQACommentableFields field : fields) {
@@ -94,12 +99,19 @@ public class FeedbackQACommentsAction extends BaseAction {
 
             // Get comments for field
             if (fieldId != null && commentManager.findAll() != null) {
-              feedbackComments.addAll(commentManager.findAll().stream()
-                .filter(c -> c.getField() != null && c.getField().getId() != null
-                  && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
-                  && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId)
-                .collect(Collectors.toList()));
+              try {
+                feedbackComments.addAll(commentManager
+                  .getFeedbackQACommentsByPhaseAndParentId(phaseId, parentId).stream().filter(c -> c.getField() != null
+                    && c.getField().getId() != null && c.getField().getId().equals(fieldIdLocal))
+                  .collect(Collectors.toList()));
 
+              } catch (Exception e) {
+                feedbackComments.addAll(commentManager.findAll().stream()
+                  .filter(c -> c.getField() != null && c.getField().getId() != null
+                    && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
+                    && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId)
+                  .collect(Collectors.toList()));
+              }
             }
           }
         }

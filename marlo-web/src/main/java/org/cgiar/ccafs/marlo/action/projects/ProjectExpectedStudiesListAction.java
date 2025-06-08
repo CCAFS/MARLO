@@ -223,7 +223,9 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      commentableFields = feedbackQACommentableFieldsManager.findBySectionName("study");
+      commentableFields =
+        this.feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+          .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study")).collect(Collectors.toList());
 
       if (projectStudies != null && !projectStudies.isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {

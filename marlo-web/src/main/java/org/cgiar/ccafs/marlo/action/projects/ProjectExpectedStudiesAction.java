@@ -2021,9 +2021,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
           this.feedbackComments = new ArrayList<>();
-          this.feedbackComments = this.feedbackQACommentableFieldsManager.findAll().stream()
-            .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study"))
-            .collect(Collectors.toList());
+          this.feedbackComments =
+            this.feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+              .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study"))
+              .collect(Collectors.toList());
           if (this.feedbackComments != null) {
             final List<FeedbackQAComment> FeedbackQACommentToSearchComments =
               this.feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());

@@ -81,14 +81,27 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
     // @param = sectionName/parentID/phaseID
     if (sectionName != null && parentId != null && phaseId != null) {
       try {
-        fields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(
-            qa -> qa != null && qa.isActive() && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
-          .collect(Collectors.toList());
+
+        try {
+          fields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+            .collect(Collectors.toList());
+        } catch (Exception e) {
+          fields = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName))
+            .collect(Collectors.toList());
+        }
 
         // cgamboa 19/04/2024 comments.findAll function has been changed by commentManager.findAllByPhase function
-        List<FeedbackQAComment> allfeedbackQAComment = commentManager.findAllByPhase(phaseId);
-        if (fields != null && !fields.isEmpty()) {
+        List<FeedbackQAComment> allfeedbackQAComment = null;
+        try {
+          allfeedbackQAComment = commentManager.getFeedbackQACommentsByPhaseAndParentId(phaseId, parentId);
+        } catch (Exception e) {
+          allfeedbackQAComment = commentManager.findAllByPhase(phaseId).stream()
+            .filter(c -> c != null && c.getParentId() == parentId).collect(Collectors.toList());
+        }
+
+        if (allfeedbackQAComment != null && fields != null && !fields.isEmpty()) {
           int countField = 0;
           for (FeedbackQACommentableFields field : fields) {
 
@@ -101,22 +114,18 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
 
             // Get comments for field
             // cgamboa 19/04/2024 comments.findAll function has been changed by commentManager.findAllByPhase function
-            if (fieldId != null && allfeedbackQAComment != null) {
+            if (fieldId != null) {
 
               if (frontName != null) {
                 feedbackComments = (allfeedbackQAComment.stream()
                   .filter(c -> c.getField() != null && c.getField().getId() != null
                     && c.getField().getId().equals(fieldIdLocal) && c.getField().getFieldName() != null
-                    && c.getField().getFieldName().equals(frontName) && c.getPhase() != null
-                    && c.getPhase().getId() != null && c.getPhase().getId().equals(phaseId)
-                    && c.getParentId() == parentId)
+                    && c.getField().getFieldName().equals(frontName))
                   .collect(Collectors.toList()));
               } else {
-                feedbackComments = (allfeedbackQAComment.stream()
-                  .filter(c -> c.getField() != null && c.getField().getId() != null
-                    && c.getField().getId().equals(fieldIdLocal) && c.getPhase() != null && c.getPhase().getId() != null
-                    && c.getPhase().getId().equals(phaseId) && c.getParentId() == parentId)
-                  .collect(Collectors.toList()));
+                feedbackComments =
+                  (allfeedbackQAComment.stream().filter(c -> c.getField() != null && c.getField().getId() != null
+                    && c.getField().getId().equals(fieldIdLocal)).collect(Collectors.toList()));
               }
 
               if (feedbackComments != null && !feedbackComments.isEmpty()) {

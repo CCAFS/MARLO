@@ -11,13 +11,12 @@
  ** along with MARLO.If not,see<http:// www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.superadmin;
+package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.validation.superadmin.FeedbackManagementValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,15 +34,12 @@ public class FeedbackManagementAction extends BaseAction {
   private List<FeedbackQACommentableFields> feedbackFields;
 
   private final FeedbackQACommentableFieldsManager fieldsManager;
-  private FeedbackManagementValidator validator;
 
 
   @Inject
-  public FeedbackManagementAction(APConfig config, FeedbackQACommentableFieldsManager fieldsManager,
-    FeedbackManagementValidator validator) {
+  public FeedbackManagementAction(APConfig config, FeedbackQACommentableFieldsManager fieldsManager) {
     super(config);
     this.fieldsManager = fieldsManager;
-    this.validator = validator;
   }
 
   public List<FeedbackQACommentableFields> getFeedbackFields() {
@@ -53,8 +49,7 @@ public class FeedbackManagementAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    feedbackFields = fieldsManager.findAll();
-
+    feedbackFields = fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
     if (this.isHttpPost()) {
       feedbackFields.clear();
     }
@@ -68,7 +63,7 @@ public class FeedbackManagementAction extends BaseAction {
         List<Long> IDs = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
           .collect(Collectors.toList());
 
-        fieldsManager.findAll().stream()
+        fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
           .filter(activityDB -> activityDB.getId() != null && !IDs.contains(activityDB.getId()))
           .map(FeedbackQACommentableFields::getId).forEach(fieldsManager::deleteInternalQaCommentableFields);
 
@@ -99,15 +94,10 @@ public class FeedbackManagementAction extends BaseAction {
             fieldSave.setParentFieldDescription(fields.getParentFieldDescription());
           }
 
-          try {
-            if (fieldSave.getGlobalUnit() != null) {
-              fieldSave.setGlobalUnit(fields.getGlobalUnit());
-            } else {
-              fieldSave.setGlobalUnit(this.getCurrentGlobalUnit());
-            }
-          } catch (Exception e) {
-            // If the global unit is not set, then it will be set to null
-            fieldSave.setGlobalUnit(null);
+          if (fields.getGlobalUnit() != null) {
+            fieldSave.setGlobalUnit(fields.getGlobalUnit());
+          } else {
+            fieldSave.setGlobalUnit(this.getCurrentGlobalUnit());
           }
 
           fieldsManager.saveInternalQaCommentableFields(fieldSave);
@@ -117,7 +107,7 @@ public class FeedbackManagementAction extends BaseAction {
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
-        if (!this.getInvalidFields().isEmpty()) {
+        if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
           List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
@@ -125,7 +115,7 @@ public class FeedbackManagementAction extends BaseAction {
             this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
           }
         } else {
-          this.addActionMessage("message:" + this.getText("saving.saved"));
+          // this.addActionMessage("message:" + this.getText("saving.saved"));
         }
         return SUCCESS;
       } else {
@@ -146,7 +136,6 @@ public class FeedbackManagementAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, feedbackFields);
     }
   }
 

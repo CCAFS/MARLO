@@ -1,15 +1,15 @@
 [#ftl]
 [#assign title = "Feedback Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/feedbackManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+[#assign pageLibs = ["select2"] /]
+[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js"
  ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
-[#assign currentSection = "superadmin" /]
+[#assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /]
+[#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackManagement" /]
 
 [#assign breadCrumb = [
-  {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
+  {"label":"admin", "nameSpace":"", "action":"marloBoard"},
   {"label":"feedbackManagement", "nameSpace":"", "action":""}
 ]/]
 
@@ -44,7 +44,7 @@
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
+        [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]

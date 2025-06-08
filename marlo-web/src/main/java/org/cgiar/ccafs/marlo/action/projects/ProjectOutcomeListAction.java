@@ -307,16 +307,13 @@ public class ProjectOutcomeListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      if (feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp") != null) {
-        /*
-         * commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-         * .filter(f -> f != null && f.getSectionName().equals("projectContributionCrp")).collect(Collectors.toList());
-         */
-        commentableFields = feedbackQACommentableFieldsManager.findBySectionName("projectContributionCrp");
+      commentableFields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+        .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+        .collect(Collectors.toList());
 
-      }
       if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
+
 
         // Set the comment status in each project outcome
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {

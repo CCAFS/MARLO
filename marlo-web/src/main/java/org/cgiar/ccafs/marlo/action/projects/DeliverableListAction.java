@@ -259,10 +259,9 @@ public class DeliverableListAction extends BaseAction {
       List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
 
       // get the commentable fields by sectionName
-      if (feedbackQACommentableFieldsManager.findAll() != null) {
-        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
-      }
+      commentableFields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+        .stream().filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
+
       if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
         && !commentableFields.isEmpty()) {
 
