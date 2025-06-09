@@ -174,6 +174,56 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                           (reply.getUser() != null && reply.getUser().getId() != null) ? reply.getUser().getId() : "");
                         replyMap.put("date", (reply.getCommentDate() != null) ? reply.getCommentDate().toString() : "");
 
+                        try {
+                          if (reply.getFeedbackStatus() != null) {
+
+                            String statusText = null;
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.Disagreed.getStatusId()))) {
+                              statusText = "0";
+                            }
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId()))) {
+                              statusText = FeedbackStatusEnum.Agreed.getStatusId();
+                            }
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.ClarificatioNeeded.getStatusId()))) {
+                              statusText = FeedbackStatusEnum.ClarificatioNeeded.getStatusId();
+                            }
+
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.Admitted.getStatusId()))) {
+                              statusText = FeedbackStatusEnum.Admitted.getStatusId();
+                            }
+
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))) {
+                              statusText = FeedbackStatusEnum.Dismissed.getStatusId();
+                            }
+                            if (reply.getFeedbackStatus().getId()
+                              .equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))) {
+                              statusText = "";
+                            }
+
+                            replyMap.put("status", statusText);
+                          } else {
+                            replyMap.put("status", "");
+                          }
+                        } catch (Exception e) {
+                          logger.error("Error getting feedback reply status", e);
+                          replyMap.put("status", "");
+                        }
+
+                        if (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
+                          && reply.getUserApproval().getLastName() != null) {
+                          replyMap.put("approvalUserName",
+                            reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName());
+                        }
+                        if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
+                          String dateString = reply.getApprovalDate().toString();
+                          replyMap.put("approvalDate", dateString);
+                        }
+
                         replyList.add(replyMap);
                       }
                     }
