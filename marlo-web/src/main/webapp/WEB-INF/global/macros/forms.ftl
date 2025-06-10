@@ -1268,15 +1268,7 @@
         </div>
       </div>      
     </div>
-    <div class="replyContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="replyTextContainer">
-        <div class="replyTitle"></div>
-        <p class="replyReadonly"></p>
-        <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
-      </div>
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
-    </div>
+    
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
@@ -1295,7 +1287,29 @@
       </div>
       <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
     </div>
-    <br>
+
+        [#-- Replies --]
+    <div class="repliesContainer"></div>
+
+    [#-- Reply textarea --]
+    <div class="replyTextAreaContainer">
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>
+      
+    [#-- Template for reply --]
+    [@customForm.qaCommentClarificationBlock /]
+  </div>
+[/#macro]
+
+[#macro qaCommentClarificationBlock]
+  <div class="_TEMPLATE_replyContainer" replyId="">
+    <div class="replyTextContainer">
+      <div class="replyTitle"></div>
+      <p class="replyReadonly"></p>
+      <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+    </div>
+    <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
 [/#macro]
 

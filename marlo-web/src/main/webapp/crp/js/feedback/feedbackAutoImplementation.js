@@ -374,7 +374,7 @@ function attachEventsFeedback() {
 		let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
 		let textarea = blockContainer.find('textarea[id="New comment"]');
 
-		block.find('.replyContainer').css('display', 'flex');
+		block.find('.replyTextAreaContainer').css('display', 'flex');
 		block.find('.buttonsContainer').hide();
 		block.find('.optionsContainer').hide();
 
@@ -861,15 +861,31 @@ function loadCommentsByUser(name) {
 								}
 								
 								//
+								const repliesContainer = block.find('.repliesContainer');
+								repliesContainer.empty();
 
-								let replyLength = Object.keys(qaComments[i][j].reply).length;
+								let templateReply = block.find('._TEMPLATE_replyContainer');
+								templateReply.hide();
 
-								if (replyLength !== 0) {
+								let replies = Array.isArray(qaComments[i][j].reply) ? qaComments[i][j].reply : (Object.keys(qaComments[i][j].reply).length ? [qaComments[i][j].reply] : []);
+
+								if (replies.length !== 0) {
+
+									replies.forEach((reply, index) => {
+										let newReply = templateReply.clone(true)
+										.removeClass('_TEMPLATE_replyContainer')
+										.addClass('replyContainer');
+
+										newReply.css('display', 'flex');
+										newReply.find('.replyTextContainer').show();
+										newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
+										newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
+
+										repliesContainer.append(newReply);
+									});
+
 									block.find('textarea[id="Reply"]').parent().hide();
 									block.find('.replyContainer').css('display', 'flex');
-									block.find('.replyTextContainer').show();
-									block.find('.replyTextContainer .replyTitle').html(`Reply by ${qaComments[i][j].reply['userName']} at ${qaComments[i][j].reply['date']}`);
-									block.find('.replyTextContainer p.replyReadonly').html(`${qaComments[i][j].reply['text']}`);
 									block.find('.replyCommentBtn').hide();
 									block.find('.sendReplyContainer').hide();
 								} else {
@@ -894,13 +910,14 @@ function loadCommentsByUser(name) {
 											block.find('.sendReplyContainer').show();
 										} if (qaComments[i][j].status == '2') {
 											block.find('textarea[id="Reply"]').parent().show();
-											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextAreaContainer').css('display', 'flex');
+											block.find('.buttonsContainer').hide();
 											block.find('.replyTextContainer').hide();
 											block.find('.replyCommentBtn').hide();
 											block.find('.sendReplyContainer').show();
 										} if (qaComments[i][j].status == '6') {
 											block.find('textarea[id="Reply"]').parent().show();
-											block.find('.replyContainer').css('display', 'flex');
+											block.find('.replyTextAreaContainer').css('display', 'flex');
 											block.find('.replyTextContainer').hide();
 											block.find('.replyCommentBtn').hide();
 											block.find('.sendReplyContainer').show();
@@ -908,6 +925,8 @@ function loadCommentsByUser(name) {
 
 									} else {
 										block.find('.replyCommentBtn').hide();
+										block.find('.replyTextAreaContainer').hide();
+										block.find('.sendReplyContainer').hide();
 									}
 								}
 							}
