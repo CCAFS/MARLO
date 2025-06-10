@@ -62,6 +62,11 @@ public class FeedbackRolesPermissionManagerImpl implements FeedbackRolesPermissi
   }
 
   @Override
+  public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID) {
+    return feedbackRolesPermissionDAO.getFeedbackRolesPermissionByGlobalUnitID(globalUnitID);
+  }
+
+  @Override
   public FeedbackRolesPermission getFeedbackRolesPermissionById(long feedbackRolesPermissionID) {
 
     return feedbackRolesPermissionDAO.find(feedbackRolesPermissionID);

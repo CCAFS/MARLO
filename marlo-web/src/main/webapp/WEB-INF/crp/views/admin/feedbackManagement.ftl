@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js"
  ] /]
-[#assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /]
+[#-- assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /--]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackManagement" /]
 
@@ -54,7 +54,7 @@
         <div class="slos-list">
         [#if feedbackFields?has_content]
           [#list feedbackFields as slo]
-            [@srfSloMacro element=slo name="feedbackFields[${slo_index}]" index=slo_index  /]
+            [@feedbackCommentFieldsMacro element=slo name="feedbackFields[${slo_index}]" index=slo_index  /]
           [/#list]
         [/#if]
         </div>
@@ -75,12 +75,12 @@
   </div>
 </section>
 
-[#-- SLO Template --]
-[@srfSloMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
+[#-- Feedback Comments fields Template --]
+[@feedbackCommentFieldsMacro element={} name="feedbackFields[-1]" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
-[#macro srfSloMacro element name index isTemplate=false]
+[#macro feedbackCommentFieldsMacro element name index isTemplate=false]
   <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="remove-element removeElement sm" title="Remove"></div>
