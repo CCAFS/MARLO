@@ -134,6 +134,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.QuantificationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -2020,23 +2021,23 @@ public class ProjectExpectedStudiesAction extends BaseAction {
        */
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
+          String sectionName = ProjectSectionsEnum.EXPECTEDSTUDY.getStatus();
+
           this.feedbackComments = new ArrayList<>();
           this.feedbackComments =
             this.feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
-              .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study"))
+              .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals(sectionName))
               .collect(Collectors.toList());
           if (this.feedbackComments != null) {
-            final List<FeedbackQAComment> FeedbackQACommentToSearchComments =
-              this.feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
+            final List<FeedbackQAComment> FeedbackQACommentToSearchComments = feedbackQACommentManager
+              .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), this.expectedStudy.getId());
+
             if (FeedbackQACommentToSearchComments != null) {
               for (final FeedbackQACommentableFields field : this.feedbackComments) {
                 List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
                 // cgamboa 08/05/2024 feedbackQACommentManager.findAll() is changed by FeedbackQACommentToSearchComments
-                comments = FeedbackQACommentToSearchComments.stream()
-                  .filter(f -> (f != null) && (f.getPhase() != null) && (f.getPhase().getId() != null)
-                    && f.getPhase().getId().equals(this.getActualPhase().getId())
-                    && (f.getParentId() == this.expectedStudy.getId()) && (f.getField() != null)
-                    && (f.getField().getId() != null) && f.getField().getId().equals(field.getId()))
+                comments = FeedbackQACommentToSearchComments.stream().filter(f -> (f != null) && (f.getField() != null)
+                  && (f.getField().getId() != null) && f.getField().getId().equals(field.getId()))
                   .collect(Collectors.toList());
                 field.setQaComments(comments);
               }

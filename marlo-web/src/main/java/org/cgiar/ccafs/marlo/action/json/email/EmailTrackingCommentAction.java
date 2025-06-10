@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -194,21 +195,24 @@ public class EmailTrackingCommentAction extends BaseAction {
     }
     if (sectionName != null && !sectionName.isEmpty()) {
 
-      switch (sectionName) {
-        case "projectContributionCrp":
+      switch (ProjectSectionsEnum.getValue(sectionName)) {
+        case OUTCOME:
           sectionName = "Contribution To Performance Indicators";
           break;
-        case "deliverable":
+        case DELIVERABLE:
           sectionName = "Deliverables";
           parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
-        case "study":
+        case EXPECTEDSTUDY:
           sectionName = "OICRs";
           parentFieldDescription = "OICR or MELIA " + parentFieldDescription;
           break;
-        case "innovation":
+        case INNOVATION:
           sectionName = "Innovations";
           parentFieldDescription = "Innovation " + parentFieldDescription;
+          break;
+        default:
+          parentFieldDescription = sectionName + " " + parentFieldDescription;
           break;
       }
     }

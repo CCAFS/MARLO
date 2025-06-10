@@ -47,7 +47,7 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
   public String execute() throws Exception {
     boolean newModel = true;
     int totalComments = 0, answeredComments = 0;
-    comments = new ArrayList<Map<String, Object>>();
+    comments = new ArrayList<>();
     Map<String, Object> fieldsMap;
     Long fieldId = null;
     List<FeedbackQAComment> feedbackComments = null;
@@ -62,10 +62,7 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
               && qa.getFieldDescription() != null && qa.getFieldDescription().equals(fieldDescription))
             .collect(Collectors.toList());
         } catch (Exception e) {
-          feedbackQACommentableFieldsManager.findAll().stream()
-            .filter(qa -> qa != null && qa.getSectionName() != null && qa.getSectionName().equals(sectionName)
-              && qa.getFieldDescription() != null && qa.getFieldDescription().equals(fieldDescription))
-            .collect(Collectors.toList());
+          logger.error("unable to get list of fields by section and field description", e);
         }
         if (fields != null && !fields.isEmpty()) {
           for (FeedbackQACommentableFields field : fields) {
@@ -116,9 +113,9 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
                     && ((f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
                       || (f.getFeedbackStatus() != null && f.getReply() != null)))
                     .collect(Collectors.toList());
-                  if (feedbackComments != null) {
-                    answeredComments = feedbackComments.size();
-                  }
+                }
+                if (feedbackComments != null) {
+                  answeredComments = feedbackComments.size();
                 }
               } catch (Exception e) {
                 logger.error("unable to get list of filters comments", e);
@@ -131,7 +128,6 @@ public class FeedbackQANumberCommentsAction extends BaseAction {
         fields = new ArrayList<>();
       }
     }
-
 
     fieldsMap = new HashMap<String, Object>();
     fieldsMap.put("totalComments", totalComments);

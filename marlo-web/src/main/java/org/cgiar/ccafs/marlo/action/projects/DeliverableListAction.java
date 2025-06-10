@@ -207,51 +207,53 @@ public class DeliverableListAction extends BaseAction {
 
     try {
 
-      List<String> commentList = null;
-      commentList = deliverableManager.getCommentStatusByPhase(this.getActualPhase().getId());
+      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty()) {
 
-      List<String> commentAnsweredList = null;
-      commentAnsweredList = deliverableManager.getAnsweredCommentByPhase(this.getActualPhase().getId());
-
-
-      for (Deliverable deliverable : project.getDeliverables()) {
-        int answeredComments = 0;
-        int totalComments = 0;
-        try {
-
-          for (String string : commentList) {
-            String test = string.replace("|", ";");
-
-            if (test.split(";")[0].equals(deliverable.getId() + "")) {
-              totalComments = Integer.parseInt(test.split(";")[1]);
+        // Set the comment status in each project outcome
+        for (Deliverable deliverable : project.getDeliverables()) {
+          int answeredComments = 0, totalComments = 0;
+          try {
+            List<FeedbackQAComment> comments = new ArrayList<>();
+            if (deliverable.getId() != null) {
+              comments = commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(),
+                deliverable.getId());
             }
-          }
+            if (comments != null) {
 
-          for (String string : commentAnsweredList) {
-            String test = string.replace("|", ";");
+              comments = comments.stream().filter(f -> f != null && (f.getFeedbackStatus() != null
+                && f.getFeedbackStatus().getId() != null
+                && (!f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))))
+                .collect(Collectors.toList());
 
-            if (test.split(";")[0].equals(deliverable.getId() + "")) {
-              answeredComments = Integer.parseInt(test.split(";")[1]);
+              if (comments != null && !comments.isEmpty()) {
+                totalComments += comments.size();
+                List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                  Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                  boolean isDisagreedOrClarificationNeeded =
+                    statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                      || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                  boolean isAgreed =
+                    statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
+
+                  return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                    && !f.getFeedbackReplies().isEmpty()) || isAgreed;
+                }).collect(Collectors.toList());
+
+                answeredComments += filteredComments.size();
+              }
             }
-          }
 
-          deliverable.setCommentStatus(answeredComments + "/" + totalComments);
-          if (deliverable.getCommentStatus() == null
-            || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+          } catch (Exception e) {
             deliverable.setCommentStatus(0 + "/" + 0);
           }
-
-        } catch (Exception e) {
-          deliverable.setCommentStatus(0 + "/" + 0);
         }
-      }
 
+      }
     } catch (Exception e) {
-      logger.error("unable to get feedbackcomments info", e);
       e.printStackTrace();
     }
   }
-
 
   public void getCommentStatusesOld() {
 
@@ -320,6 +322,56 @@ public class DeliverableListAction extends BaseAction {
         }
 
       }
+    } catch (Exception e) {
+      logger.error("unable to get feedbackcomments info", e);
+      e.printStackTrace();
+    }
+  }
+
+
+  public void getCommentStatusesOld2() {
+
+    try {
+
+      List<String> commentList = null;
+      commentList = deliverableManager.getCommentStatusByPhase(this.getActualPhase().getId());
+
+      List<String> commentAnsweredList = null;
+      commentAnsweredList = deliverableManager.getAnsweredCommentByPhase(this.getActualPhase().getId());
+
+
+      for (Deliverable deliverable : project.getDeliverables()) {
+        int answeredComments = 0;
+        int totalComments = 0;
+        try {
+
+          for (String string : commentList) {
+            String test = string.replace("|", ";");
+
+            if (test.split(";")[0].equals(deliverable.getId() + "")) {
+              totalComments = Integer.parseInt(test.split(";")[1]);
+            }
+          }
+
+          for (String string : commentAnsweredList) {
+            String test = string.replace("|", ";");
+
+            if (test.split(";")[0].equals(deliverable.getId() + "")) {
+              answeredComments = Integer.parseInt(test.split(";")[1]);
+            }
+          }
+
+          deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+          if (deliverable.getCommentStatus() == null
+            || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+            deliverable.setCommentStatus(0 + "/" + 0);
+          }
+
+        } catch (Exception e) {
+          deliverable.setCommentStatus(0 + "/" + 0);
+        }
+      }
+
     } catch (Exception e) {
       logger.error("unable to get feedbackcomments info", e);
       e.printStackTrace();

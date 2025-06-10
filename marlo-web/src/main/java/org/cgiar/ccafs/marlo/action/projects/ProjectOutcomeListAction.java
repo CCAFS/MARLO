@@ -32,7 +32,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
@@ -303,52 +302,46 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     try {
 
-
-      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
-
-      // get the commentable fields by sectionName
-      commentableFields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
-        .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
-        .collect(Collectors.toList());
-
-      if (project.getOutcomes() != null && !project.getOutcomes().isEmpty() && commentableFields != null
-        && !commentableFields.isEmpty()) {
+      if (project.getOutcomes() != null && !project.getOutcomes().isEmpty()) {
 
 
         // Set the comment status in each project outcome
         for (ProjectOutcome projectOutcome : project.getOutcomes()) {
           int answeredComments = 0, totalComments = 0;
           try {
-            for (FeedbackQACommentableFields commentableField : commentableFields) {
-              if (commentableField != null && commentableField.getId() != null) {
+            List<FeedbackQAComment> comments = new ArrayList<>();
+            if (projectOutcome.getId() != null) {
+              comments = commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(),
+                projectOutcome.getId());
+            }
 
-                if (projectOutcome != null && projectOutcome.getId() != null && commentableField != null
-                  && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager
-                    .getFeedbackQACommentsByParentId(projectOutcome.getId()).stream().filter(f -> f != null
+            if (comments != null) {
 
-                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
-                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
-                      // &&
-                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
-                      ))
+              comments = comments.stream()
+                .filter(f -> f != null && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                  && (!f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+                  // &&
+                  // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                  ))).collect(Collectors.toList());
 
-                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
-                    .collect(Collectors.toList());
-                  if (comments != null && !comments.isEmpty()) {
-                    totalComments += comments.size();
-                    comments = comments.stream()
-                      .filter(f -> f != null && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
-                        .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                        || (f.getFeedbackStatus() != null && f.getFeedbackReplies() != null)))
-                      .collect(Collectors.toList());
-                    if (comments != null) {
-                      answeredComments += comments.size();
-                    }
-                  }
-                }
+              if (comments != null && !comments.isEmpty()) {
+                totalComments += comments.size();
+                List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                  Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                  boolean isDisagreedOrClarificationNeeded =
+                    statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                      || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                  boolean isAgreed =
+                    statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
+
+                  return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                    && !f.getFeedbackReplies().isEmpty()) || isAgreed;
+                }).collect(Collectors.toList());
+
+                answeredComments += filteredComments.size();
               }
             }
+
             projectOutcome.setCommentStatus(answeredComments + "/" + totalComments);
           } catch (Exception e) {
             projectOutcome.setCommentStatus(0 + "/" + 0);

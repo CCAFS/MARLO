@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectNextuser;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcomeIndicator;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -1652,9 +1653,11 @@ public class ProjectOutcomeAction extends BaseAction {
      */
     try {
       if (this.hasSpecificities(this.feedbackModule())) {
+        String sectionName = ProjectSectionsEnum.OUTCOME.getStatus();
+
         feedbackComments = new ArrayList<>();
         feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
-          .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("projectContributionCrp"))
+          .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
 
         if (feedbackComments != null) {

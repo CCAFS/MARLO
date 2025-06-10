@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -208,29 +209,35 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
 
     if (sectionName != null && !sectionName.isEmpty()) {
 
-      switch (sectionName) {
-        case "projectContributionCrp":
+      switch (ProjectSectionsEnum.getValue(sectionName)) {
+        case OUTCOME:
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
             + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Contribution To Performance Indicadors";
           break;
-        case "deliverable":
+        case DELIVERABLE:
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
             + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Deliverable";
           parentFieldDescription = "Deliverable " + parentFieldDescription;
           break;
-        case "study":
+        case EXPECTEDSTUDY:
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
             + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "OICR or MELIA ";
           parentFieldDescription = "OICR " + parentFieldDescription;
           break;
-        case "innovation":
+        case INNOVATION:
           sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
             + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
           sectionName = "Innovations";
           parentFieldDescription = "Innovation " + parentFieldDescription;
+          break;
+        default:
+          sectionLink =
+            this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
+              + sectionName + "ID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+          parentFieldDescription = sectionName + " " + parentFieldDescription;
           break;
       }
     }

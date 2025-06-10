@@ -16,6 +16,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class FeedbackManagementAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
 
   private List<FeedbackQACommentableFields> feedbackFields;
+  private List<String> projectSections;
 
   private final FeedbackQACommentableFieldsManager fieldsManager;
 
@@ -46,9 +48,21 @@ public class FeedbackManagementAction extends BaseAction {
     return feedbackFields;
   }
 
+  public List<String> getProjectSections() {
+    return projectSections;
+  }
+
   @Override
   public void prepare() throws Exception {
-
+    ProjectSectionsEnum[] projectSectionsArray = ProjectSectionsEnum.values();
+    projectSections = new ArrayList<>();
+    if (projectSectionsArray != null && !(projectSectionsArray.length > 0)) {
+      for (ProjectSectionsEnum section : projectSectionsArray) {
+        if (section != null && section.getStatus() != null) {
+          projectSections.add(section.getStatus());
+        }
+      }
+    }
     feedbackFields = fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
     if (this.isHttpPost()) {
       feedbackFields.clear();
@@ -133,10 +147,13 @@ public class FeedbackManagementAction extends BaseAction {
     this.feedbackFields = feedbackFields;
   }
 
+  public void setProjectSections(List<String> projectSections) {
+    this.projectSections = projectSections;
+  }
+
   @Override
   public void validate() {
     if (save) {
     }
   }
-
 }
