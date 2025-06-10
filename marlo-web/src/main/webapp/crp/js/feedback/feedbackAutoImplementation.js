@@ -737,7 +737,6 @@ function loadCommentsByUser(name) {
 								block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
 								block.find('.sendCommentContainer').hide();
 								if (qaComments[i][j].userID != userID) block.find('.deleteCommentBtn').remove();
-								if (qaComments[i][j].reply.userID == userID && qaComments[i][j].status != '6') block.find('.deleteReplyBtn').show();
 								if (userCanApproveFeedback == 'false' && userCanManageFeedback == 'true' && userCanLeaveComments == 'true' && qaComments[i][j].userID != userID) block.find('.editCommentBtn').remove();
 								if (userCanManageFeedback == 'false') {
 								}
@@ -860,7 +859,8 @@ function loadCommentsByUser(name) {
 									showEditComment(block, qaComments[i][j].commentId , 1);
 								}
 								
-								//
+								//NOTE: This part manages all the conditions to display the replies
+
 								const repliesContainer = block.find('.repliesContainer');
 								repliesContainer.empty();
 
@@ -878,8 +878,18 @@ function loadCommentsByUser(name) {
 
 										newReply.css('display', 'flex');
 										newReply.find('.replyTextContainer').show();
+										newReply.attr('replyId', reply.id);
 										newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
 										newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
+
+										// If the reply is not approved (status != '6') and the userID of the reply is the same as the current userID, then show the delete button
+										if( qaComments[i][j].status != '6') {
+											// This controls the activation of the delete button in the reply
+											// If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
+											if((reply.userID == userID) && (index == replies.length - 1)) {
+												newReply.find('.deleteReplyBtn').show();
+											}
+										}
 
 										repliesContainer.append(newReply);
 									});
