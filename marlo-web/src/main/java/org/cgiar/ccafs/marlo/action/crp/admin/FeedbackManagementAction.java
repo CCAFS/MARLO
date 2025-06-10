@@ -56,7 +56,7 @@ public class FeedbackManagementAction extends BaseAction {
   public void prepare() throws Exception {
     ProjectSectionsEnum[] projectSectionsArray = ProjectSectionsEnum.values();
     projectSections = new ArrayList<>();
-    if (projectSectionsArray != null && !(projectSectionsArray.length > 0)) {
+    if (projectSectionsArray != null && (projectSectionsArray.length > 0)) {
       for (ProjectSectionsEnum section : projectSectionsArray) {
         if (section != null && section.getStatus() != null) {
           projectSections.add(section.getStatus());
