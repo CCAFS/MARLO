@@ -7804,6 +7804,7 @@ img.qaCommentStatus {
 	display: flex;
 	padding-right: 28px;
 	padding-left: 15px;
+	position: relative;
 }
 
 .deleteReplyBtn {

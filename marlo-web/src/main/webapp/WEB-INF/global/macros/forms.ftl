@@ -1266,7 +1266,8 @@
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
-      </div>      
+      </div>
+      <div style="position: absolute; bottom: 40% !important; right: -10px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>      
     </div>
 
         [#-- Replies --]
@@ -1282,7 +1283,6 @@
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="editCommentBtn qaOptionsComment" title="Edit comment" src="${baseUrlCdn}/global/images/icon_edit.png">
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
