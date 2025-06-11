@@ -374,6 +374,8 @@ function attachEventsFeedback() {
 		let textarea = blockContainer.find('textarea[id="New comment"]');
 
 		block.find('.replyTextAreaContainer').css('display', 'flex');
+		block.find('.replyTextAreaContainer').find('.textArea').show();
+		block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
 		block.find('.buttonsContainer').hide();
 		block.find('.optionsContainer').hide();
 
@@ -869,7 +871,9 @@ function loadCommentsByUser(name) {
 
 								if (replies.length !== 0) {
 
-									replies.forEach((reply, index) => {
+									//sort replies by order of the id inside the reply object
+									const repliesSort = replies.sort((a, b) => a.id - b.id);
+									repliesSort.forEach((reply, index) => {
 										let newReply = templateReply.clone(true)
 										.removeClass('_TEMPLATE_replyContainer')
 										.addClass('replyContainer');
@@ -882,7 +886,7 @@ function loadCommentsByUser(name) {
 										newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
 										// If the reply is not approved (status != '6') display options inside the reply
-										if( qaComments[i][j].status != '6') {
+										if(qaComments[i][j].status != '1' && qaComments[i][j].status != '6') {
 											// This controls the activation of the delete button in the reply
 											// If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
 											if((reply.userID == userID) && (index == replies.length - 1)) {
@@ -890,7 +894,7 @@ function loadCommentsByUser(name) {
 											}
 
 											// This controls the options to put other replies
-											if( userCanManageFeedback == 'true' || (userCanLeaveComments == 'true' && reply.userID != userID)) {
+											if( (userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) {
 												hideShowOptionButtons(block, "4");
 											}
 										}
