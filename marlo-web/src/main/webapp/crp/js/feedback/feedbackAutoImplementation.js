@@ -889,7 +889,10 @@ function loadCommentsByUser(name) {
 												newReply.find('.deleteReplyBtn').show();
 											}
 
-											// This controls the options inside the reply
+											// This controls the options to put other replies
+											if( userCanManageFeedback == 'true' || (userCanLeaveComments == 'true' && reply.userID != userID)) {
+												hideShowOptionButtons(block, "4");
+											}
 										}
 
 										repliesContainer.append(newReply);
@@ -912,7 +915,7 @@ function loadCommentsByUser(name) {
 											block.find('.replyContainer').hide();
 											block.find('.replyTextContainer').hide();
 											block.find('.replyCommentBtn').hide();
-											block.find('.sendReplyContainer').show();
+											block.find('.replyTextAreaContainer').hide();
 										} if (qaComments[i][j].status == '0') {
 											block.find('textarea[id="Reply"]').parent().show();
 											block.find('.replyContainer').css('display', 'flex');
@@ -925,7 +928,6 @@ function loadCommentsByUser(name) {
 											block.find('.buttonsContainer').hide();
 											block.find('.replyTextContainer').hide();
 											block.find('.replyCommentBtn').hide();
-											block.find('.sendReplyContainer').show();
 										} if (qaComments[i][j].status == '6') {
 											block.find('textarea[id="Reply"]').parent().show();
 											block.find('.replyTextAreaContainer').css('display', 'flex');
