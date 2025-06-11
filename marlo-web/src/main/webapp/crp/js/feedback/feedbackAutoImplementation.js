@@ -299,10 +299,9 @@ function attachEventsFeedback() {
 	$('div.deleteReplyBtn').on('click', function() {
 
 		let name = $(this).attr('name');
-		let commentID = $(this).attr('replyId');
-		let block = $(this).parent().parent().parent();
+		let replyId = $(this).attr('replyId');
 
-		deleteQAReply(commentID, name, this);
+		deleteQAReply(replyId, name, this);
 	});
 
 	$('img.clarificationCommentBtn').on('click', function() {
@@ -743,7 +742,6 @@ function loadCommentsByUser(name) {
 								block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
 								block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
 								block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
-								block.find('.deleteReplyBtn').attr('replyId', qaComments[i][j].reply.id);
 								block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
 								block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
 								block.find('.disagreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
@@ -879,16 +877,19 @@ function loadCommentsByUser(name) {
 										newReply.css('display', 'flex');
 										newReply.find('.replyTextContainer').show();
 										newReply.attr('replyId', reply.id);
+										newReply.find('.deleteReplyBtn').attr('replyId', reply.id);
 										newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
 										newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
-										// If the reply is not approved (status != '6') and the userID of the reply is the same as the current userID, then show the delete button
+										// If the reply is not approved (status != '6') display options inside the reply
 										if( qaComments[i][j].status != '6') {
 											// This controls the activation of the delete button in the reply
 											// If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
 											if((reply.userID == userID) && (index == replies.length - 1)) {
 												newReply.find('.deleteReplyBtn').show();
 											}
+
+											// This controls the options inside the reply
 										}
 
 										repliesContainer.append(newReply);
@@ -1182,9 +1183,15 @@ function deleteQAReply(commentID, name, htmlParent) {
 
 			// if (!data?.delete?.delete) return;
 
-			let qaCommentReplyBlock = $(htmlParent).closest('.qaCommentReplyBlock');
+			const qaCommentReplyBlock = $(htmlParent).closest('.qaCommentReplyBlock');
+
+			// Remove the reply from the repliesContainer
+			const repliesContainer = qaCommentReplyBlock.find('.repliesContainer');
+			const replyContainer = repliesContainer.find(`.replyContainer[replyId="${commentID}"]`);
+			replyContainer.remove();
+
 			qaCommentReplyBlock.find('.commentContainer').css('background', 'white');
-			qaCommentReplyBlock.find('.replyContainer').find('.replyTextContainer').hide();
+			qaCommentReplyBlock.find('.replyTextAreaContainer').hide();
 
 			qaCommentReplyBlock.find('.agreeCommentBtn').show();
 			qaCommentReplyBlock.find('.disagreeCommentBtn').show();

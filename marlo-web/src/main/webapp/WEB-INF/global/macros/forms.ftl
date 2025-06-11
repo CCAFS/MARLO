@@ -1268,7 +1268,17 @@
         </div>
       </div>      
     </div>
-    
+
+        [#-- Replies --]
+    <div class="repliesContainer"></div>
+
+    [#-- Reply textarea --]
+    <div class="replyTextAreaContainer">
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+    </div>
+
+    [#-- Options --]
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
@@ -1286,15 +1296,6 @@
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
       <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
-    </div>
-
-        [#-- Replies --]
-    <div class="repliesContainer"></div>
-
-    [#-- Reply textarea --]
-    <div class="replyTextAreaContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
       
     [#-- Template for reply --]
