@@ -28,7 +28,6 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.StudyTypeManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -219,58 +218,36 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   public void getCommentStatuses() {
 
     try {
-
-      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
-
-      // get the commentable fields by sectionName
-      commentableFields =
-        this.feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
-          .filter(f -> (f.getSectionName() != null) && f.getSectionName().equals("study")).collect(Collectors.toList());
-
-      if (projectStudies != null && !projectStudies.isEmpty() && commentableFields != null
-        && !commentableFields.isEmpty()) {
+      if (projectStudies != null && !projectStudies.isEmpty()) {
 
         // Set the comment status in each project outcome
         for (ProjectExpectedStudy study : projectStudies) {
           int answeredComments = 0, totalComments = 0;
           try {
+            List<FeedbackQAComment> comments = new ArrayList<>();
+            if (study != null && study.getId() != null) {
 
-            for (FeedbackQACommentableFields commentableField : commentableFields) {
-              if (commentableField != null && commentableField.getId() != null) {
+              comments =
+                commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), study.getId());
 
-                if (study != null && study.getId() != null && commentableField != null
-                  && commentableField.getId() != null) {
+              if (comments != null && !comments.isEmpty()) {
+                totalComments += comments.size();
+                List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                  Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                  boolean isDisagreedOrClarificationNeeded =
+                    statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                      || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                  boolean isAgreed =
+                    statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
 
-                  List<FeedbackQAComment> comments = commentManager
-                    .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), study.getId()).stream()
-                    .filter(f -> f != null
+                  return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                    && !f.getFeedbackReplies().isEmpty()) || isAgreed;
+                }).collect(Collectors.toList());
 
-                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
-                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
-                      // &&
-                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
-                      )) && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
-                    .collect(Collectors.toList());
-
-                  if (comments != null && !comments.isEmpty()) {
-                    totalComments += comments.size();
-                    List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
-                      Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
-                      boolean isDisagreedOrClarificationNeeded =
-                        statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
-                          || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
-                      boolean isAgreed =
-                        statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
-
-                      return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
-                        && !f.getFeedbackReplies().isEmpty()) || isAgreed;
-                    }).collect(Collectors.toList());
-
-                    answeredComments += filteredComments.size();
-                  }
-                }
+                answeredComments += filteredComments.size();
               }
             }
+
 
             study.setCommentStatus(answeredComments + "/" + totalComments);
 
@@ -283,7 +260,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
 
           }
         }
-
       }
     } catch (Exception e) {
       e.printStackTrace();

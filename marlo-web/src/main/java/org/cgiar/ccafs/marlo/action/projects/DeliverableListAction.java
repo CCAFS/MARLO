@@ -211,41 +211,49 @@ public class DeliverableListAction extends BaseAction {
 
         // Set the comment status in each project outcome
         for (Deliverable deliverable : project.getDeliverables()) {
-          int answeredComments = 0, totalComments = 0;
-          try {
-            List<FeedbackQAComment> comments = new ArrayList<>();
-            if (deliverable.getId() != null) {
+          if (deliverable != null && deliverable.getId() != null) {
+
+            int answeredComments = 0, totalComments = 0;
+            try {
+              List<FeedbackQAComment> comments = new ArrayList<>();
               comments = commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(),
                 deliverable.getId());
-            }
-            if (comments != null) {
-
-              comments = comments.stream().filter(f -> f != null && (f.getFeedbackStatus() != null
-                && f.getFeedbackStatus().getId() != null
-                && (!f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))))
-                .collect(Collectors.toList());
 
               if (comments != null && !comments.isEmpty()) {
-                totalComments += comments.size();
-                List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
-                  Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
-                  boolean isDisagreedOrClarificationNeeded =
-                    statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
-                      || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
-                  boolean isAgreed =
-                    statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
 
-                  return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
-                    && !f.getFeedbackReplies().isEmpty()) || isAgreed;
-                }).collect(Collectors.toList());
+                comments = comments.stream()
+                  .filter(f -> f != null && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                    && (!f.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))))
+                  .collect(Collectors.toList());
 
-                answeredComments += filteredComments.size();
+                if (comments != null && !comments.isEmpty()) {
+                  totalComments += comments.size();
+                  List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                    Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                    boolean isDisagreedOrClarificationNeeded =
+                      statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                        || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                    boolean isAgreed =
+                      statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
+
+                    return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                      && !f.getFeedbackReplies().isEmpty()) || isAgreed;
+                  }).collect(Collectors.toList());
+
+                  answeredComments += filteredComments.size();
+                }
               }
-            }
 
-            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
-          } catch (Exception e) {
-            deliverable.setCommentStatus(0 + "/" + 0);
+              if (deliverable.getCommentStatus() == null
+                || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+                deliverable.setCommentStatus(0 + "/" + 0);
+              }
+
+              deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+            } catch (Exception e) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
           }
         }
 
