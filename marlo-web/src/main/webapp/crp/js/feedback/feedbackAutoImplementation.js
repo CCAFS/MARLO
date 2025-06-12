@@ -1,4 +1,5 @@
 var textareaComment, parentID, projectID, phaseID, userID, userCanManageFeedback, userCanLeaveComments, isFeedbackActive, textareaReply, newData;
+let isSuperAdmin;
 var sectionName = $('#sectionNameToFeedback').val();
 var contributionCRPAjaxURL = `/fieldsBySectionAndParent.do?sectionName=${sectionName}`;
 var arrayName = 'fieldsMap';
@@ -20,7 +21,11 @@ function feedbackAutoImplementation() {
 	console.log('userCanManageFeedback: ' + userCanManageFeedback)
 	console.log('userCanLeaveComments: ' + userCanLeaveComments)
 	console.log('userCanApproveFeedback: ' + userCanApproveFeedback)
+	console.log('usercanTrackComments: ' + usercanTrackComments)
 	isFeedbackActive = $('#isFeedbackActive').html();
+
+	isSuperAdmin = userCanLeaveComments === 'true' && userCanManageFeedback === 'true' && userCanApproveFeedback === 'true';
+
 	attachEventsFeedback();
 
 	// Get section id from URL
@@ -570,12 +575,16 @@ function showEditComment(block, commentID, option) {
 function hideShowOptionButtons(block, status) {
 	let textarea = block.find('textarea[id="Reply"]');
 
+	block.find('.replyTextContainer').css('background', 'white');
+	console.log(block.find('.replyTextContainer'));
+	console.log(block.find('.replyTextContainer').last());
+
 	switch (status) {
 		case '0':
 			textarea.prev().find('span.red.requiredTag').show();
 			block.find('img.disagreeCommentBtn').hide();
 			block.find('.commentContainer').css('background', '#e8a9a4');
-			block.find('.replyTextContainer').css('background', '#e8a9a4');
+			block.find('.replyTextContainer').last().css('background', '#e8a9a4');
 			block.find('img.agreeCommentBtn').hide();
 			block.find('div.deleteCommentBtn').hide();
 			block.find('img.clarificationCommentBtn').hide();
@@ -589,7 +598,7 @@ function hideShowOptionButtons(block, status) {
 			textarea.prev().find('span.red.requiredTag').hide();
 			block.find('img.agreeCommentBtn').hide();
 			block.find('.commentContainer').css('background', '#a8eaab');
-			block.find('.replyTextContainer').css('background', '#a8eaab');
+			block.find('.replyTextContainer').last().css('background', '#a8eaab');
 			block.find('img.disagreeCommentBtn').hide();
 			block.find('img.clarificationCommentBtn').hide();
 			block.find('div.deleteCommentBtn').hide();
@@ -603,7 +612,7 @@ function hideShowOptionButtons(block, status) {
 			textarea.prev().find('span.red.requiredTag').show();
 			block.find('img.clarificationCommentBtn').hide();
 			block.find('.commentContainer').css('background', '#a4cde8');
-			block.find('.replyTextContainer').css('background', '#a4cde8');
+			block.find('.replyTextContainer').last().css('background', '#a4cde8');
 			block.find('img.agreeCommentBtn').hide();
 			block.find('img.disagreeCommentBtn').hide();
 			block.find('div.deleteCommentBtn').hide();
@@ -639,7 +648,7 @@ function hideShowOptionButtons(block, status) {
 			block.find('img.clarificationCommentBtn').hide();
 			block.find('.dismissCommentBtn').hide();
 			block.find('.commentContainer').css('background', '#9b99964a');
-			block.find('.replyTextContainer').css('background', '#9b99964a');
+			block.find('.replyTextContainer').last().css('background', '#9b99964a');
 			block.find('.commentTitle').css('font-style', 'oblique');
 			block.find('.commentTitle').css('font-weight', '200');
 			block.find('.commentReadonly').css('font-style', 'oblique');
@@ -878,6 +887,14 @@ function loadCommentsByUser(name) {
 										.removeClass('_TEMPLATE_replyContainer')
 										.addClass('replyContainer');
 
+										//remove all the _TEMPLATE_ word from the class names inside the component without removing the class itself
+										newReply.find('*').each(function() {
+											let className = $(this).attr('class');
+											if (className) {
+												$(this).attr('class', className.replace('_TEMPLATE_', ''));
+											}
+										});
+
 										newReply.css('display', 'flex');
 										newReply.find('.replyTextContainer').show();
 										newReply.attr('replyId', reply.id);
@@ -894,9 +911,11 @@ function loadCommentsByUser(name) {
 											}
 
 											// This controls the options to put other replies
-											if( (userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) {
+											if( ((userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) || isSuperAdmin) {
 												hideShowOptionButtons(block, "4");
 											}
+
+
 										}
 
 										repliesContainer.append(newReply);
@@ -906,6 +925,28 @@ function loadCommentsByUser(name) {
 									block.find('.replyContainer').css('display', 'flex');
 									block.find('.replyCommentBtn').hide();
 									block.find('.sendReplyContainer').hide();
+
+									//These is for that the only the last reply changes the textContainer background color
+									// WARNING: This is a workaround, it should be refactored
+									// This is one of the main reason to refactor all the code related to comments and replies
+									switch (qaComments[i][j].status) {
+										case '0':
+											block.find('.replyTextContainer').last().css('background', '#e8a9a4');
+											break;
+										case '1':
+											block.find('.replyTextContainer').last().css('background', '#a8eaab');
+											break;
+										case '2':
+											block.find('.replyTextContainer').last().css('background', '#a4cde8');
+											break;
+										case '4':
+											break;
+										case '6':
+											block.find('.replyTextContainer').last().css('background', '#9b99964a');
+											break;
+										case "":
+											break;
+									}
 								} else {
 									if (qaComments[i][j].status && qaComments[i][j].status != '') {
 										if (qaComments[i][j].status == '1') {
