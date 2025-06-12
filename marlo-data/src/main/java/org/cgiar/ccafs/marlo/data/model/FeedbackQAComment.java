@@ -4,7 +4,10 @@ package org.cgiar.ccafs.marlo.data.model;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.annotations.Expose;
@@ -65,6 +68,9 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
   @Expose
   private Date endTrackDate;
 
+  private Set<FeedbackQAReply> feedbackReplies = new HashSet<FeedbackQAReply>(0);
+  private List<FeedbackQAReply> replies;
+
   public FeedbackQAComment() {
   }
 
@@ -101,6 +107,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public Date getEndTrackDate() {
     return endTrackDate;
+  }
+
+  public Set<FeedbackQAReply> getFeedbackReplies() {
+    return feedbackReplies;
   }
 
   public FeedbackStatus getFeedbackStatus() {
@@ -156,6 +166,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public Project getProject() {
     return project;
+  }
+
+  public List<FeedbackQAReply> getReplies() {
+    return replies;
   }
 
   public FeedbackQAReply getReply() {
@@ -219,6 +233,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
     this.endTrackDate = endTrackDate;
   }
 
+  public void setFeedbackReplies(Set<FeedbackQAReply> feedbackReplies) {
+    this.feedbackReplies = feedbackReplies;
+  }
+
   public void setFeedbackStatus(FeedbackStatus feedbackStatus) {
     this.feedbackStatus = feedbackStatus;
   }
@@ -258,6 +276,10 @@ public class FeedbackQAComment extends MarloBaseEntity implements java.io.Serial
 
   public void setProject(Project project) {
     this.project = project;
+  }
+
+  public void setReplies(List<FeedbackQAReply> replies) {
+    this.replies = replies;
   }
 
   public void setReply(FeedbackQAReply reply) {

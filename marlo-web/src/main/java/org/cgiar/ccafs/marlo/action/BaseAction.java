@@ -142,7 +142,6 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -1477,58 +1476,85 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the current user rol is PL or PC
    */
   public boolean canManageFeedback(Long projectID) {
+    // Default to no permission
     boolean response = false;
 
-    // TODO: Update the permissions for manage feedback comments
-
     try {
+      // Super admin has full access
       if (this.canAccessSuperAdmin()) {
         return true;
       }
 
+      // Check if user has role PL or PC
       List<Role> roles = this.getRolesList();
-      if (roles != null && roles.stream().anyMatch(role -> role != null && role.getAcronym() != null
-        && (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")))) {
-        return true;
+      if (roles != null && roles.stream()
+        .anyMatch(role -> role != null && ("PL".equals(role.getAcronym()) || "PC".equals(role.getAcronym())))) {
+        response = true;
       }
     } catch (Exception e) {
       LOG.error("Error checking feedback management permissions", e);
     }
 
+    // If user has a valid role and a project ID is provided, validate user-partner association
+    if (response && projectID != null) {
+      try {
+        User currentUser = this.getCurrentUser();
+        if (currentUser == null || currentUser.getId() == null) {
+          LOG.warn("Current user is null or has no ID");
+          return false;
+        }
 
-    /*
-     * if (projectID != null && response) {
-     * try {
-     * List<ProjectPartner> projectPartners = projectPartnerManager
-     * .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
-     * List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
-     * if (projectPartners != null) {
-     * for (ProjectPartner projectPartner : projectPartners) {
-     * if (projectPartner != null && projectPartner.getId() != null) {
-     * projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
-     * if (projectParnerPersons != null) {
-     * projectParnerPersons = projectParnerPersons.stream()
-     * .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
-     * && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
-     * .collect(Collectors.toList());
-     * if (projectParnerPersons != null) {
-     * for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
-     * if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
-     * && (projectParnerPerson.getContactType().equals("PL")
-     * && projectParnerPerson.getContactType().equals("PC"))) {
-     * // TODO: verify this code
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * } catch (Exception e) {
-     * LOG.error("Error getting project partners ", e);
-     * }
-     * }
-     */
+        Phase currentPhase = this.getActualPhase();
+        Long phaseId = (currentPhase != null) ? currentPhase.getId() : null;
+        if (phaseId == null) {
+          LOG.warn("Actual phase is null or has no ID");
+          return false;
+        }
+
+        // Get project partners with active persons for the current phase
+        List<ProjectPartner> projectPartners =
+          projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, phaseId);
+
+        if (projectPartners == null || projectPartners.isEmpty()) {
+          LOG.info("No project partners found for project ID: {}", projectID);
+          return false;
+        }
+
+        for (ProjectPartner partner : projectPartners) {
+          if (partner == null || partner.getId() == null) {
+            continue;
+          }
+
+          // Get active persons for the current project partner
+          List<ProjectPartnerPerson> persons =
+            projectPartnerPersonManager.findAllActiveForProjectPartner(partner.getId());
+
+          if (persons == null || persons.isEmpty()) {
+            continue;
+          }
+
+          for (ProjectPartnerPerson person : persons) {
+            if (person == null || person.getUser() == null || person.getContactType() == null) {
+              continue;
+            }
+
+            // Match user ID
+            if (!currentUser.getId().equals(person.getUser().getId())) {
+              continue;
+            }
+
+            // Check contact type (must be PL or PC)
+            String contactType = person.getContactType();
+            if ("PL".equals(contactType) || "PC".equals(contactType)) {
+              return true; // User is associated with the project with a valid contact type
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error checking partner-person association for project ID: {}", projectID, e);
+      }
+    }
+
     return response;
   }
 

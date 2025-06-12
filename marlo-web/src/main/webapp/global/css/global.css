@@ -7847,6 +7847,7 @@ img.qaCommentStatus {
 	display: flex;
 	padding-right: 28px;
 	padding-left: 15px;
+	position: relative;
 }
 
 .deleteReplyBtn {
@@ -7889,9 +7890,10 @@ img.qaCommentStatus {
 	border-radius: 3px;
 }
 
-.replyContainer {
+.replyContainer, .replyTextAreaContainer {
 	padding-left: 25px;
 	padding-right: 20px;
+	margin-bottom: 10px;
 }
 
 .commentTitle {
@@ -7940,6 +7942,11 @@ img.qaCommentStatus {
 	display: none;
 	width: 20px;
 	margin-left: 3px;
+}
+
+.repliesContainer {
+	margin-top: 15px;
+	margin-bottom: 15px;
 }
 
 .replyContainer {

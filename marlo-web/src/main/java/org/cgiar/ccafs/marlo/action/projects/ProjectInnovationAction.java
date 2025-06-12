@@ -140,6 +140,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndContributionOfCrp;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -2032,16 +2033,19 @@ public class ProjectInnovationAction extends BaseAction {
      */
     try {
       if (this.hasSpecificities(this.feedbackModule())) {
+        String sectionName = ProjectSectionsEnum.INNOVATION.getStatus();
+
         feedbackComments = new ArrayList<>();
-        feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+        feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+          .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals(sectionName))
           .collect(Collectors.toList());
         if (feedbackComments != null) {
           for (FeedbackQACommentableFields field : feedbackComments) {
             List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId()).stream()
-              .filter(f -> f != null && f.getParentId() == innovation.getId() && f.getField() != null
-                && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+            comments = feedbackQACommentManager
+              .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), innovation.getId()).stream()
+              .filter(f -> f != null && f.getField() != null && f.getField().getId() != null
+                && f.getField().getId().equals(field.getId()))
               .collect(Collectors.toList());
 
             field.setQaComments(comments);

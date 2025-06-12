@@ -465,18 +465,27 @@ public class SafeguardAction extends BaseAction {
     try {
 
       feedbackComments = new ArrayList<>();
-      feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-        .filter(f -> f.getSectionName() != null && f.getSectionName().equals("innovation"))
+      feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+        .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals("safeguards"))
         .collect(Collectors.toList());
       if (feedbackComments != null) {
         for (FeedbackQACommentableFields field : feedbackComments) {
           List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
-          comments = feedbackQACommentManager.findAll().stream()
-            .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-              && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == safeguard.getId()
-              && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
-            .collect(Collectors.toList());
-          field.setQaComments(comments);
+          try {
+            comments = feedbackQACommentManager
+              .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), safeguard.getId()).stream()
+              .filter(f -> f != null && f.getField() != null && f.getField().getId() != null
+                && f.getField().getId().equals(field.getId()))
+              .collect(Collectors.toList());
+            field.setQaComments(comments);
+          } catch (Exception e) {
+            comments = feedbackQACommentManager.findAll().stream()
+              .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                && f.getPhase().getId().equals(this.getActualPhase().getId()) && f.getParentId() == safeguard.getId()
+                && f.getField() != null && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+              .collect(Collectors.toList());
+            field.setQaComments(comments);
+          }
         }
       }
 

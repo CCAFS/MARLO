@@ -1285,21 +1285,23 @@
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
-      </div>      
-    </div>
-    <div class="replyContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="replyTextContainer">
-        <div class="replyTitle"></div>
-        <p class="replyReadonly"></p>
-        <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
+      <div style="position: absolute; bottom: 40% !important; right: -10px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>      
+    </div>
+
+        [#-- Replies --]
+    <div class="repliesContainer"></div>
+
+    [#-- Reply textarea --]
+    <div class="replyTextAreaContainer">
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
     </div>
+
+    [#-- Options --]
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="editCommentBtn qaOptionsComment" title="Edit comment" src="${baseUrlCdn}/global/images/icon_edit.png">
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
@@ -1314,7 +1316,20 @@
       </div>
       <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
     </div>
-    <br>
+      
+    [#-- Template for reply --]
+    [@customForm.qaCommentClarificationBlock /]
+  </div>
+[/#macro]
+
+[#macro qaCommentClarificationBlock]
+  <div class="_TEMPLATE_replyContainer" replyId="">
+    <div class="_TEMPLATE_replyTextContainer">
+      <div class="_TEMPLATE_replyTitle"></div>
+      <p class="replyReadonly"></p>
+      <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+    </div>
+    <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
 [/#macro]
 

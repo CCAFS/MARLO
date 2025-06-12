@@ -62,6 +62,12 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
   }
 
   @Override
+  public List<FeedbackQACommentableFields> findAllByGlobalUnit(long globalUnitID) {
+    return feedbackQACommentableFieldsDAO.findAllByGlobalUnit(globalUnitID);
+
+  }
+
+  @Override
   public List<FeedbackQACommentableFields> findBySectionName(String sectionName) {
 
     return feedbackQACommentableFieldsDAO.findBySectionName(sectionName);
@@ -92,12 +98,12 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
     return feedbackQACommentableFieldsDAO.getCommentStatusByPhaseToStudy(phase);
   }
 
+
   @Override
   public FeedbackQACommentableFields getInternalQaCommentableFieldsById(long internalQaCommentableFieldsID) {
 
     return feedbackQACommentableFieldsDAO.find(internalQaCommentableFieldsID);
   }
-
 
   @Override
   public FeedbackQACommentableFields

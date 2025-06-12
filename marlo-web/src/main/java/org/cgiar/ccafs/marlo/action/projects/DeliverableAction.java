@@ -138,6 +138,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndFillingType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
@@ -2424,25 +2425,31 @@ public class DeliverableAction extends BaseAction {
       try {
         if (this.hasSpecificities(this.feedbackModule())) {
 
+          String sectionName = ProjectSectionsEnum.DELIVERABLE.getStatus();
           feedbackComments = new ArrayList<>();
-          feedbackComments = feedbackQACommentableFieldsManager.findAll().stream()
-            .filter(f -> f.getSectionName() != null && f.getSectionName().equals("deliverable"))
+          feedbackComments = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+            .stream().filter(f -> f.getSectionName() != null && f.getSectionName().equals(sectionName))
             .collect(Collectors.toList());
+          List<FeedbackQAComment> feedbackQACommentTemp = new ArrayList<>();
+          try {
+            feedbackQACommentTemp = feedbackQACommentManager
+              .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), deliverable.getId());
+          } catch (Exception e) {
+            Log.error("unable to get FeedbackQACommentTemp", e);
+          }
 
-          List<FeedbackQAComment> FeedbackQACommentTemp =
-            feedbackQACommentManager.findAllByPhase(this.getActualPhase().getId());
+
           if (feedbackComments != null) {
             for (FeedbackQACommentableFields field : feedbackComments) {
               List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
               // cgamboa 06/05/2024 feedbackQACommentManager.findAll() function is changed to
               // feedbackQACommentManager.findAllByPhase.
               // this function will be called once
-              comments = FeedbackQACommentTemp.stream()
-                .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                  && f.getPhase().getId().equals(this.getActualPhase().getId())
-                  && f.getParentId() == deliverable.getId() && f.getField() != null && f.getField().getId() != null
-                  && f.getField().getId().equals(field.getId()))
-                .collect(Collectors.toList());
+              comments =
+                feedbackQACommentTemp
+                  .stream().filter(f -> f != null && field != null && f.getField() != null
+                    && f.getField().getId() != null && f.getField().getId().equals(field.getId()))
+                  .collect(Collectors.toList());
               field.setQaComments(comments);
             }
           }

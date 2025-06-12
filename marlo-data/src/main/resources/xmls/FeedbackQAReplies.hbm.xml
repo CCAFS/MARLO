@@ -12,6 +12,15 @@
 		<property name="comment" type="string">
             <column name="comment" sql-type="TEXT" />
         </property>
+        <property name="approvalDate" type="timestamp">
+            <column name="approval_date" />
+        </property>
+        <many-to-one name="userApproval"
+            class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="user_approval_id">
+                <comment>This field is a link to the table users</comment>
+            </column>
+        </many-to-one>
         <many-to-one name="user" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
             <column name="user_id" not-null="true">
                 <comment>This field is a link to the table users</comment>
@@ -20,12 +29,17 @@
         <property name="commentDate" type="timestamp">
             <column name="comment_date" />
         </property>
-        <set name="feedbackQAComments" table="feedback_qa_comments" inverse="true" lazy="true"
-            fetch="select">
-            <key>
-                <column name="reply_id" not-null="true" />
-            </key>
-            <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" />
-        </set>
+        <many-to-one name="feedbackComment"
+            class="org.cgiar.ccafs.marlo.data.model.FeedbackQAComment" fetch="select">
+            <column name="comment_id" />
+        </many-to-one>
+        <many-to-one name="feedbackStatus"
+            class="org.cgiar.ccafs.marlo.data.model.FeedbackStatus" fetch="select">
+            <column name="status_id" />
+        </many-to-one>
+        <many-to-one name="phase"
+            class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+            <column name="id_phase" />
+        </many-to-one>
 	</class>
 </hibernate-mapping>

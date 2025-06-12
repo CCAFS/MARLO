@@ -51,6 +51,13 @@ public interface FeedbackRolesPermissionManager {
    */
   public List<FeedbackRolesPermission> findAll();
 
+  /**
+   * This method gets a list of feedbackRolesPermission that are active filtered by global unit.
+   * 
+   * @return a list from FeedbackRolesPermission null if no exist records
+   */
+  public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID);
+
 
   /**
    * This method gets a feedbackRolesPermission object by a given feedbackRolesPermission identifier.
@@ -63,8 +70,10 @@ public interface FeedbackRolesPermissionManager {
   /**
    * This method saves the information of the given feedbackRolesPermission
    * 
-   * @param feedbackRolesPermission - is the feedbackRolesPermission object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the feedbackRolesPermission was
+   * @param feedbackRolesPermission - is the feedbackRolesPermission object with the new information to be
+   *        added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the feedbackRolesPermission
+   *         was
    *         updated
    *         or -1 is some error occurred.
    */

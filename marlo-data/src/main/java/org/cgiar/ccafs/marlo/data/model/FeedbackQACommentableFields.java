@@ -33,6 +33,9 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
   private String fieldDescription;
   @Expose
   private boolean active;
+  @Expose
+  private GlobalUnit globalUnit;
+
   private Set<FeedbackQAComment> feedbackQAComments = new HashSet<FeedbackQAComment>(0);
   private List<FeedbackQAComment> qaComments;
 
@@ -58,6 +61,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
 
   public String getFieldName() {
     return fieldName;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -120,6 +127,10 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
     this.fieldName = fieldName;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
   @Override
   public void setModifiedBy(User modifiedBy) {
     // TODO Auto-generated method stub
@@ -144,6 +155,4 @@ public class FeedbackQACommentableFields extends MarloBaseEntity implements java
   public void setSectionName(String sectionName) {
     this.sectionName = sectionName;
   }
-
 }
-
