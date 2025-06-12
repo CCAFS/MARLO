@@ -1305,8 +1305,8 @@
 
 [#macro qaCommentClarificationBlock]
   <div class="_TEMPLATE_replyContainer" replyId="">
-    <div class="replyTextContainer">
-      <div class="replyTitle"></div>
+    <div class="_TEMPLATE_replyTextContainer">
+      <div class="_TEMPLATE_replyTitle"></div>
       <p class="replyReadonly"></p>
       <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
     </div>
