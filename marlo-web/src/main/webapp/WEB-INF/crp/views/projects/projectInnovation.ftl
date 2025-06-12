@@ -6,7 +6,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectInnovations.js?20250606",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250605"
 ] /]
 
 [#assign moduleJS = [
@@ -43,6 +43,8 @@
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
 <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+<span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+
 <input type="hidden" id="sectionNameToFeedback" value="innovation" />
 
 [#assign indexTab = 0]

@@ -1234,10 +1234,15 @@
         [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
       [/#if]
     </div>
+    [#local isFeedbackNewCommentFieldActive = action.hasSpecificities('feedback_new_comment_field_active')!false /]
     <div class="containerLeftComment">
-      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment"/]
+      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment" disabled=(!isFeedbackNewCommentFieldActive) /]
       <div class="sendCommentContainer" name="${name}"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
       <div class="sendCommentContainerLoad" name="${name}"><img src="${baseUrlCdn}/global/images/cargando.gif" class="sendComment" title="Sending"></div>
+      <div class="containerCommentNotAvailable" style="display: ${(isFeedbackNewCommentFieldActive)?then('none','flex')}; align-items: center;">
+        <span class="glyphicon glyphicon-exclamation-sign" style="margin-right: 12px;"></span>
+        <p class="commentNotAvailable" style="margin: 0;">According to the process phase, it is not possible to add new comments.</p>
+      </div>
     </div>
   </div>
 [/#macro]
