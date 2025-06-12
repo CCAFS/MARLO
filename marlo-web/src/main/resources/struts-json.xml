@@ -198,6 +198,14 @@
 			</result>
 		</action>
 
+		<action name="getInstitutionsService" 
+			class="org.cgiar.ccafs.marlo.action.json.global.GetInstitutions">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+	
 		<action name="newTargetUnit"
 			class="org.cgiar.ccafs.marlo.action.json.global.TargetUnitAction">
 			<result type="json">
@@ -215,13 +223,13 @@
 			</result>
 		</action>
 		
-		  <action name="targetCasesBySLO"
-      class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.TargetCasesBySLOAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="targetCasesBySLO"
+			class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.TargetCasesBySLOAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+    	</action>
 
 		<action name="requestCountryOffice"
 			class="org.cgiar.ccafs.marlo.action.json.project.RequestCountryOfficeAction">
@@ -833,12 +841,12 @@
 		</action>
 		
 		<action name="getFundingSourcesByPhase"
-      class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.FundingSourceByPhaseAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.FundingSourceByPhaseAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="getProjectsByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectsByPhaseAction">
@@ -849,12 +857,12 @@
 		</action>
 		
 		<action name="getProjectByDeliverable"
-      class="org.cgiar.ccafs.marlo.action.json.crpadmin.ProjectByDeliverableAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+			class="org.cgiar.ccafs.marlo.action.json.crpadmin.ProjectByDeliverableAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="getActivitiesByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ActivitiesByPhaseAction">
@@ -1229,30 +1237,30 @@
 			</result>
 		</action>
     
-    <action name="deliverableUserList"
-      class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUserPartnershipListAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="deliverableUserList"
+		class="org.cgiar.ccafs.marlo.action.json.project.DeliverableUserPartnershipListAction">
+		<result type="json">
+			<param name="noCache">true</param>
+			<param name="excludeNullProperties">true</param>
+		</result>
+		</action>
     
-    <action name="tipGenerateUrlAction"
-      class="org.cgiar.ccafs.marlo.action.json.tip.TipDinamicUrlGenerationAction">
-      <result type="json">
-        <param name="noCache">true</param>
-        <param name="excludeNullProperties">true</param>
-      </result>
-    </action>
+		<action name="tipGenerateUrlAction"
+		class="org.cgiar.ccafs.marlo.action.json.tip.TipDinamicUrlGenerationAction">
+		<result type="json">
+			<param name="noCache">true</param>
+			<param name="excludeNullProperties">true</param>
+		</result>
+		</action>
     
     		
-	<action name="tipTokenService"		
-		class="org.cgiar.ccafs.marlo.action.json.superadmin.TipGetTokenServiceAction">
-		<result type="json">
-		    <param name="noCache">true</param>
-	        <param name="excludeNullProperties">true</param>
-		</result>
-	</action>
+		<action name="tipTokenService"		
+			class="org.cgiar.ccafs.marlo.action.json.superadmin.TipGetTokenServiceAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 	</package>
 

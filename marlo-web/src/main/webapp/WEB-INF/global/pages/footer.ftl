@@ -44,13 +44,19 @@
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20250521" ></script>
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20250521" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20250606" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+
+    [#if moduleJS??]
+      [#list moduleJS as jsFile]
+        <script type="module" src="${jsFile}"></script>
+      [/#list]
+    [/#if]
     
     [#-- Changes on Save --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/changes.js?20220105" ></script>
