@@ -42,9 +42,15 @@
             <div id="repportsMenu" class="reportsButtons">
               <div class="menuList col-md-12" style="padding:0">
               [#list (biReports)?sort_by("reportOrder")![] as report]
+                [#if config.production]
                   <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
                   <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}" href="">[@s.text name=report.reportName /]</a>
                   </div>
+                [#else]
+                  <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
+                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}-test" href="">[@s.text name=report.reportName /]</a>
+                  </div>
+                [/#if]
               [/#list]
               </div>
             </div>
@@ -66,8 +72,13 @@
           [#list (biReports)?sort_by("reportOrder")![] as report]
               <div id="BIreport-${report.id}-contentOptions" class="" style="display:[#if report?index !=0]none[/#if];">
                 <div id="dashboardContainer-${report.id}" class="dashboardContainer-${report.id}"></div>
+                [#if config.production]
                 <input type="hidden" id="reportName-${report.id}" name="reportName" value=${report.reportName} />
-                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} /> 
+                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} />
+                [#else]
+                <input type="hidden" id="reportName-${report.id}" name="reportName" value="${report.reportName} Test" />
+                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value="${report.embedReport}-test" />
+                [/#if] 
               </div>
           [/#list] 
         </div>
