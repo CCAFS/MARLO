@@ -583,8 +583,6 @@ function hideShowOptionButtons(block, status) {
   let textarea = block.find('textarea[id="Reply"]');
 
   block.find('.replyTextContainer').css('background', 'white');
-  console.log(block.find('.replyTextContainer'));
-  console.log(block.find('.replyTextContainer').last());
 
   switch (status) {
     case '0':
@@ -1017,7 +1015,7 @@ function loadCommentsByUser(name) {
       }
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     getQAComments();
   }
 }
