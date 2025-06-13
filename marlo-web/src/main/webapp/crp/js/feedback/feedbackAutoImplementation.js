@@ -24,7 +24,8 @@ function feedbackAutoImplementation() {
   console.log('usercanTrackComments: ' + usercanTrackComments)
   isFeedbackActive = $('#isFeedbackActive').html();
   isFeedbackNewCommentFieldActive = $('#isFeedbackNewCommentFieldActive').html();
-  isSuperAdmin = userCanLeaveComments === 'true' && userCanManageFeedback === 'true' && userCanApproveFeedback === 'true';
+  isSuperAdmin = $('#isSuperAdmin').html();
+  console.log('isSuperAdmin: ' + isSuperAdmin);
   attachEventsFeedback();
 
   // Get section id from URL
@@ -582,8 +583,6 @@ function hideShowOptionButtons(block, status) {
   let textarea = block.find('textarea[id="Reply"]');
 
   block.find('.replyTextContainer').css('background', 'white');
-  console.log(block.find('.replyTextContainer'));
-  console.log(block.find('.replyTextContainer').last());
 
   switch (status) {
     case '0':
@@ -908,7 +907,7 @@ function loadCommentsByUser(name) {
                     newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
                     newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
-                    // If the reply is not approved (status != '6') display options inside the reply
+                    // If the reply status is not '1' or '6', then show the reply text area
                     if(qaComments[i][j].status != '1' && qaComments[i][j].status != '6') {
                       // This controls the activation of the delete button in the reply
                       // If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
@@ -917,7 +916,9 @@ function loadCommentsByUser(name) {
                       }
 
                       // This controls the options to put other replies
-                      if( ((userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) || isSuperAdmin) {
+                      // If the user can manage feedback or leave comments and the last reply is not from the current user, then show the option buttons
+                      // If the user is a super admin, then show the option buttons
+                      if( ((userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) || (isSuperAdmin == 'true' )) {
                         hideShowOptionButtons(block, "4");
                       }
 
@@ -1014,7 +1015,7 @@ function loadCommentsByUser(name) {
       }
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     getQAComments();
   }
 }
