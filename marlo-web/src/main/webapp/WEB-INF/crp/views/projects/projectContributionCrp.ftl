@@ -100,6 +100,7 @@
           <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
           <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+          <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
 
           [#-- Outcome name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]

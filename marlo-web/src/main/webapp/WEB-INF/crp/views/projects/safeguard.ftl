@@ -7,7 +7,7 @@
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250605"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250613"
   ]
 /]
 [#assign customCSS = [
@@ -60,6 +60,7 @@
   <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
   <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
   <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+  <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
     <div class="row">
       [#-- Project Menu --]
       <div class="col-md-3">
