@@ -45,6 +45,18 @@ public interface FeedbackRolesPermissionManager {
 
 
   /**
+   * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
+   * 
+   * @param roleIds is the list of roles IDs.
+   * @param permissionName is the permissionName name.
+   * @param globalUnitID is the permissionName name.
+   * @param clusterTypeID is the permissionName name.
+   * @return a list from FeedbackRolesPermission null if no exist records
+   */
+  public boolean existsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName, long globalUnitID,
+    Long clusterTypeID);
+
+  /**
    * This method gets a list of feedbackRolesPermission that are active
    * 
    * @return a list from FeedbackRolesPermission null if no exist records
@@ -52,12 +64,30 @@ public interface FeedbackRolesPermissionManager {
   public List<FeedbackRolesPermission> findAll();
 
   /**
+   * This method gets a list of feedbackRolesPermission filtered by role Acronyms and permission name.
+   * 
+   * @param permissionName is the permission name.
+   * @param globalUnitID is the permissionName name.
+   * @return a list from FeedbackRolesPermission null if no exist records
+   */
+  public List<String> findRoleAcronymsByPermissionName(String permissionName, long globalUnitID);
+
+  /**
+   * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
+   * 
+   * @param permissionName is the permission name.
+   * @param globalUnitID is the permissionName name.
+   * @return a list from FeedbackRolesPermission null if no exist records
+   */
+  public List<Long> findRoleIdsByPermissionName(String permissionName, long globalUnitID);
+
+
+  /**
    * This method gets a list of feedbackRolesPermission that are active filtered by global unit.
    * 
    * @return a list from FeedbackRolesPermission null if no exist records
    */
   public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID);
-
 
   /**
    * This method gets a feedbackRolesPermission object by a given feedbackRolesPermission identifier.
