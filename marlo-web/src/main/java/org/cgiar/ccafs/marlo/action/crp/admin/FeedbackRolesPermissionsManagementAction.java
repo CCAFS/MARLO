@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -113,65 +112,51 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
     }
   }
 
-
+  /**
+   * Saves or updates FeedbackRolesPermission entities.
+   * - If an ID is present, it updates the existing record.
+   * - If no ID is present, it creates a new one.
+   * This method does not perform uniqueness validation, allowing overwriting existing entries.
+   * It's up to the user interface to prevent unintentional duplicates.
+   */
   @Override
   public String save() {
-    if (this.canAccessSuperAdmin()) {
-      if (feedbackRolesPermissions != null && !feedbackRolesPermissions.isEmpty()) {
-
-        for (FeedbackRolesPermission rolePermission : feedbackRolesPermissions) {
-
-          FeedbackRolesPermission rolePermissionSave = new FeedbackRolesPermission();
-
-          if (rolePermission.getId() != null) {
-            rolePermissionSave = feedbackRolesPermissionManager.getFeedbackRolesPermissionById(rolePermission.getId());
-          }
-
-          if (rolePermission.getClusterType() != null) {
-            rolePermissionSave.setClusterType(rolePermission.getClusterType());
-          }
-          if (rolePermission.getFeedbackPermission() != null) {
-            rolePermissionSave.setFeedbackPermission(rolePermission.getFeedbackPermission());
-          }
-          if (rolePermission.getDescription() != null) {
-            rolePermissionSave.setDescription(rolePermission.getDescription());
-          }
-          if (rolePermission.getRole() != null) {
-            rolePermissionSave.setRole(rolePermission.getRole());
-          }
-          if (rolePermission.getGlobalUnit() != null) {
-            rolePermissionSave.setGlobalUnit(rolePermission.getGlobalUnit());
-          } else {
-            rolePermissionSave.setGlobalUnit(this.getCurrentGlobalUnit());
-          }
-
-          feedbackRolesPermissionManager.saveFeedbackRolesPermission(null);
-
-        }
-      }
-
-      if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
-        if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
-          this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
-          List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
-          for (String key : keys) {
-            this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
-          }
-        } else {
-          // this.addActionMessage("message:" + this.getText("saving.saved"));
-        }
-        return SUCCESS;
-      } else {
-        this.addActionMessage("");
-        this.setActionMessages(null);
-        return REDIRECT;
-      }
-
-    } else {
+    if (!this.hasPermission("*")) {
       return NOT_AUTHORIZED;
     }
+
+    if (feedbackRolesPermissions != null && !feedbackRolesPermissions.isEmpty()) {
+      for (FeedbackRolesPermission inputPermission : feedbackRolesPermissions) {
+
+        FeedbackRolesPermission permissionToSave = (inputPermission.getId() != null)
+          ? feedbackRolesPermissionManager.getFeedbackRolesPermissionById(inputPermission.getId())
+          : new FeedbackRolesPermission();
+
+        if (permissionToSave.getClusterType() != null && permissionToSave.getClusterType().getId() != null) {
+          permissionToSave.setClusterType(permissionToSave.getClusterType());
+        }
+        permissionToSave.setFeedbackPermission(inputPermission.getFeedbackPermission());
+        permissionToSave.setDescription(inputPermission.getDescription());
+        permissionToSave.setRole(inputPermission.getRole());
+        permissionToSave.setGlobalUnit(
+          inputPermission.getGlobalUnit() != null ? inputPermission.getGlobalUnit() : this.getCurrentGlobalUnit());
+
+        feedbackRolesPermissionManager.saveFeedbackRolesPermission(permissionToSave);
+      }
+    }
+
+    if (this.getUrl() == null || this.getUrl().isEmpty()) {
+      if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
+        this.setActionMessages(null);
+        this.getInvalidFields().forEach((key, value) -> this.addActionMessage(key + ": " + value));
+      }
+      return SUCCESS;
+    } else {
+      this.addActionMessage("");
+      this.setActionMessages(null);
+      return REDIRECT;
+    }
+
   }
 
   public void setClusterTypeList(List<ClusterType> clusterTypeList) {

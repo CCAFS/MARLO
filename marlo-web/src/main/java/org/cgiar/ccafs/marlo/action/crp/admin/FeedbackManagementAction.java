@@ -71,7 +71,7 @@ public class FeedbackManagementAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.canAccessSuperAdmin()) {
+    if (this.hasPermission("*")) {
       if (feedbackFields != null && !feedbackFields.isEmpty()) {
 
         List<Long> IDs = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)

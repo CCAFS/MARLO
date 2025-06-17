@@ -1,10 +1,10 @@
 [#ftl]
-[#assign title = "Feedback Management" /]
+[#assign title = "Feedback Role Permissions Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js"
  ] /]
-[#-- assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /--]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/feedbackRolesPermissionsManagement.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackRolesPermissionsManagement" /]
 
@@ -31,7 +31,7 @@
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
         
-        [#-- System Level Outcomes --]
+        [#-- Feedback Permissions --]
         <h4 class="sectionTitle">[@s.text name="feedbackPermissions.title" /]</h4>
         <div class="slos-list">
         [#if feedbackRolesPermissions?has_content]
@@ -40,7 +40,7 @@
           [/#list]
         [/#if]
         </div>
-        [#-- Add Outcome Button --]
+        [#-- Add Feedback Permission Button --]
         <div class="addSlo bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addFeedbackPermission"/]</div>
         
         [#-- Section Buttons--]
@@ -88,7 +88,7 @@
       <div class="clearfix"></div>
       [#--  Role --]
       <div class="form-group">
-        [@customForm.select name="${name}.role.id" className="role" i18nkey="feedbackPermissions.role"  disabled=!editable  listName="roleList" keyFieldName="id"  displayFieldName="acronym" required=true editable=editable /]
+        [@customForm.select name="${name}.role.id" className="role" i18nkey="feedbackPermissions.role"  disabled=!editable  listName="roleList" keyFieldName="id"  displayFieldName="displayLabel" required=true editable=editable /]
       </div>
       <div class="clearfix"></div>
       [#--  Cluster Type  --]
