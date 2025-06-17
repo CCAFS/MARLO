@@ -128,8 +128,7 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
 
   @Override
   public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID) {
-    String query =
-      "from " + FeedbackRolesPermission.class.getName() + " where is_active=1 and global_unit_id=" + globalUnitID;
+    String query = "from " + FeedbackRolesPermission.class.getName() + " where global_unit_id=" + globalUnitID;
     List<FeedbackRolesPermission> list = super.findAll(query);
     if (!list.isEmpty()) {
       return list;

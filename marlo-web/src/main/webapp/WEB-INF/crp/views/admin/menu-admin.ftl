@@ -30,7 +30,8 @@
     { 'slug': 'targetUnits',      'name': 'CRPAdmin.menu.hrefTargetUnits',        'action': 'targetUnits',        'active': true },
     <#--  { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true },  -->
     { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true },
-    { 'slug': 'feedbackManagement',    'name': 'menu.superadmin.feedbackManagement', 'action': 'feedbackManagement',   'active': true}
+    { 'slug': 'feedbackManagement',    'name': 'CRPAdmin.menu.feedbackManagement', 'action': 'feedbackManagement',   'active': true},
+    { 'slug': 'feedbackRolesPermissionsManagement',    'name': 'CRPAdmin.menu.feedbackPermissionsManagement', 'action': 'feedbackRolesPermissionsManagement',   'active': true}
   ]/]
 [/#if]
 
