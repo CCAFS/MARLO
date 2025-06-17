@@ -27,7 +27,7 @@
 [/#attempt]
 
 [#assign crp = "CCAFS" /]
-<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments(projectID!)?c)!}</span>
 
     <section class="container containerBI">  
       [#if biReports?has_content]
