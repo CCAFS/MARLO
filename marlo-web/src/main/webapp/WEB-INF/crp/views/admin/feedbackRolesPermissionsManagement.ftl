@@ -63,7 +63,8 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro feedbackCommentFieldsMacro element name index isTemplate=false]
-  <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">
+[#assign isNew = (element.id)?has_content?string('','new-entry')]
+<div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox ${isNew}" data-id="${(element.id)!}" style="display:${isTemplate?string('none','block')}">
     [#-- Remove Button --]
     <div class="remove-element removeElement sm" title="Remove"></div>
     

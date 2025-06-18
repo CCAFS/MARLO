@@ -25,16 +25,21 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class FeedbackRolesPermissionsManagementAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+  private final Logger logger = LoggerFactory.getLogger(FeedbackRolesPermissionsManagementAction.class);
 
   private FeedbackRolesPermissionManager feedbackRolesPermissionManager;
   private FeedbackPermissionManager feedbackPermissionManager;
@@ -45,6 +50,7 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
   private List<FeedbackPermission> feedbackPermissionsList;
   private List<Role> roleList;
   private List<ClusterType> clusterTypeList;
+
 
   @Inject
   public FeedbackRolesPermissionsManagementAction(APConfig config,
@@ -74,6 +80,7 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
     return feedbackRolesPermissions;
   }
 
+
   public List<Role> getRoleList() {
     return roleList;
   }
@@ -96,7 +103,9 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
 
       roleList = roleManager.findAll().stream()
         .filter(r -> r.getCrp() != null && Objects.equals(r.getCrp().getId(), globalUnitId))
+        .sorted(Comparator.comparing(Role::getAcronym, Comparator.nullsLast(String::compareToIgnoreCase)))
         .collect(Collectors.toList());
+
 
       clusterTypeList = clusterTypeManager.findAll();
 
@@ -125,23 +134,49 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
+    if (feedbackRolesPermissions != null) {
+
+      List<Long> inputIds = feedbackRolesPermissions.stream().map(FeedbackRolesPermission::getId)
+        .filter(Objects::nonNull).collect(Collectors.toList());
+
+      List<FeedbackRolesPermission> allExisting =
+        feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(this.getCurrentGlobalUnit().getId());
+
+      allExisting.stream().filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
+        .forEach(permissionToDelete -> {
+          try {
+            feedbackRolesPermissionManager.deleteFeedbackRolesPermission(permissionToDelete.getId());
+          } catch (Exception e) {
+            logger.error("Error deleting FeedbackRolesPermission with ID: {}", permissionToDelete.getId(), e);
+          }
+        });
+    }
+
     if (feedbackRolesPermissions != null && !feedbackRolesPermissions.isEmpty()) {
       for (FeedbackRolesPermission inputPermission : feedbackRolesPermissions) {
+        try {
 
-        FeedbackRolesPermission permissionToSave = (inputPermission.getId() != null)
-          ? feedbackRolesPermissionManager.getFeedbackRolesPermissionById(inputPermission.getId())
-          : new FeedbackRolesPermission();
+          FeedbackRolesPermission permissionToSave = (inputPermission.getId() != null)
+            ? feedbackRolesPermissionManager.getFeedbackRolesPermissionById(inputPermission.getId())
+            : new FeedbackRolesPermission();
 
-        if (permissionToSave.getClusterType() != null && permissionToSave.getClusterType().getId() != null) {
-          permissionToSave.setClusterType(permissionToSave.getClusterType());
+          if (permissionToSave.getClusterType() != null && permissionToSave.getClusterType().getId() != null) {
+            ClusterType clusterTypeSave =
+              clusterTypeManager.getClusterTypeById(permissionToSave.getClusterType().getId());
+            if (clusterTypeSave != null) {
+              permissionToSave.setClusterType(permissionToSave.getClusterType());
+            }
+          }
+          permissionToSave.setFeedbackPermission(inputPermission.getFeedbackPermission());
+          permissionToSave.setDescription(inputPermission.getDescription());
+          permissionToSave.setRole(inputPermission.getRole());
+          permissionToSave.setGlobalUnit(
+            inputPermission.getGlobalUnit() != null ? inputPermission.getGlobalUnit() : this.getCurrentGlobalUnit());
+
+          feedbackRolesPermissionManager.saveFeedbackRolesPermission(permissionToSave);
+        } catch (Exception e) {
+          logger.error("Error saving FeedbackRolesPermission: {}", e.getMessage(), e);
         }
-        permissionToSave.setFeedbackPermission(inputPermission.getFeedbackPermission());
-        permissionToSave.setDescription(inputPermission.getDescription());
-        permissionToSave.setRole(inputPermission.getRole());
-        permissionToSave.setGlobalUnit(
-          inputPermission.getGlobalUnit() != null ? inputPermission.getGlobalUnit() : this.getCurrentGlobalUnit());
-
-        feedbackRolesPermissionManager.saveFeedbackRolesPermission(permissionToSave);
       }
     }
 

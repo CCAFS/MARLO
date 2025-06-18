@@ -2,3 +2,8 @@
   border: 2px solid red;
   background-color: #ffe6e6;
 }
+
+.new-entry {
+  border: 2px dashed #4CAF50; /* Green dashed border for new items */
+  background-color: #f5fff5;  /* Light green background */
+}
