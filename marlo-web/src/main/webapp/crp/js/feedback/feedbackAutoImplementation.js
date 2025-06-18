@@ -485,6 +485,30 @@ function attachEventsFeedback() {
 
 }
 
+/**
+ * Function to display the new comment box if the field is active 
+ * This function is from the on click in replyContainer, is a refactor of the original function searching to improve the code
+ * @param {HTMLElement} this - The context of the function call, typically the element that triggered the event.
+ */
+function displayReplyComment(this) {
+  let block = $(this).parent().parent().parent();
+  let blockContainer = block.parent().parent();
+  let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
+  let textarea = blockContainer.find('textarea[id="New comment"]');
+
+  block.find('.replyTextAreaContainer').css('display', 'flex');
+  block.find('.replyTextAreaContainer').find('.textArea').show();
+  block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
+  block.find('.buttonsContainer').hide();
+  block.find('.optionsContainer').hide();
+
+  textarea.prop('disabled', true);
+  senNewComment.css({
+    'background-color': '#afafaf',
+    'pointer-events': 'none'
+  })
+}
+
 function addNewComment() {
   let name = nameNewComment;
   let block = $(`div[id^="qaCommentReply-${name}"]`);
