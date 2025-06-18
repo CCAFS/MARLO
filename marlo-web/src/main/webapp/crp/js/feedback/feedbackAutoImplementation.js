@@ -251,7 +251,7 @@ function attachEventsFeedback() {
     $sendCommentImg.attr('src', originalSrc);
   });
 
-  $('img.disagreeCommentBtn').on('click', function() {
+/*  $('img.disagreeCommentBtn').on('click', function() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(this).parent().parent().parent();
@@ -259,6 +259,19 @@ function attachEventsFeedback() {
     hideShowOptionButtons(block, '0');
     saveCommentStatus(0, commentID, name);
     block.find('img.replyCommentBtn').click();
+  }); */
+
+  $('img.disagreeCommentBtn').on('click', function() {
+
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+
+    hideShowOptionButtons(elementBasicInfo.block, '0');
+    displayReplyComment(elementBasicInfo);
+
+    //Attach events to the reply comment button
+
+
   });
 
   $('img.agreeCommentBtn').on('click', function() {
@@ -486,27 +499,68 @@ function attachEventsFeedback() {
 }
 
 /**
+ * Extracts basic data and related DOM containers from a jQuery element representing a comment or reply.
+ * @param {jQuery} element - The jQuery element to extract data from.
+ * @returns {Object} An object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
+ */
+function extractBasicElementData(element) {
+  // Extracting the basic data from the element
+  const name = element.attr('name');
+  const commentID = element.attr('commentId');
+  const index = element.attr('index');
+
+  // Extracting DOM container elements using more robust selectors
+  const block = element.closest('.qaCommentReplyBlock');
+  const blockContainer = block.parent().parent();
+  const qaPopup = $(`div[id^="qaPopup-${name}"]`);
+  const containerQaPopup = $(`div[id^="containerQaPopup-${name}"]`);
+
+  return {
+    name,
+    commentID,
+    index,
+    block,
+    blockContainer,
+    qaPopup,
+    containerQaPopup
+  };
+}
+
+/**
  * Function to display the new comment box if the field is active 
  * This function is from the on click in replyContainer, is a refactor of the original function searching to improve the code
- * @param {HTMLElement} this - The context of the function call, typically the element that triggered the event.
+ * @param {Object} elementData - Object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
  */
-function displayReplyComment(this) {
-  let block = $(this).parent().parent().parent();
-  let blockContainer = block.parent().parent();
+function displayReplyComment(elementData, isDisplay = true) {
+  const { block, blockContainer } = elementData;
   let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
   let textarea = blockContainer.find('textarea[id="New comment"]');
 
-  block.find('.replyTextAreaContainer').css('display', 'flex');
-  block.find('.replyTextAreaContainer').find('.textArea').show();
-  block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
-  block.find('.buttonsContainer').hide();
-  block.find('.optionsContainer').hide();
+  if (isDisplay) {
+    block.find('.replyTextAreaContainer').css('display', 'flex');
+    block.find('.replyTextAreaContainer').find('.textArea').show();
+    block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
+    block.find('.buttonsContainer').hide();
+    block.find('.optionsContainer').hide();
 
-  textarea.prop('disabled', true);
-  senNewComment.css({
-    'background-color': '#afafaf',
-    'pointer-events': 'none'
-  })
+    textarea.prop('disabled', true);
+    senNewComment.css({
+      'background-color': '#afafaf',
+      'pointer-events': 'none'
+    });
+  } else {
+    block.find('.replyTextAreaContainer').css('display', 'none');
+    block.find('.replyTextAreaContainer').find('.textArea').hide();
+    block.find('.replyTextAreaContainer').find('.sendReplyContainer').hide();
+    block.find('.buttonsContainer').show();
+    block.find('.optionsContainer').show();
+
+    textarea.prop('disabled', false);
+    senNewComment.css({
+      'background-color': '#0b7ba6',
+      'pointer-events': 'auto'
+    });
+  }
 }
 
 function addNewComment() {
