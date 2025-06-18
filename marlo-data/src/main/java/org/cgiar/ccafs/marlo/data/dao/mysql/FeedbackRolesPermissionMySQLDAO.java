@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 
 @Named
 public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRolesPermission, Long>
@@ -57,23 +56,30 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
   @Override
   public boolean existsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName, long globalUnitID,
     Long clusterTypeId) {
+
     if (roleIds == null || roleIds.isEmpty() || permissionName == null || permissionName.isEmpty()) {
       return false;
     }
 
-    String sql = "SELECT COUNT(frp.id) AS count " + "FROM feedback_roles_permissions frp "
-      + "JOIN feedback_permissions fp ON frp.feedback_permission_id = fp.id " + "JOIN roles r ON frp.role_id = r.id "
-      + "WHERE frp.role_id IN (:roleIds) " + "AND fp.name = :permissionName " + "AND r.global_unit_id = :globalUnitID "
-      + "AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = :clusterTypeId)";
+    String roleIdsStr = roleIds.toString().replace("[", "").replace("]", "");
 
-    Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(sql)
-      .addScalar("count", org.hibernate.type.LongType.INSTANCE).setParameterList("roleIds", roleIds)
-      .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID);
+    String safePermissionName = permissionName.replace("'", "''");
 
-    query.setParameter("clusterTypeId", clusterTypeId);
+    StringBuilder sql = new StringBuilder();
+    sql.append("SELECT COUNT(frp.id) AS count ").append("FROM feedback_roles_permissions frp ")
+      .append("JOIN feedback_permissions fp ON frp.feedback_permission_id = fp.id ")
+      .append("JOIN roles r ON frp.role_id = r.id ").append("WHERE frp.role_id IN (").append(roleIdsStr).append(") ")
+      .append("AND fp.name = '").append(safePermissionName).append("' ").append("AND r.global_unit_id = ")
+      .append(globalUnitID).append(" ");
 
+    if (clusterTypeId == null) {
+      sql.append("AND frp.cluster_type_id IS NULL ");
+    } else {
+      sql.append("AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = ").append(clusterTypeId).append(") ");
+    }
 
-    Number count = (Number) query.uniqueResult();
+    Number count = (Number) this.getSessionFactory().getCurrentSession().createSQLQuery(sql.toString()).uniqueResult();
+
     return count != null && count.longValue() > 0;
   }
 
