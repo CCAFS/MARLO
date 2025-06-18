@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRolesPermission, Long>
@@ -65,13 +66,15 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
       + "WHERE frp.role_id IN (:roleIds) " + "AND fp.name = :permissionName " + "AND r.global_unit_id = :globalUnitID "
       + "AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = :clusterTypeId)";
 
-    Long safeClusterTypeId = (clusterTypeId != null) ? clusterTypeId : -1L;
-
-    Number count = (Number) this.getSessionFactory().getCurrentSession().createSQLQuery(sql)
+    Query query = this.getSessionFactory().getCurrentSession().createSQLQuery(sql)
       .addScalar("count", org.hibernate.type.LongType.INSTANCE).setParameterList("roleIds", roleIds)
-      .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID)
-      .setParameter("clusterTypeId", safeClusterTypeId).uniqueResult();
+      .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID);
 
+    if (clusterTypeId != null) {
+      query.setParameter("clusterTypeId", clusterTypeId);
+    }
+
+    Number count = (Number) query.uniqueResult();
     return count != null && count.longValue() > 0;
   }
 
@@ -105,7 +108,7 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
 
     @SuppressWarnings("unchecked")
     List<String> acronyms = this.getSessionFactory().getCurrentSession().createNativeQuery(sql)
-      .setParameter("permissionName", permissionName).getResultList();
+      .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID).getResultList();
 
     return acronyms;
   }
