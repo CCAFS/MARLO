@@ -1477,3 +1477,17 @@ function displayNewCommentBoxFieldActive(name) {
 
 
 }
+
+function validateReply(comment) {
+  if (!comment) return { isValid: false, cleanText: '' };
+  
+  const cleanText = comment
+    .replaceAll('.<br>.', '')
+    .replaceAll('&nbsp;', ' ')
+    .trim();
+    
+  return {
+    isValid: cleanText !== '',
+    cleanText
+  };
+}
