@@ -70,9 +70,8 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
       .addScalar("count", org.hibernate.type.LongType.INSTANCE).setParameterList("roleIds", roleIds)
       .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID);
 
-    if (clusterTypeId != null) {
-      query.setParameter("clusterTypeId", clusterTypeId);
-    }
+    query.setParameter("clusterTypeId", clusterTypeId);
+
 
     Number count = (Number) query.uniqueResult();
     return count != null && count.longValue() > 0;
