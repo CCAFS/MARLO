@@ -8,6 +8,15 @@ function init() {
 }
 
 function attachEvents() {
+  
+  const newEntry = document.querySelector(".new-entry");
+    if (newEntry) {
+      newEntry.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+    
   $('.addSlo').on('click', addIdo);
 
   $('.addIndicator').on('click', addIndicator);
@@ -30,7 +39,7 @@ function attachEvents() {
       $(this).find('textarea').autoGrow();
     });
   });
-
+  
 }
 
 function addIdo() {

@@ -2,7 +2,7 @@
 [#assign title = "Feedback Role Permissions Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js?20250619a"
  ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/feedbackRolesPermissionsManagement.css" ] /]
 [#assign currentSection = "admin" /]
@@ -70,7 +70,10 @@
     
     [#-- Description --]
     <div class="blockTitle closed">
-      <strong>Feedback Field ${index+1}: </strong>${(element.description)!''} - ${(element.description[0..*200])!'Feeckback Fields'}
+      <strong>Feedback Field ${index+1}:</strong> ${(element.description)!''} 
+      [#if element.recentlyCreated?? && element.recentlyCreated]
+        <span class="badge-new fade-out">New</span>
+      [/#if]
     </div>
     
     <div class="blockContent" style="display:none">
