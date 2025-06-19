@@ -1279,6 +1279,30 @@ function saveFeedbackReply(reply, commentID, name) {
   });
 }
 
+function saveFeedbackReply2(reply, commentID, name, callback = null) {
+  var finalAjaxURL = `/saveFeedbackReply.do?reply=${encodeURIComponent(reply)}&commentID=${commentID}&userID=${userID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL
+  })
+  .done(function(data) {
+
+    if (callback) {
+      callback(data, null); // éxito
+    }
+    //getQAComments();
+    //loadCommentsByUser(name);
+    //loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+  })
+  .fail(function(jqXHR, textStatus, errorThrown) {
+    console.error('AJAX error:', textStatus, errorThrown);
+
+    if (callback) {
+      callback(null, errorThrown); // error
+    }
+  });
+}
+
 function saveCommentStatus(status, commentID, name) {
   var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
   $.ajax({
@@ -1288,6 +1312,27 @@ function saveCommentStatus(status, commentID, name) {
       getQAComments();
       loadCommentsByUser(name);
       loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+    }
+  });
+}
+
+function saveCommentStatus2(status, commentID, name, callback = null) {
+  var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL
+  })
+  .done(function(data) {
+
+    if (callback) {
+      callback(data, null); // éxito
+    }
+  })
+  .fail(function(jqXHR, textStatus, errorThrown) {
+    console.error('AJAX error:', textStatus, errorThrown);
+
+    if (callback) {
+      callback(null, errorThrown); // error
     }
   });
 }
