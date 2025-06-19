@@ -131,6 +131,7 @@ public class FeedbackManagementAction extends BaseAction {
         } else {
           // this.addActionMessage("message:" + this.getText("saving.saved"));
         }
+        this.addActionMessage("message:" + this.getText("saving.saved"));
         return SUCCESS;
       } else {
         this.addActionMessage("");
