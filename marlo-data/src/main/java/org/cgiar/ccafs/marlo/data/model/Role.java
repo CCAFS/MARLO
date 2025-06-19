@@ -122,6 +122,9 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
         case "G":
           acronym = "Guest";
           break;
+        default:
+          acronym = this.getAcronym();
+          break;
       }
     }
 
@@ -135,6 +138,10 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
 
   public String getDescription() {
     return this.description;
+  }
+
+  public String getDisplayLabel() {
+    return this.getAcronym() + " - " + this.getDescription();
   }
 
   public Set<FeedbackRolesPermission> getFeedbackRoles() {
@@ -157,10 +164,10 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
     return result;
   }
 
+
   public void setAcronym(String acronym) {
     this.acronym = acronym;
   }
-
 
   public void setCrp(GlobalUnit crp) {
     this.crp = crp;
