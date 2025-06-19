@@ -277,13 +277,17 @@ function attachEventsFeedback() {
   });
 
   $('img.agreeCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block, name, commentID} = elementBasicInfo;
 
     hideShowOptionButtons(block, '1');
-    saveCommentStatus(1, commentID, name);
-    block.find('img.replyCommentBtn').click();
+
+    saveCommentStatus2(1, commentID, "", function() {
+      getQAComments();
+      loadCommentsByUser(name);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+    });
   });
 
   $('div.deleteCommentBtn').on('click', function() {
