@@ -97,7 +97,22 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
     try {
 
       long globalUnitId = this.getCurrentGlobalUnit().getId();
-      feedbackRolesPermissions = feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId);
+
+      List<Long> newIds = (List<Long>) this.getRequest().getSession().getAttribute("recentlyCreatedFRP");
+
+      feedbackRolesPermissions =
+        feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId).stream()
+          .sorted(Comparator.comparing(
+            frp -> frp.getFeedbackPermission() != null ? frp.getFeedbackPermission().getId() : Long.MAX_VALUE))
+          .peek(frp -> {
+            if (newIds != null && newIds.contains(frp.getId())) {
+              frp.setRecentlyCreated(true);
+            }
+          }).collect(Collectors.toList());
+
+      if (newIds != null) {
+        this.getRequest().getSession().removeAttribute("recentlyCreatedFRP");
+      }
 
       feedbackPermissionsList = feedbackPermissionManager.findAll();
 
@@ -153,6 +168,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
     }
 
     if (feedbackRolesPermissions != null && !feedbackRolesPermissions.isEmpty()) {
+      List<Long> newIds = new ArrayList<>();
+
       for (FeedbackRolesPermission inputPermission : feedbackRolesPermissions) {
         try {
 
@@ -160,11 +177,13 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
             ? feedbackRolesPermissionManager.getFeedbackRolesPermissionById(inputPermission.getId())
             : new FeedbackRolesPermission();
 
-          if (permissionToSave.getClusterType() != null && permissionToSave.getClusterType().getId() != null) {
+          boolean isNew = inputPermission.getId() == null;
+
+          if (inputPermission.getClusterType() != null && inputPermission.getClusterType().getId() != null) {
             ClusterType clusterTypeSave =
-              clusterTypeManager.getClusterTypeById(permissionToSave.getClusterType().getId());
+              clusterTypeManager.getClusterTypeById(inputPermission.getClusterType().getId());
             if (clusterTypeSave != null) {
-              permissionToSave.setClusterType(permissionToSave.getClusterType());
+              permissionToSave.setClusterType(clusterTypeSave);
             }
           }
           permissionToSave.setFeedbackPermission(inputPermission.getFeedbackPermission());
@@ -173,10 +192,18 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
           permissionToSave.setGlobalUnit(
             inputPermission.getGlobalUnit() != null ? inputPermission.getGlobalUnit() : this.getCurrentGlobalUnit());
 
-          feedbackRolesPermissionManager.saveFeedbackRolesPermission(permissionToSave);
+          permissionToSave = feedbackRolesPermissionManager.saveFeedbackRolesPermission(permissionToSave);
+
+          if (isNew && permissionToSave.getId() != null) {
+            newIds.add(permissionToSave.getId());
+          }
         } catch (Exception e) {
           logger.error("Error saving FeedbackRolesPermission: {}", e.getMessage(), e);
         }
+      }
+
+      if (!newIds.isEmpty()) {
+        this.getRequest().getSession().setAttribute("recentlyCreatedFRP", newIds);
       }
     }
 
@@ -185,6 +212,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
         this.setActionMessages(null);
         this.getInvalidFields().forEach((key, value) -> this.addActionMessage(key + ": " + value));
       }
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+
       return SUCCESS;
     } else {
       this.addActionMessage("");
