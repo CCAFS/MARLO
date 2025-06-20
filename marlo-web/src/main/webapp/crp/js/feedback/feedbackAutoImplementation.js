@@ -355,9 +355,9 @@ function attachEventsFeedback() {
   });
 
   $('img.dismissCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block, name, commentID} = elementBasicInfo;
     let feedback_assesor_input = block.find('.commentContainer').attr('comment');
     let feedback_assesor_name = block.find('.commentContainer').attr('username');
     let feedback_assesor_email = block.find('.commentContainer').attr('email');
@@ -368,10 +368,12 @@ function attachEventsFeedback() {
       sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     saveTrackComment(0, commentID, name);
+
     hideShowOptionButtons(block, '6');
-    changeBackgroundColorBlocks(block, '6');
-    saveCommentStatus(6, commentID, name);
-    block.find('img.replyCommentBtn').click();
+    displayReplyComment(elementBasicInfo);
+
+    block.find('.commentContainer').attr('status', '6');
+
   });
 
   $('.editCommentBtn').on('click', function() {
@@ -636,7 +638,8 @@ function getFeedbackCommentReaction(status) {
   const statusMapping = {
     '0': 'Disagreed',
     '1': 'Accepted',
-    '2': 'Required clarification'
+    '2': 'Required clarification',
+    '6': 'Dismissed',
   };
   if (statusMapping.hasOwnProperty(status)) {
     return statusMapping[status];
@@ -1046,6 +1049,8 @@ function loadCommentsByUser(name) {
 
 
                 hideShowOptionButtons(block, qaComments[i][j].status);
+                changeBackgroundColorBlocks(block, qaComments[i][j].status);
+                displayReplyComment({block, blockContainer: block.parent().parent()}, false);
 
                 //EXTREME CASE: Close popup in an edit operation
                 //If a comment it's being edit and the user close the popup, it would be able to edit
