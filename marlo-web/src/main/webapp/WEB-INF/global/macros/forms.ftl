@@ -1281,7 +1281,10 @@
     [#-- Reply textarea --]
     <div class="replyTextAreaContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
+        <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+        <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
+      </div>
     </div>
 
     [#-- Options --]
