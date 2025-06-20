@@ -369,6 +369,7 @@ function attachEventsFeedback() {
     }
     saveTrackComment(0, commentID, name);
     hideShowOptionButtons(block, '6');
+    changeBackgroundColorBlocks(block, '6');
     saveCommentStatus(6, commentID, name);
     block.find('img.replyCommentBtn').click();
   });
@@ -503,6 +504,7 @@ function attachEventsFeedback() {
             loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
           });
           textarea.val('');
+          changeBackgroundColorBlocks(block, statusNumber);
           displayReplyComment(elementBasicInfo, false);
         })
       } else {
@@ -511,6 +513,7 @@ function attachEventsFeedback() {
     } else {
       console.error("Unknown feedback comment reaction status. Cannot proceed with saving the reply.");
       hideShowOptionButtons(block, '4');
+      changeBackgroundColorBlocks(block, '4');
       displayReplyComment(elementBasicInfo, false);
     }
 
@@ -553,7 +556,6 @@ function attachEventsFeedback() {
 }
 
 /**
- * Extracts basic data and related DOM containers from a jQuery element representing a comment or reply.
  * Extracts basic info required for handle events and related DOM containers from a jQuery element representing a comment or reply.
  * @param {jQuery} element - The jQuery element to extract data from.
  * @returns {Object} An object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
@@ -596,6 +598,7 @@ function displayReplyComment(elementData, isDisplay = true) {
     block.find('.replyTextAreaContainer').find('.textArea').show();
     block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
     block.find('.buttonsContainer').hide();
+    block.find('.deleteReplyBtn').hide();
     block.find('.optionsContainer').hide();
 
     textarea.prop('disabled', true);
@@ -739,16 +742,11 @@ function showEditComment(block, commentID, option) {
 
 function hideShowOptionButtons(block, status) {
   let textarea = block.find('textarea[id="Reply"]');
-  
-  block.find('.commentContainer').css('background', 'white');
-  block.find('.replyTextContainer').css('background', 'white');
 
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.disagreeCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#e8a9a4');
-      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
       block.find('img.agreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -761,8 +759,6 @@ function hideShowOptionButtons(block, status) {
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
       block.find('img.agreeCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#a8eaab');
-      block.find('.replyTextContainer').last().css('background', '#a8eaab');
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -775,8 +771,6 @@ function hideShowOptionButtons(block, status) {
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.clarificationCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#a4cde8');
-      block.find('.replyTextContainer').last().css('background', '#a4cde8');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -811,8 +805,6 @@ function hideShowOptionButtons(block, status) {
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#9b99964a');
-      block.find('.replyTextContainer').last().css('background', '#9b99964a');
       block.find('.commentTitle').css('font-style', 'oblique');
       block.find('.commentTitle').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
@@ -832,6 +824,38 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentTitle').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
+      break;
+  }
+}
+
+function changeBackgroundColorBlocks(block, status) {
+  // Change the background color of the comment block based on the status
+  block.find('.commentContainer').css('background', 'white');
+  block.find('.replyTextContainer').css('background', 'white');
+  switch (status) {
+    case '0':
+      block.find('.commentContainer').css('background', '#e8a9a4');
+      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
+      break;
+    case '1':
+      block.find('.commentContainer').css('background', '#a8eaab');
+      block.find('.replyTextContainer').last().css('background', '#a8eaab');
+      break;
+    case '2':
+      block.find('.commentContainer').css('background', '#a4cde8');
+      block.find('.replyTextContainer').last().css('background', '#a4cde8');
+      break;
+    case '4':
+      block.find('.commentContainer').css('background', '#f0f0f0');
+      block.find('.replyTextContainer').last().css('background', '#f0f0f0');
+      break;
+    case '6':
+      block.find('.commentContainer').css('background', '#9b99964a');
+      block.find('.replyTextContainer').last().css('background', '#9b99964a');
+      break;
+    default:
+      block.find('.commentContainer').css('background', 'white');
+      block.find('.replyTextContainer').last().css('background', 'white');
       break;
   }
 }
@@ -1066,9 +1090,9 @@ function loadCommentsByUser(name) {
                     newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
                     newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
-                    // If the reply status is not '1' or '0', then show the reply text area
-                    // Status '1' is for accepted, '0' is for disagreed
-                    if(qaComments[i][j].status != '1' && qaComments[i][j].status != '0') {
+                    // If the reply status is not '1', '6' or '0', then show the reply text area
+                    // Status '1' is for accepted, '0' is for disagreed, '6' is for dismissed
+                    if(qaComments[i][j].status != '1' && qaComments[i][j].status != '0' && qaComments[i][j].status != '6') {
                       // This controls the activation of the delete button in the reply
                       // If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
                       if((reply.userID == userID) && (index == replies.length - 1)) {
@@ -1080,6 +1104,7 @@ function loadCommentsByUser(name) {
                       // If the user is a super admin, then show the option buttons
                       if( ((userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) || (isSuperAdmin == 'true' )) {
                         hideShowOptionButtons(block, "4");
+                        changeBackgroundColorBlocks(block, "4");
                       }
 
 
