@@ -5,9 +5,28 @@ function init() {
   /* Declaring Events */
   attachEvents();
   
+  addSelect2();
+  applySelect2Filters();
+  
 }
 
 function attachEvents() {
+
+  $('#feedbackPermissionFilter').on('change', function () {
+    const selectedId = $(this).val();
+    $('.srfSlo').each(function () {
+      const permissionId = $(this).find('.feedbackPermission').val();
+      if (!selectedId || selectedId === permissionId) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+  
+  $('#clearFeedbackPermissionFilter').on('click', function () {
+    $('#feedbackPermissionFilter').val(null).trigger('change');
+  });
   
   const newEntry = document.querySelector(".new-entry");
     if (newEntry) {
@@ -37,6 +56,16 @@ function attachEvents() {
     }
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
+    });
+  });
+  
+  $('#feedbackPermissionFilter').on('change', function () {
+  const selectedPermissionId = $(this).val();
+
+    $('.srfSlo').not('.is-template').each(function () {
+      const itemPermissionId = $(this).data('permission-id') + "";
+      const shouldShow = !selectedPermissionId || selectedPermissionId === itemPermissionId;
+      $(this).toggle(shouldShow);
     });
   });
   
@@ -111,6 +140,29 @@ function updateIndexes() {
     // Updating indexes
     $(crossCutting).setNameIndexes(1, i);
 
+  });
+}
+
+function addSelect2() {
+  $("form select").select2();
+}
+
+function applySelect2Filters() {
+  $('.select2-filter').select2({
+    theme: 'bootstrap',
+    width: '100%',
+    allowClear: true,
+    placeholder: function () {
+      return $(this).data('placeholder') || 'Type to search...';
+    },
+    language: {
+      searching: function () {
+        return "Searching...";
+      },
+      noResults: function () {
+        return "No results found";
+      }
+    }
   });
 }
 

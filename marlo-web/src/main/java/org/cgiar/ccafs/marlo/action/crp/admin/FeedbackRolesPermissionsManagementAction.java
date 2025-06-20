@@ -184,6 +184,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               clusterTypeManager.getClusterTypeById(inputPermission.getClusterType().getId());
             if (clusterTypeSave != null) {
               permissionToSave.setClusterType(clusterTypeSave);
+            } else {
+              permissionToSave.setClusterType(null);
             }
           }
           permissionToSave.setFeedbackPermission(inputPermission.getFeedbackPermission());

@@ -4,7 +4,8 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js?20250619a"
  ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/feedbackRolesPermissionsManagement.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/feedbackRolesPermissionsManagement.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackRolesPermissionsManagement" /]
 
@@ -33,6 +34,28 @@
         
         [#-- Feedback Permissions --]
         <h4 class="sectionTitle">[@s.text name="feedbackPermissions.title" /]</h4>
+        
+        [#-- filter section --]
+        <div class="filter-box">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <select id="feedbackPermissionFilter" class="form-control select2-filter" data-placeholder="Filter by feedback permission...">
+                <option value="">All Permissions</option>
+                [#list feedbackPermissionsList as perm]
+                  <option value="${perm.id}">${perm.description}</option>
+                [/#list]
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-outline-secondary" id="clearFeedbackPermissionFilter">
+                <i class="fa fa-times"></i> Clear filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
         <div class="slos-list">
         [#if feedbackRolesPermissions?has_content]
           [#list feedbackRolesPermissions as frp]
@@ -64,13 +87,18 @@
 
 [#macro feedbackCommentFieldsMacro element name index isTemplate=false]
 [#assign isNew = (element.id)?has_content?string('','new-entry')]
-<div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox ${isNew}" data-id="${(element.id)!}" style="display:${isTemplate?string('none','block')}">
+<div id="srfSlo-${isTemplate?string('template',index)}"
+     class="srfSlo borderBox ${isNew}" ${isTemplate?string('is-template','')}"
+     data-id="${(element.id)!}"
+     data-permission-id="${(element.feedbackPermission.id)!}"
+     style="display:${isTemplate?string('none','block')}">
+
     [#-- Remove Button --]
     <div class="remove-element removeElement sm" title="Remove"></div>
     
     [#-- Description --]
     <div class="blockTitle closed">
-      <strong>Feedback Field ${index+1}:</strong> ${(element.description)!''} 
+      <strong>Permission ${index+1}:</strong> ${(element.description)!''} 
       [#if element.recentlyCreated?? && element.recentlyCreated]
         <span class="badge-new fade-out">New</span>
       [/#if]
