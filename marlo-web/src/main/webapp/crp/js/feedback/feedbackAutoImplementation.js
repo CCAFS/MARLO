@@ -251,17 +251,6 @@ function attachEventsFeedback() {
     $sendCommentImg.attr('src', originalSrc);
   });
 
-  // DEPRECATED: This code is commented out because it is not used anymore
-  /*   $('img.disagreeCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
-
-    hideShowOptionButtons(block, '0');
-    saveCommentStatus(0, commentID, name);
-    block.find('img.replyCommentBtn').click();
-  }); */
-
   $('img.disagreeCommentBtn').on('click', function() {
 
     const element = $(this);
@@ -287,6 +276,7 @@ function attachEventsFeedback() {
       getQAComments();
       loadCommentsByUser(name);
       loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      changeBackgroundColorBlocks(block, '1');
     });
   });
 
@@ -336,13 +326,14 @@ function attachEventsFeedback() {
   });
 
   $('img.clarificationCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block} = elementBasicInfo;
 
     hideShowOptionButtons(block, '2');
-    saveCommentStatus(2, commentID, name);
-    block.find('img.replyCommentBtn').click();
+    displayReplyComment(elementBasicInfo);
+    
+    block.find('.commentContainer').attr('status', '2');
   });
 
   $('img.correctCommentBtn').on('click', function() {
@@ -359,6 +350,7 @@ function attachEventsFeedback() {
       sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     hideShowOptionButtons(block, 1);
+    changeBackgroundColorBlocks(block, 1);
     saveCommentStatus(4, commentID, name);
   });
 
