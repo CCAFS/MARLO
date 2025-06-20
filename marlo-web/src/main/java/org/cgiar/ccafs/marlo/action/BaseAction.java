@@ -6574,6 +6574,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Determines whether the current entity is allowed to extend based on the given project information.
+   * <p>
+   * This method checks if the project end year is greater than the year of the current actual phase.
+   * If either the project information, the actual phase, or their relevant fields are null, the method returns false.
+   * </p>
+   *
+   * @param projectInfo the project information object to evaluate; may be null
+   * @return {@code true} if the project end year is greater than the current actual phase year, {@code false} otherwise
+   */
+  public boolean isAllowedToExtend(ProjectInfo projectInfo) {
+    if (projectInfo == null) {
+      return false;
+    }
+    Integer projectEndYear = projectInfo.getEndYear();
+    Phase actualPhase = getActualPhase();
+    if (actualPhase == null) {
+      return false;
+    }
+    Integer actualPhaseYear = actualPhase.getYear();
+    return projectEndYear > actualPhaseYear;
+  }
+
+
+  /**
    * Function to validate the annual report version the front will show
    *
    * @return
