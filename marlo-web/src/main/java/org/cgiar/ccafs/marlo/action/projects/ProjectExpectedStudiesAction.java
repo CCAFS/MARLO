@@ -91,7 +91,6 @@ import org.cgiar.ccafs.marlo.data.model.EvidenceTag;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
-import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
@@ -135,6 +134,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
+import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.QuantificationType;
 import org.cgiar.ccafs.marlo.data.model.RepIndGenderYouthFocusLevel;
 import org.cgiar.ccafs.marlo.data.model.RepIndGeographicScope;
@@ -165,6 +165,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -289,7 +290,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private long crpMilestonePrimary;
   private ProjectExpectedStudy expectedStudy;
   private ProjectExpectedStudy expectedStudyDB;
-  private List<GeneralStatus> statuses;
+  private Map<String, String> statuses;
   private List<RepIndGeographicScope> geographicScopes;
   private List<LocElement> regions;
   private List<RepIndOrganizationType> organizationTypes;
@@ -762,9 +763,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.stageStudies;
   }
 
-
-  public List<GeneralStatus> getStatuses() {
-    return this.statuses;
+  public Map<String, String> getStatuses() {
+    return statuses;
   }
 
   private String getStudiesSourceFolder() {
@@ -1163,6 +1163,15 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       } else {
 
         this.setDraft(false);
+
+        this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
+
+        if (this.expectedStudyDB.getProject() != null) {
+          this.projectID = this.expectedStudyDB.getProject().getId();
+          this.project = this.projectManager.getProjectById(this.projectID);
+          this.project.getProjecInfoPhase(phase);
+          this.project.setProjectInfo(this.project.getProjecInfoPhase(this.getActualPhase()));
+        }
 
         if (this.expectedStudy.getProjectExpectedStudyInfo() == null) {
           this.expectedStudy.getProjectExpectedStudyInfo(phase);
@@ -1628,7 +1637,21 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
       // Getting The list
-      this.statuses = this.generalStatusManager.findByTable(APConstants.PROJECT_EXPECTED_STUDIES_TABLE);
+      statuses = new HashMap<>();
+      List<ProjectStatusEnum> list = Arrays.asList(ProjectStatusEnum.values());
+      // Add all status
+      for (ProjectStatusEnum projectStatusEnum : list) {
+        statuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
+      }
+      // Validate if is possible to extend the deliverable based on the project end date
+      if (project.getProjectInfo() != null && !this.isAllowedToExtend(project.getProjectInfo())
+        && this.expectedStudy.getProjectExpectedStudyInfo() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null
+        && this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null
+        && !this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId()
+          .equals(Long.parseLong(ProjectStatusEnum.Extended.getStatusId()))) {
+        statuses.remove(ProjectStatusEnum.Extended.getStatusId());
+      }
 
       // cgamboa 17/04/2024 the query will be call once
       final List<LocElement> LocElementTemp = this.locElementManager.findAll();
@@ -1840,16 +1863,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         logger.error(" unable to get institutions from partners");
       }
 
-
-      this.expectedStudyDB = this.projectExpectedStudyManager.getProjectExpectedStudyById(this.expectedID);
-
-      if (this.expectedStudyDB.getProject() != null) {
-        this.projectID = this.expectedStudyDB.getProject().getId();
-        this.project = this.projectManager.getProjectById(this.projectID);
-        this.project.getProjecInfoPhase(phase);
-      }
-
-
       if (this.project != null) {
         final Project projectL = this.projectManager.getProjectById(this.projectID);
 
@@ -2037,6 +2050,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
                 List<FeedbackQAComment> comments = new ArrayList<FeedbackQAComment>();
                 // cgamboa 08/05/2024 feedbackQACommentManager.findAll() is changed by FeedbackQACommentToSearchComments
                 comments = FeedbackQACommentToSearchComments.stream().filter(f -> (f != null) && (f.getField() != null)
+
+
                   && (f.getField().getId() != null) && f.getField().getId().equals(field.getId()))
                   .collect(Collectors.toList());
                 field.setQaComments(comments);
@@ -2235,6 +2250,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
   }
+
 
   @Override
   public String save() {
@@ -2813,7 +2829,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Centers/PPA partners Information
    * 
@@ -2985,6 +3000,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Crps Information
@@ -3193,7 +3209,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save imactArea related to the Expected Studies
    * 
@@ -3301,6 +3316,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies Institutions Information
    * 
@@ -3402,7 +3418,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       logger.error(" error in saveInstitutions function " + e.getMessage());
     }
   }
-
 
   /**
    * Save Expected Studies Link Information
@@ -3610,6 +3625,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * 08/01 save Deliverable Partnership Responsible
    *
@@ -3717,7 +3733,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   private void saveProjectExpectedstudyPartnershipsPersons(
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
@@ -3868,6 +3883,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Publications
    * 
@@ -4017,7 +4033,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies References Information
    * 
@@ -4081,6 +4096,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
+
 
   /**
    * Save Expected Studies Regions Information
@@ -4193,7 +4209,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save primary alliance lever Information
@@ -4414,6 +4429,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Geographic Regions Information
    * 
@@ -4457,7 +4473,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   /**
    * Save Expected Studies SubIdos Information
@@ -4538,10 +4553,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.centers = centers;
   }
 
+
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
-
 
   public void setCrpMilestonePrimary(long crpMilestonePrimary) {
     this.crpMilestonePrimary = crpMilestonePrimary;
@@ -4623,10 +4638,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.partners = partners;
   }
 
+
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
-
 
   public void setPolicyList(List<ProjectPolicy> policyList) {
     this.policyList = policyList;
@@ -4648,10 +4663,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.quantificationTypes = quantificationTypes;
   }
 
+
   public void setRegionList(List<CrpProgram> regionList) {
     this.regionList = regionList;
   }
-
 
   public void setRegions(List<LocElement> regions) {
     this.regions = regions;
@@ -4669,7 +4684,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.stageStudies = stageStudies;
   }
 
-  public void setStatuses(List<GeneralStatus> statuses) {
+  public void setStatuses(Map<String, String> statuses) {
     this.statuses = statuses;
   }
 

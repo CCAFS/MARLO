@@ -685,7 +685,7 @@
 
       [#-- Status --]
       <div class="${isOutcomeCaseStudy?string('col-md-2','col-md-3')}">
-        [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
+        [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" header=false required=true editable=editable /]
       </div>
 
       [#-- Year --]        

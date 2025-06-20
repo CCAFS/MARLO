@@ -216,6 +216,20 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return endDate;
   }
 
+  /**
+   * Returns the end year of the project, or 0 if the end date is null.
+   *
+   * @return the end year of the project
+   */
+  public int getEndYear() {
+    if (endDate != null) {
+      Calendar calendarEnd = Calendar.getInstance();
+      calendarEnd.setTime(this.endDate);
+      return calendarEnd.get(Calendar.YEAR);
+    }
+    return 0;
+  }
+
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
   }
@@ -339,7 +353,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
       if (year > 2023) {
         // Add to the year 2029
-        calendarEnd.set(Calendar.YEAR, 2029);
+        calendarEnd.set(Calendar.YEAR, this.getEndYear());
       } else {
         calendarEnd.set(Calendar.YEAR, 2023);
       }
@@ -347,7 +361,7 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
       while (year <= calendarEnd.get(Calendar.YEAR)) {
 
         // Adding the year to the list.
-        if (allYears.size() > 0) {
+        if (!allYears.isEmpty()) {
           if (!allYears.contains(year)) {
             allYears.add(year);
           }
