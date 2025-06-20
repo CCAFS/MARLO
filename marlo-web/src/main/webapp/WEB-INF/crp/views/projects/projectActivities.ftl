@@ -9,7 +9,7 @@
 /]
 [#-- ,  
   "${baseUrlCdn}/global/js/autoSave.js?20210616"  --]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20230106"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectActivities.css?20250529"] /]
 [#assign currentStage = "activities" /]
 [#assign hideJustification = true /]
 
@@ -36,7 +36,9 @@
 
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
-
+<script>
+  var globalMaxYear = ${maxYear};
+</script>
 <!--
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
