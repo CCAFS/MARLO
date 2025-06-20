@@ -1313,7 +1313,8 @@
     <div class="_TEMPLATE_replyTextContainer">
       <div class="_TEMPLATE_replyTitle"></div>
       <p class="replyReadonly"></p>
-      <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
     <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
