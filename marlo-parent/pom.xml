@@ -20,7 +20,7 @@
 		<javax.inject.version>1</javax.inject.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
-		<struts2.version>2.5.33</struts2.version>
+		<struts2.version>7.0.0</struts2.version>
 		<mysql.version>8.0.16</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
@@ -52,7 +52,7 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-		<tomcat-catalina.version>8.0.53</tomcat-catalina.version>
+		<tomcat-catalina.version>9.0.106</tomcat-catalina.version>
 		<jackson.version>2.9.9</jackson.version>
 		<jackson.version.databind>2.9.10.7</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
