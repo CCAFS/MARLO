@@ -1286,7 +1286,8 @@
           <p class="reactionComment"></p>
         </div>
       </div>
-      <div style="position: absolute; bottom: 40% !important; right: -10px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>      
+      <div style="position: absolute; bottom: 0px !important; right: -15px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div style="position: absolute; top: 0px !important; right: -15px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
 
         [#-- Replies --]
@@ -1295,7 +1296,10 @@
     [#-- Reply textarea --]
     <div class="replyTextAreaContainer">
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
+        <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+        <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
+      </div>
     </div>
 
     [#-- Options --]
@@ -1327,7 +1331,8 @@
     <div class="_TEMPLATE_replyTextContainer">
       <div class="_TEMPLATE_replyTitle"></div>
       <p class="replyReadonly"></p>
-      <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
     <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>

@@ -251,37 +251,33 @@ function attachEventsFeedback() {
     $sendCommentImg.attr('src', originalSrc);
   });
 
-/*  $('img.disagreeCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
-
-    hideShowOptionButtons(block, '0');
-    saveCommentStatus(0, commentID, name);
-    block.find('img.replyCommentBtn').click();
-  }); */
-
   $('img.disagreeCommentBtn').on('click', function() {
 
     const element = $(this);
     const elementBasicInfo = extractBasicElementData(element);
+    const {block} = elementBasicInfo;
 
-    hideShowOptionButtons(elementBasicInfo.block, '0');
+    // Hide the option buttons and reply comment
+    hideShowOptionButtons(block, '0');
     displayReplyComment(elementBasicInfo);
 
-    //Attach events to the reply comment button
-
+    block.find('.commentContainer').attr('status', '0');
 
   });
 
   $('img.agreeCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block, name, commentID} = elementBasicInfo;
 
     hideShowOptionButtons(block, '1');
-    saveCommentStatus(1, commentID, name);
-    block.find('img.replyCommentBtn').click();
+
+    saveCommentStatus2(1, commentID, "", function() {
+      getQAComments();
+      loadCommentsByUser(name);
+      loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      changeBackgroundColorBlocks(block, '1');
+    });
   });
 
   $('div.deleteCommentBtn').on('click', function() {
@@ -330,13 +326,14 @@ function attachEventsFeedback() {
   });
 
   $('img.clarificationCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block} = elementBasicInfo;
 
     hideShowOptionButtons(block, '2');
-    saveCommentStatus(2, commentID, name);
-    block.find('img.replyCommentBtn').click();
+    displayReplyComment(elementBasicInfo);
+    
+    block.find('.commentContainer').attr('status', '2');
   });
 
   $('img.correctCommentBtn').on('click', function() {
@@ -353,13 +350,14 @@ function attachEventsFeedback() {
       sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     hideShowOptionButtons(block, 1);
+    changeBackgroundColorBlocks(block, 1);
     saveCommentStatus(4, commentID, name);
   });
 
   $('img.dismissCommentBtn').on('click', function() {
-    let name = $(this).attr('name');
-    let commentID = $(this).attr('commentId');
-    let block = $(this).parent().parent().parent();
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block, name, commentID} = elementBasicInfo;
     let feedback_assesor_input = block.find('.commentContainer').attr('comment');
     let feedback_assesor_name = block.find('.commentContainer').attr('username');
     let feedback_assesor_email = block.find('.commentContainer').attr('email');
@@ -370,9 +368,12 @@ function attachEventsFeedback() {
       sendFeedbackActionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, this);
     }
     saveTrackComment(0, commentID, name);
+
     hideShowOptionButtons(block, '6');
-    saveCommentStatus(6, commentID, name);
-    block.find('img.replyCommentBtn').click();
+    displayReplyComment(elementBasicInfo);
+
+    block.find('.commentContainer').attr('status', '6');
+
   });
 
   $('.editCommentBtn').on('click', function() {
@@ -411,7 +412,9 @@ function attachEventsFeedback() {
     })
   });
 
-  $('div.sendReplyContainer').on('click', function() {
+  // DEPRECATED: This code is commented out because it is not used anymore
+  // Old control of the sendReplyContainer click event 
+  /*   $('div.sendReplyContainer').on('click', function() {
     let name = $(this).attr('name');
     let commentID = $(this).attr('commentId');
     let block = $(`div[id^="qaCommentReply-${name}"]`);
@@ -461,8 +464,64 @@ function attachEventsFeedback() {
       'background-color': '#0b7ba6',
       'pointer-events': 'auto'
     })
-  });
+  }); */
 
+  $('div.sendReplyContainer').on('click', function() {
+
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const {block, name, commentID} = elementBasicInfo;
+
+    let textarea = block.find('textarea[id="Reply"]');
+    let value = textarea.val();
+    let comment = textarea.next().html();
+
+    let feedback_assesor_input = block.find('.commentContainer').attr('comment');
+    let feedback_assesor_name = block.find('.commentContainer').attr('username');
+    let feedback_assesor_email = block.find('.commentContainer').attr('email');
+    let isTracking = block.find('.commentContainer').attr('isTracking');
+    let feedback_comment_reaction = block.find('.commentContainer').attr('status');
+
+    const temporalStatus = getFeedbackCommentReaction(feedback_comment_reaction);
+
+    // Map the feedback_comment_reaction to a more readable status
+    if (temporalStatus !== 'Unknown') {
+      if (isTracking == 'true') {
+        sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value, this);
+      }
+
+      const validationResult = validateReply(value || comment);
+
+      // Check if the reply text is valid
+      if (validationResult.isValid) {
+        textarea.css('border', '1px solid #ccc');
+        //First save the comment status
+        const statusNumber = Number.parseInt(feedback_comment_reaction);
+        saveCommentStatus2(statusNumber, commentID, name, function (data,error) {
+          // Then save the reply comment, remove text area content and hide the reply comment
+          saveFeedbackReply2(validationResult.cleanText, commentID, name, function(){
+            // After saving the reply, reload the comments and icons
+            getQAComments();
+            loadCommentsByUser(name);
+            loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+          });
+          textarea.val('');
+          changeBackgroundColorBlocks(block, statusNumber);
+          displayReplyComment(elementBasicInfo, false);
+        })
+      } else {
+        textarea.css('border', '2px solid red');
+      }
+    } else {
+      console.error("Unknown feedback comment reaction status. Cannot proceed with saving the reply.");
+      hideShowOptionButtons(block, '4');
+      changeBackgroundColorBlocks(block, '4');
+      displayReplyComment(elementBasicInfo, false);
+    }
+
+
+  });
+  
   $('div.addCommentContainer').on('click', function() {
     $(this).hide();
     let name = $(this).attr('name');
@@ -494,12 +553,39 @@ function attachEventsFeedback() {
     // block.find('.editCommentBtn').show();
   });
 
+  $('img.goBackReplyContainer, img.goBackReplyBtn, img.goBackCommentBtn').on('click', function() {
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const { block, name, commentID } = elementBasicInfo;
+
+    const status = block.find('.commentContainer').attr('status');
+
+    // Hide the reply comment box and show the option buttons
+    displayReplyComment(elementBasicInfo, false);
+
+    if (status == '6') {
+      hideShowOptionButtons(block, '');
+    } else {
+      hideShowOptionButtons(block, '4');
+    }
+
+    if (status == '1') {
+      saveCommentStatus2(4, commentID, name, function (data, error) {
+        changeBackgroundColorBlocks(block, "4");
+        displayReplyComment(elementBasicInfo, false);
+        getQAComments();
+        loadCommentsByUser(name);
+        loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      });
+    }
+  });
+
 
 
 }
 
 /**
- * Extracts basic data and related DOM containers from a jQuery element representing a comment or reply.
+ * Extracts basic info required for handle events and related DOM containers from a jQuery element representing a comment or reply.
  * @param {jQuery} element - The jQuery element to extract data from.
  * @returns {Object} An object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
  */
@@ -525,11 +611,11 @@ function extractBasicElementData(element) {
     containerQaPopup
   };
 }
-
 /**
  * Function to display the new comment box if the field is active 
  * This function is from the on click in replyContainer, is a refactor of the original function searching to improve the code
  * @param {Object} elementData - Object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
+ * @param {boolean} isDisplay - Flag to determine whether to display or hide the reply comment box.
  */
 function displayReplyComment(elementData, isDisplay = true) {
   const { block, blockContainer } = elementData;
@@ -541,6 +627,8 @@ function displayReplyComment(elementData, isDisplay = true) {
     block.find('.replyTextAreaContainer').find('.textArea').show();
     block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
     block.find('.buttonsContainer').hide();
+    block.find('.deleteReplyBtn').hide();
+    block.find('.goBackReplyBtn').hide();
     block.find('.optionsContainer').hide();
 
     textarea.prop('disabled', true);
@@ -561,6 +649,32 @@ function displayReplyComment(elementData, isDisplay = true) {
       'pointer-events': 'auto'
     });
   }
+}
+
+/**
+ * Converts a numeric/string status code to a human-readable reaction name.
+ * This function maps status codes to their corresponding reaction descriptions in the feedback system.
+ * 
+ * @param {string} status - The numeric/string status code as a string ('0', '1', '2')
+ * @returns {string} The human-readable reaction name:
+ *   - '0': 'Disagreed'
+ *   - '1': 'Accepted'
+ *   - '2': 'Required clarification'
+ *   - Default: 'Unknown' if status code doesn't match any defined status
+ */
+function getFeedbackCommentReaction(status) {
+  const statusMapping = {
+    '0': 'Disagreed',
+    '1': 'Accepted',
+    '2': 'Required clarification',
+    '6': 'Dismissed',
+  };
+  if (statusMapping.hasOwnProperty(status)) {
+    return statusMapping[status];
+  }
+  // If status is 4 or 6, it is not a valid reaction
+  // so we return 'Unknown'
+  return 'Unknown';
 }
 
 function addNewComment() {
@@ -660,14 +774,10 @@ function showEditComment(block, commentID, option) {
 function hideShowOptionButtons(block, status) {
   let textarea = block.find('textarea[id="Reply"]');
 
-  block.find('.replyTextContainer').css('background', 'white');
-
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.disagreeCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#e8a9a4');
-      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
       block.find('img.agreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -680,8 +790,6 @@ function hideShowOptionButtons(block, status) {
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
       block.find('img.agreeCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#a8eaab');
-      block.find('.replyTextContainer').last().css('background', '#a8eaab');
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -694,8 +802,6 @@ function hideShowOptionButtons(block, status) {
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
       block.find('img.clarificationCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#a4cde8');
-      block.find('.replyTextContainer').last().css('background', '#a4cde8');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -710,6 +816,7 @@ function hideShowOptionButtons(block, status) {
       block.find('div.deleteCommentBtn').show();
       block.find('.correctCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
+      block.find('.goBackCommentBtn').hide();
       block.find('img.agreeCommentBtn').show();
       block.find('img.disagreeCommentBtn').show();
       block.find('img.clarificationCommentBtn').show();
@@ -730,8 +837,6 @@ function hideShowOptionButtons(block, status) {
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.commentContainer').css('background', '#9b99964a');
-      block.find('.replyTextContainer').last().css('background', '#9b99964a');
       block.find('.commentTitle').css('font-style', 'oblique');
       block.find('.commentTitle').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
@@ -751,6 +856,38 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentTitle').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
+      break;
+  }
+}
+
+function changeBackgroundColorBlocks(block, status) {
+  // Change the background color of the comment block based on the status
+  block.find('.commentContainer').css('background', 'white');
+  block.find('.replyTextContainer').css('background', 'white');
+  switch (status) {
+    case '0':
+      block.find('.commentContainer').css('background', '#e8a9a4');
+      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
+      break;
+    case '1':
+      block.find('.commentContainer').css('background', '#a8eaab');
+      block.find('.replyTextContainer').last().css('background', '#a8eaab');
+      break;
+    case '2':
+      block.find('.commentContainer').css('background', '#a4cde8');
+      block.find('.replyTextContainer').last().css('background', '#a4cde8');
+      break;
+    case '4':
+      block.find('.commentContainer').css('background', '#f0f0f0');
+      block.find('.replyTextContainer').last().css('background', '#f0f0f0');
+      break;
+    case '6':
+      block.find('.commentContainer').css('background', '#9b99964a');
+      block.find('.replyTextContainer').last().css('background', '#9b99964a');
+      break;
+    default:
+      block.find('.commentContainer').css('background', 'white');
+      block.find('.replyTextContainer').last().css('background', 'white');
       break;
   }
 }
@@ -835,6 +972,7 @@ function loadCommentsByUser(name) {
                 }
                 block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
                 block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                block.find('.goBackCommentBtn').attr('commentId', qaComments[i][j].commentId);
                 block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
                 block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
                 block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
@@ -941,6 +1079,8 @@ function loadCommentsByUser(name) {
 
 
                 hideShowOptionButtons(block, qaComments[i][j].status);
+                changeBackgroundColorBlocks(block, qaComments[i][j].status);
+                displayReplyComment({block, blockContainer: block.parent().parent()}, false);
 
                 //EXTREME CASE: Close popup in an edit operation
                 //If a comment it's being edit and the user close the popup, it would be able to edit
@@ -982,11 +1122,13 @@ function loadCommentsByUser(name) {
                     newReply.find('.replyTextContainer').show();
                     newReply.attr('replyId', reply.id);
                     newReply.find('.deleteReplyBtn').attr('replyId', reply.id);
+                    newReply.find('.goBackReplyBtn').attr('commentId', qaComments[i][j].commentId);
                     newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
                     newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
-                    // If the reply status is not '1' or '6', then show the reply text area
-                    if(qaComments[i][j].status != '1' && qaComments[i][j].status != '6') {
+                    // If the reply status is not '1', '6' or '0', then show the reply text area
+                    // Status '1' is for accepted, '0' is for disagreed, '6' is for dismissed
+                    if(qaComments[i][j].status != '1' && qaComments[i][j].status != '0' && qaComments[i][j].status != '6') {
                       // This controls the activation of the delete button in the reply
                       // If the userID of the reply is the same as the current userID and it's the last in the list of replies, then show the delete button
                       if((reply.userID == userID) && (index == replies.length - 1)) {
@@ -998,9 +1140,16 @@ function loadCommentsByUser(name) {
                       // If the user is a super admin, then show the option buttons
                       if( ((userCanManageFeedback == 'true' || userCanLeaveComments == 'true') && (repliesSort[replies.length-1].userID != userID)) || (isSuperAdmin == 'true' )) {
                         hideShowOptionButtons(block, "4");
+                        changeBackgroundColorBlocks(block, "4");
                       }
 
 
+                    }
+
+                    // This is a special case for the reply status '1' (accepted)
+                    // It allows the go back button to be displayed
+                    if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
+                      newReply.find('.goBackReplyBtn').show();
                     }
 
                     repliesContainer.append(newReply);
@@ -1070,6 +1219,27 @@ function loadCommentsByUser(name) {
                     block.find('.replyCommentBtn').hide();
                     block.find('.replyTextAreaContainer').hide();
                     block.find('.sendReplyContainer').hide();
+                  }
+                }
+
+                // This is an special case for hide the goBack button
+                // If there are no replies, then show the go back button only if the comment status is '1' (accepted)
+                // If there is a reply, then show the go back button only if the last reply status is '1' (accepted) and in the last reply
+                if (replies.length == 0) {
+                  repliesContainer.find('.goBackReplyBtn').hide();
+                  block.find('.goBackCommentBtn').hide();
+                  if (qaComments[i][j].status == '1') {
+                    block.find('.goBackCommentBtn').show();
+                  } else {
+                    block.find('.goBackCommentBtn').hide();
+                  }
+                } else {
+                  block.find('.goBackCommentBtn').hide();
+                  repliesContainer.find('.goBackReplyBtn').hide();
+                  if (qaComments[i][j].status == '1') {
+                    repliesContainer.find('.goBackReplyBtn').last().show();
+                  } else {
+                    repliesContainer.find('.goBackReplyBtn').last().hide();
                   }
                 }
               }
@@ -1149,6 +1319,9 @@ function showQAComments(data) {
       $(item).find('.deleteCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.containerSentCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.deleteReplyBtn').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackReplyBtn').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackReplyContainer').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackCommentBtn').attr('name', `${field[1]}[${index}]`);
       // $(item).find('.sendCommentContainer').attr('name', `${field[1]}[${index}]`);
       $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.disagreeCommentBtn').attr('name', `${field[1]}[${index}]`);
@@ -1279,6 +1452,30 @@ function saveFeedbackReply(reply, commentID, name) {
   });
 }
 
+function saveFeedbackReply2(reply, commentID, name, callback = null) {
+  var finalAjaxURL = `/saveFeedbackReply.do?reply=${encodeURIComponent(reply)}&commentID=${commentID}&userID=${userID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL
+  })
+  .done(function(data) {
+
+    if (callback) {
+      callback(data, null); // éxito
+    }
+    //getQAComments();
+    //loadCommentsByUser(name);
+    //loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+  })
+  .fail(function(jqXHR, textStatus, errorThrown) {
+    console.error('AJAX error:', textStatus, errorThrown);
+
+    if (callback) {
+      callback(null, errorThrown); // error
+    }
+  });
+}
+
 function saveCommentStatus(status, commentID, name) {
   var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
   $.ajax({
@@ -1288,6 +1485,27 @@ function saveCommentStatus(status, commentID, name) {
       getQAComments();
       loadCommentsByUser(name);
       loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+    }
+  });
+}
+
+function saveCommentStatus2(status, commentID, name, callback = null) {
+  var finalAjaxURL = `/saveCommentStatus.do?status=${status}&commentID=${commentID}&userID=${userID}`;
+
+  $.ajax({
+    url: baseURL + finalAjaxURL
+  })
+  .done(function(data) {
+
+    if (callback) {
+      callback(data, null); // éxito
+    }
+  })
+  .fail(function(jqXHR, textStatus, errorThrown) {
+    console.error('AJAX error:', textStatus, errorThrown);
+
+    if (callback) {
+      callback(null, errorThrown); // error
     }
   });
 }
@@ -1478,8 +1696,10 @@ function displayNewCommentBoxFieldActive(name) {
 
 }
 
-function validateReply(comment) {
-  if (!comment) return { isValid: false, cleanText: '' };
+function validateReply(comment = '') {
+  if (!comment) {
+    return { isValid: false, cleanText: '' };
+  }
   
   const cleanText = comment
     .replaceAll('.<br>.', '')

@@ -7888,6 +7888,7 @@ img.qaCommentStatus {
 	background: white;
 	border: 1px solid #D1D1D1;
 	border-radius: 3px;
+	position: relative;
 }
 
 .replyContainer, .replyTextAreaContainer {
@@ -8047,6 +8048,7 @@ img.sendComment {
 	height: 20px;
 	margin-top: 5px;
 	padding-right: 28px;
+	margin-bottom: 10px;
 }
 
 .optionsContainer {
