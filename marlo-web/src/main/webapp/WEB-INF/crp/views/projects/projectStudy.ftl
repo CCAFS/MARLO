@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/projectStudy.js?20250402",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250624"
   ] 
 /]
 [#assign customCSS = [
@@ -32,10 +32,10 @@
 [#import "/WEB-INF/global/macros/studiesTemplates.ftl" as studies /]
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
-    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments(projectID)!false)/]
   [/#list]
   <div id="qaTemplate" style="display: none">
-    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments(projectID)!false) template=true/]
   </div>
 [/#if]
 <input type="hidden"  name="expectedStudy.id" value="${(expectedStudy.id)!}" />

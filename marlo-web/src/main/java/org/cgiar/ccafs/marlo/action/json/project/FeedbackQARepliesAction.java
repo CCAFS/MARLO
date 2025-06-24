@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -62,18 +63,47 @@ public class FeedbackQARepliesAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    boolean newModel = true;
     comments = new ArrayList<Map<String, Object>>();
     Map<String, Object> fieldsMap;
     FeedbackQAReply reply = new FeedbackQAReply();
+    List<FeedbackQAReply> replies = new ArrayList<>();
+
     // @param = commentID
     if (commentId != null) {
-      try {
-        FeedbackQAComment comment = commentManager.getFeedbackQACommentById(commentId);
-        if (comment != null && comment.getReply() != null && comment.getReply().getId() != null) {
-          reply = replyManager.getFeedbackCommentById(comment.getReply().getId());
+      FeedbackQAComment comment = commentManager.getFeedbackQACommentById(commentId);
+
+      if (newModel) {
+        if (comment != null && comment.getFeedbackReplies() != null && !comment.getFeedbackReplies().isEmpty()) {
+
+          comment.setReplies(comment
+            .getFeedbackReplies().stream().filter(r -> r != null && r.getFeedbackComment() != null
+              && r.getFeedbackComment().getId() != null && r.getFeedbackComment().getId().equals(comment.getId()))
+            .collect(Collectors.toList()));
+          replies = new ArrayList<>();
+          for (FeedbackQAReply r : comment.getReplies()) {
+            if (r != null && r.getId() != null) {
+              try {
+                FeedbackQAReply fullReply = replyManager.getFeedbackCommentById(r.getId());
+                if (fullReply != null) {
+                  replies.add(fullReply);
+                }
+              } catch (Exception ex) {
+                logger.error("unable to get feedback reply with id: " + r.getId(), ex);
+              }
+            }
+          }
         }
-      } catch (Exception e) {
-        logger.error("unable to get feedback replies", e);
+
+      } else {
+        // Old model
+        try {
+          if (comment != null && comment.getReply() != null && comment.getReply().getId() != null) {
+            reply = replyManager.getFeedbackCommentById(comment.getReply().getId());
+          }
+        } catch (Exception e) {
+          logger.error("unable to get feedback replies", e);
+        }
       }
     }
 

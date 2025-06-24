@@ -65,11 +65,21 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
   public List<FeedbackQACommentableFields> findAll() {
     String query = "from " + FeedbackQACommentableFields.class.getName() + " where is_active=1";
     List<FeedbackQACommentableFields> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
+  }
 
+  @Override
+  public List<FeedbackQACommentableFields> findAllByGlobalUnit(long globalUnitID) {
+    String query =
+      "from " + FeedbackQACommentableFields.class.getName() + " where is_active=1 and global_unit_id=" + globalUnitID;
+    List<FeedbackQACommentableFields> list = super.findAll(query);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
   }
 
   @Override
@@ -82,6 +92,7 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
     }
     return Collections.emptyList();
   }
+
 
   /**
    * Get the answered comment by phase
@@ -146,7 +157,6 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
 
     return comments;
   }
-
 
   @Override
   public FeedbackQACommentableFields save(FeedbackQACommentableFields feedbackQACommentableFields) {

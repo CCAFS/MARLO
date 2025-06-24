@@ -14,15 +14,19 @@
 		</property>		
 		<many-to-one name="role" class="org.cgiar.ccafs.marlo.data.model.Role"
             fetch="select">
-            <column name="role_id" not-null="true" />
+            <column name="role_id" />
         </many-to-one>
 		<many-to-one name="clusterType" class="org.cgiar.ccafs.marlo.data.model.ClusterType"
             fetch="select">
-            <column name="cluster_type_id" not-null="true" />
+            <column name="cluster_type_id" />
         </many-to-one>
 		<many-to-one name="feedbackPermission" class="org.cgiar.ccafs.marlo.data.model.FeedbackPermission"
             fetch="select">
-            <column name="feedback_permission_id" not-null="true" />
+            <column name="feedback_permission_id" />
+        </many-to-one>
+        <many-to-one name="globalUnit"
+            class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id" />
         </many-to-one>
 	</class>
 </hibernate-mapping>

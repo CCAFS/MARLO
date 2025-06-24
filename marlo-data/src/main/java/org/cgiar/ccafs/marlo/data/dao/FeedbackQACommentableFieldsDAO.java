@@ -55,13 +55,21 @@ public interface FeedbackQACommentableFieldsDAO {
   public List<FeedbackQACommentableFields> findAll();
 
   /**
+   * This method gets a list of internalQaCommentableFields that are active filtered by global unit
+   * 
+   * @param globalUnitID
+   * @return a list from FeedbackQACommentableFields null if no exist records
+   */
+  public List<FeedbackQACommentableFields> findAllByGlobalUnit(long globalUnitID);
+
+
+  /**
    * This method gets a list of internalQaCommentableFields that are active
    * 
    * @param section name String
    * @return a list from FeedbackQACommentableFields null if no exist records
    */
   public List<FeedbackQACommentableFields> findBySectionName(String sectionName);
-
 
   /**
    * Get the answered comment by phase

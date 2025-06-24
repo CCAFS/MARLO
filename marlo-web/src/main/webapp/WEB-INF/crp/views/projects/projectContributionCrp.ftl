@@ -5,7 +5,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250624",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -46,10 +46,10 @@
 
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
-    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments(projectID!)!false)/]
   [/#list]
   <div id="qaTemplate" style="display: none">
-    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments(projectID!)!false) template=true/]
   </div>
 [/#if]
 
@@ -95,10 +95,12 @@
           <span id="userID" style="display: none;">${currentUser.id!}</span>
           <span id="projectID" style="display: none;">${projectID!}</span>
           <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
-          <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+          <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments(projectID!)?c)!}</span>
           <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!}</span>
           <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!}</span>
           <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+          <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+          <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
 
           [#-- Outcome name --]
           [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]

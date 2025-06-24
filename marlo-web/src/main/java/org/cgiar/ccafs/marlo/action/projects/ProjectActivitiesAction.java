@@ -98,6 +98,7 @@ public class ProjectActivitiesAction extends BaseAction {
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
+  private String maxYear;
 
   @Inject
   public ProjectActivitiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -261,6 +262,10 @@ public class ProjectActivitiesAction extends BaseAction {
     return loggedCrp;
   }
 
+  public String getMaxYear() {
+    return maxYear;
+  }
+
   public List<ProjectPartnerPerson> getPartnerPersons() {
     return partnerPersons;
   }
@@ -273,14 +278,15 @@ public class ProjectActivitiesAction extends BaseAction {
     return projectID;
   }
 
+
   public Map<String, String> getStatus() {
     return status;
   }
 
-
   public String getTransaction() {
     return transaction;
   }
+
 
   @Override
   public void prepare() throws Exception {
@@ -485,7 +491,9 @@ public class ProjectActivitiesAction extends BaseAction {
        * }
        */
       project.setProjectDeliverables(deliverables);
-
+      if (project.getProjectInfo() != null) {
+        maxYear = String.valueOf(project.getProjectInfo().getEndYear());
+      }
 
       List<ProjectPartner> ProjectPartnerList = new ArrayList<>();
 
@@ -630,7 +638,6 @@ public class ProjectActivitiesAction extends BaseAction {
      */
   }
 
-
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
@@ -711,6 +718,7 @@ public class ProjectActivitiesAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
+
 
   public void saveActivitiesNewData() {
 
@@ -802,10 +810,10 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
-
   public void setActivityTitles(List<ActivityTitle> activityTitles) {
     this.activityTitles = activityTitles;
   }
+
 
   /**
    * Set the value of deliverablesMissingActivity
@@ -817,9 +825,12 @@ public class ProjectActivitiesAction extends BaseAction {
     this.deliverablesMissingActivity = deliverablesMissingActivity;
   }
 
-
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setMaxYear(String maxYear) {
+    this.maxYear = maxYear;
   }
 
   public void setPartnerPersons(List<ProjectPartnerPerson> partnerPersons) {
