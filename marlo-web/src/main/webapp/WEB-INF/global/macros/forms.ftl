@@ -1272,7 +1272,8 @@
           <p class="reactionComment"></p>
         </div>
       </div>
-      <div style="position: absolute; bottom: 40% !important; right: -10px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>      
+      <div style="position: absolute; bottom: 0px !important; right: -15px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div style="position: absolute; top: 0px !important; right: -15px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
 
         [#-- Replies --]

@@ -553,6 +553,33 @@ function attachEventsFeedback() {
     // block.find('.editCommentBtn').show();
   });
 
+  $('img.goBackReplyContainer, img.goBackReplyBtn, img.goBackCommentBtn').on('click', function() {
+    const element = $(this);
+    const elementBasicInfo = extractBasicElementData(element);
+    const { block, name, commentID } = elementBasicInfo;
+
+    const status = block.find('.commentContainer').attr('status');
+
+    // Hide the reply comment box and show the option buttons
+    displayReplyComment(elementBasicInfo, false);
+
+    if (status == '6') {
+      hideShowOptionButtons(block, '');
+    } else {
+      hideShowOptionButtons(block, '4');
+    }
+
+    if (status == '1') {
+      saveCommentStatus2(4, commentID, name, function (data, error) {
+        changeBackgroundColorBlocks(block, "4");
+        displayReplyComment(elementBasicInfo, false);
+        getQAComments();
+        loadCommentsByUser(name);
+        loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
+      });
+    }
+  });
+
 
 
 }
@@ -601,6 +628,7 @@ function displayReplyComment(elementData, isDisplay = true) {
     block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
     block.find('.buttonsContainer').hide();
     block.find('.deleteReplyBtn').hide();
+    block.find('.goBackReplyBtn').hide();
     block.find('.optionsContainer').hide();
 
     textarea.prop('disabled', true);
@@ -788,6 +816,7 @@ function hideShowOptionButtons(block, status) {
       block.find('div.deleteCommentBtn').show();
       block.find('.correctCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
+      block.find('.goBackCommentBtn').hide();
       block.find('img.agreeCommentBtn').show();
       block.find('img.disagreeCommentBtn').show();
       block.find('img.clarificationCommentBtn').show();
@@ -943,6 +972,7 @@ function loadCommentsByUser(name) {
                 }
                 block.find('.commentContainer').attr('userName', qaComments[i][j].userName).attr('email', qaComments[i][j].email).attr('comment', qaComments[i][j].comment).attr('isTracking', qaComments[i][j].isTracking).attr('status', qaComments[i][j].status);
                 block.find('.deleteCommentBtn').attr('commentId', qaComments[i][j].commentId);
+                block.find('.goBackCommentBtn').attr('commentId', qaComments[i][j].commentId);
                 block.find('.containerSentCommentBtn').attr('commentId', qaComments[i][j].commentId);
                 block.find('.sendReplyContainer').attr('commentId', qaComments[i][j].commentId);
                 block.find('.agreeCommentBtn').attr('commentId', qaComments[i][j].commentId);
@@ -1092,6 +1122,7 @@ function loadCommentsByUser(name) {
                     newReply.find('.replyTextContainer').show();
                     newReply.attr('replyId', reply.id);
                     newReply.find('.deleteReplyBtn').attr('replyId', reply.id);
+                    newReply.find('.goBackReplyBtn').attr('commentId', qaComments[i][j].commentId);
                     newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
                     newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
@@ -1113,6 +1144,12 @@ function loadCommentsByUser(name) {
                       }
 
 
+                    }
+
+                    // This is a special case for the reply status '1' (accepted)
+                    // It allows the go back button to be displayed
+                    if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
+                      newReply.find('.goBackReplyBtn').show();
                     }
 
                     repliesContainer.append(newReply);
@@ -1182,6 +1219,27 @@ function loadCommentsByUser(name) {
                     block.find('.replyCommentBtn').hide();
                     block.find('.replyTextAreaContainer').hide();
                     block.find('.sendReplyContainer').hide();
+                  }
+                }
+
+                // This is an special case for hide the goBack button
+                // If there are no replies, then show the go back button only if the comment status is '1' (accepted)
+                // If there is a reply, then show the go back button only if the last reply status is '1' (accepted) and in the last reply
+                if (replies.length == 0) {
+                  repliesContainer.find('.goBackReplyBtn').hide();
+                  block.find('.goBackCommentBtn').hide();
+                  if (qaComments[i][j].status == '1') {
+                    block.find('.goBackCommentBtn').show();
+                  } else {
+                    block.find('.goBackCommentBtn').hide();
+                  }
+                } else {
+                  block.find('.goBackCommentBtn').hide();
+                  repliesContainer.find('.goBackReplyBtn').hide();
+                  if (qaComments[i][j].status == '1') {
+                    repliesContainer.find('.goBackReplyBtn').last().show();
+                  } else {
+                    repliesContainer.find('.goBackReplyBtn').last().hide();
                   }
                 }
               }
@@ -1261,6 +1319,9 @@ function showQAComments(data) {
       $(item).find('.deleteCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.containerSentCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.deleteReplyBtn').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackReplyBtn').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackReplyContainer').attr('name', `${field[1]}[${index}]`);
+      $(item).find('.goBackCommentBtn').attr('name', `${field[1]}[${index}]`);
       // $(item).find('.sendCommentContainer').attr('name', `${field[1]}[${index}]`);
       $(item).find('.agreeCommentBtn').attr('name', `${field[1]}[${index}]`);
       $(item).find('.disagreeCommentBtn').attr('name', `${field[1]}[${index}]`);
