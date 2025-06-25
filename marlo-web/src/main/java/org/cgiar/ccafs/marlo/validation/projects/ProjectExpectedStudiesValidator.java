@@ -195,7 +195,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
     this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
     this.validateCommunications(action, project, projectExpectedStudy, saving);
-    this.validateAllianceOICRid(action, projectExpectedStudy);
+    // this.validateAllianceOICRid(action, projectExpectedStudy);
 
 
     if (!action.getFieldErrors().isEmpty()) {
