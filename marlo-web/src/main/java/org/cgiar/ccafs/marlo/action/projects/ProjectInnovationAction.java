@@ -2488,13 +2488,21 @@ public class ProjectInnovationAction extends BaseAction {
 
           boolean saveActorProcess = false;
           try {
+
+            boolean isSelectedActor = false;
+
+            if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null) {
+              isSelectedActor = true;
+            }
+
+            // Validate if the actor is selected and has some fields filled
             if (innovationActor != null && (innovationActor.getWomenYouth() != null
               || innovationActor.getWomenNotYouth() != null || innovationActor.getMenYouth() != null
               || innovationActor.getMenNotYouth() != null || innovationActor.getNonbinaryYouth() != null
               || innovationActor.getNonbinaryNotYouth() != null || innovationActor.getWomenYouthNumber() != null
               || innovationActor.getWomenNonYouthNumber() != null || innovationActor.getMenYouthNumber() != null
-              || innovationActor.getMenNonYouthNumber() != null || innovationActor.getSexAgeNotApply() != null
-              || (innovationActor.getActor() != null && innovationActor.getActor().getId() != null))) {
+              || innovationActor.getMenNonYouthNumber() != null || innovationActor.getSexAgeNotApply() != null)
+              && isSelectedActor) {
               saveActorProcess = true;
             }
           } catch (Exception e) {
