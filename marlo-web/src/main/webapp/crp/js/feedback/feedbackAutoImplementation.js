@@ -580,6 +580,15 @@ function attachEventsFeedback() {
     }
   });
 
+  //Additional Behavoir: this close the popup when the user clicks outside of it
+  $(document).on('click', function(event) {
+    // Check if the clicked element is not inside the qaPopup
+    if (!$(event.target).closest('.containerQaPopup').length && !$(event.target).closest('.qaComment').length) {
+      // Hide all qaPopups
+      $('.containerQaPopup').hide();
+    }
+  });
+
 
 
 }
