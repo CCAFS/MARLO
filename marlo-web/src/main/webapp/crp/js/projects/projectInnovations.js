@@ -90,6 +90,8 @@ $(document).ready(function() {
   });
 
   feedbackAutoImplementation();
+
+  initDropdownOrganization();
 });
 
 function attachEvents() {
@@ -210,34 +212,54 @@ function attachEvents() {
     $('.addOrganizations').on('click', addOrganization);
     $('.removeOrganization').on('click', removeOrganization);
 
-    // Function
+    // Function - KEEP ONLY THIS IMPLEMENTATION
     function addOrganization() {
-
       const $listBlock = $('.organizationsList');
       const $template = $('#organizationsInnovation-template');
 
-      // remove select2 data to avoid corruption in clone process
-      if ($template.find('select').data('select2')) {
-        $template.find('select').select2("destroy");
-      }
-
       const $newItem = $template.clone(true).removeAttr('id');
-      $newItem.find('input, select, input[type="checkbox"]').each(function(_i,e) {
-        e.name = (e.name).replace("_TEMPLATE_", "");
-        e.id = (e.id).replace("_TEMPLATE_", "");
+      
+      // First handle standard elements
+      $newItem.find('input:not([readonly]), select, input[type="checkbox"]:not([readonly])').each(function(_i,e) {
+        if(e.name && e.name.includes("_TEMPLATE_")) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        }
       });
+      
       $newItem.find('label').each(function(_i,e) {
         e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
-      // Add select2 to select2 library
-      $template.find('select').select2();
-      $newItem.find('select').select2();
 
+      // Handle the mal-select component properly using attributes
+      const $malSelect = $newItem.find('.allianceOrganizations-institutions');
+      
+      // Update name and id attributes instead of properties
+      $malSelect.attr('name', function(i, oldName) {
+        return oldName.replace("_TEMPLATE_", "");
+      });
+      
+      $malSelect.attr('id', function(i, oldId) {
+        return oldId.replace("_TEMPLATE_", "");
+      });
+      
+      // Copy data from template component
+      $malSelect[0].data = $template.find('.allianceOrganizations-institutions')[0].data;
+      
+      // Add event listener for valueChange
+      $malSelect[0].addEventListener('valueChange', function() {
+        // This will handle any inner select elements if they exist
+        const $innerSelect = $(this).find('select');
+        $innerSelect.each(function(_i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+      });
+      
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
       // Update indexes
       updateIndexes();
-
     }
 
     function removeOrganization() {
@@ -254,10 +276,6 @@ function attachEvents() {
 
       $('.organizationsList').find('.organizationsInnovation').each(function(i, organization) {
         $(organization).setNameIndexes(1, i);
-
-        const newForValue = $(organization).find('label').prev('input').attr('id');
-        $(organization).find('label').attr('for', newForValue);
-        
 
       });
     }
@@ -405,39 +423,6 @@ function addSelect2() {
       width: '100%'
   });
 
-  var $nationalBlock = $('.nationalBlock');
-  // Handle dropdown positioning on click instead of select2:open
-  $nationalBlock.find("select").on('click', function() {
-    // Wait a short moment for Select2 to finish rendering the dropdown
-    setTimeout(() => {
-      const dropdown = $('.select2-dropdown');
-      const select2Container = $(this).closest('.select2-container');
-      const select2Options = $('.select2-results__options');
-
-      if(select2Options.length === 0) return;
-
-      // Fix positioning for the dropdown
-      if(select2Options.length === 1 && $(select2Options[0]).attr('aria-live') === 'assertive') {
-    // Override dropdown position to show below
-    dropdown.removeClass('select2-dropdown--above').addClass('select2-dropdown--below');
-    select2Container.removeClass('select2-container--above').addClass('select2-container--below');
-    
-    // Explicitly position the dropdown below the container
-    dropdown.css({
-      'top': select2Container.outerHeight() + 'px',
-      'bottom': 'auto',
-      'position': 'absolute'
-    });
-    
-    // Adjust height to match available options
-    const optionsHeight = dropdown.find('.select2-results__options li').length * 36; // Approximate height per option
-    dropdown.find('.select2-results').css({
-      'max-height': optionsHeight + 'px',
-      'height': 'auto'
-    });
-      }
-    }, 10); // Slightly longer timeout to ensure dropdown is rendered
-  });
 
 }
 
@@ -898,7 +883,7 @@ const evidencesModule = function () {
     }
 
     const $newItem = $template.clone(true).removeAttr('id');
-    $newItem.find('input, select').each(function(_i,e) {
+    $newItem.find('input, select, textarea').each(function(_i,e) {
       e.name = (e.name).replace("_TEMPLATE_", "");
       e.id = (e.id).replace("_TEMPLATE_", "");
     });
@@ -1213,4 +1198,45 @@ function dynamicStatusCheckedForEvidences() {
     // Hide the label when no conditions are met
     statusLabel.hide();
   }
+}
+
+function initDropdownOrganization() {
+  const dropdowns = document.querySelectorAll('.allianceOrganizations-institutions');
+
+  $.ajax({
+    url: `${baseURL}/getInstitutionsService.do`,
+    method: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      //console.log('Data received:', data);
+      const options = data.institutions.map(item => {
+        return { label: item.name, value: item.id };
+      });
+      
+      // Apply data to all dropdowns with the class
+      dropdowns.forEach(dropdown => {
+        dropdown.data = options;
+        
+        // Set initial value if available
+        const initialValue = dropdown.getAttribute("data-value");
+        if (initialValue) {
+          dropdown.value = parseInt(initialValue);
+        }
+        
+        // Listen for value changes
+        dropdown.addEventListener('valueChange', (event) => {
+          console.log('Selected value:', event.detail);
+          console.log('This is the dropdown:', dropdown);
+        });
+      });
+
+      //console.log('Data loaded successfully for all dropdowns');
+    },
+    error: function(xhr, status, error) {
+      console.error('Error loading data:', error);
+      console.error('Response text:', xhr.responseText);
+      console.error('Status code:', xhr.status);
+    }
+  });
+
 }

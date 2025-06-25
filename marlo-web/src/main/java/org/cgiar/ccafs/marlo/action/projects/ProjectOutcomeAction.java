@@ -1394,7 +1394,8 @@ public class ProjectOutcomeAction extends BaseAction {
           .filter(ds -> ds.isActive() && ds.getDeliverable().isActive()
             && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
             && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive()
-            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3L)
+            && ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3L
+            && !ds.getDeliverable().getDeliverableInfo(this.getActualPhase()).isPrevious())
           .collect(Collectors.toList());
       }
 

@@ -502,31 +502,40 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void deleteLocElements(ProjectInnovation innovation, Phase phase, boolean isCountry) {
-    if (isCountry) {
-      if (innovation.getProjectInnovationCountries() != null && innovation.getProjectInnovationCountries().size() > 0) {
+    try {
+      if (isCountry) {
+        if (innovation.getProjectInnovationCountries() != null
+          && !innovation.getProjectInnovationCountries().isEmpty()) {
 
-        List<ProjectInnovationCountry> regionPrev = new ArrayList<>(innovation.getProjectInnovationCountries().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          List<ProjectInnovationCountry> regionPrev =
+            new ArrayList<>(innovation.getProjectInnovationCountries().stream()
+              .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        for (ProjectInnovationCountry policyRegion : regionPrev) {
+          for (ProjectInnovationCountry policyRegion : regionPrev) {
+            if (policyRegion != null && policyRegion.getId() != null) {
+              projectInnovationCountryManager.deleteProjectInnovationCountry(policyRegion.getId());
+            }
 
-          projectInnovationCountryManager.deleteProjectInnovationCountry(policyRegion.getId());
+          }
+        }
+      } else {
+        if (innovation.getProjectInnovationRegions() != null && !innovation.getProjectInnovationRegions().isEmpty()) {
+
+          List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
+            .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+
+          for (ProjectInnovationRegion policyRegion : regionPrev) {
+            if (policyRegion != null && policyRegion.getId() != null) {
+              projectInnovationRegionManager.deleteProjectInnovationRegion(policyRegion.getId());
+            }
+
+          }
 
         }
       }
-    } else {
-      if (innovation.getProjectInnovationRegions() != null && innovation.getProjectInnovationRegions().size() > 0) {
-
-        List<ProjectInnovationRegion> regionPrev = new ArrayList<>(innovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-        for (ProjectInnovationRegion policyRegion : regionPrev) {
-
-          projectInnovationRegionManager.deleteProjectInnovationRegion(policyRegion.getId());
-
-        }
-
-      }
+    } catch (Exception e) {
+      logger.error("Error deleting LocElements for innovation: " + innovation.getId() + " in phase: " + phase.getId(),
+        e);
     }
   }
 
@@ -1376,30 +1385,29 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
 
-        // Innovations references URL
-        if (innovation.getProjectInnovationReferenceUrls() != null
-          && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
-          try {
-            innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-              .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-
-        // Innovations references Complementary solutions
-        if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
-          && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
-          try {
-            innovation
-              .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
-                .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
-                .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
+        /*
+         * if (innovation.getProjectInnovationReferenceUrls() != null
+         * && !innovation.getProjectInnovationReferenceUrls().isEmpty()) {
+         * try {
+         * innovation.setReferenceUrls(innovation.getProjectInnovationReferenceUrls().stream()
+         * .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+         * .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+         * } catch (Exception e) {
+         * e.printStackTrace();
+         * }
+         * }
+         * if (innovation.getProjectInnovationReferenceComplementarySolutions() != null
+         * && !innovation.getProjectInnovationReferenceComplementarySolutions().isEmpty()) {
+         * try {
+         * innovation
+         * .setReferenceComplementarySolutions(innovation.getProjectInnovationReferenceComplementarySolutions()
+         * .stream().filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
+         * .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
+         * } catch (Exception e) {
+         * e.printStackTrace();
+         * }
+         * }
+         */
 
         // Innovation shared Projects List
         if (this.innovation.getProjectInnovationShareds() != null) {
@@ -2196,8 +2204,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveImpactAreas(innovationDB, phase);
       this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
-      this.saveReferenceUrls(innovationDB, phase);
-      this.saveReferenceComplementarySolution(innovationDB, phase);
+      // this.saveReferenceUrls(innovationDB, phase);
+      // this.saveReferenceComplementarySolution(innovationDB, phase);
       this.saveAllianceOrganizations(innovationDB, phase);
       this.saveActors(innovationDB, phase);
       this.saveToolCategories(innovationDB, phase);

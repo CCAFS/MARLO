@@ -1,0 +1,15 @@
+{
+  "entries": [
+    "components/mal-input/mal-input.js",
+    "components/mal-multiselect/mal-multiselect.js",
+    "components/mal-select/mal-select.js",
+    "components/my-component/my-component.js"
+  ],
+  "compiler": {
+    "name": "@stencil/core",
+    "version": "4.29.0",
+    "typescriptVersion": "5.5.4"
+  },
+  "collections": [],
+  "bundles": []
+}
