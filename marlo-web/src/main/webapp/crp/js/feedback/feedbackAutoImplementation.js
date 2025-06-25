@@ -87,7 +87,7 @@ function feedbackAutoImplementation() {
 
     loadCommentsByUser(name);
 
-    if (popupLeft < 1000) {
+    if (popupLeft < 800) {
       containerQaPopup.css('left', popupLeft);
     } else {
       containerQaPopup.css('left', popupLeft - 480);
@@ -219,7 +219,7 @@ function attachEventsFeedback() {
 
     loadCommentsByUser(name);
 
-    if (event.pageX < 1000) {
+    if (event.pageX < 800) {
       containerQaPopup.css('left', event.pageX);
     } else {
       containerQaPopup.css('left', event.pageX - 500);
