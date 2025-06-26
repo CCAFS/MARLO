@@ -1295,6 +1295,7 @@
 
     [#-- Reply textarea --]
     <div class="replyTextAreaContainer">
+      <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
       <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
         <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
