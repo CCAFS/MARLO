@@ -68,6 +68,18 @@ public interface FeedbackRolesPermissionDAO {
   public List<FeedbackRolesPermission> findAll();
 
   /**
+   * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
+   * 
+   * @param roleIds is the list of roles IDs.
+   * @param permissionName is the permissionName name.
+   * @param globalUnitID is the permissionName name.
+   * @param clusterTypeID is the permissionName name.
+   * @return a list from FeedbackRolesPermission null if no exist records
+   */
+  List<FeedbackRolesPermission> findObjectsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName,
+    Long globalUnitID, Long clusterTypeID);
+
+  /**
    * This method gets a list of feedbackRolesPermission filtered by role Acronyms and permission name.
    * 
    * @param permissionName is the permission name.
