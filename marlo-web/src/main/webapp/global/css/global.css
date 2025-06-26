@@ -7867,6 +7867,14 @@ img.qaCommentStatus {
 	margin-bottom: 10px;
 }
 
+.replyWarningMessage {
+	position: absolute;
+    bottom: -22px;
+    font-size: 0.85em;
+    color: red;
+    width: 50%;
+}
+
 .commentTitle {
 	padding-right: 37px !important;
 }
