@@ -65,10 +65,17 @@ public class FeedbackParentIdAction extends BaseAction {
       try {
 
         List<FeedbackQACommentableFields> fields = new ArrayList<FeedbackQACommentableFields>();
-        fields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(
-            f -> f != null && f.getSectionName() != null && f.getSectionName().equals(sectionName) && f.isActive())
-          .collect(Collectors.toList());
+        try {
+          fields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
+            .filter(
+              f -> f != null && f.getSectionName() != null && f.getSectionName().equals(sectionName) && f.isActive())
+            .collect(Collectors.toList());
+        } catch (Exception e) {
+          fields = feedbackQACommentableFieldsManager.findAll().stream()
+            .filter(
+              f -> f != null && f.getSectionName() != null && f.getSectionName().equals(sectionName) && f.isActive())
+            .collect(Collectors.toList());
+        }
         if (fields != null && !fields.isEmpty() && fields.get(0) != null) {
           field = fields.get(0);
         }

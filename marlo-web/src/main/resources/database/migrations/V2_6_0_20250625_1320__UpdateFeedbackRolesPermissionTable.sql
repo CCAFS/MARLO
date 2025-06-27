@@ -1,0 +1,1 @@
+ALTER TABLE feedback_roles_permissions ADD requires_project_association tinyint(1) NULL;

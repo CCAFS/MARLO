@@ -1234,10 +1234,15 @@
         [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
       [/#if]
     </div>
+    [#local isFeedbackNewCommentFieldActive = action.hasSpecificities('feedback_new_comment_field_active')!false /]
     <div class="containerLeftComment">
-      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment"/]
+      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment" disabled=(!isFeedbackNewCommentFieldActive) /]
       <div class="sendCommentContainer" name="${name}"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
       <div class="sendCommentContainerLoad" name="${name}"><img src="${baseUrlCdn}/global/images/cargando.gif" class="sendComment" title="Sending"></div>
+      <div class="containerCommentNotAvailable" style="display: ${(isFeedbackNewCommentFieldActive)?then('none','flex')}; align-items: center;">
+        <span class="glyphicon glyphicon-exclamation-sign" style="margin-right: 12px;"></span>
+        <p class="commentNotAvailable" style="margin: 0;">According to the process phase, it is not possible to add new comments.</p>
+      </div>
     </div>
   </div>
 [/#macro]
@@ -1266,21 +1271,28 @@
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
-      </div>      
-    </div>
-    <div class="replyContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="replyTextContainer">
-        <div class="replyTitle"></div>
-        <p class="replyReadonly"></p>
-        <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div style="position: absolute; bottom: 0px !important; right: -2.5px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div style="position: absolute; top: 0px !important; right: -2.5px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
+
+        [#-- Replies --]
+    <div class="repliesContainer"></div>
+
+    [#-- Reply textarea --]
+    <div class="replyTextAreaContainer">
+      <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable placeholder="A comment is needed to change the status" /]
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
+        <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+        <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
+      </div>
+    </div>
+
+    [#-- Options --]
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="editCommentBtn qaOptionsComment" title="Edit comment" src="${baseUrlCdn}/global/images/icon_edit.png">
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
@@ -1295,7 +1307,21 @@
       </div>
       <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
     </div>
-    <br>
+      
+    [#-- Template for reply --]
+    [@customForm.qaCommentClarificationBlock /]
+  </div>
+[/#macro]
+
+[#macro qaCommentClarificationBlock]
+  <div class="_TEMPLATE_replyContainer" replyId="">
+    <div class="_TEMPLATE_replyTextContainer">
+      <div class="_TEMPLATE_replyTitle"></div>
+      <p class="replyReadonly"></p>
+      <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
+    </div>
+    <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
 [/#macro]
 

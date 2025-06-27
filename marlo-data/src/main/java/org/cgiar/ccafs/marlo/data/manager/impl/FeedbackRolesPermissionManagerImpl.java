@@ -55,10 +55,41 @@ public class FeedbackRolesPermissionManagerImpl implements FeedbackRolesPermissi
   }
 
   @Override
+  public boolean existsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName, long globalUnitID,
+    Long clusterTypeID) {
+    return feedbackRolesPermissionDAO.existsByRoleIdsAndPermissionName(roleIds, permissionName, globalUnitID,
+      clusterTypeID);
+  }
+
+
+  @Override
   public List<FeedbackRolesPermission> findAll() {
 
     return feedbackRolesPermissionDAO.findAll();
 
+  }
+
+  @Override
+  public List<FeedbackRolesPermission> findObjectsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName,
+    Long globalUnitID, Long clusterTypeID) {
+    return feedbackRolesPermissionDAO.findObjectsByRoleIdsAndPermissionName(roleIds, permissionName, globalUnitID,
+      clusterTypeID);
+  }
+
+  @Override
+  public List<String> findRoleAcronymsByPermissionName(String permissionName, long globalUnitID) {
+
+    return feedbackRolesPermissionDAO.findRoleAcronymsByPermissionName(permissionName, globalUnitID);
+  }
+
+  @Override
+  public List<Long> findRoleIdsByPermissionName(String permissionName, long globalUnitID) {
+    return feedbackRolesPermissionDAO.findRoleIdsByPermissionName(permissionName, globalUnitID);
+  }
+
+  @Override
+  public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID) {
+    return feedbackRolesPermissionDAO.getFeedbackRolesPermissionByGlobalUnitID(globalUnitID);
   }
 
   @Override

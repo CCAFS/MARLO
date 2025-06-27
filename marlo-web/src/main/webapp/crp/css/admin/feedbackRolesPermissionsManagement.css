@@ -1,0 +1,72 @@
+.has-duplicate {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
+
+.new-entry {
+  border: 2px dashed #4CAF50; /* Green dashed border for new items */
+  background-color: #f5fff5;  /* Light green background */
+}
+
+.badge-new {
+  display: inline-block;
+  background-color: #28a745;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  margin-left: 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: popInFadeOut 15s ease-out forwards;
+}
+
+@keyframes popInFadeOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  20% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes highlightFlash {
+  0% { background-color: #ffffcc; }
+  100% { background-color: inherit; }
+}
+
+.new-entry {
+  animation: highlightFlash 2s ease-in-out;
+}
+
+.srfSlo {
+  position: relative;
+}
+
+#clearFeedbackPermissionFilter i {
+  margin-right: 4px;
+}
+
+.filter-box {
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+

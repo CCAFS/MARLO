@@ -21,6 +21,12 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
   private FeedbackPermission feedbackPermission;
   @Expose
   private ClusterType clusterType;
+  @Expose
+  private GlobalUnit globalUnit;
+  @Expose
+  private Boolean requiresProjectAssociation;
+
+  private transient boolean recentlyCreated;
 
   public FeedbackRolesPermission() {
   }
@@ -44,6 +50,10 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
     return feedbackPermission;
   }
 
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
   @Override
   public String getLogDeatil() {
     // TODO Auto-generated method stub
@@ -62,6 +72,10 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
     return null;
   }
 
+  public Boolean getRequiresProjectAssociation() {
+    return requiresProjectAssociation;
+  }
+
   public Role getRole() {
     return role;
   }
@@ -70,6 +84,11 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
   public boolean isActive() {
     // TODO Auto-generated method stub
     return false;
+  }
+
+
+  public boolean isRecentlyCreated() {
+    return recentlyCreated;
   }
 
 
@@ -87,6 +106,9 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
     this.feedbackPermission = feedbackPermission;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
 
   @Override
   public void setModifiedBy(User modifiedBy) {
@@ -94,6 +116,13 @@ public class FeedbackRolesPermission extends MarloBaseEntity implements java.io.
 
   }
 
+  public void setRecentlyCreated(boolean recentlyCreated) {
+    this.recentlyCreated = recentlyCreated;
+  }
+
+  public void setRequiresProjectAssociation(Boolean requiresProjectAssociation) {
+    this.requiresProjectAssociation = requiresProjectAssociation;
+  }
 
   public void setRole(Role role) {
     this.role = role;

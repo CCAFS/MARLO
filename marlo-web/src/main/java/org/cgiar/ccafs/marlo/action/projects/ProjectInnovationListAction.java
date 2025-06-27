@@ -39,7 +39,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisCrossCuttingDimensionIn
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
-import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
@@ -346,37 +345,24 @@ public class ProjectInnovationListAction extends BaseAction {
   public void getCommentStatuses() {
 
     try {
+      if (projectInnovations != null && !projectInnovations.isEmpty()) {
 
+        // Set the comment status in each project innovation
+        for (ProjectInnovation innovation : projectInnovations) {
+          if (innovation != null) {
+            int answeredComments = 0, totalComments = 0;
+            try {
+              List<FeedbackQAComment> comments = new ArrayList<>();
+              if (innovation != null && innovation.getId() != null) {
+                comments = commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(),
+                  innovation.getId());
 
-      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+                if (comments != null) {
 
-      // get the commentable fields by sectionName
-      commentableFields = feedbackQACommentableFieldsManager.findBySectionName("innovation");
-
-      if (projectInnovations != null && !projectInnovations.isEmpty() && commentableFields != null
-        && !commentableFields.isEmpty()) {
-
-        // Set the comment status in each project outcome
-
-        for (ProjectInnovation study : projectInnovations) {
-          int answeredComments = 0, totalComments = 0;
-          try {
-
-            for (FeedbackQACommentableFields commentableField : commentableFields) {
-              if (commentableField != null && commentableField.getId() != null) {
-
-                if (study != null && study.getId() != null && commentableField != null
-                  && commentableField.getId() != null) {
-
-                  List<FeedbackQAComment> comments = commentManager
-                    .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), study.getId()).stream()
-                    .filter(f -> f != null
-
-                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
-                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
-                      // &&
-                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
-                      )) && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                  comments = comments.stream()
+                    .filter(f -> f != null && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                      && (!f.getFeedbackStatus().getId()
+                        .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))))
                     .collect(Collectors.toList());
 
                   if (comments != null && !comments.isEmpty()) {
@@ -389,23 +375,25 @@ public class ProjectInnovationListAction extends BaseAction {
                       boolean isAgreed =
                         statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
 
-                      return (isDisagreedOrClarificationNeeded && f.getReply() != null) || isAgreed;
+                      return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                        && !f.getFeedbackReplies().isEmpty()) || isAgreed;
                     }).collect(Collectors.toList());
 
                     answeredComments += filteredComments.size();
                   }
                 }
+
+                if (innovation.getCommentStatus() == null
+                  || (innovation.getCommentStatus() != null && innovation.getCommentStatus().isEmpty())) {
+                  innovation.setCommentStatus(0 + "/" + 0);
+                }
               }
-            }
-            study.setCommentStatus(answeredComments + "/" + totalComments);
+              innovation.setCommentStatus(answeredComments + "/" + totalComments);
 
-            if (study.getCommentStatus() == null
-              || (study.getCommentStatus() != null && study.getCommentStatus().isEmpty())) {
-              study.setCommentStatus(0 + "/" + 0);
-            }
-          } catch (Exception e) {
-            study.setCommentStatus(0 + "/" + 0);
+            } catch (Exception e) {
+              innovation.setCommentStatus(0 + "/" + 0);
 
+            }
           }
         }
 

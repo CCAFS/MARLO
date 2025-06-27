@@ -17,8 +17,10 @@
   <span id="userID" style="display: none;">${currentUser.id!}</span>
   <span id="projectID" style="display: none;">${projectID!}</span>
   <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
-  <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!}</span>
+  <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments(projectID)?c)!}</span>
   <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+  <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+  <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
   <input type="hidden" id="sectionNameToFeedback" value="study" />
 
 
@@ -683,7 +685,7 @@
 
       [#-- Status --]
       <div class="${isOutcomeCaseStudy?string('col-md-2','col-md-3')}">
-        [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" keyFieldName="id"  displayFieldName="name" header=false required=true editable=editable /]
+        [@customForm.select name="${customName}.projectExpectedStudyInfo.status.id" className="setSelect2 statusSelect" i18nkey="study.general.status" listName="statuses" header=false required=true editable=editable /]
       </div>
 
       [#-- Year --]        
