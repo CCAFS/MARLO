@@ -691,10 +691,18 @@
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" hasInnerCheckbox=false argsInnerCheckbox={}]
   
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
+    [#if orderById]
+      [#local elementList = (elementList?sort_by("id"))![] /] 
+    [#else]
+      [#local elementList = (elementList)![] /] 
+    [/#if]
   [#recover]
-    [#local list = [] /] 
+    [#local elementList = [] /] 
   [/#attempt]
+
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#-- Compose ID for the element --]
   
   [#local composedID = "${elementType}" /]
   [#if id?has_content]
@@ -942,7 +950,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
@@ -966,7 +977,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
       <strong>${(subtitleElement)}:</strong>
@@ -1272,8 +1286,8 @@
           <p class="reactionComment"></p>
         </div>
       </div>
-      <div style="position: absolute; bottom: 0px !important; right: -15px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
-      <div style="position: absolute; top: 0px !important; right: -15px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
+      <div style="position: absolute; bottom: 0px !important; right: -2.5px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div style="position: absolute; top: 0px !important; right: -2.5px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
 
         [#-- Replies --]
@@ -1281,7 +1295,8 @@
 
     [#-- Reply textarea --]
     <div class="replyTextAreaContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
+      <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable placeholder="A comment is needed to change the status" /]
       <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
         <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
         <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>

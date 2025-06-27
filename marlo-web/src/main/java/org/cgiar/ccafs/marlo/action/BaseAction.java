@@ -143,6 +143,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -1595,13 +1596,18 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return false;
       }
 
-      if (projectID == null) {
-        return true;
+      List<String> rolesThatRequireProjectValidation = Arrays.asList("PL", "PC");
+
+      boolean requiresProjectValidation =
+        roles.stream().anyMatch(r -> rolesThatRequireProjectValidation.contains(r.getAcronym()));
+
+      if (requiresProjectValidation) {
+        // Delegate user-project association validation
+        return isUserAssociatedWithProjectForFeedback(currentUser, projectID, PERMISSION_NAME,
+          this.getCurrentGlobalUnit().getId());
       }
 
-      // Delegate user-project association validation
-      return isUserAssociatedWithProjectForFeedback(currentUser, projectID, PERMISSION_NAME,
-        this.getCurrentGlobalUnit().getId());
+      return true;
 
     } catch (Exception e) {
       LOG.error("Error checking feedback management permissions", e);

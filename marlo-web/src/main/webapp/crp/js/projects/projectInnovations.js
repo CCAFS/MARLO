@@ -396,6 +396,8 @@ function attachEvents() {
     }
   });
 
+  CustomSortableList("div[listname='innovation.contributingOrganizations'] .panel-body ul.list");
+
 
 }
 

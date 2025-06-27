@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 
 @Named
 public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRolesPermission, Long>
@@ -102,6 +103,32 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
   }
 
   @Override
+  public List<FeedbackRolesPermission> findObjectsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName,
+    Long globalUnitID, Long clusterTypeId) {
+
+    String sql = "SELECT * FROM feedback_roles_permissions " + "WHERE role_id IN (:roleIds) "
+      + "AND feedback_permission_id = (SELECT id FROM feedback_permissions WHERE name = :permissionName) "
+      + "AND global_unit_id = :globalUnitID ";
+
+    if (clusterTypeId == null) {
+      sql += "AND frp.cluster_type_id IS NULL ";
+    } else {
+      sql += "AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = :clusterTypeId) ";
+    }
+
+    NativeQuery<FeedbackRolesPermission> query = this.getSessionFactory().getCurrentSession()
+      .createNativeQuery(sql, FeedbackRolesPermission.class).setParameter("roleIds", roleIds)
+      .setParameter("permissionName", permissionName).setParameter("globalUnitID", globalUnitID);
+
+    if (clusterTypeId != null) {
+      query.setParameter("clusterTypeId", clusterTypeId);
+    }
+
+    return query.getResultList();
+  }
+
+
+  @Override
   public List<String> findRoleAcronymsByPermissionName(String permissionName, long globalUnitID) {
     if (permissionName == null || permissionName.isEmpty()) {
       return Collections.emptyList();
@@ -117,7 +144,6 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
 
     return acronyms;
   }
-
 
   @Override
   public List<Long> findRoleIdsByPermissionName(String permissionName, long globalUnitID) {
@@ -143,6 +169,7 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
     }
     return null;
   }
+
 
   @Override
   public FeedbackRolesPermission save(FeedbackRolesPermission feedbackRolesPermission) {

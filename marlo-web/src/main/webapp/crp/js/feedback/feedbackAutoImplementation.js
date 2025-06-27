@@ -87,7 +87,7 @@ function feedbackAutoImplementation() {
 
     loadCommentsByUser(name);
 
-    if (popupLeft < 1000) {
+    if (popupLeft < 800) {
       containerQaPopup.css('left', popupLeft);
     } else {
       containerQaPopup.css('left', popupLeft - 480);
@@ -219,7 +219,7 @@ function attachEventsFeedback() {
 
     loadCommentsByUser(name);
 
-    if (event.pageX < 1000) {
+    if (event.pageX < 800) {
       containerQaPopup.css('left', event.pageX);
     } else {
       containerQaPopup.css('left', event.pageX - 500);
@@ -472,6 +472,7 @@ function attachEventsFeedback() {
     const elementBasicInfo = extractBasicElementData(element);
     const {block, name, commentID} = elementBasicInfo;
 
+    let warningMessage = block.find('.replyWarningMessage');
     let textarea = block.find('textarea[id="Reply"]');
     let value = textarea.val();
     let comment = textarea.next().html();
@@ -495,12 +496,15 @@ function attachEventsFeedback() {
       // Check if the reply text is valid
       if (validationResult.isValid) {
         textarea.css('border', '1px solid #ccc');
+        warningMessage.hide();
+        textarea.addClass('blockLoading');
         //First save the comment status
         const statusNumber = Number.parseInt(feedback_comment_reaction);
         saveCommentStatus2(statusNumber, commentID, name, function (data,error) {
           // Then save the reply comment, remove text area content and hide the reply comment
           saveFeedbackReply2(validationResult.cleanText, commentID, name, function(){
             // After saving the reply, reload the comments and icons
+            textarea.removeClass('blockLoading');
             getQAComments();
             loadCommentsByUser(name);
             loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
@@ -510,6 +514,7 @@ function attachEventsFeedback() {
           displayReplyComment(elementBasicInfo, false);
         })
       } else {
+        warningMessage.show();
         textarea.css('border', '2px solid red');
       }
     } else {
@@ -580,6 +585,15 @@ function attachEventsFeedback() {
     }
   });
 
+  //Additional Behavoir: this close the popup when the user clicks outside of it
+  $(document).on('click', function(event) {
+    // Check if the clicked element is not inside the qaPopup
+    if (!$(event.target).closest('.containerQaPopup').length && !$(event.target).closest('.qaComment').length) {
+      // Hide all qaPopups
+      $('.containerQaPopup').hide();
+    }
+  });
+
 
 
 }
@@ -625,11 +639,13 @@ function displayReplyComment(elementData, isDisplay = true) {
   if (isDisplay) {
     block.find('.replyTextAreaContainer').css('display', 'flex');
     block.find('.replyTextAreaContainer').find('.textArea').show();
+    block.find('textarea[id="Reply"]').css('border', '1px solid #ccc');
     block.find('.replyTextAreaContainer').find('.sendReplyContainer').show();
     block.find('.buttonsContainer').hide();
     block.find('.deleteReplyBtn').hide();
     block.find('.goBackReplyBtn').hide();
     block.find('.optionsContainer').hide();
+    block.find('.replyWarningMessage').hide();
 
     textarea.prop('disabled', true);
     senNewComment.css({
@@ -777,6 +793,7 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
+      textarea.prev().text('Reason you disagree:')
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -789,6 +806,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
+      textarea.prev().text('Reply:');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -801,6 +819,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
+      textarea.prev().text('Your comments about the clarification needed:');
       block.find('img.clarificationCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
@@ -844,6 +863,7 @@ function hideShowOptionButtons(block, status) {
 
       break;
     case "":
+      textarea.prev().text('Reply:');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
