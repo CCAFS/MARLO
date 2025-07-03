@@ -350,6 +350,13 @@
               </div>
               <br/>
             </div> 
+            
+            [#-- Link to other PRMS innovation reported --]
+            [#if action.hasSpecificities('innovation_link_to_other_reported_in_prms_active')]
+              <div class="form-group">
+                [@customForm.input name="innovation.projectInnovationInfo.otherPrmsInnovationReported" type="text" i18nkey="projectInnovations.otherPrmsInnovationReported"  placeholder="" className="limitWords-30" help="projectInnovations.otherPrmsInnovationReported.helpText" helpIcon=false required=false editable=editable isMainTitle=true isWidthFull=true /]
+              </div>
+            [/#if]
           
             [#-- Contributing cNE/Platforms --]
             [#if !action.isAiccra()]
@@ -357,7 +364,7 @@
                 [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
               </div>
             [/#if]
-              
+             
 
             [#if !action.isAiccra()]
             [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
