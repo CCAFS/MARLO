@@ -717,7 +717,7 @@
           [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
-        [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential == 1)) || ((!editable) && (hasKnowledgePotential == 1)) /]
+        [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential == 1)) || ((!editable)) /]
         
         [#-- reasonKnowledgePotential --]
         <div class="col-md-12 block-w-${hasKnowledgePotentialText} padding-left-2" style="display:${(isDisplayReasonKnowledgePotential)?then('block','none')};">
