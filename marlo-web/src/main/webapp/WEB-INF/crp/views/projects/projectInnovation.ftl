@@ -19,6 +19,7 @@
 
 
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250606"] /]
+
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
