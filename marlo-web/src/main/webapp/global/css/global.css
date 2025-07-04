@@ -1600,12 +1600,13 @@ header {
 	position: absolute;
 	right: 0.5em;
 	top: 0;
-	background: #57A7B5;
+	/*background: #57A7B5;
 	border-bottom: 6px solid #4C8D99;
+	*/
 	height: 100%;
 	font-size: 0.9em;
 	padding: 6px 30px 17px 20px;
-	box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);
+	/*box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);*/
 }
 
 a#userLogOut {
@@ -1893,7 +1894,83 @@ a#userLogOut {
 	color: #5FAAC7;
 }
 
+#userInfo.userDropdown {
+  position: absolute;
+  right: 10px;
+  color: #fff;
+  font-size: 0.85em;
+  cursor: pointer;
+}
 
+#userInfo .userToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+}
+
+#userInfo .avatar {
+  width: 35px;
+  height: 35px;
+  background-color: #fff;
+  color: #23718F;
+  border-radius: 4px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 0.9em;
+}
+
+#userInfo .caret {
+  margin-top: 3px;
+  border-top: 5px solid #fff;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  vertical-align: middle;
+}
+
+#userInfo .userMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 38px;
+  background: #23718F;
+  padding: 10px 12px;
+  border-radius: 4px;
+  width: 240px;
+  box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+  z-index: 10000;
+  color: #fff;
+}
+
+#userInfo .userMenu p {
+  margin: 4px 0;
+  font-size: 0.9em;
+  line-height: 1.2em;
+}
+
+#userInfo .userMenu .logout {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#userInfo .userMenu .logout:hover {
+  text-decoration: underline;
+}
+
+#userInfo:hover .userMenu {
+  display: block;
+}
+
+/* Sticky top adjustment */
+#mainMenu .menuContent.positionFixedTop #userInfo .userMenu {
+  top: 32px;
+}
 
 
 @media screen and (max-width: 1335px) {

@@ -130,15 +130,49 @@
 	    [@mainMenuList /]
 	  </ul>
 
-    [#if logged?? && logged]
-      <div id="userInfo">
-        <a id="userLogOut" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>
-        <p class="userId" style="display:none">${(currentUser.id)!}</p>
-        <p class="name"><span class="glyphicon glyphicon-user"></span> ${(currentUser.composedCompleteName)!}</p>
-        <p class="institution">${(currentUser.email)!}</p>
-        <p class="roles"> [${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]</p>
-      </div>
-    [/#if]
+[#if logged?? && logged]
+[#-- Separar el nombre completo en partes --]
+[#assign nameParts = (currentUser.composedName)!''?split(" ") /]
+
+[#-- Inicial del primer nombre --]
+[#assign initialsFirst = '' /]
+[#if nameParts?size > 0]
+  [#if nameParts[0]?length > 0]
+    [#assign initialsFirst = nameParts[0][0]?upper_case /]
+  [/#if]
+[/#if]
+
+[#-- Inicial del segundo nombre o apellido (última palabra si hay más de uno) --]
+[#assign initialsSecond = '' /]
+[#if nameParts?size > 1]
+  [#assign lastIndex = nameParts?size - 1 /]
+  [#if nameParts[lastIndex]?length > 0]
+    [#assign initialsSecond = nameParts[lastIndex][0]?upper_case /]
+  [/#if]
+[/#if]
+
+[#-- Combinar las iniciales --]
+[#assign initials = initialsFirst + initialsSecond /]
+
+
+  <div id="userInfo" class="userDropdown">
+    <div class="userToggle">
+      <div class="avatar">${initials}</div>
+      <span class="caret"></span>
+    </div>
+    <div class="userMenu">
+      <p class="username"><strong>${(currentUser.composedCompleteName)!}</strong></p>
+      <p class="email">${(currentUser.email)!}</p>
+      <p class="roles">[${(roles)!}${(roles?has_content && liasons?has_content)?string(', ', '')}${(liasons)!}]</p>
+      <a class="logout" href="[@s.url action="logout" namespace="/" /]">
+        <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
+      </a>
+    </div>
+  </div>
+[/#if]
+
+    
+    
   </div>
 </div>
 </nav>
