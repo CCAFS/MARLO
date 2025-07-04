@@ -131,28 +131,14 @@
 	  </ul>
 
 [#if logged?? && logged]
-[#-- Separar el nombre completo en partes --]
-[#assign nameParts = (currentUser.composedName)!''?split(" ") /]
+  [#assign nameParts = (currentUser.firstName)!''?split(" ") /]
+  [#assign lastNameParts = (currentUser.lastName)!''?split(" ") /]
 
-[#-- Inicial del primer nombre --]
-[#assign initialsFirst = '' /]
-[#if nameParts?size > 0]
-  [#if nameParts[0]?length > 0]
-    [#assign initialsFirst = nameParts[0][0]?upper_case /]
-  [/#if]
-[/#if]
+  [#assign firstInitial = (nameParts[0])?substring(0, 1)?upper_case /]
+  [#assign lastInitial = (lastNameParts[0])?substring(0, 1)?upper_case /]
 
-[#-- Inicial del segundo nombre o apellido (última palabra si hay más de uno) --]
-[#assign initialsSecond = '' /]
-[#if nameParts?size > 1]
-  [#assign lastIndex = nameParts?size - 1 /]
-  [#if nameParts[lastIndex]?length > 0]
-    [#assign initialsSecond = nameParts[lastIndex][0]?upper_case /]
-  [/#if]
-[/#if]
+  [#assign initials = firstInitial + lastInitial /]
 
-[#-- Combinar las iniciales --]
-[#assign initials = initialsFirst + initialsSecond /]
 
 
   <div id="userInfo" class="userDropdown">
@@ -164,6 +150,20 @@
       <p class="username"><strong>${(currentUser.composedCompleteName)!}</strong></p>
       <p class="email">${(currentUser.email)!}</p>
       <p class="roles">[${(roles)!}${(roles?has_content && liasons?has_content)?string(', ', '')}${(liasons)!}]</p>
+      
+    <p class="roles">
+      [#if roleList?has_content]
+        [#list roleList as r]
+          ${(r.aiccraAcronymDimanic)!}[#if r_has_next], [/#if]
+        [/#list]
+      [/#if]
+      [#if liasons?has_content]
+        [#if roleList?has_content], [/#if]
+        ${(liasons)!}
+      [/#if]
+    </p>
+      
+      
       <a class="logout" href="[@s.url action="logout" namespace="/" /]">
         <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
       </a>

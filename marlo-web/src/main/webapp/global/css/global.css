@@ -1780,21 +1780,30 @@ a#userLogOut {
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo {
-	padding: 7px 22px 0px 20px;
+	padding: 0px 22px 0px 20px;
 	border: 0;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo .userToggle {
+  height: 35px;
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo .institution {
 	display: none;
 }
 
+#mainMenu .menuContent.positionFixedTop #userInfo .avatar {
+	width: 28px;
+  height: 28px;
+  font-size: 0.9em;
+}
+
 #mainMenu .menuContent.positionFixedTop #userInfo .roles {
-	display: none;
+	display: true;
 }
 
 #mainMenu .menuContent.positionFixedTop ul {
 	list-style-type: none;
-	/* padding: 8px 0px; */
 }
 
 #mainMenu .menuContent.positionFixedTop ul li {
@@ -1920,7 +1929,7 @@ a#userLogOut {
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
-  font-size: 0.9em;
+  font-size: 1.0em;
 }
 
 #userInfo .caret {
