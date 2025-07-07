@@ -1047,6 +1047,36 @@ img.icon {
 	color: #816565;
 }
 
+.sortIcon {
+	background-image: url(../../global/images/icon-draggable.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 12px;
+	height: 20.25px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	cursor: pointer;
+	margin: 0.5em;
+}
+
+.sortIcon--2 {
+	background-image: url(../../global/images/icon-draggable.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	display: block;
+	margin: 12px;
+	width: 16px;
+	height: 27px;
+}
+
+.sortableInstructions{
+	display: flex;
+    width: 90%;
+    align-items: center;
+	font-size: 11px;
+}
+
 .addLink {
 	margin: 15px 5px 12px 0px;
 	text-align: right;

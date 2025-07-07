@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_info ADD other_prms_innovation_reported text NULL;
