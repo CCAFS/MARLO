@@ -581,7 +581,14 @@
         </div> 
       [/#list]
     [#else]
-
+      <div class="col-md-4 " style="display: flex;">
+        <span> Value selected:&nbsp;</span>
+        [#if value?has_content]
+          <span class="${cssClass}"><b>${value}</b></span>
+        [#else]
+          <span class="${cssClass}"><b>No provided</b></span>
+        [/#if]
+      </div>
     [/#if]
   </div>
 [/#macro]
@@ -691,10 +698,18 @@
 [#macro elementsListComponent name elementType id="" elementList=[] label="" paramText="" help="" helpIcon=true listName="" keyFieldName="" displayFieldName="" maxLimit=0 indexLevel=1 required=true hasPrimary=false forceEditable=false onlyElementIDs=false i18nkey="" showTitle=true isFlex=false isNote=false isMainTitle=false orderById=false cssClass="" cssClassContainer="" hasInnerCheckbox=false argsInnerCheckbox={}]
   
   [#attempt]
-    [#local list = ((listName?eval)?sort_by(((orderById?then(keyFieldName,displayFieldName))?split("."))))![] /] 
+    [#if orderById]
+      [#local elementList = (elementList?sort_by("id"))![] /] 
+    [#else]
+      [#local elementList = (elementList)![] /] 
+    [/#if]
   [#recover]
-    [#local list = [] /] 
+    [#local elementList = [] /] 
   [/#attempt]
+
+  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#-- Compose ID for the element --]
   
   [#local composedID = "${elementType}" /]
   [#if id?has_content]
@@ -942,7 +957,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</span>
   </li>
@@ -966,7 +984,10 @@
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
     <input type="hidden" class="elementRelationID" name="${customName}.${type}.id" value="${(element[type][keyFieldName])!}" />
     [#-- Remove button --]
-    [#if isEditable]<div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>[/#if] 
+    [#if isEditable]
+    <div class="removeElement sm removeIcon removeElementType-${composedID}" title="Remove"></div>
+    <div class="sortElement sm sortIcon sortElementType-${composedID}" title="Sort" style="display: none;"></div>
+    [/#if] 
     [#-- Title --]
     <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
       <strong>${(subtitleElement)}:</strong>
@@ -1067,68 +1088,17 @@
   </div>
 [/#macro]
 
-[#macro evidence name element index=-1 template=false class="" isDeliverable=true ]
+[#macro evidence name element index=-1 template=false class="" isDeliverable=true editable=true ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div id="evidences${class?has_content?string('-${class}', '')}-${(template?string('template', ''))}" class="evidences form-group grayBox ${class}" data-reference="${class}">
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-    <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
 
     [#local evidenceByDeliverable = (element.evidenceByDeliverable)! /]
     [#local labelName = isDeliverable?then("projectInnovations.evidence.evidenceByDeliverable","projectInnovations.evidence.evidenceByInnovation") /]
 
-    <div class="col-md-4">
-      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
-    </div>
-    <div class="col-md-4">
-      [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
-    </div>
-
     [#local blockYesName = "block-yes-${class}_${index}" /]
     [#local blockNoName = "block-no-${class}_${index}" /]
-    
-    [#if isDeliverable]
-      <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-        [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceDeliverable${class}" /]
-      </div>
-    [#else]
-      <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
-        [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceInnovation${class}" /]
-      </div>
-    [/#if]
-    <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
-      <div class="col-md-12 row">
-        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
-        </div>
-        <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="col-md-6">
-          [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
-        </div>
-        <div class="col-md-6">
-          [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="col-md-12 evidenceType">
-          <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
-            <div class="col-md-12 row">
-            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
-            </div>
-            <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
-            </div>
-          </div>
-          <div class="col-md-6">
-            [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
-          </div>
-          <div class="col-md-6">
-            [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
-          </div>            
-        </div>
-      </div>
-    </div>
-    
+
     [#local isGender = (element.gender?has_content && element.gender?c == "true") /]
     [#local isClimateChange = (element.climateChange?has_content && element.climateChange?c == "true") /]
     [#local isNutrition = (element.nutrition?has_content && element.nutrition?c == "true") /]
@@ -1136,35 +1106,182 @@
     [#local isPoverty = (element.poverty?has_content && element.poverty?c == "true") /]
     [#local isInnovationReadiness = (element.innovationReadiness?has_content && element.innovationReadiness?c == "true") /]
 
-    <div class="col-md-12">
-      <label class="col-md-12" style="margin-top: 15px;">
-        [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
-      </label>
-      <div class="col-md-12">
-        <div style="width: 11% !important;" class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender" label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
+
+    [#if editable]
+      <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
+
+      <div class="col-md-4">
+        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
+      </div>
+      <div class="col-md-4">
+        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
+      </div>
+      
+      [#if isDeliverable]
+        <div class="evidenceByDeliverable col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+          [@customForm.select name="${customName}.deliverable.id" i18nkey="projectInnovations.evidence.deliverable" editable=true required=true listName="deliverableList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceDeliverable${class}" /]
         </div>
-        <div class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange" label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
+      [#else]
+        <div class="evidenceByInnovation col-md-12 ${blockYesName}" style="display:${((element.evidenceByDeliverable??) && (evidenceByDeliverable))?then('block','none')}">
+          [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceInnovation${class}" /]
         </div>
-        <div style="width: 12% !important;" class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition" label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
+      [/#if]
+      <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
+        <div class="col-md-12 row">
+          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+          </div>
+          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+          </div>
         </div>
-        <div style="width: 16% !important;" class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental" label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
+        <div class="col-md-12">
+          <div class="col-md-6">
+            [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
+          </div>
+          <div class="col-md-6">
+            [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
+          </div>
         </div>
-        <div style="width: 11% !important;" class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty" label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
-        </div>
-        <div style="width: 23% !important;" class="col-md-2">
-          [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness" label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
+        <div class="col-md-12">
+          <div class="col-md-12 evidenceType">
+            <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
+              <div class="col-md-12 row">
+              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
+              </div>
+              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
+              </div>
+            </div>
+            <div class="col-md-6">
+              [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
+            </div>
+            <div class="col-md-6">
+              [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
+            </div>            
+          </div>
         </div>
       </div>
-    </div>
-    
-    <div class="form-group">
-      [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=false editable=editable isMainTitle=false isWidthFull=true /]         
-    </div>
+
+      <div class="col-md-12">
+        <label class="col-md-12" style="margin-top: 15px;">
+          [@s.text name="projectInnovations.evidence.impactAreaTagInstruction" /][@customForm.req required=true /]
+        </label>
+        <div class="col-md-12">
+          <div style="width: 11% !important;" class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.gender" name="${customName}.gender" label="projectInnovations.evidence.gender" value="true" checked=isGender editable=true /]
+          </div>
+          <div class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.climateChange" name="${customName}.climateChange" label="projectInnovations.evidence.climateChange" value="true" checked=isClimateChange editable=true /]
+          </div>
+          <div style="width: 12% !important;" class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.nutrition" name="${customName}.nutrition" label="projectInnovations.evidence.nutrition" value="true" checked=isNutrition editable=true /]
+          </div>
+          <div style="width: 16% !important;" class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.environmental" name="${customName}.environmental" label="projectInnovations.evidence.environmental" value="true" checked=isEnvironmental editable=true /]
+          </div>
+          <div style="width: 11% !important;" class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.poverty" name="${customName}.poverty" label="projectInnovations.evidence.poverty" value="true" checked=isPoverty editable=true /]
+          </div>
+          <div style="width: 23% !important;" class="col-md-2">
+            [@customForm.checkBoxFlat id="${customName}.innovationReadiness" name="${customName}.innovationReadiness" label="projectInnovations.evidence.innovationReadiness" value="true" checked=isInnovationReadiness editable=true /]
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=false editable=editable isMainTitle=false isWidthFull=true /]         
+      </div>
+    [#else]
+      [#-- Evidence source--]
+      <div class="col-md-12 margin-top-10">
+        <div class="col-md-12 margin-buttom-10">
+          <label class="col-md-12">Source of evidence:</label>
+          <span class="col-md-12">
+            <span class="evidenceSource">${evidenceByDeliverable?then('Deliverable', 'Link')}</span>
+          </span>
+        </div>
+
+        [#-- Evidence Type --]
+        [#if evidenceByDeliverable]
+          [#if isDeliverable]
+            <div class="col-md-12 margin-buttom-10">
+              <label class="col-md-12">
+                Deliverable Name:
+              </label> 
+              <span class="col-md-12">
+                <span class="evidenceDeliverable">${(element.deliverable.composedName)!}</span>
+              </span>
+            </div>
+          [#else]
+            <div class="col-md-12 margin-buttom-10">
+              <label class="col-md-12">
+                Innovation Name:
+              </label> 
+              <span class="col-md-12">
+                <span class="evidenceDeliverable">${(element.innovation.composedName)!}</span>
+              </span>
+            </div>
+          [/#if]
+        [#else]
+            <div class="col-md-12 margin-buttom-10">
+              <label class="col-md-12">
+                Link information:
+              </label> 
+              <span class="col-md-12">
+                <b>Evidence/Reference: </b><span class="evidenceDeliverable">${(element.reference)!}</span>
+              </span>
+              <span class="col-md-12">
+                <b>URL: </b><a href="${element.link!''}" class="evidenceDeliverable">${(element.link)!}</a>
+              </span>
+              <span class="col-md-12">
+                <b>Evidence Type: </b>
+                <span class="evidenceType">
+                  <span class="evidenceCategory">${(element.deliverableType.deliverableCategory.name)!}</span> /
+                  <span class="evidenceSubCategory">${(element.deliverableType.name)!}</span>
+                </span>
+              </span>
+            </div>
+        [/#if]
+
+        [#-- Evidence Impact Area Tags --]
+        <div class="col-md-12 margin-buttom-10">
+          <label class="col-md-12">
+            Impact Area Tags / Innovation Readiness:
+          </label>
+
+          <ul class="col-md-12">
+            [#if isGender]
+              <li class="col-md-12" style="margin-left: 24px;">Gender</li>
+            [/#if]
+            [#if isClimateChange]
+              <li class="col-md-12" style="margin-left: 24px;">Climate Change</li> 
+            [/#if]
+            [#if isNutrition]
+              <li class="col-md-12" style="margin-left: 24px;">Nutrition</li>
+            [/#if]
+            [#if isEnvironmental]
+              <li class="col-md-12" style="margin-left: 24px;">Environmental</li>
+            [/#if]
+            [#if isPoverty]
+              <li class="col-md-12" style="margin-left: 24px;">Poverty</li>
+            [/#if]
+            [#if isInnovationReadiness]
+              <li class="col-md-12" style="margin-left: 24px;">Innovation Readiness</li>
+            [/#if]
+          </ul>
+        </div>
+
+        [#-- Evidence Source --]
+        <div class="col-md-12 margin-buttom-10">
+          <label class="col-md-12">
+            Details of where evidence can be found within the source link (e.g. page number, slide number, table number)::
+          </label>
+          <span class="col-md-12">
+            <span class="evidenceSource">${(element.evidenceSource)!"No provided"}</span>
+          </span>
+        </div>
+
+      </div>
+        
+    [/#if]
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]
     <div class="clearfix"></div>
@@ -1234,10 +1351,15 @@
         [@qaCommentReplyBlock name=name canLeaveComments=canLeaveComments/]
       [/#if]
     </div>
+    [#local isFeedbackNewCommentFieldActive = action.hasSpecificities('feedback_new_comment_field_active')!false /]
     <div class="containerLeftComment">
-      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment"/]
+      [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle placeholder="Leave new comment" disabled=(!isFeedbackNewCommentFieldActive) /]
       <div class="sendCommentContainer" name="${name}"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
       <div class="sendCommentContainerLoad" name="${name}"><img src="${baseUrlCdn}/global/images/cargando.gif" class="sendComment" title="Sending"></div>
+      <div class="containerCommentNotAvailable" style="display: ${(isFeedbackNewCommentFieldActive)?then('none','flex')}; align-items: center;">
+        <span class="glyphicon glyphicon-exclamation-sign" style="margin-right: 12px;"></span>
+        <p class="commentNotAvailable" style="margin: 0;">According to the process phase, it is not possible to add new comments.</p>
+      </div>
     </div>
   </div>
 [/#macro]
@@ -1266,21 +1388,28 @@
         <div class="containerReactionComment" style="display:none">
           <p class="reactionComment"></p>
         </div>
-      </div>      
-    </div>
-    <div class="replyContainer">
-      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable /]
-      <div class="replyTextContainer">
-        <div class="replyTitle"></div>
-        <p class="replyReadonly"></p>
-        <div style="position: absolute; bottom: 50px !important; right: -10px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       </div>
-      <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
+      <div style="position: absolute; bottom: 0px !important; right: -2.5px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div style="position: absolute; top: 0px !important; right: -2.5px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
+
+        [#-- Replies --]
+    <div class="repliesContainer"></div>
+
+    [#-- Reply textarea --]
+    <div class="replyTextAreaContainer">
+      <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
+      [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable placeholder="A comment is needed to change the status" /]
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
+        <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+        <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
+      </div>
+    </div>
+
+    [#-- Options --]
     <!--  <div class="sendCommentContainer"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>  -->
     <div class="buttonsContainer">
       <div class="optionsContainer">
-        <div style="position: absolute; bottom: 60px !important; right: -30px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
         <img class="editCommentBtn qaOptionsComment" title="Edit comment" src="${baseUrlCdn}/global/images/icon_edit.png">
         <img class="dismissCommentBtn qaOptionsComment" title="Dismiss comment" src="${baseUrlCdn}/global/images/remove.png">
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
@@ -1295,7 +1424,21 @@
       </div>
       <!--  <div class="addCommentContainer" index="${index}" title="Clarification needed"><img src="${baseUrlCdn}/global/images/comment.png" class="addCommentBlock" title="Add comment"></div>  -->
     </div>
-    <br>
+      
+    [#-- Template for reply --]
+    [@customForm.qaCommentClarificationBlock /]
+  </div>
+[/#macro]
+
+[#macro qaCommentClarificationBlock]
+  <div class="_TEMPLATE_replyContainer" replyId="">
+    <div class="_TEMPLATE_replyTextContainer">
+      <div class="_TEMPLATE_replyTitle"></div>
+      <p class="replyReadonly"></p>
+      <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
+    </div>
+    <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
 [/#macro]
 

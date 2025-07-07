@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackStatus;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -177,23 +178,29 @@ public class SaveFeedbackCommentsAction extends BaseAction {
           feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
 
         if (field.getSectionName() != null && parentId != null) {
-          switch (field.getSectionName()) {
-            case "projectContributionCrp":
+          String sectionName = field.getSectionName();
+
+          switch (ProjectSectionsEnum.getValue(sectionName)) {
+            case OUTCOME:
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
                 + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
-            case "deliverable":
+            case DELIVERABLE:
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
                 + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               isDeliverableSection = true;
               break;
-            case "study":
+            case EXPECTEDSTUDY:
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?" + "expectedID="
                 + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
-            case "innovation":
+            case INNOVATION:
               link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
                 + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+              break;
+            default:
+              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
+                + sectionName + "ID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
               break;
           }
         }

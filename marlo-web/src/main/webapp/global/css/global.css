@@ -1046,6 +1046,36 @@ img.icon {
 	color: #816565;
 }
 
+.sortIcon {
+	background-image: url(../../global/images/icon-draggable.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 12px;
+	height: 20.25px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	cursor: pointer;
+	margin: 0.5em;
+}
+
+.sortIcon--2 {
+	background-image: url(../../global/images/icon-draggable.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	display: block;
+	margin: 12px;
+	width: 16px;
+	height: 27px;
+}
+
+.sortableInstructions{
+	display: flex;
+    width: 90%;
+    align-items: center;
+	font-size: 11px;
+}
+
 .addLink {
 	margin: 15px 5px 12px 0px;
 	text-align: right;
@@ -7735,11 +7765,6 @@ img.qaCommentStatus {
 	border-radius: 10px;
 }
 
-.containerLeftComment textarea {
-	min-height: 2.5em !important;
-	border-radius: 10px;
-}
-
 .headerQaPopup {
 	width: 100%;
 	height: 30px;
@@ -7791,6 +7816,24 @@ img.qaCommentStatus {
 	background: #E7E7E7;
 	padding: 10px;
 	border-radius: 0px 0px 7px 7px;
+	position: relative;
+}
+
+.containerLeftComment textarea {
+	min-height: 2.5em !important;
+	border-radius: 10px;
+}
+
+.containerLeftComment .containerCommentNotAvailable {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	min-height: 2.5em !important;
+	background: #88888895;
+	padding: 10px;
+	backdrop-filter: blur(10px);
 }
 
 .titleQaPopup {
@@ -7804,6 +7847,7 @@ img.qaCommentStatus {
 	display: flex;
 	padding-right: 28px;
 	padding-left: 15px;
+	position: relative;
 }
 
 .deleteReplyBtn {
@@ -7844,11 +7888,21 @@ img.qaCommentStatus {
 	background: white;
 	border: 1px solid #D1D1D1;
 	border-radius: 3px;
+	position: relative;
 }
 
-.replyContainer {
+.replyContainer, .replyTextAreaContainer {
 	padding-left: 25px;
 	padding-right: 20px;
+	margin-bottom: 10px;
+}
+
+.replyWarningMessage {
+	position: absolute;
+    bottom: -22px;
+    font-size: 0.85em;
+    color: red;
+    width: 50%;
 }
 
 .commentTitle {
@@ -7897,6 +7951,11 @@ img.qaCommentStatus {
 	display: none;
 	width: 20px;
 	margin-left: 3px;
+}
+
+.repliesContainer {
+	margin-top: 15px;
+	margin-bottom: 15px;
 }
 
 .replyContainer {
@@ -7997,6 +8056,7 @@ img.sendComment {
 	height: 20px;
 	margin-top: 5px;
 	padding-right: 28px;
+	margin-bottom: 10px;
 }
 
 .optionsContainer {

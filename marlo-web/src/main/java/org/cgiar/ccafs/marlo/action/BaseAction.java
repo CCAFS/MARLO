@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.data.manager.DeliverableTraineesIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableTypeRuleManager;
 import org.cgiar.ccafs.marlo.data.manager.ExpectedStudyProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.FeedbackRolesPermissionManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -349,6 +350,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   @Inject
   private CrpProgramManager crpProgramManager;
+
+  @Inject
+  private FeedbackRolesPermissionManager feedbackRolesPermissionManager;
+
   @Inject
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
@@ -791,12 +796,55 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Checks if the current user can approve comments for a given project.
+   * A user can approve comments if:
+   * - They are a super admin, OR
+   * - Their role has the 'can_approve_comments' permission for the project's cluster type (or has no specific cluster
+   * type assigned).
+   *
+   * @param projectID the ID of the project (can be null)
+   * @return true if the user can approve comments, false otherwise
+   */
+  public boolean canApproveComments(Long projectID) {
+    final String PERMISSION_NAME = FeedbackPermissionsEnum.CAN_APPROVE_COMMENTS.getValue();
+
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
+      }
+
+      User currentUser = this.getCurrentUser();
+      if (currentUser == null || this.getCurrentGlobalUnit() == null) {
+        LOG.warn("Current user or their global unit is null");
+        return false;
+      }
+
+      List<Role> roles = this.getRolesList();
+      if (roles == null || roles.isEmpty()) {
+        return false;
+      }
+
+      List<Long> roleIds = roles.stream().filter(Objects::nonNull).map(Role::getId).collect(Collectors.toList());
+
+      Long clusterTypeID = getClusterTypeIDFromProject(projectID);
+
+      return feedbackRolesPermissionManager.existsByRoleIdsAndPermissionName(roleIds, PERMISSION_NAME,
+        this.getCurrentGlobalUnit().getId(), clusterTypeID);
+
+    } catch (Exception e) {
+      LOG.error("Error checking comment approval permissions", e);
+      return false;
+    }
+  }
+
+
+  /**
    * Validate if the current user can approve feedback draft comments
    * 
    * @param projectID
    * @return yes if the user has a role that allows approve comments
    */
-  public boolean canApproveComments(Long projectID) {
+  public boolean canApproveCommentsOld(Long projectID) {
     try {
       if (this.canAccessSuperAdmin()) {
         return true;
@@ -1445,11 +1493,52 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Checks whether the current user has permission to leave feedback comments.
+   * This method returns true if:
+   * - The user is a super admin.
+   * - The user's role is associated with the permission "can_leave_comments" in the database.
+   * 
+   * @return true if the user can leave comments, false otherwise.
+   */
+  public boolean canLeaveComments(Long projectID) {
+    final String PERMISSION_NAME = FeedbackPermissionsEnum.CAN_LEAVE_COMMENTS.getValue();
+
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
+      }
+
+      User currentUser = this.getCurrentUser();
+      if (currentUser == null) {
+        LOG.warn("Current user or their global unit is null");
+        return false;
+      }
+
+      List<Role> roles = this.getRolesList();
+      if (roles == null || roles.isEmpty()) {
+        return false;
+      }
+
+      List<Long> roleIds = roles.stream().filter(Objects::nonNull).map(Role::getId).collect(Collectors.toList());
+
+      Long clusterTypeID = getClusterTypeIDFromProject(projectID);
+
+      return feedbackRolesPermissionManager.existsByRoleIdsAndPermissionName(roleIds, PERMISSION_NAME,
+        this.getCurrentGlobalUnit().getId(), clusterTypeID);
+
+    } catch (Exception e) {
+      LOG.error("Error checking comment permissions", e);
+      return false;
+    }
+  }
+
+
+  /**
    * Validate if the user has a role that allows leave initial comments
    * 
    * @return true if the user can leave draft comments
    */
-  public boolean canLeaveComments() {
+  public boolean canLeaveCommentsOld() {
     try {
       if (this.canAccessSuperAdmin()) {
         return true;
@@ -1467,6 +1556,65 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * Checks if the current user can manage feedback for a given project.
+   * A user can manage feedback if:
+   * - They are a super admin, OR
+   * - Their role has the 'can_react_comments' permission, AND
+   * they are associated with the project as PL or PC (based on contact type).
+   *
+   * @param projectID the ID of the project (can be null)
+   * @return true if the user can manage feedback, false otherwise
+   */
+  public boolean canManageFeedback(Long projectID) {
+    final String PERMISSION_NAME = FeedbackPermissionsEnum.CAN_MANAGE_FEEDBACK.getValue();
+
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
+      }
+
+      User currentUser = this.getCurrentUser();
+      if (currentUser == null || this.getCurrentGlobalUnit() == null) {
+        LOG.warn("Current user or their global unit is null");
+        return false;
+      }
+
+      List<Role> roles = this.getRolesList();
+      if (roles == null || roles.isEmpty()) {
+        return false;
+      }
+
+      List<Long> roleIds = roles.stream().filter(Objects::nonNull).map(Role::getId).collect(Collectors.toList());
+
+      Long clusterTypeID = getClusterTypeIDFromProject(projectID);
+
+      boolean hasPermission = feedbackRolesPermissionManager.existsByRoleIdsAndPermissionName(roleIds, PERMISSION_NAME,
+        this.getCurrentGlobalUnit().getId(), clusterTypeID);
+
+      if (!hasPermission) {
+        return false;
+      }
+
+      List<String> rolesThatRequireProjectValidation = Arrays.asList("PL", "PC");
+
+      boolean requiresProjectValidation =
+        roles.stream().anyMatch(r -> rolesThatRequireProjectValidation.contains(r.getAcronym()));
+
+      if (requiresProjectValidation) {
+        // Delegate user-project association validation
+        return isUserAssociatedWithProjectForFeedback(currentUser, projectID, PERMISSION_NAME,
+          this.getCurrentGlobalUnit().getId());
+      }
+
+      return true;
+
+    } catch (Exception e) {
+      LOG.error("Error checking feedback management permissions", e);
+    }
+
+    return false;
+  }
 
   /**
    * Validate the user permission to replay or react to a comment
@@ -1477,122 +1625,89 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @param projectID
    * @return true if the current user rol is PL or PC
    */
-  public boolean canManageFeedback(Long projectID) {
+  public boolean canManageFeedbackOld(Long projectID) {
+    // Default to no permission
     boolean response = false;
 
-    // TODO: Update the permissions for manage feedback comments
-
     try {
+      // Super admin has full access
       if (this.canAccessSuperAdmin()) {
         return true;
       }
 
+      // Check if user has role PL or PC
       List<Role> roles = this.getRolesList();
-      if (roles != null && roles.stream().anyMatch(role -> role != null && role.getAcronym() != null
-        && (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")))) {
-        return true;
+      if (roles != null && roles.stream()
+        .anyMatch(role -> role != null && ("PL".equals(role.getAcronym()) || "PC".equals(role.getAcronym())))) {
+        response = true;
       }
     } catch (Exception e) {
       LOG.error("Error checking feedback management permissions", e);
     }
 
-
-    /*
-     * if (projectID != null && response) {
-     * try {
-     * List<ProjectPartner> projectPartners = projectPartnerManager
-     * .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
-     * List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
-     * if (projectPartners != null) {
-     * for (ProjectPartner projectPartner : projectPartners) {
-     * if (projectPartner != null && projectPartner.getId() != null) {
-     * projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
-     * if (projectParnerPersons != null) {
-     * projectParnerPersons = projectParnerPersons.stream()
-     * .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
-     * && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
-     * .collect(Collectors.toList());
-     * if (projectParnerPersons != null) {
-     * for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
-     * if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
-     * && (projectParnerPerson.getContactType().equals("PL")
-     * && projectParnerPerson.getContactType().equals("PC"))) {
-     * // TODO: verify this code
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * }
-     * } catch (Exception e) {
-     * LOG.error("Error getting project partners ", e);
-     * }
-     * }
-     */
-    return response;
-  }
-
-  /**
-   * Validate the user permission to replay or react to a comment
-   * 
-   * @param projectID
-   * @return true if the current user rol is PL or PC
-   */
-  public boolean canManageFeedbackOld(Long projectID) {
-    boolean response = false;
-
-    // TODO: Update the permissions for manage feedback comments
-    if (this.canAccessSuperAdmin()) {
-      response = true;
-    }
-
-    if (this.getRolesList() != null && !this.getRolesList().isEmpty()) {
-      for (Role role : this.getRolesList()) {
-        if (role != null && role.getAcronym() != null) {
-          // FPL & FPM roles can comment
-
-          if (role.getAcronym().equals("PL") || role.getAcronym().equals("PC")) {
-            response = true;
-          }
-        }
-      }
-    }
-
-    if (projectID != null && response) {
+    // If user has a valid role and a project ID is provided, validate user-partner association
+    if (response && projectID != null) {
       try {
-        List<ProjectPartner> projectPartners = projectPartnerManager
-          .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, this.getActualPhase().getId());
-        List<ProjectPartnerPerson> projectParnerPersons = new ArrayList<>();
-        if (projectPartners != null) {
-          for (ProjectPartner projectPartner : projectPartners) {
-            if (projectPartner != null && projectPartner.getId() != null) {
-              projectParnerPersons = projectPartnerPersonManager.findAllActiveForProjectPartner(projectPartner.getId());
-              if (projectParnerPersons != null) {
-                projectParnerPersons = projectParnerPersons.stream()
-                  .filter(pp -> pp != null && pp.getUser() != null && pp.getUser().getId() != null
-                    && this.getCurrentUser() != null && pp.getUser().getId().equals(this.getCurrentUser().getId()))
-                  .collect(Collectors.toList());
+        User currentUser = this.getCurrentUser();
+        if (currentUser == null || currentUser.getId() == null) {
+          LOG.warn("Current user is null or has no ID");
+          return false;
+        }
 
-                if (projectParnerPersons != null) {
-                  for (ProjectPartnerPerson projectParnerPerson : projectParnerPersons) {
-                    if (projectParnerPerson != null && projectParnerPerson.getContactType() != null
-                      && (projectParnerPerson.getContactType().equals("PL")
-                        && projectParnerPerson.getContactType().equals("PC"))) {
-                      // TODO: verify this code
-                    }
-                  }
-                }
-              }
+        Phase currentPhase = this.getActualPhase();
+        Long phaseId = (currentPhase != null) ? currentPhase.getId() : null;
+        if (phaseId == null) {
+          LOG.warn("Actual phase is null or has no ID");
+          return false;
+        }
+
+        // Get project partners with active persons for the current phase
+        List<ProjectPartner> projectPartners =
+          projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, phaseId);
+
+        if (projectPartners == null || projectPartners.isEmpty()) {
+          LOG.info("No project partners found for project ID: {}", projectID);
+          return false;
+        }
+
+        for (ProjectPartner partner : projectPartners) {
+          if (partner == null || partner.getId() == null) {
+            continue;
+          }
+
+          // Get active persons for the current project partner
+          List<ProjectPartnerPerson> persons =
+            projectPartnerPersonManager.findAllActiveForProjectPartner(partner.getId());
+
+          if (persons == null || persons.isEmpty()) {
+            continue;
+          }
+
+          for (ProjectPartnerPerson person : persons) {
+            if (person == null || person.getUser() == null || person.getContactType() == null) {
+              continue;
+            }
+
+            // Match user ID
+            if (!currentUser.getId().equals(person.getUser().getId())) {
+              continue;
+            }
+
+            // Check contact type (must be PL or PC)
+            String contactType = person.getContactType();
+            if ("PL".equals(contactType) || "PC".equals(contactType)) {
+              return true; // User is associated with the project with a valid contact type
             }
           }
         }
       } catch (Exception e) {
-        LOG.error("Error getting project partners ", e);
+        LOG.error("Error checking partner-person association for project ID: {}", projectID, e);
       }
     }
+
     return response;
   }
+
 
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
@@ -1609,11 +1724,50 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Checks if the current user has permission to track feedback comments.
+   * This permission is dynamically resolved from the database based on the user's roles
+   * and the 'can_track_comments' permission name.
+   *
+   * @return true if the user has the permission, false otherwise
+   */
+  public boolean canTrackComments() {
+    final String PERMISSION_NAME = FeedbackPermissionsEnum.CAN_TRACK_COMMENTS.getValue();
+
+    try {
+      if (this.canAccessSuperAdmin()) {
+        return true;
+      }
+
+      if (this.getCurrentGlobalUnit() == null) {
+        LOG.warn("Global unit is null for user");
+        return false;
+      }
+
+      List<Role> roles = this.getRolesList();
+      if (roles == null || roles.isEmpty()) {
+        return false;
+      }
+
+      List<Long> roleIds = roles.stream().filter(Objects::nonNull).map(Role::getId).collect(Collectors.toList());
+
+      return feedbackRolesPermissionManager.existsByRoleIdsAndPermissionName(roleIds, PERMISSION_NAME,
+        this.getCurrentGlobalUnit().getId(), null // clusterTypeID is null for global access
+      );
+
+    } catch (Exception e) {
+      LOG.error("Error checking track feedback comments permission", e);
+    }
+
+    return false;
+  }
+
+
+  /**
    * Validate if the user has a role that allows tracking comments
    * 
    * @return true if the user can leave draft comments
    */
-  public boolean canTrackComments() {
+  public boolean canTrackCommentsOld() {
     // TODO: Update the permissions for track feedback comments
     if (this.canAccessSuperAdmin()) {
       return true;
@@ -1912,7 +2066,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_ACTIVITES_MODULE;
   }
 
-
   public String crpDeliverableIntellectualAsset() {
     return APConstants.CRP_DELIVERABLES_INTELLECTUAL_ASSET;
   }
@@ -1920,6 +2073,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String crpLocationCsvActivities() {
     return APConstants.CRP_LOCATION_CSV_ACTIVITIES;
   }
+
 
   /*
    * View Project Highligths section
@@ -2711,6 +2865,33 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     }
     return clusterOfActivities;
+  }
+
+  /**
+   * Retrieves the ID of the ClusterType associated with the given project ID and the current phase.
+   * <p>
+   * This method checks whether the project exists, whether it has information for the current phase,
+   * and whether that information includes a ClusterType. If any of these are missing or null, the method returns null.
+   * </p>
+   *
+   * @param projectID the ID of the project to retrieve the ClusterType from.
+   * @return the ID of the associated ClusterType if available; otherwise, null.
+   */
+  private Long getClusterTypeIDFromProject(Long projectID) {
+    try {
+      if (projectID != null) {
+        Project project = projectManager.getProjectById(projectID);
+        if (project != null) {
+          ProjectInfo infoPhase = project.getProjecInfoPhase(this.getActualPhase());
+          if (infoPhase != null && infoPhase.getClusterType() != null) {
+            return infoPhase.getClusterType().getId();
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("Error retrieving clusterTypeId for project ID: " + projectID, e);
+    }
+    return null;
   }
 
   public HashMap<Integer, Integer> getCompletedeliverableListbyPhase() {
@@ -4148,7 +4329,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return feedbackBIReportName;
   }
 
-
   public FileDB getFileDB(FileDB preview, File file, String fileFileName, String path) {
 
     try {
@@ -4188,6 +4368,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * Get the Global Unit Type
@@ -4233,10 +4414,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public long getIFPRIId() {
     return APConstants.IFPRI_ID;
   }
+
 
   public boolean getImpactSectionStatus(String section, long crpProgramID) {
     SectionStatus sectionStatus = this.sectionStatusManager.getSectionStatusByCrpProgam(crpProgramID, section,
@@ -4336,7 +4517,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-
   public List<Integer> getInnovationsYears(Long innovation) {
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
       .filter(c -> c != null && c.getProjectInnovation() != null
@@ -4364,6 +4544,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     allYears.add(this.getActualPhase().getYear());
     return allYears;
   }
+
 
   public HashMap<String, String> getInvalidFields() {
     return this.invalidFields;
@@ -6390,12 +6571,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null && (this.getCurrentCrp().getId() == 45 || this.getCurrentCrp().getId() == 47)) {
+    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
+      && (this.getCurrentCrp().getId() == 45 || this.getCurrentCrp().getId() == 47)) {
       return true;
     } else {
       return false;
     }
   }
+
+  /**
+   * Determines whether the current entity is allowed to extend based on the given project information.
+   * <p>
+   * This method checks if the project end year is greater than the year of the current actual phase.
+   * If either the project information, the actual phase, or their relevant fields are null, the method returns false.
+   * </p>
+   *
+   * @param projectInfo the project information object to evaluate; may be null
+   * @return {@code true} if the project end year is greater than the current actual phase year, {@code false} otherwise
+   */
+  public boolean isAllowedToExtend(ProjectInfo projectInfo) {
+    if (projectInfo == null) {
+      return false;
+    }
+    Integer projectEndYear = projectInfo.getEndYear();
+    Phase actualPhase = getActualPhase();
+    if (actualPhase == null) {
+      return false;
+    }
+    Integer actualPhaseYear = actualPhase.getYear();
+    return projectEndYear > actualPhaseYear;
+  }
+
 
   /**
    * Function to validate the annual report version the front will show
@@ -7519,7 +7725,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
   public boolean isEntityPlatform() {
     if (this.getCurrentCrp() != null) {
       if (this.getCurrentCrp().getGlobalUnitType().getId().intValue() == 3) {
@@ -7528,6 +7733,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     return false;
   }
+
 
   /**
    * Get if the Evidence is new
@@ -7555,7 +7761,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
-
 
   public boolean isExpectedDeliverablesReportAllYearsVisible() {
     // Specificity for show expected deliverable summary - all years selection - in summaries section
@@ -7617,6 +7822,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isFullEditable() {
     return this.fullEditable;
   }
+
 
   public Boolean isFundingSourceNew(long fundingSourceID) {
 
@@ -8293,6 +8499,54 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return this.getActualPhase().getUpkeep();
 
+  }
+
+  /**
+   * Verifies if the current user is associated with a given project in a role that allows feedback actions,
+   * based on their contact type and the permission configuration (e.g., "can_react_comments").
+   * This check is used in the context of feedback module access control.
+   *
+   * @param user the current user
+   * @param projectId the ID of the project to check
+   * @param permissionName the feedback permission name (e.g. "can_react_comments")
+   * @param globalUnitId the ID of the current global unit
+   * @return true if the user is associated with the project and has a valid contact type for feedback permissions
+   */
+  private boolean isUserAssociatedWithProjectForFeedback(User user, Long projectId, String permissionName,
+    Long globalUnitId) {
+    Phase currentPhase = this.getActualPhase();
+    if (currentPhase == null || currentPhase.getId() == null) {
+      return false;
+    }
+
+    List<ProjectPartner> projectPartners = projectPartnerManager
+      .getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectId, currentPhase.getId());
+
+    if (projectPartners == null || projectPartners.isEmpty()) {
+      return false;
+    }
+
+    List<String> allowedContactTypes =
+      feedbackRolesPermissionManager.findRoleAcronymsByPermissionName(permissionName, globalUnitId);
+
+    for (ProjectPartner partner : projectPartners) {
+      if (partner == null || partner.getId() == null) {
+        continue;
+      }
+
+      List<ProjectPartnerPerson> persons = projectPartnerPersonManager.findAllActiveForProjectPartner(partner.getId());
+
+      if (persons != null) {
+        for (ProjectPartnerPerson person : persons) {
+          if (person.getUser() != null && user.getId().equals(person.getUser().getId())
+            && allowedContactTypes.contains(person.getContactType())) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   public boolean isValidEmail(String emailStr) {

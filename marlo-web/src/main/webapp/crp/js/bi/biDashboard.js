@@ -35,9 +35,9 @@ function addEvents() {
     fullScreenDashboard();
   });
 
-  if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
+/*   if(userCanLeaveComments = $('#userCanLeaveComments').html() == 'false'){
     $('[has-role-authorization="true"]').hide();
-  }
+  } */
 
   $(window).on('message', function (e) {
     var currentVisible = $(".loaded iframe").filter((i, el) => $(el).closest('.loaded').css('display') !== 'none');

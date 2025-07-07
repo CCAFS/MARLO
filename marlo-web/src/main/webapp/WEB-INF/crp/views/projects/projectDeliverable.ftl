@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?202505230",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250205",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250626",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
@@ -98,21 +98,24 @@
 <span id="userID" style="display: none;">${currentUser.id!}</span>
 <span id="projectID" style="display: none;">${projectID!}</span>
 <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID!-1)?c)!"false"}</span>
-<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments()?c)!"false"}</span>
+<span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments(projectID!)?c)!"false"}</span>
 <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID!-1)?c)!"false"}</span>
 <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!"false"}</span>
 <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!"false"}</span>
+<span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+<span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()!false)?c!"false"}</span>
 <input type="hidden" id="sectionNameToFeedback" value="deliverable" />
+
 
 <span id="existCurrentCluster" style="display: none;">${(existCurrentCluster?c)!}</span>
 
 
 [#if action.hasSpecificities('feedback_active') ]
   [#list feedbackComments as feedback]
-    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments()!false)/]
+    [@customForm.qaPopUpMultiple fields=feedback.qaComments name=feedback.fieldDescription index=feedback_index canLeaveComments=(action.canLeaveComments(projectID!)!false)/]
   [/#list]
   <div id="qaTemplate" style="display: none">
-    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments()!false) template=true/]
+    [@customForm.qaPopUpMultiple canLeaveComments=(action.canLeaveComments(projectID!)!false) template=true/]
   </div>
 [/#if]
 

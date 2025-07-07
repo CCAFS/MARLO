@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
-import com.google.zxing.common.detector.MathUtils;
-
 /**
  * @author Christian Garcia- CIAT/CCAFS
  */
@@ -65,7 +63,7 @@ public class ProgressOutcomesValidator extends BaseValidator {
 
     int iFlagShips = this.getFlagshipNnumbers(crpID);
 
-    int maxNumber = MathUtils.round(((maxlimit / (iFlagShips - 1) * 2)));
+    int maxNumber = Math.round((maxlimit / (iFlagShips - 1)) * 2);
 
     return maxNumber;
 

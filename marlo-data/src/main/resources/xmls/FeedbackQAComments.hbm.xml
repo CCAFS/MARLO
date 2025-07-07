@@ -100,5 +100,10 @@
                 <comment>This field is a link to the table users</comment>
             </column>
         </many-to-one>
+        <set name="feedbackReplies" inverse="true" lazy="true" cascade="all-delete-orphan">
+		  <key column="comment_id"/>
+		  <one-to-many class="org.cgiar.ccafs.marlo.data.model.FeedbackQAReply"/>
+		</set>
+        
 	</class>
 </hibernate-mapping>

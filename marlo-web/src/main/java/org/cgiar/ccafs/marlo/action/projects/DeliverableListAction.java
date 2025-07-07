@@ -207,6 +207,140 @@ public class DeliverableListAction extends BaseAction {
 
     try {
 
+      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty()) {
+
+        // Set the comment status in each project outcome
+        for (Deliverable deliverable : project.getDeliverables()) {
+          if (deliverable != null && deliverable.getId() != null) {
+
+            int answeredComments = 0, totalComments = 0;
+            try {
+              List<FeedbackQAComment> comments = new ArrayList<>();
+              comments = commentManager.getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(),
+                deliverable.getId());
+
+              if (comments != null && !comments.isEmpty()) {
+
+                comments = comments.stream()
+                  .filter(f -> f != null && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null
+                    && (!f.getFeedbackStatus().getId()
+                      .equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId())))))
+                  .collect(Collectors.toList());
+
+                if (comments != null && !comments.isEmpty()) {
+                  totalComments += comments.size();
+                  List<FeedbackQAComment> filteredComments = comments.stream().filter(f -> {
+                    Long statusId = f.getFeedbackStatus() != null ? f.getFeedbackStatus().getId() : null;
+                    boolean isDisagreedOrClarificationNeeded =
+                      statusId != null && (statusId.equals(Long.valueOf(FeedbackStatusEnum.Disagreed.getStatusId()))
+                        || statusId.equals(Long.valueOf(FeedbackStatusEnum.ClarificatioNeeded.getStatusId())));
+                    boolean isAgreed =
+                      statusId != null && statusId.equals(Long.valueOf(FeedbackStatusEnum.Agreed.getStatusId()));
+
+                    return (isDisagreedOrClarificationNeeded && f.getFeedbackReplies() != null
+                      && !f.getFeedbackReplies().isEmpty()) || isAgreed;
+                  }).collect(Collectors.toList());
+
+                  answeredComments += filteredComments.size();
+                }
+              }
+
+              if (deliverable.getCommentStatus() == null
+                || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+                deliverable.setCommentStatus(0 + "/" + 0);
+              }
+
+              deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+            } catch (Exception e) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void getCommentStatusesOld() {
+
+    try {
+      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
+
+      // get the commentable fields by sectionName
+      commentableFields = feedbackQACommentableFieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId())
+        .stream().filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
+
+      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
+        && !commentableFields.isEmpty()) {
+
+
+        // Set the comment status in each project outcome
+
+        for (Deliverable deliverable : project.getDeliverables()) {
+          int answeredComments = 0;
+          int totalComments = 0;
+          try {
+
+            for (FeedbackQACommentableFields commentableField : commentableFields) {
+              if (commentableField != null && commentableField.getId() != null) {
+
+                if (deliverable != null && deliverable.getId() != null && commentableField != null
+                  && commentableField.getId() != null) {
+                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
+                    .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                      && f.getPhase().getId().equals(this.getActualPhase().getId())
+                      && f.getParentId() == deliverable.getId()
+
+                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
+                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
+                      // &&
+                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
+                      ))
+
+                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
+                    .collect(Collectors.toList());
+                  if (comments != null && !comments.isEmpty()) {
+                    totalComments += comments.size();
+                    comments = comments.stream()
+                      .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
+                        && f.getPhase().getId().equals(this.getActualPhase().getId())
+                        && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
+                          .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
+                          || (f.getFeedbackStatus() != null && f.getFeedbackReplies() != null)))
+                      .collect(Collectors.toList());
+                    if (comments != null) {
+                      answeredComments += comments.size();
+                    }
+                  }
+                }
+              }
+            }
+            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
+
+            if (deliverable.getCommentStatus() == null
+              || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
+              deliverable.setCommentStatus(0 + "/" + 0);
+            }
+          } catch (Exception e) {
+            deliverable.setCommentStatus(0 + "/" + 0);
+
+          }
+        }
+
+      }
+    } catch (Exception e) {
+      logger.error("unable to get feedbackcomments info", e);
+      e.printStackTrace();
+    }
+  }
+
+
+  public void getCommentStatusesOld2() {
+
+    try {
+
       List<String> commentList = null;
       commentList = deliverableManager.getCommentStatusByPhase(this.getActualPhase().getId());
 
@@ -246,81 +380,6 @@ public class DeliverableListAction extends BaseAction {
         }
       }
 
-    } catch (Exception e) {
-      logger.error("unable to get feedbackcomments info", e);
-      e.printStackTrace();
-    }
-  }
-
-
-  public void getCommentStatusesOld() {
-
-    try {
-      List<FeedbackQACommentableFields> commentableFields = new ArrayList<>();
-
-      // get the commentable fields by sectionName
-      if (feedbackQACommentableFieldsManager.findAll() != null) {
-        commentableFields = feedbackQACommentableFieldsManager.findAll().stream()
-          .filter(f -> f != null && f.getSectionName().equals("deliverable")).collect(Collectors.toList());
-      }
-      if (project.getDeliverables() != null && !project.getDeliverables().isEmpty() && commentableFields != null
-        && !commentableFields.isEmpty()) {
-
-
-        // Set the comment status in each project outcome
-
-        for (Deliverable deliverable : project.getDeliverables()) {
-          int answeredComments = 0;
-          int totalComments = 0;
-          try {
-
-            for (FeedbackQACommentableFields commentableField : commentableFields) {
-              if (commentableField != null && commentableField.getId() != null) {
-
-                if (deliverable != null && deliverable.getId() != null && commentableField != null
-                  && commentableField.getId() != null) {
-                  List<FeedbackQAComment> comments = commentManager.findAll().stream()
-                    .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                      && f.getPhase().getId().equals(this.getActualPhase().getId())
-                      && f.getParentId() == deliverable.getId()
-
-                      && (f.getFeedbackStatus() != null && f.getFeedbackStatus().getId() != null && (!f
-                        .getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Dismissed.getStatusId()))
-                      // &&
-                      // !f.getFeedbackStatus().getId().equals(Long.parseLong(FeedbackStatusEnum.Draft.getStatusId()))
-                      ))
-
-                      && f.getField() != null && f.getField().getId().equals(commentableField.getId()))
-                    .collect(Collectors.toList());
-                  if (comments != null && !comments.isEmpty()) {
-                    totalComments += comments.size();
-                    comments = comments.stream()
-                      .filter(f -> f != null && f.getPhase() != null && f.getPhase().getId() != null
-                        && f.getPhase().getId().equals(this.getActualPhase().getId())
-                        && ((f.getFeedbackStatus() != null && f.getFeedbackStatus().getId()
-                          .equals(Long.parseLong(FeedbackStatusEnum.Agreed.getStatusId())))
-                          || (f.getFeedbackStatus() != null && f.getReply() != null)))
-                      .collect(Collectors.toList());
-                    if (comments != null) {
-                      answeredComments += comments.size();
-                    }
-                  }
-                }
-              }
-            }
-            deliverable.setCommentStatus(answeredComments + "/" + totalComments);
-
-            if (deliverable.getCommentStatus() == null
-              || (deliverable.getCommentStatus() != null && deliverable.getCommentStatus().isEmpty())) {
-              deliverable.setCommentStatus(0 + "/" + 0);
-            }
-          } catch (Exception e) {
-            deliverable.setCommentStatus(0 + "/" + 0);
-
-          }
-        }
-
-      }
     } catch (Exception e) {
       logger.error("unable to get feedbackcomments info", e);
       e.printStackTrace();

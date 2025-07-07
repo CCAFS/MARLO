@@ -294,7 +294,7 @@
 
               [#-- External Contributing Centers --]
               <div class="col-md-12 top-five-contributing">
-                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=false maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" hasInnerCheckbox=true argsInnerCheckbox={"listCheckbox": organizationRoles, "subtitleElement": "Organization", "subtitleCheckbox": "Role"}  /]
+                [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=false maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" hasInnerCheckbox=true argsInnerCheckbox={"listCheckbox": organizationRoles, "subtitleElement": "Organization", "subtitleCheckbox": "Role"} orderById=true  /]
               </div>
 
             </div>
@@ -350,6 +350,13 @@
               </div>
               <br/>
             </div> 
+            
+            [#-- Link to other PRMS innovation reported --]
+            [#if action.hasSpecificities('innovation_link_to_other_reported_in_prms_active')]
+              <div class="form-group">
+                [@customForm.input name="innovation.projectInnovationInfo.otherPrmsInnovationReported" type="text" i18nkey="projectInnovations.otherPrmsInnovationReported"  placeholder="" className="limitWords-30" help="projectInnovations.otherPrmsInnovationReported.helpText" helpIcon=false required=false editable=editable isMainTitle=true isWidthFull=true /]
+              </div>
+            [/#if]
           
             [#-- Contributing cNE/Platforms --]
             [#if !action.isAiccra()]
@@ -357,7 +364,7 @@
                 [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
               </div>
             [/#if]
-              
+             
 
             [#if !action.isAiccra()]
             [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
@@ -643,8 +650,10 @@
         <div class="col-md-1">
           [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
+
+        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers)) || ((!editable)) /]
         [#-- knowledgeToolUsesNarrative --]
-        <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers))?then('block','none')};">
+        <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
         </div>
       </div>  
@@ -715,7 +724,10 @@
           [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
-        <div class="col-md-12 block-w-${hasKnowledgePotentialText} padding-left-2" style="display:${((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential == 2))?then('block','none')};">
+        [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&(hasKnowledgePotential == 1)) || ((!editable)) /]
+        
+        [#-- reasonKnowledgePotential --]
+        <div class="col-md-12 block-w-${hasKnowledgePotentialText} padding-left-2" style="display:${(isDisplayReasonKnowledgePotential)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
         </div>
       </div>
@@ -896,7 +908,7 @@
             <div class="referenceListReadiness">
               [#if element.references?has_content]
                 [#list element.references as reference]
-                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" /]
+                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" editable=editable /]
                 [/#list]
               [/#if]
             </div>
@@ -907,7 +919,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness" /]
+            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness"  /]
           </div>
         </div>
       </div>
@@ -931,6 +943,7 @@
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" value=((element.id)?string)!"" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
+    [#if editable]
     <div class="col-md-12 select--flex padding-bottom-1">
       <div class="col-md-6">
         [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
@@ -939,6 +952,24 @@
         [@customForm.checkBoxFlat id="${customName}.sexAgeNotApply" name="${customName}.sexAgeNotApply" label="projectInnovations.anticipatedUsers.actors.sexAgeNotApply" value="true" checked=sexAgeNotApply editable=true cssClass="sexAgeNotApply" /]
       </div>
     </div>
+    [#else]
+    <div class="col-md-12 select--flex padding-bottom-1">
+      <div class="col-md-6">
+        [#local actorName = (element.actor.name)!"No provided" /]
+        
+        <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.typeActor" /]:</span>
+        <span class="col-md-12"><b>${actorName}</b></span>
+      </div>
+      <div class="col-md-6 checkbox-sexAgeNotApply align-content-end">
+        <span class="label--2">Does sex and age disaggregation apply?</span>
+        [#if sexAgeNotApply]
+          <span class="col-md-12"><b>No</b></span>
+        [#else]
+          <span class="col-md-12"><b>Yes</b></span>
+        [/#if]
+      </div>
+    </div>
+    [/#if]
 
     [#-- Checkbox Actors - Genders --]
     <div class="block-sexAgeNotApply col-md-12" style="display: ${(!sexAgeNotApply)?then('block','none')}">
@@ -946,6 +977,8 @@
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
         [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]
+
+        [#if editable]
         <div class="col-md-5 innerOptions select--flex">
           <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isWomanWithYouth editable=true cssClass="check-gender" /]
@@ -962,11 +995,23 @@
             [@customForm.input name="${customName}.womenNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /] 
           </div>
         </div>
+        [#else]
+          <div class="col-md-4">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionYouth" /]:</span>
+            <span class="col-md-12"><b>${(element.womenYouthNumber)!0}</b></span>
+          </div>
+          <div class="col-md-4">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionNoYouth" /]:</span>
+            <span class="col-md-12"><b>${(element.womenNonYouthNumber)!0}</b></span>
+          </div>
+        [/#if]
       </div>
       <div class="col-md-6">
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [#local isMenWithYouth = ((element.menYouth??) && (element.menYouth == true)) /] 
         [#local isMenNotYouth = ((element.menNotYouth??) && (element.menNotYouth == true)) /]
+        
+        [#if editable]
         <div class="col-md-5 innerOptions select--flex">
           <div class="col-md-6">
             [@customForm.checkBoxFlat id="${customName}.menYouth" name="${customName}.menYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isMenWithYouth editable=true cssClass="check-gender" /]
@@ -983,6 +1028,16 @@
             [@customForm.input name="${customName}.menNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
           </div>
         </div>
+        [#else]
+          <div class="col-md-4">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionYouth" /]:</span>
+            <span class="col-md-12"><b>${(element.menYouthNumber)!0}</b></span>
+          </div>
+          <div class="col-md-4">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionNoYouth" /]:</span>
+            <span class="col-md-12"><b>${(element.menNonYouthNumber)!0}</b></span>
+          </div>
+        [/#if]
       </div>
       [#--        <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
@@ -1012,6 +1067,7 @@
     --]
     [#-- Input Organization name --]
     <div class="col-md-12">
+      [#if editable]
       <div class="col-md-6">
         [#local organizationId = (element.institution.id)!"" /]
         [@customForm.labelText name="${customName}.institution.id" text="projectInnovations.anticipatedUsers.organizations.name" required=true /]
@@ -1023,6 +1079,17 @@
           [@customForm.input name="${customName}.number" className="targetValueNumber" type="number" required=false editable=true i18nkey="projectInnovations.anticipatedUsers.organizations.number" /]
         </div>
       </div>
+      [#else]
+      <div class="col-md-6">
+        [#local organizationName = (element.institution.name)!"" /]
+        <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.organizations.name" /]:</span>
+        <span class="col-md-12"><b>${organizationName}</b></span>
+      </div>
+      <div class="col-md-6">
+        <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.organizations.number" /]:</span>
+        <span class="col-md-12"><b>${(element.number)!0}</b></span>
+      </div>
+      [/#if]
     </div>
     [#-- Checkbox - is a co-development --]
     [#--      <div class="col-md-12">
