@@ -216,6 +216,14 @@
 			<artifactId>jericho-html</artifactId>
 			<version>3.4</version>
 		</dependency>
+    <dependency>
+        <groupId>com.ibm.icu</groupId>
+        <artifactId>icu4j</artifactId>
+    </dependency>
+		<dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
 		<!-- Database version control -->
 		<dependency>
 			<groupId>org.flywaydb</groupId>
@@ -223,20 +231,12 @@
 		</dependency>
 		<!-- jasper -->
 		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-fonts</artifactId>
 		</dependency>
 		<!-- End jasper -->
 		<!-- gson -->

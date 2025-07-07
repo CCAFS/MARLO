@@ -105,6 +105,9 @@
 		<property name="adaptativeResearchNarrative" type="string">
 			<column name="adaptative_research_narrative" sql-type="TEXT" />
 		</property>
+		<property name="otherPrmsInnovationReported" type="string">
+			<column name="other_prms_innovation_reported" sql-type="TEXT" />
+		</property>
 		<property name="otherInnovationType" type="string">
 			<column name="other_innovation_type" sql-type="TEXT" />
 		</property>
