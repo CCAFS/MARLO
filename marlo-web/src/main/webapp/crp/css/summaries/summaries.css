@@ -247,6 +247,10 @@
   background: #4584e3;
 }
 
+.summariesFiles .tags .label.type-code {
+  background: #57A7B5;
+}
+
 .summariesFiles .imgArrow{
   position: absolute;
   left: 0;

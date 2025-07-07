@@ -165,6 +165,17 @@
       "action": "${crpSession}/projectContributionLp6Summary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
+    },
+    {
+      "active": !centerGlobalUnit,
+      "available": true,
+      "title": "summaries.board.report.endCycleReport",
+      "description": "",
+      "namespace": "/projects",
+      "action": "",
+      "formats": [ "Code" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "allowIAI": true
     }
   ]},
   [#-- PARTNERS REPORTS --]
@@ -460,7 +471,13 @@
     <div class="tags pull-right">
       [#list report.cycles![] as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
       [#list report.formats as icon ]
-      <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span> ${icon}</span>
+      <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span>
+        [#if icon?lower_case == "code"]
+          AI
+        [#else]
+          ${icon}
+        [/#if]
+       </span>
       [/#list] 
     </div>
     [#-- Title --]
@@ -499,7 +516,13 @@
             <label for="">Format:</label>
             <select name="format" id="">
               [#list report.formats as format ]
-              <option value="${format}">${format}</option>
+              <option value="${format}">
+                [#if format?lower_case == "code"]
+                  AI
+                [#else]
+                  ${format}
+                [/#if]
+              </option>
               [/#list]
             </select>
           </div>
@@ -535,13 +558,22 @@
         <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
       [/#if]
-      
+
+
+      [#-- AI --]
+      [#if report.allowIAI??]
+      <div class="form-group row">
+        <div class="col-md-8">
+          [@customForm.select name="projectID"   label=""  i18nkey="Indicator"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+        </div>
+      </div>
+      [/#if]
 
       
       [#-- Components --]
       [#-- for CCAFS also it include this logic / tiquet 1903 --]
       [#list (report.components)![] as component]
-      <div class="form-group">
+      <div class="form-group row">
         [#local customID = "${index}-${component.name}"]
         <label for="${customID}">${component.label}:</label>
         [#if component.type == "radio"]
@@ -567,7 +599,21 @@
       [/#if]
       
       [#-- Generate Button--]
+      [#if report.allowIAI??]
+      <button  class="btn btn-info pull-right generateReport" onclick="startTyping(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
+      [/#if]
+
+      [#if report.allowIAI??]
+      <div class="form-group iaPromptContainer" style="display: none;">
+        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem;">
+          <textarea disabled name="aiPrompt" class="form-control aiPrompt" placeholder="Describe the report you want to generate..." ></textarea>  
+        </div>
+        
+        <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
+      </div>
+      [/#if]
     [/@s.form]
   </div>
   [/#if]
