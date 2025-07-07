@@ -8,7 +8,7 @@
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230801"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250707"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -349,37 +349,69 @@
     [#--  Reports Content --]
     <div class="summariesContent col-md-9" style="min-height:550px;">
       [#--  <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">  --]
-      <div class="containerHeader">
-        <img src="${baseUrlCdn}/global/images/summaries_icon.png">
-        <h3 class="headTitle text-center">Summaries</h3>        
-      </div>
-      <div class="containerDescriptionSummaries">
-        <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
-      </div>
-      <div class="menuSummaries"> 
-            <div id="projects" class="summariesSection current">
-              <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
-            </div>
-            <div id="partners" class="summariesSection ">
-              <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
-            </div>
-            <div id="deliverables" class="summariesSection ">
-              <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
-            </div>
-      </div>
-      <div class="loading" style="display:none"></div>
-      <div class="summariesOptions">
-        [#list reportsTypes as reportType]
-          [#if reportType.active]
-            <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-              [#-- Temporal Validation (action.canAcessSumaries())--]
-              [#list reportType.reportsList as report]
-                [#if report.active][@reportMacro report=report index=report_index /][/#if]
-              [/#list]
-            </div>
-          [/#if]
-        [/#list] 
-      </div>
+      <section class="sectionMap">
+        <div class="containerHeader">
+          [#--  <img src="${baseUrlCdn}/global/images/summaries_icon.png"> --]
+          <h3 class="headTitle text-center">Summaries</h3>        
+        </div>
+        <div class="containerDescriptionSummaries">
+          <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
+        </div>
+      </section>
+      <div class="borderMap"></div>
+      
+      [#-- Menu Summaries --]
+      <div class="summariesTab tab-content">
+        <ul class="nav nav-tabs" role="tablist col-md-12">
+          <li role="presentation" class="summariesSection col-md-4 current active" id="projects">
+            <a href="#projects-contentOptions" aria-controls="projects-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="30px" />
+              Clusters
+            </a>
+          </li>
+          <li role="presentation" class="summariesSection col-md-4" id="partners">
+            <a href="#partners-contentOptions" aria-controls="partners-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/partners_summaries.png" width="30px" />
+              Partners
+            </a>
+          </li>
+          <li role="presentation" class="summariesSection col-md-4" id="deliverables">
+            <a href="#deliverables-contentOptions" aria-controls="deliverables-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/verification.png" width="30px" />
+              Deliverables
+            </a>
+          </li>
+        </ul>
+        
+        [#--  Temporarily disabled --]
+        [#--          <div class=""> 
+          <div id="projects" class="summariesSection current">
+            <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
+          </div>
+          <div id="partners" class="summariesSection ">
+            <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
+          </div>
+          <div id="deliverables" class="summariesSection ">
+            <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
+          </div>
+        </div>  --]
+        <div class="borderBox clearfix">
+          [#--  Reports Options --]
+          <div class="loading" style="display:none"></div>
+          <div class="summariesOptions">
+            [#list reportsTypes as reportType]
+              [#if reportType.active]
+                <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
+                  [#-- Temporal Validation (action.canAcessSumaries())--]
+                  [#list reportType.reportsList as report]
+                    [#if report.active][@reportMacro report=report index=report_index /][/#if]
+                  [/#list]
+                </div>
+              [/#if]
+            [/#list] 
+          </div>
+        </div>
+      </div> 
     </div>
     
     
