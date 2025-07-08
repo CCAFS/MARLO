@@ -2216,7 +2216,9 @@ public class DeliverableAction extends BaseAction {
         for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
           .filter(ca -> ca.isActive() && ca.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
 
-          if (!this.programOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+          if (!this.programOutcomes.contains(projectOutcome.getCrpProgramOutcome())
+            && projectOutcome.getCrpProgramOutcome().getDescription() != null && !projectOutcome.getCrpProgramOutcome()
+              .getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
             this.programOutcomes.add(projectOutcome.getCrpProgramOutcome());
           }
 

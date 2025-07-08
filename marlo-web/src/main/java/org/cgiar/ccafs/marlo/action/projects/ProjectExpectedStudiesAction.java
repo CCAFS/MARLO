@@ -1890,7 +1890,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
               && m.isActive() && (m.getYear() != 0) && (m.getYear() <= this.getActualPhase().getYear()))
               .collect(Collectors.toList()));
 
-            if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())) {
+            if (!this.crpOutcomes.contains(projectOutcome.getCrpProgramOutcome())
+              && projectOutcome.getCrpProgramOutcome().getDescription() != null && !projectOutcome
+                .getCrpProgramOutcome().getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
               this.crpOutcomes.add(projectOutcome.getCrpProgramOutcome());
             }
 

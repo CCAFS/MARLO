@@ -108,7 +108,14 @@ const MalSelect = class {
             placeholder: 'Select an option',
             filter: true,
             filterPlaceholder: 'Search...',
-            virtualScrollerOptions: { itemSize: 25 },
+            filterInputAutoFocus: true,
+            virtualScrollerOptions: {
+                itemSize: 25,
+                numToleratedItems: 30,
+                showLoader: true,
+                loadingTemplate: loadingTemplate,
+                delay: 40,
+            },
         });
         // Find container element
         const container = this.el.querySelector('#react-dropdown');
@@ -123,12 +130,43 @@ const MalSelect = class {
         }
     }
     render() {
-        return (index.h(index.Host, { key: '02663f6c5865ca2071d42709b717d3ade4d764fc' }, index.h("div", { key: 'daf01b317a3de81f93c77b11c088307e212b13ed', id: "react-dropdown" })));
+        return (index.h(index.Host, { key: 'b23e63ff7f7bdb3a77caf10947146b744c29a6d1' }, index.h("div", { key: '9539e043eeed9e4d45d3a19354935141e478bc21', id: "react-dropdown" })));
     }
     static get watchers() { return {
         "data": ["onPropsChange"],
         "value": ["onPropsChange"]
     }; }
+};
+const loadingTemplate = (options) => {
+    const React = window.React;
+    const ReactDOM = window.ReactDOM;
+    // Check if primereact is available
+    if (!React || !ReactDOM) {
+        console.error('React or ReactDOM not found');
+        return;
+    }
+    // Ensure primereact global object exists
+    const primereact = window.primereact || {};
+    const Skeleton = primereact.skeleton?.Skeleton || primereact.Skeleton;
+    if (!Skeleton) {
+        console.error('PrimeReact Skeleton not found');
+        return;
+    }
+    // Use React.createElement instead of JSX to avoid Stencil compilation
+    return React.createElement('div', {
+        className: 'flex align-items-center p-2 justify-content-center',
+        style: {
+            height: '25px',
+            backgroundColor: options.odd ? '#fff' : '#fafafa', // Use actual color values instead of Tailwind classes
+        }
+    }, React.createElement(Skeleton, {
+        style: {
+            width: '50%',
+            borderRadius: '0.375rem',
+            padding: '0.25rem 0.25rem',
+            margin: '0.25rem 0',
+        }
+    }));
 };
 MalSelect.style = malSelectCss;
 

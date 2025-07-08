@@ -164,8 +164,16 @@ $(document).ready(function () {
     var menuOffset = function () {
       return $(document).height() - ($buttons.offset().top + $buttons.height());
     }
+    // Set the initial position
     $buttons.find('.buttons-content').css({
       right: $(document).width() - ($buttons.offset().left + $buttons.width())
+    });
+    
+    // Update position when window is resized
+    $(window).on('resize', function() {
+      $buttons.find('.buttons-content').css({
+      right: $(document).width() - ($buttons.offset().left + $buttons.width())
+      });
     });
 
     setTimeout(function () {
