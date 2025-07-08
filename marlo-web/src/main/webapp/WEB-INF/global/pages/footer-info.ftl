@@ -94,7 +94,7 @@
 
 [#-- MARLO Blog --]
 <div class="newsButton">
-  <a href="https://www.notion.so/cgiar-prms/AICCRA-Knowledge-and-Data-Sharing-team-achievements-3a83ae1ef2804fa8b9220bdba2f5d1f7?pvs=4" target="__blank">
+  <a href="https://cgiar-prms.notion.site/AICCRA-Knowledge-and-Data-Sharing-team-achievements-8742c91b3be14f05902f02224a63a2d9" target="__blank">
      <b> [@s.text name="footer.checkBlog" /] </b> <span class="fa fa-external-link-square"></span>
   </a>
 </div>

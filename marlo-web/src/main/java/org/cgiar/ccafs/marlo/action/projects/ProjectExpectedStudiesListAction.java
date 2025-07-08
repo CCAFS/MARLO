@@ -266,56 +266,6 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     }
   }
 
-  public void getCommentStatusesNew() {
-    try {
-
-      List<String> commentList = null;
-      commentList = feedbackQACommentableFieldsManager.getCommentStatusByPhaseToStudy(this.getActualPhase().getId());
-
-      List<String> commentAnsweredList = null;
-      commentAnsweredList =
-        feedbackQACommentableFieldsManager.getAnsweredCommentByPhaseToStudy(this.getActualPhase().getId());
-
-      if (projectStudies != null && !projectStudies.isEmpty()) {
-        for (ProjectExpectedStudy study : projectStudies) {
-          int answeredComments = 0;
-          int totalComments = 0;
-          try {
-
-            for (String string : commentList) {
-              String test = string.replace("|", ";");
-
-              if (test.split(";")[0].equals(study.getId() + "")) {
-                totalComments = Integer.parseInt(test.split(";")[1]);
-              }
-            }
-
-            for (String string : commentAnsweredList) {
-              String test = string.replace("|", ";");
-
-              if (test.split(";")[0].equals(study.getId() + "")) {
-                answeredComments = Integer.parseInt(test.split(";")[1]);
-              }
-            }
-
-            study.setCommentStatus(answeredComments + "/" + totalComments);
-            if (study.getCommentStatus() == null
-              || (study.getCommentStatus() != null && study.getCommentStatus().isEmpty())) {
-              study.setCommentStatus(0 + "/" + 0);
-            }
-
-          } catch (Exception e) {
-            study.setCommentStatus(0 + "/" + 0);
-          }
-        }
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-
   public long getExpectedID() {
     return expectedID;
   }
@@ -488,8 +438,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       }
     }
     if (this.hasSpecificities(this.feedbackModule())) {
-      // this.getCommentStatuses();
-      this.getCommentStatusesNew();
+      this.getCommentStatuses();
     }
 
   }

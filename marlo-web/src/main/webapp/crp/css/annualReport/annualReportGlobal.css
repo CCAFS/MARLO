@@ -763,13 +763,25 @@ div#chart13 {
 
 .textAchived{
   position: absolute;
-  top: 59px;
+  top: 52px;
   margin-right: 14px;
+  font-size: 12px;
+}
+
+.textAchived #opener{
   font-size: 12px;
 }
 
 @media (max-width:1580px){
   .textAchived{
     font-size: 10px;
+    padding: 0 0.5rem;
+    width: 98%;
+    max-width: 98%;
+  }
+
+  .textAchived #opener{
+    font-size: 10px;
+    line-height: 1rem;
   }
 }

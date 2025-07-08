@@ -581,14 +581,25 @@
         </div> 
       [/#list]
     [#else]
-      <div class="col-md-4 " style="display: flex;">
+      [#--        <div class="col-md-4 " style="display: flex;">
         <span> Value selected:&nbsp;</span>
         [#if value?has_content]
           <span class="${cssClass}"><b>${value}</b></span>
         [#else]
           <span class="${cssClass}"><b>No provided</b></span>
         [/#if]
-      </div>
+      </div>  --]
+        [#list 1..scaleNumber as i]
+          [#local isChecked = (value?has_content && value == i)!false /]
+          <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
+            <div class="fieldReference radioFlat ${inline?string('radio-inline', '')}">
+              <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${i}" [#if isChecked]checked[/#if] disabled />
+              <label for="${id}" class="radio-label disabled-label ${cssClassLabel}">
+                ${i}
+              </label>
+            </div>
+          </div> 
+        [/#list]
     [/#if]
   </div>
 [/#macro]
@@ -1229,7 +1240,7 @@
                 <b>Evidence/Reference: </b><span class="evidenceDeliverable">${(element.reference)!}</span>
               </span>
               <span class="col-md-12">
-                <b>URL: </b><a href="${element.link!''}" class="evidenceDeliverable">${(element.link)!}</a>
+                <b>URL: </b><a href="${element.link!''}" class="evidenceDeliverable" style="word-break: break-all;">${(element.link)!}</a>
               </span>
               <span class="col-md-12">
                 <b>Evidence Type: </b>

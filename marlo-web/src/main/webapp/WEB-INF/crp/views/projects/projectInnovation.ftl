@@ -16,6 +16,8 @@
   "${baseUrlMedia}/js/dist/components/mal-select.js"
 ] /]
 
+
+
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250604"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
