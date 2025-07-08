@@ -613,6 +613,7 @@ textarea#justification {
 	font-size: 0.98em;
 	line-height: 1.5em;
 	word-wrap: break-word;
+	word-break: break-all;
 	color: #828282;
 	margin: 0.25rem 0;
 }
