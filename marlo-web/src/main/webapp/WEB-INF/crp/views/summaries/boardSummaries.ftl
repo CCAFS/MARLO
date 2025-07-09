@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20230702"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250707"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20230801"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250707-1"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -165,6 +165,17 @@
       "action": "${crpSession}/projectContributionLp6Summary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
+    },
+    {
+      "active": !centerGlobalUnit,
+      "available": true,
+      "title": "summaries.board.report.endCycleReport",
+      "description": "",
+      "namespace": "/projects",
+      "action": "",
+      "formats": [ "Code" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "allowIAI": true
     }
   ]},
   [#-- PARTNERS REPORTS --]
@@ -349,37 +360,69 @@
     [#--  Reports Content --]
     <div class="summariesContent col-md-9" style="min-height:550px;">
       [#--  <img class="img_aiccra" src="${baseUrlCdn}/global/images/crps/AICCRA.png">  --]
-      <div class="containerHeader">
-        <img src="${baseUrlCdn}/global/images/summaries_icon.png">
-        <h3 class="headTitle text-center">Summaries</h3>        
-      </div>
-      <div class="containerDescriptionSummaries">
-        <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
-      </div>
-      <div class="menuSummaries"> 
-            <div id="projects" class="summariesSection current">
-              <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
-            </div>
-            <div id="partners" class="summariesSection ">
-              <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
-            </div>
-            <div id="deliverables" class="summariesSection ">
-              <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
-            </div>
-      </div>
-      <div class="loading" style="display:none"></div>
-      <div class="summariesOptions">
-        [#list reportsTypes as reportType]
-          [#if reportType.active]
-            <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
-              [#-- Temporal Validation (action.canAcessSumaries())--]
-              [#list reportType.reportsList as report]
-                [#if report.active][@reportMacro report=report index=report_index /][/#if]
-              [/#list]
-            </div>
-          [/#if]
-        [/#list] 
-      </div>
+      <section class="sectionMap">
+        <div class="containerHeader">
+          [#--  <img src="${baseUrlCdn}/global/images/summaries_icon.png"> --]
+          <h3 class="headTitle text-center">Summaries</h3>        
+        </div>
+        <div class="containerDescriptionSummaries">
+          <div class="descriptionSummaries">Find detailed reports on all the activities reported in AICCRA. Our report provides unique insights, as it focuses on a specific stage of the reporting cycle, differentiating it from the BI section.</div>
+        </div>
+      </section>
+      <div class="borderMap"></div>
+      
+      [#-- Menu Summaries --]
+      <div class="summariesTab tab-content">
+        <ul class="nav nav-tabs" role="tablist col-md-12">
+          <li role="presentation" class="summariesSection col-md-4 current active" id="projects">
+            <a href="#projects-contentOptions" aria-controls="projects-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="30px" />
+              Clusters
+            </a>
+          </li>
+          <li role="presentation" class="summariesSection col-md-4" id="partners">
+            <a href="#partners-contentOptions" aria-controls="partners-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/partners_summaries.png" width="30px" />
+              Partners
+            </a>
+          </li>
+          <li role="presentation" class="summariesSection col-md-4" id="deliverables">
+            <a href="#deliverables-contentOptions" aria-controls="deliverables-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/verification.png" width="30px" />
+              Deliverables
+            </a>
+          </li>
+        </ul>
+        
+        [#--  Temporarily disabled --]
+        [#--          <div class=""> 
+          <div id="projects" class="summariesSection current">
+            <img src="${baseUrlCdn}/global/images/cluster_summaries.png"><a href="">Clusters</a>
+          </div>
+          <div id="partners" class="summariesSection ">
+            <img src="${baseUrlCdn}/global/images/partners_summaries.png"><a href="">Partners</a>
+          </div>
+          <div id="deliverables" class="summariesSection ">
+            <img src="${baseUrlCdn}/global/images/deliverables_summaries.png"><a href="">Deliverables</a>
+          </div>
+        </div>  --]
+        <div class="borderBox clearfix">
+          [#--  Reports Options --]
+          <div class="loading" style="display:none"></div>
+          <div class="summariesOptions">
+            [#list reportsTypes as reportType]
+              [#if reportType.active]
+                <div id="${reportType.slug}-contentOptions" class="" style="display: [#if reportType_index != 0]none[/#if];">
+                  [#-- Temporal Validation (action.canAcessSumaries())--]
+                  [#list reportType.reportsList as report]
+                    [#if report.active][@reportMacro report=report index=report_index /][/#if]
+                  [/#list]
+                </div>
+              [/#if]
+            [/#list] 
+          </div>
+        </div>
+      </div> 
     </div>
     
     
@@ -428,7 +471,13 @@
     <div class="tags pull-right">
       [#list report.cycles![] as tag ]<span class="label label-default type-${tag?lower_case}">${tag}</span>[/#list]
       [#list report.formats as icon ]
-      <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span> ${icon}</span>
+      <span class="label label-default type-${icon?lower_case}"><span class="fa fa-file-${icon?lower_case}-o ${icon?lower_case}Icon file"></span>
+        [#if icon?lower_case == "code"]
+          AI
+        [#else]
+          ${icon}
+        [/#if]
+       </span>
       [/#list] 
     </div>
     [#-- Title --]
@@ -467,7 +516,13 @@
             <label for="">Format:</label>
             <select name="format" id="">
               [#list report.formats as format ]
-              <option value="${format}">${format}</option>
+              <option value="${format}">
+                [#if format?lower_case == "code"]
+                  AI
+                [#else]
+                  ${format}
+                [/#if]
+              </option>
               [/#list]
             </select>
           </div>
@@ -503,13 +558,22 @@
         <div class="btn btn-danger btn-xs removeAllTags" role="button">Remove all keywords</div>
       </div>
       [/#if]
-      
+
+
+      [#-- AI --]
+      [#if report.allowIAI??]
+      <div class="form-group row">
+        <div class="col-md-8">
+          [@customForm.select name="projectID"   label=""  i18nkey="Indicator"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+        </div>
+      </div>
+      [/#if]
 
       
       [#-- Components --]
       [#-- for CCAFS also it include this logic / tiquet 1903 --]
       [#list (report.components)![] as component]
-      <div class="form-group">
+      <div class="form-group row">
         [#local customID = "${index}-${component.name}"]
         <label for="${customID}">${component.label}:</label>
         [#if component.type == "radio"]
@@ -535,7 +599,21 @@
       [/#if]
       
       [#-- Generate Button--]
+      [#if report.allowIAI??]
+      <button  class="btn btn-info pull-right generateReport" onclick="startTyping(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
+      [/#if]
+
+      [#if report.allowIAI??]
+      <div class="form-group iaPromptContainer" style="display: none;">
+        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem;">
+          <textarea disabled name="aiPrompt" class="form-control aiPrompt" placeholder="Describe the report you want to generate..." ></textarea>  
+        </div>
+        
+        <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
+      </div>
+      [/#if]
     [/@s.form]
   </div>
   [/#if]
