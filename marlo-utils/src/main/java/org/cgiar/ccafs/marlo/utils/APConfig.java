@@ -171,7 +171,7 @@ public class APConfig {
   private String MICROSERVICE_REPORTING_URL;
   @Value("${microservice.s3.url}")
   private String MICROSERVICE_S3_URL;
-  @Value("${summaryMicroservice.url}")
+  @Value("${summary.microservice.url}")
   private String SUMMARY_MICROSERVICE_URL;
 
   public APConfig() {
