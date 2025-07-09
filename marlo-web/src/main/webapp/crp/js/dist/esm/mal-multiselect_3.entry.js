@@ -108,11 +108,10 @@ const MalSelect = class {
             filterPlaceholder: 'Search...',
             filterInputAutoFocus: true,
             virtualScrollerOptions: {
-                itemSize: 25,
-                numToleratedItems: 30,
+                itemSize: 40,
                 showLoader: true,
                 loadingTemplate: loadingTemplate,
-                delay: 40,
+                numToleratedItems: 10,
             },
         });
         // Find container element
@@ -128,7 +127,7 @@ const MalSelect = class {
         }
     }
     render() {
-        return (h(Host, { key: 'b23e63ff7f7bdb3a77caf10947146b744c29a6d1' }, h("div", { key: '9539e043eeed9e4d45d3a19354935141e478bc21', id: "react-dropdown" })));
+        return (h(Host, { key: '56a93e3518dae75f744f8b21faf21e1672e86a65' }, h("div", { key: '08cdeeb6a33209bb555ddc9a056aedf69881464f', id: "react-dropdown" })));
     }
     static get watchers() { return {
         "data": ["onPropsChange"],
