@@ -1679,7 +1679,7 @@ a#userLogOut {
 	font-size: 0.7em;
 	padding-top: 0px;
 	min-width: 153px;
-	color: #c1e2e8;
+	color: rgb(43, 131, 160);
 	font-weight: lighter;
 }
 
@@ -1701,11 +1701,12 @@ a#userLogOut {
 }
 
 #userInfo .logout {
-	background-color: #4B4B4B;
+	background-color: #337AB7;
 	margin-left: 4px;
 	padding: 0px 7px;
 	border-radius: 4px;
-	border-bottom: 2px solid #2E2E2E;
+	border-bottom: 3px solid #004080;
+	font-family: "Helvetica Neue", Helvetica, Arial;
 }
 
 #userInfo .program {
@@ -1952,13 +1953,13 @@ a#userLogOut {
   position: absolute;
   right: 0;
   top: 38px;
-  background: #23718F;
+  background: rgb(255, 255, 255);
   padding: 10px 12px;
   border-radius: 4px;
   width: 240px;
   box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
   z-index: 10000;
-  color: #fff;
+  color: rgb(0, 0, 0);
 }
 
 #userInfo .userMenu p {
