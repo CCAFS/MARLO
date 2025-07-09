@@ -28,7 +28,7 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
   private static final Logger logger = LoggerFactory.getLogger(CrpProgramOutcomesByGlobalUnit.class);
 
   // Parameters
-  private List<Map<String, Object>> entityByPhaseList;
+  private List<Map<String, Object>> crpOutcomes;
   private GlobalUnit globalUnit;
 
   // Managers
@@ -42,7 +42,7 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    entityByPhaseList = new ArrayList<Map<String, Object>>();
+    crpOutcomes = new ArrayList<Map<String, Object>>();
 
     try {
       globalUnit = this.getCurrentCrp();
@@ -52,7 +52,8 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
       if (this.getCurrentGlobalUnit() != null) {
         crpOutcomesList =
           crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId()).stream()
-            .filter(c -> c != null && c.getDescription() != null
+            .filter(c -> c != null && c.getDescription() != null && c.getPhase() != null
+              && c.getPhase().getId() == this.getActualPhase().getId()
               && !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
             .collect(Collectors.toList());
       }
@@ -67,7 +68,7 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
               outcomeMap.put("id", crpOutcome.getId());
               outcomeMap.put("acronym", crpOutcome.getAcronym());
               outcomeMap.put("description", crpOutcome.getDescription());
-              this.entityByPhaseList.add(outcomeMap);
+              this.crpOutcomes.add(outcomeMap);
             }
           } catch (Exception e) {
             logger.error("Unable to add ProjectOutcome to ProjectOutcome list", e);
@@ -81,8 +82,8 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
     return SUCCESS;
   }
 
-  public List<Map<String, Object>> getEntityByPhaseList() {
-    return entityByPhaseList;
+  public List<Map<String, Object>> getCrpOutcomes() {
+    return crpOutcomes;
   }
 
   @Override
@@ -90,7 +91,8 @@ public class CrpProgramOutcomesByGlobalUnit extends BaseAction {
 
   }
 
-  public void setEntityByPhaseList(List<Map<String, Object>> entityByPhaseList) {
-    this.entityByPhaseList = entityByPhaseList;
+  public void setCrpOutcomes(List<Map<String, Object>> crpOutcomes) {
+    this.crpOutcomes = crpOutcomes;
   }
+
 }
