@@ -112,7 +112,7 @@
             [#if (item.showCheck)!true]
             [#assign submitStatus = false /]
               [#if item.action?has_content && projectID?has_content]
-                  [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
+                  [#assign submitStatus = true /]
               [#else]
                   [#assign submitStatus = false /]
               [/#if]

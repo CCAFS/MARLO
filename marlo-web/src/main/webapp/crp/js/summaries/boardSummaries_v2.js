@@ -115,7 +115,7 @@ function selectSummariesSection(e) {
   $section.siblings().removeClass('current');
   $section.addClass('current');
   $content.siblings().hide();
-  $content.fadeIn();
+  $content.fadeIn(600);
   $(".summariesFiles").removeClass("selected");
   $(".extraOptions").slideUp();
 }
