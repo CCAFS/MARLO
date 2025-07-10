@@ -495,18 +495,20 @@
       <div class="form-group row">
         [#assign reportPhases = (action.getPhasesByCycles(report.cycles![]))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if reportPhases?has_content]
-         
-          <div class="col-md-4">
-            <label for="">Cycle:</label>
-            <select name="phaseID" id="">
-              [#list reportPhases as phase ]
-              <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
-              [/#list]  
-            </select>
-          </div>
-        [#else]
-          <input type="hidden" name="phaseID" value="${actualPhase.id}" />
+        [#if !(report.allowIAI??)]
+          [#if reportPhases?has_content]
+          
+            <div class="col-md-4">
+              <label for="">Cycle:</label>
+              <select name="phaseID" id="">
+                [#list reportPhases as phase ]
+                <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
+                [/#list]  
+              </select>
+            </div>
+          [#else]
+            <input type="hidden" name="phaseID" value="${actualPhase.id}" />
+          [/#if]
         [/#if]
         
         [#-- Formats (PDF/Excel) --]
@@ -563,8 +565,15 @@
       [#-- AI --]
       [#if report.allowIAI??]
       <div class="form-group row">
+        [#assign crpByGlobalUnit = action.getCrpProgramOutcomesByGlobalUnit()![] ]
+        <div class="col-md-4">
+          <label for="">Year:</label>
+          <select name="year" id="">
+            <option value="2025" selected>2025</option>
+          </select>
+        </div>
         <div class="col-md-8">
-          [@customForm.select name="projectID"   label=""  i18nkey="Indicator"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+          [@customForm.select name="indicatorName"   label=""  i18nkey="Indicator"  listName="globalUnitCrpOutcomes"  keyFieldName="acronym"  displayFieldName="description" className="allProjectsSelect" /]
         </div>
       </div>
       [/#if]
