@@ -565,7 +565,6 @@
       [#-- AI --]
       [#if report.allowIAI??]
       <div class="form-group row">
-        [#assign crpByGlobalUnit = action.getCrpProgramOutcomesByGlobalUnit()![] ]
         <div class="col-md-4">
           <label for="">Year:</label>
           <select name="year" id="">
@@ -573,7 +572,7 @@
           </select>
         </div>
         <div class="col-md-8">
-          [@customForm.select name="indicatorName"   label=""  i18nkey="Indicator"  listName="globalUnitCrpOutcomes"  keyFieldName="acronym"  displayFieldName="description" className="allProjectsSelect" /]
+          [@customForm.select name="indicatorName" label=""  i18nkey="Indicator"  listName="globalUnitCrpOutcomes"  keyFieldName="acronym"  displayFieldName="description" className="allProjectsSelect" /]
         </div>
       </div>
       [/#if]
@@ -609,7 +608,7 @@
       
       [#-- Generate Button--]
       [#if report.allowIAI??]
-      <button  class="btn btn-info pull-right generateReport" onclick="startTyping(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      <button  class="btn btn-info pull-right generateReport" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
