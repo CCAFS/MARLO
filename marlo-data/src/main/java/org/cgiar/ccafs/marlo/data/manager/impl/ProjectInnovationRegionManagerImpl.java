@@ -53,26 +53,28 @@ public class ProjectInnovationRegionManagerImpl implements ProjectInnovationRegi
 
     ProjectInnovationRegion projectInnovationRegion = this.getProjectInnovationRegionById(projectInnovationRegionId);
 
-
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
-    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.PLANNING)
-      && projectInnovationRegion.getPhase().getNext() != null) {
-      this.deleteProjectInnovationRegionPhase(projectInnovationRegion.getPhase().getNext(),
-        projectInnovationRegion.getProjectInnovation().getId(), projectInnovationRegion);
+    if(projectInnovationRegion != null && projectInnovationRegion.getPhase() != null && projectInnovationRegion.getPhase().getDescription() != null) {
+	    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.PLANNING)
+	      && projectInnovationRegion.getPhase().getNext() != null) {
+	      this.deleteProjectInnovationRegionPhase(projectInnovationRegion.getPhase().getNext(),
+	        projectInnovationRegion.getProjectInnovation().getId(), projectInnovationRegion);
+	    }
+	
+	    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
+	      if (projectInnovationRegion.getPhase().getNext() != null
+	        && projectInnovationRegion.getPhase().getNext().getNext() != null) {
+	        Phase upkeepPhase = projectInnovationRegion.getPhase().getNext().getNext();
+	        if (upkeepPhase != null) {
+	          this.deleteProjectInnovationRegionPhase(upkeepPhase, projectInnovationRegion.getProjectInnovation().getId(),
+	            projectInnovationRegion);
+	        }
+	      }
+	    }
     }
-
-    if (projectInnovationRegion.getPhase().getDescription().equals(APConstants.REPORTING)) {
-      if (projectInnovationRegion.getPhase().getNext() != null
-        && projectInnovationRegion.getPhase().getNext().getNext() != null) {
-        Phase upkeepPhase = projectInnovationRegion.getPhase().getNext().getNext();
-        if (upkeepPhase != null) {
-          this.deleteProjectInnovationRegionPhase(upkeepPhase, projectInnovationRegion.getProjectInnovation().getId(),
-            projectInnovationRegion);
-        }
-      }
-    }
-
-    projectInnovationRegionDAO.deleteProjectInnovationRegion(projectInnovationRegionId);
+	if (projectInnovationRegion != null) {
+		projectInnovationRegionDAO.deleteProjectInnovationRegion(projectInnovationRegionId);
+	}
   }
 
   public void deleteProjectInnovationRegionPhase(Phase next, long innovationID,
