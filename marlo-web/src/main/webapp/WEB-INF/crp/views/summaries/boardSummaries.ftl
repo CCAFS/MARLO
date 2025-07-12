@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250707"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250711"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250707-1"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250711"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
