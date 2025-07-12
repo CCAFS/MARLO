@@ -156,11 +156,12 @@ function getProjectsByCycleYear(parent, phaseID) {
 function getAIText(e, service = 'AIReportSummary.do') {
   e.preventDefault();
 
-  console.log("getAIText called with service:", service);
-
   const eventBtn = $(e.target);
 
   const form = $(eventBtn).closest('form');
+
+  const container = $('.iaPromptContainer');
+  const textarea = container.find('textarea');
 
   const indicatorNameValue = form.find('select[name="indicatorName"]').val();
   const yearValue = form.find('select[name="year"]').val();
@@ -174,13 +175,45 @@ function getAIText(e, service = 'AIReportSummary.do') {
       indicatorName : indicatorNameValue,
       year : yearValue
     },
-    success: function(response) {
-      console.log("AI response received:", response);
-      if (response && response.jsonResponse) {
-        text = response.jsonResponse.content;
-        console.log("AI text to type:", text);
+    beforeSend: function() {
+      // Disable the button to prevent multiple clicks
+      eventBtn.prop('disabled', true);
+      // Show loading spinner or message
+      eventBtn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Generating AI text...');
 
-        startTyping(text);
+      // Show the container
+      container.show();
+      // Enable the textarea and focus on it
+      textarea.trumbowyg('disable');
+
+      // Clear the textarea
+      textarea.trumbowyg('html', '');
+
+      // Add load animation to the textarea
+      textarea.closest('form').find('.trumbowyg-editor').addClass('loading');
+    },
+    success: function(response) {
+
+      // Enable the button after the request is complete
+      eventBtn.prop('disabled', false);
+      eventBtn.html('<span class="glyphicon glyphicon-download-alt"></span> Generate with AI');
+
+      // Add load animation to the textarea
+      textarea.closest('form').find('.trumbowyg-editor').removeClass('loading');
+
+      if (response && response.jsonResponse) {
+        const jsonResponse = response.jsonResponse;
+        const text = JSON.parse(jsonResponse).content;
+
+        if (!text) {
+          console.error("No text found in the response.");
+          text = "No text found in the response.";
+        }
+
+        // Convert Markdown to HTML
+        const htmlText = convertMarkdownToHTML(text);
+
+        startTyping(htmlText);
         
       } else {
         console.error("No text found in the response.");
@@ -195,23 +228,39 @@ function getAIText(e, service = 'AIReportSummary.do') {
 
 }
 
+function convertMarkdownToHTML(markdownText) {
+  // Convert Markdown to HTML using a simple regex-based approach
+  // This is a basic implementation; consider using a library like marked.js for more complex Markdown
+  let htmlText = markdownText
+    .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>') // H3
+    .replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>') // H2
+    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>') // H1
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
+    .replace(/~~(.*?)~~/g, '<del>$1</del>') // Strikethrough
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>') // Links
+    .replace(/```(.*?)```/g, '<pre><code>$1</code></pre>') // Code blocks
+    .replace(/`(.*?)`/g, '<code>$1</code>') // Inline code
+    .replace(/^\s*-\s+(.*?)(\n|$)/gm, '<ul><li>$1</li></ul>') // Unordered lists
+    .replace(/^\s*\d+\.\s+(.*?)(\n|$)/gm, '<ol><li>$1</li></ol>'); // Ordered lists
+
+
+
+  return htmlText;
+}
+
 function typeText(element, text, speed = 30) {
   let index = 0;
   
   // Clear the textarea first
-  element.val('');
+  element.trumbowyg('html', '');
   
   function typeChar() {
     if (index < text.length) {
       const currentText = element.val();
-      element.val(currentText + text.charAt(index));
+      element.trumbowyg('html',currentText + text.charAt(index));
       index++;
       setTimeout(typeChar, speed);
-    }
-
-    //if the text is fully typed, enable the textarea
-    if (index === text.length) {
-      element.prop('disabled', true);
     }
   }
 
@@ -227,15 +276,13 @@ function startTyping(textToTypeParam) {
     console.error("No text to type. Exiting function.");
     return; // Exit if no text is available
   }
-  // Show the container
-  container.show();
   
   // Enable the textarea and focus on it
-  textarea.prop('disabled', false);
+  textarea.trumbowyg('enable');
   textarea.focus();
 
   // Start typing with AI-like effect
-  typeText(textarea, textToType, 5); // Faster speed for more AI-like feel
+  typeText(textarea, textToType, 1); // Faster speed for more AI-like feel
 }
 
 function copyToClipboard(e) {

@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
+[#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
   "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250707"
@@ -615,8 +615,8 @@
 
       [#if report.allowIAI??]
       <div class="form-group iaPromptContainer" style="display: none;">
-        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem;">
-          <textarea disabled name="aiPrompt" class="form-control aiPrompt" placeholder="Describe the report you want to generate..." ></textarea>  
+        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem; padding: 0;">
+          [@customForm.textArea name="aiPrompt" placeholder="Describe the report you want to generate..." className="form-control aiPrompt" showTitle=false allowTextEditor=true  /]
         </div>
         
         <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
