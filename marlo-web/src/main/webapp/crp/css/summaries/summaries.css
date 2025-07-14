@@ -90,6 +90,10 @@
   cursor: pointer;
 }
 
+.summariesTab {
+  margin-top: 2em;
+}
+
 .summariesOptions {
   /* margin: 8px 0; */
 }
@@ -439,7 +443,7 @@ ul.tag-editor {
   /* border-radius: 0 0 50% 50%; */
   flex-direction: column;
   color: #ffffff;
-  padding: 1rem 1.5rem;
+  padding: 1rem 4rem;
   align-items: flex-start;
 }
 

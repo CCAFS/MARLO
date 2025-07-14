@@ -171,6 +171,8 @@ public class APConfig {
   private String MICROSERVICE_REPORTING_URL;
   @Value("${microservice.s3.url}")
   private String MICROSERVICE_S3_URL;
+  @Value("${summary.microservice.url}")
+  private String SUMMARY_MICROSERVICE_URL;
 
   public APConfig() {
   }
@@ -765,6 +767,14 @@ public class APConfig {
       return null;
     }
     return RECAPTCHAT_SITE_KEY;
+  }
+
+  public String getSummaryMicroserviceURL() {
+    if (SUMMARY_MICROSERVICE_URL == null) {
+      LOG.error("there is not a Summary Microservice URL configured.");
+      return null;
+    }
+    return SUMMARY_MICROSERVICE_URL;
   }
 
   /**

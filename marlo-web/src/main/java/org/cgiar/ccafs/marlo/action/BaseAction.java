@@ -17,6 +17,8 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.action.deliverable.dto.DeliverableSearchSummary;
+import org.cgiar.ccafs.marlo.action.summaries.ai.service.AIIndicatorReport;
+import org.cgiar.ccafs.marlo.action.summaries.ai.service.AIReportService;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
@@ -143,7 +145,6 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -647,7 +648,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * This method add a missing field separated by a semicolon (;).
    *
@@ -662,7 +662,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * This method add a synthesis flagship separated by a semicolon (;).
    *
@@ -674,6 +673,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
     this.synthesisFlagships.append(flagship);
   }
+
 
   public void addUsers() {
     if (this.usersToActive != null) {
@@ -695,6 +695,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean canAccessSuperAdmin() {
     return this.securityContext.hasAllPermissions(Permission.FULL_PRIVILEGES);
   }
@@ -715,11 +716,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.securityContext.hasPermission(permission);
   }
 
-
   public boolean canAcessCrp() {
     return this.canAcessPublications() || this.canAcessSynthesisMog();
   }
-
 
   public boolean canAcessCrpAdmin() {
     try {
@@ -740,10 +739,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   public boolean canAcessImpactPathway() {
     String permission = this.generatePermission(Permission.IMPACT_PATHWAY_VISIBLE_PRIVILEGES, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
   }
+
 
   public boolean canAcessPOWB() {
     String permission = this.generatePermission(Permission.POWB_SYNTHESIS_CAN_VIEW, this.getCrpSession());
@@ -788,7 +789,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String permission = this.generatePermission(Permission.PROJECT_BILATERAL_ADD, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
   }
-
 
   public boolean canAddCoreProject() {
     String permission = this.generatePermission(Permission.PROJECT_CORE_ADD, this.getCrpSession());
@@ -1283,6 +1283,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+
   /* Override this method depending of the cancel action. */
   public String cancel() {
     return CANCEL;
@@ -1532,7 +1533,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-
   /**
    * Validate if the user has a role that allows leave initial comments
    * 
@@ -1615,6 +1615,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
   }
+
 
   /**
    * Validate the user permission to replay or react to a comment
@@ -1708,7 +1709,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return response;
   }
 
-
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
     if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus()) && this.hasPermission("statusDescription")
@@ -1722,6 +1722,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     String params[] = {this.crpManager.getGlobalUnitById(this.getCrpID()).getAcronym(), projectID + ""};
     return this.hasPermission(this.generatePermission(Permission.PROJECT_SUBMISSION_PERMISSION, params));
   }
+
 
   /**
    * Checks if the current user has permission to track feedback comments.
@@ -1760,7 +1761,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return false;
   }
-
 
   /**
    * Validate if the user has a role that allows tracking comments
@@ -1901,6 +1901,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
   }
+
 
   /**
    * ***********************CENTER METHOD******************** Check if the
@@ -2074,7 +2075,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.CRP_LOCATION_CSV_ACTIVITIES;
   }
 
-
   /*
    * View Project Highligths section
    */
@@ -2086,6 +2086,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String delete() {
     return SUCCESS;
   }
+
 
   @Override
   public String execute() throws Exception {
@@ -2320,6 +2321,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public int getAFIndicatorsEndyear() {
     return 2028;
   }
+
+  /**
+   * Generates an AI report and returns only the content string.
+   *
+   * @param indicatorName The indicator name
+   * @param year The reporting year
+   * @return A String with the report content or null if failed
+   */
+  public String getAIIndicatorReport(String indicatorName, int year) {
+    AIIndicatorReport report = getAIIndicatorReportObject(indicatorName, year);
+    return (report != null) ? report.getContent() : null;
+  }
+
+  /**
+   * Generates an AI report as an object (DTO) from the external API.
+   *
+   * @param indicatorName The indicator name
+   * @param year The reporting year
+   * @return An AIIndicatorReport object or null if failed
+   */
+  public AIIndicatorReport getAIIndicatorReportObject(String indicatorName, int year) {
+    try {
+      AIReportService service = new AIReportService(config);
+      return service.generateAIReportObject(indicatorName, year);
+    } catch (Exception e) {
+      this.addActionError("Error generating AI report for: " + indicatorName);
+      e.printStackTrace();
+      return null;
+    }
+  }
+
 
   /**
    * Get the phases created for the crp
@@ -4367,6 +4399,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return null;
     }
 
+  }
+
+  /**
+   * Get the Global Unit CRP Outcomes
+   *
+   * @return the list of CrpProgramOutcome for the current Global Unit.
+   */
+  public List<CrpProgramOutcome> getGlobalUnitCrpOutcomes() {
+    List<CrpProgramOutcome> outcomes = new ArrayList<>();
+    try {
+      if (this.getCurrentGlobalUnit() != null) {
+        outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId()).stream()
+          .filter(c -> c != null && c.getDescription() != null
+            && !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
+          .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error("Error getting global unit crp outcomes: " + e.getMessage());
+    }
+    return outcomes;
   }
 
 

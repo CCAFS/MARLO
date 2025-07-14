@@ -1,14 +1,14 @@
 [#ftl]
 [#assign title = "Summaries Section" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor"] /]
+[#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250707"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250711"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250707-1"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250711"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -495,18 +495,20 @@
       <div class="form-group row">
         [#assign reportPhases = (action.getPhasesByCycles(report.cycles![]))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if reportPhases?has_content]
-         
-          <div class="col-md-4">
-            <label for="">Cycle:</label>
-            <select name="phaseID" id="">
-              [#list reportPhases as phase ]
-              <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
-              [/#list]  
-            </select>
-          </div>
-        [#else]
-          <input type="hidden" name="phaseID" value="${actualPhase.id}" />
+        [#if !(report.allowIAI??)]
+          [#if reportPhases?has_content]
+          
+            <div class="col-md-4">
+              <label for="">Cycle:</label>
+              <select name="phaseID" id="">
+                [#list reportPhases as phase ]
+                <option value="${phase.id}" [#if (actualPhase.id == phase.id)!false]selected[/#if]>${phase.composedName}</option>
+                [/#list]  
+              </select>
+            </div>
+          [#else]
+            <input type="hidden" name="phaseID" value="${actualPhase.id}" />
+          [/#if]
         [/#if]
         
         [#-- Formats (PDF/Excel) --]
@@ -563,8 +565,14 @@
       [#-- AI --]
       [#if report.allowIAI??]
       <div class="form-group row">
+        <div class="col-md-4">
+          <label for="">Year:</label>
+          <select name="year" id="">
+            <option value="2025" selected>2025</option>
+          </select>
+        </div>
         <div class="col-md-8">
-          [@customForm.select name="projectID"   label=""  i18nkey="Indicator"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+          [@customForm.select name="indicatorName" label=""  i18nkey="Indicator"  listName="globalUnitCrpOutcomes"  keyFieldName="acronym"  displayFieldName="description" className="allProjectsSelect" /]
         </div>
       </div>
       [/#if]
@@ -600,15 +608,15 @@
       
       [#-- Generate Button--]
       [#if report.allowIAI??]
-      <button  class="btn btn-info pull-right generateReport" onclick="startTyping(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      <button  class="btn btn-info pull-right generateReport" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
 
       [#if report.allowIAI??]
       <div class="form-group iaPromptContainer" style="display: none;">
-        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem;">
-          <textarea disabled name="aiPrompt" class="form-control aiPrompt" placeholder="Describe the report you want to generate..." ></textarea>  
+        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem; padding: 0;">
+          [@customForm.textArea name="aiPrompt" placeholder="Describe the report you want to generate..." className="form-control aiPrompt" showTitle=false allowTextEditor=true  /]
         </div>
         
         <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
