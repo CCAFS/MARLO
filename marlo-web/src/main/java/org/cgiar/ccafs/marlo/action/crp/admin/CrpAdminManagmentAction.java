@@ -1224,6 +1224,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgramDb.setCrp(loggedCrp);
           crpProgramDb.setAcronym(crpProgram.getAcronym());
           crpProgramDb.setName(crpProgram.getName());
+          crpProgramDb.setBaseLine(crpProgram.getBaseLine());
 
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
 

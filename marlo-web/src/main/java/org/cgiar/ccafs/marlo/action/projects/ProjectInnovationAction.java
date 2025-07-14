@@ -3543,10 +3543,14 @@ public class ProjectInnovationAction extends BaseAction {
           ProjectInnovationReferenceComplementarySolution innovationReferenceSave =
             new ProjectInnovationReferenceComplementarySolution();
 
+			try {
           if (innovationReference.getId() != null) {
             innovationReferenceSave = this.projectInnovationReferenceComplementarySolutionManager
               .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
           }
+		} catch (Exception e) {
+			Log.error("error in load references process " + e);
+		}
 
           innovationReferenceSave.setProjectInnovation(projectInnovation);
           innovationReferenceSave.setPhase(phase);
@@ -3628,7 +3632,11 @@ public class ProjectInnovationAction extends BaseAction {
         studyReferenceSave.setProjectInnovation(projectInnovation);
         studyReferenceSave.setPhase(phase);
         studyReferenceSave.setReference(studyReference.getReference());
-        studyReferenceSave.setLink(studyReference.getLink());
+		if (studyReference.getLink() != null && !studyReference.getLink().isEmpty()) {
+			studyReferenceSave.setLink(studyReference.getLink().trim());
+		} else {
+			studyReferenceSave.setLink(studyReference.getLink());
+		}
 
         studyReferenceSave.setGender(studyReference.getGender());
         studyReferenceSave.setClimateChange(studyReference.getClimateChange());
@@ -3756,21 +3764,25 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveRegions(ProjectInnovation projectInnovation, Phase phase) {
+		try {
+			// Search and deleted form Information
+			if (projectInnovation.getProjectInnovationRegions() != null
+					&& !projectInnovation.getProjectInnovationRegions().isEmpty()) {
 
-    // Search and deleted form Information
-    if (projectInnovation.getProjectInnovationRegions() != null
-      && !projectInnovation.getProjectInnovationRegions().isEmpty()) {
+				List<ProjectInnovationRegion> regionPrev = new ArrayList<>(
+						projectInnovation.getProjectInnovationRegions().stream()
+								.filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId()))
+								.collect(Collectors.toList()));
 
-      List<ProjectInnovationRegion> regionPrev =
-        new ArrayList<>(projectInnovation.getProjectInnovationRegions().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-
-      for (ProjectInnovationRegion innovationRegion : regionPrev) {
-        if (innovation.getRegions() == null || !innovation.getRegions().contains(innovationRegion)) {
-          projectInnovationRegionManager.deleteProjectInnovationRegion(innovationRegion.getId());
-        }
-      }
-    }
+				for (ProjectInnovationRegion innovationRegion : regionPrev) {
+					if (innovation.getRegions() == null || !innovation.getRegions().contains(innovationRegion)) {
+						projectInnovationRegionManager.deleteProjectInnovationRegion(innovationRegion.getId());
+					}
+				}
+			}
+		} catch (Exception e) {
+			Log.error("error in sdg save process " + e);
+		}
 
     // Save form Information
     if (innovation.getRegions() != null) {

@@ -272,12 +272,19 @@ function attachEventsFeedback() {
 
     hideShowOptionButtons(block, '1');
 
-    saveCommentStatus2(1, commentID, "", function() {
+    //07/14/2025: update to allow write a comment after agree
+    displayReplyComment(elementBasicInfo);
+
+    block.find('.commentContainer').attr('status', '1');
+
+
+    //07/14/2025: update to disallow write a comment after agree
+    /*     saveCommentStatus2(1, commentID, "", function() {
       getQAComments();
       loadCommentsByUser(name);
       loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
       changeBackgroundColorBlocks(block, '1');
-    });
+    }); */
   });
 
   $('div.deleteCommentBtn').on('click', function() {
@@ -493,13 +500,14 @@ function attachEventsFeedback() {
 
       const validationResult = validateReply(value || comment);
 
+      const statusNumber = Number.parseInt(feedback_comment_reaction);
+
       // Check if the reply text is valid
-      if (validationResult.isValid) {
+      if (validationResult.isValid || statusNumber === 1) {
         textarea.css('border', '1px solid #ccc');
         warningMessage.hide();
         textarea.addClass('blockLoading');
         //First save the comment status
-        const statusNumber = Number.parseInt(feedback_comment_reaction);
         saveCommentStatus2(statusNumber, commentID, name, function (data,error) {
           // Then save the reply comment, remove text area content and hide the reply comment
           saveFeedbackReply2(validationResult.cleanText, commentID, name, function(){
@@ -806,7 +814,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
-      textarea.prev().text('Reply:');
+      textarea.prev().text('Reason you agree:');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -1168,9 +1176,10 @@ function loadCommentsByUser(name) {
 
                     // This is a special case for the reply status '1' (accepted)
                     // It allows the go back button to be displayed
-                    if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
+                    // 07/11/2024 - Disabled for the moment, since some revisions are being apply by directives
+                    /*                     if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
                       newReply.find('.goBackReplyBtn').show();
-                    }
+                    } */
 
                     repliesContainer.append(newReply);
                   });
@@ -1245,7 +1254,8 @@ function loadCommentsByUser(name) {
                 // This is an special case for hide the goBack button
                 // If there are no replies, then show the go back button only if the comment status is '1' (accepted)
                 // If there is a reply, then show the go back button only if the last reply status is '1' (accepted) and in the last reply
-                if (replies.length == 0) {
+                // 07/11/2024 - Disabled for the moment, since some revisions are being apply by directives (bulk of indecisive people)
+                /*                 if (replies.length == 0) {
                   repliesContainer.find('.goBackReplyBtn').hide();
                   block.find('.goBackCommentBtn').hide();
                   if (qaComments[i][j].status == '1') {
@@ -1261,7 +1271,10 @@ function loadCommentsByUser(name) {
                   } else {
                     repliesContainer.find('.goBackReplyBtn').last().hide();
                   }
-                }
+                } */
+
+                  repliesContainer.find('.goBackReplyBtn').hide();
+                  block.find('.goBackCommentBtn').hide();
               }
             }
           } else {
