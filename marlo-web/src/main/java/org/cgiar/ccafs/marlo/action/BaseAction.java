@@ -4407,19 +4407,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the list of CrpProgramOutcome for the current Global Unit.
    */
   public List<CrpProgramOutcome> getGlobalUnitCrpOutcomes() {
-    List<CrpProgramOutcome> outcomes = new ArrayList<>();
-    try {
-      if (this.getCurrentGlobalUnit() != null) {
-        outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId()).stream()
-          .filter(c -> c != null && c.getDescription() != null
-            && !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
-          .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      LOG.error("Error getting global unit crp outcomes: " + e.getMessage());
-    }
-    return outcomes;
-  }
+		List<CrpProgramOutcome> outcomes = new ArrayList<>();
+		try {
+			if (this.getCurrentGlobalUnit() != null) {
+				Set<String> seenAcronyms = new HashSet<>();
+				outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId())
+						.stream()
+						.filter(c -> c != null && c.isActive() && c.getDescription() != null
+								&& !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
+						.filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym()))
+						.collect(Collectors.toList());
+			}
+		} catch (Exception e) {
+			LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
+		}
+		return outcomes;
+	}
 
 
   /**
