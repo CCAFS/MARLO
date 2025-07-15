@@ -616,7 +616,7 @@
       
       [#-- Generate Button--]
       [#if report.allowAI??]
-      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px;" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px; background-color: #0478A3; display:flex; sp" onclick="getAIText(event)"><span class="tabler--file-star"></span> <p>Generate with AI</p></button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
