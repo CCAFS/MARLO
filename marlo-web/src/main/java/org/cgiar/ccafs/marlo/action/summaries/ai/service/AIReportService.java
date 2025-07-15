@@ -24,89 +24,102 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 public class AIReportService extends BaseAction {
 
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  private static String AI_API_URL = "";
+	private static String AI_API_URL = "";
 
-  protected APConfig config;
+	protected APConfig config;
 
-  public AIReportService(APConfig config) {
-    super();
-    this.config = config;
-  }
+	public AIReportService(APConfig config) {
+		super();
+		this.config = config;
+	}
 
-  public String generateAIReport(String indicator, int year) throws Exception {
-    AI_API_URL = config.getSummaryMicroserviceURL();
+	public String generateAIReport(String indicator, int year) throws Exception {
+		AI_API_URL = config.getSummaryMicroserviceURL();
 
-    URL url = new URL(AI_API_URL);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		URL url = new URL(AI_API_URL);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-    conn.setRequestMethod("POST");
-    conn.setRequestProperty("Content-Type", "application/json");
-    conn.setDoOutput(true);
+		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setDoOutput(true);
 
-    // Build JSON
-    String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
+		// Build JSON
+		String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
 
-    // Send JSON
-    try (OutputStream os = conn.getOutputStream()) {
-      byte[] input = jsonInput.getBytes("utf-8");
-      os.write(input, 0, input.length);
-    }
+		// Send JSON
+		try (OutputStream os = conn.getOutputStream()) {
+			byte[] input = jsonInput.getBytes("utf-8");
+			os.write(input, 0, input.length);
+		}
 
-    // Read answer
-    int status = conn.getResponseCode();
-    StringBuilder response = new StringBuilder();
+		// Read answer
+		int status = conn.getResponseCode();
+		StringBuilder response = new StringBuilder();
 
-    try (BufferedReader br = new BufferedReader(
-      new InputStreamReader(status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        response.append(line.trim());
-      }
-    }
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(
+				status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				response.append(line.trim());
+			}
+		}
 
-    conn.disconnect();
+		conn.disconnect();
 
-    return response.toString();
-  }
+		return response.toString();
+	}
 
-  public AIIndicatorReport generateAIReportObject(String indicator, int year) throws Exception {
-    AI_API_URL = config.getSummaryMicroserviceURL();
+	public AIIndicatorReport generateAIReportObject(String indicator, int year) throws Exception {
+		AI_API_URL = config.getSummaryMicroserviceURL();
 
-    URL url = new URL(AI_API_URL);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		URL url = new URL(AI_API_URL);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-    conn.setRequestMethod("POST");
-    conn.setRequestProperty("Content-Type", "application/json");
-    conn.setDoOutput(true);
+		conn.setRequestMethod("POST");
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setDoOutput(true);
 
-    String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
+		String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
 
-    try (OutputStream os = conn.getOutputStream()) {
-      byte[] input = jsonInput.getBytes("utf-8");
-      os.write(input, 0, input.length);
-    }
+		try (OutputStream os = conn.getOutputStream()) {
+			byte[] input = jsonInput.getBytes("utf-8");
+			os.write(input, 0, input.length);
+		}
 
-    int status = conn.getResponseCode();
-    StringBuilder response = new StringBuilder();
+		int status = conn.getResponseCode();
+		System.out.println("[AI Report] HTTP response status: " + status);
 
-    try (BufferedReader br = new BufferedReader(
-      new InputStreamReader(status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
-      String line;
-      while ((line = br.readLine()) != null) {
-        response.append(line.trim());
-      }
-    }
+		StringBuilder response = new StringBuilder();
 
-    conn.disconnect();
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(
+				status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
+			String line;
+			while ((line = br.readLine()) != null) {
+				response.append(line.trim());
+			}
+		}
 
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(response.toString(), AIIndicatorReport.class);
-  }
+		conn.disconnect();
+
+		String rawJson = response.toString();
+		System.out.println("[AI Report] Raw JSON response:");
+		System.out.println(rawJson.length() > 3000 ? rawJson.substring(0, 3000) + "..." : rawJson);
+
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			AIIndicatorReport report = mapper.readValue(rawJson, AIIndicatorReport.class);
+			System.out.println("[AI Report] JSON parsed successfully.");
+			return report;
+		} catch (JsonProcessingException e) {
+			System.err.println("[AI Report] Error parsing JSON: " + e.getMessage());
+			throw e;
+		}
+	}
 }
