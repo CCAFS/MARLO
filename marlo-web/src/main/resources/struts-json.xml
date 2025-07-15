@@ -452,6 +452,14 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+		
+		<action name="AIReportSummary"
+			class="org.cgiar.ccafs.marlo.action.json.summary.AIReportSummaryAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 
 		<action name="keyOutputList"
 			class="org.cgiar.ccafs.marlo.action.json.project.KeyOutputListAction">
@@ -874,6 +882,14 @@
 
 		<action name="getProjectOutcomesByPhase"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.bulkreplication.ProjectOutcomesByPhaseAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="getCrpProgramOutcomesByGlobalUnit"
+			class="org.cgiar.ccafs.marlo.action.json.summary.CrpProgramOutcomesByGlobalUnit">
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
