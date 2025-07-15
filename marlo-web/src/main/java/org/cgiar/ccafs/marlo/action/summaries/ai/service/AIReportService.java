@@ -51,8 +51,8 @@ public class AIReportService extends BaseAction {
 		conn.setDoOutput(true);
 
 		// Timeout settings
-		conn.setConnectTimeout(30000);
-		conn.setReadTimeout(120000);
+		conn.setConnectTimeout(31000);
+		conn.setReadTimeout(180000);
 
 		// Build JSON
 		String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
