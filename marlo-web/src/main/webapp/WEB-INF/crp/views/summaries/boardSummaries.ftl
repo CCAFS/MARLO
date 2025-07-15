@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250711"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250715"
   ] 
 /]
 
@@ -165,17 +165,6 @@
       "action": "${crpSession}/projectContributionLp6Summary",
       "formats": [ "Excel" ],
       "cycles": [ "Reporting" ]
-    },
-    {
-      "active": !centerGlobalUnit,
-      "available": true,
-      "title": "summaries.board.report.endCycleReport",
-      "description": "",
-      "namespace": "/projects",
-      "action": "",
-      "formats": [ "Code" ],
-      "cycles": [ "Planning", "Reporting" ],
-      "allowIAI": true
     }
   ]},
   [#-- PARTNERS REPORTS --]
@@ -334,6 +323,19 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning" ]
     }
+  ]},
+  [#-- AI REPORTS --]
+  { "slug": "ai", "active": true, "title":"summaries.board.options.ai", "reportsList": [
+    { "active": true,
+      "available": true,
+      "title": "summaries.board.report.cycleClosureOverview", 
+      "description": "summaries.board.report.cycleClosureOverview.description",
+      "namespace": "/ai",
+      "action": "${crpSession}/aiSummaries",
+      "formats": [ "Code" ],
+      "cycles": [ "Planning", "Reporting" ],
+      "allowAI": true
+    }
   ]}
 ]/]
 
@@ -374,22 +376,28 @@
       [#-- Menu Summaries --]
       <div class="summariesTab tab-content">
         <ul class="nav nav-tabs" role="tablist col-md-12">
-          <li role="presentation" class="summariesSection col-md-4 current active" id="projects">
+          <li role="presentation" class="summariesSection col-md-3 current active" id="projects">
             <a href="#projects-contentOptions" aria-controls="projects-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="30px" />
               Clusters
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-4" id="partners">
+          <li role="presentation" class="summariesSection col-md-3" id="partners">
             <a href="#partners-contentOptions" aria-controls="partners-contentOptions" role="tab" data-toggle="tab">
-              <img src="${baseUrlCdn}/global/images/partners_summaries.png" width="30px" />
+              <img src="${baseUrlCdn}/global/images/partners_summaries_color.png" width="30px" />
               Partners
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-4" id="deliverables">
+          <li role="presentation" class="summariesSection col-md-3" id="deliverables">
             <a href="#deliverables-contentOptions" aria-controls="deliverables-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/verification.png" width="30px" />
               Deliverables
+            </a>
+          </li>
+          <li role="presentation" class="summariesSection col-md-3" id="ai">
+            <a href="#ai-contentOptions" aria-controls="ai-contentOptions" role="tab" data-toggle="tab">
+              <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png" width="30px" />
+              AI Summaries
             </a>
           </li>
         </ul>
@@ -495,7 +503,7 @@
       <div class="form-group row">
         [#assign reportPhases = (action.getPhasesByCycles(report.cycles![]))![] ]
         [#-- Cycles (Planning/Reporting) --]
-        [#if !(report.allowIAI??)]
+        [#if !(report.allowAI??)]
           [#if reportPhases?has_content]
           
             <div class="col-md-4">
@@ -563,15 +571,15 @@
 
 
       [#-- AI --]
-      [#if report.allowIAI??]
-      <div class="form-group row">
-        <div class="col-md-4">
+      [#if report.allowAI??]
+      <div class="form-group col-md-10" style="padding: 0;">
+        <div class="col-md-6" style="padding-left: 0;">
           <label for="">Year:</label>
           <select name="year" id="">
             <option value="2025" selected>2025</option>
           </select>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-6" style="padding-left: 0;">
           [@customForm.select name="indicatorName" label=""  i18nkey="Indicator"  listName="globalUnitCrpOutcomes"  keyFieldName="acronym"  displayFieldName="description" className="allProjectsSelect" /]
         </div>
       </div>
@@ -607,13 +615,13 @@
       [/#if]
       
       [#-- Generate Button--]
-      [#if report.allowIAI??]
-      <button  class="btn btn-info pull-right generateReport" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      [#if report.allowAI??]
+      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px;" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
 
-      [#if report.allowIAI??]
+      [#if report.allowAI??]
       <div class="form-group iaPromptContainer" style="display: none;">
         <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem; padding: 0;">
           [@customForm.textArea name="aiPrompt" placeholder="Describe the report you want to generate..." className="form-control aiPrompt" showTitle=false allowTextEditor=true  /]

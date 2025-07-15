@@ -166,6 +166,16 @@ function getAIText(e, service = 'AIReportSummary.do') {
   const indicatorNameValue = form.find('select[name="indicatorName"]').val();
   const yearValue = form.find('select[name="year"]').val();
 
+  console.log("Selected Indicator Name:", indicatorNameValue);
+
+  if (indicatorNameValue == -1 || indicatorNameValue == "-1" || indicatorNameValue == null || indicatorNameValue == "") {
+    form.find('select[name="indicatorName"]').next().addClass('fieldError');
+
+    return;
+  }
+
+  form.find('select[name="indicatorName"]').next().removeClass('fieldError');
+
   $.ajax({
     url: baseURL + "/" + service,
     method: 'GET',
@@ -203,7 +213,7 @@ function getAIText(e, service = 'AIReportSummary.do') {
 
       if (response && response.jsonResponse) {
         const jsonResponse = response.jsonResponse;
-        const text = JSON.parse(jsonResponse).content;
+        let text = JSON.parse(jsonResponse).content;
 
         if (!text) {
           console.error("No text found in the response.");
