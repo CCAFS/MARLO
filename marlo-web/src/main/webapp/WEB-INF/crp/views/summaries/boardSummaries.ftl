@@ -400,7 +400,7 @@
           <li role="presentation" class="summariesSection col-md-3" id="ai">
             <a href="#ai-contentOptions" aria-controls="ai-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png" width="30px" />
-              AI Summaries
+              AI Narrative Generator
             </a>
           </li>
           [/#if]
