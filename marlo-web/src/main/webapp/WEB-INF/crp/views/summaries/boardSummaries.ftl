@@ -373,33 +373,37 @@
       </section>
       <div class="borderMap"></div>
       
+      [#assign isAISummariesActive = action.hasSpecificities("summary_ai_report_tab_active")]
+      
       [#-- Menu Summaries --]
       <div class="summariesTab tab-content">
         <ul class="nav nav-tabs" role="tablist col-md-12">
-          <li role="presentation" class="summariesSection col-md-3 current active" id="projects">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)} current active" id="projects">
             <a href="#projects-contentOptions" aria-controls="projects-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="30px" />
               Clusters
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-3" id="partners">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)}" id="partners">
             <a href="#partners-contentOptions" aria-controls="partners-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/partners_summaries_color.png" width="30px" />
               Partners
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-3" id="deliverables">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)}" id="deliverables">
             <a href="#deliverables-contentOptions" aria-controls="deliverables-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/verification.png" width="30px" />
               Deliverables
             </a>
           </li>
+          [#if isAISummariesActive]
           <li role="presentation" class="summariesSection col-md-3" id="ai">
             <a href="#ai-contentOptions" aria-controls="ai-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png" width="30px" />
               AI Summaries
             </a>
           </li>
+          [/#if]
         </ul>
         
         [#--  Temporarily disabled --]
