@@ -166,8 +166,6 @@ function getAIText(e, service = 'AIReportSummary.do') {
   const indicatorNameValue = form.find('select[name="indicatorName"]').val();
   const yearValue = form.find('select[name="year"]').val();
 
-  console.log("Selected Indicator Name:", indicatorNameValue);
-
   if (indicatorNameValue == -1 || indicatorNameValue == "-1" || indicatorNameValue == null || indicatorNameValue == "") {
     form.find('select[name="indicatorName"]').next().addClass('fieldError');
 
@@ -242,9 +240,9 @@ function convertMarkdownToHTML(markdownText) {
   // Convert Markdown to HTML using a simple regex-based approach
   // This is a basic implementation; consider using a library like marked.js for more complex Markdown
   let htmlText = markdownText
-    .replace(/### (.*?)(\n|$)/g, '<h3>$1</h3>') // H3
-    .replace(/## (.*?)(\n|$)/g, '<h2>$1</h2>') // H2
-    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>') // H1
+    .replace(/### (.*?)(\n|$)/g, '<h4>$1</h4>') // H4
+    .replace(/## (.*?)(\n|$)/g, '<h3>$1</h3>') // H3
+    .replace(/# (.*?)(\n|$)/g, '<h2>$1</h2>') // H2
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
     .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
     .replace(/~~(.*?)~~/g, '<del>$1</del>') // Strikethrough
@@ -252,7 +250,8 @@ function convertMarkdownToHTML(markdownText) {
     .replace(/```(.*?)```/g, '<pre><code>$1</code></pre>') // Code blocks
     .replace(/`(.*?)`/g, '<code>$1</code>') // Inline code
     .replace(/^\s*-\s+(.*?)(\n|$)/gm, '<ul><li>$1</li></ul>') // Unordered lists
-    .replace(/^\s*\d+\.\s+(.*?)(\n|$)/gm, '<ol><li>$1</li></ol>'); // Ordered lists
+    .replace(/^\s*\d+\.\s+(.*?)(\n|$)/gm, '<ol><li>$1</li></ol>') // Ordered lists
+    .replace(/\n/g, '<br>'); // New lines to <br>
 
 
 
@@ -297,11 +296,32 @@ function startTyping(textToTypeParam) {
 
 function copyToClipboard(e) {
   e.preventDefault();
-  const textarea = $(this).siblings('.col-md-12').find('.aiPrompt');
+  const textareaContainer = $(this).siblings('.col-md-12').find('.trumbowyg-editor');
+  console.log("Copying formatted text to clipboard");
   
-  if (textarea.length > 0) {
-    textarea.select();
+  if (textareaContainer.length > 0) {
+    // Create a temporary div with the formatted content
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = textareaContainer.html();
+    
+    // Create a selection range
+    const selection = window.getSelection();
+    const range = document.createRange();
+    
+    // Clear any existing selection
+    selection.removeAllRanges();
+    
+    // Select the temporary div
+    document.body.appendChild(tempDiv);
+    range.selectNodeContents(tempDiv);
+    selection.addRange(range);
+    
+    // Execute the copy command
     document.execCommand('copy');
+    
+    // Clean up
+    selection.removeAllRanges();
+    document.body.removeChild(tempDiv);
     
     // Visual feedback
     const originalText = $(this).html();

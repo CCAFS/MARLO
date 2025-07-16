@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250715"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250716"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250711"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250716"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -373,33 +373,37 @@
       </section>
       <div class="borderMap"></div>
       
+      [#assign isAISummariesActive = action.hasSpecificities("summary_ai_report_tab_active")]
+      
       [#-- Menu Summaries --]
       <div class="summariesTab tab-content">
         <ul class="nav nav-tabs" role="tablist col-md-12">
-          <li role="presentation" class="summariesSection col-md-3 current active" id="projects">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)} current active" id="projects">
             <a href="#projects-contentOptions" aria-controls="projects-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" width="30px" />
               Clusters
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-3" id="partners">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)}" id="partners">
             <a href="#partners-contentOptions" aria-controls="partners-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/partners_summaries_color.png" width="30px" />
               Partners
             </a>
           </li>
-          <li role="presentation" class="summariesSection col-md-3" id="deliverables">
+          <li role="presentation" class="summariesSection col-md-${isAISummariesActive?then(3,4)}" id="deliverables">
             <a href="#deliverables-contentOptions" aria-controls="deliverables-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/verification.png" width="30px" />
               Deliverables
             </a>
           </li>
+          [#if isAISummariesActive]
           <li role="presentation" class="summariesSection col-md-3" id="ai">
             <a href="#ai-contentOptions" aria-controls="ai-contentOptions" role="tab" data-toggle="tab">
               <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png" width="30px" />
-              AI Summaries
+              AI Narrative Generator
             </a>
           </li>
+          [/#if]
         </ul>
         
         [#--  Temporarily disabled --]
@@ -616,7 +620,7 @@
       
       [#-- Generate Button--]
       [#if report.allowAI??]
-      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px;" onclick="getAIText(event)"><span class="glyphicon glyphicon-download-alt"></span> Generate with AI</button> <div class="clearfix"></div>
+      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px; background-color: #0478A3; display:flex; sp" onclick="getAIText(event)"><span class="tabler--file-star"></span> <p>Generate Narrative</p></button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
