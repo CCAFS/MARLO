@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250715-1"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250716"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250711"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250716"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -620,7 +620,7 @@
       
       [#-- Generate Button--]
       [#if report.allowAI??]
-      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px; background-color: #0478A3; display:flex; sp" onclick="getAIText(event)"><span class="tabler--file-star"></span> <p>Generate with AI</p></button> <div class="clearfix"></div>
+      <button  class="btn btn-info pull-right generateReport col-md-2" style="margin-top: 20px; background-color: #0478A3; display:flex; sp" onclick="getAIText(event)"><span class="tabler--file-star"></span> <p>Generate Narrative</p></button> <div class="clearfix"></div>
       [#else]
       <button type="submit" class="btn btn-info pull-right"><span class="glyphicon glyphicon-download-alt"></span> Generate</button> <div class="clearfix"></div>
       [/#if]
