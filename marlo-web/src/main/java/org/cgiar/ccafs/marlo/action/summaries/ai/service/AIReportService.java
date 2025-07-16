@@ -51,8 +51,8 @@ public class AIReportService extends BaseAction {
 		conn.setDoOutput(true);
 
 		// Timeout settings
-		conn.setConnectTimeout(30000);
-		conn.setReadTimeout(120000);
+		conn.setConnectTimeout(35000);
+		conn.setReadTimeout(300000);
 
 		// Build JSON
 		String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
@@ -80,50 +80,75 @@ public class AIReportService extends BaseAction {
 		return response.toString();
 	}
 
-	public AIIndicatorReport generateAIReportObject(String indicator, int year) throws Exception {
-		AI_API_URL = config.getSummaryMicroserviceURL();
-
-		URL url = new URL(AI_API_URL);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-		conn.setRequestMethod("POST");
-		conn.setRequestProperty("Content-Type", "application/json");
-		conn.setDoOutput(true);
-
-		String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
-
-		try (OutputStream os = conn.getOutputStream()) {
-			byte[] input = jsonInput.getBytes("utf-8");
-			os.write(input, 0, input.length);
-		}
-
-		int status = conn.getResponseCode();
-		System.out.println("[AI Report] HTTP response status: " + status);
-
-		StringBuilder response = new StringBuilder();
-
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(
-				status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
-			String line;
-			while ((line = br.readLine()) != null) {
-				response.append(line.trim());
-			}
-		}
-
-		conn.disconnect();
-
-		String rawJson = response.toString();
-		System.out.println("[AI Report] Raw JSON response:");
-		System.out.println(rawJson.length() > 3000 ? rawJson.substring(0, 3000) + "..." : rawJson);
-
+	/**
+	 * Generates the AI narrative report for a specific indicator and year by
+	 * calling the AI summary microservice. If the remote call or JSON parsing
+	 * fails, a fallback AIIndicatorReport is returned with error information.
+	 *
+	 * @param indicator The unique identifier of the indicator.
+	 * @param year      The reporting year.
+	 * @return AIIndicatorReport object containing the report content or an error
+	 *         message.
+	 */
+	public AIIndicatorReport generateAIReportObject(String indicator, int year) {
 		ObjectMapper mapper = new ObjectMapper();
+		AIIndicatorReport report = new AIIndicatorReport();
+
 		try {
-			AIIndicatorReport report = mapper.readValue(rawJson, AIIndicatorReport.class);
+			// Prepare URL and open connection to AI summary microservice
+			AI_API_URL = config.getSummaryMicroserviceURL();
+			URL url = new URL(AI_API_URL);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			// Set connection properties
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setConnectTimeout(32000); // 32 seconds
+			conn.setReadTimeout(360000); // 6 minutes
+			conn.setDoOutput(true);
+
+			// Prepare request payload
+			String jsonInput = String.format("{\"indicator\": \"%s\", \"year\": %d}", indicator, year);
+
+			// Send request body
+			try (OutputStream os = conn.getOutputStream()) {
+				byte[] input = jsonInput.getBytes("utf-8");
+				os.write(input, 0, input.length);
+			}
+
+			// Get response status code
+			int status = conn.getResponseCode();
+			System.out.println("[AI Report] HTTP response status: " + status);
+
+			// Read response body
+			StringBuilder response = new StringBuilder();
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(
+					status >= 200 && status < 300 ? conn.getInputStream() : conn.getErrorStream(), "utf-8"))) {
+				String line;
+				while ((line = br.readLine()) != null) {
+					response.append(line.trim());
+				}
+			}
+
+			conn.disconnect();
+			String rawJson = response.toString();
+
+			// Try to parse the response into AIIndicatorReport
+			report = mapper.readValue(rawJson, AIIndicatorReport.class);
 			System.out.println("[AI Report] JSON parsed successfully.");
 			return report;
-		} catch (JsonProcessingException e) {
-			System.err.println("[AI Report] Error parsing JSON: " + e.getMessage());
-			throw e;
+
+		} catch (Exception e) {
+			// Log and build fallback error response
+			System.err.println("[AI Report] Error generating report: " + e.getMessage());
+
+			report.setIndicator(indicator);
+			report.setYear(year);
+			report.setStatus("error");
+			report.setContent("Failed to generate report: " + e.getMessage());
+
+			return report;
 		}
 	}
+
 }
