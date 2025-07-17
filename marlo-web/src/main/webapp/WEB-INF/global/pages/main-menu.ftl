@@ -141,34 +141,40 @@
 
 
 
-  <div id="userInfo" class="userDropdown">
-    <div class="userToggle">
-      <div class="avatar">${initials}</div>
-      <span class="caret"></span>
-    </div>
-    <div class="userMenu">
-      <p class="username"><strong>${(currentUser.composedCompleteName)!}</strong></p>
-      <p class="email">${(currentUser.email)!}</p>
-      <p class="roles">[${(roles)!}${(roles?has_content && liasons?has_content)?string(', ', '')}${(liasons)!}]</p>
-      
-    <p class="roles">
-      [#if roleList?has_content]
-        [#list roleList as r]
-          ${(r.aiccraAcronymDimanic)!}[#if r_has_next], [/#if]
-        [/#list]
-      [/#if]
-      [#if liasons?has_content]
-        [#if roleList?has_content], [/#if]
-        ${(liasons)!}
-      [/#if]
-    </p>
-      
-      
-      <a class="logout" href="[@s.url action="logout" namespace="/" /]">
-        <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
-      </a>
-    </div>
-  </div>
+	<div id="userInfo" class="userDropdown">
+	  <div class="userToggle">
+	    <div class="avatar">${initials}</div>
+	    <span class="caret"></span>
+	  </div>
+	
+	  <div id="userInfo-drop">
+	    <p class="name"><strong>${(currentUser.composedCompleteName)!}</strong></p>
+	
+	    <p class="email">
+	      <i class="glyphicon glyphicon-envelope"></i> ${(currentUser.email)!}
+	    </p>
+	
+	    <div class="roles">
+	      <strong>Roles:</strong>
+	      [#if rolesList?has_content]
+	        [#list rolesList as r]
+	          <span>${(r.aiccraAcronymDimanic)!}</span>[#if r_has_next] [/#if]
+	        [/#list]
+	      [/#if]
+	      [#if liasons?has_content]
+	        [#if rolesList?has_content] <br/> [/#if]
+	        <span>${(liasons)!}</span>
+	      [/#if]
+	    </div>
+	
+	    <!-- loguot button -->
+	    <a id="userLogOut" href="[@s.url action='logout' namespace='/' /]">
+	      <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
+	    </a>
+	  </div>
+	</div>
+
+
 [/#if]
 
     

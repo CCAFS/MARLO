@@ -1612,21 +1612,32 @@ header {
 	*/
 	height: 100%;
 	font-size: 0.9em;
-	padding: 6px 30px 17px 20px;
+	padding: 6px 1px 30px 1px;
 	/*box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);*/
 }
 
 a#userLogOut {
-	color: #FFF;
-	text-decoration: none;
-	background: #444;
-	padding: 1px 8px;
-	font-size: 0.70em;
-	font-weight: lighter;
-	position: absolute;
-	right: 1em;
-	top: 0.6em;
-	border-radius: 5px;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #FFF;
+  text-decoration: none;
+  background: rgb(0, 128, 255);
+  padding: 6px 0;
+  font-size: 0.90em;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-top: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+}
+a#userLogOut:hover {
+  background: rgb(0, 110, 220);
+}
+
+#userLogOut:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.3);
 }
 
 #userInfo:hover #userInfo-drop {
@@ -1635,30 +1646,36 @@ a#userLogOut {
 }
 
 #userInfo-drop {
-	padding: 10px !important;
-	position: absolute;
-	top: 64px;
-	left: 0;
-	border-radius: 8px;
-	text-align: left;
-	transition: opacity 0.5s linear;
-	background: #595959;
-	z-index: 1;
-	width: 90%;
-	display: none;
+  padding: 10px !important;
+  position: absolute;
+  top: 66px;
+  right: 0;
+  left: auto;
+  border-radius: 8px;
+  text-align: left;
+  transition: opacity 0.5s linear;
+  background: #595959;
+  z-index: 1;
+  min-width: 220px;
+  max-width: 300px;
+  width: auto;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  cursor: default;
 }
 
 #userInfo-drop:after {
 	position: absolute;
-	left: 20px;
+	right: -152px;
+	left: auto;
 	top: -9px;
 	content: '';
 	width: 0;
 	margin-right: 80%;
 	height: 0px;
 	border-style: solid;
-	border-width: 0 8px 9px 8px;
-	border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #595959 rgba(0, 0, 0, 0);
+	border-width: 0 12px 9px 12px; 
+	border-color: transparent transparent #595959 transparent;
 }
 
 #userInfo-drop li {
@@ -1667,6 +1684,12 @@ a#userLogOut {
 	padding: 6px 5px 6px 0px !important;
 	border-bottom: 1px solid #6E6B6B;
 	line-height: 0.9em;
+	cursor: default;
+}
+
+#userInfo-drop li.logout-btn {
+  cursor: pointer; /* Solo este es clickeable */
+  font-weight: bold;
 }
 
 #userInfo .name {
@@ -1675,19 +1698,25 @@ a#userLogOut {
 	margin-bottom: 0;
 }
 
-#userInfo .roles {
-	font-size: 0.7em;
-	padding-top: 0px;
-	min-width: 153px;
-	color: rgb(43, 131, 160);
-	font-weight: lighter;
+#userInfo .roles strong {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #fff;
 }
 
 #userInfo .roles span {
-	background-color: #fff;
-	color: #444;
-	padding: 0 5px;
-	border-radius: 3px;
+  display: inline-block;
+  margin: 2px 3px;
+  background-color: #fff;
+  color: #444;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7em;
+}
+
+#userInfo .roles span {
+  display: block;
 }
 
 #userInfo .institution {
@@ -1788,8 +1817,21 @@ a#userLogOut {
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo {
-	padding: 0px 22px 0px 20px;
-	border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* o space-between si necesitas separar cosas */
+  padding: 0px 22px 0px 20px;
+  border: 0;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo-drop {
+  top: 40px;
+  right: 0;
+  left: auto;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo-drop:after {
+  right: -134px; 
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo .userToggle {
@@ -1801,13 +1843,13 @@ a#userLogOut {
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo .avatar {
-	width: 28px;
+  width: 28px;
   height: 28px;
   font-size: 0.9em;
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo .roles {
-	display: true;
+	display: block;
 }
 
 #mainMenu .menuContent.positionFixedTop ul {
