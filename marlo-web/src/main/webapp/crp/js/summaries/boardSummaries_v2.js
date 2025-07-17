@@ -359,19 +359,18 @@ function animationTransition(status = 0) {
   const animationText = animationContainer.find('.iaAnimation-text');
   const animationSubtext = animationContainer.find('.iaAnimation-subtext');
 
-  const baseUrlCdn = window.location.origin;
 
   const animationStatus = {
     0: {
-      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-1.png`,
+      image: `${baseURL}/global/images/animation-load-summaries-1.png`,
       text: "Collecting data reported in the system",
     },
     1: {
-      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-2.png`,
+      image: `${baseURL}/global/images/animation-load-summaries-2.png`,
       text: "Analyzing and organizing the collected information",
     },
     2: {
-      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-3.png`,
+      image: `${baseURL}/global/images/animation-load-summaries-3.png`,
       text: "Generating a summary based on the synthesized data",
     }
   }
