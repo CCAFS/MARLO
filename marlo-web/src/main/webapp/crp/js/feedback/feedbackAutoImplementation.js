@@ -495,7 +495,7 @@ function attachEventsFeedback() {
     // Map the feedback_comment_reaction to a more readable status
     if (temporalStatus !== 'Unknown') {
       if (isTracking == 'true') {
-        sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, feedback_comment_reaction, currentUserName, value, this);
+        sendFeedbackReactionEmail(feedback_assesor_input, feedback_assesor_name, feedback_assesor_email, temporalStatus, currentUserName, value, this);
       }
 
       const validationResult = validateReply(value || comment);
