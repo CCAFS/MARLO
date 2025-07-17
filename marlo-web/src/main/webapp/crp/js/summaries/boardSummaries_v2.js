@@ -162,6 +162,8 @@ function getAIText(e, service = 'AIReportSummary.do') {
 
   const container = $('.iaPromptContainer');
   const textarea = container.find('textarea');
+  const containerContent = container.find('.iaPromptContent');
+  const containerAnimation = $('.iaAnimation');
 
   const indicatorNameValue = form.find('select[name="indicatorName"]').val();
   const yearValue = form.find('select[name="year"]').val();
@@ -186,53 +188,69 @@ function getAIText(e, service = 'AIReportSummary.do') {
     beforeSend: function() {
       // Disable the button to prevent multiple clicks
       eventBtn.prop('disabled', true);
-      // Show loading spinner or message
-      eventBtn.html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Generating AI text...');
 
-      // Show the container
+      // Show the containers
       container.show();
+      containerContent.hide();
+      containerAnimation.show();
       // Enable the textarea and focus on it
       textarea.trumbowyg('disable');
 
       // Clear the textarea
       textarea.trumbowyg('html', '');
 
-      // Add load animation to the textarea
-      textarea.closest('form').find('.trumbowyg-editor').addClass('loading');
+      // Start the animation
+      animationTransition(0);
+
+      // After a short delay, start the animation transition
+      setTimeout(function() {
+        animationTransition(1);
+      }, 25000); // Adjust the delay as needed
+
+
     },
     success: function(response) {
 
       // Enable the button after the request is complete
       eventBtn.prop('disabled', false);
-      eventBtn.html('<span class="glyphicon glyphicon-download-alt"></span> Generate with AI');
 
-      // Add load animation to the textarea
-      textarea.closest('form').find('.trumbowyg-editor').removeClass('loading');
+      console.log(response);
 
-      if (response && response.jsonResponse) {
-        const jsonResponse = response.jsonResponse;
-        let text = JSON.parse(jsonResponse).content;
+      // Continue with the animation transition
+      animationTransition(2);
 
-        if (!text) {
-          console.error("No text found in the response.");
-          text = "No text found in the response.";
+      setTimeout(function () {
+        // Hide the animation container after a delay
+        containerAnimation.hide();
+        // Show the content container
+        containerContent.show();
+
+        //With the success callback, we can handle the response
+        if (response) {
+          const jsonResponse = JSON.parse(response.jsonResponse);
+          let text = jsonResponse.content;
+          if (!text) {
+            console.error("No text found in the response.");
+            text = "No text found in the response.";
+          }
+          // Convert Markdown to HTML
+          const htmlText = convertMarkdownToHTML(text);
+          // Start typing the text in the textarea
+          startTyping(htmlText);
+        } else {
+          console.error("Invalid response format:", response);
+          // Handle the case where the response is not as expected
+          textarea.trumbowyg('html', "No text found in the response.");
         }
 
-        // Convert Markdown to HTML
-        const htmlText = convertMarkdownToHTML(text);
+      }, 3500); // Adjust the delay as needed
 
-        startTyping(htmlText);
-        
-      } else {
-        console.error("No text found in the response.");
-        return "No text found in the response.";
-      }
     },
     error: function(xhr, status, error) {
       console.error("Error fetching AI text:", error);
       return "Error fetching AI text.";
     }
-  })
+  });
 
 }
 
@@ -333,4 +351,55 @@ function copyToClipboard(e) {
       $(this).removeClass('btn-success').addClass('btn-copy');
     }, 2000);
   }
+}
+
+function animationTransition(status = 0) {
+  const animationContainer = $('.iaAnimation');
+  const animationImage = animationContainer.find('.iaAnimation-image');
+  const animationText = animationContainer.find('.iaAnimation-text');
+  const animationSubtext = animationContainer.find('.iaAnimation-subtext');
+
+  const baseUrlCdn = window.location.origin;
+
+  const animationStatus = {
+    0: {
+      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-1.png`,
+      text: "Collecting data reported in the system",
+    },
+    1: {
+      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-2.png`,
+      text: "Analyzing and organizing the collected information",
+    },
+    2: {
+      image: `${baseUrlCdn}/marlo-web/global/images/animation-load-summaries-3.png`,
+      text: "Generating a summary based on the synthesized data",
+    }
+  }
+
+  if (status in animationStatus) {
+    // Fade out current content
+    animationImage.fadeOut(300, function() {
+      // Change the image source
+      $(this).attr('src', animationStatus[status].image);
+      // Fade in with new image
+      $(this).fadeIn(300);
+    });
+    
+    animationText.fadeOut(300, function() {
+      // Change the text
+      $(this).text(animationStatus[status].text);
+      // Fade in with new text
+      $(this).fadeIn(300);
+    });
+    
+    animationSubtext.fadeOut(300, function() {
+      // Change the subtext
+      $(this).text("Please, wait a moment. The system is working on the narratives. This may take a few minutes.");
+      // Fade in with new subtext
+      $(this).fadeIn(300);
+    });
+  } else {
+    console.error("Invalid status for animation transition:", status);
+  }
+
 }

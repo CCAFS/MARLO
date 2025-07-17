@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250716"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20250717"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250716"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250717"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -627,11 +627,19 @@
 
       [#if report.allowAI??]
       <div class="form-group iaPromptContainer" style="display: none;">
-        <div class="col-md-12" style="margin-top: 1rem; margin-bottom: 1rem; padding: 0;">
-          [@customForm.textArea name="aiPrompt" placeholder="Describe the report you want to generate..." className="form-control aiPrompt" showTitle=false allowTextEditor=true  /]
+        <div class="iaAnimation">
+          <img src="${baseUrlCdn}/global/images/animation-load-summaries-3.png" alt="AI Animation" class="iaAnimation-image" />
+          <p class="iaAnimation-text">Template text</p>
+          <p class="iaAnimation-subtext">Please, wait a moment. The system is working on the narratives. This may take a few minutes.</p>
         </div>
-        
-        <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
+
+        <div class="iaPromptContent">          
+          <div class="col-md-12 iaPrompt" style="margin-top: 1rem; margin-bottom: 1rem; padding: 0;">
+            [@customForm.textArea name="aiPrompt" placeholder="Describe the report you want to generate..." className="form-control aiPrompt" showTitle=false allowTextEditor=true  /]
+          </div>
+          
+          <button class="btn btn-copy pull-right"><span class="glyphicon glyphicon-copy"></span> Copy to clipboard</button> <div class="clearfix"></div>
+        </div>
       </div>
       [/#if]
     [/@s.form]
