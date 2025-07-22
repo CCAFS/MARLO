@@ -7,7 +7,7 @@
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
   "${baseUrlMedia}/js/projects/projectInnovations.js?20250604",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250714"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250716"
 ] /]
 
 [#assign moduleJS = [
