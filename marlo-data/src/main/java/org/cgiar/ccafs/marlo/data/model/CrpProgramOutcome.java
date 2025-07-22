@@ -56,6 +56,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   @Expose
   private Integer year;
   @Expose
+  private Integer startYear;
+  @Expose
   private FileDB file;
   @Expose
   private Integer orderIndex;
@@ -111,6 +113,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
     this.setYear(other.getYear());
+    this.setStartYear(other.getStartYear());
   }
 
 
@@ -135,6 +138,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
     this.setYear(other.getYear());
+    this.setStartYear(other.getStartYear());
   }
 
   @Override
@@ -265,6 +269,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return this.srfTargetUnit;
   }
 
+  public Integer getStartYear() {
+    return startYear;
+  }
+
   public List<CrpOutcomeSubIdo> getSubIdos() {
     return subIdos;
   }
@@ -355,6 +363,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
     this.srfTargetUnit = srfTargetUnit;
+  }
+
+  public void setStartYear(Integer startYear) {
+    this.startYear = startYear;
   }
 
   public void setSubIdos(List<CrpOutcomeSubIdo> subIdos) {

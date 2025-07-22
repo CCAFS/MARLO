@@ -53,6 +53,9 @@
 		<property name="year" type="java.lang.Integer">
 			<column name="year" not-null="false" />
 		</property>
+		<property name="startYear" type="java.lang.Integer">
+			<column name="start_year" not-null="false" />
+		</property>
 		<property name="orderIndex" type="java.lang.Integer">
             <column name="order_index" not-null="false" />
         </property>

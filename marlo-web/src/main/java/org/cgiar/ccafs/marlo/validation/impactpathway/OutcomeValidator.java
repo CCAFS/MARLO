@@ -149,7 +149,8 @@ public class OutcomeValidator extends BaseValidator
     }
 
     /* POWB 2019 validators */
-    if (milestone.getYear() != null && milestone.getYear() == year && milestone.getYear() >= 2019) {
+    if (!action.isAiccra() && milestone.getYear() != null && milestone.getYear() == year
+      && milestone.getYear() >= 2019) {
 
       if (!(this.isValidString(milestone.getPowbMilestoneVerification()))) {
         action.getInvalidFields().put("input-" + customName + ".powbMilestoneVerification",

@@ -224,8 +224,15 @@
     [/#if]
 
     <div class="row form-group target-block to-minimize-outcome">
+      [#-- Acronym --]
+    	<div class="col-md-4">[@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]</div>
+    
+      [#-- Start Year --]
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!0}" type="text" i18nkey="outcome.startYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!2023}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!0}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
+      [#-- Order --]
+      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
       <div class="col-md-4 targetUnit-block">
@@ -241,12 +248,12 @@
       <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
       </div>
-
+      
     </div>
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
-      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">Intermediate Targets <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
+      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">[@s.text name = "outcome.milestone.sectionTitle" /] <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
       [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
         [#if action.isAiccra()]
           <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Progress to Target Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
@@ -469,6 +476,7 @@
         </div>
 
         [#-- POWB 2019 REQUIREMENTS --]
+        [#if !(action.isAiccra())]
         <div class="form-group to-minimize">
           <div class="row">
             [#-- Indicate of the following --]
@@ -526,6 +534,7 @@
             <br />
           </div>
         </div>
+        [/#if]
       </div>
 
     </div>
