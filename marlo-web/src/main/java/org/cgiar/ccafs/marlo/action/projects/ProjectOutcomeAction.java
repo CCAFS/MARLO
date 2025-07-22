@@ -160,6 +160,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private Double totalOwnFemales = new Double(0);
   private Double totalOwnAfricans = new Double(0);
   private Double totalOwnYouth = new Double(0);
+  private boolean isAiccraPhase3;
 
   @Inject
   public ProjectOutcomeAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -1681,6 +1682,7 @@ public class ProjectOutcomeAction extends BaseAction {
       LOG.error(e + " error getting commentable fields");
     }
 
+    isAiccraPhase3 = this.isAICCRA3Phase(this.getActualPhase().getId());
 
     /*
      * Loading basic List
@@ -2267,6 +2269,14 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setTotalParticipantFormalTrainingPhdMale(Double totalParticipantFormalTrainingPhdMale) {
     this.totalParticipantFormalTrainingPhdMale = totalParticipantFormalTrainingPhdMale;
+  }
+
+  public boolean isAiccraPhase3() {
+    return isAiccraPhase3;
+  }
+
+  public void setAiccraPhase3(boolean isAiccraPhase3) {
+    this.isAiccraPhase3 = isAiccraPhase3;
   }
 
   public void setTotalParticipantFormalTrainingShortFemale(Double totalParticipantFormalTrainingShortFemale) {

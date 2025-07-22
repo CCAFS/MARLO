@@ -476,7 +476,7 @@
         </div>
 
         [#-- POWB 2019 REQUIREMENTS --]
-        [#if !(action.isAiccra())]
+        [#if action.hasSpecificities('impact_pathway_cross_cutting_markets_active')]
         <div class="form-group to-minimize">
           <div class="row">
             [#-- Indicate of the following --]

@@ -4407,22 +4407,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the list of CrpProgramOutcome for the current Global Unit.
    */
   public List<CrpProgramOutcome> getGlobalUnitCrpOutcomes() {
-		List<CrpProgramOutcome> outcomes = new ArrayList<>();
-		try {
-			if (this.getCurrentGlobalUnit() != null) {
-				Set<String> seenAcronyms = new HashSet<>();
-				outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId())
-						.stream()
-						.filter(c -> c != null && c.isActive() && c.getDescription() != null
-								&& !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
-						.filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym()))
-						.collect(Collectors.toList());
-			}
-		} catch (Exception e) {
-			LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
-		}
-		return outcomes;
-	}
+    List<CrpProgramOutcome> outcomes = new ArrayList<>();
+    try {
+      if (this.getCurrentGlobalUnit() != null) {
+        Set<String> seenAcronyms = new HashSet<>();
+        outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId()).stream()
+          .filter(c -> c != null && c.isActive() && c.getDescription() != null
+            && !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
+          .filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym())).collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
+    }
+    return outcomes;
+  }
 
 
   /**
@@ -6619,6 +6617,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * This method return true if the phase belong to an AICCRA 3 phase
+   *
+   * @param phaseID is the phase ID to be identified.
+   * @return Boolean object with the value
+   */
+  public boolean isAICCRA3Phase(long phaseID) {
+    long startAICCRA3Phase = 444;
+
+    if (startAICCRA3Phase != 0 && phaseID != 0 && phaseID >= startAICCRA3Phase) {
       return true;
     } else {
       return false;

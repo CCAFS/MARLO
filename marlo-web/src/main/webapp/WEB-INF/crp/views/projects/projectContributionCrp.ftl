@@ -266,7 +266,7 @@
 
                               [#-- progress targets --]
                               <br>
-                              [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                              [#if !aiccraPhase3 && year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
                                 <h5 class="sectionSubTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h5>
                                 [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
@@ -402,6 +402,23 @@
           </div>
           [/#if]          
                                   
+          [#-- AICCRA Indicators --]
+          [#if aiccraPhase3 && action.hasSpecificities('crp_baseline_indicators') && projectOutcome.crpProgramOutcome.indicators?size != 0]
+          <h4 class="headTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h4>
+          <div class="nextUsersBlock borderBox">
+            <div class="nextUsersList">
+              [#if projectOutcome.crpProgramOutcome.indicators?has_content]
+                [#list projectOutcome.crpProgramOutcome.indicators as indicator]
+                	[@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
+                [/#list]
+              [#else]
+              	<h5 class="headTitle">No Progress to Target indicators added</h5>
+              [/#if]
+            </div>
+    
+          </div>
+          [/#if]
+                  
           
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
@@ -458,6 +475,10 @@
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
 
+[#-- indicators Template --]
+[#if AiccraPhase3]
+	[@baselineAiccraIndicatorMacro element={} name="projectOutcome.indicators" index="-1" isTemplate=true AREditable=true /]
+[/#if]
 
 
   
