@@ -531,3 +531,61 @@ ul.nav li a {
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
 }
+
+.iaAnimation{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.iaAnimation-image {
+  width: 140px;
+  height: 140px;
+}
+
+.iaAnimation-text {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #0478A3;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  animation: textColorChange 5s infinite;
+}
+
+.iaAnimation-subtext {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #6E6E6E;
+  margin-top: 0.5rem;
+  animation: subtextColorChange 5s infinite;
+}
+
+/* Animation Keyframes to change color with a lateral movement of the text */
+
+@keyframes textColorChange {
+  0% {
+    color: #0478A3;
+  }
+  50% {
+    color: #81a3af;
+  }
+  100% {
+    color: #0478A3;
+  }
+}
+
+
+@keyframes subtextColorChange {
+  0% {
+    color: #6E6E6E;
+  }
+  50% {
+    color: #9a9a9a;
+  }
+  100% {
+    color: #6E6E6E;
+  }
+  
+}
