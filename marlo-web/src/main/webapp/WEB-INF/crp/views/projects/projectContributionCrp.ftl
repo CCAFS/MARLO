@@ -236,36 +236,54 @@
                                     
           </div>
           
-          [#-- if aiccraPhase3 --]
+          [#if aiccraPhase3]
 	          [#-- Project Milestones and Communications contributions per year--]
 	          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
-	          
-	          [#-- List milestones  --]
-	          <div class="milestonesYearBlock borderBox" listname="milestonesProject">
-	            <div class="milestonesYearList">
-	              [#if milestonesProject?has_content]
-	                [#list milestonesProject as milestone]
-	                  [@milestoneMacroOld element=milestone name="projectOutcome.milestones" index=milestone_index /]
-	                [/#list]
-	              [#else]
-	                <p class="emptyMessage text-center">There is not a milestone added.</p>
-	              [/#if]
-	            </div>
-	            [#-- Select a milestone  --]
-	            [#-- if editable]
-	            <div class="milestonesYearSelect"> 
-	              <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-	              <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-	              [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
-	            </div>
-	            [/#if--]
-	          </div>
-          [#--  /#if--]
-                    
+	          	          
+	          [#-- List milestones 
+	          <div class="milestonesYearBlock borderBox" listname="milestonesProject"> --]
+	            
+	            [#-- Year Tabs --]
+							[#if milestonesYears?has_content]
+							  <ul class="nav nav-tabs budget-tabs" role="tablist">
+							    [#list milestonesYears as year]
+
+							      <li class="[#if year == currentCycleYear]active[/#if]">
+							        <a href="#milestoneYear-${year}" role="tab" data-toggle="tab">
+							          [@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year}
+							        </a>
+							      </li>
+							    [/#list]
+							  </ul>
+							
+							  <div class="tab-content contributionContent">
+							    [#list milestonesYears as year]
+							      <div class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}">
+							        <div class="milestonesYearList">
+							          [#assign foundMilestone = false]
+							          [#list milestonesProject as milestone]
+							            [#if milestone.year == year]
+							              [#assign foundMilestone = true]
+							              [@milestoneMacroOld element=milestone name="projectOutcome.milestones" index=milestone_index /]
+							            [/#if]
+							          [/#list]
+							          [#if !foundMilestone]
+							            <p class="emptyMessage text-center">There is no milestone added for ${year}.</p>
+							          [/#if]
+							        </div>
+							      </div>
+							    [/#list]
+							    </br>
+							  </div>
+							  
+							[/#if]
+
+	          [/#if]          
+                     
+          [#if !aiccraPhase3]         
           [#-- Project Milestones and Communications contributions per year AICCRA 2--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
-
           [#-- Year Tabs --]
           [#if milestonesProjectYear?has_content]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
@@ -409,7 +427,8 @@
           [#else]
           <p>No information</p>
           [/#if]
-                   
+          [/#if]
+                          
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">
@@ -1018,6 +1037,7 @@
     
     [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
 
+
     [#-- Remove Button --]
     [#--  if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if --]
     <div class="leftHead sm">
@@ -1078,7 +1098,7 @@
           </div>
           
           <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && isYearRequired(milestoneYear) && (milestoneYear gte currentCycleYear)!true /]
           </div>
           
           <div class="col-md-4 input-container">
@@ -1205,7 +1225,7 @@
       <span class="index">${index+1}</span>
     </div>
     <div class="form-group grayBox">
-      ${element.indicator}
+      ${(element.indicator)!}
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
