@@ -114,6 +114,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setValue(other.getValue());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
+    this.setOrderIndex(other.getOrderIndex());
   }
 
 
@@ -139,6 +140,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setValue(other.getValue());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
+    this.setOrderIndex(other.getOrderIndex());
   }
 
   @Override
