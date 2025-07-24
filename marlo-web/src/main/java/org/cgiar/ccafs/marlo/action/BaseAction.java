@@ -6054,20 +6054,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String getTraineesIndicatorDB() {
-    DeliverableTraineesIndicator deliverableTraineesIndicator = null;
     String indicator = "";
     try {
-      deliverableTraineesIndicator = this.deliverableTraineesIndicatorManager.findAll().stream()
-        .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList()).get(0);
+      Optional<DeliverableTraineesIndicator> optionalIndicator =
+        this.deliverableTraineesIndicatorManager.findAll().stream()
+          .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+          .findFirst();
+
+      if (optionalIndicator.isPresent() && optionalIndicator.get().getIndicator() != null
+        && !optionalIndicator.get().getIndicator().isEmpty()) {
+        indicator = optionalIndicator.get().getIndicator();
+      }
+
     } catch (Exception e) {
-      LOG.error("error getting deliverable trainees indicator DB " + e);
+      LOG.error("Error getting deliverable trainees indicator from DB", e);
     }
 
-    if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
-      && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
-      indicator = deliverableTraineesIndicator.getIndicator();
-    }
     return indicator;
   }
 
@@ -6623,21 +6625,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  /**
-   * This method return true if the phase belong to an AICCRA 3 phase
-   *
-   * @param phaseID is the phase ID to be identified.
-   * @return Boolean object with the value
-   */
-  public boolean isAICCRA3Phase(long phaseID) {
-    long startAICCRA3Phase = 444;
-
-    if (startAICCRA3Phase != 0 && phaseID != 0 && phaseID >= startAICCRA3Phase) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   public boolean isAiccra() {
     if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null

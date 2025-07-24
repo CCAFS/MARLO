@@ -169,6 +169,8 @@ public final class APConstants {
   public static final String GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE = "generate_pentaho_innovations_report_active";
   public static final String IMPACT_PATHWAY_CROSS_CUTTING_MARKETS_ACTIVE =
     "impact_pathway_cross_cutting_markets_active";
+  public static final String CONTRIBUTION_PERFORMANCE_INDICATORS_SHOW_MULTIPLE_MILESTONES_PER_YEAR_ACTIVE =
+    "contribution_performance_indicators_show_multiple_milestones_per_year_active";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";

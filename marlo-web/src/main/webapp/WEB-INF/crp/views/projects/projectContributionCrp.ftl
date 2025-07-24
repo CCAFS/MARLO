@@ -236,7 +236,7 @@
                                     
           </div>
           
-          [#if aiccraPhase3]
+          [#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active') ]
 	          [#-- Project Milestones and Communications contributions per year--]
 	          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
 	          	          
@@ -280,7 +280,7 @@
 
 	          [/#if]          
                      
-          [#if !aiccraPhase3]         
+          [#if !(action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active')) ]
           [#-- Project Milestones and Communications contributions per year AICCRA 2--]
           <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
           
@@ -310,7 +310,7 @@
 
                               [#-- progress targets --]
                               <br>
-                              [#if !aiccraPhase3 && year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                              [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
                                 <h5 class="sectionSubTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h5>
                                 [#--  <h4 class="headTitle">Progress to Targets</h4>--]
 
@@ -448,7 +448,7 @@
           [/#if]          
                                   
           [#-- AICCRA Indicators --]
-          [#if aiccraPhase3 && action.hasSpecificities('crp_baseline_indicators') && projectOutcome.crpProgramOutcome.indicators?size != 0]
+          [#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active') && action.hasSpecificities('crp_baseline_indicators') && projectOutcome.crpProgramOutcome.indicators?size != 0]
           <h4 class="headTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h4>
           <div class="nextUsersBlock borderBox">
             <div class="nextUsersList">
@@ -522,7 +522,7 @@
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
 
 [#-- indicators Template --]
-[#if aiccraPhase3]
+[#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active')]
 	[@baselineAiccraIndicatorMacro element={} name="projectOutcome.indicators" index="-1" isTemplate=true AREditable=true /]
 [/#if]
 
