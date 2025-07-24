@@ -127,6 +127,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
   private List<Integer> milestonesProjectYear;
+  private List<Integer> milestonesYears;
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
   private ProjectOutcome projectOutcome;
@@ -750,6 +751,28 @@ public class ProjectOutcomeAction extends BaseAction {
       }
     }
   }
+
+  /**
+   * Fill the milestones years list for tabs information
+   **/
+  public void fillAllMilestonesYearsList() {
+    milestonesYears = new ArrayList<>();
+    Set<Integer> yearsAdded = new HashSet<>();
+
+    if (milestonesProject != null && !milestonesProject.isEmpty()) {
+      for (CrpMilestone milestoneElement : milestonesProject) {
+        if (milestoneElement != null && milestoneElement.isActive() && milestoneElement.getYear() != null
+          && milestoneElement.getYear() != 0) {
+
+          Integer year = milestoneElement.getYear();
+          if (yearsAdded.add(year)) { // Solo lo añade si no existe
+            milestonesYears.add(year);
+          }
+        }
+      }
+    }
+  }
+
 
   /*
    * Get information shared deliverables for own trainees contribution
@@ -1577,6 +1600,7 @@ public class ProjectOutcomeAction extends BaseAction {
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
 
     this.fillMilestonesProjectYearsList();
+    this.fillAllMilestonesYearsList();
 
     if (this.isReportingActive()) {
       if (projectOutcomeLastPhase != null) {
@@ -1680,7 +1704,6 @@ public class ProjectOutcomeAction extends BaseAction {
     } catch (Exception e) {
       LOG.error(e + " error getting commentable fields");
     }
-
 
     /*
      * Loading basic List
@@ -2291,6 +2314,16 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setUserID(Long userID) {
     this.userID = userID;
+  }
+
+
+  public List<Integer> getMilestonesYears() {
+    return milestonesYears;
+  }
+
+
+  public void setMilestonesYears(List<Integer> milestonesYears) {
+    this.milestonesYears = milestonesYears;
   }
 
   @Override
