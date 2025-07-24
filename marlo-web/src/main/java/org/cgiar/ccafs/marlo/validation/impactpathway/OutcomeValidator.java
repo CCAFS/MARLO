@@ -17,6 +17,7 @@
 package org.cgiar.ccafs.marlo.validation.impactpathway;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpMilestone;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
@@ -149,7 +150,8 @@ public class OutcomeValidator extends BaseValidator
     }
 
     /* POWB 2019 validators */
-    if (milestone.getYear() != null && milestone.getYear() == year && milestone.getYear() >= 2019) {
+    if (action.hasSpecificities(APConstants.IMPACT_PATHWAY_CROSS_CUTTING_MARKETS_ACTIVE) && milestone.getYear() != null
+      && milestone.getYear() == year && milestone.getYear() >= 2019) {
 
       if (!(this.isValidString(milestone.getPowbMilestoneVerification()))) {
         action.getInvalidFields().put("input-" + customName + ".powbMilestoneVerification",
