@@ -171,6 +171,7 @@ public final class APConstants {
     "impact_pathway_cross_cutting_markets_active";
   public static final String CONTRIBUTION_PERFORMANCE_INDICATORS_SHOW_MULTIPLE_MILESTONES_PER_YEAR_ACTIVE =
     "contribution_performance_indicators_show_multiple_milestones_per_year_active";
+  public static final String DISPLAY_USER_MENU_NEW_STYLE = "display_user_menu_new_style";
 
   public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
     "is_expected_deliverable_report_all_years_visible";
