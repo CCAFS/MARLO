@@ -114,7 +114,7 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
           acronym = "Cluster Coordinator";
           break;
         case "PMU":
-          acronym = "Secretariat";
+          acronym = "PMC";
           break;
         case "CP":
           acronym = "Contact Point";
@@ -123,7 +123,11 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
           acronym = "Guest";
           break;
         default:
-          acronym = this.getAcronym();
+          if (this.getDescription() != null && !this.getDescription().isEmpty()) {
+            acronym = this.getDescription();
+          } else {
+            acronym = this.getAcronym();
+          }
           break;
       }
     }

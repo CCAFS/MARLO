@@ -1601,7 +1601,7 @@ header {
 	text-align: left;
 }
 
-#userInfo {
+#userInfoOld {
 	color: #fff;
 	text-align: left;
 	position: absolute;
@@ -1609,13 +1609,45 @@ header {
 	top: 0;
 	background: #57A7B5;
 	border-bottom: 6px solid #4C8D99;
+   
 	height: 100%;
 	font-size: 0.9em;
 	padding: 6px 30px 17px 20px;
 	box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);
 }
 
+#userInfo {
+	color: #fff;
+	text-align: left;
+	position: absolute;
+	right: 0.5em;
+	top: 0;
+	/*background: #57A7B5;
+	border-bottom: 6px solid #4C8D99;
+	*/
+	height: 100%;
+	font-size: 0.9em;
+	padding: 6px 1px 30px 1px;
+	/*box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.1);*/
+}
+
 a#userLogOut {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #FFF;
+  text-decoration: none;
+  background: rgb(0, 128, 255);
+  padding: 6px 0;
+  font-size: 0.90em;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-top: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+}
+
+a#userLogOutOld {				 
 	color: #FFF;
 	text-decoration: none;
 	background: #444;
@@ -1624,8 +1656,18 @@ a#userLogOut {
 	font-weight: lighter;
 	position: absolute;
 	right: 1em;
+										   
 	top: 0.6em;
-	border-radius: 5px;
+	border-radius: 5px;							   
+}
+
+a#userLogOut:hover {
+  background: rgb(0, 110, 220);
+}
+
+#userLogOut:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.3);
 }
 
 #userInfo:hover #userInfo-drop {
@@ -1633,31 +1675,54 @@ a#userLogOut {
 	display: block;
 }
 
-#userInfo-drop {
+#userInfoOld-drop {
 	padding: 10px !important;
 	position: absolute;
 	top: 64px;
 	left: 0;
+			 
 	border-radius: 8px;
 	text-align: left;
 	transition: opacity 0.5s linear;
 	background: #595959;
 	z-index: 1;
 	width: 90%;
-	display: none;
+				   
+			  
+	display: none;	  
+}
+
+#userInfo-drop {
+  padding: 10px !important;
+  position: absolute;
+  top: 66px;
+  right: 0;
+  left: auto;
+  border-radius: 8px;
+  text-align: left;
+  transition: opacity 0.5s linear;
+  background: #595959;
+  z-index: 1;
+  min-width: 220px;
+  max-width: 300px;
+  width: auto;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  cursor: default;
 }
 
 #userInfo-drop:after {
 	position: absolute;
-	left: 20px;
+	right: -152px;
+	left: auto;
 	top: -9px;
 	content: '';
 	width: 0;
 	margin-right: 80%;
 	height: 0px;
 	border-style: solid;
-	border-width: 0 8px 9px 8px;
-	border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #595959 rgba(0, 0, 0, 0);
+	border-width: 0 12px 9px 12px; 
+	border-color: transparent transparent #595959 transparent;
 }
 
 #userInfo-drop li {
@@ -1666,6 +1731,12 @@ a#userLogOut {
 	padding: 6px 5px 6px 0px !important;
 	border-bottom: 1px solid #6E6B6B;
 	line-height: 0.9em;
+	cursor: default;
+}
+
+#userInfo-drop li.logout-btn {
+  cursor: pointer; /* Solo este es clickeable */
+  font-weight: bold;
 }
 
 #userInfo .name {
@@ -1674,7 +1745,13 @@ a#userLogOut {
 	margin-bottom: 0;
 }
 
-#userInfo .roles {
+#userInfoOld .name {
+	font-size: 0.8em;
+	margin-right: 55px;
+	margin-bottom: 0;
+}
+
+#userInfoOld .roles {
 	font-size: 0.7em;
 	padding-top: 0px;
 	min-width: 153px;
@@ -1682,11 +1759,32 @@ a#userLogOut {
 	font-weight: lighter;
 }
 
-#userInfo .roles span {
+#userInfoOld .roles span {		  
 	background-color: #fff;
 	color: #444;
 	padding: 0 5px;
 	border-radius: 3px;
+}
+
+#userInfo .roles strong {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #fff;
+}
+
+#userInfo .roles span {
+  display: inline-block;
+  margin: 2px 3px;
+  background-color: #fff;
+  color: #444;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7em;
+}
+
+#userInfo .roles span {
+  display: block;
 }
 
 #userInfo .institution {
@@ -1699,12 +1797,31 @@ a#userLogOut {
 	margin-bottom: 0;
 }
 
+#userInfoOld .institution {
+	font-size: 0.7em;
+	padding-top: 0px;
+	min-width: 153px;
+	color: #E7E7E7;
+	font-weight: lighter;
+	/* line-height: 1em; */
+	margin-bottom: 0;
+}
+
 #userInfo .logout {
+	background-color: #337AB7;
+	margin-left: 4px;
+	padding: 0px 7px;
+	border-radius: 4px;
+	border-bottom: 3px solid #004080;
+	font-family: "Helvetica Neue", Helvetica, Arial;
+}
+
+#userInfoOld .logout {
 	background-color: #4B4B4B;
 	margin-left: 4px;
 	padding: 0px 7px;
 	border-radius: 4px;
-	border-bottom: 2px solid #2E2E2E;
+	border-bottom: 2px solid #2E2E2E;											 
 }
 
 #userInfo .program {
@@ -1785,22 +1902,67 @@ a#userLogOut {
 	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-#mainMenu .menuContent.positionFixedTop #userInfo {
+#mainMenu .menuContent.positionFixedTop #userInfoOld {															 
 	padding: 7px 22px 0px 20px;
 	border: 0;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* o space-between si necesitas separar cosas */
+  padding: 0px 22px 0px 20px;
+  border: 0;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo-drop {
+  top: 40px;
+  right: 0;
+  left: auto;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo-drop:after {
+  right: -134px; 
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo .userToggle {
+  height: 35px;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfoOld .userToggle {
+  height: 35px;
 }
 
 #mainMenu .menuContent.positionFixedTop #userInfo .institution {
 	display: none;
 }
 
-#mainMenu .menuContent.positionFixedTop #userInfo .roles {
+#mainMenu .menuContent.positionFixedTop #userInfoOld .institution {
 	display: none;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo .avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.9em;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfoOld .avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 0.9em;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfoOld .roles {
+	display: none;
+}
+
+#mainMenu .menuContent.positionFixedTop #userInfo .roles {
+	display: block;
 }
 
 #mainMenu .menuContent.positionFixedTop ul {
 	list-style-type: none;
-	/* padding: 8px 0px; */
 }
 
 #mainMenu .menuContent.positionFixedTop ul li {
@@ -1900,7 +2062,83 @@ a#userLogOut {
 	color: #5FAAC7;
 }
 
+#userInfo.userDropdown {
+  position: absolute;
+  right: 10px;
+  color: #fff;
+  font-size: 0.85em;
+  cursor: pointer;
+}
 
+#userInfo .userToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+}
+
+#userInfo .avatar {
+  width: 35px;
+  height: 35px;
+  background-color: #fff;
+  color: #23718F;
+  border-radius: 4px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 1.0em;
+}
+
+#userInfo .caret {
+  margin-top: 3px;
+  border-top: 5px solid #fff;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  vertical-align: middle;
+}
+
+#userInfo .userMenu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 38px;
+  background: rgb(255, 255, 255);
+  padding: 10px 12px;
+  border-radius: 4px;
+  width: 240px;
+  box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+  z-index: 10000;
+  color: rgb(0, 0, 0);
+}
+
+#userInfo .userMenu p {
+  margin: 4px 0;
+  font-size: 0.9em;
+  line-height: 1.2em;
+}
+
+#userInfo .userMenu .logout {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#userInfo .userMenu .logout:hover {
+  text-decoration: underline;
+}
+
+#userInfo:hover .userMenu {
+  display: block;
+}
+
+/* Sticky top adjustment */
+#mainMenu .menuContent.positionFixedTop #userInfo .userMenu {
+  top: 32px;
+}
 
 
 @media screen and (max-width: 1335px) {

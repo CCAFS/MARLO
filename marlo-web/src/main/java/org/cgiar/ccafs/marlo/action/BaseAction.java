@@ -4407,22 +4407,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the list of CrpProgramOutcome for the current Global Unit.
    */
   public List<CrpProgramOutcome> getGlobalUnitCrpOutcomes() {
-		List<CrpProgramOutcome> outcomes = new ArrayList<>();
-		try {
-			if (this.getCurrentGlobalUnit() != null) {
-				Set<String> seenAcronyms = new HashSet<>();
-				outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId())
-						.stream()
-						.filter(c -> c != null && c.isActive() && c.getDescription() != null
-								&& !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
-						.filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym()))
-						.collect(Collectors.toList());
-			}
-		} catch (Exception e) {
-			LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
-		}
-		return outcomes;
-	}
+    List<CrpProgramOutcome> outcomes = new ArrayList<>();
+    try {
+      if (this.getCurrentGlobalUnit() != null) {
+        Set<String> seenAcronyms = new HashSet<>();
+        outcomes = crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId()).stream()
+          .filter(c -> c != null && c.isActive() && c.getDescription() != null
+            && !c.getDescription().contains(APConstants.DELIVERABLE_CRP_PROGRAM_OUTCOME_DEPRECATED))
+          .filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym())).collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
+    }
+    return outcomes;
+  }
 
 
   /**
@@ -6056,20 +6054,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String getTraineesIndicatorDB() {
-    DeliverableTraineesIndicator deliverableTraineesIndicator = null;
     String indicator = "";
     try {
-      deliverableTraineesIndicator = this.deliverableTraineesIndicatorManager.findAll().stream()
-        .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
-        .collect(Collectors.toList()).get(0);
+      Optional<DeliverableTraineesIndicator> optionalIndicator =
+        this.deliverableTraineesIndicatorManager.findAll().stream()
+          .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId().equals(this.getActualPhase().getId()))
+          .findFirst();
+
+      if (optionalIndicator.isPresent() && optionalIndicator.get().getIndicator() != null
+        && !optionalIndicator.get().getIndicator().isEmpty()) {
+        indicator = optionalIndicator.get().getIndicator();
+      }
+
     } catch (Exception e) {
-      LOG.error("error getting deliverable trainees indicator DB " + e);
+      LOG.error("Error getting deliverable trainees indicator from DB", e);
     }
 
-    if (deliverableTraineesIndicator != null && deliverableTraineesIndicator.getIndicator() != null
-      && !deliverableTraineesIndicator.getIndicator().isEmpty()) {
-      indicator = deliverableTraineesIndicator.getIndicator();
-    }
     return indicator;
   }
 
@@ -6624,6 +6624,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
   }
+
 
   public boolean isAiccra() {
     if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null

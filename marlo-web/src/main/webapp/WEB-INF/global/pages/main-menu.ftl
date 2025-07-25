@@ -130,15 +130,63 @@
 	    [@mainMenuList /]
 	  </ul>
 
-    [#if logged?? && logged]
-      <div id="userInfo">
-        <a id="userLogOut" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>
-        <p class="userId" style="display:none">${(currentUser.id)!}</p>
+[#if logged?? && logged]
+	[#if action.hasSpecificities('display_user_menu_new_style')]
+	  [#assign nameParts = (currentUser.firstName)!''?split(" ") /]
+	  [#assign lastNameParts = (currentUser.lastName)!''?split(" ") /]
+	
+	  [#assign firstInitial = (nameParts[0])?substring(0, 1)?upper_case /]
+	  [#assign lastInitial = (lastNameParts[0])?substring(0, 1)?upper_case /]
+	
+	  [#assign initials = firstInitial + lastInitial /]
+	
+	
+	
+		<div id="userInfo" class="userDropdown">
+		  <div class="userToggle">
+		    <div class="avatar">${initials}</div>
+		    <span class="caret"></span>
+		  </div>
+		
+		  <div id="userInfo-drop">
+		    <p class="name"><strong>${(currentUser.composedCompleteName)!}</strong></p>
+		
+		    <p class="email">
+		      <i class="glyphicon glyphicon-envelope"></i> ${(currentUser.email)!}
+		    </p>
+		
+		    <div class="roles">
+		      <strong>Roles:</strong>
+		      [#if rolesList?has_content]
+		        [#list rolesList as r]
+		          <span>${(r.aiccraAcronymDimanic)!}</span>[#if r_has_next] [/#if]
+		        [/#list]
+		      [/#if]
+		      [#if liasons?has_content]
+		        [#if rolesList?has_content] <br/> [/#if]
+		        <span>${(liasons)!}</span>
+		      [/#if]
+		    </div>
+		
+		    <!-- loguot button -->
+		    <a id="userLogOut" href="[@s.url action='logout' namespace='/' /]">
+		      <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
+		    </a>
+		  </div>
+		</div>
+	[#else]
+      <div id="userInfoOld">
+        <a id="userLogOutOld" href="[@s.url action="logout" namespace="/" /]">[@s.text name="header.logout" /]</a>					   
+        <p class="userId" style="display:none">${(currentUser.id)!}</p>	  
         <p class="name"><span class="glyphicon glyphicon-user"></span> ${(currentUser.composedCompleteName)!}</p>
         <p class="institution">${(currentUser.email)!}</p>
         <p class="roles"> [${(roles)!}${(roles?has_content && liasons?has_content)?string(',','')}${(liasons)!}]</p>
       </div>
-    [/#if]
+	[/#if]
+[/#if]
+
+    
+    
   </div>
 </div>
 </nav>
