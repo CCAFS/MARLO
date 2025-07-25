@@ -346,6 +346,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<Institution> contributingPartnerList;
   private List<ImpactAreaScore> impactAreaScores;
   private List<RepIndOptions> optionList;
+  private List<ProjectInnovation> allInnovationList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -1438,6 +1439,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       try {
+        this.allInnovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase());
         this.impactAreaScores = this.impactAreaScoreManager.findAll();
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
@@ -4092,6 +4094,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setImpactAreaList(List<ImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
+  }
+
+  public List<ProjectInnovation> getAllInnovationList() {
+    return allInnovationList;
+  }
+
+  public void setAllInnovationList(List<ProjectInnovation> allInnovationList) {
+    this.allInnovationList = allInnovationList;
   }
 
   public void setImpactAreaScores(List<ImpactAreaScore> impactAreaScores) {
