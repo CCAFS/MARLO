@@ -783,12 +783,11 @@
           </div>
           [#-- Organizations --]
           <div class="col-md-12 organizationsBlock">
+          [#-- list of items --]
+          [#-- DEPRECATED --]
+          [#--
             <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
-            <label class="note--2">
-              <p>[@s.text name="projectInnovations.anticipatedUsers.organizations.help" /]</p>
-            </label>
-            [#-- list of items --]
-            <div class="organizationsList">
+             <div class="organizationsList">
               [#list (element.allianceOrganizations)![] as organization]
                 [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
               [/#list]
@@ -796,12 +795,16 @@
             [#if editable]
               <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
               <div class="clearfix"></div>
-            [/#if]
+            [/#if] --]
+            [#-- multiselect organizations --]
+            <div class="form-group">
+              [@customForm.elementsListComponent name="${customName}.allianceOrganizations" elementType="institution" label="projectInnovations.anticipatedUsers.organizations" elementList=(element.allianceOrganizations)![] listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=true /]
+            </div>
           </div>
           [#-- Element item Template --]
           <div style="display:none">
             [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-            [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+            [#--  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]  --]
           </div>
 
         </div>
@@ -1054,6 +1057,8 @@
   </div>
 [/#macro]
 
+[#--  Organizations Macro  --]
+[#--  DEPRECATED - Not being used, a good development :(  --]
 [#macro organizationsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   

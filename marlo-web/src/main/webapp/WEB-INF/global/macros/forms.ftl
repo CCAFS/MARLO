@@ -718,7 +718,18 @@
     [#local elementList = [] /] 
   [/#attempt]
 
-  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#attempt]
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /]
+  [#recover]
+    [#-- If the sort_by failed with the specified field, try to sort by "name" instead --]
+    [#attempt]
+      [#local list = ((listName?eval)?sort_by("name"))![] /]
+    [#recover]
+      [#-- If both sorting attempts fail, just use the unsorted list --]
+      [#local list = (listName?eval)![] /]
+    [/#attempt]
+  [/#attempt]
 
   [#-- Compose ID for the element --]
   
