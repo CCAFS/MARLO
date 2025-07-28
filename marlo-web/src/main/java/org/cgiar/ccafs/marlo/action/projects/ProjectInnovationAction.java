@@ -42,12 +42,15 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationActorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationBundleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCrpOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationFunctionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationInfoManager;
@@ -113,12 +116,15 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationFunction;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
@@ -281,6 +287,10 @@ public class ProjectInnovationAction extends BaseAction {
   private ImpactAreaScoreManager impactAreaScoreManager;
   private RepIndOptionsManager repIndOptionsManager;
 
+  private ProjectInnovationFunctionManager projectInnovationFunctionManager;
+  private ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager;
+  private ProjectInnovationBundleManager projectInnovationBundleManager;
+
   // Variables
   private long projectID;
   private long innovationID;
@@ -347,6 +357,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ImpactAreaScore> impactAreaScores;
   private List<RepIndOptions> optionList;
   private List<ProjectInnovation> allInnovationList;
+  private List<ProjectInnovationFunction> projectInnovationFunctionList;
 
   @Inject
   public ProjectInnovationAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -398,7 +409,9 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager,
     DeliverableTypeManager deliverableTypeManager, InstitutionLocationManager institutionLocationManager,
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
-    RepIndOptionsManager repIndOptionsManager) {
+    RepIndOptionsManager repIndOptionsManager, ProjectInnovationFunctionManager projectInnovationFunctionManager,
+    ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
+    ProjectInnovationBundleManager projectInnovationBundleManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -472,6 +485,9 @@ public class ProjectInnovationAction extends BaseAction {
     this.deliverableInfoManager = deliverableInfoManager;
     this.impactAreaScoreManager = impactAreaScoreManager;
     this.repIndOptionsManager = repIndOptionsManager;
+    this.projectInnovationFunctionManager = projectInnovationFunctionManager;
+    this.projectInnovationComplementarySolutionManager = projectInnovationComplementarySolutionManager;
+    this.projectInnovationBundleManager = projectInnovationBundleManager;
   }
 
   /**
@@ -1359,6 +1375,19 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovations bundles
+        if (innovation.getProjectInnovationComplementarySolutions() != null) {
+          innovation
+            .setComplementarySolutions(new ArrayList<>(innovation.getProjectInnovationComplementarySolutions().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
+        // Innovations actors
+        if (innovation.getProjectInnovationBundles() != null) {
+          innovation.setBundles(new ArrayList<>(innovation.getProjectInnovationBundles().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+        }
+
         // Innovations tool categories
         if (innovation.getProjectInnovationToolCategories() != null) {
           innovation.setToolCategories(new ArrayList<>(innovation.getProjectInnovationToolCategories().stream()
@@ -1457,6 +1486,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
         this.optionList = this.repIndOptionsManager.findAll();
+        this.projectInnovationFunctionList = this.projectInnovationFunctionManager.findAll();
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());
@@ -2139,6 +2169,12 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getToolCategories() != null) {
         innovation.getToolCategories().clear();
       }
+      if (innovation.getBundles() != null) {
+        innovation.getBundles().clear();
+      }
+      if (innovation.getComplementarySolutions() != null) {
+        innovation.getComplementarySolutions().clear();
+      }
       if (deliverableTypeParent != null) {
         deliverableTypeParent.clear();
       }
@@ -2215,6 +2251,8 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveAllianceOrganizations(innovationDB, phase);
       this.saveActors(innovationDB, phase);
       this.saveToolCategories(innovationDB, phase);
+      this.saveBundles(innovationDB, phase);
+      this.saveComplementarySolutions(innovationDB, phase);
 
       boolean haveRegions = false;
       boolean haveCountries = false;
@@ -2443,6 +2481,150 @@ public class ProjectInnovationAction extends BaseAction {
 
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  /**
+   * Save Project Innovation Bundles
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveBundles(ProjectInnovation projectInnovation, Phase phase) {
+    try {
+      if (projectInnovation.getProjectInnovationBundles() != null
+        && !projectInnovation.getProjectInnovationBundles().isEmpty()) {
+
+        List<ProjectInnovationBundle> bundlePrev = projectInnovationBundleManager
+          .getProjectInnovationBundleByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+
+        for (ProjectInnovationBundle bundle : bundlePrev) {
+          if (bundle.getId() != null && (innovation.getProjectInnovationBundles() == null
+            || !innovation.getProjectInnovationBundles().contains(bundle))) {
+            if (projectInnovationBundleManager.existProjectInnovationBundle(bundle.getId())) {
+              projectInnovationBundleManager.deleteProjectInnovationBundle(bundle.getId());
+            }
+          }
+        }
+      }
+
+      if (innovation.getProjectInnovationBundles() != null && !innovation.getProjectInnovationBundles().isEmpty()) {
+        for (ProjectInnovationBundle bundle : innovation.getProjectInnovationBundles()) {
+          if (bundle.getId() != null && bundle.getId() == -1) {
+            bundle.setId(null);
+          }
+
+          boolean saveBundleProcess = false;
+
+          try {
+            if (bundle.getSelectedInnovation() != null && bundle.getSelectedInnovation().getId() != null) {
+              saveBundleProcess = true;
+            }
+          } catch (Exception e) {
+            logger.error("unable to validate bundle fields", e);
+          }
+
+          if (saveBundleProcess) {
+            ProjectInnovationBundle bundleToSave = new ProjectInnovationBundle();
+
+            try {
+              if (bundle.getId() != null) {
+                bundleToSave = projectInnovationBundleManager.getProjectInnovationBundleById(bundle.getId());
+              }
+            } catch (Exception e) {
+              logger.error("unable to get old bundle", e);
+            }
+
+            bundleToSave.setPhase(phase);
+            bundleToSave.setProjectInnovation(projectInnovation);
+            bundleToSave.setSelectedInnovation(bundle.getSelectedInnovation());
+
+            projectInnovationBundleManager.saveProjectInnovationBundle(bundleToSave);
+            innovation.getProjectInnovationBundles().add(bundleToSave);
+          }
+        }
+      }
+    } catch (Exception e) {
+      logger.error("Error saving innovation bundles", e);
+      System.out.println("Error saving innovation bundles: " + e);
+    }
+  }
+
+  /**
+   * Save Project Innovation Complementary Solutions
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
+  public void saveComplementarySolutions(ProjectInnovation projectInnovation, Phase phase) {
+    try {
+      if (projectInnovation.getProjectInnovationComplementarySolutions() != null
+        && !projectInnovation.getProjectInnovationComplementarySolutions().isEmpty()) {
+
+        List<ProjectInnovationComplementarySolution> previousSolutions = projectInnovationComplementarySolutionManager
+          .getProjectInnovationComplementarySolutionByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+
+        for (ProjectInnovationComplementarySolution complementarySolution : previousSolutions) {
+          if (complementarySolution.getId() != null && (innovation.getProjectInnovationComplementarySolutions() == null
+            || !innovation.getProjectInnovationComplementarySolutions().contains(complementarySolution))) {
+            if (projectInnovationComplementarySolutionManager
+              .existProjectInnovationComplementarySolution(complementarySolution.getId())) {
+              projectInnovationComplementarySolutionManager
+                .deleteProjectInnovationComplementarySolution(complementarySolution.getId());
+            }
+          }
+        }
+      }
+
+      if (innovation.getProjectInnovationComplementarySolutions() != null
+        && !innovation.getProjectInnovationComplementarySolutions().isEmpty()) {
+
+        for (ProjectInnovationComplementarySolution solution : innovation
+          .getProjectInnovationComplementarySolutions()) {
+
+          if (solution.getId() != null && solution.getId() == -1) {
+            solution.setId(null);
+          }
+
+          boolean saveProcess = false;
+
+          try {
+            if (solution.getTitle() != null && !solution.getTitle().trim().isEmpty()) {
+              saveProcess = true;
+            }
+          } catch (Exception e) {
+            logger.error("Error validating complementary solution fields", e);
+          }
+
+          if (saveProcess) {
+            ProjectInnovationComplementarySolution solutionToSave = new ProjectInnovationComplementarySolution();
+
+            try {
+              if (solution.getId() != null) {
+                solutionToSave = projectInnovationComplementarySolutionManager
+                  .getProjectInnovationComplementarySolutionById(solution.getId());
+              }
+            } catch (Exception e) {
+              logger.error("Error retrieving existing complementary solution", e);
+            }
+
+            solutionToSave.setTitle(solution.getTitle());
+            solutionToSave.setShortTitle(solution.getShortTitle());
+            solutionToSave.setShortDescription(solution.getShortDescription());
+            solutionToSave.setProjectInnovationType(solution.getProjectInnovationType());
+            solutionToSave.setProjectInnovationFunction(solution.getProjectInnovationFunction());
+            solutionToSave.setPhase(phase);
+
+            projectInnovationComplementarySolutionManager.saveProjectInnovationComplementarySolution(solutionToSave);
+
+            innovation.getProjectInnovationComplementarySolutions().add(solutionToSave);
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logger.error("Error saving complementary solutions", e);
+      System.out.println("Error saving complementary solutions: " + e);
     }
   }
 
@@ -4215,6 +4397,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setSrfIdos(List<SrfIdo> srfIdos) {
     this.srfIdos = srfIdos;
+  }
+
+  public List<ProjectInnovationFunction> getProjectInnovationFunctionList() {
+    return projectInnovationFunctionList;
+  }
+
+  public void setProjectInnovationFunctionList(List<ProjectInnovationFunction> projectInnovationFunctionList) {
+    this.projectInnovationFunctionList = projectInnovationFunctionList;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {

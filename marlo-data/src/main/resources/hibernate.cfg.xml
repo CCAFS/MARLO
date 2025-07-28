@@ -470,5 +470,8 @@
   <mapping resource="xmls/ReportConfigurations.hbm.xml"/>
   <mapping resource="xmls/ImpactAreaScores.hbm.xml"/>
   <mapping resource="xmls/RepIndOptions.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationFunctions.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationBundles.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationComplementarySolutions.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
