@@ -767,9 +767,9 @@
           [#-- Actors --]
           <div class="col-md-12 actorsBlock">
             <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
-            <label class="note--2">
-              <span class="inner-note">[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</span>
-            </label>
+            <div class="note" style="align-items: center;">
+              <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
+            </div>
             [#-- list of items --]
             <div class="actorsList">
               [#list (element.actors)![] as actor]
@@ -813,7 +813,11 @@
 
       [#-- Beneficiries --]
       <div class="form-group col-md-12">
-        [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
+        <label for="innovation.actors">[@s.text name="projectInnovations.beneficiaries" /]:[@customForm.req required=true /]</label>
+        <div class="note" style="align-items: center;">
+          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.beneficiaries.helpText" /]</p>
+        </div>
+        [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  showTitle=false placeholder="" className="limitWords-80"  isNote=true helpIcon=false required=true editable=editable isWidthFull=true /]
       </div>
       
       [#-- URLs: Tool website, publications, stories and more  --]
@@ -903,7 +907,7 @@
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true twoPoints=false classNameLabel="blueLightColor" isNoteCss="note" /]
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isMainTitle=true twoPoints=false classNameLabel="blueLightColor" /]
         <br>
         <label class="note note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >Problem available</span></label>
         <div class="col-md-12">
@@ -1111,7 +1115,10 @@
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
-    [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
+    <label for="${customName}" class="label--2">[@s.text name=label /]: [@customForm.req required=(editable) /]</label>
+    <div class="note" style="align-items: unset;">
+      <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name=helpLabel /]</p>
+    </div>
 
     <div class="scaling__container">
       <div class="scaling__line col-md-11"></div>

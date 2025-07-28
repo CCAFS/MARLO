@@ -683,7 +683,7 @@
         [#local cssInfo = (isNoteCss?has_content)?string(isNoteCss,'note--2  note--2__margin-none col-md-12') /]
         <div class="${cssInfo}"><p>${nameValue}</p></div>
       [#else]
-        <br /><i class="helpLabel">${nameValue}</i>
+        <br /><i class="helpLabel" style="color: #5f5e5e;">${nameValue}</i>
       [/#if]
     [/#if]
   [/#if]
