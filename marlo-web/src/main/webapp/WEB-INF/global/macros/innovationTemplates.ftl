@@ -946,7 +946,7 @@
 
   [#local sexAgeNotApply = ((element.sexAgeNotApply??) && (element.sexAgeNotApply == true))! /]
 
-  <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
+  <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group graySoftBox ${class}">
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" value=((element.id)?string)!"" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
@@ -980,40 +980,41 @@
 
     [#-- Checkbox Actors - Genders --]
     <div class="block-sexAgeNotApply col-md-12" style="display: ${(!sexAgeNotApply)?then('block','none')}">
-      <div class="col-md-6">
-        <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
+      <div class="col-md-12">
+        [#--          <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
-        [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]
+        [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]  --]
 
         [#if editable]
-        <div class="col-md-5 innerOptions select--flex">
-          <div class="col-md-6">
-            [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isWomanWithYouth editable=true cssClass="check-gender" /]
+        <div class="col-md-10 innerOptions select--flex" style="padding-left: 0;">
+          <div class="col-md-2 margin-right-10">
+            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true value=(element.total)!""  /]
           </div>
-          <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenYouthNumber"  className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
+          <div class="col-md-3 margin-right-10">
+            [@customForm.input name="${customName}.whichWomen" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.whichWomen)!""  /]
           </div>
-        </div>
-        <div class="col-md-7 innerOptions select--flex">
-          <div class="col-md-6">
-            [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isWomanNotYouth editable=true cssClass="check-gender" /]
-          </div>
-          <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /] 
+          <div class="col-md-3">
+            [@customForm.input name="${customName}.whichYouth" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.whichYouth)!""  /]
           </div>
         </div>
         [#else]
-          <div class="col-md-4">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionYouth" /]:</span>
-            <span class="col-md-12"><b>${(element.womenYouthNumber)!0}</b></span>
+        <div class="col-md-12">
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.total" /]:</span>
+            <span class="col-md-12"><b>${(element.total)!0}</b></span>
           </div>
-          <div class="col-md-4">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionNoYouth" /]:</span>
-            <span class="col-md-12"><b>${(element.womenNonYouthNumber)!0}</b></span>
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]:</span>
+            <span class="col-md-12"><b>${(element.whichWomen)!0}</b></span>
           </div>
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]:</span>
+            <span class="col-md-12"><b>${(element.whichYouth)!0}</b></span>
+          </div>
+        </div>
         [/#if]
       </div>
-      <div class="col-md-6">
+      [#--        <div class="col-md-6">
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [#local isMenWithYouth = ((element.menYouth??) && (element.menYouth == true)) /] 
         [#local isMenNotYouth = ((element.menNotYouth??) && (element.menNotYouth == true)) /]
@@ -1045,7 +1046,7 @@
             <span class="col-md-12"><b>${(element.menNonYouthNumber)!0}</b></span>
           </div>
         [/#if]
-      </div>
+      </div>  --]
       [#--        <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
         [#local isNonbinaryWithYouth = ((element.nonbinaryYouth??) && (element.nonbinaryYouth == true)) /] 
