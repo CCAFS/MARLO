@@ -119,6 +119,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolutionFunction;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
@@ -1380,6 +1381,28 @@ public class ProjectInnovationAction extends BaseAction {
           innovation
             .setComplementarySolutions(new ArrayList<>(innovation.getProjectInnovationComplementarySolutions().stream()
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          for (ProjectInnovationComplementarySolution innovationComplementarySolution : innovation
+            .getComplementarySolutions()) {
+            if (innovationComplementarySolution != null
+              && innovationComplementarySolution.getComplementarySolutionFunctions() != null) {
+              for (ProjectInnovationComplementarySolutionFunction complementarySolutionFunction : innovationComplementarySolution
+                .getComplementarySolutionFunctions()) {
+                if (complementarySolutionFunction.getProjectInnovationFunction() != null
+                  && complementarySolutionFunction.getProjectInnovationFunction().getId() != null) {
+                  complementarySolutionFunction
+                    .setProjectInnovationFunction(projectInnovationFunctionManager.getProjectInnovationFunctionById(
+                      complementarySolutionFunction.getProjectInnovationFunction().getId()));
+                }
+                if (complementarySolutionFunction.getProjectInnovationComplementarySolution() != null
+                  && complementarySolutionFunction.getProjectInnovationComplementarySolution().getId() != null) {
+                  complementarySolutionFunction.setProjectInnovationComplementarySolution(
+                    projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
+                      complementarySolutionFunction.getProjectInnovationComplementarySolution().getId()));
+                }
+              }
+
+            }
+          }
         }
 
         // Innovations actors
@@ -2556,6 +2579,17 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  public void saveComplementarySolutionFunctions(ProjectInnovationComplementarySolution ComplementarySolution,
+    ProjectInnovationComplementarySolution ComplementarySolutionDB) {
+
+  }
+
+  /**
+   * Save Project Innovation Complementary Solutions
+   * 
+   * @param projectInnovation
+   * @param phase
+   */
   public void saveComplementarySolutions(ProjectInnovation projectInnovation, Phase phase) {
     try {
       if (projectInnovation.getProjectInnovationComplementarySolutions() != null
@@ -2612,8 +2646,8 @@ public class ProjectInnovationAction extends BaseAction {
             solutionToSave.setShortTitle(solution.getShortTitle());
             solutionToSave.setShortDescription(solution.getShortDescription());
             solutionToSave.setProjectInnovationType(solution.getProjectInnovationType());
-            solutionToSave.setProjectInnovationFunction(solution.getProjectInnovationFunction());
             solutionToSave.setPhase(phase);
+            saveComplementarySolutionFunctions(solution, solutionToSave);
 
             projectInnovationComplementarySolutionManager.saveProjectInnovationComplementarySolution(solutionToSave);
 

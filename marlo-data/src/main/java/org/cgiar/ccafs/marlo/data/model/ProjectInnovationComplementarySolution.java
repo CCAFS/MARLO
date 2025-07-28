@@ -17,6 +17,10 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.google.gson.annotations.Expose;
 
 public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
@@ -33,9 +37,12 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
   @Expose
   private RepIndInnovationType projectInnovationType;
   @Expose
-  private ProjectInnovationFunction projectInnovationFunction;
-  @Expose
   private Phase phase;
+
+  private Set<ProjectInnovationComplementarySolutionFunction> projectInnovationComplementarySolutionFunctions =
+    new HashSet<ProjectInnovationComplementarySolutionFunction>(0);
+
+  private List<ProjectInnovationComplementarySolutionFunction> complementarySolutionFunctions;
 
   public ProjectInnovationComplementarySolution() {
   }
@@ -61,6 +68,10 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
   }
 
 
+  public List<ProjectInnovationComplementarySolutionFunction> getComplementarySolutionFunctions() {
+    return complementarySolutionFunctions;
+  }
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -72,29 +83,26 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
     return phase;
   }
 
-  public ProjectInnovationFunction getProjectInnovationFunction() {
-    return projectInnovationFunction;
+  public Set<ProjectInnovationComplementarySolutionFunction> getProjectInnovationComplementarySolutionFunctions() {
+    return projectInnovationComplementarySolutionFunctions;
   }
+
 
   public RepIndInnovationType getProjectInnovationType() {
     return projectInnovationType;
   }
 
-
   public String getShortDescription() {
     return shortDescription;
   }
-
 
   public String getShortTitle() {
     return shortTitle;
   }
 
-
   public String getTitle() {
     return title;
   }
-
 
   @Override
   public int hashCode() {
@@ -105,20 +113,25 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
   }
 
 
+  public void setComplementarySolutionFunctions(
+    List<ProjectInnovationComplementarySolutionFunction> complementarySolutionFunctions) {
+    this.complementarySolutionFunctions = complementarySolutionFunctions;
+  }
+
+
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
 
-  public void setProjectInnovationFunction(ProjectInnovationFunction projectInnovationFunction) {
-    this.projectInnovationFunction = projectInnovationFunction;
+  public void setProjectInnovationComplementarySolutionFunctions(
+    Set<ProjectInnovationComplementarySolutionFunction> projectInnovationComplementarySolutionFunctions) {
+    this.projectInnovationComplementarySolutionFunctions = projectInnovationComplementarySolutionFunctions;
   }
-
 
   public void setProjectInnovationType(RepIndInnovationType projectInnovationType) {
     this.projectInnovationType = projectInnovationType;
   }
-
 
   public void setShortDescription(String shortDescription) {
     this.shortDescription = shortDescription;
@@ -128,7 +141,6 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
   public void setShortTitle(String shortTitle) {
     this.shortTitle = shortTitle;
   }
-
 
   public void setTitle(String title) {
     this.title = title;
