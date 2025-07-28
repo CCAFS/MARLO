@@ -44,6 +44,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceLeversManager
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationAllianceOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationBundleManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCenterManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionFunctionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
@@ -291,6 +292,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationFunctionManager projectInnovationFunctionManager;
   private ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager;
   private ProjectInnovationBundleManager projectInnovationBundleManager;
+  private ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager;
 
   // Variables
   private long projectID;
@@ -412,7 +414,8 @@ public class ProjectInnovationAction extends BaseAction {
     DeliverableInfoManager deliverableInfoManager, ImpactAreaScoreManager impactAreaScoreManager,
     RepIndOptionsManager repIndOptionsManager, ProjectInnovationFunctionManager projectInnovationFunctionManager,
     ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
-    ProjectInnovationBundleManager projectInnovationBundleManager) {
+    ProjectInnovationBundleManager projectInnovationBundleManager,
+    ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -489,6 +492,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationFunctionManager = projectInnovationFunctionManager;
     this.projectInnovationComplementarySolutionManager = projectInnovationComplementarySolutionManager;
     this.projectInnovationBundleManager = projectInnovationBundleManager;
+    this.projectInnovationComplementarySolutionFunctionManager = projectInnovationComplementarySolutionFunctionManager;
   }
 
   /**
@@ -2574,15 +2578,76 @@ public class ProjectInnovationAction extends BaseAction {
   }
 
   /**
-   * Save Project Innovation Complementary Solutions
-   * 
-   * @param projectInnovation
-   * @param phase
+   * Saves the list of functions associated with a given Complementary Solution.
+   * <p>
+   * This method compares the functions submitted via form (from {@code complementarySolution})
+   * against those already stored in the database (from {@code complementarySolutionDB}). It performs
+   * the following actions:
+   * <ul>
+   * <li>Deletes functions previously stored but no longer selected.</li>
+   * <li>Updates existing functions if their referenced innovation function has changed.</li>
+   * <li>Creates new entries for newly selected functions.</li>
+   * </ul>
+   *
+   * @param complementarySolution The Complementary Solution containing the current list of functions selected in the
+   *        form.
+   * @param complementarySolutionDB The persisted Complementary Solution from the database.
    */
-  public void saveComplementarySolutionFunctions(ProjectInnovationComplementarySolution ComplementarySolution,
-    ProjectInnovationComplementarySolution ComplementarySolutionDB) {
+  public void saveComplementarySolutionFunctions(ProjectInnovationComplementarySolution complementarySolution,
+    ProjectInnovationComplementarySolution complementarySolutionDB) {
 
+    if (complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions() != null
+      && !complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().isEmpty()) {
+
+      List<ProjectInnovationComplementarySolutionFunction> previousFunctions =
+        complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().stream().filter(f -> f.isActive())
+          .collect(Collectors.toList());
+
+      for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
+        if (complementarySolution.getComplementarySolutionFunctions() == null
+          || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
+          projectInnovationComplementarySolutionFunctionManager
+            .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
+        }
+      }
+    }
+
+    if (complementarySolution.getComplementarySolutionFunctions() != null) {
+
+      for (ProjectInnovationComplementarySolutionFunction function : complementarySolution
+        .getComplementarySolutionFunctions()) {
+
+        if (function.getId() != null) {
+          ProjectInnovationComplementarySolutionFunction functionToUpdate =
+            projectInnovationComplementarySolutionFunctionManager
+              .getProjectInnovationComplementarySolutionFunctionById(function.getId());
+
+          if (function.getProjectInnovationFunction() != null && function.getProjectInnovationFunction().getId() != null
+            && !function.getProjectInnovationFunction().getId()
+              .equals(functionToUpdate.getProjectInnovationFunction().getId())) {
+            functionToUpdate.setProjectInnovationFunction(function.getProjectInnovationFunction());
+            projectInnovationComplementarySolutionFunctionManager
+              .saveProjectInnovationComplementarySolutionFunction(functionToUpdate);
+          }
+
+        } else {
+          if (function.getProjectInnovationFunction() != null
+            && function.getProjectInnovationFunction().getId() != null) {
+            ProjectInnovationComplementarySolutionFunction functionToSave =
+              new ProjectInnovationComplementarySolutionFunction();
+
+            functionToSave.setProjectInnovationComplementarySolution(complementarySolutionDB);
+            functionToSave.setProjectInnovationFunction(function.getProjectInnovationFunction());
+            functionToSave.setPhase(complementarySolutionDB.getPhase());
+
+            projectInnovationComplementarySolutionFunctionManager
+              .saveProjectInnovationComplementarySolutionFunction(functionToSave);
+          }
+        }
+      }
+    }
   }
+
 
   /**
    * Save Project Innovation Complementary Solutions
