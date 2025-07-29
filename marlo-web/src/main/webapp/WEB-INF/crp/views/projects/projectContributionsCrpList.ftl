@@ -133,8 +133,8 @@
 						        </tr>
 						      </thead>
 						      <tbody>
-						        [#if project.outcomes?has_content]
-						          [#list project.outcomes as projectOutcome]
+						        [#if mainOutcomes?has_content]
+						          [#list mainOutcomes as projectOutcome]
 						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
 						          [/#list]
 						        [/#if]
