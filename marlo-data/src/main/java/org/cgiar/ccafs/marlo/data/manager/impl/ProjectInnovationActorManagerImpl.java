@@ -169,6 +169,7 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
       projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
       projectInnovationActorAdd.setPhase(phase);
+      projectInnovationActorAdd.setOther(projectInnovationActor.getOther());
       projectInnovationActorDAO.save(projectInnovationActorAdd);
     } else {
       for (ProjectInnovationActor projectInnovationActorCopy : innovationActors) {
@@ -187,6 +188,7 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
           projectInnovationActorCopy.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
           projectInnovationActorCopy.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
           projectInnovationActorCopy.setPhase(phase);
+          projectInnovationActorCopy.setOther(projectInnovationActor.getOther());
           projectInnovationActorDAO.save(projectInnovationActorCopy);
         } catch (Exception e) {
           System.out.println("Error delete ActorByInnovationAndPhase method" + e);

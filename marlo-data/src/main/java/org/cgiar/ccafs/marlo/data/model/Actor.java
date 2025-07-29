@@ -27,10 +27,11 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
   private String name;
   @Expose
   private String description;
+  @Expose
+  private String prmsNameEquivalent;
 
   public Actor() {
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -57,7 +58,6 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
     return description;
   }
 
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -65,9 +65,12 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
     return sb.toString();
   }
 
-
   public String getName() {
     return name;
+  }
+
+  public String getPrmsNameEquivalent() {
+    return prmsNameEquivalent;
   }
 
   public void setDescription(String description) {
@@ -76,6 +79,10 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setPrmsNameEquivalent(String prmsNameEquivalent) {
+    this.prmsNameEquivalent = prmsNameEquivalent;
   }
 
   @Override

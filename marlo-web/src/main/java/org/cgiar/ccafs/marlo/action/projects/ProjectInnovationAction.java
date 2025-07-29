@@ -2822,6 +2822,7 @@ public class ProjectInnovationAction extends BaseAction {
             innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
             innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
             innovationActorSave.setPhase(phase);
+            innovationActorSave.setOther(innovationActor.getOther());
 
             projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
             // This is to add innovationActorSave to generate correct auditlog.

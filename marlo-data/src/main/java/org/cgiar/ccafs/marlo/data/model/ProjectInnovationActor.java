@@ -51,6 +51,8 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
   private Integer womenYouthNumber;
   @Expose
   private Integer womenNonYouthNumber;
+  @Expose
+  private String other;
 
   public ProjectInnovationActor() {
   }
@@ -111,6 +113,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return nonbinaryYouth;
   }
 
+  public String getOther() {
+    return other;
+  }
+
   public Phase getPhase() {
     return phase;
   }
@@ -165,6 +171,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
 
   public void setNonbinaryYouth(Boolean nonbinaryYouth) {
     this.nonbinaryYouth = nonbinaryYouth;
+  }
+
+  public void setOther(String other) {
+    this.other = other;
   }
 
   public void setPhase(Phase phase) {
