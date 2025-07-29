@@ -94,33 +94,79 @@
 
             [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
 
+						<ul class="nav nav-tabs" role="tablist">
+						  <li role="presentation" class="active">
+						  	<a href="#mainOutcomesTab" data-toggle="tab">
+						  		<span class="glyphicon glyphicon-flag"></span> Current Outcomes
+						  	</a>
+						  </li>
+						  [#if showDeprecatedTab?? && showDeprecatedTab]
+						    <li role="presentation">
+						    	<a href="#deprecatedOutcomesTab" data-toggle="tab">
+						    		<span class="glyphicon glyphicon-chevron-down"></span> Deprecated
+						    	</a>
+						    </li>
+						  [/#if]
+						</ul>
+
+
             [#-- Project Outcomes List --]
-            <table id="projectOutcomesList" class="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>[@s.text name="global.flagship" /]</th>
-                  [#if (action.isAFPhase(actualPhase.id))!false]
-                  <th>Performance Indicator ${action.getAFIndicatorsEndyear()}</th>
-                  [#else]
-                  <th>Performance Indicator 2023</th>
-                  [/#if]              
-                  <th></th>
-                  [#-- if  false--]
-                  [#if action.hasSpecificities('feedback_active') ]
-                    <th><div style align=center>Feedback Comments</div></th>
-                  [/#if]
-                  <th>Status</th>
-                  <th>Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-              [#if project.outcomes?has_content]
-                [#list project.outcomes?sort_by("order") as projectOutcome]
-                  [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
-                [/#list]
-              [/#if]
-              </tbody>
-            </table>
+						<div class="tab-content">
+					
+						  <div class="tab-pane active" id="mainOutcomesTab" id="active-tab">						 
+						  <br>
+						    <table id="projectOutcomesList" class="table table-striped table-hover ">
+						      <thead>
+						        <tr>
+						          <th>[@s.text name="global.flagship" /]</th>
+						          [#if (action.isAFPhase(actualPhase.id))!false]
+						            <th>Performance Indicator ${action.getAFIndicatorsEndyear()}</th>
+						          [#else]
+						            <th>Performance Indicator 2023</th>
+						          [/#if]
+						          <th></th>
+						          [#if action.hasSpecificities('feedback_active') ]
+						            <th><div style align=center>Feedback Comments</div></th>
+						          [/#if]
+						          <th>Status</th>
+						          <th>Remove</th>
+						        </tr>
+						      </thead>
+						      <tbody>
+						        [#if mainOutcomes?has_content]
+						          [#list mainOutcomes as projectOutcome]
+						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+						          [/#list]
+						        [/#if]
+						      </tbody>
+						    </table>
+						  </div>
+						
+						  [#if showDeprecatedTab?? && showDeprecatedTab]
+						    <div class="tab-pane" id="deprecatedOutcomesTab">
+						      <br>
+						      <table id="projectOutcomesList" class="table table-striped table-hover">
+						        <thead>
+						          <tr>
+						            <th>[@s.text name="global.flagship" /]</th>
+						            <th>Performance Indicator</th>
+						            <th></th>
+						            <th>Status</th>
+						            <th>Remove</th>
+						          </tr>
+						        </thead>
+						        <tbody>
+						          [#assign deprecatedOutcomes = deprecatedOutcomes![] ]
+						          [#list deprecatedOutcomes as projectOutcome]
+						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+						          [/#list]
+						        </tbody>
+						      </table>
+						    </div>
+						  [/#if]
+						
+						</div>
+
 
             [#if !project.outcomes?has_content]
               <p class="emptyMessage text-center">[@s.text name="projectContributionsCrpList.contributionsEmpty"/]</p>
