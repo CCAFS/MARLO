@@ -103,7 +103,7 @@
 						  [#if showDeprecatedTab?? && showDeprecatedTab]
 						    <li role="presentation">
 						    	<a href="#deprecatedOutcomesTab" data-toggle="tab">
-						    		<span class="glyphicon glyphicon-chevron-down"></span> Deprecated
+						    		<span class="glyphicon glyphicon-minus-sign"></span> Deprecated Indicators
 						    	</a>
 						    </li>
 						  [/#if]
@@ -151,6 +151,9 @@
 						            <th>[@s.text name="global.flagship" /]</th>
 						            <th>Performance Indicator</th>
 						            <th></th>
+						            [#if action.hasSpecificities('feedback_active') ]
+						            	<th><div style align=center>Feedback Comments</div></th>
+						          	[/#if]
 						            <th>Status</th>
 						            <th>Remove</th>
 						          </tr>
