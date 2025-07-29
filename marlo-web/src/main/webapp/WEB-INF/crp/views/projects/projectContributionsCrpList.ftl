@@ -97,7 +97,7 @@
 						<ul class="nav nav-tabs" role="tablist">
 						  <li role="presentation" class="active">
 						  	<a href="#mainOutcomesTab" data-toggle="tab">
-						  		<span class="glyphicon glyphicon-flag"></span> Current Outcomes
+						  		<span class="glyphicon glyphicon-flag"></span> Current Indicators
 						  	</a>
 						  </li>
 						  [#if showDeprecatedTab?? && showDeprecatedTab]
