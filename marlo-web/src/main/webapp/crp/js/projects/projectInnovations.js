@@ -471,7 +471,7 @@ function attachEvents() {
 
   CustomSortableList("div[listname='innovation.contributingOrganizations'] .panel-body ul.list");
 
-
+  addDataTableAllInnovations();
 }
 
 function AddRequired(){
@@ -1312,4 +1312,49 @@ function initDropdownOrganization() {
     }
   });
 
+}
+
+function addDataTableAllInnovations() {
+  $('#table-all-innovations').each(function(_i,table) {
+    // Skip empty tables or tables without proper structure
+    if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
+      console.warn('Skipping DataTables initialization for invalid table structure.');
+      return;
+    }
+
+    // Prevent re-initialization
+    if ($.fn.dataTable.isDataTable(table)) {
+      return;
+    }
+
+    // Get total number of columns
+    const columns = $(table).find('thead th').length;
+
+    const noSortColumns = [];
+    $(table).find('thead th.no-sort').each(function() {
+      noSortColumns.push($(this).index());
+    });
+
+    try {
+      $(table).DataTable({
+        // DataTables options
+        "bPaginate": true,
+        "bLengthChange": true,
+        "bFilter": true,
+        "bSort": true,
+        "bAutoWidth": true,
+        "iDisplayLength": 10,
+        "language": {
+          "searchPlaceholder": "Search...",
+          "emptyTable": "No innovation entries entered into the system yet."
+        },
+        "order": columns > 1 ? [[1, 'desc']] : [],
+        "columnDefs": [
+          { "targets": noSortColumns, "orderable": false }
+        ]
+      });
+    } catch (error) {
+      console.error('Error initializing DataTable:', error);
+    }
+  });
 }

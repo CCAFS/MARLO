@@ -2,7 +2,7 @@
 [#assign title = "Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${innovationID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
-[#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
+[#assign pageLibs = ["select2","font-awesome", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
   "${baseUrlMedia}/js/projects/projectInnovations.js?20250604",
@@ -18,7 +18,10 @@
 
 
 
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250604"] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250604",
+  "${baseUrlCdn}/global/css/customDataTable.css?20250730"
+] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 

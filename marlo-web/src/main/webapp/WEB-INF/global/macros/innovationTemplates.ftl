@@ -610,6 +610,7 @@
   </div>
 [/#macro]
 
+[#-- DEPRECATED - Not being used - 30/07/2025 --]
 [#macro innovationReadiness element name index=-1 template=false]
   <div id="readiness" class="borderBox clearfix">
     <div class="form-group">
@@ -1129,7 +1130,7 @@
 [/#macro]
 
 [#--  Organizations Macro  --]
-[#--  DEPRECATED - Not being used, a good development :(  --]
+[#--  DEPRECATED - Not being used, a good development :( - 30/07/2025 --]
 [#macro organizationsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   
@@ -1322,16 +1323,16 @@
 [/#macro]
 
 [#macro tableAllInnovationsMacro list]
-  <table id="table-all-innovations" class="table table-striped table-bordered table-hover table-responsive">
+  <table id="table-all-innovations" class="table table-striped table-bordered table-hover table-responsive" width="100%">
     <thead>
       <tr>
         <th id="tb-id" width="1%" class="no-sort">ID</th>
-        <th id="tb-title" width="32.5%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-title" width="32%">[@s.text name="projectInnovations.table.title" /]</th>
         <th id="tb-cluster" width="10%">[@s.text name="projectInnovations.table.cluster" /]</th>
         <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
         <th id="tb-year" width="5%">[@s.text name="projectInnovations.table.year" /]</th>
-        <th id="tb-actions" width="15%" colspan="2">Action</th>
+        <th id="tb-actions" width="15%">Action</th>
         [#-- Hidden column Don't remove it is neccesary for the library --]
         <th id="tb-hidden" style="display: none"></th>
       </tr>
@@ -1402,6 +1403,8 @@
 
               <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}">Select</button>
             </td>
+
+            <td style="display: none"></td>
           </tr>
         [/#list]
       [/#if]
