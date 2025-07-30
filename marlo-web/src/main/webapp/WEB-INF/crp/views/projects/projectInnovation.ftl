@@ -147,7 +147,7 @@
 
             [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
             <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md toSubmit">
-              <a href="#innovationReadiness" role="tab" data-toggle="tab" disabled class="no-button-label-disabled">[@s.text name="projectInnovations.tab.bundleComposition" /][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /]</a>
+              <a href="#innovationBundle" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.bundleComposition" /]</a>
             </li>
 
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
@@ -170,9 +170,9 @@
               [#-- Innovation OneCGIAR Aligment--]
               [@innovations.innovationOneCGIAR element=(innovation)!{} name="innovation" index=0 /]
             </div>
-            <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationReadiness">
-              [#-- Innovation Readiness --]
-              [@innovations.innovationReadiness element=(innovation)!{} name="innovation" index=0 /]
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationBundle">
+              [#-- Innovation Bundle Composition --]
+              [@innovations.innovationBundleComposition element=(innovation)!{} name="innovation" index=0 /]
             </div>
             <div role="tabpanel" class="tab-pane fade [#if indexTab==5]in active[/#if]" id="innovationSharing">
               [#-- Innovation IP Rights and Funding --]

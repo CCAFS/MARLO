@@ -627,6 +627,43 @@
   </div>
 [/#macro]
 
+[#macro innovationBundleComposition element name index=-1 template=false]
+  <div id="bundleComposition" class="borderBox clearfix">
+    <div class="form-group">
+
+      [#-- Select an innovation --]
+      [#-- Table with all innovations and a selector list --]
+
+
+      [#-- Add complementary innovation --]
+      [#-- A module that creates accordions with inner unique data --]
+      <div class="form-group">
+        <label class="label--2">[@s.text name="projectInnovations.bundle.complementaryInnovations" /]:</label>
+        <br />
+        <div class="col-md-12">
+          <div class="complementarySolutionsBlock">
+            <div class="complementarySolutionsList">
+              [#if element.complementarySolutionFunctions?has_content]
+                [#list element.complementarySolutionFunctions as solution]
+                  [@accordionComplementaryInnovation name="innovation.complementarySolutionFunctions" element=solution index=solution_index template=false class="" editable=editable /]
+                [/#list]
+              [/#if]
+            </div>
+            [#if editable]
+            <div class="addButtonComplementarySolutions bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add a complementary innovation</div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@accordionComplementaryInnovation name="innovation.complementarySolutionFunctions" element={} index=-1 template=true  /]
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  
+[/#macro] 
+
 [#macro innovationSharing element name index=-1 template=false]
   [#local customName = "${name}"/]
 
@@ -1195,6 +1232,62 @@
       <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
         [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
       </div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro accordionComplementaryInnovation element name index template=false editable=false ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+
+  <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation borderBox" style="display:${template?string('none','block')}">
+    [#-- Remove Button --]
+    <div class="remove-element removeElement removeComplementaryInnovation" title="Remove"></div>
+
+    [#-- Complementary innovation --]
+    <div class="blockTitle closed">
+      ${(element.title)!'New complementary innovation'}
+    </div>
+    
+    <div class="blockContent" style="display:none">
+      <hr />
+      [#-- ID  --]
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+      [#-- Title  --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-100" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Short title  --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-100" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Short description  --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-100" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Innovation type select --]
+      <div class="form-group">
+        [@customForm.select name="${customName}.innovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Function  --]
+      <div class="form-group">
+        [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=true helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
+        [#if projectInnovationFunctionList?has_content]
+          [#list projectInnovationFunctionList as function]
+            <div class="col-md-12">
+              [#local functionLabel] ${function.title!""} [/#local]
+              [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
+              [#local cleanedLabel = cleanedLabel?js_string!"" /]
+
+              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions.projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=((element.function??) && (element.function?contains(function.id))) cssClass="check-function" /]
+            </div>
+          [/#list]
+        [/#if]
+      </div>
+      <div class="clearfix"></div>
     </div>
   </div>
 [/#macro]

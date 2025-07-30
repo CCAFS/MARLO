@@ -604,7 +604,7 @@
   </div>
 [/#macro]
 
-[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 isLabelDB=false]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if disabled]readonly onclick="this.checked=!this.checked;"[/#if] />
@@ -613,7 +613,11 @@
         [#local labelArray = label?split(":") /]
         <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
       [#else]
-        [@s.text name=label /]
+        [#if isLabelDB]
+          ${label}
+        [#else]
+          [@s.text name=label /]
+        [/#if]
       [/#if] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]

@@ -89,6 +89,20 @@ $(document).ready(function() {
     setTimeout(dynamicStatusCheckedForEvidences, 100);
   });
 
+  //Add display to accordion items 
+  $('.blockTitle.closed').on('click', function() {
+    if($(this).hasClass('closed')) {
+      $('.blockContent').slideUp();
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
+    }
+    $(this).next().slideToggle('slow', function() {
+      $(this).find('textarea').autoGrow();
+    });
+  });
+
   feedbackAutoImplementation();
 
   initDropdownOrganization();
@@ -280,6 +294,65 @@ function attachEvents() {
       });
     }
 
+  })();
+
+  /**
+   * Accordion Complementary Innovations
+   */
+  ( function () {
+    // Events
+    $('.addButtonComplementarySolutions').on('click', addComplementaryInnovation);
+    $('.removeComplementaryInnovation').on('click', removeComplementaryInnovation);
+    
+    // Function
+
+    function addComplementaryInnovation() {
+      console.log('Adding complementary innovation');
+      const $listBlock = $('.complementarySolutionsList');
+      const $template = $('#complementaryInnovation-template');
+
+      // remove select2 data to avoid corruption in clone process
+      if ($template.find('select').data('select2')) {
+        $template.find('select').select2("destroy");
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+      $newItem.find('input, select, textarea').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      $newItem.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      });
+
+      // Add select2 to select2 library
+      $template.find('select').select2();
+      $newItem.find('select').select2();
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeComplementaryInnovation() {
+      var $parent = $(this).parents('.complementaryInnovation');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.complementarySolutionsList').find('.complementaryInnovation').each(function(i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+        
+        $(innovation).find('label').each(function(_i,e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
   })();
 
   const readinessModule = evidencesModule();
@@ -1138,7 +1211,7 @@ function dynamicStatusCheckedForEvidences() {
   
   if (readinessElement.length > 0) {
     const readinessValue = parseInt(readinessElement.val());
-    if (readinessValue > 2) {
+    if (readinessValue >= 2) {
       readinessNeedsEvidence = true;
       messages.push(`Provide at least one evidence for innovation readiness level.`);
     }
