@@ -1401,7 +1401,7 @@
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
 
-              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}">Select</button>
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}">Select</button>
             </td>
 
             <td style="display: none"></td>
@@ -1415,12 +1415,12 @@
 
 [#macro innovationSelectedMacro element name index template=false editable=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  <div class="innovationBundleItem">
+  <div class="innovationBundleItem graySoftBox " id="innovationBundleItem-${template?string('template',index)}" style="display:${template?string('none','block')}">
     <div class="col-md-12">
       <input type="hidden" name="${customName}.id" value="${element.id!''}" />
       <input type="hidden" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
 
-      <span class="glyphicon glyphicon-remove removeInnovationBundleItem" aria-hidden="true"></span>
+      <span  title="Remove" class="gremoveInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
       <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.name??)?then(element.selectedInnovation.name,'')}</span></p>
     </div>
   </div>

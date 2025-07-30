@@ -355,6 +355,68 @@ function attachEvents() {
     }
   })();
 
+
+  /**
+   * Bundle Innovation Select Innovation
+   */
+  ( function () {
+    // Events
+    $('.selectInnovationBundle').on('click', addBundleInnovation);
+    $('.removeBundleInnovation').on('click', removeBundleInnovation);
+    // Function
+    function addBundleInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      console.log('Button clicked:', $button);
+
+      const innovationId = $button.attr('data-id');
+      const innovationName = $button.attr('data-name');
+
+      console.log('Adding bundle innovation with ID:', innovationId, 'and Name:', innovationName);  
+
+      const $listBlock = $('.innovationBundleList');
+      const $template = $('#innovationBundleItem-template');
+
+      const $newItem = $template.clone(true).removeAttr('id');
+
+      $newItem.find('.innovationBundleItemID').text(innovationId);
+      $newItem.find('.innovationBundleItemName').text(innovationName);
+
+      $newItem.find('input').each(function(_i,e) { 
+        if(e.name && e.name.includes("_TEMPLATE_")) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        }
+      });
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeBundleInnovation() {
+      var $parent = $(this).parents('.innovationBundleItem');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.innovationBundleList').find('.innovationBundleItem').each(function(i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+        
+        $(innovation).find('label').each(function(_i,e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
+  })();
+
   const readinessModule = evidencesModule();
   readinessModule.init('Readiness');
 
