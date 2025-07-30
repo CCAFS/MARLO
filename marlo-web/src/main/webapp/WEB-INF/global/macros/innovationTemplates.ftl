@@ -633,6 +633,35 @@
 
       [#-- Select an innovation --]
       [#-- Table with all innovations and a selector list --]
+      <div class="form-group">
+        <label class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]:</label>
+        <div class="note" style="align-items: center;">
+          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
+        </div>
+        [#-- Table --]
+        <div class="col-md-12 simpleBox">
+          [#if editable]
+            [@tableAllInnovationsMacro list=allInnovationList /]
+          [/#if]
+        </div>
+        [#-- Innovations selected - bundles --]
+        <div class="col-md-12 innovationBundleBlock">
+          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
+          [#-- Innovation selected List - bundles --]
+          <div class="innovationBundleList">
+            [#if element.bundles?has_content]
+              [#list element.bundles as innovation]
+                [@innovationSelectedMacro element=innovation name="innovationBundleItem" index=innovation_index template=false editable=editable /]
+              [/#list]
+            [/#if]
+          </div>
+          <div class="clearfix"></div>
+          [#-- Template item --]
+          <div style="display:none">
+            [@innovationSelectedMacro element={} name="innovationBundleItem" index=-1 template=true editable=editable /]
+          </div>
+        </div>
+      </div>
 
 
       [#-- Add complementary innovation --]
@@ -1288,6 +1317,108 @@
         [/#if]
       </div>
       <div class="clearfix"></div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro tableAllInnovationsMacro list]
+  <table id="table-all-innovations" class="table table-striped table-bordered table-hover table-responsive">
+    <thead>
+      <tr>
+        <th id="tb-id" width="1%" class="no-sort">ID</th>
+        <th id="tb-title" width="32.5%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-cluster" width="10%">[@s.text name="projectInnovations.table.cluster" /]</th>
+        <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
+        <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
+        <th id="tb-year" width="5%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th id="tb-actions" width="15%" colspan="2">Action</th>
+        [#-- Hidden column Don't remove it is neccesary for the library --]
+        <th id="tb-hidden" style="display: none"></th>
+      </tr>
+    </thead>
+    <tbody>
+      [#if list?has_content]
+        [#list list as innovation]
+          <tr class="innovation-row" data-id="${innovation.id}">
+            [#-- Title --]
+            [#local title]
+              [#if ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.title?has_content))]
+                [@utilities.wordCutter string=(innovation.projectInnovationInfo.title)!"" maxPos=120 /]
+              [/#if]
+            [/#local]
+
+            [#-- URL --]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+
+            [#-- Boolean scaling readiness available --]
+            [#local isScalingReadines = ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.readinessScale?has_content))!false ]
+          
+            [#-- Scaling Readiness value --]
+            [#local scaleReadiness = (innovation.projectInnovationInfo.readinessScale-1)!"" ]
+
+            [#-- Scaling Innovation Titles --]
+            [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
+
+            [#-- ID --]
+            <td class="text-center">${innovation.id!}</td>
+            [#-- Title --]
+            <td class="text-left">
+              <a href="${url!''}" class="title-link">
+                ${title!''}
+              </a>
+            </td>
+            [#-- Cluster --]
+            <td class="text-center">
+              [#if innovation.project??]
+                ${innovation.project.acronym!''}
+              [/#if]
+            </td>
+            [#-- Type of Innovation --]
+            <td class="text-center">
+              [#if innovation.projectInnovationInfo?? && innovation.projectInnovationInfo.repIndInnovationType?? ]
+                ${innovation.projectInnovationInfo.repIndInnovationType.name!''}
+              [/#if]
+            </td>
+            [#-- Readiness Level --]
+            <td class="text-center">
+              [#if isScalingReadines]
+                <span class="inno-scale inno-scale-${scaleReadiness}">[@utilities.tableText value=scaleReadiness /]</span>
+                <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
+              [#else]
+                [@utilities.tableText value=(innovation.projectInnovationInfo.readinessLevel.name)!"" /]
+              [/#if]
+            </td>
+            [#-- Year --]
+            <td class="text-center">
+              [#if innovation.projectInnovationInfo?? && innovation.projectInnovationInfo.year??]
+                ${innovation.projectInnovationInfo.year!''}
+              [/#if]
+            </td>
+            [#-- Actions --]
+            <td class="text-center">
+              <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank">
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              </a>
+
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}">Select</button>
+            </td>
+          </tr>
+        [/#list]
+      [/#if]
+    </tbody>
+  </table>
+  <div class="clearfix"></div>
+[/#macro]
+
+[#macro innovationSelectedMacro element name index template=false editable=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div class="innovationBundleItem">
+    <div class="col-md-12">
+      <input type="hidden" name="${customName}.id" value="${element.id!''}" />
+      <input type="hidden" name="${customName}.selectedInnovation.id" value="${element.selectedInnovation.id!''}" />
+
+      <span class="glyphicon glyphicon-remove removeInnovationBundleItem" aria-hidden="true"></span>
+      <p><b class="innovationBundleItemID">${element.selectedInnovation.id!''}</b> - <span class="innovationBundleItemName">${element.selectedInnovation.name!''}</span></p>
     </div>
   </div>
 [/#macro]
