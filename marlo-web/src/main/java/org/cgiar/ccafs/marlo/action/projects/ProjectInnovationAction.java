@@ -2526,8 +2526,8 @@ public class ProjectInnovationAction extends BaseAction {
           .getProjectInnovationBundleByInnovationAndPhase(projectInnovation.getId(), phase.getId());
 
         for (ProjectInnovationBundle bundle : bundlePrev) {
-          if (bundle.getId() != null && (innovation.getProjectInnovationBundles() == null
-            || !innovation.getProjectInnovationBundles().contains(bundle))) {
+          if (bundle.getId() != null
+            && (innovation.getBundles() == null || !innovation.getBundles().contains(bundle))) {
             if (projectInnovationBundleManager.existProjectInnovationBundle(bundle.getId())) {
               projectInnovationBundleManager.deleteProjectInnovationBundle(bundle.getId());
             }
@@ -2535,8 +2535,8 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationBundles() != null && !innovation.getProjectInnovationBundles().isEmpty()) {
-        for (ProjectInnovationBundle bundle : innovation.getProjectInnovationBundles()) {
+      if (innovation.getBundles() != null && !innovation.getBundles().isEmpty()) {
+        for (ProjectInnovationBundle bundle : innovation.getBundles()) {
           if (bundle.getId() != null && bundle.getId() == -1) {
             bundle.setId(null);
           }
@@ -2664,8 +2664,8 @@ public class ProjectInnovationAction extends BaseAction {
           .getProjectInnovationComplementarySolutionByInnovationAndPhase(projectInnovation.getId(), phase.getId());
 
         for (ProjectInnovationComplementarySolution complementarySolution : previousSolutions) {
-          if (complementarySolution.getId() != null && (innovation.getProjectInnovationComplementarySolutions() == null
-            || !innovation.getProjectInnovationComplementarySolutions().contains(complementarySolution))) {
+          if (complementarySolution.getId() != null && (innovation.getComplementarySolutions() == null
+            || !innovation.getComplementarySolutions().contains(complementarySolution))) {
             if (projectInnovationComplementarySolutionManager
               .existProjectInnovationComplementarySolution(complementarySolution.getId())) {
               projectInnovationComplementarySolutionManager
@@ -2675,11 +2675,9 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
 
-      if (innovation.getProjectInnovationComplementarySolutions() != null
-        && !innovation.getProjectInnovationComplementarySolutions().isEmpty()) {
+      if (innovation.getComplementarySolutions() != null && !innovation.getComplementarySolutions().isEmpty()) {
 
-        for (ProjectInnovationComplementarySolution solution : innovation
-          .getProjectInnovationComplementarySolutions()) {
+        for (ProjectInnovationComplementarySolution solution : innovation.getComplementarySolutions()) {
 
           if (solution.getId() != null && solution.getId() == -1) {
             solution.setId(null);
