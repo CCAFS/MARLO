@@ -120,7 +120,7 @@
 						        <tr>
 						          <th>[@s.text name="global.flagship" /]</th>
 						          [#if (action.isAFPhase(actualPhase.id))!false]
-						            <th>Performance Indicator ${action.getAFIndicatorsEndyear()}</th>
+						            <th>Performance Indicator</th> [#-- ${action.getAFIndicatorsEndyear()} --]
 						          [#else]
 						            <th>Performance Indicator 2023</th>
 						          [/#if]
