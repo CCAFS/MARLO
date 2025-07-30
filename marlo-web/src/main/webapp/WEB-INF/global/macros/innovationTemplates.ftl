@@ -672,9 +672,9 @@
         <div class="col-md-12">
           <div class="complementarySolutionsBlock">
             <div class="complementarySolutionsList">
-              [#if element.complementarySolutionFunctions?has_content]
-                [#list element.complementarySolutionFunctions as solution]
-                  [@accordionComplementaryInnovation name="innovation.complementarySolutionFunctions" element=solution index=solution_index template=false class="" editable=editable /]
+              [#if element.complementarySolutions?has_content]
+                [#list element.complementarySolutions as solution]
+                  [@accordionComplementaryInnovation name="innovation.complementarySolutions" element=solution index=solution_index template=false class="" editable=editable /]
                 [/#list]
               [/#if]
             </div>
@@ -685,7 +685,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@accordionComplementaryInnovation name="innovation.complementarySolutionFunctions" element={} index=-1 template=true  /]
+            [@accordionComplementaryInnovation name="innovation.complementarySolutions" element={} index=-1 template=true  /]
           </div>
         </div>
       </div>
@@ -1415,10 +1415,10 @@
   <div class="innovationBundleItem">
     <div class="col-md-12">
       <input type="hidden" name="${customName}.id" value="${element.id!''}" />
-      <input type="hidden" name="${customName}.selectedInnovation.id" value="${element.selectedInnovation.id!''}" />
+      <input type="hidden" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
 
       <span class="glyphicon glyphicon-remove removeInnovationBundleItem" aria-hidden="true"></span>
-      <p><b class="innovationBundleItemID">${element.selectedInnovation.id!''}</b> - <span class="innovationBundleItemName">${element.selectedInnovation.name!''}</span></p>
+      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.name??)?then(element.selectedInnovation.name,'')}</span></p>
     </div>
   </div>
 [/#macro]
