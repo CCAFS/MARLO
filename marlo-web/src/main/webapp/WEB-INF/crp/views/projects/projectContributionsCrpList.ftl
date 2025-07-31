@@ -3,13 +3,13 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20230705",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250730",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20230314",
+  "${baseUrlMedia}/css/projects/projectContributionsCrpList.css?20250730",
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
@@ -94,33 +94,82 @@
 
             [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
 
+						<ul class="nav nav-tabs" role="tablist">
+						  <li role="presentation" class="active">
+						  	<a href="#mainOutcomesTab" data-toggle="tab">
+						  		<span class="glyphicon glyphicon-flag"></span> Current Indicators
+						  	</a>
+						  </li>
+						  [#if showDeprecatedTab?? && showDeprecatedTab]
+						    <li role="presentation">
+						    	<a href="#deprecatedOutcomesTab" data-toggle="tab">
+						    		<span class="glyphicon glyphicon-minus-sign"></span> Deprecated Indicators
+						    	</a>
+						    </li>
+						  [/#if]
+						</ul>
+
+
             [#-- Project Outcomes List --]
-            <table id="projectOutcomesList" class="table table-striped table-hover ">
-              <thead>
-                <tr>
-                  <th>[@s.text name="global.flagship" /]</th>
-                  [#if (action.isAFPhase(actualPhase.id))!false]
-                  <th>Performance Indicator ${action.getAFIndicatorsEndyear()}</th>
-                  [#else]
-                  <th>Performance Indicator 2023</th>
-                  [/#if]              
-                  <th></th>
-                  [#-- if  false--]
-                  [#if action.hasSpecificities('feedback_active') ]
-                    <th><div style align=center>Feedback Comments</div></th>
-                  [/#if]
-                  <th>Status</th>
-                  <th>Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-              [#if project.outcomes?has_content]
-                [#list project.outcomes?sort_by("order") as projectOutcome]
-                  [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index  /]
-                [/#list]
-              [/#if]
-              </tbody>
-            </table>
+						<div class="tab-content">
+					
+						  <div class="tab-pane active" id="mainOutcomesTab" id="active-tab">						 
+						  <br>
+						    <table id="projectOutcomesList" class="table table-striped table-hover ">
+						      <thead>
+						        <tr>
+						          <th>[@s.text name="global.flagship" /]</th>
+						          [#if (action.isAFPhase(actualPhase.id))!false]
+						            <th>Performance Indicator</th> [#-- ${action.getAFIndicatorsEndyear()} --]
+						          [#else]
+						            <th>Performance Indicator 2023</th>
+						          [/#if]
+						          <th></th>
+						          [#if action.hasSpecificities('feedback_active') ]
+						            <th><div style align=center>Feedback Comments</div></th>
+						          [/#if]
+						          <th>Status</th>
+						          <th>Remove</th>
+						        </tr>
+						      </thead>
+						      <tbody>
+						        [#if mainOutcomes?has_content]
+						          [#list mainOutcomes as projectOutcome]
+						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+						          [/#list]
+						        [/#if]
+						      </tbody>
+						    </table>
+						  </div>
+						
+						  [#if showDeprecatedTab?? && showDeprecatedTab]
+						    <div class="tab-pane" id="deprecatedOutcomesTab">
+						      <br>
+						      <table id="projectOutcomesList" class="table table-striped table-hover">
+						        <thead>
+						          <tr>
+						            <th>[@s.text name="global.flagship" /]</th>
+						            <th>Performance Indicator</th>
+						            <th></th>
+						            [#if action.hasSpecificities('feedback_active') ]
+						            	<th><div style align=center>Feedback Comments</div></th>
+						          	[/#if]
+						            <th>Status</th>
+						            <th>Remove</th>
+						          </tr>
+						        </thead>
+						        <tbody>
+						          [#assign deprecatedOutcomes = deprecatedOutcomes![] ]
+						          [#list deprecatedOutcomes as projectOutcome]
+						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+						          [/#list]
+						        </tbody>
+						      </table>
+						    </div>
+						  [/#if]
+						
+						</div>
+
 
             [#if !project.outcomes?has_content]
               <p class="emptyMessage text-center">[@s.text name="projectContributionsCrpList.contributionsEmpty"/]</p>
