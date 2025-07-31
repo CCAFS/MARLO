@@ -642,7 +642,7 @@
         [#-- Table --]
         <div class="col-md-12 simpleBox">
           [#if editable]
-            [@tableAllInnovationsMacro list=allInnovationList /]
+            [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles /]
           [/#if]
         </div>
         [#-- Innovations selected - bundles --]
@@ -652,14 +652,14 @@
           <div class="innovationBundleList">
             [#if element.bundles?has_content]
               [#list element.bundles as innovation]
-                [@innovationSelectedMacro element=innovation name="innovationBundleItem" index=innovation_index template=false editable=editable /]
+                [@innovationSelectedMacro element=innovation name="innovation.bundles" index=innovation_index template=false editable=editable /]
               [/#list]
             [/#if]
           </div>
           <div class="clearfix"></div>
           [#-- Template item --]
           <div style="display:none">
-            [@innovationSelectedMacro element={} name="innovationBundleItem" index=-1 template=true editable=editable /]
+            [@innovationSelectedMacro element={} name="innovation.bundles" index=-1 template=true editable=editable /]
           </div>
         </div>
       </div>
@@ -675,7 +675,7 @@
             <div class="complementarySolutionsList">
               [#if element.complementarySolutions?has_content]
                 [#list element.complementarySolutions as solution]
-                  [@accordionComplementaryInnovation name="innovation.complementarySolutions" element=solution index=solution_index template=false class="" editable=editable /]
+                  [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
                 [/#list]
               [/#if]
             </div>
@@ -686,7 +686,7 @@
           </div>
           [#-- Element item Template --]
           <div style="display:none">
-            [@accordionComplementaryInnovation name="innovation.complementarySolutions" element={} index=-1 template=true  /]
+            [@complementarySolutionsMacro name="innovation.complementarySolutions" element={} index=-1 template=true  /]
           </div>
         </div>
       </div>
@@ -1266,7 +1266,7 @@
   </div>
 [/#macro]
 
-[#macro accordionComplementaryInnovation element name index template=false editable=false ]
+[#macro complementarySolutionsMacro element name index template=false editable=false ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
 
   <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation borderBox" style="display:${template?string('none','block')}">
@@ -1322,7 +1322,7 @@
   </div>
 [/#macro]
 
-[#macro tableAllInnovationsMacro list]
+[#macro tableAllInnovationsMacro list selected={}]
   <table id="table-all-innovations" class="table table-striped table-bordered table-hover table-responsive" width="100%">
     <thead>
       <tr>
@@ -1395,13 +1395,21 @@
                 ${innovation.projectInnovationInfo.year!''}
               [/#if]
             </td>
+            [#local innovationSelected = false /]
+            [#if selected?has_content]
+              [#list selected as sel]
+                [#if sel.selectedInnovation.id == innovation.id]
+                  [#local innovationSelected = true /]
+                [/#if]
+              [/#list]
+            [/#if]
             [#-- Actions --]
             <td class="text-center">
               <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank">
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
 
-              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}">Select</button>
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}" [#if innovationSelected]disabled[/#if]>Select</button>
             </td>
 
             <td style="display: none"></td>
@@ -1415,13 +1423,11 @@
 
 [#macro innovationSelectedMacro element name index template=false editable=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  <div class="innovationBundleItem graySoftBox " id="innovationBundleItem-${template?string('template',index)}" style="display:${template?string('none','block')}">
-    <div class="col-md-12">
+  <div class="innovationBundleItem grayGreenBox" id="innovationBundleItem-${template?string('template',index)}" style="display:${template?string('none','block')}">
       <input type="hidden" name="${customName}.id" value="${element.id!''}" />
-      <input type="hidden" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
+      <input type="hidden" id="reference-selected" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
 
-      <span  title="Remove" class="gremoveInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
-      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.name??)?then(element.selectedInnovation.name,'')}</span></p>
-    </div>
+      <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
+      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
   </div>
 [/#macro]
