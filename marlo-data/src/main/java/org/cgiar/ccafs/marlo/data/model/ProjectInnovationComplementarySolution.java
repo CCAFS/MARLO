@@ -38,6 +38,8 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
   private RepIndInnovationType projectInnovationType;
   @Expose
   private Phase phase;
+  @Expose
+  private ProjectInnovation projectInnovation;
 
   private Set<ProjectInnovationComplementarySolutionFunction> projectInnovationComplementarySolutionFunctions =
     new HashSet<ProjectInnovationComplementarySolutionFunction>(0);
@@ -83,10 +85,14 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
     return phase;
   }
 
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
+  }
+
+
   public Set<ProjectInnovationComplementarySolutionFunction> getProjectInnovationComplementarySolutionFunctions() {
     return projectInnovationComplementarySolutionFunctions;
   }
-
 
   public RepIndInnovationType getProjectInnovationType() {
     return projectInnovationType;
@@ -112,22 +118,24 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
     return result;
   }
 
-
   public void setComplementarySolutionFunctions(
     List<ProjectInnovationComplementarySolutionFunction> complementarySolutionFunctions) {
     this.complementarySolutionFunctions = complementarySolutionFunctions;
   }
 
-
   public void setPhase(Phase phase) {
     this.phase = phase;
   }
 
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
+  }
 
   public void setProjectInnovationComplementarySolutionFunctions(
     Set<ProjectInnovationComplementarySolutionFunction> projectInnovationComplementarySolutionFunctions) {
     this.projectInnovationComplementarySolutionFunctions = projectInnovationComplementarySolutionFunctions;
   }
+
 
   public void setProjectInnovationType(RepIndInnovationType projectInnovationType) {
     this.projectInnovationType = projectInnovationType;
@@ -137,10 +145,10 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
     this.shortDescription = shortDescription;
   }
 
-
   public void setShortTitle(String shortTitle) {
     this.shortTitle = shortTitle;
   }
+
 
   public void setTitle(String title) {
     this.title = title;

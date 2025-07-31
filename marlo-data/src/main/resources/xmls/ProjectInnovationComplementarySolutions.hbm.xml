@@ -22,6 +22,10 @@
 			class="org.cgiar.ccafs.marlo.data.model.RepIndInnovationType" fetch="select">
 			<column name="project_innovation_type_id"/>
 		</many-to-one>
+		<many-to-one name="projectInnovation"
+			class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+			<column name="project_innovation_id"/>
+		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />

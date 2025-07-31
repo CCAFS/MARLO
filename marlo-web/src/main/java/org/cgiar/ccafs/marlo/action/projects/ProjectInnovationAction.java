@@ -2710,6 +2710,7 @@ public class ProjectInnovationAction extends BaseAction {
             solutionToSave.setShortDescription(solution.getShortDescription());
             solutionToSave.setProjectInnovationType(solution.getProjectInnovationType());
             solutionToSave.setPhase(phase);
+            solutionToSave.setProjectInnovation(projectInnovation);
             saveComplementarySolutionFunctions(solution, solutionToSave);
 
             projectInnovationComplementarySolutionManager.saveProjectInnovationComplementarySolution(solutionToSave);
