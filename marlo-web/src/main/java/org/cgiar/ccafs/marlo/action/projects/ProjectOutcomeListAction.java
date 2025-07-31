@@ -88,11 +88,15 @@ public class ProjectOutcomeListAction extends BaseAction {
   private long outcomeId;
   private List<CrpProgramOutcome> outcomes;
   private List<CrpMilestone> milestones;
+  private List<ProjectOutcome> allProjectOutcomes;
+  private List<ProjectOutcome> deprecatedOutcomes;
+  private List<ProjectOutcome> mainOutcomes;
   private ProjectLp6Contribution projectLp6Contribution;
   private Map<String, Object> status;
   private boolean contributionValue;
   private long phaseID;
   private Phase phase;
+  private boolean showDeprecatedTab;
 
 
   @Inject
@@ -412,11 +416,29 @@ public class ProjectOutcomeListAction extends BaseAction {
     project = projectManager.getProjectById(projectID);
     project.setProjectInfo(project.getProjecInfoPhase(phase));
     List<ProjectOutcome> projectOutcomes = project.getProjectOutcomes().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
-
-    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
+      .filter(c -> c.isActive() && c.getPhase().equals(phase)).sorted(Comparator.comparing(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        return (cpo != null && cpo.getOrderIndex() != null) ? cpo.getOrderIndex() : Integer.MAX_VALUE;
+      })).collect(Collectors.toList());
 
     project.setOutcomes(projectOutcomes);
+
+    List<ProjectOutcome> allProjectOutcomes = project.getProjectOutcomes().stream()
+      .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+
+    mainOutcomes = allProjectOutcomes.stream().filter(po -> {
+      CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+      return cpo != null && Integer.valueOf(2).equals(cpo.getAfPhase());
+    }).sorted(Comparator.comparing(po -> po.getCrpProgramOutcome().getOrderIndex())).collect(Collectors.toList());
+
+    deprecatedOutcomes = allProjectOutcomes.stream().filter(po -> isDeprecated(po.getCrpProgramOutcome()))
+      .sorted(Comparator.comparingInt(po -> po.getCrpProgramOutcome().getOrderIndex())).collect(Collectors.toList());
+
+    project.setOutcomes(mainOutcomes);
+
+    showDeprecatedTab = deprecatedOutcomes != null && !deprecatedOutcomes.isEmpty();
+
+    GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
 
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
@@ -529,9 +551,62 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectLp6Contribution = projectLp6Contribution;
   }
 
+  public static boolean isDeprecated(CrpProgramOutcome cpo) {
+    if (cpo == null) {
+      return true;
+    }
+
+    if (cpo.getAfPhase() != null && cpo.getAfPhase() < 2) {
+      return true;
+    }
+
+    if (cpo.getDescription() != null && cpo.getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
+      return true;
+    }
+
+    return false;
+  }
+
 
   public void setProjectOutcomeID(long projectOutcomeID) {
     this.projectOutcomeID = projectOutcomeID;
+  }
+
+  public List<ProjectOutcome> getAllProjectOutcomes() {
+    return allProjectOutcomes;
+  }
+
+  public void setAllProjectOutcomes(List<ProjectOutcome> allProjectOutcomes) {
+    this.allProjectOutcomes = allProjectOutcomes;
+  }
+
+
+  public List<ProjectOutcome> getDeprecatedOutcomes() {
+    return deprecatedOutcomes;
+  }
+
+
+  public void setDeprecatedOutcomes(List<ProjectOutcome> deprecatedOutcomes) {
+    this.deprecatedOutcomes = deprecatedOutcomes;
+  }
+
+
+  public List<ProjectOutcome> getMainOutcomes() {
+    return mainOutcomes;
+  }
+
+
+  public void setMainOutcomes(List<ProjectOutcome> mainOutcomes) {
+    this.mainOutcomes = mainOutcomes;
+  }
+
+  public boolean isShowDeprecatedTab() {
+    return showDeprecatedTab;
+  }
+
+
+  public void setShowDeprecatedTab(boolean showDeprecatedTab) {
+    this.showDeprecatedTab = showDeprecatedTab;
   }
 
   public void setStatus(Map<String, Object> status) {

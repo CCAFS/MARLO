@@ -1005,6 +1005,15 @@
   [#local subtitleCheckbox = argsInnerCheckbox.subtitleCheckbox!'Checkboxes Available' /]
   [#local customElementType = argsInnerCheckbox.elementType!"elementType" /]
 
+  [#local displayName = '' /]
+  [#if element[type]?has_content && element[type][displayFieldName]?has_content]
+    [#local displayName = element[type][displayFieldName]!'' /]
+  [#elseif element[type]?has_content]
+    [#local displayName = element[type].name!'' /]
+  [#else]
+    [#local displayName = 'elementNameUndefined' /]
+  [/#if]
+
   <li class="[#if template]relationElement-template[/#if] relationElement indexLevel-${indexLevel} col-md-12">
     [#-- Hidden Inputs --]
     <input type="hidden" class="elementID" name="${customName}.id" value="${(element.id)!}" />
@@ -1017,7 +1026,7 @@
     [#-- Title --]
     <span class="col-md-4 col-lg-4 col-xlg-5 col-xxlg-6">
       <strong>${(subtitleElement)}:</strong>
-      <p class="elementName">${(element[type][displayFieldName])!'{elementNameUndefined}'}</p>
+      <p class="elementName">${displayName}</p>
     </span>
     <span class="col-md-8 col-lg-8 col-xlg-7 col-xxlg-6">
     <p>${(element[type][customElementType])!}</p>
