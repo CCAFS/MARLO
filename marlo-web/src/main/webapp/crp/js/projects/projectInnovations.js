@@ -362,7 +362,7 @@ function attachEvents() {
   ( function () {
     // Events
     $('.selectInnovationBundle').on('click', addBundleInnovation);
-    $('.removeBundleInnovation').on('click', removeBundleInnovation);
+    $('.removeInnovationBundleItem').on('click', removeBundleInnovation);
     // Function
     function addBundleInnovation(e) {
       e.preventDefault();
@@ -374,13 +374,12 @@ function attachEvents() {
       const innovationId = $button.attr('data-id');
       const innovationName = $button.attr('data-name');
 
-      console.log('Adding bundle innovation with ID:', innovationId, 'and Name:', innovationName);  
-
       const $listBlock = $('.innovationBundleList');
       const $template = $('#innovationBundleItem-template');
 
       const $newItem = $template.clone(true).removeAttr('id');
 
+      // add data-id and data-name attributes to the new item
       $newItem.find('.innovationBundleItemID').text(innovationId);
       $newItem.find('.innovationBundleItemName').text(innovationName);
 
@@ -390,6 +389,11 @@ function attachEvents() {
           e.id = (e.id).replace("_TEMPLATE_", "");
         }
       });
+
+      // Update reference hidden input to be save in database
+      $newItem.find('input[type="hidden"]#reference-selected').val(innovationId);
+
+      $button.prop('disabled', true); // Disable the button after selection
 
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
@@ -401,6 +405,10 @@ function attachEvents() {
       $parent.hide(500, function() {
         // Remove DOM element
         $parent.remove();
+        // Re-enable the select button for the removed innovation
+        const innovationId = $parent.find('.innovationBundleItemID').text();
+        const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
+        $selectButton.prop('disabled', false); // Re-enable the button
         // Update indexes
         updateIndexes();
       });
