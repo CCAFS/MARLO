@@ -25,7 +25,9 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
@@ -65,6 +67,7 @@ public class ProjectInnovationValidator extends BaseValidator {
   String innovationOneCgiar = "";
   String innovationReadiness = "";
   String innovationRights = "";
+  String innovationBundle = "";
 
   @Inject
   public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
@@ -139,6 +142,11 @@ public class ProjectInnovationValidator extends BaseValidator {
       BaseAction.getIsInnovationRightsCompleteMap().remove(projectInnovation.getId() + "");
     }
 
+    value = BaseAction.getIsInnovationBundleCompleteMap().get(projectInnovation.getId() + "");
+    if (value != null) {
+      BaseAction.getIsInnovationBundleCompleteMap().remove(projectInnovation.getId() + "");
+    }
+
     if (!saving) {
       Path path = this.getAutoSaveFilePath(projectInnovation, action.getCrpID(), action);
       if (path.toFile().exists()) {
@@ -158,6 +166,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
     this.validateInnovationReadiness(action, project, projectInnovation, saving);
     this.validateInnovationRights(action, project, projectInnovation, saving);
+    this.validateInnovationBundle(action, project, projectInnovation, saving);
 
     // The validator is called by Struts
     if (struts) {
@@ -1246,6 +1255,85 @@ public class ProjectInnovationValidator extends BaseValidator {
     innovationOneCgiar = action.getMissingFields().toString();
     if (projectInnovation.getId() != null && (innovationOneCgiar.length() > innovationAlliance.length())) {
       BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  /**
+   * Validate the data of the bundle tab
+   *
+   * @param action base action
+   * @param project related project
+   * @param projectInnovation An specific projectInnovation
+   * @param saving related action
+   */
+  public void validateInnovationBundle(BaseAction action, Project project, ProjectInnovation projectInnovation,
+    boolean saving) {
+    if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
+      ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+
+      // Validate bundles
+      if (projectInnovation.getBundles() == null && projectInnovation.getBundles().isEmpty()) {
+
+
+        action.addMessage(action.getText("innovation.bundles"));
+        action.addMissingField("innovation.bundles");
+        action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
+      }
+
+      // Validate Complementary Solutions
+      if (projectInnovation.getComplementarySolutions() != null
+        && !projectInnovation.getComplementarySolutions().isEmpty()) {
+
+        int index = 0;
+        for (ProjectInnovationComplementarySolution complementarySolution : projectInnovation
+          .getComplementarySolutions()) {
+          if (complementarySolution != null) {
+
+            if (!(this.isValidString(complementarySolution.getTitle())
+              && this.wordCount(complementarySolution.getTitle()) <= 100)) {
+              action.addMessage(action.getText("complementarySolution" + (index + 1) + "title"));
+              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].title",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (!(this.isValidString(complementarySolution.getShortTitle())
+              && this.wordCount(complementarySolution.getShortTitle()) <= 100)) {
+              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortTitle"));
+              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].shortTitle",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (!(this.isValidString(complementarySolution.getShortDescription())
+              && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
+              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
+              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].shortDescription",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (!(this.isValidString(complementarySolution.getShortDescription())
+              && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
+              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
+              action.getInvalidFields().put(
+                "list-innovation.complementarySolution[" + index + "].projectInnovationType.id",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+            if (complementarySolution.getComplementarySolutionFunctions() == null
+              || complementarySolution.getComplementarySolutionFunctions().isEmpty()) {
+              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
+              action.getInvalidFields().put(
+                "list-innovation.complementarySolution[" + index + "].complementarySolutionFunctions",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
+          }
+          index++;
+        }
+        action.addMessage(action.getText("innovation.sdgs"));
+        action.addMissingField("innovation.sdgs");
+        action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
+      }
+
+
+    }
+    innovationBundle = action.getMissingFields().toString();
+    if (projectInnovation.getId() != null && (innovationBundle.length() > innovationRights.length())) {
+      BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 
