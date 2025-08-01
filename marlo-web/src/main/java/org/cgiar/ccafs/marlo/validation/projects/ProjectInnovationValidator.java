@@ -164,7 +164,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     this.validateGeneralInformation(action, project, projectInnovation, saving);
     this.validateAllianceAlignment(action, project, projectInnovation, saving);
     this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
-    this.validateInnovationReadiness(action, project, projectInnovation, saving);
+    // this.validateInnovationReadiness(action, project, projectInnovation, saving);
     this.validateInnovationRights(action, project, projectInnovation, saving);
     this.validateInnovationBundle(action, project, projectInnovation, saving);
 
@@ -1269,7 +1269,6 @@ public class ProjectInnovationValidator extends BaseValidator {
   public void validateInnovationBundle(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
-      ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
       // Validate bundles
       if (projectInnovation.getBundles() == null && projectInnovation.getBundles().isEmpty()) {
@@ -1332,7 +1331,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     }
     innovationBundle = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationBundle.length() > innovationRights.length())) {
+    if (projectInnovation.getId() != null && (innovationBundle.length() > innovationOneCgiar.length())) {
       BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }

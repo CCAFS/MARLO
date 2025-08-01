@@ -607,6 +607,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean isInnovationOneCgiarAlignmentComplete;
   private boolean isInnovationReadinessComplete;
   private boolean isInnovationRightsComplete;
+  private boolean isInnovationBundleComplete;
 
   public BaseAction() {
     this.saveable = true;
@@ -8004,6 +8005,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isInnovationOneCgiarAlignmentComplete() {
     return isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public boolean isInnovationBundleComplete() {
+    return isInnovationBundleComplete;
+  }
+
+  public void setInnovationBundleComplete(boolean isInnovationBundleComplete) {
+    this.isInnovationBundleComplete = isInnovationBundleComplete;
   }
 
   public boolean isInnovationReadinessComplete() {
