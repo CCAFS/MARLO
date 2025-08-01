@@ -1425,19 +1425,19 @@ function addDataTableAllInnovations() {
       });
 
       // Add styles to the table
-      var $table = $(table);
-      var $wrapper = $table.closest('.dataTables_wrapper');
+      const $table = $(table);
+      const $wrapper = $table.closest('.dataTables_wrapper');
 
       if ($wrapper.length) {
-        var iconSearch = $("<div></div>").addClass("iconSearch");
-        var $filter = $wrapper.find('.dataTables_filter');
+        const iconSearch = $("<div></div>").addClass("iconSearch");
+        const $filter = $wrapper.find('.dataTables_filter');
 
         if ($filter.length) {
           iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
           $filter.parent().prepend(iconSearch);
         }
 
-        var $length = $wrapper.find('.dataTables_length');
+        const $length = $wrapper.find('.dataTables_length');
         if ($length.length) {
           $length.parent().css({
             "position": "absolute",
@@ -1449,8 +1449,81 @@ function addDataTableAllInnovations() {
         }
       }
 
+      //Add custom select to make personalized filter my project/cluster
+      const $firstChildren = $wrapper.children().first();
+      if ($firstChildren.length) {
+        const $selectContainer = $('<div class="select-container"></div>');
+        const $selectLabel = $('<label for="filter-select">Cluster:</label>');
+        const $select = $('<select class="form-control select2"></select>');
+        
+        $selectContainer.css({
+          "margin-left": "15px",
+          "margin-right": "15px",
+          "z-index": "1",
+          "position": "absolute",
+          "width": "25%",
+          "display": "flex"
+        });
+
+        $selectLabel.css({
+          "margin-right": "5px"
+        });
+
+        $select.css({
+          "width": "100% !important",
+          "height": "30px !important",
+          "margin-left": "5px",
+  
+        });
+
+        ajaxAllClusters($select);
+
+        $selectContainer.append($selectLabel);
+        $selectContainer.append($select);
+
+        $select.on('change', function() {
+          const selectedValue = $(this).val();
+          const table = $('#table-all-innovations').DataTable();
+          table.column(2).search(selectedValue ? '^' + selectedValue + '$' : '', true, false).draw();
+        });
+
+        $firstChildren.prepend($selectContainer);
+      }
+
     } catch (error) {
       console.error('Error initializing DataTable:', error);
+    }
+  });
+}
+
+function ajaxAllClusters(selectElement) {
+  $.ajax({
+    url: baseURL + '/projectList.do',
+    type: 'GET',
+    data: {
+      year: currentCrpSession,
+      phaseID: phaseID
+    },
+    success: function(data) {
+
+      console.log(data);
+
+      $(selectElement).append('<option value="">All Clusters</option>');
+
+      data.projects.forEach(function(cluster) {
+        $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
+      });
+
+      // Initialize select2 on the new select element
+      $(selectElement).select2({
+        width: '100%',
+        height: '30px',
+        placeholder: "Select a cluster",
+        allowClear: true
+      });
+    },
+    error: function(xhr, status, error) {
+      console.error('Error loading clusters:', error);
     }
   });
 }

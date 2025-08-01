@@ -233,7 +233,7 @@ table.dataTable a {
   margin-left: 0;
 }
 
-#table-all-innovations_wrapper .row:last-child{
+#table-all-innovations_wrapper .row{
   margin: 0;
 }
 
@@ -262,10 +262,15 @@ table.dataTable a {
     height: 30px;
     width: 40px;
     position: absolute;
-    right: 0;
+    right: 15px;
     border-radius: 0px 4px 4px 0px;
     display: flex;
 }
+
+#table-all-innovations_info {
+  width: 75%;
+  white-space: wrap;
+} 
 
 /* Responsive Design */
 

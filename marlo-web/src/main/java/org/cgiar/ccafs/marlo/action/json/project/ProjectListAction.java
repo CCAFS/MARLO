@@ -79,6 +79,12 @@ public class ProjectListAction extends BaseSummariesAction {
         } else {
           projectInfo.put("description", "");
         }
+        if(project.getProjecInfoPhase(this.getSelectedPhase()) != null
+          && project.getProjecInfoPhase(this.getSelectedPhase()).getAcronym() != null) {
+          projectInfo.put("acronym", project.getProjecInfoPhase(this.getSelectedPhase()).getAcronym());
+        } else {
+          projectInfo.put("acronym", "");
+        }
         projects.add(projectInfo);
       }
     }

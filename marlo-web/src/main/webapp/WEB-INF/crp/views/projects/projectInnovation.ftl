@@ -5,7 +5,7 @@
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250801",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250801-A",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250717"
 ] /]
@@ -20,7 +20,7 @@
 
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectInnovations.css?20250801",
-  "${baseUrlCdn}/global/css/customDataTable.css?20250801"
+  "${baseUrlCdn}/global/css/customDataTable.css?20250801-A"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
