@@ -157,6 +157,16 @@
             <div class="form-group">
               [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
+            
+            [#-- Project Challenges, causes and proposed solutions --]
+            <div class="form-group">
+              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable /]
+            </div>
+            
+            [#-- Project Lessons Learned --]
+            <div class="form-group">
+              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable /]
+            </div>
 
             [#-- Project status --]
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
