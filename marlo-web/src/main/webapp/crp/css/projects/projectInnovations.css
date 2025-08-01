@@ -438,6 +438,12 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   margin-top: 12px;
 }
 
+/** Select innovations **/
+.selectInnovationBundle {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+
 /** Complementary innovations **/
 .complementaryInnovation .blockTitle, .crpParameters .blockTitle {
   cursor: pointer;

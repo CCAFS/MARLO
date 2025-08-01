@@ -1412,7 +1412,7 @@ function addDataTableAllInnovations() {
         "bLengthChange": true,
         "bFilter": true,
         "bSort": true,
-        "bAutoWidth": true,
+        "bAutoWidth": false,
         "iDisplayLength": 10,
         "language": {
           "searchPlaceholder": "Search...",
@@ -1423,6 +1423,32 @@ function addDataTableAllInnovations() {
           { "targets": noSortColumns, "orderable": false }
         ]
       });
+
+      // Add styles to the table
+      var $table = $(table);
+      var $wrapper = $table.closest('.dataTables_wrapper');
+
+      if ($wrapper.length) {
+        var iconSearch = $("<div></div>").addClass("iconSearch");
+        var $filter = $wrapper.find('.dataTables_filter');
+
+        if ($filter.length) {
+          iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
+          $filter.parent().prepend(iconSearch);
+        }
+
+        var $length = $wrapper.find('.dataTables_length');
+        if ($length.length) {
+          $length.parent().css({
+            "position": "absolute",
+            "bottom": "8px",
+            "margin-left": "33%",
+            "z-index": "1",
+            "width": "25%"
+          });
+        }
+      }
+
     } catch (error) {
       console.error('Error initializing DataTable:', error);
     }

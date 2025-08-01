@@ -1299,7 +1299,7 @@
       <div class="clearfix"></div>
       [#-- Innovation type select --]
       <div class="form-group">
-        [@customForm.select name="${customName}.innovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
+        [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Function  --]
@@ -1323,7 +1323,7 @@
 [/#macro]
 
 [#macro tableAllInnovationsMacro list selected={}]
-  <table id="table-all-innovations" class="table table-striped table-bordered table-hover table-responsive" width="100%">
+  <table id="table-all-innovations" class="table table-striped table-hover" width="100%">
     <thead>
       <tr>
         <th id="tb-id" width="1%" class="no-sort">ID</th>
@@ -1331,7 +1331,7 @@
         <th id="tb-cluster" width="10%">[@s.text name="projectInnovations.table.cluster" /]</th>
         <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
-        <th id="tb-year" width="5%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th id="tb-year" width="1%">[@s.text name="projectInnovations.table.year" /]</th>
         <th id="tb-actions" width="15%">Action</th>
         [#-- Hidden column Don't remove it is neccesary for the library --]
         <th id="tb-hidden" style="display: none"></th>
@@ -1405,11 +1405,13 @@
             [/#if]
             [#-- Actions --]
             <td class="text-center">
+              [#-- Select --]
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}" [#if innovationSelected]disabled[/#if]>Select</button>
+              
+              [#-- Download PDF --]
               <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank">
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
-
-              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}" [#if innovationSelected]disabled[/#if]>Select</button>
             </td>
 
             <td style="display: none"></td>
