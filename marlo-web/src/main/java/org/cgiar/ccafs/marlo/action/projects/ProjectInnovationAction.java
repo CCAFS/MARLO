@@ -2595,56 +2595,61 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveComplementarySolutionFunctions(ProjectInnovationComplementarySolution complementarySolution,
     ProjectInnovationComplementarySolution complementarySolutionDB) {
+    try {
 
-    if (complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions() != null
-      && !complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().isEmpty()) {
+      if (complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions() != null
+        && !complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().isEmpty()) {
 
-      List<ProjectInnovationComplementarySolutionFunction> previousFunctions =
-        complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().stream().filter(f -> f.isActive())
-          .collect(Collectors.toList());
+        List<ProjectInnovationComplementarySolutionFunction> previousFunctions =
+          complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().stream()
+            .filter(f -> f.isActive()).collect(Collectors.toList());
 
-      for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
-        if (complementarySolution.getComplementarySolutionFunctions() == null
-          || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
-          projectInnovationComplementarySolutionFunctionManager
-            .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
-        }
-      }
-    }
-
-    if (complementarySolution.getComplementarySolutionFunctions() != null) {
-
-      for (ProjectInnovationComplementarySolutionFunction function : complementarySolution
-        .getComplementarySolutionFunctions()) {
-
-        if (function.getId() != null) {
-          ProjectInnovationComplementarySolutionFunction functionToUpdate =
+        for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
+          if (complementarySolution.getComplementarySolutionFunctions() == null
+            || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
             projectInnovationComplementarySolutionFunctionManager
-              .getProjectInnovationComplementarySolutionFunctionById(function.getId());
-
-          if (function.getProjectInnovationFunction() != null && function.getProjectInnovationFunction().getId() != null
-            && !function.getProjectInnovationFunction().getId()
-              .equals(functionToUpdate.getProjectInnovationFunction().getId())) {
-            functionToUpdate.setProjectInnovationFunction(function.getProjectInnovationFunction());
-            projectInnovationComplementarySolutionFunctionManager
-              .saveProjectInnovationComplementarySolutionFunction(functionToUpdate);
-          }
-
-        } else {
-          if (function.getProjectInnovationFunction() != null
-            && function.getProjectInnovationFunction().getId() != null) {
-            ProjectInnovationComplementarySolutionFunction functionToSave =
-              new ProjectInnovationComplementarySolutionFunction();
-
-            functionToSave.setProjectInnovationComplementarySolution(complementarySolutionDB);
-            functionToSave.setProjectInnovationFunction(function.getProjectInnovationFunction());
-            functionToSave.setPhase(complementarySolutionDB.getPhase());
-
-            projectInnovationComplementarySolutionFunctionManager
-              .saveProjectInnovationComplementarySolutionFunction(functionToSave);
+              .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
           }
         }
       }
+
+      if (complementarySolution.getComplementarySolutionFunctions() != null) {
+
+        for (ProjectInnovationComplementarySolutionFunction function : complementarySolution
+          .getComplementarySolutionFunctions()) {
+          if (function != null) {
+            if (function.getId() != null) {
+              ProjectInnovationComplementarySolutionFunction functionToUpdate =
+                projectInnovationComplementarySolutionFunctionManager
+                  .getProjectInnovationComplementarySolutionFunctionById(function.getId());
+
+              if (function.getProjectInnovationFunction() != null
+                && function.getProjectInnovationFunction().getId() != null && !function.getProjectInnovationFunction()
+                  .getId().equals(functionToUpdate.getProjectInnovationFunction().getId())) {
+                functionToUpdate.setProjectInnovationFunction(function.getProjectInnovationFunction());
+                projectInnovationComplementarySolutionFunctionManager
+                  .saveProjectInnovationComplementarySolutionFunction(functionToUpdate);
+              }
+
+            } else {
+              if (function.getProjectInnovationFunction() != null
+                && function.getProjectInnovationFunction().getId() != null) {
+                ProjectInnovationComplementarySolutionFunction functionToSave =
+                  new ProjectInnovationComplementarySolutionFunction();
+
+                functionToSave.setProjectInnovationComplementarySolution(complementarySolutionDB);
+                functionToSave.setProjectInnovationFunction(function.getProjectInnovationFunction());
+                functionToSave.setPhase(complementarySolutionDB.getPhase());
+
+                projectInnovationComplementarySolutionFunctionManager
+                  .saveProjectInnovationComplementarySolutionFunction(functionToSave);
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      Log.error("error to save complementary solution functions " + e);
     }
   }
 
@@ -2708,12 +2713,21 @@ public class ProjectInnovationAction extends BaseAction {
             solutionToSave.setTitle(solution.getTitle());
             solutionToSave.setShortTitle(solution.getShortTitle());
             solutionToSave.setShortDescription(solution.getShortDescription());
-            solutionToSave.setProjectInnovationType(solution.getProjectInnovationType());
+
+            RepIndInnovationType innovationType = null;
+            if (solution.getProjectInnovationType() != null && solution.getProjectInnovationType().getId() != null
+              && solution.getProjectInnovationType().getId() != -1) {
+              innovationType =
+                repIndInnovationTypeManager.getRepIndInnovationTypeById(solution.getProjectInnovationType().getId());
+            }
+
+            solutionToSave.setProjectInnovationType(innovationType);
             solutionToSave.setPhase(phase);
             solutionToSave.setProjectInnovation(projectInnovation);
-            saveComplementarySolutionFunctions(solution, solutionToSave);
 
-            projectInnovationComplementarySolutionManager.saveProjectInnovationComplementarySolution(solutionToSave);
+            solutionToSave =
+              projectInnovationComplementarySolutionManager.saveProjectInnovationComplementarySolution(solutionToSave);
+            saveComplementarySolutionFunctions(solution, solutionToSave);
 
             innovation.getProjectInnovationComplementarySolutions().add(solutionToSave);
           }
