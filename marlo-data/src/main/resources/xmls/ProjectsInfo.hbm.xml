@@ -35,6 +35,12 @@
         <property name="summary" type="string">
             <column name="summary" sql-type="TEXT" />
         </property>
+        <property name="challengesSolutions" type="string">
+            <column name="challenges_solutions" sql-type="TEXT" />
+        </property>
+        <property name="lessonsLearned" type="string">
+            <column name="lessons_learned" sql-type="TEXT" />
+        </property>
         <property name="startDate" type="date">
             <column name="start_date" length="10" />
         </property>
