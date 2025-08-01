@@ -146,7 +146,7 @@
 				    [#if showDeprecatedTab?? && showDeprecatedTab]
 				      <div class="tab-pane" id="deprecatedOutcomesTab">
 				        <br>
-				        <table class="table table-striped table-hover">
+				        <table id="projectOutcomesList" class="table table-striped table-hover">
 				          <thead>
 				            <tr>
 				              <th>[@s.text name="global.flagship" /]</th>
