@@ -83,6 +83,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
   private FileDB activitiesCSVFile;
   @Expose
   private Long previousProjectId;
+  @Expose
+  private String challengesSolutions;
+  @Expose
+  private String lessonsLearned;
 
   public ProjectInfo() {
   }
@@ -184,6 +188,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     return allYears;
   }
 
+  public String getChallengesSolutions() {
+    return challengesSolutions;
+  }
+
   public ClusterType getClusterType() {
     return clusterType;
   }
@@ -232,6 +240,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public String getLeaderResponsabilities() {
     return leaderResponsabilities;
+  }
+
+  public String getLessonsLearned() {
+    return lessonsLearned;
   }
 
   public LiaisonInstitution getLiaisonInstitution() {
@@ -406,6 +418,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.administrative = administrative;
   }
 
+  public void setChallengesSolutions(String challengesSolutions) {
+    this.challengesSolutions = challengesSolutions;
+  }
+
   public void setClusterType(ClusterType clusterType) {
     this.clusterType = clusterType;
   }
@@ -444,6 +460,10 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
 
   public void setLeaderResponsabilities(String leaderResponsabilities) {
     this.leaderResponsabilities = leaderResponsabilities;
+  }
+
+  public void setLessonsLearned(String lessonsLearned) {
+    this.lessonsLearned = lessonsLearned;
   }
 
   public void setLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
@@ -558,6 +578,8 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setActivitiesCSV(update.getActivitiesCSV());
     this.setActivitiesCSVFile(update.getActivitiesCSVFile());
     this.setClusterType(update.getClusterType());
+    this.setChallengesSolutions(update.getChallengesSolutions());
+    this.setLessonsLearned(update.getLessonsLearned());
     if (update.getAcronym() != null && !update.getAcronym().isEmpty()) {
       this.setAcronym(update.getAcronym());
     }

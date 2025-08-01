@@ -94,6 +94,18 @@ public class ProjectDescriptionValidator extends BaseValidator {
       action.addMessage(action.getText("project.summary"));
       action.getInvalidFields().put("input-project.projectInfo.summary", InvalidFieldsMessages.EMPTYFIELD);
     }
+    if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getLessonsLearned())
+      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getSummary()) > 1
+      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getSummary()) <= 250)) {
+      action.addMessage(action.getText("project.challengesAndSolutions"));
+      action.getInvalidFields().put("input-project.projectInfo.challengesSolutions", InvalidFieldsMessages.EMPTYFIELD);
+    }
+    if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getChallengesSolutions())
+      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getSummary()) > 1
+      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getSummary()) <= 250)) {
+      action.addMessage(action.getText("project.lessonsLearned"));
+      action.getInvalidFields().put("input-project.projectInfo.lessonsLearned", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
       if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getId() == -1) {
