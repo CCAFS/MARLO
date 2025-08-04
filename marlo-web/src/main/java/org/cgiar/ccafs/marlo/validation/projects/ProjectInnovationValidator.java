@@ -1271,9 +1271,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
 
       // Validate bundles
-      if (projectInnovation.getBundles() == null && projectInnovation.getBundles().isEmpty()) {
-
-
+      if (projectInnovation.getBundles() == null || projectInnovation.getBundles().isEmpty()) {
         action.addMessage(action.getText("innovation.bundles"));
         action.addMissingField("innovation.bundles");
         action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
@@ -1323,9 +1321,7 @@ public class ProjectInnovationValidator extends BaseValidator {
           }
           index++;
         }
-        action.addMessage(action.getText("innovation.sdgs"));
-        action.addMissingField("innovation.sdgs");
-        action.getInvalidFields().put("list-innovation.sdgs", InvalidFieldsMessages.EMPTYLIST);
+
       }
 
 

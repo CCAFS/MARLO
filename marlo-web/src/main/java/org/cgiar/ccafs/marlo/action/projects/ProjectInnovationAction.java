@@ -2604,11 +2604,13 @@ public class ProjectInnovationAction extends BaseAction {
           complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().stream()
             .filter(f -> f.isActive()).collect(Collectors.toList());
 
-        for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
-          if (complementarySolution.getComplementarySolutionFunctions() == null
-            || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
-            projectInnovationComplementarySolutionFunctionManager
-              .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
+        if (previousFunctions != null && !previousFunctions.isEmpty()) {
+          for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
+            if (complementarySolution.getComplementarySolutionFunctions() == null
+              || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
+              projectInnovationComplementarySolutionFunctionManager
+                .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
+            }
           }
         }
       }
@@ -2668,13 +2670,15 @@ public class ProjectInnovationAction extends BaseAction {
         List<ProjectInnovationComplementarySolution> previousSolutions = projectInnovationComplementarySolutionManager
           .getProjectInnovationComplementarySolutionByInnovationAndPhase(projectInnovation.getId(), phase.getId());
 
-        for (ProjectInnovationComplementarySolution complementarySolution : previousSolutions) {
-          if (complementarySolution.getId() != null && (innovation.getComplementarySolutions() == null
-            || !innovation.getComplementarySolutions().contains(complementarySolution))) {
-            if (projectInnovationComplementarySolutionManager
-              .existProjectInnovationComplementarySolution(complementarySolution.getId())) {
-              projectInnovationComplementarySolutionManager
-                .deleteProjectInnovationComplementarySolution(complementarySolution.getId());
+        if (previousSolutions != null && !previousSolutions.isEmpty()) {
+          for (ProjectInnovationComplementarySolution complementarySolution : previousSolutions) {
+            if (complementarySolution.getId() != null && (innovation.getComplementarySolutions() == null
+              || !innovation.getComplementarySolutions().contains(complementarySolution))) {
+              if (projectInnovationComplementarySolutionManager
+                .existProjectInnovationComplementarySolution(complementarySolution.getId())) {
+                projectInnovationComplementarySolutionManager
+                  .deleteProjectInnovationComplementarySolution(complementarySolution.getId());
+              }
             }
           }
         }
