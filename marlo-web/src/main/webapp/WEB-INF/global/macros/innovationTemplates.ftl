@@ -1316,8 +1316,15 @@
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
 
               [#local functionID = (function.id)!"" /]
+
+              [#if element.complementarySolutionFunctions?has_content]
+                [#local elementID = element.complementarySolutionFunctions[functionID].id /]
+              [#else]
+                [#local elementID = "" /]
+              [/#if]
+
               [#-- Hidden - id --]
-              [@customForm.input name="${customName}.complementarySolutionFunctions[${function.id}].id" value="" type="hidden" /]
+              <input name="${customName}.complementarySolutionFunctions[${function.id}].id" value="${elementID}" type="hidden" />
 
               [#local isChecked = false /]
               [#if element.projectInnovationComplementarySolutionFunctions?has_content]
