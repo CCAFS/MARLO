@@ -371,21 +371,33 @@ function attachEvents() {
     // Events
     $('.selectInnovationBundle').on('click', addBundleInnovation);
     $('.removeInnovationBundleItem').on('click', removeBundleInnovation);
+    if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+      $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
+    }
     // Function
     function addBundleInnovation(e) {
       e.preventDefault();
 
       const $button = $(this);
 
-      console.log('Button clicked:', $button);
-
       const innovationId = $button.attr('data-id');
       const innovationName = $button.attr('data-name');
+
+      console.log('Adding bundle innovation with ID:', innovationId, 'and Name:', innovationName);
 
       const $listBlock = $('.innovationBundleList');
       const $template = $('#innovationBundleItem-template');
 
+      if($listBlock.find('.innovationBundleItem').length == 0) {
+        $listBlock.empty(); // Clear the list message before adding new items
+      }
+
       const $newItem = $template.clone(true).removeAttr('id');
+
+      console.log('New item created:', $newItem);
+      console.log('Template item:', $template);
+
+      console.log($newItem.find('.innovationBundleItemID'));
 
       // add data-id and data-name attributes to the new item
       $newItem.find('.innovationBundleItemID').text(innovationId);
@@ -415,6 +427,7 @@ function attachEvents() {
         $parent.remove();
         // Re-enable the select button for the removed innovation
         const innovationId = $parent.find('.innovationBundleItemID').text();
+        console.log('Re-enabling button for innovation ID:', innovationId);
         const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
         $selectButton.prop('disabled', false); // Re-enable the button
         // Update indexes
@@ -430,6 +443,11 @@ function attachEvents() {
           $(e).attr('for', newForValue);
         });
       });
+
+      // If no items left, show a message
+      if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+        $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
+      }
     }
   })();
 
