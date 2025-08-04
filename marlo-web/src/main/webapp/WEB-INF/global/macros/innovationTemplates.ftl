@@ -1047,7 +1047,7 @@
     [/#if]
 
     [#-- Checkbox Actors - Genders --]
-    <div class="block-sexAgeNotApply col-md-12" style="display: ${(!sexAgeNotApply)?then('block','none')}">
+    <div class="col-md-12">
       <div class="col-md-12">
         [#--          <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
@@ -1056,13 +1056,15 @@
         [#if editable]
         <div class="col-md-10 innerOptions select--flex" style="padding-left: 0;">
           <div class="col-md-2 margin-right-10">
-            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true value=(element.total)!""  /]
+            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true value=(element.total)!"" className="input-total"  /]
           </div>
-          <div class="col-md-3 margin-right-10">
-            [@customForm.input name="${customName}.whichWomen" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.whichWomen)!""  /]
-          </div>
-          <div class="col-md-3">
-            [@customForm.input name="${customName}.whichYouth" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.whichYouth)!""  /]
+          <div class="col-md-10 block-sexAgeNotApply" style="display: ${(!sexAgeNotApply)?then('block','none')}">
+            <div class="col-md-4 margin-right-10">
+              [@customForm.input name="${customName}.whichWomen" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.whichWomen)!"" className="input-whichWomen" /]
+            </div>
+            <div class="col-md-4">
+              [@customForm.input name="${customName}.whichYouth" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.whichYouth)!"" className="input-whichYouth" /]
+            </div>
           </div>
         </div>
         [#else]
@@ -1312,6 +1314,10 @@
               [#local functionLabel] ${function.title!""} [/#local]
               [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
+
+              [#local functionID = (function.id)!"" /]
+              [#-- Hidden - id --]
+              [@customForm.input name="${customName}.complementarySolutionFunctions[${function.id}].id" value="" type="hidden" /]
 
               [#local isChecked = false /]
               [#if element.projectInnovationComplementarySolutionFunctions?has_content]

@@ -121,6 +121,10 @@ function attachEvents() {
     $('.actorsList .actorsInnovation').each(function(_i,e) {
       $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
     });
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichWomen'));
+      limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichYouth'));
+    });
     
     // Function
     function addActor() {
@@ -149,6 +153,10 @@ function attachEvents() {
 
       // Add function to onChangeCheckboxSexAndAge
       $newItem.find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
+
+      // Add function to make max value of input number
+      limitedValueFillInput($newItem.find('input.input-total'), $newItem.find('input.input-whichWomen'));
+      limitedValueFillInput($newItem.find('input.input-total'), $newItem.find('input.input-whichYouth'));
 
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
@@ -1506,8 +1514,6 @@ function ajaxAllClusters(selectElement) {
     },
     success: function(data) {
 
-      console.log(data);
-
       $(selectElement).append('<option value="">All Clusters</option>');
 
       data.projects.forEach(function(cluster) {
@@ -1524,6 +1530,47 @@ function ajaxAllClusters(selectElement) {
     },
     error: function(xhr, status, error) {
       console.error('Error loading clusters:', error);
+    }
+  });
+}
+
+function limitedValueFillInput(reference, input) {
+
+  if (!$(reference).length || !$(input).length) {
+    console.warn('Invalid elements passed to limitedValueFillInput');
+    return;
+  }
+
+  // Set initial max value based on the reference input
+  const initialMaxValue = parseInt($(reference).val(), 10) || 0;
+  const $input = $(input);
+  $input.attr('max', initialMaxValue);
+  // If the current value exceeds the initial max, adjust it
+  const currentValue = parseInt($input.val(), 10) || 0;
+  if (currentValue > initialMaxValue) {
+    $input.val(initialMaxValue);
+  }
+
+  $(reference).on('change', function() {
+    const maxValue = parseInt($(reference).val(), 10) || 0;
+    
+    // Set max attribute for number inputs
+    $input.attr('max', maxValue);
+    
+    // If the current value exceeds the new max, adjust it
+    const currentValue = parseInt($input.val(), 10) || 0;
+    if (currentValue > maxValue) {
+      $input.val(maxValue);
+    }
+  });
+
+  $(input).on('change', function() {
+    const maxValue = parseInt($(reference).val(), 10) || 0;
+
+    // If the current value exceeds the new max, adjust it
+    const currentValue = parseInt($(input).val(), 10) || 0;
+    if (currentValue > maxValue) {
+      $(input).val(maxValue);
     }
   });
 }
