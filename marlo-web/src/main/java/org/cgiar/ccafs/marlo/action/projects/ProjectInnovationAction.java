@@ -1392,7 +1392,8 @@ public class ProjectInnovationAction extends BaseAction {
               for (ProjectInnovationComplementarySolutionFunction complementarySolutionFunction : innovationComplementarySolution
                 .getComplementarySolutionFunctions()) {
                 if (complementarySolutionFunction.getProjectInnovationFunction() != null
-                  && complementarySolutionFunction.getProjectInnovationFunction().getId() != null) {
+                  && complementarySolutionFunction.getProjectInnovationFunction().getId() != null
+                  && complementarySolutionFunction.getProjectInnovationFunction().isActive()) {
                   complementarySolutionFunction
                     .setProjectInnovationFunction(projectInnovationFunctionManager.getProjectInnovationFunctionById(
                       complementarySolutionFunction.getProjectInnovationFunction().getId()));
