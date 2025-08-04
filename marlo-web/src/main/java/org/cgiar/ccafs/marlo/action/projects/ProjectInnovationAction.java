@@ -2607,7 +2607,8 @@ public class ProjectInnovationAction extends BaseAction {
 
         if (previousFunctions != null && !previousFunctions.isEmpty()) {
           for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
-            if (complementarySolution.getComplementarySolutionFunctions() == null
+            if (previousFunction.getId() != null && previousFunction.getProjectInnovationFunction() != null
+              && complementarySolution.getComplementarySolutionFunctions() == null
               || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
               projectInnovationComplementarySolutionFunctionManager
                 .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());

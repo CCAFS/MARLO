@@ -1315,25 +1315,21 @@
               [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
 
-              [#local functionID = (function.id)!"" /]
-
-              [#if element.complementarySolutionFunctions?has_content]
-                [#local elementID = element.complementarySolutionFunctions[functionID].id /]
-              [#else]
-                [#local elementID = "" /]
-              [/#if]
-
-              [#-- Hidden - id --]
-              <input name="${customName}.complementarySolutionFunctions[${function.id}].id" value="${elementID}" type="hidden" />
 
               [#local isChecked = false /]
               [#if element.projectInnovationComplementarySolutionFunctions?has_content]
                 [#list element.projectInnovationComplementarySolutionFunctions as func]
                   [#if func.projectInnovationFunction.id == function.id]
                     [#local isChecked = true /]
+                    [#local savedFunctionId = func.id /]
                   [/#if]
                 [/#list]
               [/#if]
+
+							[#-- Hidden ID --]
+							[#if isChecked && savedFunctionId?has_content]
+								<input name="${customName}.complementarySolutionFunctions[${(function.id)!}].id" value="${savedFunctionId}" type="hidden" />
+							[/#if]
 
               [#-- Checkbox Function --]
               [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=isChecked cssClass="check-function" /]
