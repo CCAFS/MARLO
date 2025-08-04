@@ -675,6 +675,7 @@
             <div class="complementarySolutionsList">
               [#if element.complementarySolutions?has_content]
                 [#list element.complementarySolutions as solution]
+                  [#-- Complementary Solutions Macro --]
                   [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
                 [/#list]
               [/#if]
@@ -1312,7 +1313,17 @@
               [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
 
-              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions.projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=((element.function??) && (element.function?contains(function.id))) cssClass="check-function" /]
+              [#local isChecked = false /]
+              [#if element.projectInnovationComplementarySolutionFunctions?has_content]
+                [#list element.projectInnovationComplementarySolutionFunctions as func]
+                  [#if func.projectInnovationFunction.id == function.id]
+                    [#local isChecked = true /]
+                  [/#if]
+                [/#list]
+              [/#if]
+
+              [#-- Checkbox Function --]
+              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=isChecked cssClass="check-function" /]
             </div>
           [/#list]
         [/#if]

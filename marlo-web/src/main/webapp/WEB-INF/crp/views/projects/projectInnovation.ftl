@@ -148,8 +148,8 @@
               <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
-            [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md toSubmit">
+            [#assign isInnovationBundleComplete = (action.isInnovationBundleComplete())!false /]
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationBundleComplete?then('submitted','toSubmit')}">
               <a href="#innovationBundle" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.bundleComposition" /]</a>
             </li>
 
