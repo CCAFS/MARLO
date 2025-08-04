@@ -5753,6 +5753,10 @@ ul#deliverablesFilesMessages>li {
 	margin-bottom: 1rem;
 }
 
+.grayGreenBox p {
+	margin: 0;
+}
+
 .grayBlueBox {
 	background: #ECF3F4;
 	border-radius: 10px;
