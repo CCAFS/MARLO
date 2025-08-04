@@ -394,11 +394,6 @@ function attachEvents() {
 
       const $newItem = $template.clone(true).removeAttr('id');
 
-      console.log('New item created:', $newItem);
-      console.log('Template item:', $template);
-
-      console.log($newItem.find('.innovationBundleItemID'));
-
       // add data-id and data-name attributes to the new item
       $newItem.find('.innovationBundleItemID').text(innovationId);
       $newItem.find('.innovationBundleItemName').text(innovationName);
@@ -568,6 +563,8 @@ function attachEvents() {
   CustomSortableList("div[listname='innovation.contributingOrganizations'] .panel-body ul.list");
 
   addDataTableAllInnovations();
+
+  changeInformativeTextPRMSEquivalence();
 }
 
 function AddRequired(){
@@ -1589,6 +1586,34 @@ function limitedValueFillInput(reference, input) {
     const currentValue = parseInt($(input).val(), 10) || 0;
     if (currentValue > maxValue) {
       $(input).val(maxValue);
+    }
+  });
+}
+
+function changeInformativeTextPRMSEquivalence() {
+  const $selectInnovationType = $('select[name="innovation.projectInnovationInfo.repIndInnovationType.id"]');
+
+  const $blockPRMSEquivalence = $('.prmsEquivalentBlock');
+
+  $selectInnovationType.on('change', function() {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      $blockPRMSEquivalence.show();
+
+      const $textPRMSEquivalence = $blockPRMSEquivalence.find('.prmsEquivalentText');
+
+      $textPRMSEquivalence.each(function() {
+        const $this = $(this);
+        const typeId = $this.attr('data-id');
+        console.log('Type ID:', typeId, 'Selected value:', selectedValue);
+        if (typeId == selectedValue) {
+          $this.parent().show();
+        } else {
+          $this.parent().hide();
+        }
+      });
+    } else {
+      $blockPRMSEquivalence.hide();
     }
   });
 }

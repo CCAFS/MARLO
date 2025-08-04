@@ -149,6 +149,19 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /]
             </div>
 
+            [#-- Informative text - Compatibility with PRMS --]
+            <div class="form-group prmsEquivalentBlock">
+              [#local innovationTypeValue = (element.projectInnovationInfo?has_content && element.projectInnovationInfo.repIndInnovationType?has_content)?then(element.projectInnovationInfo.repIndInnovationType.id, -1) /]
+              [#list innovationTypeList as type]
+                [#local isVisible = (type.id == innovationTypeValue) /]
+                <p style="display:${isVisible?string('block','none')}">
+                  <i class="form-text text-muted prmsEquivalentText" data-id="${type.id}">
+                    In the context of CGIAR, the <b>${type.name}</b> type in AICCRA, equals to <b>${type.prmsNameEquivalent}</b>
+                  </i>
+                </p>
+              [/#list]
+            </div>
+
             <div class="form-group">
               [#-- Other Innovation Type --]
               [#local isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
