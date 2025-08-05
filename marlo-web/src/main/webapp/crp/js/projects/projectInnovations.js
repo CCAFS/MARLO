@@ -402,9 +402,12 @@ function attachEvents() {
       const $button = $(this);
 
       const innovationId = $button.attr('data-id');
-      const innovationName = $button.attr('data-name');
-
-      console.log('Adding bundle innovation with ID:', innovationId, 'and Name:', innovationName);
+      const innovationName = $button.attr('data-name')
+        .replace(/"/g, '&quot;') // Escape double quotes for HTML attribute safety 
+        .replace(/'/g, '&#39;'); // Escape single quotes for HTML attribute safety
+      
+      // When displaying in the DOM, decode any HTML entities
+      const displayName = $('<div/>').html(innovationName).text();
 
       const $listBlock = $('.innovationBundleList');
       const $template = $('#innovationBundleItem-template');
@@ -417,7 +420,7 @@ function attachEvents() {
 
       // add data-id and data-name attributes to the new item
       $newItem.find('.innovationBundleItemID').text(innovationId);
-      $newItem.find('.innovationBundleItemName').text(innovationName);
+      $newItem.find('.innovationBundleItemName').html(displayName); // Use .html() instead of .text() to properly handle the content
 
       $newItem.find('input').each(function(_i,e) { 
         if(e.name && e.name.includes("_TEMPLATE_")) {
