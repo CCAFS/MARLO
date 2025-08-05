@@ -70,6 +70,12 @@ function getListElement(fieldName,message) {
       $spanSelector.addClass('fieldError');
       $spanSelector.attr("title", message);
     }
+
+    const firstLabel = $(elementQuery).find('label:first');
+    if(firstLabel) {
+      firstLabel.addClass('fieldError');
+      firstLabel.attr("title", message);
+    }
   }
 }
 

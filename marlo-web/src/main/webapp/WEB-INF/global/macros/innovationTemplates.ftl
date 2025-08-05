@@ -665,7 +665,7 @@
           [/#if]
         </div>
         [#-- Innovations selected - bundles --]
-        <div class="col-md-12 innovationBundleBlock">
+        <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
           <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
           [#-- Innovation selected List - bundles --]
           <div class="innovationBundleList">
@@ -1343,8 +1343,8 @@
 
 
               [#local isChecked = false /]
-              [#if element.projectInnovationComplementarySolutionFunctions?has_content]
-                [#list element.projectInnovationComplementarySolutionFunctions as func]
+              [#if element.complementarySolutionFunctions?has_content]
+                [#list element.complementarySolutionFunctions as func]
                   [#if func.projectInnovationFunction.id == function.id]
                     [#local isChecked = true /]
                     [#local savedFunctionId = func.id /]
