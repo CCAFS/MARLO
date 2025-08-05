@@ -181,6 +181,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -1380,35 +1381,45 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
-        // Innovations bundles
+        // Complementary Solutions
         if (innovation.getProjectInnovationComplementarySolutions() != null) {
-          innovation
-            .setComplementarySolutions(new ArrayList<>(innovation.getProjectInnovationComplementarySolutions().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
-          for (ProjectInnovationComplementarySolution innovationComplementarySolution : innovation
-            .getComplementarySolutions()) {
-            if (innovationComplementarySolution != null
-              && innovationComplementarySolution.getComplementarySolutionFunctions() != null) {
-              for (ProjectInnovationComplementarySolutionFunction complementarySolutionFunction : innovationComplementarySolution
-                .getComplementarySolutionFunctions()) {
-                if (complementarySolutionFunction.getProjectInnovationFunction() != null
-                  && complementarySolutionFunction.getProjectInnovationFunction().getId() != null
-                  && complementarySolutionFunction.getProjectInnovationFunction().isActive()) {
-                  complementarySolutionFunction
-                    .setProjectInnovationFunction(projectInnovationFunctionManager.getProjectInnovationFunctionById(
-                      complementarySolutionFunction.getProjectInnovationFunction().getId()));
-                }
-                if (complementarySolutionFunction.getProjectInnovationComplementarySolution() != null
-                  && complementarySolutionFunction.getProjectInnovationComplementarySolution().getId() != null) {
-                  complementarySolutionFunction.setProjectInnovationComplementarySolution(
-                    projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
-                      complementarySolutionFunction.getProjectInnovationComplementarySolution().getId()));
-                }
-              }
 
+          List<ProjectInnovationComplementarySolution> solutions = new ArrayList<>();
+          solutions = projectInnovationComplementarySolutionManager
+            .getProjectInnovationComplementarySolutionByInnovationAndPhase(innovationID, this.getActualPhase().getId());
+
+          innovation.setComplementarySolutions(solutions);
+
+          for (ProjectInnovationComplementarySolution solution : solutions) {
+            if (solution != null && solution.getId() != null) {
+
+              List<ProjectInnovationComplementarySolutionFunction> validFunctions =
+                projectInnovationComplementarySolutionFunctionManager
+                  .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(solution.getId());
+
+              if (validFunctions != null && !validFunctions.isEmpty()) {
+
+                for (ProjectInnovationComplementarySolutionFunction function : validFunctions) {
+                  if (function.getProjectInnovationFunction() != null
+                    && function.getProjectInnovationFunction().getId() != null) {
+                    function.setProjectInnovationFunction(projectInnovationFunctionManager
+                      .getProjectInnovationFunctionById(function.getProjectInnovationFunction().getId()));
+                  }
+
+                  if (function.getProjectInnovationComplementarySolution() != null
+                    && function.getProjectInnovationComplementarySolution().getId() != null) {
+                    function.setProjectInnovationComplementarySolution(
+                      projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
+                        function.getProjectInnovationComplementarySolution().getId()));
+                  }
+                }
+
+                solution.setComplementarySolutionFunctions(validFunctions);
+              }
             }
           }
         }
+
 
         // Innovations actors
         if (innovation.getProjectInnovationBundles() != null) {
@@ -2522,8 +2533,8 @@ public class ProjectInnovationAction extends BaseAction {
     try {
       if (projectInnovation.getProjectInnovationBundles() != null
         && !projectInnovation.getProjectInnovationBundles().isEmpty()) {
-
-        List<ProjectInnovationBundle> bundlePrev = projectInnovationBundleManager
+        List<ProjectInnovationBundle> bundlePrev = new ArrayList<>();
+        bundlePrev = projectInnovationBundleManager
           .getProjectInnovationBundleByInnovationAndPhase(projectInnovation.getId(), phase.getId());
 
         for (ProjectInnovationBundle bundle : bundlePrev) {
@@ -2598,25 +2609,43 @@ public class ProjectInnovationAction extends BaseAction {
     ProjectInnovationComplementarySolution complementarySolutionDB) {
     try {
 
-      if (complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions() != null
-        && !complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().isEmpty()) {
+      List<ProjectInnovationComplementarySolutionFunction> incomingFunctions =
+        complementarySolution.getComplementarySolutionFunctions();
 
-        List<ProjectInnovationComplementarySolutionFunction> previousFunctions =
-          complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions().stream()
-            .filter(f -> f.isActive()).collect(Collectors.toList());
+      Set<Long> incomingFunctionIds = new HashSet<>();
 
-        if (previousFunctions != null && !previousFunctions.isEmpty()) {
-          for (ProjectInnovationComplementarySolutionFunction previousFunction : previousFunctions) {
-            if (previousFunction.getId() != null && previousFunction.getProjectInnovationFunction() != null
-              && complementarySolution.getComplementarySolutionFunctions() == null
-              || !complementarySolution.getComplementarySolutionFunctions().contains(previousFunction)) {
+      if (incomingFunctions != null) {
+        for (ProjectInnovationComplementarySolutionFunction function : incomingFunctions) {
+          if (function != null && function.getProjectInnovationFunction() != null
+            && function.getProjectInnovationFunction().getId() != null) {
+            incomingFunctionIds.add(function.getProjectInnovationFunction().getId());
+          }
+        }
+      }
+
+      Set<ProjectInnovationComplementarySolutionFunction> existingFunctions =
+        complementarySolutionDB.getProjectInnovationComplementarySolutionFunctions();
+
+      if (existingFunctions != null && !existingFunctions.isEmpty()) {
+        for (ProjectInnovationComplementarySolutionFunction existing : existingFunctions) {
+          if (existing != null && existing.isActive() && existing.getProjectInnovationFunction() != null
+            && existing.getProjectInnovationFunction().getId() != null) {
+
+            Long existingId = existing.getProjectInnovationFunction().getId();
+
+            if (!incomingFunctionIds.contains(existingId)) {
               projectInnovationComplementarySolutionFunctionManager
-                .deleteProjectInnovationComplementarySolutionFunction(previousFunction.getId());
+                .deleteProjectInnovationComplementarySolutionFunction(existing.getId());
             }
           }
         }
       }
 
+    } catch (Exception e) {
+      Log.error("error to delete complementary solution functions " + e);
+    }
+
+    try {
       if (complementarySolution.getComplementarySolutionFunctions() != null) {
 
         for (ProjectInnovationComplementarySolutionFunction function : complementarySolution
@@ -2653,7 +2682,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error to save complementary solution functions " + e);
+      Log.error("error to delete complementary solution functions " + e);
     }
   }
 

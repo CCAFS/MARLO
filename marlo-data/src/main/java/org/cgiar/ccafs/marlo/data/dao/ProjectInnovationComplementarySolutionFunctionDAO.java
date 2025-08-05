@@ -26,23 +26,30 @@ public interface ProjectInnovationComplementarySolutionFunctionDAO {
   /**
    * This method removes a specific projectInnovationComplementarySolutionFunction value from the database.
    * 
-   * @param projectInnovationComplementarySolutionFunctionId is the projectInnovationComplementarySolutionFunction identifier.
+   * @param projectInnovationComplementarySolutionFunctionId is the projectInnovationComplementarySolutionFunction
+   *        identifier.
    * @return true if the projectInnovationComplementarySolutionFunction was successfully deleted, false otherwise.
    */
-  public void deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId);
+  public void
+    deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId);
 
   /**
-   * This method validate if the projectInnovationComplementarySolutionFunction identify with the given id exists in the system.
+   * This method validate if the projectInnovationComplementarySolutionFunction identify with the given id exists in the
+   * system.
    * 
-   * @param projectInnovationComplementarySolutionFunctionID is a projectInnovationComplementarySolutionFunction identifier.
+   * @param projectInnovationComplementarySolutionFunctionID is a projectInnovationComplementarySolutionFunction
+   *        identifier.
    * @return true if the projectInnovationComplementarySolutionFunction exists, false otherwise.
    */
-  public boolean existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID);
+  public boolean
+    existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID);
 
   /**
-   * This method gets a projectInnovationComplementarySolutionFunction object by a given projectInnovationComplementarySolutionFunction identifier.
+   * This method gets a projectInnovationComplementarySolutionFunction object by a given
+   * projectInnovationComplementarySolutionFunction identifier.
    * 
-   * @param projectInnovationComplementarySolutionFunctionID is the projectInnovationComplementarySolutionFunction identifier.
+   * @param projectInnovationComplementarySolutionFunctionID is the projectInnovationComplementarySolutionFunction
+   *        identifier.
    * @return a ProjectInnovationComplementarySolutionFunction object.
    */
   public ProjectInnovationComplementarySolutionFunction find(long id);
@@ -56,12 +63,26 @@ public interface ProjectInnovationComplementarySolutionFunctionDAO {
 
 
   /**
+   * This method gets a list of projectInnovationComplementarySolutionFunction that are active by a given
+   * projectInnovationComplementarySolution identifier
+   * 
+   * @param projectInnovationComplementarySolutionFunctionID is a projectInnovationComplementarySolutionFunction
+   *        identifier.
+   * @return a list from ProjectInnovationComplementarySolutionFunction null if no exist records
+   */
+  public List<ProjectInnovationComplementarySolutionFunction>
+    getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(long complementarySolutionID);
+
+  /**
    * This method saves the information of the given projectInnovationComplementarySolutionFunction
    * 
-   * @param projectInnovationComplementarySolutionFunction - is the projectInnovationComplementarySolutionFunction object with the new information to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the projectInnovationComplementarySolutionFunction was
+   * @param projectInnovationComplementarySolutionFunction - is the projectInnovationComplementarySolutionFunction
+   *        object with the new information to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   *         projectInnovationComplementarySolutionFunction was
    *         updated
    *         or -1 is some error occurred.
    */
-  public ProjectInnovationComplementarySolutionFunction save(ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction);
+  public ProjectInnovationComplementarySolutionFunction
+    save(ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction);
 }
