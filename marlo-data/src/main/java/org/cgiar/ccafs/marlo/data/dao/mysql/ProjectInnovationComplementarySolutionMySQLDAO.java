@@ -74,6 +74,18 @@ public class ProjectInnovationComplementarySolutionMySQLDAO extends
 
   @Override
   public List<ProjectInnovationComplementarySolution>
+    getProjectInnovationComplementarySolutionByInnovation(long innovationID) {
+    String query = "from " + ProjectInnovationComplementarySolution.class.getName()
+      + " where is_active=1 and project_innovation_id = " + innovationID;
+    List<ProjectInnovationComplementarySolution> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  @Override
+  public List<ProjectInnovationComplementarySolution>
     getProjectInnovationComplementarySolutionByInnovationAndPhase(long innovationID, long phaseID) {
     String query = "from " + ProjectInnovationComplementarySolution.class.getName()
       + " where is_active=1 and project_innovation_id = " + innovationID + " and id_phase = " + phaseID;

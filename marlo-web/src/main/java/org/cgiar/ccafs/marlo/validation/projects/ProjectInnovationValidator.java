@@ -25,7 +25,6 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
@@ -1156,7 +1155,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
 
       innovationRights = action.getMissingFields().toString();
-      if (projectInnovation.getId() != null && (innovationRights.length() > innovationReadiness.length())) {
+      if (projectInnovation.getId() != null && (innovationRights.length() > innovationBundle.length())) {
         BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
       }
     } catch (Exception e) {

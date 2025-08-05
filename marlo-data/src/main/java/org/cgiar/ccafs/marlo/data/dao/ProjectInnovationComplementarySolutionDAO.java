@@ -57,6 +57,15 @@ public interface ProjectInnovationComplementarySolutionDAO {
 
 
   /**
+   * This method gets a list of projectInnovationComplementarySolution by a given innovation identifier.
+   * 
+   * @param innovationID is a innovation identifier.
+   * @return a list from ProjectInnovationComplementarySolution null if no exist records
+   */
+  public List<ProjectInnovationComplementarySolution>
+    getProjectInnovationComplementarySolutionByInnovation(long innovationID);
+
+  /**
    * This method gets a list of projectInnovationComplementarySolution by a given phase and innovation identifier.
    * 
    * @param innovationID is a innovation identifier.
