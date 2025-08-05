@@ -155,9 +155,15 @@
               [#list innovationTypeList as type]
                 [#local isVisible = (type.id == innovationTypeValue) /]
                 <p style="display:${isVisible?string('block','none')}">
+                  [#if (type.prmsNameEquivalent?has_content)]
                   <i class="form-text text-muted prmsEquivalentText" data-id="${type.id}">
                     In the context of CGIAR, the <b>${type.name}</b> type in AICCRA, equals to <b>${type.prmsNameEquivalent}</b>
                   </i>
+                  [#else]
+                  <i class="form-text text-muted prmsEquivalentText" data-id="${type.id}">
+                    In the context of CGIAR, the <b>${type.name}</b> type in AICCRA, does not have a direct equivalent in PRMS.
+                  </i>
+                  [/#if]
                 </p>
               [/#list]
             </div>
@@ -1034,7 +1040,7 @@
     [#if editable]
     <div class="col-md-12 select--flex padding-bottom-1">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
+        [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="prmsNameEquivalent" required=false editable=true /]
       </div>
       <div class="col-md-6 checkbox-sexAgeNotApply align-content-end">
         [@customForm.checkBoxFlat id="${customName}.sexAgeNotApply" name="${customName}.sexAgeNotApply" label="projectInnovations.anticipatedUsers.actors.sexAgeNotApply" value="true" checked=sexAgeNotApply editable=true cssClass="sexAgeNotApply" /]
@@ -1058,6 +1064,13 @@
       </div>
     </div>
     [/#if]
+
+    [#local isActorOther = ((element.actor??) && (element.actor.name == "Other"))!false /]
+
+    [#-- Other type --]
+    <div class="col-md-12 otherType" style="display: ${((isActorOther) && (editable))?then('block','none')}">
+      [@customForm.input name="${customName}.other" i18nkey="projectInnovations.otherInnovationNature" required=false editable=true showTitle=true value=(element.other)!"" /]
+    </div>
 
     [#-- Checkbox Actors - Genders --]
     <div class="col-md-12">

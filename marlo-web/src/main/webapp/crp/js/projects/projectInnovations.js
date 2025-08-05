@@ -125,6 +125,17 @@ function attachEvents() {
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichWomen'));
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichYouth'));
     });
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      $(e).find('select').on('change', function() {
+        //get the text of the selected option
+        const selectedText = $(this).find('option:selected').text();
+        if(selectedText == "Other") {
+          $(e).find('.otherType').slideDown();
+        } else {
+          $(e).find('.otherType').slideUp();
+        }
+      });
+    });
     
     // Function
     function addActor() {
@@ -166,6 +177,16 @@ function attachEvents() {
       // Also call onAddDataRelatedToCheckboxGender for each checkbox to set up initial state
       $newItem.find('input[type="checkbox"].check-gender').each(function(_i,_e) {
         onAddDataRelatedToCheckboxGender.call(this);
+      });
+
+      // Add event listener for select2 to display otherType
+      $newItem.find('select').on('change', function() {
+        const selectedText = $(this).find('option:selected').text();
+        if(selectedText == "Other") {
+          $newItem.find('.otherType').slideDown();
+        } else {
+          $newItem.find('.otherType').slideUp();
+        }
       });
 
     }
