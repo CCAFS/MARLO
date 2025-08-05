@@ -738,7 +738,7 @@
           [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
-        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers)) || ((!editable)) /]
+        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(foreseeBarriers)) || ((!editable)) /]
         [#-- knowledgeToolUsesNarrative --]
         <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
@@ -1082,14 +1082,14 @@
         [#if editable]
         <div class="col-md-10 innerOptions select--flex" style="padding-left: 0;">
           <div class="col-md-2 margin-right-10">
-            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true value=(element.total)!"" className="input-total"  /]
+            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true className="input-total"  /]
           </div>
           <div class="col-md-10 block-sexAgeNotApply" style="display: ${(!sexAgeNotApply)?then('block','none')}">
             <div class="col-md-4 margin-right-10">
-              [@customForm.input name="${customName}.womenYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.womenYouthNumber)!"" className="input-whichWomen" /]
+              [@customForm.input name="${customName}.womenYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true className="input-whichWomen" /]
             </div>
             <div class="col-md-4">
-              [@customForm.input name="${customName}.womenNonYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.womenNonYouthNumber)!"" className="input-whichYouth" /]
+              [@customForm.input name="${customName}.womenNonYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true className="input-whichYouth" /]
             </div>
           </div>
         </div>
