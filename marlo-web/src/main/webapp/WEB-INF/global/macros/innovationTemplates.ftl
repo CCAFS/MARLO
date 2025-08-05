@@ -665,7 +665,7 @@
           [/#if]
         </div>
         [#-- Innovations selected - bundles --]
-        <div class="col-md-12 innovationBundleBlock">
+        <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
           <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
           [#-- Innovation selected List - bundles --]
           <div class="innovationBundleList">
@@ -1086,10 +1086,10 @@
           </div>
           <div class="col-md-10 block-sexAgeNotApply" style="display: ${(!sexAgeNotApply)?then('block','none')}">
             <div class="col-md-4 margin-right-10">
-              [@customForm.input name="${customName}.whichWomen" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.whichWomen)!"" className="input-whichWomen" /]
+              [@customForm.input name="${customName}.womenYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true value=(element.womenYouthNumber)!"" className="input-whichWomen" /]
             </div>
             <div class="col-md-4">
-              [@customForm.input name="${customName}.whichYouth" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.whichYouth)!"" className="input-whichYouth" /]
+              [@customForm.input name="${customName}.womenNonYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true value=(element.womenNonYouthNumber)!"" className="input-whichYouth" /]
             </div>
           </div>
         </div>
@@ -1101,11 +1101,11 @@
           </div>
           <div class="col-md-3">
             <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]:</span>
-            <span class="col-md-12"><b>${(element.whichWomen)!0}</b></span>
+            <span class="col-md-12"><b>${(element.womenYouthNumber)!0}</b></span>
           </div>
           <div class="col-md-3">
             <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]:</span>
-            <span class="col-md-12"><b>${(element.whichYouth)!0}</b></span>
+            <span class="col-md-12"><b>${(element.womenNonYouthNumber)!0}</b></span>
           </div>
         </div>
         [/#if]
@@ -1343,8 +1343,8 @@
 
 
               [#local isChecked = false /]
-              [#if element.projectInnovationComplementarySolutionFunctions?has_content]
-                [#list element.projectInnovationComplementarySolutionFunctions as func]
+              [#if element.complementarySolutionFunctions?has_content]
+                [#list element.complementarySolutionFunctions as func]
                   [#if func.projectInnovationFunction.id == function.id]
                     [#local isChecked = true /]
                     [#local savedFunctionId = func.id /]
