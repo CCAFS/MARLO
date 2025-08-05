@@ -1332,7 +1332,7 @@
       </div>
       <div class="clearfix"></div>
       [#-- Function  --]
-      <div class="form-group">
+      <div class="form-group" listname="${customName}.complementarySolutionFunctions">
         [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=true helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
         [#if projectInnovationFunctionList?has_content]
           [#list projectInnovationFunctionList as function]
