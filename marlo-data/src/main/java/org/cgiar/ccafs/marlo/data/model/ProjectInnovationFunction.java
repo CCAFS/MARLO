@@ -19,18 +19,14 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class Actor extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class ProjectInnovationFunction extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private String name;
-  @Expose
-  private String description;
-  @Expose
-  private String prmsNameEquivalent;
+  private String title;
 
-  public Actor() {
+  public ProjectInnovationFunction() {
   }
 
   @Override
@@ -42,7 +38,7 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
       return false;
     }
 
-    Actor other = (Actor) obj;
+    ProjectInnovationFunction other = (ProjectInnovationFunction) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -54,10 +50,6 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
   }
 
 
-  public String getDescription() {
-    return description;
-  }
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -65,28 +57,24 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
     return sb.toString();
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
-  public String getPrmsNameEquivalent() {
-    return prmsNameEquivalent;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setPrmsNameEquivalent(String prmsNameEquivalent) {
-    this.prmsNameEquivalent = prmsNameEquivalent;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   @Override
   public String toString() {
-    return "Actor [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Activity [id=" + this.getId() + ", title=" + title + "]";
   }
 }

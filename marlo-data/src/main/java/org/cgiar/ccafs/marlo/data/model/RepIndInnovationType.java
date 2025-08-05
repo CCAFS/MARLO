@@ -12,6 +12,8 @@ public class RepIndInnovationType extends MarloBaseEntity implements java.io.Ser
   @Expose
   private String name;
   @Expose
+  private String prmsNameEquivalent;
+  @Expose
   private String definition;
   @Expose
   private Boolean oldType;
@@ -31,6 +33,10 @@ public class RepIndInnovationType extends MarloBaseEntity implements java.io.Ser
     return oldType;
   }
 
+  public String getPrmsNameEquivalent() {
+    return prmsNameEquivalent;
+  }
+
   public void setDefinition(String definition) {
     this.definition = definition;
   }
@@ -41,5 +47,9 @@ public class RepIndInnovationType extends MarloBaseEntity implements java.io.Ser
 
   public void setOldType(Boolean oldType) {
     this.oldType = oldType;
+  }
+
+  public void setPrmsNameEquivalent(String prmsNameEquivalent) {
+    this.prmsNameEquivalent = prmsNameEquivalent;
   }
 }

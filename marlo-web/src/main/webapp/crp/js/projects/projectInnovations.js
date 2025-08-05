@@ -89,6 +89,20 @@ $(document).ready(function() {
     setTimeout(dynamicStatusCheckedForEvidences, 100);
   });
 
+  //Add display to accordion items 
+  $('.blockTitle.closed').on('click', function() {
+    if($(this).hasClass('closed')) {
+      $('.blockContent').slideUp();
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
+    }
+    $(this).next().slideToggle('slow', function() {
+      $(this).find('textarea').autoGrow();
+    });
+  });
+
   feedbackAutoImplementation();
 
   initDropdownOrganization();
@@ -106,6 +120,21 @@ function attachEvents() {
     $('.removeActor').on('click', removeActor);
     $('.actorsList .actorsInnovation').each(function(_i,e) {
       $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
+    });
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichWomen'));
+      limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichYouth'));
+    });
+    $('.actorsList .actorsInnovation').each(function(_i,e) {
+      $(e).find('select').on('change', function() {
+        //get the text of the selected option
+        const selectedText = $(this).find('option:selected').text();
+        if(selectedText == "Other") {
+          $(e).find('.otherType').slideDown();
+        } else {
+          $(e).find('.otherType').slideUp();
+        }
+      });
     });
     
     // Function
@@ -136,6 +165,10 @@ function attachEvents() {
       // Add function to onChangeCheckboxSexAndAge
       $newItem.find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
 
+      // Add function to make max value of input number
+      limitedValueFillInput($newItem.find('input.input-total'), $newItem.find('input.input-whichWomen'));
+      limitedValueFillInput($newItem.find('input.input-total'), $newItem.find('input.input-whichYouth'));
+
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
       // Update indexes
@@ -144,6 +177,16 @@ function attachEvents() {
       // Also call onAddDataRelatedToCheckboxGender for each checkbox to set up initial state
       $newItem.find('input[type="checkbox"].check-gender').each(function(_i,_e) {
         onAddDataRelatedToCheckboxGender.call(this);
+      });
+
+      // Add event listener for select2 to display otherType
+      $newItem.find('select').on('change', function() {
+        const selectedText = $(this).find('option:selected').text();
+        if(selectedText == "Other") {
+          $newItem.find('.otherType').slideDown();
+        } else {
+          $newItem.find('.otherType').slideUp();
+        }
       });
 
     }
@@ -282,6 +325,148 @@ function attachEvents() {
 
   })();
 
+  /**
+   * Accordion Complementary Innovations
+   */
+  ( function () {
+    // Events
+    $('.addButtonComplementarySolutions').on('click', addComplementaryInnovation);
+    $('.removeComplementaryInnovation').on('click', removeComplementaryInnovation);
+    
+    // Function
+
+    function addComplementaryInnovation() {
+      console.log('Adding complementary innovation');
+      const $listBlock = $('.complementarySolutionsList');
+      const $template = $('#complementaryInnovation-template');
+
+      // remove select2 data to avoid corruption in clone process
+      if ($template.find('select').data('select2')) {
+        $template.find('select').select2("destroy");
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+      $newItem.find('input, select, textarea').each(function(_i,e) {
+        e.name = (e.name).replace("_TEMPLATE_", "");
+        e.id = (e.id).replace("_TEMPLATE_", "");
+      });
+      $newItem.find('label').each(function(_i,e) {
+        e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
+      });
+
+      // Add select2 to select2 library
+      $template.find('select').select2();
+      $newItem.find('select').select2();
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeComplementaryInnovation() {
+      var $parent = $(this).parents('.complementaryInnovation');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.complementarySolutionsList').find('.complementaryInnovation').each(function(i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+        
+        $(innovation).find('label').each(function(_i,e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
+  })();
+
+
+  /**
+   * Bundle Innovation Select Innovation
+   */
+  ( function () {
+    // Events
+    $('.selectInnovationBundle').on('click', addBundleInnovation);
+    $('.removeInnovationBundleItem').on('click', removeBundleInnovation);
+    if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+      $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
+    }
+    // Function
+    function addBundleInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      const innovationId = $button.attr('data-id');
+      const innovationName = $button.attr('data-name');
+
+      console.log('Adding bundle innovation with ID:', innovationId, 'and Name:', innovationName);
+
+      const $listBlock = $('.innovationBundleList');
+      const $template = $('#innovationBundleItem-template');
+
+      if($listBlock.find('.innovationBundleItem').length == 0) {
+        $listBlock.empty(); // Clear the list message before adding new items
+      }
+
+      const $newItem = $template.clone(true).removeAttr('id');
+
+      // add data-id and data-name attributes to the new item
+      $newItem.find('.innovationBundleItemID').text(innovationId);
+      $newItem.find('.innovationBundleItemName').text(innovationName);
+
+      $newItem.find('input').each(function(_i,e) { 
+        if(e.name && e.name.includes("_TEMPLATE_")) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        }
+      });
+
+      // Update reference hidden input to be save in database
+      $newItem.find('input[type="hidden"]#reference-selected').val(innovationId);
+
+      $button.prop('disabled', true); // Disable the button after selection
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+    }
+    function removeBundleInnovation() {
+      var $parent = $(this).parents('.innovationBundleItem');
+      $parent.hide(500, function() {
+        // Remove DOM element
+        $parent.remove();
+        // Re-enable the select button for the removed innovation
+        const innovationId = $parent.find('.innovationBundleItemID').text();
+        console.log('Re-enabling button for innovation ID:', innovationId);
+        const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
+        $selectButton.prop('disabled', false); // Re-enable the button
+        // Update indexes
+        updateIndexes();
+      });
+    }
+    function updateIndexes() {
+      $('.innovationBundleList').find('.innovationBundleItem').each(function(i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+        
+        $(innovation).find('label').each(function(_i,e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+
+      // If no items left, show a message
+      if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+        $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
+      }
+    }
+  })();
+
   const readinessModule = evidencesModule();
   readinessModule.init('Readiness');
 
@@ -398,7 +583,9 @@ function attachEvents() {
 
   CustomSortableList("div[listname='innovation.contributingOrganizations'] .panel-body ul.list");
 
+  addDataTableAllInnovations();
 
+  changeInformativeTextPRMSEquivalence();
 }
 
 function AddRequired(){
@@ -1138,7 +1325,7 @@ function dynamicStatusCheckedForEvidences() {
   
   if (readinessElement.length > 0) {
     const readinessValue = parseInt(readinessElement.val());
-    if (readinessValue > 2) {
+    if (readinessValue >= 2) {
       readinessNeedsEvidence = true;
       messages.push(`Provide at least one evidence for innovation readiness level.`);
     }
@@ -1239,4 +1426,215 @@ function initDropdownOrganization() {
     }
   });
 
+}
+
+function addDataTableAllInnovations() {
+  $('#table-all-innovations').each(function(_i,table) {
+    // Skip empty tables or tables without proper structure
+    if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
+      console.warn('Skipping DataTables initialization for invalid table structure.');
+      return;
+    }
+
+    // Prevent re-initialization
+    if ($.fn.dataTable.isDataTable(table)) {
+      return;
+    }
+
+    // Get total number of columns
+    const columns = $(table).find('thead th').length;
+
+    const noSortColumns = [];
+    $(table).find('thead th.no-sort').each(function() {
+      noSortColumns.push($(this).index());
+    });
+
+    try {
+      $(table).DataTable({
+        // DataTables options
+        "bPaginate": true,
+        "bLengthChange": true,
+        "bFilter": true,
+        "bSort": true,
+        "bAutoWidth": false,
+        "iDisplayLength": 10,
+        "language": {
+          "searchPlaceholder": "Search...",
+          "emptyTable": "No innovation entries entered into the system yet."
+        },
+        "order": columns > 1 ? [[1, 'desc']] : [],
+        "columnDefs": [
+          { "targets": noSortColumns, "orderable": false }
+        ]
+      });
+
+      // Add styles to the table
+      const $table = $(table);
+      const $wrapper = $table.closest('.dataTables_wrapper');
+
+      if ($wrapper.length) {
+        const iconSearch = $("<div></div>").addClass("iconSearch");
+        const $filter = $wrapper.find('.dataTables_filter');
+
+        if ($filter.length) {
+          iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
+          $filter.parent().prepend(iconSearch);
+        }
+
+        const $length = $wrapper.find('.dataTables_length');
+        if ($length.length) {
+          $length.parent().css({
+            "position": "absolute",
+            "bottom": "8px",
+            "margin-left": "33%",
+            "z-index": "1",
+            "width": "25%"
+          });
+        }
+      }
+
+      //Add custom select to make personalized filter my project/cluster
+      const $firstChildren = $wrapper.children().first();
+      if ($firstChildren.length) {
+        const $selectContainer = $('<div class="select-container"></div>');
+        const $selectLabel = $('<label for="filter-select">Cluster:</label>');
+        const $select = $('<select class="form-control select2"></select>');
+        
+        $selectContainer.css({
+          "margin-left": "15px",
+          "margin-right": "15px",
+          "z-index": "1",
+          "position": "absolute",
+          "width": "25%",
+          "display": "flex"
+        });
+
+        $selectLabel.css({
+          "margin-right": "5px"
+        });
+
+        $select.css({
+          "width": "100% !important",
+          "height": "30px !important",
+          "margin-left": "5px",
+  
+        });
+
+        ajaxAllClusters($select);
+
+        $selectContainer.append($selectLabel);
+        $selectContainer.append($select);
+
+        $select.on('change', function() {
+          const selectedValue = $(this).val();
+          const table = $('#table-all-innovations').DataTable();
+          table.column(2).search(selectedValue ? '^' + selectedValue + '$' : '', true, false).draw();
+        });
+
+        $firstChildren.prepend($selectContainer);
+      }
+
+    } catch (error) {
+      console.error('Error initializing DataTable:', error);
+    }
+  });
+}
+
+function ajaxAllClusters(selectElement) {
+  $.ajax({
+    url: baseURL + '/projectList.do',
+    type: 'GET',
+    data: {
+      year: currentCrpSession,
+      phaseID: phaseID
+    },
+    success: function(data) {
+
+      $(selectElement).append('<option value="">All Clusters</option>');
+
+      data.projects.forEach(function(cluster) {
+        $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
+      });
+
+      // Initialize select2 on the new select element
+      $(selectElement).select2({
+        width: '100%',
+        height: '30px',
+        placeholder: "Select a cluster",
+        allowClear: true
+      });
+    },
+    error: function(xhr, status, error) {
+      console.error('Error loading clusters:', error);
+    }
+  });
+}
+
+function limitedValueFillInput(reference, input) {
+
+  if (!$(reference).length || !$(input).length) {
+    console.warn('Invalid elements passed to limitedValueFillInput');
+    return;
+  }
+
+  // Set initial max value based on the reference input
+  const initialMaxValue = parseInt($(reference).val(), 10) || 0;
+  const $input = $(input);
+  $input.attr('max', initialMaxValue);
+  // If the current value exceeds the initial max, adjust it
+  const currentValue = parseInt($input.val(), 10) || 0;
+  if (currentValue > initialMaxValue) {
+    $input.val(initialMaxValue);
+  }
+
+  $(reference).on('change', function() {
+    const maxValue = parseInt($(reference).val(), 10) || 0;
+    
+    // Set max attribute for number inputs
+    $input.attr('max', maxValue);
+    
+    // If the current value exceeds the new max, adjust it
+    const currentValue = parseInt($input.val(), 10) || 0;
+    if (currentValue > maxValue) {
+      $input.val(maxValue);
+    }
+  });
+
+  $(input).on('change', function() {
+    const maxValue = parseInt($(reference).val(), 10) || 0;
+
+    // If the current value exceeds the new max, adjust it
+    const currentValue = parseInt($(input).val(), 10) || 0;
+    if (currentValue > maxValue) {
+      $(input).val(maxValue);
+    }
+  });
+}
+
+function changeInformativeTextPRMSEquivalence() {
+  const $selectInnovationType = $('select[name="innovation.projectInnovationInfo.repIndInnovationType.id"]');
+
+  const $blockPRMSEquivalence = $('.prmsEquivalentBlock');
+
+  $selectInnovationType.on('change', function() {
+    const selectedValue = $(this).val();
+    if (selectedValue) {
+      $blockPRMSEquivalence.show();
+
+      const $textPRMSEquivalence = $blockPRMSEquivalence.find('.prmsEquivalentText');
+
+      $textPRMSEquivalence.each(function() {
+        const $this = $(this);
+        const typeId = $this.attr('data-id');
+        console.log('Type ID:', typeId, 'Selected value:', selectedValue);
+        if (typeId == selectedValue) {
+          $this.parent().show();
+        } else {
+          $this.parent().hide();
+        }
+      });
+    } else {
+      $blockPRMSEquivalence.hide();
+    }
+  });
 }

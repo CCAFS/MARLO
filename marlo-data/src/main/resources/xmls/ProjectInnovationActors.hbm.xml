@@ -8,7 +8,10 @@
 		<id name="id" type="java.lang.Long">
 			<column name="id" />
 			<generator class="identity" />
-		</id>		
+		</id>
+		<property name="other" type="string" >
+			<column name="other" sql-type="TEXT" />
+		</property>		
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

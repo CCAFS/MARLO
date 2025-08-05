@@ -2,10 +2,10 @@
 [#assign title = "Innovations" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${innovationID}-phase-${(actualPhase.id)!}" /]
 [#-- TODO: Remove unused pageLibs--]
-[#assign pageLibs = ["select2","font-awesome", "flag-icon-css"] /]
+[#assign pageLibs = ["select2","font-awesome", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250606",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250805",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250516",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250717"
 ] /]
@@ -18,8 +18,10 @@
 
 
 
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectInnovations.css?20250606"] /]
-
+[#assign customCSS = [
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250801",
+  "${baseUrlCdn}/global/css/customDataTable.css?20250801-A"
+] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
 
@@ -146,9 +148,9 @@
               <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
-            [#assign isInnovationReadinessComplete = (action.isInnovationReadinessComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md toSubmit">
-              <a href="#innovationReadiness" role="tab" data-toggle="tab" disabled class="no-button-label-disabled">[@s.text name="projectInnovations.tab.bundleComposition" /][@utils.underConstruction title="global.underConstruction" width="18px" height="18px" /]</a>
+            [#assign isInnovationBundleComplete = (action.isInnovationBundleComplete())!false /]
+            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationBundleComplete?then('submitted','toSubmit')}">
+              <a href="#innovationBundle" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.bundleComposition" /]</a>
             </li>
 
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
@@ -171,9 +173,9 @@
               [#-- Innovation OneCGIAR Aligment--]
               [@innovations.innovationOneCGIAR element=(innovation)!{} name="innovation" index=0 /]
             </div>
-            <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationReadiness">
-              [#-- Innovation Readiness --]
-              [@innovations.innovationReadiness element=(innovation)!{} name="innovation" index=0 /]
+            <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationBundle">
+              [#-- Innovation Bundle Composition --]
+              [@innovations.innovationBundleComposition element=(innovation)!{} name="innovation" index=0 /]
             </div>
             <div role="tabpanel" class="tab-pane fade [#if indexTab==5]in active[/#if]" id="innovationSharing">
               [#-- Innovation IP Rights and Funding --]

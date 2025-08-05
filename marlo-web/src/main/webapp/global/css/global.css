@@ -388,6 +388,14 @@ span.badge.fieldError {
 	margin-bottom: 0rem;
 }
 
+.margin-right-10 {
+	margin-right: 1rem;
+}
+
+.margin-left-10 {
+	margin-left: 1rem;
+}
+
 textarea.fieldError,
 input.fieldError,
 textarea.fieldError:focus,
@@ -5722,6 +5730,31 @@ ul#deliverablesFilesMessages>li {
 	border-radius: 5px;
 	margin-top: 10px;
 	position: relative;
+}
+
+.graySoftBox {
+	background: #CCCCCC10;
+	border-radius: 10px;
+	border: 1px solid #B4B4B4;
+	padding: 12px 16px;
+	position: relative;
+	overflow: hidden;
+}
+
+.grayGreenBox {
+	background: #F7F7F7;
+	border-radius: 2px;
+	border: 1px solid #E0E0E0;
+	padding: 6px 16px;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 1px 1px 0px 0px #0000001A;
+	width: 100%;
+	margin-bottom: 1rem;
+}
+
+.grayGreenBox p {
+	margin: 0;
 }
 
 .grayBlueBox {

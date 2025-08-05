@@ -19,18 +19,18 @@ import org.cgiar.ccafs.marlo.data.IAuditLog;
 
 import com.google.gson.annotations.Expose;
 
-public class Actor extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+public class ProjectInnovationBundle extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
 
   private static final long serialVersionUID = -963914989396761020L;
 
   @Expose
-  private String name;
+  private ProjectInnovation projectInnovation;
   @Expose
-  private String description;
+  private ProjectInnovation selectedInnovation;
   @Expose
-  private String prmsNameEquivalent;
+  private Phase phase;
 
-  public Actor() {
+  public ProjectInnovationBundle() {
   }
 
   @Override
@@ -42,7 +42,7 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
       return false;
     }
 
-    Actor other = (Actor) obj;
+    ProjectInnovationBundle other = (ProjectInnovationBundle) obj;
     if (this.getId() == null) {
       if (other.getId() != null) {
         return false;
@@ -53,11 +53,6 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
     return true;
   }
 
-
-  public String getDescription() {
-    return description;
-  }
-
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
@@ -65,28 +60,41 @@ public class Actor extends MarloAuditableEntity implements java.io.Serializable,
     return sb.toString();
   }
 
-  public String getName() {
-    return name;
+  public Phase getPhase() {
+    return phase;
   }
 
-  public String getPrmsNameEquivalent() {
-    return prmsNameEquivalent;
+
+  public ProjectInnovation getProjectInnovation() {
+    return projectInnovation;
   }
 
-  public void setDescription(String description) {
-    this.description = description;
+  public ProjectInnovation getSelectedInnovation() {
+    return selectedInnovation;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.getId() == null) ? 0 : this.getId().hashCode());
+    return result;
   }
 
-  public void setPrmsNameEquivalent(String prmsNameEquivalent) {
-    this.prmsNameEquivalent = prmsNameEquivalent;
+  public void setPhase(Phase phase) {
+    this.phase = phase;
+  }
+
+  public void setProjectInnovation(ProjectInnovation projectInnovation) {
+    this.projectInnovation = projectInnovation;
+  }
+
+  public void setSelectedInnovation(ProjectInnovation selectedInnovation) {
+    this.selectedInnovation = selectedInnovation;
   }
 
   @Override
   public String toString() {
-    return "Actor [id=" + this.getId() + ", name=" + name + ", description=" + description + "]";
+    return "Activity [id=" + this.getId() + ", projectInnovation=" + projectInnovation.getId() + "]";
   }
 }
