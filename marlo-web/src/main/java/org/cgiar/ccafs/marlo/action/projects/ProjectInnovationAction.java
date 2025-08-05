@@ -1382,44 +1382,49 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Complementary Solutions
-        if (innovation.getProjectInnovationComplementarySolutions() != null) {
+        try {
+          if (innovation.getProjectInnovationComplementarySolutions() != null) {
 
-          List<ProjectInnovationComplementarySolution> solutions = new ArrayList<>();
-          solutions = projectInnovationComplementarySolutionManager
-            .getProjectInnovationComplementarySolutionByInnovationAndPhase(innovationID, this.getActualPhase().getId());
+            List<ProjectInnovationComplementarySolution> solutions = new ArrayList<>();
+            solutions = projectInnovationComplementarySolutionManager
+              .getProjectInnovationComplementarySolutionByInnovationAndPhase(innovationID,
+                this.getActualPhase().getId());
 
-          innovation.setComplementarySolutions(solutions);
+            innovation.setComplementarySolutions(solutions);
+            if (solutions != null && !solutions.isEmpty()) {
+              for (ProjectInnovationComplementarySolution solution : solutions) {
+                if (solution != null && solution.getId() != null) {
 
-          for (ProjectInnovationComplementarySolution solution : solutions) {
-            if (solution != null && solution.getId() != null) {
+                  List<ProjectInnovationComplementarySolutionFunction> validFunctions =
+                    projectInnovationComplementarySolutionFunctionManager
+                      .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(solution.getId());
 
-              List<ProjectInnovationComplementarySolutionFunction> validFunctions =
-                projectInnovationComplementarySolutionFunctionManager
-                  .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(solution.getId());
+                  if (validFunctions != null && !validFunctions.isEmpty()) {
 
-              if (validFunctions != null && !validFunctions.isEmpty()) {
+                    for (ProjectInnovationComplementarySolutionFunction function : validFunctions) {
+                      if (function.getProjectInnovationFunction() != null
+                        && function.getProjectInnovationFunction().getId() != null) {
+                        function.setProjectInnovationFunction(projectInnovationFunctionManager
+                          .getProjectInnovationFunctionById(function.getProjectInnovationFunction().getId()));
+                      }
 
-                for (ProjectInnovationComplementarySolutionFunction function : validFunctions) {
-                  if (function.getProjectInnovationFunction() != null
-                    && function.getProjectInnovationFunction().getId() != null) {
-                    function.setProjectInnovationFunction(projectInnovationFunctionManager
-                      .getProjectInnovationFunctionById(function.getProjectInnovationFunction().getId()));
-                  }
+                      if (function.getProjectInnovationComplementarySolution() != null
+                        && function.getProjectInnovationComplementarySolution().getId() != null) {
+                        function.setProjectInnovationComplementarySolution(
+                          projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
+                            function.getProjectInnovationComplementarySolution().getId()));
+                      }
+                    }
 
-                  if (function.getProjectInnovationComplementarySolution() != null
-                    && function.getProjectInnovationComplementarySolution().getId() != null) {
-                    function.setProjectInnovationComplementarySolution(
-                      projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
-                        function.getProjectInnovationComplementarySolution().getId()));
+                    solution.setComplementarySolutionFunctions(validFunctions);
                   }
                 }
-
-                solution.setComplementarySolutionFunctions(validFunctions);
               }
             }
           }
+        } catch (Exception e) {
+          Log.error("error getting complementary solutions " + e);
         }
-
 
         // Innovations actors
         if (innovation.getProjectInnovationBundles() != null) {
@@ -2787,11 +2792,6 @@ public class ProjectInnovationAction extends BaseAction {
       if (projectInnovation.getProjectInnovationActors() != null
         && !projectInnovation.getProjectInnovationActors().isEmpty()) {
 
-        /*
-         * List<ProjectInnovationActor> actorPrev = new
-         * ArrayList<>(projectInnovation.getProjectInnovationActors().stream()
-         * .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-         */
         List<ProjectInnovationActor> actorPrev = projectInnovationActorManager
           .getProjectInnovationActorByInnovationAndPhase(innovationID, this.getActualPhase().getId());
         try {
@@ -2821,62 +2821,39 @@ public class ProjectInnovationAction extends BaseAction {
             innovationActor.setActor(null);
           }
 
-          boolean saveActorProcess = false;
+          ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
+
           try {
-
-            boolean isSelectedActor = false;
-
-            if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null) {
-              isSelectedActor = true;
-            }
-
-            // Validate if the actor is selected and has some fields filled
-            if (innovationActor != null && (innovationActor.getWomenYouth() != null
-              || innovationActor.getWomenNotYouth() != null || innovationActor.getMenYouth() != null
-              || innovationActor.getMenNotYouth() != null || innovationActor.getNonbinaryYouth() != null
-              || innovationActor.getNonbinaryNotYouth() != null || innovationActor.getWomenYouthNumber() != null
-              || innovationActor.getWomenNonYouthNumber() != null || innovationActor.getMenYouthNumber() != null
-              || innovationActor.getMenNonYouthNumber() != null || innovationActor.getSexAgeNotApply() != null)
-              && isSelectedActor) {
-              saveActorProcess = true;
+            if (innovationActor.getId() != null) {
+              innovationActorSave =
+                projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
             }
           } catch (Exception e) {
-            saveActorProcess = true;
-            logger.error("unable to validate actor fields", e);
+            logger.error("unable to get old actors", e);
           }
-          if (saveActorProcess) {
-            ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
 
-            try {
-              if (innovationActor.getId() != null) {
-                innovationActorSave =
-                  projectInnovationActorManager.getProjectInnovationActorById(innovationActor.getId());
-              }
-            } catch (Exception e) {
-              logger.error("unable to get old actors", e);
-            }
+          innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
+          innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
+          innovationActorSave.setMenYouth(innovationActor.getMenYouth());
+          innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
+          innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
+          innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
+          innovationActorSave.setActor(innovationActor.getActor());
+          innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
+          innovationActorSave.setProjectInnovation(projectInnovation);
+          innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
+          innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
+          innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
+          innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
+          innovationActorSave.setPhase(phase);
+          innovationActorSave.setOther(innovationActor.getOther());
+          innovationActorSave.setTotal(innovationActor.getTotal());
 
-            innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
-            innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
-            innovationActorSave.setMenYouth(innovationActor.getMenYouth());
-            innovationActorSave.setMenNotYouth(innovationActor.getMenNotYouth());
-            innovationActorSave.setNonbinaryYouth(innovationActor.getNonbinaryYouth());
-            innovationActorSave.setNonbinaryNotYouth(innovationActor.getNonbinaryNotYouth());
-            innovationActorSave.setActor(innovationActor.getActor());
-            innovationActorSave.setSexAgeNotApply(innovationActor.getSexAgeNotApply());
-            innovationActorSave.setProjectInnovation(projectInnovation);
-            innovationActorSave.setWomenYouthNumber(innovationActor.getWomenYouthNumber());
-            innovationActorSave.setWomenNonYouthNumber(innovationActor.getWomenNonYouthNumber());
-            innovationActorSave.setMenYouthNumber(innovationActor.getMenYouthNumber());
-            innovationActorSave.setMenNonYouthNumber(innovationActor.getMenNonYouthNumber());
-            innovationActorSave.setPhase(phase);
-            innovationActorSave.setOther(innovationActor.getOther());
+          projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
+          // This is to add innovationActorSave to generate correct auditlog.
+          innovation.getProjectInnovationActors().add(innovationActorSave);
 
-            projectInnovationActorManager.saveProjectInnovationActor(innovationActorSave);
-            // This is to add innovationActorSave to generate correct auditlog.
-            innovation.getProjectInnovationActors().add(innovationActorSave);
 
-          }
         }
       }
     } catch (Exception e) {

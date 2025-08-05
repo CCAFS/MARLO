@@ -52,6 +52,8 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
   @Expose
   private Integer womenNonYouthNumber;
   @Expose
+  private Integer total;
+  @Expose
   private String other;
 
   public ProjectInnovationActor() {
@@ -129,6 +131,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
     return sexAgeNotApply;
   }
 
+  public Integer getTotal() {
+    return total;
+  }
+
   public Integer getWomenNonYouthNumber() {
     return womenNonYouthNumber;
   }
@@ -187,6 +193,10 @@ public class ProjectInnovationActor extends MarloAuditableEntity implements java
 
   public void setSexAgeNotApply(Boolean sexAgeNotApply) {
     this.sexAgeNotApply = sexAgeNotApply;
+  }
+
+  public void setTotal(Integer total) {
+    this.total = total;
   }
 
   public void setWomenNonYouthNumber(Integer womenNonYouthNumber) {

@@ -45,6 +45,9 @@
          <property name="menYouthNumber" type="int">
             <column name="men_youth_number" not-null="true" />
         </property>
+         <property name="total" type="int">
+            <column name="total" not-null="true" />
+        </property>
          <property name="menNonYouthNumber" type="int">
             <column name="men_non_youth_number" not-null="true" />
         </property>

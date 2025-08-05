@@ -173,6 +173,7 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
       projectInnovationActorAdd.setPhase(phase);
       projectInnovationActorAdd.setOther(projectInnovationActor.getOther());
+      projectInnovationActorAdd.setTotal(projectInnovationActor.getTotal());
       projectInnovationActorDAO.save(projectInnovationActorAdd);
     }
     if (phase.getNext() != null) {
