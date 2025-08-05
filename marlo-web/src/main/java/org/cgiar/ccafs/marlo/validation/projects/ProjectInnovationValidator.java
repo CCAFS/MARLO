@@ -1288,34 +1288,34 @@ public class ProjectInnovationValidator extends BaseValidator {
 
             if (!(this.isValidString(complementarySolution.getTitle())
               && this.wordCount(complementarySolution.getTitle()) <= 100)) {
-              action.addMessage(action.getText("complementarySolution" + (index + 1) + "title"));
-              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].title",
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "title"));
+              action.getInvalidFields().put("input-innovation.complementarySolutions[" + index + "].title",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
             if (!(this.isValidString(complementarySolution.getShortTitle())
               && this.wordCount(complementarySolution.getShortTitle()) <= 100)) {
-              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortTitle"));
-              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].shortTitle",
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortTitle"));
+              action.getInvalidFields().put("input-innovation.complementarySolutions[" + index + "].shortTitle",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
             if (!(this.isValidString(complementarySolution.getShortDescription())
               && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
-              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
-              action.getInvalidFields().put("input-innovation.complementarySolution[" + index + "].shortDescription",
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
+              action.getInvalidFields().put("input-innovation.complementarySolutions[" + index + "].shortDescription",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
             if (!(this.isValidString(complementarySolution.getShortDescription())
               && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
-              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
               action.getInvalidFields().put(
-                "list-innovation.complementarySolution[" + index + "].projectInnovationType.id",
+                "list-innovation.complementarySolutions[" + index + "].projectInnovationType.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
             if (complementarySolution.getComplementarySolutionFunctions() == null
               || complementarySolution.getComplementarySolutionFunctions().isEmpty()) {
-              action.addMessage(action.getText("complementarySolution" + (index + 1) + "shortDescription"));
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
               action.getInvalidFields().put(
-                "list-innovation.complementarySolution[" + index + "].complementarySolutionFunctions",
+                "list-innovation.complementarySolutions[" + index + "].complementarySolutionFunctions",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }

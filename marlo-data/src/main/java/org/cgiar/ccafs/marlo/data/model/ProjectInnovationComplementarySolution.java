@@ -156,6 +156,6 @@ public class ProjectInnovationComplementarySolution extends MarloAuditableEntity
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + ", title=" + title + "]";
+    return "ComplementarySolution [id=" + this.getId() + ", title=" + title + "]";
   }
 }

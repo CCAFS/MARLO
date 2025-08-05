@@ -25,9 +25,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
-public class ProjectInnovationComplementarySolutionFunctionMySQLDAO extends AbstractMarloDAO<ProjectInnovationComplementarySolutionFunction, Long> implements ProjectInnovationComplementarySolutionFunctionDAO {
+public class ProjectInnovationComplementarySolutionFunctionMySQLDAO
+  extends AbstractMarloDAO<ProjectInnovationComplementarySolutionFunction, Long>
+  implements ProjectInnovationComplementarySolutionFunctionDAO {
 
 
   @Inject
@@ -36,15 +39,19 @@ public class ProjectInnovationComplementarySolutionFunctionMySQLDAO extends Abst
   }
 
   @Override
-  public void deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId) {
-    ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction = this.find(projectInnovationComplementarySolutionFunctionId);
+  public void
+    deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId) {
+    ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction =
+      this.find(projectInnovationComplementarySolutionFunctionId);
     projectInnovationComplementarySolutionFunction.setActive(false);
     this.update(projectInnovationComplementarySolutionFunction);
   }
 
   @Override
-  public boolean existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID) {
-    ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction = this.find(projectInnovationComplementarySolutionFunctionID);
+  public boolean
+    existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID) {
+    ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction =
+      this.find(projectInnovationComplementarySolutionFunctionID);
     if (projectInnovationComplementarySolutionFunction == null) {
       return false;
     }
@@ -70,7 +77,22 @@ public class ProjectInnovationComplementarySolutionFunctionMySQLDAO extends Abst
   }
 
   @Override
-  public ProjectInnovationComplementarySolutionFunction save(ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction) {
+  public List<ProjectInnovationComplementarySolutionFunction>
+    getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(long complementarySolutionID) {
+    String query = "from " + ProjectInnovationComplementarySolutionFunction.class.getName()
+      + " where is_active=1 and projectInnovationComplementarySolution.id = :complementarySolutionID";
+
+    Query<ProjectInnovationComplementarySolutionFunction> createQuery =
+      this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("complementarySolutionID", complementarySolutionID);
+    List<ProjectInnovationComplementarySolutionFunction> result = super.findAll(createQuery);
+
+    return super.findAll(createQuery);
+  }
+
+  @Override
+  public ProjectInnovationComplementarySolutionFunction
+    save(ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction) {
     if (projectInnovationComplementarySolutionFunction.getId() == null) {
       super.saveEntity(projectInnovationComplementarySolutionFunction);
     } else {

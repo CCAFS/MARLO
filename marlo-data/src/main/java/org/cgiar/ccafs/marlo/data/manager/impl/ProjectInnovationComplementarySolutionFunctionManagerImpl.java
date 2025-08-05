@@ -28,7 +28,8 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
-public class ProjectInnovationComplementarySolutionFunctionManagerImpl implements ProjectInnovationComplementarySolutionFunctionManager {
+public class ProjectInnovationComplementarySolutionFunctionManagerImpl
+  implements ProjectInnovationComplementarySolutionFunctionManager {
 
 
   private ProjectInnovationComplementarySolutionFunctionDAO projectInnovationComplementarySolutionFunctionDAO;
@@ -36,22 +37,27 @@ public class ProjectInnovationComplementarySolutionFunctionManagerImpl implement
 
 
   @Inject
-  public ProjectInnovationComplementarySolutionFunctionManagerImpl(ProjectInnovationComplementarySolutionFunctionDAO projectInnovationComplementarySolutionFunctionDAO) {
+  public ProjectInnovationComplementarySolutionFunctionManagerImpl(
+    ProjectInnovationComplementarySolutionFunctionDAO projectInnovationComplementarySolutionFunctionDAO) {
     this.projectInnovationComplementarySolutionFunctionDAO = projectInnovationComplementarySolutionFunctionDAO;
 
 
   }
 
   @Override
-  public void deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId) {
+  public void
+    deleteProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionId) {
 
-    projectInnovationComplementarySolutionFunctionDAO.deleteProjectInnovationComplementarySolutionFunction(projectInnovationComplementarySolutionFunctionId);
+    projectInnovationComplementarySolutionFunctionDAO
+      .deleteProjectInnovationComplementarySolutionFunction(projectInnovationComplementarySolutionFunctionId);
   }
 
   @Override
-  public boolean existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID) {
+  public boolean
+    existProjectInnovationComplementarySolutionFunction(long projectInnovationComplementarySolutionFunctionID) {
 
-    return projectInnovationComplementarySolutionFunctionDAO.existProjectInnovationComplementarySolutionFunction(projectInnovationComplementarySolutionFunctionID);
+    return projectInnovationComplementarySolutionFunctionDAO
+      .existProjectInnovationComplementarySolutionFunction(projectInnovationComplementarySolutionFunctionID);
   }
 
   @Override
@@ -62,13 +68,22 @@ public class ProjectInnovationComplementarySolutionFunctionManagerImpl implement
   }
 
   @Override
-  public ProjectInnovationComplementarySolutionFunction getProjectInnovationComplementarySolutionFunctionById(long projectInnovationComplementarySolutionFunctionID) {
+  public List<ProjectInnovationComplementarySolutionFunction>
+    getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(long complementarySolutionID) {
+    return projectInnovationComplementarySolutionFunctionDAO
+      .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(complementarySolutionID);
+  }
+
+  @Override
+  public ProjectInnovationComplementarySolutionFunction
+    getProjectInnovationComplementarySolutionFunctionById(long projectInnovationComplementarySolutionFunctionID) {
 
     return projectInnovationComplementarySolutionFunctionDAO.find(projectInnovationComplementarySolutionFunctionID);
   }
 
   @Override
-  public ProjectInnovationComplementarySolutionFunction saveProjectInnovationComplementarySolutionFunction(ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction) {
+  public ProjectInnovationComplementarySolutionFunction saveProjectInnovationComplementarySolutionFunction(
+    ProjectInnovationComplementarySolutionFunction projectInnovationComplementarySolutionFunction) {
 
     return projectInnovationComplementarySolutionFunctionDAO.save(projectInnovationComplementarySolutionFunction);
   }

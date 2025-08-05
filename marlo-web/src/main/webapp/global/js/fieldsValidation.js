@@ -70,6 +70,20 @@ function getListElement(fieldName,message) {
       $spanSelector.addClass('fieldError');
       $spanSelector.attr("title", message);
     }
+
+    const firstLabel = $(elementQuery).find('label:first');
+    if(firstLabel) {
+      firstLabel.addClass('fieldError');
+      firstLabel.attr("title", message);
+    }
+
+    const checkBoxes = $(elementQuery).find('input[type="checkbox"]').next('label');
+    if(checkBoxes) {
+      checkBoxes.each(function(i,e) {
+        $(e).addClass('fieldError');
+        $(e).attr("title", message);
+      });
+    }
   }
 }
 
