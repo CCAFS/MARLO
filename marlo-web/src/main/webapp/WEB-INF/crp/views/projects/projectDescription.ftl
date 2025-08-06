@@ -160,12 +160,12 @@
             
             [#-- Project Challenges, causes and proposed solutions --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false helpText="project.challengesAndSolutions.helpText" /]
+              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" /]
             </div>
             
             [#-- Project Lessons Learned --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false helpText="project.lessonsLearned.helpText" /]
+              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.lessonsLearned.helpText" /]
             </div>
 
             [#-- Project status --]
