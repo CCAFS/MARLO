@@ -151,10 +151,12 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       innovationActors =
 
         projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-          .filter(c -> c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
+          .filter(c -> c.getActor() != null && projectInnovationActor.getActor() != null
+            && projectInnovationActor.getActor().getId() != null && c.getActor().getId() != null
+            && c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
           .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in ActorByInnovationAndPhase method" + e);
+      System.out.println("Error in ActorByInnovationAndPhase save method" + e);
     }
     if (innovationActors == null || innovationActors.isEmpty()) {
       ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();

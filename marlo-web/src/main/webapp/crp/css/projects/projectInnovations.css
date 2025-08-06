@@ -444,6 +444,11 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   font-size: 12px;
 }
 
+.title-link:hover{
+  text-decoration: underline;
+  color: #1882aa;
+}  
+
 /** Complementary innovations **/
 .complementaryInnovation .blockTitle, .crpParameters .blockTitle {
   cursor: pointer;

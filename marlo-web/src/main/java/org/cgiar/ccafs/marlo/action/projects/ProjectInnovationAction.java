@@ -4600,20 +4600,6 @@ public class ProjectInnovationAction extends BaseAction {
       } else {
         this.setInnovationOneCgiarAlignmentComplete(true);
       }
-      /*
-       * value = BaseAction.getIsInnovationReadinessCompleteMap().get(innovationID + "");
-       * if (value != null && value.equals("1")) {
-       * this.setInnovationReadinessComplete(false);
-       * } else {
-       * this.setInnovationReadinessComplete(true);
-       * }
-       */
-      value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
-      if (value != null && value.equals("1")) {
-        this.setInnovationRightsComplete(false);
-      } else {
-        this.setInnovationRightsComplete(true);
-      }
 
       value = BaseAction.getIsInnovationBundleCompleteMap().get(innovationID + "");
       if (value != null && value.equals("1")) {
@@ -4621,6 +4607,14 @@ public class ProjectInnovationAction extends BaseAction {
       } else {
         this.setInnovationBundleComplete(true);
       }
+
+      value = BaseAction.getIsInnovationRightsCompleteMap().get(innovationID + "");
+      if (value != null && value.equals("1")) {
+        this.setInnovationRightsComplete(false);
+      } else {
+        this.setInnovationRightsComplete(true);
+      }
+
 
       ProjectInnovationAction.getIsSaving().remove(innovationID + "");
     }
