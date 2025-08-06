@@ -1410,7 +1410,7 @@
             <td class="text-center">${innovation.id!}</td>
             [#-- Title --]
             <td class="text-left">
-              <a href="${url!''}" class="title-link" target="_blank" rel="noopener noreferrer" title="${title!''}">
+              <a href="${url!''}" class="title-link" target="_blank" rel="noopener noreferrer" title="View details of innovation">
                 ${title!''}
               </a>
             </td>
