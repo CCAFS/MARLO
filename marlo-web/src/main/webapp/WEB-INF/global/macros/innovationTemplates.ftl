@@ -1327,7 +1327,7 @@
       </div>
       <div class="clearfix"></div>
       [#-- Innovation type select --]
-      <div class="form-group">
+      <div class="form-group" listname="${customName}.projectInnovationType.id">
         [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
       </div>
       <div class="clearfix"></div>
@@ -1452,8 +1452,9 @@
             [#-- Actions --]
             <td class="text-center">
               [#-- Select --]
-              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${innovation.projectInnovationInfo.title!}" [#if innovationSelected]disabled[/#if]>Select</button>
-              
+              [#local titleShow] [@s.text name=innovation.projectInnovationInfo.title /] [/#local]
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${titleShow!}" [#if innovationSelected]disabled[/#if]>Select</button>
+
               [#-- Download PDF --]
               <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank">
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />

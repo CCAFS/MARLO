@@ -98,6 +98,6 @@ public class ProjectInnovationComplementarySolutionFunction extends MarloAuditab
 
   @Override
   public String toString() {
-    return "Activity [id=" + this.getId() + "]";
+    return "projectInnovationComplementarySolutionFunction [id=" + this.getId() + "]";
   }
 }
