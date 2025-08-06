@@ -1410,7 +1410,7 @@
             <td class="text-center">${innovation.id!}</td>
             [#-- Title --]
             <td class="text-left">
-              <a href="${url!''}" class="title-link">
+              <a href="${url!''}" class="title-link" target="_blank" rel="noopener noreferrer" title="${title!''}">
                 ${title!''}
               </a>
             </td>
@@ -1456,7 +1456,7 @@
               <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${titleShow!}" [#if innovationSelected]disabled[/#if]>Select</button>
 
               [#-- Download PDF --]
-              <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank">
+              <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank" rel="noopener noreferrer">
                 <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
               </a>
             </td>
