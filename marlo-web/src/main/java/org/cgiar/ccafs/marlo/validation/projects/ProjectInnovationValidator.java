@@ -64,8 +64,8 @@ public class ProjectInnovationValidator extends BaseValidator {
   String innovationGeneral = "";
   String innovationAlliance = "";
   String innovationOneCgiar = "";
-  String innovationRights = "";
   String innovationBundle = "";
+  String innovationRights = "";
 
   @Inject
   public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
@@ -130,14 +130,14 @@ public class ProjectInnovationValidator extends BaseValidator {
       BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().remove(projectInnovation.getId() + "");
     }
 
-    value = BaseAction.getIsInnovationRightsCompleteMap().get(projectInnovation.getId() + "");
-    if (value != null) {
-      BaseAction.getIsInnovationRightsCompleteMap().remove(projectInnovation.getId() + "");
-    }
-
     value = BaseAction.getIsInnovationBundleCompleteMap().get(projectInnovation.getId() + "");
     if (value != null) {
       BaseAction.getIsInnovationBundleCompleteMap().remove(projectInnovation.getId() + "");
+    }
+
+    value = BaseAction.getIsInnovationRightsCompleteMap().get(projectInnovation.getId() + "");
+    if (value != null) {
+      BaseAction.getIsInnovationRightsCompleteMap().remove(projectInnovation.getId() + "");
     }
 
     if (!saving) {
@@ -157,8 +157,8 @@ public class ProjectInnovationValidator extends BaseValidator {
     this.validateGeneralInformation(action, project, projectInnovation, saving);
     this.validateAllianceAlignment(action, project, projectInnovation, saving);
     this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
-    this.validateInnovationRights(action, project, projectInnovation, saving);
     this.validateInnovationBundle(action, project, projectInnovation, saving);
+    this.validateInnovationRights(action, project, projectInnovation, saving);
 
     // The validator is called by Struts
     if (struts) {
@@ -639,7 +639,6 @@ public class ProjectInnovationValidator extends BaseValidator {
   }
 
 
-
   /**
    * Validate the data of the Innovation Rights tab
    *
@@ -745,7 +744,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                 && (reference.getNutrition() == null || !reference.getNutrition())
                 && (reference.getEnvironmental() == null || !reference.getEnvironmental())
                 && (reference.getPoverty() == null || !reference.getPoverty())
-                )
+                && (reference.getInnovationReadiness() == null || !reference.getInnovationReadiness()))
                 || (markMissingScore)) {
                 action.addMessage("References ");
                 action.getInvalidFields().put("input-innovation.references[" + i + "].gender",
@@ -1002,7 +1001,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                 if (actor.getTotal() == null || actor.getActor().getId() == -1) {
                   action.addMessage(action.getText("actors[" + count + "] total"));
                   action.addMissingField("innovation.actors[" + count + "].total");
-                  action.getInvalidFields().put("list-innovation.actors[" + count + "].total",
+                  action.getInvalidFields().put("input-innovation.actors[" + count + "].total",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
                 }
 
@@ -1047,65 +1046,6 @@ public class ProjectInnovationValidator extends BaseValidator {
           }
         }
 
-        // Validate Reference Complementary Solutions
-        /*
-         * if (projectInnovation.getReferenceComplementarySolutions() != null
-         * && !projectInnovation.getReferenceComplementarySolutions().isEmpty()) {
-         * for (int i = 0; i < projectInnovation.getReferenceComplementarySolutions().size(); i++) {
-         * ProjectInnovationReferenceComplementarySolution reference =
-         * projectInnovation.getReferenceComplementarySolutions().get(i);
-         * if (reference != null) {
-         * // Evidence by deliverable false
-         * if (reference.getEvidenceByDeliverable() != null && !reference.getEvidenceByDeliverable()) {
-         * if (reference.getReference() == null || !this.isValidString(reference.getReference())) {
-         * action.addMessage("References Complementary solutions Cited");
-         * action.getInvalidFields().put("input-innovation.referenceComplementarySolutions[" + i + "].reference",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * if (reference.getLink() == null || reference.getLink().isEmpty()
-         * || !this.isValidUrl(reference.getLink())) {
-         * action.addMessage("Reference Complementary solutions Link");
-         * action.getInvalidFields().put("input-innovation.referenceComplementarySolutions[" + i + "].link",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * if (reference.getDeliverableType() == null || reference.getDeliverableType().getId() == null
-         * || reference.getDeliverableType().getId() == -1) {
-         * action.addMessage("References Complementary solutions type");
-         * action.getInvalidFields().put(
-         * "input-innovation.referenceComplementarySolutions[" + i + "].deliverableType.id",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * if (reference.getDeliverableType() != null
-         * && (reference.getDeliverableType().getDeliverableCategory() == null
-         * || reference.getDeliverableType().getDeliverableCategory().getId() == null
-         * || reference.getDeliverableType().getDeliverableCategory().getId() == -1)) {
-         * action.addMessage("References Complementary solutions type");
-         * action.getInvalidFields().put("input-innovation.referenceComplementarySolutions[" + i
-         * + "].deliverableType.deliverableCategory.id", InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * } else {
-         * // Evidence by deliverable true
-         * if (reference.getEvidenceByDeliverable() != null && reference.getEvidenceByDeliverable()
-         * && reference.getInnovation() == null
-         * || (reference.getInnovation() != null && reference.getInnovation().getId() != null
-         * && reference.getInnovation().getId() == -1)) {
-         * action.addMessage("References Complementary solutions Cited Link");
-         * action.getInvalidFields().put(
-         * "input-innovation.referenceComplementarySolutions[" + i + "].innovation.id",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * }
-         * // Evidence by deliverable null
-         * if (reference.getEvidenceByDeliverable() == null) {
-         * action.addMessage("References Complementary solutions Evidence by deliverable");
-         * action.getInvalidFields().put(
-         * "input-innovation.referenceComplementarySolutions[" + i + "].evidenceByDeliverable",
-         * InvalidFieldsMessages.EMPTYFIELD);
-         * }
-         * }
-         * }
-         * }
-         */
       }
 
       innovationRights = action.getMissingFields().toString();
