@@ -2712,6 +2712,16 @@ public class ProjectInnovationAction extends BaseAction {
               || !innovation.getComplementarySolutions().contains(complementarySolution))) {
               if (projectInnovationComplementarySolutionManager
                 .existProjectInnovationComplementarySolution(complementarySolution.getId())) {
+                try {
+                  for (ProjectInnovationComplementarySolutionFunction function : projectInnovationComplementarySolutionFunctionManager
+                    .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(
+                      complementarySolution.getId())) {
+                    projectInnovationComplementarySolutionFunctionManager
+                      .deleteProjectInnovationComplementarySolutionFunction(function.getId());
+                  }
+                } catch (Exception e) {
+                  Log.error("error to delete complementary solution functions " + e);
+                }
                 projectInnovationComplementarySolutionManager
                   .deleteProjectInnovationComplementarySolution(complementarySolution.getId());
               }

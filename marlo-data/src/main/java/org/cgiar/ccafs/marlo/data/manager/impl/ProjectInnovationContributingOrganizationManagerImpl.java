@@ -180,22 +180,6 @@ public class ProjectInnovationContributingOrganizationManagerImpl
       projectInnovationContributingAdd.setInnovation(projectInnovationContributing.getInnovation());
       projectInnovationContributingAdd.setOther(projectInnovationContributing.getOther());
       projectInnovationContributingOrganizationDAO.save(projectInnovationContributingAdd);
-    } else {
-      try {
-        for (ProjectInnovationContributingOrganization projectInnovationContributingDB : projectInnovatioCrps) {
-          projectInnovationContributingDB.setProjectInnovation(projectInnovationContributing.getProjectInnovation());
-          projectInnovationContributingDB.setPhase(phase);
-          projectInnovationContributingDB.setInstitution(projectInnovationContributing.getInstitution());
-          projectInnovationContributingDB.setScaling(projectInnovationContributing.getScaling());
-          projectInnovationContributingDB.setDemand(projectInnovationContributing.getDemand());
-          projectInnovationContributingDB.setInnovation(projectInnovationContributing.getInnovation());
-          projectInnovationContributingDB.setOther(projectInnovationContributing.getOther());
-          projectInnovationContributingOrganizationDAO.save(projectInnovationContributingDB);
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-
-      }
     }
 
     if (phase.getNext() != null)
