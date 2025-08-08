@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
   // Add select2
   addSelect2();
@@ -11,23 +11,23 @@ $(document).ready(function() {
     $('div.nationalBlock span.selection span.select2-selection--multiple').append('<span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span>');
   }); */
 
-  $('input.radioType-geographicScopes').on("change", function() {
+  $('input.radioType-geographicScopes').on("change", function () {
     setGeographicScope2(this);
-    $('select.countriesSelect').each(function(i, element) {
+    $('select.countriesSelect').each(function (i, element) {
       dynamicMarginToSelectedRender(element);
     });
   });
 
-  $('select.countriesSelect').on('change', function() {
+  $('select.countriesSelect').on('change', function () {
     dynamicMarginToSelectedRender(this);
   });
 
-  $('select.countriesSelect').each(function(i, element) {
+  $('select.countriesSelect').each(function (i, element) {
     dynamicMarginToSelectedRender(element);
   });
 
-  $('input.radioType-geographicScopes').each(function(i, element) {
-    if($(element).is(':checked')) {
+  $('input.radioType-geographicScopes').each(function (i, element) {
+    if ($(element).is(':checked')) {
       setGeographicScope2(element);
     }
   })
@@ -48,7 +48,7 @@ $(document).ready(function() {
   // Add image to SDG Targets
   $('select.elementType-sdg').on("change", addImageToSelectSDGTargets);
   addImageToSelectSDGTargets();
-  
+
   // Add image to Impact Areas
   /* $('select.elementType-impactArea').on("change", addImageToSelectImpactAreas);
   addImageToSelectImpactAreas(); */
@@ -59,8 +59,15 @@ $(document).ready(function() {
 
   // Update the dynamic visualization of the "Alliance" Tab after selecting in Key Contributors
   updateAllianceTab();
-  $('select.elementType-institution').on('change',updateAllianceTab);
-  $('div.removeElementType-institution').on('click',updateAllianceTab);
+  $('select.elementType-institution').on('change', updateAllianceTab);
+  $('div.removeElementType-institution').on('click', updateAllianceTab);
+
+  // Update the dynamic visualization of the "Bundle" Tab after selecting in Key Contributors
+  updateBundleTab();
+  $('input[type="radio"][name="innovation.projectInnovationInfo.innovationBundle"]').on('change', updateBundleTab);
+
+  // Update width tabs initial
+  updateWidthTab();
 
   //init partners methods
   deliverablePartnersModule.init();
@@ -69,36 +76,36 @@ $(document).ready(function() {
   dynamicStatusCheckedForEvidences();
 
   // Listen for changes to impact area scores
-  $('input[name^="innovation.projectInnovationInfo"][name$=".id"]').on("change", function() {
+  $('input[name^="innovation.projectInnovationInfo"][name$=".id"]').on("change", function () {
     dynamicStatusCheckedForEvidences();
   });
-  
+
   // Listen for changes to readiness scale
-  $('input[name="innovation.projectInnovationInfo.readinessScale"]').on("change", function() {
+  $('input[name="innovation.projectInnovationInfo.readinessScale"]').on("change", function () {
     dynamicStatusCheckedForEvidences();
   });
 
   // Update status when evidence checkboxes change
-  $('.referenceListReadiness').on('change', 'input[type="checkbox"]', function() {
+  $('.referenceListReadiness').on('change', 'input[type="checkbox"]', function () {
     dynamicStatusCheckedForEvidences();
   });
-  
+
   // Also run when evidence items are added or removed
-  $('.addButtonReferenceReadiness, .removeButtonReferenceReadiness').on('click', function() {
+  $('.addButtonReferenceReadiness, .removeButtonReferenceReadiness').on('click', function () {
     // Small delay to ensure DOM is updated
     setTimeout(dynamicStatusCheckedForEvidences, 100);
   });
 
   //Add display to accordion items 
-  $('.blockTitle.closed').on('click', function() {
-    if($(this).hasClass('closed')) {
+  $('.blockTitle.closed').on('click', function () {
+    if ($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
       $('.blockTitle').removeClass('opened').addClass('closed');
       $(this).removeClass('closed').addClass('opened');
     } else {
       $(this).removeClass('opened').addClass('closed');
     }
-    $(this).next().slideToggle('slow', function() {
+    $(this).next().slideToggle('slow', function () {
       $(this).find('textarea').autoGrow();
     });
   });
@@ -114,29 +121,29 @@ function attachEvents() {
    * Actors Component
    */
 
-  ( function () {
+  (function () {
     // Events
     $('.addActors').on('click', addActor);
     $('.removeActor').on('click', removeActor);
-    $('.actorsList .actorsInnovation').each(function(_i,e) {
+    $('.actorsList .actorsInnovation').each(function (_i, e) {
       $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
     });
-    $('.actorsList .actorsInnovation').each(function(_i,e) {
+    $('.actorsList .actorsInnovation').each(function (_i, e) {
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichWomen'));
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichYouth'));
     });
-    $('.actorsList .actorsInnovation').each(function(_i,e) {
-      $(e).find('select').on('change', function() {
+    $('.actorsList .actorsInnovation').each(function (_i, e) {
+      $(e).find('select').on('change', function () {
         //get the text of the selected option
         const selectedText = $(this).find('option:selected').text();
-        if(selectedText == "Other") {
+        if (selectedText == "Other") {
           $(e).find('.otherType').slideDown();
         } else {
           $(e).find('.otherType').slideUp();
         }
       });
     });
-    
+
     // Function
     function addActor() {
 
@@ -149,12 +156,12 @@ function attachEvents() {
       }
 
       const $newItem = $template.clone(true).removeAttr('id');
-      $newItem.find('input, select').each(function(_i,e) {
+      $newItem.find('input, select').each(function (_i, e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
 
-      $newItem.find('label').each(function(_i,e) {
+      $newItem.find('label').each(function (_i, e) {
         e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
 
@@ -175,14 +182,14 @@ function attachEvents() {
       updateIndexes();
 
       // Also call onAddDataRelatedToCheckboxGender for each checkbox to set up initial state
-      $newItem.find('input[type="checkbox"].check-gender').each(function(_i,_e) {
+      $newItem.find('input[type="checkbox"].check-gender').each(function (_i, _e) {
         onAddDataRelatedToCheckboxGender.call(this);
       });
 
       // Add event listener for select2 to display otherType
-      $newItem.find('select').on('change', function() {
+      $newItem.find('select').on('change', function () {
         const selectedText = $(this).find('option:selected').text();
-        if(selectedText == "Other") {
+        if (selectedText == "Other") {
           $newItem.find('.otherType').slideDown();
         } else {
           $newItem.find('.otherType').slideUp();
@@ -193,7 +200,7 @@ function attachEvents() {
 
     function removeActor() {
       var $parent = $(this).parents('.actorsInnovation');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -202,10 +209,10 @@ function attachEvents() {
     }
 
     function updateIndexes() {
-      $('.actorsList').find('.actorsInnovation').each(function(i, actor) {
+      $('.actorsList').find('.actorsInnovation').each(function (i, actor) {
         $(actor).setNameIndexes(1, i);
-        
-        $(actor).find('label').each(function(_i,e) {
+
+        $(actor).find('label').each(function (_i, e) {
           const newForValue = $(e).prev('input').attr('id');
           $(e).attr('for', newForValue);
         });
@@ -218,7 +225,7 @@ function attachEvents() {
       const $checkboxSexAgeNotApply = $blockSexAgeNotApply.find('input[type="checkbox"]');
       const $inputSexAgeNotApply = $blockSexAgeNotApply.find('input[type="text"]');
 
-      if($element.is(':checked')) {
+      if ($element.is(':checked')) {
         $blockSexAgeNotApply.slideUp();
         $checkboxSexAgeNotApply.prop('checked', false);
         $inputSexAgeNotApply.val('');
@@ -231,14 +238,14 @@ function attachEvents() {
       const $checkboxGender = $(this);
       const $relatedInputNumber = $checkboxGender.parents('.innerOptions').find(`input[type="number"]`);
 
-      $relatedInputNumber.on('change', function() {
+      $relatedInputNumber.on('change', function () {
 
         const inputValue = $(this).val().trim();
-        
+
         // If input has a value, ensure the checkbox is checked
         if (inputValue !== '') {
           $checkboxGender.prop('checked', true);
-        } 
+        }
         else {
           $checkboxGender.prop('checked', false);
         }
@@ -250,7 +257,7 @@ function attachEvents() {
   /**
    * Organizations Component
    */
-  ( function () {
+  (function () {
     // Events
     $('.addOrganizations').on('click', addOrganization);
     $('.removeOrganization').on('click', removeOrganization);
@@ -261,44 +268,44 @@ function attachEvents() {
       const $template = $('#organizationsInnovation-template');
 
       const $newItem = $template.clone(true).removeAttr('id');
-      
+
       // First handle standard elements
-      $newItem.find('input:not([readonly]), select, input[type="checkbox"]:not([readonly])').each(function(_i,e) {
-        if(e.name && e.name.includes("_TEMPLATE_")) {
+      $newItem.find('input:not([readonly]), select, input[type="checkbox"]:not([readonly])').each(function (_i, e) {
+        if (e.name && e.name.includes("_TEMPLATE_")) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         }
       });
-      
-      $newItem.find('label').each(function(_i,e) {
+
+      $newItem.find('label').each(function (_i, e) {
         e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
 
       // Handle the mal-select component properly using attributes
       const $malSelect = $newItem.find('.allianceOrganizations-institutions');
-      
+
       // Update name and id attributes instead of properties
-      $malSelect.attr('name', function(i, oldName) {
+      $malSelect.attr('name', function (i, oldName) {
         return oldName.replace("_TEMPLATE_", "");
       });
-      
-      $malSelect.attr('id', function(i, oldId) {
+
+      $malSelect.attr('id', function (i, oldId) {
         return oldId.replace("_TEMPLATE_", "");
       });
-      
+
       // Copy data from template component
       $malSelect[0].data = $template.find('.allianceOrganizations-institutions')[0].data;
-      
+
       // Add event listener for valueChange
-      $malSelect[0].addEventListener('valueChange', function() {
+      $malSelect[0].addEventListener('valueChange', function () {
         // This will handle any inner select elements if they exist
         const $innerSelect = $(this).find('select');
-        $innerSelect.each(function(_i,e) {
+        $innerSelect.each(function (_i, e) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         });
       });
-      
+
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
       // Update indexes
@@ -307,7 +314,7 @@ function attachEvents() {
 
     function removeOrganization() {
       var $parent = $(this).parents('.organizationsInnovation');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -317,7 +324,7 @@ function attachEvents() {
 
     function updateIndexes() {
 
-      $('.organizationsList').find('.organizationsInnovation').each(function(i, organization) {
+      $('.organizationsList').find('.organizationsInnovation').each(function (i, organization) {
         $(organization).setNameIndexes(1, i);
 
       });
@@ -328,11 +335,11 @@ function attachEvents() {
   /**
    * Accordion Complementary Innovations
    */
-  ( function () {
+  (function () {
     // Events
     $('.addButtonComplementarySolutions').on('click', addComplementaryInnovation);
     $('.removeComplementaryInnovation').on('click', removeComplementaryInnovation);
-    
+
     // Function
 
     function addComplementaryInnovation() {
@@ -346,11 +353,11 @@ function attachEvents() {
       }
 
       const $newItem = $template.clone(true).removeAttr('id');
-      $newItem.find('input, select, textarea').each(function(_i,e) {
+      $newItem.find('input, select, textarea').each(function (_i, e) {
         e.name = (e.name).replace("_TEMPLATE_", "");
         e.id = (e.id).replace("_TEMPLATE_", "");
       });
-      $newItem.find('label').each(function(_i,e) {
+      $newItem.find('label').each(function (_i, e) {
         e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
       });
 
@@ -365,7 +372,7 @@ function attachEvents() {
     }
     function removeComplementaryInnovation() {
       var $parent = $(this).parents('.complementaryInnovation');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Update indexes
@@ -373,10 +380,10 @@ function attachEvents() {
       });
     }
     function updateIndexes() {
-      $('.complementarySolutionsList').find('.complementaryInnovation').each(function(i, innovation) {
+      $('.complementarySolutionsList').find('.complementaryInnovation').each(function (i, innovation) {
         $(innovation).setNameIndexes(1, i);
-        
-        $(innovation).find('label').each(function(_i,e) {
+
+        $(innovation).find('label').each(function (_i, e) {
           const newForValue = $(e).prev('input').attr('id');
           $(e).attr('for', newForValue);
         });
@@ -388,11 +395,11 @@ function attachEvents() {
   /**
    * Bundle Innovation Select Innovation
    */
-  ( function () {
+  (function () {
     // Events
     $('.selectInnovationBundle').on('click', addBundleInnovation);
     $('.removeInnovationBundleItem').on('click', removeBundleInnovation);
-    if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+    if ($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
       $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
     }
     // Function
@@ -405,14 +412,14 @@ function attachEvents() {
       const innovationName = $button.attr('data-name')
         .replace(/"/g, '&quot;') // Escape double quotes for HTML attribute safety 
         .replace(/'/g, '&#39;'); // Escape single quotes for HTML attribute safety
-      
+
       // When displaying in the DOM, decode any HTML entities
       const displayName = $('<div/>').html(innovationName).text();
 
       const $listBlock = $('.innovationBundleList');
       const $template = $('#innovationBundleItem-template');
 
-      if($listBlock.find('.innovationBundleItem').length == 0) {
+      if ($listBlock.find('.innovationBundleItem').length == 0) {
         $listBlock.empty(); // Clear the list message before adding new items
       }
 
@@ -422,8 +429,8 @@ function attachEvents() {
       $newItem.find('.innovationBundleItemID').text(innovationId);
       $newItem.find('.innovationBundleItemName').html(displayName); // Use .html() instead of .text() to properly handle the content
 
-      $newItem.find('input').each(function(_i,e) { 
-        if(e.name && e.name.includes("_TEMPLATE_")) {
+      $newItem.find('input').each(function (_i, e) {
+        if (e.name && e.name.includes("_TEMPLATE_")) {
           e.name = (e.name).replace("_TEMPLATE_", "");
           e.id = (e.id).replace("_TEMPLATE_", "");
         }
@@ -441,7 +448,7 @@ function attachEvents() {
     }
     function removeBundleInnovation() {
       var $parent = $(this).parents('.innovationBundleItem');
-      $parent.hide(500, function() {
+      $parent.hide(500, function () {
         // Remove DOM element
         $parent.remove();
         // Re-enable the select button for the removed innovation
@@ -454,17 +461,17 @@ function attachEvents() {
       });
     }
     function updateIndexes() {
-      $('.innovationBundleList').find('.innovationBundleItem').each(function(i, innovation) {
+      $('.innovationBundleList').find('.innovationBundleItem').each(function (i, innovation) {
         $(innovation).setNameIndexes(1, i);
-        
-        $(innovation).find('label').each(function(_i,e) {
+
+        $(innovation).find('label').each(function (_i, e) {
           const newForValue = $(e).prev('input').attr('id');
           $(e).attr('for', newForValue);
         });
       });
 
       // If no items left, show a message
-      if($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
+      if ($('.innovationBundleList').find('.innovationBundleItem').length == 0) {
         $('.innovationBundleList').append('<p><i>No innovations selected</i></p>');
       }
     }
@@ -483,21 +490,21 @@ function attachEvents() {
   $('#isClearLeadToAddRequired').on('click', AddRequired);
 
   // Check the stage of innovation - DEPRECATED
-/*   $('select.stageInnovationSelect').on('change', function() {
-    var isStageFour = this.value == 4;
-    if(isStageFour) {
-      $('.stageFourBlock-true').slideDown();
-      $('.stageFourBlock-false').slideUp();
-    } else {
-      $('.stageFourBlock-true').slideUp();
-      $('.stageFourBlock-false').slideDown();
-    }
-  }); */
+  /*   $('select.stageInnovationSelect').on('change', function() {
+      var isStageFour = this.value == 4;
+      if(isStageFour) {
+        $('.stageFourBlock-true').slideDown();
+        $('.stageFourBlock-false').slideUp();
+      } else {
+        $('.stageFourBlock-true').slideUp();
+        $('.stageFourBlock-false').slideDown();
+      }
+    }); */
 
   // If select other in innovation type
-  $('select.innovationTypeSelect').on('change', function() {
+  $('select.innovationTypeSelect').on('change', function () {
     var id = this.value;
-    if(id == 6) {
+    if (id == 6) {
       $('.typeSixBlock').slideDown();
     } else {
       $('.typeSixBlock').slideUp();
@@ -505,9 +512,9 @@ function attachEvents() {
   });
 
   // If select other in innovation nature
-  $('select.innovationNatureSelect').on('change', function() {
+  $('select.innovationNatureSelect').on('change', function () {
     var id = this.value;
-    if(id == 4) {
+    if (id == 4) {
       $('.natureFourBlock').slideDown();
     } else {
       $('.natureFourBlock').slideUp();
@@ -515,19 +522,19 @@ function attachEvents() {
   });
 
   // If select other in innovation property rights
-  $('select.innovationPropertyRightsSelect').on('change', function() {
+  $('select.innovationPropertyRightsSelect').on('change', function () {
     var id = this.value;
-    if(id == 4) {
+    if (id == 4) {
       $('.otherIntellectualProperty').slideDown();
     } else {
       $('.otherIntellectualProperty').slideUp();
     }
   });
-  
-  $('input.isClearLead').on('change', function() {
+
+  $('input.isClearLead').on('change', function () {
     var selected = $('input.isClearLead').is(":checked");
 
-    if(selected == true) {
+    if (selected == true) {
       $('.lead-organization').slideUp();
     } else {
       $('.lead-organization').slideDown();
@@ -535,10 +542,10 @@ function attachEvents() {
 
   })
 
-  $('input[name="innovation.projectInnovationInfo.hasKnowledgePotential.id"]').on('change', function() {
+  $('input[name="innovation.projectInnovationInfo.hasKnowledgePotential.id"]').on('change', function () {
     var selected = this.value;
     console.log(selected);
-    if(selected == 2) {
+    if (selected == 2) {
       $('.block-w-hasKnowledgePotential').slideDown();
     } else {
       $('.block-w-hasKnowledgePotential').slideUp();
@@ -550,7 +557,7 @@ function attachEvents() {
 
   // On change checkbox buttons in alliance lever display other field
   displayInnerOtherInput();
-  $('.containerRadioToCheckbox--other input[type="checkbox"][id*="lever-"]').on('change',displayInnerOtherInput);
+  $('.containerRadioToCheckbox--other input[type="checkbox"][id*="lever-"]').on('change', displayInnerOtherInput);
   //On change checkbox buttons - alliance
   updateIndexListCheckbox();
   $('input[type="checkbox"][id*="lever-"]').on('change', updateIndexListCheckbox);
@@ -562,10 +569,10 @@ function attachEvents() {
   $('input.radioType-contributionToCGIAR').on('change', onDisplayNotesInScores);
 
   // Use event delegation to handle "Other" checkbox changes for both existing and new elements
-  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[id$="other"]', function() {
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[id$="other"]', function () {
     const $element = $(this).closest('.relationElement');
-    
-    if(this.checked) {
+
+    if (this.checked) {
       $element.find('input[type="checkbox"]').not(this).prop("checked", false);
     } else {
       $element.find('input[type="checkbox"]').not(this).prop("checked", false);
@@ -573,13 +580,13 @@ function attachEvents() {
   });
 
   // On change checkbox buttons - Contributing Organizations except "Other"
-  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[type="checkbox"]', function() {
+  $('div[listname="innovation.contributingOrganizations"]').on('change', 'input[type="checkbox"]', function () {
     const $element = $(this).closest('.relationElement');
     const $checkboxOther = $element.find('input[id$="other"]');
     const $checkboxContributingOrganizations = $element.find('input[type="checkbox"]').not($checkboxOther);
     const $checkboxContributingOrganizationsChecked = $checkboxContributingOrganizations.filter(':checked');
 
-    if($checkboxContributingOrganizationsChecked.length > 0) {
+    if ($checkboxContributingOrganizationsChecked.length > 0) {
       $checkboxOther.prop("checked", false);
     }
   });
@@ -591,53 +598,53 @@ function attachEvents() {
   changeInformativeTextPRMSEquivalence();
 }
 
-function AddRequired(){
+function AddRequired() {
   if ($('#isClearLeadToAddRequired').is(":checked")) {
     $('.top-five-contributing').find('.requiredTag').show();
-  }else{
+  } else {
     $('.top-five-contributing').find('.requiredTag').hide();
   }
 }
 function addSelect2() {
   $('form select').select2({
-      width: '100%',
-      templateResult: formatList,
-      templateSelection: formatList
+    width: '100%',
+    templateResult: formatList,
+    templateSelection: formatList
   });
 
   $('form select.countriesSelect').select2({
-      placeholder: "Select a country",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      dropdownPosition: "above",
-      width: '100%'
+    placeholder: "Select a country",
+    templateResult: formatStateCountries,
+    templateSelection: formatStateCountries,
+    dropdownPosition: "above",
+    width: '100%'
   });
 
 
 }
 
 function onChangeRadioButton() {
-	  var thisValue = this.value === "true";
-	  var radioType = $(this).classParam('radioType');
-	  if (thisValue) {
-      //if just is one block
-	    $('.block-' + radioType).slideDown();
+  var thisValue = this.value === "true";
+  var radioType = $(this).classParam('radioType');
+  if (thisValue) {
+    //if just is one block
+    $('.block-' + radioType).slideDown();
 
-      //if is a block with two different blocks
-      $('.block-yes-'+radioType).slideDown();
-      $('.block-no-'+radioType).slideUp();
-	  } else {
-      //if just is one block
-	    $('.block-' + radioType).slideUp();
+    //if is a block with two different blocks
+    $('.block-yes-' + radioType).slideDown();
+    $('.block-no-' + radioType).slideUp();
+  } else {
+    //if just is one block
+    $('.block-' + radioType).slideUp();
 
-      //if is a block with two different blocks
-      $('.block-yes-'+radioType).slideUp();
-      $('.block-no-'+radioType).slideDown();
-	  }
+    //if is a block with two different blocks
+    $('.block-yes-' + radioType).slideUp();
+    $('.block-no-' + radioType).slideDown();
+  }
 }
 
 function formatList(state) {
-  if(!state.id || (state.id == "-1")) {
+  if (!state.id || (state.id == "-1")) {
     return state.text;
   }
   var result = "<span>" + state.text + "</span>";
@@ -645,12 +652,12 @@ function formatList(state) {
 };
 
 function formatStateCountries(state) {
-  if(!state.id) {
+  if (!state.id) {
     return state.text;
   }
   var flag = '<i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ';
   var $state;
-  if(state.id != -1) {
+  if (state.id != -1) {
     $state = $('<span>' + flag + state.text + '</span>');
   } else {
     $state = $('<span>' + state.text + '</span>');
@@ -663,95 +670,128 @@ function counterSharedCluster() {
   let currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
   const $counter = $('#modalCounterShared');
   $counter.text(currentAmount);
-  
-  $('div[listname="innovation.sharedInnovations"] .setSelect2').on('change', function() {
+
+  $('div[listname="innovation.sharedInnovations"] .setSelect2').on('change', function () {
     currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
     $counter.text(currentAmount);
   });
 }
 
-  // Copy URL Button event
- $(".copyButton").click(function() {
-        var $button = $(this); // Get the clicked button
-        var $parent = $button.closest(".generalInnovationsOptions"); // Find the closest parent container
-        var $input = $parent.find(".urlInput"); // Locate the input field with the URL
+// Copy URL Button event
+$(".copyButton").click(function () {
+  var $button = $(this); // Get the clicked button
+  var $parent = $button.closest(".generalInnovationsOptions"); // Find the closest parent container
+  var $input = $parent.find(".urlInput"); // Locate the input field with the URL
 
-        if ($input.length) {
-            var textToCopy = $input.val().trim();
+  if ($input.length) {
+    var textToCopy = $input.val().trim();
 
-            if (textToCopy) {
-                // Copy text to clipboard
-                var tempInput = $("<input>");
-                $("body").append(tempInput);
-                tempInput.val(textToCopy).select();
-                document.execCommand("copy");
-                tempInput.remove();
+    if (textToCopy) {
+      // Copy text to clipboard
+      var tempInput = $("<input>");
+      $("body").append(tempInput);
+      tempInput.val(textToCopy).select();
+      document.execCommand("copy");
+      tempInput.remove();
 
-                // Store original button text
-                var originalText = $button.html();
+      // Store original button text
+      var originalText = $button.html();
 
-                // Change button text to "Copied!"
-                $button.html('<span class="glyphicon glyphicon-ok"></span> Copied to clipboard!').css({
-                    "background-color": "#28a745",
-                    "color": "#fff",
-                    "border-color": "#28a745"
-                });
+      // Change button text to "Copied!"
+      $button.html('<span class="glyphicon glyphicon-ok"></span> Copied to clipboard!').css({
+        "background-color": "#28a745",
+        "color": "#fff",
+        "border-color": "#28a745"
+      });
 
-                setTimeout(function() {
-                    $button.html(originalText).css({
-                        "background-color": "",
-                        "color": "",
-                        "border-color": ""
-                    });
-                }, 1000);
-            }
-        }
-    });
+      setTimeout(function () {
+        $button.html(originalText).css({
+          "background-color": "",
+          "color": "",
+          "border-color": ""
+        });
+      }, 1000);
+    }
+  }
+});
 
 function updateAllianceTab() {
-  var $selectCenters = $('div[listname="innovation.centers"] select.elementType-institution');
 
-    setTimeout(() => {
-      $option = $selectCenters.find('option[disabled]');
+  setTimeout(function () {
+    const $selectCenters = $('div[listname="innovation.centers"] select.elementType-institution');
 
-        if($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
-          //remove disabled class alliance tab
-          $('#allianceTab').slideDown();
-          $('li[role="presentation"]').css('width', "20%");
-        } else {
-          //add disabled class alliance tab
-          $('#allianceTab').slideUp();
-          $('li[role="presentation"]').css('width', "25%");
-        }
+    const $option = $selectCenters.find('option[disabled]');
 
-    }, 500);
+    if ($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
+      //remove disabled class alliance tab
+      $('#allianceTab').slideDown();
+    } else {
+      //add disabled class alliance tab
+      $('#allianceTab').slideUp();
+    }
 
-}  
+    updateWidthTab();
+  }, 500);
+
+}
+
+function updateBundleTab() {
+  const innovationBundle = $('input[name="innovation.projectInnovationInfo.innovationBundle"][type="radio"]:checked');
+
+  setTimeout(function () {
+    if (innovationBundle.val() === "true") {
+      $('#bundleTab').slideDown();
+    } else {
+      $('#bundleTab').slideUp();
+    }
+
+    updateWidthTab();
+  }, 0);
+
+}
+
+function updateWidthTab() {
+
+  setTimeout(function () {
+    const $tabs = $('.nav-tabs li[role="presentation"]');
+
+    let initialWidth = "20%";
+
+    let numberOfVisibleTabs = $tabs.filter(':visible').length;
+
+    if (numberOfVisibleTabs > 0) {
+      initialWidth = (100 / numberOfVisibleTabs) + "%";
+    }
+
+    $tabs.css('width', initialWidth);
+  }, 500);
+
+}
 
 function addImageToSelectSDGTargets() {
 
   const $listRender = $('div[listname="innovation.sdgs"] .panel-body li.relationElement');
 
-  $listRender.each(function(index, element) {
+  $listRender.each(function (index, element) {
     const $elementVisualization = $(element);
     const $elementId = $(element).find('input[type="hidden"].elementRelationID').val();
 
-    if($elementVisualization.find('.sdgImage').length == 0) {
-      
+    if ($elementVisualization.find('.sdgImage').length == 0) {
+
       $.ajax({
         url: baseURL + '/getSdgImage.do',
         async: true,
         data: {
           sdgID: Number.parseInt(Number.parseInt($elementId))
         },
-        success: function(data) {
-  
-          if(data) {
+        success: function (data) {
+
+          if (data) {
             //render image in a before element in the elementVisualization
             $elementVisualization.find('.elementName').before(`<img src="${data.image.adsoluteURL}" class="sdgImage" alt="sdg-${$elementId}">`);
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           console.error(error);
           reject(error);
         }
@@ -759,16 +799,16 @@ function addImageToSelectSDGTargets() {
     }
 
   });
-  
+
 }
 
 function updateIndexListCheckbox() {
   const $list = $('input[type="checkbox"][id*="lever-"]');
   const $listChecked = $list.filter(':checked');
   const $listUnchecked = $list.filter(':not(:checked)');
-  
-  $listChecked.each(function(index, element) {
-    
+
+  $listChecked.each(function (index, element) {
+
     const $element = $(element);
 
     const newValueForLever = "innovation.allianceLevers[" + index + "].allianceLever.id";
@@ -776,7 +816,7 @@ function updateIndexListCheckbox() {
 
     $element.attr('name', newValueForLever);
 
-    if($element.parent('.inputsFlat').prev('.hiddenIdReference')){
+    if ($element.parent('.inputsFlat').prev('.hiddenIdReference')) {
       const $hiddenIdReferenceInput = $element.parent('.inputsFlat').prev('.hiddenIdReference').find('input[type="hidden"]');
       const $hiddenIdReferenceLabel = $hiddenIdReferenceInput.prevAll('label');
 
@@ -786,10 +826,10 @@ function updateIndexListCheckbox() {
     }
   });
 
-  $listUnchecked.each(function(index, element) {
+  $listUnchecked.each(function (index, element) {
     const $element = $(element);
 
-    if($element.parent('.inputsFlat').prev('.hiddenIdReference')){
+    if ($element.parent('.inputsFlat').prev('.hiddenIdReference')) {
       const $hiddenIdReferenceInput = $element.parent('.inputsFlat').prev('.hiddenIdReference').find('input[type="hidden"]');
       const $hiddenIdReferenceLabel = $hiddenIdReferenceInput.prevAll('label');
 
@@ -879,7 +919,7 @@ function onDisplayNotesInScores() {
   const $nameInput = $(this).attr('name');
   const $valueInput = $(this).val();
 
-  if($valueInput == "3") {
+  if ($valueInput == "3") {
     $(`div.note[name="${$nameInput}"]`).slideDown();
   } else {
     $(`div.note[name="${$nameInput}"]`).slideUp();
@@ -892,11 +932,11 @@ function changeDisplayMessageInScaling() {
   const $scalingMessageContainer = $('.scaling__message');
   const $listScalingHiddenInfo = $('.scaling__hiddenInfo .scaling__hiddenInfo__item');
 
-  $listScalingHiddenInfo.each(function(index, element) {
+  $listScalingHiddenInfo.each(function (index, element) {
     const $element = $(element);
     const $elementValue = $element.attr('id');
 
-    if($elementValue == $readinessScale) {
+    if ($elementValue == $readinessScale) {
       $scalingMessageContainer.find('h5').html($element.find('h5').html());
       $scalingMessageContainer.find('p').html($element.find('p').html());
     }
@@ -940,13 +980,13 @@ const deliverablePartnersModule = (function () {
     var $newUsersBlock = $partnerUsersBlock.clone(true);
 
     $newUsersBlock.find('input').each(function (_i, user) {
-      if((user.id).includes('_TEMPLATE_')){
+      if ((user.id).includes('_TEMPLATE_')) {
         user.id = user.id.replace('_TEMPLATE_', '');
       }
     });
 
     $newUsersBlock.find('label').each(function (_i, label) {
-      if((label.htmlFor).includes('_TEMPLATE_')){
+      if ((label.htmlFor).includes('_TEMPLATE_')) {
         label.htmlFor = label.htmlFor.replace('_TEMPLATE_', '');
       }
     });
@@ -1063,7 +1103,7 @@ const evidencesModule = function () {
    * @function
    */
   function addReference() {
-    
+
     const $listBlock = $(`.referenceList${nameReference}`);
     const $template = $(`#evidences-${nameReference}-template`);
 
@@ -1073,16 +1113,16 @@ const evidencesModule = function () {
     }
 
     const $newItem = $template.clone(true).removeAttr('id');
-    $newItem.find('input, select, textarea').each(function(_i,e) {
+    $newItem.find('input, select, textarea').each(function (_i, e) {
       e.name = (e.name).replace("_TEMPLATE_", "");
       e.id = (e.id).replace("_TEMPLATE_", "");
     });
-    $newItem.find('label').each(function(_i,e) {
+    $newItem.find('label').each(function (_i, e) {
       e.htmlFor = (e.htmlFor).replace("_TEMPLATE_", "");
     });
 
     // Remove class _TEMPLATE_ from divs blocks inner display option
-    $newItem.find('div[class^="block-"]').each(function(_i,e) {
+    $newItem.find('div[class^="block-"]').each(function (_i, e) {
       e.className = (e.className).replace("_TEMPLATE_", "");
     });
     // Add select2 to select2 library
@@ -1091,13 +1131,13 @@ const evidencesModule = function () {
       data: function (data) {
         return data;
       },
-      escapeMarkup: function(markup) {
+      escapeMarkup: function (markup) {
         return markup;
       },
-      templateResult: function(data) {
+      templateResult: function (data) {
         return data.text;
       },
-      templateSelection: function(data) {
+      templateSelection: function (data) {
         return data.text;
       }
     });
@@ -1123,7 +1163,7 @@ const evidencesModule = function () {
    */
   function removeReference() {
     var $parent = $(this).parents('.evidences');
-    $parent.hide(500, function() {
+    $parent.hide(500, function () {
       // Remove DOM element
       $parent.remove();
       //Update options selected in all instances
@@ -1149,19 +1189,19 @@ const evidencesModule = function () {
    */
   function updateIndexes() {
 
-    $(`.referenceList${nameReference}`).find('.evidences').each(function(i, reference) {
+    $(`.referenceList${nameReference}`).find('.evidences').each(function (i, reference) {
       $(reference).setNameIndexes(1, i);
 
-      $(reference).find('label').each(function(_i,e) {
+      $(reference).find('label').each(function (_i, e) {
         let newForValue = $(e).prev('input').attr('id');
         $(e).attr('for', newForValue);
 
         // change radioType- based on the reference and index
-        if($(e).prev('input').attr('type') == 'radio'){
+        if ($(e).prev('input').attr('type') == 'radio') {
           newForValue = $(e).prev('input').attr('id') + '.' + $(e).prev('input').attr('value');
           $(e).attr('for', newForValue);
           $(e).prev('input').attr('id', newForValue);
-          $(e).prev('input').attr('class').split(/\s+/).forEach(function(cls) {
+          $(e).prev('input').attr('class').split(/\s+/).forEach(function (cls) {
             if (cls.startsWith('radioType-')) {
               $(e).prev('input').removeClass(cls);
               const splitCurrentValue = cls.split('-');
@@ -1173,8 +1213,8 @@ const evidencesModule = function () {
       });
 
       // Update indexes of blocks to match with the radioType- indexes
-      $(reference).find('div[class*="block-"]').each(function(_i,e) {
-        $(e).attr('class').split(/\s+/).forEach(function(cls) {
+      $(reference).find('div[class*="block-"]').each(function (_i, e) {
+        $(e).attr('class').split(/\s+/).forEach(function (cls) {
           if (cls.startsWith('block-')) {
             $(e).removeClass(cls);
 
@@ -1182,7 +1222,7 @@ const evidencesModule = function () {
             const newValue = splitCurrentValue[0] + '-' + splitCurrentValue[1] + '-' + $(reference).attr('data-reference') + `_${i}`;
             $(e).addClass(newValue);
           }
-      });
+        });
       });
 
     });
@@ -1200,33 +1240,33 @@ const evidencesModule = function () {
 
     const $parentDeliverableType = $(this).parents('.evidenceType');
     const $subTypeSelect = $parentDeliverableType.find('select.subTypeSelect');
-    
-    if (typeID == -1){
+
+    if (typeID == -1) {
       return
     }
-    
+
     $.ajax({
-        url: baseURL + '/centerDeliverableSubType.do',
-        data: {
-          deliverableTypeId: typeID,
-          phaseID: phaseID
-        },
-        beforeSend: function() {
-          $(".loading.subtype").fadeIn();
-          $subTypeSelect.empty();
-          $subTypeSelect.addOption("-1", "Select a sub type...");
-        },
-        success: function(data) {
-          $.each(data.deliverableSubTypes, function(i,type) {
-            $subTypeSelect.addOption(type.id, type.name);
-          });
-        },
-        complete: function() {
-          $(".loading.subtype").fadeOut();
-          $subTypeSelect.select2();
-        }
+      url: baseURL + '/centerDeliverableSubType.do',
+      data: {
+        deliverableTypeId: typeID,
+        phaseID: phaseID
+      },
+      beforeSend: function () {
+        $(".loading.subtype").fadeIn();
+        $subTypeSelect.empty();
+        $subTypeSelect.addOption("-1", "Select a sub type...");
+      },
+      success: function (data) {
+        $.each(data.deliverableSubTypes, function (i, type) {
+          $subTypeSelect.addOption(type.id, type.name);
+        });
+      },
+      complete: function () {
+        $(".loading.subtype").fadeOut();
+        $subTypeSelect.select2();
+      }
     });
-  
+
   }
 
   /**
@@ -1241,14 +1281,14 @@ const evidencesModule = function () {
     const selectedValues = new Set();
 
     // Collect the selected values from all select elements within the reference list
-    $listBlock.find('select.evidence option:selected').each(function() {
+    $listBlock.find('select.evidence option:selected').each(function () {
       selectedValues.add(this.value);
     });
 
     // Disable options in all select elements that are already selected in other instances to prevent duplication
-    $listBlock.find('select.evidence').each(function() {
+    $listBlock.find('select.evidence').each(function () {
       const $select = $(this);
-      $select.find('option').each(function() {
+      $select.find('option').each(function () {
         const $option = $(this);
         const isSelectedAndNotCurrent = selectedValues.has($option.val()) && !$option.is(':selected');
         if (isSelectedAndNotCurrent) {
@@ -1276,23 +1316,23 @@ const evidencesModule = function () {
 
 }
 
-function dynamicMarginToSelectedRender(select){
+function dynamicMarginToSelectedRender(select) {
   const $select = $(select);
 
-  if(!$select.length) {
+  if (!$select.length) {
     console.warn('Invalid element passed to dynamicMarginToSelectedRender');
     return;
   }
-  
+
   // Add a delay to ensure DOM elements are fully rendered
   setTimeout(() => {
     const $selectedMultiple = $select.next('.select2-container--default').find('.select2-selection--multiple');
     const $rendered = $select.next('.select2-container--default').find('.select2-selection__rendered');
 
-    if($rendered.children().length > 0){
-      $selectedMultiple.css('margin-bottom',`${$rendered.height()+30}px`);
+    if ($rendered.children().length > 0) {
+      $selectedMultiple.css('margin-bottom', `${$rendered.height() + 30}px`);
     } else {
-      $selectedMultiple.css('margin-bottom','0');
+      $selectedMultiple.css('margin-bottom', '0');
     }
   }, 10); // 100ms delay to allow rendering to complete
 }
@@ -1306,13 +1346,13 @@ function dynamicStatusCheckedForEvidences() {
     { name: "environmentalScore", displayName: "Environmental health", displayReference: "environmental" },
     { name: "povertyScore", displayName: "Poverty reduction", displayReference: "poverty" },
   ];
-  
+
   // Initialize messages array
   const messages = [];
 
   // Track which impact areas need evidence
   const areasNeedingEvidence = [];
-  
+
   // Check for score of 2 in any impact area
   impactAreas.forEach(area => {
     const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
@@ -1321,11 +1361,11 @@ function dynamicStatusCheckedForEvidences() {
       messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
     }
   });
-  
+
   // Check the innovation readiness scale value
   const readinessElement = $('input[name="innovation.projectInnovationInfo.readinessScale"]:checked');
   let readinessNeedsEvidence = false;
-  
+
   if (readinessElement.length > 0) {
     const readinessValue = parseInt(readinessElement.val());
     if (readinessValue >= 2) {
@@ -1337,14 +1377,14 @@ function dynamicStatusCheckedForEvidences() {
   const evidences = $('.referenceListReadiness .evidences')
 
   if (evidences.length > 0) {
-    evidences.each(function(index, element) {
+    evidences.each(function (index, element) {
       const $element = $(element);
 
       const $typeCheckboxes = $element.find('input[type="checkbox"]:checked');
-      
-      $typeCheckboxes.each(function() {
+
+      $typeCheckboxes.each(function () {
         const checkboxId = $(this).attr('id');
-        
+
         // Remove messages for impact areas that have evidence
         areasNeedingEvidence.forEach((area, index) => {
           if (checkboxId && checkboxId.includes(area)) {
@@ -1353,7 +1393,7 @@ function dynamicStatusCheckedForEvidences() {
             messages.splice(index, 1);
           }
         });
-        
+
         // Remove readiness message if evidence is provided
         if (readinessNeedsEvidence && checkboxId && checkboxId.includes('innovationReadiness')) {
           // Find and remove the readiness message
@@ -1365,25 +1405,25 @@ function dynamicStatusCheckedForEvidences() {
       });
     });
   }
-  
+
   // Update the status label content
   const statusLabel = $(".statusEvidenceInImpactArea");
   const contentElement = statusLabel.find(".contentInformation");
 
-  
+
   if (messages.length > 0) {
     // Show label with message list
     statusLabel.show();
-    
+
     // Create list if multiple messages, otherwise show single message
     if (messages.length > 1) {
-      contentElement.html("<ul style='margin: 5px 0; padding-left: 20px;'>" + 
-                         messages.map(msg => `<li>${msg}</li>`).join("") + 
-                         "</ul>");
+      contentElement.html("<ul style='margin: 5px 0; padding-left: 20px;'>" +
+        messages.map(msg => `<li>${msg}</li>`).join("") +
+        "</ul>");
     } else {
       contentElement.html(`<p>${messages[0]}</p>`);
     }
-    
+
   } else {
     // Hide the label when no conditions are met
     statusLabel.hide();
@@ -1397,22 +1437,22 @@ function initDropdownOrganization() {
     url: `${baseURL}/getInstitutionsService.do`,
     method: 'GET',
     dataType: 'json',
-    success: function(data) {
+    success: function (data) {
       //console.log('Data received:', data);
       const options = data.institutions.map(item => {
         return { label: item.name, value: item.id };
       });
-      
+
       // Apply data to all dropdowns with the class
       dropdowns.forEach(dropdown => {
         dropdown.data = options;
-        
+
         // Set initial value if available
         const initialValue = dropdown.getAttribute("data-value");
         if (initialValue) {
           dropdown.value = parseInt(initialValue);
         }
-        
+
         // Listen for value changes
         dropdown.addEventListener('valueChange', (event) => {
           console.log('Selected value:', event.detail);
@@ -1422,7 +1462,7 @@ function initDropdownOrganization() {
 
       //console.log('Data loaded successfully for all dropdowns');
     },
-    error: function(xhr, status, error) {
+    error: function (xhr, status, error) {
       console.error('Error loading data:', error);
       console.error('Response text:', xhr.responseText);
       console.error('Status code:', xhr.status);
@@ -1432,7 +1472,7 @@ function initDropdownOrganization() {
 }
 
 function addDataTableAllInnovations() {
-  $('#table-all-innovations').each(function(_i,table) {
+  $('#table-all-innovations').each(function (_i, table) {
     // Skip empty tables or tables without proper structure
     if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
       console.warn('Skipping DataTables initialization for invalid table structure.');
@@ -1448,7 +1488,7 @@ function addDataTableAllInnovations() {
     const columns = $(table).find('thead th').length;
 
     const noSortColumns = [];
-    $(table).find('thead th.no-sort').each(function() {
+    $(table).find('thead th.no-sort').each(function () {
       noSortColumns.push($(this).index());
     });
 
@@ -1497,12 +1537,16 @@ function addDataTableAllInnovations() {
       }
 
       //Add custom select to make personalized filter my project/cluster
+      // Cluster filter
       const $firstChildren = $wrapper.children().first();
       if ($firstChildren.length) {
         const $selectContainer = $('<div class="select-container"></div>');
         const $selectLabel = $('<label for="filter-select">Cluster:</label>');
         const $select = $('<select class="form-control select2"></select>');
-        
+
+        ajaxAllClusters($select, $table);
+
+
         $selectContainer.css({
           "margin-left": "15px",
           "margin-right": "15px",
@@ -1520,15 +1564,13 @@ function addDataTableAllInnovations() {
           "width": "100% !important",
           "height": "30px !important",
           "margin-left": "5px",
-  
-        });
 
-        ajaxAllClusters($select);
+        });
 
         $selectContainer.append($selectLabel);
         $selectContainer.append($select);
 
-        $select.on('change', function() {
+        $select.on('change', function () {
           const selectedValue = $(this).val();
           const table = $('#table-all-innovations').DataTable();
           table.column(2).search(selectedValue ? '^' + selectedValue + '$' : '', true, false).draw();
@@ -1543,7 +1585,7 @@ function addDataTableAllInnovations() {
   });
 }
 
-function ajaxAllClusters(selectElement) {
+function ajaxAllClusters(selectElement, table) {
   $.ajax({
     url: baseURL + '/projectList.do',
     type: 'GET',
@@ -1551,11 +1593,11 @@ function ajaxAllClusters(selectElement) {
       year: currentCrpSession,
       phaseID: phaseID
     },
-    success: function(data) {
+    success: function (data) {
 
       $(selectElement).append('<option value="">All Clusters</option>');
 
-      data.projects.forEach(function(cluster) {
+      data.projects.forEach(function (cluster) {
         $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
       });
 
@@ -1566,8 +1608,15 @@ function ajaxAllClusters(selectElement) {
         placeholder: "Select a cluster",
         allowClear: true
       });
+
+      // Pre-set value
+      setTimeout(() => {
+        if (table.attr('data-cluster')) {
+          selectElement.val(table.attr('data-cluster')).trigger('change');
+        }
+      }, 0);
     },
-    error: function(xhr, status, error) {
+    error: function (xhr, status, error) {
       console.error('Error loading clusters:', error);
     }
   });
@@ -1590,12 +1639,12 @@ function limitedValueFillInput(reference, input) {
     $input.val(initialMaxValue);
   }
 
-  $(reference).on('change', function() {
+  $(reference).on('change', function () {
     const maxValue = parseInt($(reference).val(), 10) || 0;
-    
+
     // Set max attribute for number inputs
     $input.attr('max', maxValue);
-    
+
     // If the current value exceeds the new max, adjust it
     const currentValue = parseInt($input.val(), 10) || 0;
     if (currentValue > maxValue) {
@@ -1603,7 +1652,7 @@ function limitedValueFillInput(reference, input) {
     }
   });
 
-  $(input).on('change', function() {
+  $(input).on('change', function () {
     const maxValue = parseInt($(reference).val(), 10) || 0;
 
     // If the current value exceeds the new max, adjust it
@@ -1619,14 +1668,14 @@ function changeInformativeTextPRMSEquivalence() {
 
   const $blockPRMSEquivalence = $('.prmsEquivalentBlock');
 
-  $selectInnovationType.on('change', function() {
+  $selectInnovationType.on('change', function () {
     const selectedValue = $(this).val();
     if (selectedValue) {
       $blockPRMSEquivalence.show();
 
       const $textPRMSEquivalence = $blockPRMSEquivalence.find('.prmsEquivalentText');
 
-      $textPRMSEquivalence.each(function() {
+      $textPRMSEquivalence.each(function () {
         const $this = $(this);
         const typeId = $this.attr('data-id');
         console.log('Type ID:', typeId, 'Selected value:', selectedValue);

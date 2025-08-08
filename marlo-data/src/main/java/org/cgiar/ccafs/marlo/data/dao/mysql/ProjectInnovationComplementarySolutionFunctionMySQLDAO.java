@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 
 @Named
 public class ProjectInnovationComplementarySolutionFunctionMySQLDAO
@@ -80,14 +79,12 @@ public class ProjectInnovationComplementarySolutionFunctionMySQLDAO
   public List<ProjectInnovationComplementarySolutionFunction>
     getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(long complementarySolutionID) {
     String query = "from " + ProjectInnovationComplementarySolutionFunction.class.getName()
-      + " where is_active=1 and projectInnovationComplementarySolution.id = :complementarySolutionID";
-
-    Query<ProjectInnovationComplementarySolutionFunction> createQuery =
-      this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("complementarySolutionID", complementarySolutionID);
-    List<ProjectInnovationComplementarySolutionFunction> result = super.findAll(createQuery);
-
-    return super.findAll(createQuery);
+      + " where is_active=1 and complementary_solution_id = " + complementarySolutionID;
+    List<ProjectInnovationComplementarySolutionFunction> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
