@@ -22,6 +22,8 @@ public class Timeline extends MarloAuditableEntity implements java.io.Serializab
   private Date endDate;
   @Expose
   private Double order;
+  @Expose
+  private GlobalUnit globalUnit;
 
   public Timeline() {
   }
@@ -32,6 +34,10 @@ public class Timeline extends MarloAuditableEntity implements java.io.Serializab
 
   public Date getEndDate() {
     return endDate;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -56,6 +62,10 @@ public class Timeline extends MarloAuditableEntity implements java.io.Serializab
     this.endDate = endDate;
   }
 
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
+
   public void setOrder(Double order) {
     this.order = order;
   }
@@ -63,5 +73,4 @@ public class Timeline extends MarloAuditableEntity implements java.io.Serializab
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
   }
-
 }
