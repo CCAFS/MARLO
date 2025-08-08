@@ -661,7 +661,7 @@
         [#-- Table --]
         <div class="col-md-12 simpleBox">
           [#if editable]
-            [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles /]
+            [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles clusterName=element.project.acronym /]
           [/#if]
         </div>
         [#-- Innovations selected - bundles --]
@@ -1368,8 +1368,8 @@
   </div>
 [/#macro]
 
-[#macro tableAllInnovationsMacro list selected={}]
-  <table id="table-all-innovations" class="table table-striped table-hover" width="100%">
+[#macro tableAllInnovationsMacro list selected={} clusterName="" ]
+  <table id="table-all-innovations" class="table table-striped table-hover" width="100%" data-cluster="${clusterName}">
     <thead>
       <tr>
         <th id="tb-id" width="1%" class="no-sort">ID</th>

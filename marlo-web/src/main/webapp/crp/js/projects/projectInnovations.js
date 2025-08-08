@@ -1537,11 +1537,15 @@ function addDataTableAllInnovations() {
       }
 
       //Add custom select to make personalized filter my project/cluster
+      // Cluster filter
       const $firstChildren = $wrapper.children().first();
       if ($firstChildren.length) {
         const $selectContainer = $('<div class="select-container"></div>');
         const $selectLabel = $('<label for="filter-select">Cluster:</label>');
         const $select = $('<select class="form-control select2"></select>');
+
+        ajaxAllClusters($select, $table);
+
 
         $selectContainer.css({
           "margin-left": "15px",
@@ -1563,8 +1567,6 @@ function addDataTableAllInnovations() {
 
         });
 
-        ajaxAllClusters($select);
-
         $selectContainer.append($selectLabel);
         $selectContainer.append($select);
 
@@ -1583,7 +1585,7 @@ function addDataTableAllInnovations() {
   });
 }
 
-function ajaxAllClusters(selectElement) {
+function ajaxAllClusters(selectElement, table) {
   $.ajax({
     url: baseURL + '/projectList.do',
     type: 'GET',
@@ -1606,6 +1608,13 @@ function ajaxAllClusters(selectElement) {
         placeholder: "Select a cluster",
         allowClear: true
       });
+
+      // Pre-set value
+      setTimeout(() => {
+        if (table.attr('data-cluster')) {
+          selectElement.val(table.attr('data-cluster')).trigger('change');
+        }
+      }, 0);
     },
     error: function (xhr, status, error) {
       console.error('Error loading clusters:', error);
