@@ -101,6 +101,7 @@
         
         [#assign isProgressActive = action.isProgressActive() /]
 
+        [#-- Validate if it's required the tab of "Alliance Alignment" --]
         [#assign isAllianceContribution = false /]
         [#if innovation.centers?size > 0]
           [#list innovation.centers as center]
@@ -111,6 +112,25 @@
           [/#if]
           [/#list]
         [/#if]
+
+        [#-- Validate if it's required the tab of "Bundle composition" --]
+        [#assign isBundleCompositionRequired =  false /]
+        [#if innovation.projectInnovationInfo?has_content && innovation.projectInnovationInfo.innovationBundle?has_content]
+          [#assign isBundleCompositionRequired = innovation.projectInnovationInfo.innovationBundle!false /]
+        [/#if]
+
+        [#-- Calculate width of tabs at load --]
+        [#if isAllianceContribution && isBundleCompositionRequired]
+          [#assign tabWidth = '20%' /]
+        [#else]
+          [#if isAllianceContribution || isBundleCompositionRequired]
+            [#assign tabWidth = '25%' /]
+          [#else]
+            [#assign tabWidth = '33.3%' /]
+          [/#if]
+        [/#if]
+
+        <p>${tabWidth}</p>
 
         [#-- Back --]
         <small class="pull-right">
@@ -134,27 +154,27 @@
           <ul class="nav nav-tabs" role="tablist">
 
             [#assign isInnovationGeneralInformationComplete = (action.isInnovationGeneralInformationComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md ${isInnovationGeneralInformationComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${tabWidth}" class="[#if indexTab==1 || indexTab==0]active[/#if] col-md ${isInnovationGeneralInformationComplete?then('submitted','toSubmit')}">
               <a href="#innovationGeneral" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.general" /]</a>
             </li>
 
             [#assign isInnovationAllianceAlignmentComplete = (action.isInnovationAllianceAlignmentComplete())!false /]
-            <li role="presentation" style="display: ${isAllianceContribution?then('block','none')}; width:${isAllianceContribution?then('20%','25%')}; " class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" id="allianceTab">
+            <li role="presentation" style="display: ${isAllianceContribution?then('block','none')}; width:${tabWidth}; " class="[#if indexTab==2]active[/#if] col-md ${isInnovationAllianceAlignmentComplete?then('submitted','toSubmit')}" id="allianceTab">
               <a href="#innovationAlliance" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.allianceAlignment" /]</a>
             </li>
 
             [#assign isInnovationOneCgiarAlignmentComplete = (action.isInnovationOneCgiarAlignmentComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==3]active[/#if] col-md ${isInnovationOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${tabWidth}" class="[#if indexTab==3]active[/#if] col-md ${isInnovationOneCgiarAlignmentComplete?then('submitted','toSubmit')}">
               <a href="#innovationOneCGIAR" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.oneCGIARAlignment" /]</a>
             </li>
 
             [#assign isInnovationBundleComplete = (action.isInnovationBundleComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationBundleComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="display: ${isBundleCompositionRequired?then('block','none')}; width:${tabWidth}" class="[#if indexTab==4]active[/#if] col-md ${isInnovationBundleComplete?then('submitted','toSubmit')}" id="bundleTab">
               <a href="#innovationBundle" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.bundleComposition" /]</a>
             </li>
 
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
-            <li role="presentation" style="width:${isAllianceContribution?then('20%','25%')}" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
+            <li role="presentation" style="width:${tabWidth}" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
               <a href="#innovationSharing" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationSharing" /]</a>
             </li>
           </ul>
