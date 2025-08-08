@@ -122,8 +122,8 @@ public class ActivityManagerImpl implements ActivityManager {
   public void deletActivityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<Activity> activities = this.getActiveActivitiesByProject(projecID, phase.getId()).stream()
-      .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+    List<Activity> activities =
+      this.getActivitiesByComposedIDPhaseIDProjectID(activity.getComposeID(), phase.getId(), projecID);
 
     if (activities != null) {
       for (Activity activityDB : activities) {
@@ -180,6 +180,11 @@ public class ActivityManagerImpl implements ActivityManager {
   @Override
   public List<Activity> getActivitiesByComposedID(String composedID, long phaseId) {
     return activityDAO.getActivitiesByComposedID(composedID, phaseId);
+  }
+
+  @Override
+  public List<Activity> getActivitiesByComposedIDPhaseIDProjectID(String composedID, long phaseId, long projectId) {
+    return activityDAO.getActivitiesByComposedIDPhaseIDProjectID(composedID, phaseId, projectId);
   }
 
 
@@ -259,8 +264,9 @@ public class ActivityManagerImpl implements ActivityManager {
    */
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
-    List<Activity> activities = this.getActiveActivitiesByProject(projecID, phase.getId()).stream()
-      .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+    List<Activity> activities =
+      this.getActivitiesByComposedIDPhaseIDProjectID(activity.getComposeID(), phase.getId(), projecID).stream()
+        .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
 
     // Create new Activity
     if (activities == null || activities.isEmpty()) {

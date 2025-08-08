@@ -33,6 +33,7 @@ import javax.inject.Named;
 
 import org.hibernate.FlushMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
 @Named
@@ -303,18 +304,16 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
 
   @Override
   public List<Deliverable> getDeliverablesByProjectAndPhase(long phaseId, long projectId) {
-    String query = "select d from Deliverable d, DeliverableInfo di "
-      + "join d.project pr with pr.id = :projectId and pr.active = true join di.phase ph with ph.id = :phaseId "
-      + "where di.deliverable = d and d.active = true and coalesce(nullif(di.newExpectedYear, -1),di.year) = ph.year";
 
-    Query<Deliverable> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    String sql =
+      "SELECT d.* FROM deliverables d JOIN projects p ON d.project_id = p.id JOIN deliverables_info di ON di.deliverable_id = d.id JOIN phases ph ON di.id_phase = ph.id "
+        + " WHERE p.id = :projectId AND p.is_active = 1 AND d.is_active = 1 AND di.is_active = 1 "
+        + " AND ph.id = :phaseId AND COALESCE(NULLIF(di.new_expected_year, -1), di.year) = ph.year";
 
-    createQuery.setParameter("phaseId", phaseId);
-    createQuery.setParameter("projectId", projectId);
+    NativeQuery<Deliverable> query = this.getSessionFactory().getCurrentSession()
+      .createNativeQuery(sql, Deliverable.class).setParameter("projectId", projectId).setParameter("phaseId", phaseId);
 
-    List<Deliverable> deliverables = super.findAll(createQuery);
-
-    return deliverables;
+    return query.getResultList();
   }
 
 
