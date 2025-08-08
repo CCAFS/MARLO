@@ -343,7 +343,6 @@ function attachEvents() {
     // Function
 
     function addComplementaryInnovation() {
-      console.log('Adding complementary innovation');
       const $listBlock = $('.complementarySolutionsList');
       const $template = $('#complementaryInnovation-template');
 
@@ -453,7 +452,6 @@ function attachEvents() {
         $parent.remove();
         // Re-enable the select button for the removed innovation
         const innovationId = $parent.find('.innovationBundleItemID').text();
-        console.log('Re-enabling button for innovation ID:', innovationId);
         const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
         $selectButton.prop('disabled', false); // Re-enable the button
         // Update indexes
@@ -1460,7 +1458,6 @@ function initDropdownOrganization() {
         });
       });
 
-      //console.log('Data loaded successfully for all dropdowns');
     },
     error: function (xhr, status, error) {
       console.error('Error loading data:', error);
@@ -1678,7 +1675,6 @@ function changeInformativeTextPRMSEquivalence() {
       $textPRMSEquivalence.each(function () {
         const $this = $(this);
         const typeId = $this.attr('data-id');
-        console.log('Type ID:', typeId, 'Selected value:', selectedValue);
         if (typeId == selectedValue) {
           $this.parent().show();
         } else {
