@@ -1041,7 +1041,7 @@
     [#-- Remove Button --]
     [#--  if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if --]
     <div class="leftHead sm">
-      <span class="index">${index+1}</span>
+      <span class="index">${(element.code)!'Empty Code'}</span>
       [#-- <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>--]
     </div>
 

@@ -446,6 +446,11 @@
         </div>
 
         <div class="form-group row to-minimize">
+        	[#-- Code --]
+
+        	<div class="col-md-4">     
+        		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editableMilestone /]
+					</div>
           [#-- Year --]
           <div class="col-md-4">
             [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
