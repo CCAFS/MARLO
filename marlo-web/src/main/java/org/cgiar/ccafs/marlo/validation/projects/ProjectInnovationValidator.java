@@ -1193,20 +1193,22 @@ public class ProjectInnovationValidator extends BaseValidator {
             }
             if (!(this.isValidString(complementarySolution.getShortDescription())
               && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
-              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "getShortDescription"));
               action.getInvalidFields().put("input-innovation.complementarySolutions[" + index + "].shortDescription",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
-            if (!(this.isValidString(complementarySolution.getShortDescription())
-              && this.wordCount(complementarySolution.getShortDescription()) <= 100)) {
-              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
+            if (complementarySolution.getProjectInnovationType() == null
+              || complementarySolution.getProjectInnovationType().getId() == null
+              || complementarySolution.getProjectInnovationType().getId() == -1) {
+              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "projectInnovationType.id"));
               action.getInvalidFields().put(
                 "list-innovation.complementarySolutions[" + index + "].projectInnovationType.id",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
             if (complementarySolution.getComplementarySolutionFunctions() == null
               || complementarySolution.getComplementarySolutionFunctions().isEmpty()) {
-              action.addMessage(action.getText("complementarySolutions" + (index + 1) + "shortDescription"));
+              action
+                .addMessage(action.getText("complementarySolutions" + (index + 1) + "complementarySolutionFunctions"));
               action.getInvalidFields().put(
                 "list-innovation.complementarySolutions[" + index + "].complementarySolutionFunctions",
                 InvalidFieldsMessages.EMPTYFIELD);

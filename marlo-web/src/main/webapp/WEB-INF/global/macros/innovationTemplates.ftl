@@ -1304,7 +1304,11 @@
 
     [#-- Complementary innovation --]
     <div class="blockTitle closed">
-      ${(element.title)!'New complementary innovation'}
+		  [#if element.title?has_content]
+				${element.title}
+			[#else]
+				New Complementary Innovation
+			[/#if]
     </div>
     
     <div class="blockContent" style="display:none">
