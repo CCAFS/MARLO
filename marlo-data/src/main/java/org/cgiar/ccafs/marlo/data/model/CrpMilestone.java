@@ -36,17 +36,16 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private CrpProgramOutcome crpProgramOutcome;
 
-
   @Expose
   private SrfTargetUnit srfTargetUnit;
-
-
+  @Expose
+  private Integer orderIndex;
+  @Expose
+  private String code;
   @Expose
   private String title;
 
-
   private Long index;
-
 
   @Expose
   private Integer year;
@@ -54,10 +53,8 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private Integer extendedYear;
 
-
   @Expose
   private BigDecimal value;
-
 
   @Expose
   private String composeID;
@@ -68,64 +65,51 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   @Expose
   private Phase phaseCreated;
 
-
   /** POWB 2019 New Milestones Fields **/
 
   // Assessment of Risk
   @Expose
   private PowbIndAssesmentRisk powbIndAssesmentRisk;
 
-
   // DAC Youth
   @Expose
   private RepIndGenderYouthFocusLevel youthFocusLevel;
-
 
   // Main Risk
   @Expose
   private PowbIndMilestoneRisk powbIndMilestoneRisk;
 
-
   // DAC Climate
   @Expose
   private RepIndGenderYouthFocusLevel climateFocusLevel;
-
 
   // DAC CapDev
   @Expose
   private RepIndGenderYouthFocusLevel capdevFocusLevel;
 
-
   // DAC Gender
   @Expose
   private RepIndGenderYouthFocusLevel genderFocusLevel;
-
 
   // Indicate the Following
   @Expose
   private PowbIndFollowingMilestone powbIndFollowingMilestone;
 
-
   // Text Other Risk
   @Expose
   private String powbMilestoneOtherRisk;
-
 
   // Means of Verification
   @Expose
   private String powbMilestoneVerification;
 
-
   // POWB 2019 Synthesis Fields
   private Boolean isPowb;
 
-
   private Set<ProjectMilestone> projectMilestones = new HashSet<ProjectMilestone>(0);
-
 
   public CrpMilestone() {
   }
-
 
   public CrpMilestone(CrpProgramOutcome crpProgramOutcome, SrfTargetUnit srfTargetUnits, String title, Integer year,
     BigDecimal value) {
@@ -162,8 +146,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.setValue(other.getValue());
     this.setYear(other.getYear());
     this.setYouthFocusLevel(other.getYouthFocusLevel());
+    this.setOrderIndex(other.getOrderIndex());
+    this.setCode(other.getCode());
   }
-
 
   @Override
   public boolean equals(Object obj) {
@@ -196,6 +181,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return climateFocusLevel;
   }
 
+  public String getCode() {
+    return code;
+  }
+
   public String getComposedName() {
     if ((this.extendedYear != null) && (!this.extendedYear.equals(-1))) {
       return this.year + " extended to " + this.extendedYear + " - " + this.title;
@@ -208,7 +197,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
   public String getComposeID() {
     return composeID;
   }
-
 
   public CrpProgramOutcome getCrpProgramOutcome() {
     return this.crpProgramOutcome;
@@ -241,6 +229,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return milestonesStatus;
   }
 
+  public Integer getOrderIndex() {
+    return orderIndex;
+  }
+
   public Phase getPhaseCreated() {
     return phaseCreated;
   }
@@ -257,6 +249,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return powbIndMilestoneRisk;
   }
 
+
   public String getPowbMilestoneOtherRisk() {
     return powbMilestoneOtherRisk;
   }
@@ -265,10 +258,10 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return powbMilestoneVerification;
   }
 
-
   public Set<ProjectMilestone> getProjectMilestones() {
     return projectMilestones;
   }
+
 
   public SrfTargetUnit getSrfTargetUnit() {
 
@@ -302,7 +295,6 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return "";
   }
 
-
   public String getTitle() {
     return this.title;
   }
@@ -327,6 +319,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return result;
   }
 
+
   public boolean isNew(Long phaseId) {
     if (this.getPhaseCreated() != null) {
       if (this.getPhaseCreated().getId().equals(phaseId)) {
@@ -336,6 +329,7 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     return false;
   }
 
+
   public void setCapdevFocusLevel(RepIndGenderYouthFocusLevel capdevFocusLevel) {
     this.capdevFocusLevel = capdevFocusLevel;
   }
@@ -343,6 +337,11 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
 
   public void setClimateFocusLevel(RepIndGenderYouthFocusLevel climateFocusLevel) {
     this.climateFocusLevel = climateFocusLevel;
+  }
+
+
+  public void setCode(String code) {
+    this.code = code;
   }
 
 
@@ -355,11 +354,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.crpProgramOutcome = crpProgramOutcome;
   }
 
-
   public void setExtendedYear(Integer extendedYear) {
     this.extendedYear = extendedYear;
   }
-
 
   public void setGenderFocusLevel(RepIndGenderYouthFocusLevel genderFocusLevel) {
     this.genderFocusLevel = genderFocusLevel;
@@ -374,8 +371,14 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.isPowb = isPowb;
   }
 
+
   public void setMilestonesStatus(GeneralStatus milestonesStatus) {
     this.milestonesStatus = milestonesStatus;
+  }
+
+
+  public void setOrderIndex(Integer orderIndex) {
+    this.orderIndex = orderIndex;
   }
 
 
@@ -387,24 +390,23 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.powbIndAssesmentRisk = powbIndAssesmentRisk;
   }
 
-
   public void setPowbIndFollowingMilestone(PowbIndFollowingMilestone powbIndFollowingMilestone) {
     this.powbIndFollowingMilestone = powbIndFollowingMilestone;
   }
-
 
   public void setPowbIndMilestoneRisk(PowbIndMilestoneRisk powbIndMilestoneRisk) {
     this.powbIndMilestoneRisk = powbIndMilestoneRisk;
   }
 
-
   public void setPowbMilestoneOtherRisk(String powbMilestoneOtherRisk) {
     this.powbMilestoneOtherRisk = powbMilestoneOtherRisk;
   }
 
+
   public void setPowbMilestoneVerification(String powbMilestoneVerification) {
     this.powbMilestoneVerification = powbMilestoneVerification;
   }
+
 
   public void setProjectMilestones(Set<ProjectMilestone> projectMilestones) {
     this.projectMilestones = projectMilestones;
@@ -418,11 +420,9 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
     this.title = title;
   }
 
-
   public void setValue(BigDecimal value) {
     this.value = value;
   }
-
 
   public void setYear(Integer year) {
     this.year = year;
@@ -438,4 +438,3 @@ public class CrpMilestone extends MarloAuditableEntity implements java.io.Serial
       + srfTargetUnit + ", title=" + title + ", index=" + index + ", year=" + year + ", value=" + value + "]";
   }
 }
-

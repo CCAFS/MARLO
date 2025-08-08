@@ -265,8 +265,7 @@ public class ActivityManagerImpl implements ActivityManager {
   public void saveActvityPhase(Phase next, long projecID, Activity activity) {
     Phase phase = phaseDAO.find(next.getId());
     List<Activity> activities =
-      this.getActivitiesByComposedIDPhaseIDProjectID(activity.getComposeID(), phase.getId(), projecID).stream()
-        .filter(c -> c.getComposeID().equals(activity.getComposeID())).collect(Collectors.toList());
+      this.getActivitiesByComposedIDPhaseIDProjectID(activity.getComposeID(), phase.getId(), projecID);
 
     // Create new Activity
     if (activities == null || activities.isEmpty()) {
