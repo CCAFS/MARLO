@@ -130,8 +130,6 @@
           [/#if]
         [/#if]
 
-        <p>${tabWidth}</p>
-
         [#-- Back --]
         <small class="pull-right">
           <a href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
