@@ -2738,16 +2738,16 @@ public class ProjectInnovationAction extends BaseAction {
             solution.setId(null);
           }
 
-          boolean saveProcess = false;
-
-          try {
-            if (solution.getTitle() != null && !solution.getTitle().trim().isEmpty()) {
-              saveProcess = true;
-            }
-          } catch (Exception e) {
-            logger.error("Error validating complementary solution fields", e);
-          }
-
+          boolean saveProcess = true;
+          /*
+           * try {
+           * if (solution.getTitle() != null && !solution.getTitle().trim().isEmpty()) {
+           * saveProcess = true;
+           * }
+           * } catch (Exception e) {
+           * logger.error("Error validating complementary solution fields", e);
+           * }
+           */
           if (saveProcess) {
             ProjectInnovationComplementarySolution solutionToSave = new ProjectInnovationComplementarySolution();
 
