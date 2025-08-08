@@ -14,6 +14,7 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -36,13 +37,15 @@ public class TimelineManagementAction extends BaseAction {
 
   private final TimelineManager timelineManager;
   private TimelineManagementValidator validator;
+  private GlobalUnitManager globalUnitManager;
 
   @Inject
   public TimelineManagementAction(APConfig config, TimelineManager timelineManager,
-    TimelineManagementValidator validator) {
+    TimelineManagementValidator validator, GlobalUnitManager globalUnitManager) {
     super(config);
     this.timelineManager = timelineManager;
     this.validator = validator;
+    this.globalUnitManager = globalUnitManager;
   }
 
   public List<Timeline> getTimelineActivities() {
@@ -88,6 +91,11 @@ public class TimelineManagementAction extends BaseAction {
           }
           if (activity.getEndDate() != null) {
             timeLineSave.setEndDate(activity.getEndDate());
+          }
+          if (activity.getGlobalUnit() != null) {
+            timeLineSave.setGlobalUnit(globalUnitManager.getGlobalUnitById(activity.getGlobalUnit().getId()));
+          } else {
+            timeLineSave.setGlobalUnit(this.getCurrentGlobalUnit());
           }
           timeLineSave.setOrder(activity.getOrder());
 

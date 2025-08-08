@@ -3867,6 +3867,7 @@ button.ipGraph-btn {
 	font-weight: 300;
 	margin: 5px 0;
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	word-break: break-word;
 }
 
 .note--2 ul{
