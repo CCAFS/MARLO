@@ -1317,17 +1317,17 @@
       <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
       [#-- Title  --]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-100" required=true /]
+        [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Short title  --]
       <div class="form-group">
-        [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-100" required=true /]
+        [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Short description  --]
       <div class="form-group">
-        [@customForm.input name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-100" required=true /]
+        [@customForm.textArea name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-80" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Innovation type select --]
@@ -1382,7 +1382,7 @@
         <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
         <th id="tb-year" width="1%">[@s.text name="projectInnovations.table.year" /]</th>
-        <th id="tb-actions" width="15%">Action</th>
+        <th id="tb-actions" class="no-sort" width="15%">Action</th>
         [#-- Hidden column Don't remove it is neccesary for the library --]
         <th id="tb-hidden" style="display: none"></th>
       </tr>
