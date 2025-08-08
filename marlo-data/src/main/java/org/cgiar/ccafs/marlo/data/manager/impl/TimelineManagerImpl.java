@@ -62,6 +62,12 @@ public class TimelineManagerImpl implements TimelineManager {
   }
 
   @Override
+  public List<Timeline> findAllByGlobalUnit(long globalUnitID) {
+    return timelineDAO.findAllByGlobalUnit(globalUnitID);
+
+  }
+
+  @Override
   public Timeline getTimelineById(long timelineID) {
 
     return timelineDAO.find(timelineID);
@@ -72,6 +78,4 @@ public class TimelineManagerImpl implements TimelineManager {
 
     return timelineDAO.save(timeline);
   }
-
-
 }

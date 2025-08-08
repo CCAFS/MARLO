@@ -65,7 +65,16 @@ public class TimelineMySQLDAO extends AbstractMarloDAO<Timeline, Long> implement
       return list;
     }
     return null;
+  }
 
+  @Override
+  public List<Timeline> findAllByGlobalUnit(long globalUnitID) {
+    String query = "from " + Timeline.class.getName() + " where global_unit_id = " + globalUnitID;
+    List<Timeline> list = super.findAll(query);
+    if (list.size() > 0) {
+      return list;
+    }
+    return null;
   }
 
   @Override
@@ -75,10 +84,7 @@ public class TimelineMySQLDAO extends AbstractMarloDAO<Timeline, Long> implement
     } else {
       timeline = super.update(timeline);
     }
-
-
     return timeline;
   }
-
 
 }

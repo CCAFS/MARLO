@@ -51,6 +51,13 @@ public interface TimelineManager {
    */
   public List<Timeline> findAll();
 
+  /**
+   * This method gets a list of timeline objects that are active filtered by global unit
+   * 
+   * @param globalUnitID
+   * @return a list from timeline objects null if no exist records
+   */
+  public List<Timeline> findAllByGlobalUnit(long globalUnitID);
 
   /**
    * This method gets a timeline object by a given timeline identifier.
