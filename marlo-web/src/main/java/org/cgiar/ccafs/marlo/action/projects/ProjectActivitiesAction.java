@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerPersonManager;
@@ -30,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -95,7 +95,6 @@ public class ProjectActivitiesAction extends BaseAction {
   private ProjectManager projectManager;
   private ProjectPartnerPersonManager projectPartnerPersonManager;
   private ActivityTitleManager activityTitleManager;
-  private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
   private List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
   private String maxYear;
@@ -105,8 +104,7 @@ public class ProjectActivitiesAction extends BaseAction {
     ProjectPartnerPersonManager projectPartnerPersonManager, ActivityManager activityManager,
     DeliverableManager deliverableManager, AuditLogManager auditLogManager,
     ProjectActivitiesValidator activitiesValidator, HistoryComparator historyComparator,
-    ProjectPartnerManager projectPartnerManager, ActivityTitleManager activityTitleManager,
-    ProjectDeliverableSharedManager projectDeliverableSharedManager) {
+    ProjectPartnerManager projectPartnerManager, ActivityTitleManager activityTitleManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -118,7 +116,6 @@ public class ProjectActivitiesAction extends BaseAction {
     this.activitiesValidator = activitiesValidator;
     this.projectPartnerManager = projectPartnerManager;
     this.activityTitleManager = activityTitleManager;
-    this.projectDeliverableSharedManager = projectDeliverableSharedManager;
   }
 
 
@@ -135,22 +132,23 @@ public class ProjectActivitiesAction extends BaseAction {
 
   }
 
-  public void activitiesPreviousDataCustom(Project projectBD) {
+  public void deleteActivities(List<Activity> activitiesDB) {
     try {
-      List<Activity> activitiesPrew;
-      activitiesPrew =
-        this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId()).stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-      for (Activity activity : activitiesPrew) {
-        if (!project.getProjectActivities().contains(activity)) {
+      for (Activity activity : activitiesDB) {
+        boolean existsInUI = project.getProjectActivities() != null && project.getProjectActivities().stream()
+          .anyMatch(a -> a.getId() != null && a.getId().equals(activity.getId()));
+
+        if (!existsInUI) {
+          // TODO: delete deliverables associated before to delete the activity
+
           activityManager.deleteActivity(activity.getId());
+          logger.info("Deleted activity with ID {}", activity.getId());
         }
       }
+
     } catch (Exception e) {
       logger.error(" unable to get activities in activitiesPreviousDataCustom function ");
     }
-
-
   }
 
 
@@ -180,6 +178,10 @@ public class ProjectActivitiesAction extends BaseAction {
 
   // Helper function to extract the number from the title
   private int extractActivityNumber(Activity activity) {
+    if (activity == null || activity.getTitle() == null) {
+      return 0;
+    }
+
     Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)*)");
     Matcher matcher = pattern.matcher(activity.getTitle());
     if (matcher.find()) {
@@ -187,11 +189,15 @@ public class ProjectActivitiesAction extends BaseAction {
       String[] numberParts = numberStr.split("\\.");
       int number = 0;
       for (String part : numberParts) {
-        number = number * 100 + Integer.parseInt(part);
+        try {
+          number = number * 100 + Integer.parseInt(part);
+        } catch (NumberFormatException e) {
+          // ignora parte malformada
+        }
       }
       return number;
     }
-    return 0; // Default if no number is found
+    return 0;
   }
 
   public List<Activity> getActivities(boolean open) {
@@ -220,6 +226,7 @@ public class ProjectActivitiesAction extends BaseAction {
       openA.sort(Comparator.comparing(this::extractActivityNumber));
       return openA;
     } catch (Exception e) {
+      System.err.println("Error getting activities: " + e.getMessage());
       return new ArrayList<>();
     }
   }
@@ -374,8 +381,6 @@ public class ProjectActivitiesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
-        project.setProjectLocations(projectDb.getProjectLocations());
-
 
         for (Activity activity : project.getProjectActivities()) {
           if (activity.getDeliverables() != null) {
@@ -398,10 +403,8 @@ public class ProjectActivitiesAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-        // GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-
-        List<Activity> activities = project.getActivities().stream()
-          .filter(a -> a.isActive() && a.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+        List<Activity> activities =
+          this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
 
         project.setProjectActivities(new ArrayList<Activity>(activities));
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
@@ -425,72 +428,13 @@ public class ProjectActivitiesAction extends BaseAction {
         status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
-      List<Deliverable> deliverables = new ArrayList<>();
 
-      Set<Deliverable> deliverablesTmp = project.getDeliverables();
-      // 04/06/2024 cgamboa project.getDeliverables() was changed by
-      if (deliverablesTmp != null) {
-        if (deliverablesTmp.isEmpty()) {
-          /*
-           * project.setProjectDeliverables(new ArrayList<Deliverable>(projectManager.getProjectById(projectID)
-           * .getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) !=
-           * null)
-           * .collect(Collectors.toList())));
-           */
-          deliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
-            .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList());
-        } else {
-          /*
-           * project.setProjectDeliverables(new ArrayList<Deliverable>(project.getDeliverables().stream()
-           * .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-           * .collect(Collectors.toList())));
-           */
-          deliverables =
-            deliverablesTmp.stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
-              .collect(Collectors.toList());
-        }
-      }
+      List<Deliverable> filteredDeliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
+        .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
+        .peek(d -> d.setTagTitle(d.getComposedName())).collect(Collectors.toList());
 
+      project.setProjectDeliverables(filteredDeliverables);
 
-      for (Deliverable deliverable : deliverables) {
-        deliverable.setTagTitle(deliverable.getComposedName());
-      }
-      /*
-       * try {
-       * // Load Shared deliverables
-       * List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
-       * .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-       * ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-       * .stream()
-       * .filter(px -> px.isActive() && px.getDeliverable().isActive()
-       * && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-       * .collect(Collectors.toList())
-       * : Collections.emptyList();
-       * if (deliverableShared != null && !deliverableShared.isEmpty()) {
-       * for (ProjectDeliverableShared deliverableS : deliverableShared) {
-       * if (!deliverables.contains(deliverableS.getDeliverable())) {
-       * if (deliverableS.getDeliverable().getProject() != null
-       * && deliverableS.getDeliverable().getProject().getId() != null
-       * && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
-       * DeliverableInfo deliverableInfo =
-       * deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase());
-       * deliverableS.getDeliverable().setDeliverableInfo(deliverableInfo);
-       * deliverableS.getDeliverable().setTagTitle(
-       * "<span class=\"label label-info\">From C" + deliverableS.getDeliverable().getProject().getId()
-       * + "</span> ");
-       * } else {
-       * deliverableS.getDeliverable().setTagTitle(deliverableS.getDeliverable().getComposedName());
-       * }
-       * deliverables.add(deliverableS.getDeliverable());
-       * }
-       * }
-       * }
-       * } catch (Exception e) {
-       * logger.error("unable to get shared deliverables", e);
-       * }
-       */
-      project.setProjectDeliverables(deliverables);
       if (project.getProjectInfo() != null) {
         maxYear = String.valueOf(project.getProjectInfo().getEndYear());
       }
@@ -518,80 +462,53 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
 
-
       List<ActivityTitle> ActivityTitleList = new ArrayList<>();
       ActivityTitleList = activityTitleManager.findAll();
-
       activityTitles = new ArrayList<>();
 
       if (this.isAiccra()) {
         if (ActivityTitleList != null && !ActivityTitleList.isEmpty()) {
 
-
-          try {
-            activityTitles = activityTitleManager.findByCurrentYear(this.getActualPhase().getYear());
-          } catch (Exception e) {
-            logger.error("unable to get activity title by date", e);
-          }
-
           if (activityTitles == null || (activityTitles != null && activityTitles.isEmpty())) {
             activityTitles = ActivityTitleList;// activityTitleManager.findAll();
-          }
-          /*
-           * List<ActivityTitle> tempActivityTitles = new ArrayList<>();
-           * for (ActivityTitle activityTitle : activityTitles) {
-           * if (activityTitle != null && activityTitle.getStartDate() != null && activityTitle.getEndDate() != null) {
-           * if (activityTitle.getStartDate().before(this.getActualPhase().getStartDate())
-           * && activityTitle.getEndDate().after(this.getActualPhase().getEndDate())) {
-           * tempActivityTitles.add(activityTitle);
-           * }
-           * }
-           * }
-           */
-          /*
-           * if (activityTitles != null && !activityTitles.isEmpty()) {
-           * activityTitles = tempActivityTitles;
-           * }
-           */
-          if (activityTitles != null && activityTitles.isEmpty()) {
             activityTitles.sort((a1, a2) -> a1.getTitle().compareTo(a2.getTitle()));
           }
         }
       }
 
-
       deliverablesMissingActivity = new ArrayList<>();
-      List<Deliverable> prevMissingActivity = new ArrayList<>();
 
       try {
-        prevMissingActivity = project.getCurrentDeliverables(this.getActualPhase());
+        List<Deliverable> currentDeliverables = project.getCurrentDeliverables(this.getActualPhase());
 
-        if (prevMissingActivity != null && !prevMissingActivity.isEmpty()) {
-          prevMissingActivity = prevMissingActivity.stream()
-            .filter(d -> d != null && d.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() != 5)
-            .collect(Collectors.toList());
+        if (currentDeliverables != null && !currentDeliverables.isEmpty()) {
+          for (Deliverable deliverable : currentDeliverables) {
+            if (deliverable == null) {
+              continue;
+            }
+
+            DeliverableInfo info = deliverable.getDeliverableInfo(this.getActualPhase());
+            if (info == null || info.getStatus() == null || info.getStatus() == 5) {
+              continue; // skip status 5
+            }
+
+            List<DeliverableActivity> activeDA = deliverable.getDeliverableActivities().stream()
+              .filter(da -> da != null && da.isActive()).collect(Collectors.toList());
+
+            boolean hasValidAssociation = activeDA.stream()
+              .anyMatch(da -> da.getPhase() != null && da.getPhase().getId().equals(this.getActualPhase().getId())
+                && da.getActivity() != null && da.getActivity().isActive());
+
+            if (!hasValidAssociation) {
+              deliverablesMissingActivity.add(deliverable);
+            }
+          }
         }
+
       } catch (Exception e) {
-        logger.error("unable to get deliverables without activities", e);
-        prevMissingActivity = new ArrayList<>();
+        logger.error("Unable to get deliverables without activities", e);
+        deliverablesMissingActivity = new ArrayList<>();
       }
-
-
-      prevMissingActivity.stream()
-        .filter(
-          (deliverable) -> (deliverable.getDeliverableActivities().isEmpty()
-            || deliverable.getDeliverableActivities().stream().filter(
-              da -> da.isActive()).collect(
-                Collectors.toList())
-              .isEmpty()
-            || deliverable.getDeliverableActivities().stream()
-              .filter(da -> da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity().isActive()
-                && da.isActive())
-              .collect(Collectors.toList()).isEmpty()))
-        .forEachOrdered((_item) -> {
-          deliverablesMissingActivity.add(_item);
-        });
 
     }
 
@@ -642,31 +559,28 @@ public class ProjectActivitiesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
-      Project projectBD = projectManager.getProjectById(projectID);
 
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
       // improve performance
       List<Activity> activitiesDB = new ArrayList<Activity>();
       try {
-        activitiesDB =
-          this.activityManager.getActiveActivitiesByProject(projectBD.getId(), this.getActualPhase().getId());
+        activitiesDB = this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
       } catch (Exception e) {
         logger.info(" unable to get activities from the BD in save function ");
       }
 
-
-      this.activitiesPreviousDataCustom(projectBD);
-
-      // cgamboa 11/06/2024 project.getProjectActivities() will be call once and used sometimes
-      List<Activity> projectActivities = new ArrayList<Activity>();
+      List<Activity> projectActivitiesDB = new ArrayList<Activity>();
       try {
-        projectActivities = project.getProjectActivities();
+        projectActivitiesDB =
+          this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
       } catch (Exception e) {
         logger.info(" unable to get activities in save function ");
       }
 
+
       // Check activities from UI
-      if (projectActivities != null && !projectActivities.isEmpty()) {
+      if (projectActivitiesDB != null && !projectActivitiesDB.isEmpty()) {
+        this.deleteActivities(projectActivitiesDB);
         this.saveActivitiesNewData();
       } else {
         // Delete activities
@@ -723,92 +637,72 @@ public class ProjectActivitiesAction extends BaseAction {
   public void saveActivitiesNewData() {
 
     for (Activity activityUI : project.getProjectActivities()) {
-      if (activityUI != null) {
-
-        // New Activity
-        if (activityUI.getId() == null || activityUI.getId() == -1) {
-
-          activityUI.setProject(project);
-          activityUI.setPhase(this.getActualPhase());
-          if (activityUI.getActivityStatus() == -1) {
-            activityUI.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-          }
-          try {
-            ProjectPartnerPerson partnerPerson =
-              projectPartnerPersonManager.getProjectPartnerPersonById(activityUI.getProjectPartnerPerson().getId());
-            activityUI.setProjectPartnerPerson(partnerPerson);
-          } catch (Exception e) {
-            activityUI.setProjectPartnerPerson(null);
-          }
-
-          // Set Activity Title
-          if (this.isAiccra()) {
-            ActivityTitle title;
-            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId() != null
-              && activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId()) != null) {
-              title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
-              if (title != null) {
-                activityUI.setActivityTitle(title);
-                activityUI.setTitle(title.getTitle());
-              } else {
-                activityUI.setActivityTitle(null);
-              }
-            } else {
-              activityUI.setActivityTitle(null);
-            }
-          }
-
-          // Save new activity and deliverable activities
-          activityUI = activityManager.saveActivity(activityUI);
-          // This is to add Activity to generate correct auditlog.
-          project.getActivities().add(activityUI);
-        } else {
-          // Update Activity
-          Activity activityUpdate = activityManager.getActivityById(activityUI.getId());
-          activityUpdate.setPhase(this.getActualPhase());
-          activityUpdate.setTitle(activityUI.getTitle());
-          activityUpdate.setDescription(activityUI.getDescription());
-          activityUpdate.setStartDate(activityUI.getStartDate());
-          activityUpdate.setEndDate(activityUI.getEndDate());
-          if (activityUI.getActivityStatus() != -1) {
-            activityUpdate.setActivityStatus(activityUI.getActivityStatus());
-          } else {
-            activityUpdate.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-          }
-          activityUpdate.setActivityProgress(activityUI.getActivityProgress());
-
-
-          if (activityUI.getProjectPartnerPerson() != null
-            && activityUI.getProjectPartnerPerson().getId().longValue() != -1) {
-            ProjectPartnerPerson partnerPerson =
-              projectPartnerPersonManager.getProjectPartnerPersonById(activityUI.getProjectPartnerPerson().getId());
-            activityUpdate.setProjectPartnerPerson(partnerPerson);
-          } else {
-            activityUpdate.setProjectPartnerPerson(null);
-          }
-          if (this.isAiccra()) {
-            if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getId().longValue() != -1) {
-              ActivityTitle title = activityTitleManager.getActivityTitleById(activityUI.getActivityTitle().getId());
-              activityUpdate.setActivityTitle(title);
-              activityUpdate.setTitle(title.getTitle());
-            } else {
-              activityUpdate.setActivityTitle(null);
-            }
-          }
-          // Set deliverables here to add inside saveActivity
-          activityUpdate.setDeliverables(activityUI.getDeliverables());
-
-          // Save new activity and deliverable activities
-          activityUpdate = activityManager.saveActivity(activityUpdate);
-          // This is to add Activity to generate correct auditlog.
-          project.getActivities().add(activityUpdate);
-        }
+      if (activityUI == null) {
+        continue;
       }
 
+      boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
+      Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
 
+
+      activityEntity.setProject(project);
+      activityEntity.setPhase(this.getActualPhase());
+      activityEntity.setActivityTitle(activityUI.getActivityTitle());
+      if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getTitle() != null) {
+        activityEntity.setTitle(activityUI.getActivityTitle().getTitle());
+      }
+      activityEntity.setDescription(activityUI.getDescription());
+      activityEntity.setStartDate(activityUI.getStartDate());
+      activityEntity.setEndDate(activityUI.getEndDate());
+      activityEntity.setActivityProgress(activityUI.getActivityProgress());
+
+      int status = activityUI.getActivityStatus() != -1 ? activityUI.getActivityStatus()
+        : Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId());
+      activityEntity.setActivityStatus(status);
+
+      // Partner person
+      activityEntity.setProjectPartnerPerson(getValidPartnerPerson(activityUI));
+
+      // Activity title (just for AICCRA)
+      handleActivityTitle(activityEntity);
+
+      if (!isNew) {
+        activityEntity.setDeliverables(activityUI.getDeliverables());
+      }
+
+      Activity saved = activityManager.saveActivity(activityEntity);
+      project.getActivities().add(saved);
     }
 
+
   }
+
+  private ProjectPartnerPerson getValidPartnerPerson(Activity activity) {
+    try {
+      if (activity.getProjectPartnerPerson() != null && activity.getProjectPartnerPerson().getId() != null
+        && activity.getProjectPartnerPerson().getId() > 0) {
+        return projectPartnerPersonManager.getProjectPartnerPersonById(activity.getProjectPartnerPerson().getId());
+      }
+    } catch (Exception e) {
+      logger.warn("Invalid partner person for activity: {}", activity.getId());
+    }
+    return null;
+  }
+
+  private void handleActivityTitle(Activity activity) {
+    if (this.isAiccra()) {
+      if (activity.getActivityTitle() != null && activity.getActivityTitle().getId() != null) {
+        ActivityTitle title = activityTitleManager.getActivityTitleById(activity.getActivityTitle().getId());
+        if (title != null) {
+          activity.setActivityTitle(title);
+          activity.setTitle(title.getTitle());
+          return;
+        }
+      }
+      activity.setActivityTitle(null);
+    }
+  }
+
 
   public void setActivityTitles(List<ActivityTitle> activityTitles) {
     this.activityTitles = activityTitles;

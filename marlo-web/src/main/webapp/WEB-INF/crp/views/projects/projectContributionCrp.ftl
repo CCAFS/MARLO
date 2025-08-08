@@ -1042,7 +1042,7 @@
     [#--  if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if --]
     <div class="leftHead sm">
       <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>
+      [#-- <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>--]
     </div>
 
 
@@ -1056,12 +1056,13 @@
           <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value?string(",##0"))!}
         </div>
       [/#if]
-      [#-- Milestone Year --]
+      [#-- Milestone Year 
       <div class="row">
         <div class="col-md-6">
           <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
         </div>
       </div>
+      --]
       [#--  Title --]
       <div class="form-group">
         <span class="title">${(element.title)!}</span>

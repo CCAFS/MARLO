@@ -75,6 +75,16 @@ public interface ActivityManager {
   public List<Activity> getActivitiesByComposedID(String composedID, long phaseId);
 
   /**
+   * This method gets activities by a given activity composedID and phase.
+   * 
+   * @param composedID is the composed identifier.
+   * @param phaseId is the phase identifier.
+   * @param projectID is the project identifier.
+   * @return a list from Activity null if no exist records
+   */
+  List<Activity> getActivitiesByComposedIDPhaseIDProjectID(String composedID, long phaseId, long projectId);
+
+  /**
    * This method obtains the number of existing activities, by deliverable and phase
    * 
    * @param deliverableId deliverable identifier.
@@ -82,6 +92,7 @@ public interface ActivityManager {
    * @return number of existing activities
    */
   int getActivitiesByDeliverableAndPhaseQuantity(long deliverableId, long phaseId);
+
 
   /**
    * This method gets a activity object by a given activity identifier.
@@ -103,7 +114,6 @@ public interface ActivityManager {
    */
 
   int getActivitiesByProjectAndUserQuantity(long projectId, long phaseId, long projectPersonId);
-
 
   /**
    * This method gets a activity object by a given activity identifier.
