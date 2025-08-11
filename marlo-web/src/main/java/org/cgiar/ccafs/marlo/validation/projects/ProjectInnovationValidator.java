@@ -1033,7 +1033,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                   || allianceOrganizations.getInstitution().getId() == null
                   || allianceOrganizations.getInstitution().getId() == -1) {
                   action.addMessage(action.getText("innovation.allianceOrganizations[" + count + "].institution.id"));
-                  action.addMissingField("innovation.allianceOrganizations[.institution");
+                  action.addMissingField("innovation.allianceOrganizations[" + count + ".institution");
                   action.getInvalidFields().put("list-innovation.allianceOrganizations[" + count + "].institution.id",
                     action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"institution"}));
                 }

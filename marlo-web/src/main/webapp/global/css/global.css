@@ -1678,11 +1678,6 @@ a#userLogOut:hover {
   box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.3);
 }
 
-#userInfo:hover #userInfo-drop {
-	opacity: 1;
-	display: block;
-}
-
 #userInfoOld-drop {
 	padding: 10px !important;
 	position: absolute;
@@ -1701,6 +1696,7 @@ a#userLogOut:hover {
 }
 
 #userInfo-drop {
+	display: none;   
   padding: 10px !important;
   position: absolute;
   top: 66px;
@@ -1717,6 +1713,10 @@ a#userLogOut:hover {
   display: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   cursor: default;
+}
+
+#userInfo.open #userInfo-drop {
+  display: block;
 }
 
 #userInfo-drop:after {
@@ -2108,17 +2108,7 @@ a#userLogOut:hover {
 }
 
 #userInfo .userMenu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 38px;
-  background: rgb(255, 255, 255);
-  padding: 10px 12px;
-  border-radius: 4px;
-  width: 240px;
-  box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
-  z-index: 10000;
-  color: rgb(0, 0, 0);
+	display: none !important;
 }
 
 #userInfo .userMenu p {
@@ -2140,7 +2130,18 @@ a#userLogOut:hover {
 }
 
 #userInfo:hover .userMenu {
+  display: none;
+}
+
+#userInfo.open .userMenu {
   display: block;
+}
+
+#userInfo .caret {
+  transition: transform 0.15s ease;
+}
+#userInfo.open .caret {
+  transform: rotate(180deg);
 }
 
 /* Sticky top adjustment */

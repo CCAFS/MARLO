@@ -512,6 +512,71 @@ $(document).ready(function () {
   $('.button-save').on("click", openLoadPage);
   $(".deliverableId a").on("click", openLoadPage);
   $("tbody .left a").on("click", openLoadPage);
+	
+	/* ===== User dropdown by click (avatar+caret) ===== */
+	(function initUserMenuToggle() {
+	  var $userInfo = $('#userInfo');
+	  if (!$userInfo.length) return; // Por si no existe en esta vista
+
+	  var $toggle = $userInfo.find('.userToggle');
+	  var $menu   = $('#userInfo-drop');
+
+	  // Limpia handlers previos si este archivo se inyecta más de una vez
+	  $toggle.off('.userMenu');
+	  $(document).off('.userMenu');
+
+	  function openMenu() {
+	    $userInfo.addClass('open');
+	    $toggle.attr('aria-expanded', 'true');
+	    $menu.attr('aria-hidden', 'false').show();
+	  }
+	  function closeMenu() {
+	    $userInfo.removeClass('open');
+	    $toggle.attr('aria-expanded', 'false');
+	    $menu.attr('aria-hidden', 'true').hide();
+	  }
+	  function toggleMenu() {
+	    ($userInfo.hasClass('open')) ? closeMenu() : openMenu();
+	  }
+
+	  // Click en avatar/caret
+	  $toggle.on('click.userMenu', function (e) {
+	    e.stopPropagation();
+	    toggleMenu();
+	  });
+
+	  // Accesibilidad: Enter/Espacio
+	  $toggle.on('keydown.userMenu', function (e) {
+	    if (e.key === 'Enter' || e.key === ' ') {
+	      e.preventDefault();
+	      toggleMenu();
+	    } else if (e.key === 'Escape') {
+	      closeMenu();
+	      $toggle.blur();
+	    }
+	  });
+
+	  // Cerrar al click fuera
+	  $(document).on('click.userMenu', function (e) {
+	    if (!$userInfo.is(e.target) && $userInfo.has(e.target).length === 0) {
+	      closeMenu();
+	    }
+	  });
+
+	  // Cerrar con ESC global
+	  $(document).on('keydown.userMenu', function (e) {
+	    if (e.key === 'Escape') {
+	      closeMenu();
+	    }
+	  });
+
+	  // Cerrar en resize o scroll para evitar posiciones raras
+	  $(window).on('resize.userMenu scroll.userMenu', function () {
+	    closeMenu();
+	  });
+	})();
+
+	
 });
 
 function openLoadPage() {
