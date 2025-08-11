@@ -439,6 +439,7 @@ function attachEvents() {
       $newItem.find('input[type="hidden"]#reference-selected').val(innovationId);
 
       $button.prop('disabled', true); // Disable the button after selection
+      $button.text('Selected');
 
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
@@ -454,6 +455,7 @@ function attachEvents() {
         const innovationId = $parent.find('.innovationBundleItemID').text();
         const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
         $selectButton.prop('disabled', false); // Re-enable the button
+        $selectButton.text('Select'); // Reset button text
         // Update indexes
         updateIndexes();
       });
