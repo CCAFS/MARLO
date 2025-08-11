@@ -1723,7 +1723,7 @@ a#userLogOut:hover {
 	position: absolute;
 	right: -152px;
 	left: auto;
-	top: -9px;
+	top: -5px;
 	content: '';
 	width: 0;
 	margin-right: 80%;
@@ -2083,6 +2083,18 @@ a#userLogOut:hover {
   align-items: center;
   gap: 6px;
   height: 50px;
+}
+
+#userInfo .userToggle:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+#userInfo .userToggle:hover .avatar {
+  background-color: #e6f3f8;
+  color: #23718F;
+  box-shadow: 0 0 0 0.5px #23718F inset;
 }
 
 #userInfo .avatar {
