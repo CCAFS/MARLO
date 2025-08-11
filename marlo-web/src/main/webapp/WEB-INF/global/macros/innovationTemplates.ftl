@@ -1452,10 +1452,12 @@
               [/#if]
             </td>
             [#local innovationSelected = false /]
+            [#local textBtn = "Select" /]
             [#if selected?has_content]
               [#list selected as sel]
                 [#if sel.selectedInnovation.id == innovation.id]
                   [#local innovationSelected = true /]
+                  [#local textBtn = "Selected" /]
                 [/#if]
               [/#list]
             [/#if]
@@ -1463,7 +1465,7 @@
             <td class="text-center">
               [#-- Select --]
               [#local titleShow] [@s.text name=innovation.projectInnovationInfo.title /] [/#local]
-              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${titleShow!}" [#if innovationSelected]disabled[/#if]>Select</button>
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${titleShow!}" [#if innovationSelected]disabled[/#if]>${textBtn!""}</button>
 
               [#-- Download PDF --]
               <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank" rel="noopener noreferrer">
