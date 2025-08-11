@@ -439,6 +439,7 @@ function attachEvents() {
       $newItem.find('input[type="hidden"]#reference-selected').val(innovationId);
 
       $button.prop('disabled', true); // Disable the button after selection
+      $button.text('Selected');
 
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
@@ -454,6 +455,7 @@ function attachEvents() {
         const innovationId = $parent.find('.innovationBundleItemID').text();
         const $selectButton = $('.selectInnovationBundle[data-id="' + innovationId + '"]');
         $selectButton.prop('disabled', false); // Re-enable the button
+        $selectButton.text('Select'); // Reset button text
         // Update indexes
         updateIndexes();
       });
@@ -1351,7 +1353,7 @@ function dynamicStatusCheckedForEvidences() {
     const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
     if (scoreElement.length > 0 && scoreElement.val() == 3) {
       areasNeedingEvidence.push(area.displayReference);
-      messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
+      messages.push(`As a score of 2 has been selected, you are required to provide <b>at least one evidence</b> of the ${area.displayName}, by select the checkbox.`);
     }
   });
 
@@ -1363,7 +1365,7 @@ function dynamicStatusCheckedForEvidences() {
     const readinessValue = parseInt(readinessElement.val());
     if (readinessValue >= 2) {
       readinessNeedsEvidence = true;
-      messages.push(`Provide at least one evidence for innovation readiness level.`);
+      messages.push(`Provide <b>at least one evidence</b> for innovation readiness level.`);
     }
   }
 
@@ -1629,6 +1631,7 @@ function limitedValueFillInput(reference, input) {
   const currentValue = parseInt($input.val(), 10) || 0;
   if (currentValue > initialMaxValue) {
     $input.val(initialMaxValue);
+    displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
   }
 
   $(reference).on('change', function () {
@@ -1640,6 +1643,7 @@ function limitedValueFillInput(reference, input) {
     // If the current value exceeds the new max, adjust it
     const currentValue = parseInt($input.val(), 10) || 0;
     if (currentValue > maxValue) {
+      displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
       $input.val(maxValue);
     }
   });
@@ -1650,9 +1654,19 @@ function limitedValueFillInput(reference, input) {
     // If the current value exceeds the new max, adjust it
     const currentValue = parseInt($(input).val(), 10) || 0;
     if (currentValue > maxValue) {
+      displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
       $(input).val(maxValue);
     }
   });
+}
+
+function displayWarningMessage(container, customName) {
+  if(container.length === 0){
+    console.warn('Invalid container element passed to displayWarningMessage');
+    return;
+  }
+
+  container.find(customName).fadeIn().delay(8000).fadeOut();
 }
 
 function changeInformativeTextPRMSEquivalence() {
