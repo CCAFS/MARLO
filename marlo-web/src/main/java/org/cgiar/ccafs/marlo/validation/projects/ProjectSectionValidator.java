@@ -758,6 +758,12 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
             .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Innovations Bundles
+      if (innovation.getProjectInnovationBundles() != null) {
+        innovation.setBundles(new ArrayList<>(innovation.getProjectInnovationBundles().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Innovation clear lead
       if (innovation != null && innovation.getProjectInnovationInfo(phase) != null) {
         if (innovation.getProjectInnovationInfo(phase).getClearLead() == null
