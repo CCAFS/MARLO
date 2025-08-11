@@ -714,56 +714,51 @@ $(".copyButton").click(function () {
 });
 
 function updateAllianceTab() {
+  // Calculate tab widths before showing/hiding
+  updateWidthTab();
 
   setTimeout(function () {
     const $selectCenters = $('div[listname="innovation.centers"] select.elementType-institution');
-
     const $option = $selectCenters.find('option[disabled]');
 
     if ($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
-      //remove disabled class alliance tab
-      $('#allianceTab').slideDown();
+      // Show alliance tab after width calculation
+      $('#allianceTab').show();
     } else {
-      //add disabled class alliance tab
-      $('#allianceTab').slideUp();
+      // Hide alliance tab after width calculation
+      $('#allianceTab').hide();
     }
-
+    // Recalculate tab widths after animation completes
     updateWidthTab();
-  }, 500);
-
+  }, 250);
 }
 
 function updateBundleTab() {
-  const innovationBundle = $('input[name="innovation.projectInnovationInfo.innovationBundle"][type="radio"]:checked');
+  // Calculate tab widths before showing/hiding
+  updateWidthTab();
 
+  const innovationBundle = $('input[name="innovation.projectInnovationInfo.innovationBundle"][type="radio"]:checked');
   setTimeout(function () {
     if (innovationBundle.val() === "true") {
-      $('#bundleTab').slideDown();
+      $('#bundleTab').show();
     } else {
-      $('#bundleTab').slideUp();
+      $('#bundleTab').hide();
     }
-
+    // Recalculate tab widths after animation completes
     updateWidthTab();
-  }, 0);
-
+  }, 250);
 }
 
 function updateWidthTab() {
+  const $tabs = $('.nav-tabs li[role="presentation"]');
+  let initialWidth = "20%";
+  let numberOfVisibleTabs = $tabs.filter(':visible').length;
 
-  setTimeout(function () {
-    const $tabs = $('.nav-tabs li[role="presentation"]');
+  if (numberOfVisibleTabs > 0) {
+    initialWidth = (100 / numberOfVisibleTabs) + "%";
+  }
 
-    let initialWidth = "20%";
-
-    let numberOfVisibleTabs = $tabs.filter(':visible').length;
-
-    if (numberOfVisibleTabs > 0) {
-      initialWidth = (100 / numberOfVisibleTabs) + "%";
-    }
-
-    $tabs.css('width', initialWidth);
-  }, 500);
-
+  $tabs.css('width', initialWidth);
 }
 
 function addImageToSelectSDGTargets() {

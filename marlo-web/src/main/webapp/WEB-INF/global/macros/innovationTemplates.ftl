@@ -1069,7 +1069,7 @@
 
     [#-- Other type --]
     <div class="col-md-12 otherType" style="display: ${((isActorOther) && (editable))?then('block','none')}">
-      [@customForm.input name="${customName}.other" i18nkey="projectInnovations.otherInnovationNature" required=false editable=true showTitle=true value=(element.other)!"" /]
+      [@customForm.input name="${customName}.other" i18nkey="projectInnovations.anticipatedUsers.actors.otherTypeActor" required=false editable=true showTitle=true value=(element.other)!"" /]
     </div>
 
     [#-- Checkbox Actors - Genders --]
