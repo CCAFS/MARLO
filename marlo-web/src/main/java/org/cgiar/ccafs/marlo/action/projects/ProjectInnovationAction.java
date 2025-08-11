@@ -3947,12 +3947,27 @@ public class ProjectInnovationAction extends BaseAction {
         if (studyReference.getId() != null && studyReference.getId() == -1) {
           studyReference.setId(null);
         }
-        ProjectInnovationReference studyReferenceSave = new ProjectInnovationReference();
 
-        if (studyReference.getId() != null) {
-          studyReferenceSave =
-            this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId());
+        // Validate save process
+        final Boolean evidenceByDeliverable = studyReference.getEvidenceByDeliverable();
+        final Long deliverableId =
+          (studyReference.getDeliverable() != null) ? studyReference.getDeliverable().getId() : null;
+        final String link = (studyReference.getLink() != null) ? studyReference.getLink().trim() : null;
+        final String reference = (studyReference.getReference() != null) ? studyReference.getReference().trim() : null;
+
+        // save rules
+        boolean saveProcess = evidenceByDeliverable != null
+          && ((Boolean.TRUE.equals(evidenceByDeliverable) && deliverableId != null && deliverableId != -1)
+            || (Boolean.FALSE.equals(evidenceByDeliverable)
+              && ((link != null && !link.isEmpty()) || (reference != null && !reference.isEmpty()))));
+
+        if (!saveProcess) {
+          continue;
         }
+
+        ProjectInnovationReference studyReferenceSave = (studyReference.getId() != null)
+          ? this.projectInnovationReferenceManager.getProjectInnovationReferenceById(studyReference.getId())
+          : new ProjectInnovationReference();
 
         studyReferenceSave.setProjectInnovation(projectInnovation);
         studyReferenceSave.setPhase(phase);
