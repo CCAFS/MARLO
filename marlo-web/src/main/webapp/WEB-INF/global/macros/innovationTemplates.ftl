@@ -1068,7 +1068,7 @@
     [#local isActorOther = ((element.actor??) && (element.actor.name == "Other"))!false /]
 
     [#-- Other type --]
-    <div class="col-md-12 otherType" style="display: ${((isActorOther) && (editable))?then('block','none')}">
+    <div class="col-md-6 otherType" style="display: ${((isActorOther) && (editable))?then('block','none')}">
       [@customForm.input name="${customName}.other" i18nkey="projectInnovations.anticipatedUsers.actors.otherTypeActor" required=false editable=true showTitle=true value=(element.other)!"" /]
     </div>
 
@@ -1091,6 +1091,12 @@
             <div class="col-md-4">
               [@customForm.input name="${customName}.womenNonYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true className="input-whichYouth" /]
             </div>
+          </div>
+        </div>
+        [#-- Message to appear if a value overpass the total with a banish in 10 seconds --]
+        <div class="col-md-12" id="message-overpass-total" style="display: none;">
+          <div class="alert alert-warning">
+            <strong>Warning!</strong> The sum of the values in <b>Of which women</b> or <b>Of which youth</b> exceeds the total. The value will be modified to match the total.
           </div>
         </div>
         [#else]

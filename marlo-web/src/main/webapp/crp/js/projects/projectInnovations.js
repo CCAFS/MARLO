@@ -1631,6 +1631,7 @@ function limitedValueFillInput(reference, input) {
   const currentValue = parseInt($input.val(), 10) || 0;
   if (currentValue > initialMaxValue) {
     $input.val(initialMaxValue);
+    displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
   }
 
   $(reference).on('change', function () {
@@ -1642,6 +1643,7 @@ function limitedValueFillInput(reference, input) {
     // If the current value exceeds the new max, adjust it
     const currentValue = parseInt($input.val(), 10) || 0;
     if (currentValue > maxValue) {
+      displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
       $input.val(maxValue);
     }
   });
@@ -1652,9 +1654,19 @@ function limitedValueFillInput(reference, input) {
     // If the current value exceeds the new max, adjust it
     const currentValue = parseInt($(input).val(), 10) || 0;
     if (currentValue > maxValue) {
+      displayWarningMessage($input.closest('.actorsInnovation'), $('#message-overpass-total'));
       $(input).val(maxValue);
     }
   });
+}
+
+function displayWarningMessage(container, customName) {
+  if(container.length === 0){
+    console.warn('Invalid container element passed to displayWarningMessage');
+    return;
+  }
+
+  container.find(customName).fadeIn().delay(8000).fadeOut();
 }
 
 function changeInformativeTextPRMSEquivalence() {
