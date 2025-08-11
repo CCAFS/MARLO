@@ -1353,7 +1353,7 @@ function dynamicStatusCheckedForEvidences() {
     const scoreElement = $(`input[name="innovation.projectInnovationInfo.${area.name}.id"]:checked`);
     if (scoreElement.length > 0 && scoreElement.val() == 3) {
       areasNeedingEvidence.push(area.displayReference);
-      messages.push(`As a score of 2 has been selected, you are required to provide at least one evidence of the ${area.displayName}, by select the checkbox.`);
+      messages.push(`As a score of 2 has been selected, you are required to provide <b>at least one evidence</b> of the ${area.displayName}, by select the checkbox.`);
     }
   });
 
@@ -1365,7 +1365,7 @@ function dynamicStatusCheckedForEvidences() {
     const readinessValue = parseInt(readinessElement.val());
     if (readinessValue >= 2) {
       readinessNeedsEvidence = true;
-      messages.push(`Provide at least one evidence for innovation readiness level.`);
+      messages.push(`Provide <b>at least one evidence</b> for innovation readiness level.`);
     }
   }
 
