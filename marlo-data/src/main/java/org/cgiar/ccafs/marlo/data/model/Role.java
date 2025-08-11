@@ -116,6 +116,14 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
         case "PMU":
           acronym = "PMC";
           break;
+
+        case "FPL":
+          acronym = "Theme Leader";
+          break;
+        case "FPM":
+          acronym = "Theme Manager";
+          break;
+
         case "CP":
           acronym = "Contact Point";
           break;
