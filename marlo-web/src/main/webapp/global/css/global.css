@@ -2152,8 +2152,12 @@ a#userLogOut:hover {
 #userInfo .caret {
   transition: transform 0.15s ease;
 }
+
 #userInfo.open .caret {
-  transform: rotate(180deg);
+  transform: rotate(180deg) scale(1.2); 
+  border-top-color: #00b4d8; 
+  filter: drop-shadow(0 0 2px rgba(0, 180, 216, 0.8)); 
+  transition: transform 0.2s ease, border-top-color 0.2s ease, filter 0.2s ease;
 }
 
 /* Sticky top adjustment */
