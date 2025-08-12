@@ -73,14 +73,17 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
   public void deleteProjectInnovationActorPhase(Phase next, long innovationID,
     ProjectInnovationActor projectInnovationActors) {
     Phase phase = phaseDAO.find(next.getId());
-
-    List<ProjectInnovationActor> innovationActors =
-      projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-        .filter(c -> c.getActor() != null && c.getActor().getId() != null && projectInnovationActors.getActor() != null
-          && projectInnovationActors.getActor().getId() != null
-          && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
-        .collect(Collectors.toList());
-
+    List<ProjectInnovationActor> innovationActors = new ArrayList<>();
+    try {
+      innovationActors =
+        projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
+          .filter(c -> c.getActor() != null && c.getActor().getId() != null
+            && projectInnovationActors.getActor() != null && projectInnovationActors.getActor().getId() != null
+            && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      System.out.println("Error in ActorByInnovationAndPhase method" + e);
+    }
     for (ProjectInnovationActor projectInnovationActorsDB : innovationActors) {
       if (projectInnovationActorsDB.getId() != null) {
         projectInnovationActorDAO.deleteProjectInnovationActor(projectInnovationActorsDB.getId());
@@ -148,12 +151,14 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       innovationActors =
 
         projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-          .filter(c -> c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
+          .filter(c -> c.getActor() != null && projectInnovationActor.getActor() != null
+            && projectInnovationActor.getActor().getId() != null && c.getActor().getId() != null
+            && c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
           .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in ActorByInnovationAndPhase method" + e);
+      System.out.println("Error in ActorByInnovationAndPhase save method" + e);
     }
-    if (innovationActors.isEmpty()) {
+    if (innovationActors == null || innovationActors.isEmpty()) {
       ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
       projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
       projectInnovationActorAdd.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
@@ -169,29 +174,9 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
       projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
       projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
       projectInnovationActorAdd.setPhase(phase);
+      projectInnovationActorAdd.setOther(projectInnovationActor.getOther());
+      projectInnovationActorAdd.setTotal(projectInnovationActor.getTotal());
       projectInnovationActorDAO.save(projectInnovationActorAdd);
-    } else {
-      for (ProjectInnovationActor projectInnovationActorCopy : innovationActors) {
-        try {
-          projectInnovationActorCopy.setWomenYouth(projectInnovationActor.getWomenYouth());
-          projectInnovationActorCopy.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
-          projectInnovationActorCopy.setMenYouth(projectInnovationActor.getMenYouth());
-          projectInnovationActorCopy.setMenNotYouth(projectInnovationActor.getMenNotYouth());
-          projectInnovationActorCopy.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
-          projectInnovationActorCopy.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
-          projectInnovationActorCopy.setActor(projectInnovationActor.getActor());
-          projectInnovationActorCopy.setProjectInnovation(projectInnovationActor.getProjectInnovation());
-          projectInnovationActorCopy.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
-          projectInnovationActorCopy.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
-          projectInnovationActorCopy.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
-          projectInnovationActorCopy.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
-          projectInnovationActorCopy.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
-          projectInnovationActorCopy.setPhase(phase);
-          projectInnovationActorDAO.save(projectInnovationActorCopy);
-        } catch (Exception e) {
-          System.out.println("Error delete ActorByInnovationAndPhase method" + e);
-        }
-      }
     }
     if (phase.getNext() != null) {
       this.saveProjectInnovationActorPhase(phase.getNext(), innovationID, projectInnovationActor);

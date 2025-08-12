@@ -201,11 +201,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private static HashMap<String, String> isInnovationOneCgiarAlignmentCompleteMap = new HashMap<>();
   private static HashMap<String, String> isInnovationReadinessCompleteMap = new HashMap<>();
   private static HashMap<String, String> isInnovationRightsCompleteMap = new HashMap<>();
+  private static HashMap<String, String> isInnovationBundleCompleteMap = new HashMap<>();
 
   public static HashMap<String, String> getIsInnovationAllianceAlignmentCompleteMap() {
     return isInnovationAllianceAlignmentCompleteMap;
   }
 
+  public static HashMap<String, String> getIsInnovationBundleCompleteMap() {
+    return isInnovationBundleCompleteMap;
+  }
+
+  public static void setIsInnovationBundleCompleteMap(HashMap<String, String> isInnovationBundleCompleteMap) {
+    BaseAction.isInnovationBundleCompleteMap = isInnovationBundleCompleteMap;
+  }
 
   public static HashMap<String, String> getIsInnovationGeneralInformationCompleteMap() {
     return isInnovationGeneralInformationCompleteMap;
@@ -599,6 +607,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean isInnovationOneCgiarAlignmentComplete;
   private boolean isInnovationReadinessComplete;
   private boolean isInnovationRightsComplete;
+  private boolean isInnovationBundleComplete;
 
   public BaseAction() {
     this.saveable = true;
@@ -7996,6 +8005,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isInnovationOneCgiarAlignmentComplete() {
     return isInnovationOneCgiarAlignmentComplete;
+  }
+
+  public boolean isInnovationBundleComplete() {
+    return isInnovationBundleComplete;
+  }
+
+  public void setInnovationBundleComplete(boolean isInnovationBundleComplete) {
+    this.isInnovationBundleComplete = isInnovationBundleComplete;
   }
 
   public boolean isInnovationReadinessComplete() {

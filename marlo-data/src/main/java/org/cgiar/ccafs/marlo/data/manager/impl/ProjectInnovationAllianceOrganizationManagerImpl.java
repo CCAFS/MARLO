@@ -184,31 +184,6 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
       projectInnovationAllianceOrganizationAdd.setPhase(phase);
 
       projectInnovationAllianceOrganizationDAO.save(projectInnovationAllianceOrganizationAdd);
-    } else {
-      for (ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationDel : innovationAllianceOrganizations) {
-        try {
-          projectInnovationAllianceOrganizationDAO
-            .deleteProjectInnovationAllianceOrganization(projectInnovationAllianceOrganizationDel.getId());
-        } catch (Exception e) {
-          System.out.println("Error in InnovationAllianceOrganizationPhase method" + e);
-        }
-        ProjectInnovationAllianceOrganization projectInnovationAllianceOrganizationAdd =
-          new ProjectInnovationAllianceOrganization();
-        projectInnovationAllianceOrganizationAdd.setPhase(phase);
-        projectInnovationAllianceOrganizationAdd
-          .setInstitutionType(projectInnovationAllianceOrganization.getInstitutionType());
-        projectInnovationAllianceOrganizationAdd.setInstitution(projectInnovationAllianceOrganization.getInstitution());
-        projectInnovationAllianceOrganizationAdd
-          .setOrganizationName(projectInnovationAllianceOrganization.getOrganizationName());
-        projectInnovationAllianceOrganizationAdd
-          .setScalingPartner(projectInnovationAllianceOrganization.getScalingPartner());
-        projectInnovationAllianceOrganizationAdd.setNumber(projectInnovationAllianceOrganization.getNumber());
-        projectInnovationAllianceOrganizationAdd
-          .setProjectInnovation(projectInnovationAllianceOrganization.getProjectInnovation());
-        projectInnovationAllianceOrganizationAdd.setPhase(phase);
-
-        projectInnovationAllianceOrganizationDAO.save(projectInnovationAllianceOrganizationAdd);
-      }
     }
     if (phase.getNext() != null) {
       this.saveProjectInnovationAllianceOrganizationPhase(phase.getNext(), innovationID,

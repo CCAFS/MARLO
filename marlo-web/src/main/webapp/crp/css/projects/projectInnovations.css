@@ -438,6 +438,42 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   margin-top: 12px;
 }
 
+/** Select innovations **/
+.selectInnovationBundle {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+
+.title-link:hover{
+  text-decoration: underline;
+  color: #1882aa;
+}  
+
+/** Complementary innovations **/
+.complementaryInnovation .blockTitle, .crpParameters .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.complementaryInnovation .blockTitle.opened, .crpParameters .blockTitle.opened {
+  opacity: 0.5;
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
+.complementaryInnovation .blockTitle.closed, .crpParameters .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+.complementaryInnovation .blockTitle small, .crpParameters .blockTitle small {
+  color: #389b98;
+}
+
+.complementaryInnovation .blockContent, .crpParameters .blockContent {
+  padding: 0 15px 20px 15px;
+}
+
 .scaling__container {
   display: flex;
   height: 100%;

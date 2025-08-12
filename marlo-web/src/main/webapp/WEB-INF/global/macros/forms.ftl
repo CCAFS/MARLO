@@ -604,7 +604,7 @@
   </div>
 [/#macro]
 
-[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 ]
+[#macro checkBoxFlat id name label="" help="" paramText="" helpIcon=true disabled=false editable=true value="" checked=true cssClass="" cssClassLabel="" columns=0 isLabelDB=false]
   <div class="inputsFlat [#if columns > 0]col-md-${columns}[/#if]">
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if disabled]readonly onclick="this.checked=!this.checked;"[/#if] />
@@ -613,7 +613,11 @@
         [#local labelArray = label?split(":") /]
         <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
       [#else]
-        [@s.text name=label /]
+        [#if isLabelDB]
+          ${label}
+        [#else]
+          [@s.text name=label /]
+        [/#if]
       [/#if] 
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
@@ -683,7 +687,7 @@
         [#local cssInfo = (isNoteCss?has_content)?string(isNoteCss,'note--2  note--2__margin-none col-md-12') /]
         <div class="${cssInfo}"><p>${nameValue}</p></div>
       [#else]
-        <br /><i class="helpLabel">${nameValue}</i>
+        <br /><i class="helpLabel" style="color: #5f5e5e;">${nameValue}</i>
       [/#if]
     [/#if]
   [/#if]
@@ -718,7 +722,18 @@
     [#local elementList = [] /] 
   [/#attempt]
 
-  [#local list = ((listName?eval)?sort_by(displayFieldName))![] /] 
+
+  [#attempt]
+    [#local list = ((listName?eval)?sort_by(displayFieldName))![] /]
+  [#recover]
+    [#-- If the sort_by failed with the specified field, try to sort by "name" instead --]
+    [#attempt]
+      [#local list = ((listName?eval)?sort_by("name"))![] /]
+    [#recover]
+      [#-- If both sorting attempts fail, just use the unsorted list --]
+      [#local list = (listName?eval)![] /]
+    [/#attempt]
+  [/#attempt]
 
   [#-- Compose ID for the element --]
   

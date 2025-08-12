@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationReferenceManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,13 +146,19 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
     ProjectInnovationReference projectInnovationReference) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationReference> projectInnovationReferences =
-      this.getProjectInnovationReferenceByPhaseAndInnovation(next.getId(), innovationID).stream()
-        .filter(
-          c -> c != null && c.getId() != null && c.getReference().equals(projectInnovationReference.getReference()))
-        .collect(Collectors.toList());
+    List<ProjectInnovationReference> projectInnovationReferences = new ArrayList<>();
+    try {
+      projectInnovationReferences =
+        this.getProjectInnovationReferenceByPhaseAndInnovation(next.getId(), innovationID).stream()
+          .filter(
+            c -> c != null && c.getId() != null && c.getReference().equals(projectInnovationReference.getReference()))
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      System.out.println("Error retrieving project innovation references: " + e.getMessage());
+      projectInnovationReferences = new ArrayList<>();
+    }
 
-    if (projectInnovationReferences.isEmpty()) {
+    if (projectInnovationReferences == null || projectInnovationReferences.isEmpty()) {
       ProjectInnovationReference projectInnovationReferenceAdd = new ProjectInnovationReference();
       projectInnovationReferenceAdd.setProjectInnovation(projectInnovationReference.getProjectInnovation());
       projectInnovationReferenceAdd.setPhase(phase);
@@ -169,52 +176,8 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
       projectInnovationReferenceAdd.setEvidenceSource(projectInnovationReference.getEvidenceSource());
       projectInnovationReferenceAdd.setDeliverable(projectInnovationReference.getDeliverable());
       projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
-    } else {
-      try {
-        for (ProjectInnovationReference projectInnovationReferenceClone : projectInnovationReferences) {
-          projectInnovationReferenceClone.setProjectInnovation(projectInnovationReference.getProjectInnovation());
-          projectInnovationReferenceClone.setPhase(phase);
-          projectInnovationReferenceClone.setReference(projectInnovationReference.getReference());
-          projectInnovationReferenceClone.setLink(projectInnovationReference.getLink());
-          projectInnovationReferenceClone
-            .setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
-          projectInnovationReferenceClone.setExternalAuthor(projectInnovationReference.getExternalAuthor());
-          projectInnovationReferenceClone.setDeliverableType(projectInnovationReference.getDeliverableType());
-          projectInnovationReferenceClone.setGender(projectInnovationReference.getGender());
-          projectInnovationReferenceClone.setClimateChange(projectInnovationReference.getClimateChange());
-          projectInnovationReferenceClone.setNutrition(projectInnovationReference.getNutrition());
-          projectInnovationReferenceClone.setEnvironmental(projectInnovationReference.getEnvironmental());
-          projectInnovationReferenceClone.setPoverty(projectInnovationReference.getPoverty());
-          projectInnovationReferenceClone.setInnovationReadiness(projectInnovationReference.getInnovationReadiness());
-          projectInnovationReferenceClone.setEvidenceSource(projectInnovationReference.getEvidenceSource());
-          projectInnovationReferenceClone.setDeliverable(projectInnovationReference.getDeliverable());
-          projectInnovationReferenceDAO.save(projectInnovationReferenceClone);
-        }
-      } catch (Exception e) {
-        System.out.println();
-      }
     }
 
-    /*
-     * else {
-     * ProjectInnovationReference projectInnovationReferenceAdd = new ProjectInnovationReference();
-     * projectInnovationReferenceAdd.setProjectInnovation(projectInnovationReference.getProjectInnovation());
-     * projectInnovationReferenceAdd.setPhase(phase);
-     * projectInnovationReferenceAdd.setReference(projectInnovationReference.getReference());
-     * projectInnovationReferenceAdd.setLink(projectInnovationReference.getLink());
-     * projectInnovationReferenceAdd.setEvidenceByDeliverable(projectInnovationReference.getEvidenceByDeliverable());
-     * projectInnovationReferenceAdd.setExternalAuthor(projectInnovationReference.getExternalAuthor());
-     * projectInnovationReferenceAdd.setDeliverableType(projectInnovationReference.getDeliverableType());
-     * projectInnovationReferenceDAO.save(projectInnovationReferenceAdd);
-     * for (ProjectInnovationReference projectInnovationReferenceDel : projectInnovationReferences) {
-     * try {
-     * projectInnovationReferenceDAO.deleteProjectInnovationReference(projectInnovationReferenceDel.getId());
-     * } catch (Exception e) {
-     * // TODO: handle exception
-     * }
-     * }
-     * }
-     */
     if (phase.getNext() != null) {
       this.saveProjectInnovationReferencePhase(phase.getNext(), innovationID, projectInnovationReference);
     }

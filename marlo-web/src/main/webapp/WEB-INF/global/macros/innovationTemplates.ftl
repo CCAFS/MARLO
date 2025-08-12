@@ -149,6 +149,25 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /]
             </div>
 
+            [#-- Informative text - Compatibility with PRMS --]
+            <div class="form-group prmsEquivalentBlock">
+              [#local innovationTypeValue = (element.projectInnovationInfo?has_content && element.projectInnovationInfo.repIndInnovationType?has_content)?then(element.projectInnovationInfo.repIndInnovationType.id, -1) /]
+              [#list innovationTypeList as type]
+                [#local isVisible = (type.id == innovationTypeValue) /]
+                <p style="display:${isVisible?string('block','none')}">
+                  [#if (type.prmsNameEquivalent?has_content)]
+                  <i class="form-text text-muted prmsEquivalentText" data-id="${type.id}">
+                    In the context of CGIAR, the <b>${type.name}</b> type in AICCRA, equals to <b>${type.prmsNameEquivalent}</b>
+                  </i>
+                  [#else]
+                  <i class="form-text text-muted prmsEquivalentText" data-id="${type.id}">
+                    In the context of CGIAR, the <b>${type.name}</b> type in AICCRA, does not have a direct equivalent in PRMS.
+                  </i>
+                  [/#if]
+                </p>
+              [/#list]
+            </div>
+
             <div class="form-group">
               [#-- Other Innovation Type --]
               [#local isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
@@ -610,6 +629,7 @@
   </div>
 [/#macro]
 
+[#-- DEPRECATED - Not being used - 30/07/2025 --]
 [#macro innovationReadiness element name index=-1 template=false]
   <div id="readiness" class="borderBox clearfix">
     <div class="form-group">
@@ -626,6 +646,73 @@
     </div>
   </div>
 [/#macro]
+
+[#macro innovationBundleComposition element name index=-1 template=false]
+  <div id="bundleComposition" class="borderBox clearfix">
+    <div class="form-group">
+
+      [#-- Select an innovation --]
+      [#-- Table with all innovations and a selector list --]
+      <div class="form-group">
+        <label class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]:</label>
+        <div class="note" style="align-items: center;">
+          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
+        </div>
+        [#-- Table --]
+        <div class="col-md-12 simpleBox">
+          [#if editable]
+            [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles clusterName=element.project.acronym /]
+          [/#if]
+        </div>
+        [#-- Innovations selected - bundles --]
+        <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
+          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
+          [#-- Innovation selected List - bundles --]
+          <div class="innovationBundleList">
+            [#if element.bundles?has_content]
+              [#list element.bundles as innovation]
+                [@innovationSelectedMacro element=innovation name="innovation.bundles" index=innovation_index template=false editable=editable /]
+              [/#list]
+            [/#if]
+          </div>
+          <div class="clearfix"></div>
+          [#-- Template item --]
+          <div style="display:none">
+            [@innovationSelectedMacro element={} name="innovation.bundles" index=-1 template=true editable=editable /]
+          </div>
+        </div>
+      </div>
+
+
+      [#-- Add complementary innovation --]
+      [#-- A module that creates accordions with inner unique data --]
+      <div class="form-group">
+        <label class="label--2">[@s.text name="projectInnovations.bundle.complementaryInnovations" /]:</label>
+        <br />
+        <div class="col-md-12">
+          <div class="complementarySolutionsBlock">
+            <div class="complementarySolutionsList">
+              [#if element.complementarySolutions?has_content]
+                [#list element.complementarySolutions as solution]
+                  [#-- Complementary Solutions Macro --]
+                  [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
+                [/#list]
+              [/#if]
+            </div>
+            [#if editable]
+            <div class="addButtonComplementarySolutions bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add a complementary innovation</div>
+            <div class="clearfix"></div>
+            [/#if]
+          </div>
+          [#-- Element item Template --]
+          <div style="display:none">
+            [@complementarySolutionsMacro name="innovation.complementarySolutions" element={} index=-1 template=true  /]
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  
+[/#macro] 
 
 [#macro innovationSharing element name index=-1 template=false]
   [#local customName = "${name}"/]
@@ -651,7 +738,7 @@
           [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
-        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(!foreseeBarriers)) || ((!editable)) /]
+        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(foreseeBarriers)) || ((!editable)) /]
         [#-- knowledgeToolUsesNarrative --]
         <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
@@ -767,9 +854,9 @@
           [#-- Actors --]
           <div class="col-md-12 actorsBlock">
             <label for="innovation.actors">[@s.text name="projectInnovations.anticipatedUsers.actors" /]:[@customForm.req required=true /]</label>
-            <label class="note--2">
-              <span class="inner-note">[@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</span>
-            </label>
+            <div class="note" style="align-items: center;">
+              <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.anticipatedUsers.actors.help" /]</p>
+            </div>
             [#-- list of items --]
             <div class="actorsList">
               [#list (element.actors)![] as actor]
@@ -783,12 +870,11 @@
           </div>
           [#-- Organizations --]
           <div class="col-md-12 organizationsBlock">
+          [#-- list of items --]
+          [#-- DEPRECATED --]
+          [#--
             <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
-            <label class="note--2">
-              <p>[@s.text name="projectInnovations.anticipatedUsers.organizations.help" /]</p>
-            </label>
-            [#-- list of items --]
-            <div class="organizationsList">
+             <div class="organizationsList">
               [#list (element.allianceOrganizations)![] as organization]
                 [@organizationsMacro name="innovation.allianceOrganizations" element=organization index=organization_index template=false /]
               [/#list]
@@ -796,12 +882,16 @@
             [#if editable]
               <div class="addOrganizations bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add organization </div>
               <div class="clearfix"></div>
-            [/#if]
+            [/#if] --]
+            [#-- multiselect organizations --]
+            <div class="form-group">
+              [@customForm.elementsListComponent name="${customName}.allianceOrganizations" elementType="institution" label="projectInnovations.anticipatedUsers.organizations" elementList=(element.allianceOrganizations)![] listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=true /]
+            </div>
           </div>
           [#-- Element item Template --]
           <div style="display:none">
             [@actorsMacro name="innovation.actors" element={} index=-1 template=true /]
-            [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]
+            [#--  [@organizationsMacro name="innovation.allianceOrganizations" element={} index=-1 template=true /]  --]
           </div>
 
         </div>
@@ -810,7 +900,11 @@
 
       [#-- Beneficiries --]
       <div class="form-group col-md-12">
-        [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  i18nkey="projectInnovations.beneficiaries"  placeholder="" className="limitWords-80" help="projectInnovations.beneficiaries.helpText" isNote=true helpIcon=false required=true editable=editable isMainTitle=true isWidthFull=true /]
+        <label for="innovation.actors">[@s.text name="projectInnovations.beneficiaries" /]:[@customForm.req required=true /]</label>
+        <div class="note" style="align-items: center;">
+          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.beneficiaries.helpText" /]</p>
+        </div>
+        [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  showTitle=false placeholder="" className="limitWords-80"  isNote=true helpIcon=false required=true editable=editable isWidthFull=true /]
       </div>
       
       [#-- URLs: Tool website, publications, stories and more  --]
@@ -900,7 +994,7 @@
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isNote=true isMainTitle=true twoPoints=false classNameLabel="blueLightColor" isNoteCss="note" /]
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isMainTitle=true twoPoints=false classNameLabel="blueLightColor" /]
         <br>
         <label class="note note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >Problem available</span></label>
         <div class="col-md-12">
@@ -939,14 +1033,14 @@
 
   [#local sexAgeNotApply = ((element.sexAgeNotApply??) && (element.sexAgeNotApply == true))! /]
 
-  <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group grayBlueBox ${class}">
+  <div id="actorsInnovation-${(template?string('template', ''))}" class="actorsInnovation form-group graySoftBox ${class}">
     [#-- Hidden not saved - id --]
     [@customForm.input name="${customName}.id" value=((element.id)?string)!"" editable=false display=false /]
     [#-- Dropdown Actors - Type --]
     [#if editable]
     <div class="col-md-12 select--flex padding-bottom-1">
       <div class="col-md-6">
-        [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="name" required=false editable=true /]
+        [@customForm.select name="${customName}.actor.id" i18nkey="projectInnovations.anticipatedUsers.actors.typeActor" listName="actorList" keyFieldName="id" displayFieldName="prmsNameEquivalent" required=false editable=true /]
       </div>
       <div class="col-md-6 checkbox-sexAgeNotApply align-content-end">
         [@customForm.checkBoxFlat id="${customName}.sexAgeNotApply" name="${customName}.sexAgeNotApply" label="projectInnovations.anticipatedUsers.actors.sexAgeNotApply" value="true" checked=sexAgeNotApply editable=true cssClass="sexAgeNotApply" /]
@@ -971,42 +1065,58 @@
     </div>
     [/#if]
 
+    [#local isActorOther = ((element.actor??) && (element.actor.name == "Other"))!false /]
+
+    [#-- Other type --]
+    <div class="col-md-6 otherType" style="display: ${((isActorOther) && (editable))?then('block','none')}">
+      [@customForm.input name="${customName}.other" i18nkey="projectInnovations.anticipatedUsers.actors.otherTypeActor" required=false editable=true showTitle=true value=(element.other)!"" /]
+    </div>
+
     [#-- Checkbox Actors - Genders --]
-    <div class="block-sexAgeNotApply col-md-12" style="display: ${(!sexAgeNotApply)?then('block','none')}">
-      <div class="col-md-6">
-        <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
+    <div class="col-md-12">
+      <div class="col-md-12">
+        [#--          <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.women" /]:</label>
         [#local isWomanWithYouth = ((element.womenYouth??) && (element.womenYouth == true)) /] 
-        [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]
+        [#local isWomanNotYouth = ((element.womenNotYouth??) && (element.womenNotYouth == true)) /]  --]
 
         [#if editable]
-        <div class="col-md-5 innerOptions select--flex">
-          <div class="col-md-6">
-            [@customForm.checkBoxFlat id="${customName}.womenYouth" name="${customName}.womenYouth" label="projectInnovations.anticipatedUsers.actors.optionYouth" value="true" checked=isWomanWithYouth editable=true cssClass="check-gender" /]
+        <div class="col-md-10 innerOptions select--flex" style="padding-left: 0;">
+          <div class="col-md-2 margin-right-10">
+            [@customForm.input name="${customName}.total" i18nkey="projectInnovations.anticipatedUsers.actors.total" required=true editable=true showTitle=true className="input-total"  /]
           </div>
-          <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenYouthNumber"  className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /]
+          <div class="col-md-10 block-sexAgeNotApply" style="display: ${(!sexAgeNotApply)?then('block','none')}">
+            <div class="col-md-4 margin-right-10">
+              [@customForm.input name="${customName}.womenYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichWomen" required=false editable=true showTitle=true className="input-whichWomen" /]
+            </div>
+            <div class="col-md-4">
+              [@customForm.input name="${customName}.womenNonYouthNumber" i18nkey="projectInnovations.anticipatedUsers.actors.whichYouth" required=false editable=true showTitle=true className="input-whichYouth" /]
+            </div>
           </div>
         </div>
-        <div class="col-md-7 innerOptions select--flex">
-          <div class="col-md-6">
-            [@customForm.checkBoxFlat id="${customName}.womenNotYouth" name="${customName}.womenNotYouth" label="projectInnovations.anticipatedUsers.actors.optionNoYouth" value="true" checked=isWomanNotYouth editable=true cssClass="check-gender" /]
-          </div>
-          <div class="col-md-6 align-content-end">
-            [@customForm.input name="${customName}.womenNonYouthNumber" className="targetValueNumber numericInput" type="number" required=false editable=true showTitle=false /] 
+        [#-- Message to appear if a value overpass the total with a banish in 10 seconds --]
+        <div class="col-md-12 message-overpass-total" style="display: none;">
+          <div class="alert alert-warning">
+            <strong>Warning!</strong> The value in <b>Of which women</b> or <b>Of which youth</b> exceeds the total. The values will be modified to match the total.
           </div>
         </div>
         [#else]
-          <div class="col-md-4">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionYouth" /]:</span>
+        <div class="col-md-12">
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.total" /]:</span>
+            <span class="col-md-12"><b>${(element.total)!0}</b></span>
+          </div>
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]:</span>
             <span class="col-md-12"><b>${(element.womenYouthNumber)!0}</b></span>
           </div>
-          <div class="col-md-4">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.optionNoYouth" /]:</span>
+          <div class="col-md-3">
+            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]:</span>
             <span class="col-md-12"><b>${(element.womenNonYouthNumber)!0}</b></span>
           </div>
+        </div>
         [/#if]
       </div>
-      <div class="col-md-6">
+      [#--        <div class="col-md-6">
         <label class="col-md-12">[@s.text name="projectInnovations.anticipatedUsers.actors.men" /]:</label>
         [#local isMenWithYouth = ((element.menYouth??) && (element.menYouth == true)) /] 
         [#local isMenNotYouth = ((element.menNotYouth??) && (element.menNotYouth == true)) /]
@@ -1038,7 +1148,7 @@
             <span class="col-md-12"><b>${(element.menNonYouthNumber)!0}</b></span>
           </div>
         [/#if]
-      </div>
+      </div>  --]
       [#--        <div class="col-md-4">
         <label>[@s.text name="projectInnovations.anticipatedUsers.actors.noBinary" /]:</label>
         [#local isNonbinaryWithYouth = ((element.nonbinaryYouth??) && (element.nonbinaryYouth == true)) /] 
@@ -1054,6 +1164,8 @@
   </div>
 [/#macro]
 
+[#--  Organizations Macro  --]
+[#--  DEPRECATED - Not being used, a good development :( - 30/07/2025 --]
 [#macro organizationsMacro name element index=-1 template=false class=""]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   
@@ -1106,7 +1218,10 @@
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
   <div id="scalingInnovation" class="scaling form-group ${class}">
-    [@customForm.labelText name="${customName}" text="${label}" helpText="${helpLabel}" required=true isMainTitle=true isNote=true /]
+    <label for="${customName}" class="label--2">[@s.text name=label /]: [@customForm.req required=(editable) /]</label>
+    <div class="note" style="align-items: unset;">
+      <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name=helpLabel /]</p>
+    </div>
 
     <div class="scaling__container">
       <div class="scaling__line col-md-11"></div>
@@ -1183,5 +1298,197 @@
         [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
       </div>
     </div>
+  </div>
+[/#macro]
+
+[#macro complementarySolutionsMacro element name index template=false editable=false ]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+
+  <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation borderBox" style="display:${template?string('none','block')}">
+    [#-- Remove Button --]
+    <div class="remove-element removeElement removeComplementaryInnovation" title="Remove"></div>
+
+    [#-- Complementary innovation --]
+    <div class="blockTitle closed">
+		  [#if element.title?has_content]
+				${element.title}
+			[#else]
+				New Complementary Innovation
+			[/#if]
+    </div>
+    
+    <div class="blockContent" style="display:none">
+      <hr />
+      [#-- ID  --]
+      <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
+      [#-- Title  --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Short title  --]
+      <div class="form-group">
+        [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Short description  --]
+      <div class="form-group">
+        [@customForm.textArea name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-80" required=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Innovation type select --]
+      <div class="form-group" listname="${customName}.projectInnovationType.id">
+        [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
+      </div>
+      <div class="clearfix"></div>
+      [#-- Function  --]
+      <div class="form-group" listname="${customName}.complementarySolutionFunctions">
+        [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=true helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
+        [#if projectInnovationFunctionList?has_content]
+          [#list projectInnovationFunctionList as function]
+            <div class="col-md-12">
+              [#local functionLabel] ${function.title!""} [/#local]
+              [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
+              [#local cleanedLabel = cleanedLabel?js_string!"" /]
+
+
+              [#local isChecked = false /]
+              [#if element.complementarySolutionFunctions?has_content]
+                [#list element.complementarySolutionFunctions as func]
+                  [#if func.projectInnovationFunction.id == function.id]
+                    [#local isChecked = true /]
+                    [#local savedFunctionId = func.id /]
+                  [/#if]
+                [/#list]
+              [/#if]
+
+							[#-- Hidden ID --]
+							[#if isChecked && savedFunctionId?has_content]
+								<input name="${customName}.complementarySolutionFunctions[${(function.id)!}].id" value="${savedFunctionId}" type="hidden" />
+							[/#if]
+
+              [#-- Checkbox Function --]
+              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=isChecked cssClass="check-function" /]
+            </div>
+          [/#list]
+        [/#if]
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+[/#macro]
+
+[#macro tableAllInnovationsMacro list selected={} clusterName="" ]
+  <table id="table-all-innovations" class="table table-striped table-hover" width="100%" data-cluster="${clusterName}">
+    <thead>
+      <tr>
+        <th id="tb-id" width="1%" class="no-sort">ID</th>
+        <th id="tb-title" width="32%">[@s.text name="projectInnovations.table.title" /]</th>
+        <th id="tb-cluster" width="10%">[@s.text name="projectInnovations.table.cluster" /]</th>
+        <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
+        <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
+        <th id="tb-year" width="1%">[@s.text name="projectInnovations.table.year" /]</th>
+        <th id="tb-actions" class="no-sort" width="15%">Action</th>
+        [#-- Hidden column Don't remove it is neccesary for the library --]
+        <th id="tb-hidden" style="display: none"></th>
+      </tr>
+    </thead>
+    <tbody>
+      [#if list?has_content]
+        [#list list as innovation]
+          <tr class="innovation-row" data-id="${innovation.id}">
+            [#-- Title --]
+            [#local title]
+              [#if ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.title?has_content))]
+                [@utilities.wordCutter string=(innovation.projectInnovationInfo.title)!"" maxPos=120 /]
+              [/#if]
+            [/#local]
+
+            [#-- URL --]
+            [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${(innovation.id)!''}[/@s.param][@s.param name='projectID']${(innovation.project.id)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+
+            [#-- Boolean scaling readiness available --]
+            [#local isScalingReadines = ((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.readinessScale?has_content))!false ]
+          
+            [#-- Scaling Readiness value --]
+            [#local scaleReadiness = (innovation.projectInnovationInfo.readinessScale-1)!"" ]
+
+            [#-- Scaling Innovation Titles --]
+            [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
+
+            [#-- ID --]
+            <td class="text-center">${innovation.id!}</td>
+            [#-- Title --]
+            <td class="text-left">
+              <a href="${url!''}" class="title-link" target="_blank" rel="noopener noreferrer" title="View details of innovation">
+                ${title!''}
+              </a>
+            </td>
+            [#-- Cluster --]
+            <td class="text-center">
+              [#if innovation.project??]
+                ${innovation.project.acronym!''}
+              [/#if]
+            </td>
+            [#-- Type of Innovation --]
+            <td class="text-center">
+              [#if innovation.projectInnovationInfo?? && innovation.projectInnovationInfo.repIndInnovationType?? ]
+                ${innovation.projectInnovationInfo.repIndInnovationType.name!''}
+              [/#if]
+            </td>
+            [#-- Readiness Level --]
+            <td class="text-center">
+              [#if isScalingReadines]
+                <span class="inno-scale inno-scale-${scaleReadiness}">[@utilities.tableText value=scaleReadiness /]</span>
+                <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
+              [#else]
+                [@utilities.tableText value=(innovation.projectInnovationInfo.readinessLevel.name)!"" /]
+              [/#if]
+            </td>
+            [#-- Year --]
+            <td class="text-center">
+              [#if innovation.projectInnovationInfo?? && innovation.projectInnovationInfo.year??]
+                ${innovation.projectInnovationInfo.year!''}
+              [/#if]
+            </td>
+            [#local innovationSelected = false /]
+            [#local textBtn = "Select" /]
+            [#if selected?has_content]
+              [#list selected as sel]
+                [#if sel.selectedInnovation.id == innovation.id]
+                  [#local innovationSelected = true /]
+                  [#local textBtn = "Selected" /]
+                [/#if]
+              [/#list]
+            [/#if]
+            [#-- Actions --]
+            <td class="text-center">
+              [#-- Select --]
+              [#local titleShow] [@s.text name=innovation.projectInnovationInfo.title /] [/#local]
+              <button class="btn btn-primary selectInnovationBundle" data-id="${innovation.id!}" data-name="${titleShow!}" [#if innovationSelected]disabled[/#if]>${textBtn!""}</button>
+
+              [#-- Download PDF --]
+              <a href="[@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${innovation.id?c}[/@s.param][@s.param name='phaseID']${(innovation.projectInnovationInfo.phase.id)!''}[/@s.param][/@s.url]" target="_blank" rel="noopener noreferrer">
+                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+              </a>
+            </td>
+
+            <td style="display: none"></td>
+          </tr>
+        [/#list]
+      [/#if]
+    </tbody>
+  </table>
+  <div class="clearfix"></div>
+[/#macro]
+
+[#macro innovationSelectedMacro element name index template=false editable=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div class="innovationBundleItem grayGreenBox" id="innovationBundleItem-${template?string('template',index)}" style="display:${template?string('none','block')}">
+      <input type="hidden" name="${customName}.id" value="${element.id!''}" />
+      <input type="hidden" id="reference-selected" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
+
+      <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
+      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
   </div>
 [/#macro]

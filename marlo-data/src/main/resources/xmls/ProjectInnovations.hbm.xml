@@ -236,6 +236,22 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory" />
     </set>
+    <set name="projectInnovationComplementarySolutions" table="project_innovation_complementary_solutions"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution" />
+    </set>
+    <set name="projectInnovationBundles" table="project_innovation_bundles"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle" />
+    </set>
     <set name="projectInnovationSDGs" table="project_innovation_sdgs"
       inverse="true" lazy="true" fetch="select">
       <key>

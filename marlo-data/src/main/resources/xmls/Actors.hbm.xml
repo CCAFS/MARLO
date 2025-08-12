@@ -15,6 +15,9 @@
 		<property name="description" type="string">
 			<column name="description" sql-type="TEXT" />
 		</property>
+		<property name="prmsNameEquivalent" type="string">
+			<column name="prms_name_equivalent" sql-type="TEXT" />
+		</property>
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>

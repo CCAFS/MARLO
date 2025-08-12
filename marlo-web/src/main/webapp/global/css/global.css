@@ -388,6 +388,14 @@ span.badge.fieldError {
 	margin-bottom: 0rem;
 }
 
+.margin-right-10 {
+	margin-right: 1rem;
+}
+
+.margin-left-10 {
+	margin-left: 1rem;
+}
+
 textarea.fieldError,
 input.fieldError,
 textarea.fieldError:focus,
@@ -1670,11 +1678,6 @@ a#userLogOut:hover {
   box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.3);
 }
 
-#userInfo:hover #userInfo-drop {
-	opacity: 1;
-	display: block;
-}
-
 #userInfoOld-drop {
 	padding: 10px !important;
 	position: absolute;
@@ -1693,6 +1696,7 @@ a#userLogOut:hover {
 }
 
 #userInfo-drop {
+	display: none;   
   padding: 10px !important;
   position: absolute;
   top: 66px;
@@ -1711,11 +1715,15 @@ a#userLogOut:hover {
   cursor: default;
 }
 
+#userInfo.open #userInfo-drop {
+  display: block;
+}
+
 #userInfo-drop:after {
 	position: absolute;
 	right: -152px;
 	left: auto;
-	top: -9px;
+	top: -5px;
 	content: '';
 	width: 0;
 	margin-right: 80%;
@@ -2077,6 +2085,18 @@ a#userLogOut:hover {
   height: 50px;
 }
 
+#userInfo .userToggle:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+#userInfo .userToggle:hover .avatar {
+  background-color: #e6f3f8;
+  color: #23718F;
+  box-shadow: 0 0 0 0.5px #23718F inset;
+}
+
 #userInfo .avatar {
   width: 35px;
   height: 35px;
@@ -2100,17 +2120,7 @@ a#userLogOut:hover {
 }
 
 #userInfo .userMenu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 38px;
-  background: rgb(255, 255, 255);
-  padding: 10px 12px;
-  border-radius: 4px;
-  width: 240px;
-  box-shadow: 1px 1px 6px rgba(0,0,0,0.3);
-  z-index: 10000;
-  color: rgb(0, 0, 0);
+	display: none !important;
 }
 
 #userInfo .userMenu p {
@@ -2132,7 +2142,22 @@ a#userLogOut:hover {
 }
 
 #userInfo:hover .userMenu {
+  display: none;
+}
+
+#userInfo.open .userMenu {
   display: block;
+}
+
+#userInfo .caret {
+  transition: transform 0.15s ease;
+}
+
+#userInfo.open .caret {
+  transform: rotate(180deg) scale(1.2); 
+  border-top-color: #00b4d8; 
+  filter: drop-shadow(0 0 2px rgba(0, 180, 216, 0.8)); 
+  transition: transform 0.2s ease, border-top-color 0.2s ease, filter 0.2s ease;
 }
 
 /* Sticky top adjustment */
@@ -5723,6 +5748,31 @@ ul#deliverablesFilesMessages>li {
 	border-radius: 5px;
 	margin-top: 10px;
 	position: relative;
+}
+
+.graySoftBox {
+	background: #CCCCCC10;
+	border-radius: 10px;
+	border: 1px solid #B4B4B4;
+	padding: 12px 16px;
+	position: relative;
+	overflow: hidden;
+}
+
+.grayGreenBox {
+	background: #F7F7F7;
+	border-radius: 2px;
+	border: 1px solid #E0E0E0;
+	padding: 6px 16px;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 1px 1px 0px 0px #0000001A;
+	width: 100%;
+	margin-bottom: 1rem;
+}
+
+.grayGreenBox p {
+	margin: 0;
 }
 
 .grayBlueBox {

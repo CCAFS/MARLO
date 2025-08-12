@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_complementary_solutions DROP FOREIGN KEY complementary_solution_innovation_functions_FK;
+ALTER TABLE project_innovation_complementary_solutions DROP COLUMN project_innovation_function_id;
