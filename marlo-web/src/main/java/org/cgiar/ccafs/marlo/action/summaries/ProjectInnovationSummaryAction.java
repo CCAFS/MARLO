@@ -22,9 +22,12 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionFunctionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationDeliverableManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationFunctionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationGeographicScopeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
@@ -47,6 +50,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolutionFunction;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCrp;
@@ -161,6 +166,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final InstitutionManager institutionManager;
   private final LocElementManager locElementManager;
   private final ScalingReadinessManager scalingReadinessManager;
+  private final ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager;
+  private final ProjectInnovationFunctionManager projectInnovationFunctionManager;
+  private final ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager;
 
   private final MicroserviceReportAction microserviceReportAction;
   // Parameters
@@ -191,7 +199,10 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
     ReportConfigurationManager reportConfigurationManager, MicroserviceReportAction microserviceReportAction,
     InstitutionManager institutionManager, LocElementManager locElementManager,
-    RepIndInnovationTypeManager repIndInnovationTypeManager, ScalingReadinessManager scalingReadinessManager) {
+    RepIndInnovationTypeManager repIndInnovationTypeManager, ScalingReadinessManager scalingReadinessManager,
+    ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
+    ProjectInnovationFunctionManager projectInnovationFunctionManager,
+    ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -209,6 +220,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.locElementManager = locElementManager;
     this.repIndInnovationTypeManager = repIndInnovationTypeManager;
     this.scalingReadinessManager = scalingReadinessManager;
+    this.projectInnovationComplementarySolutionManager = projectInnovationComplementarySolutionManager;
+    this.projectInnovationFunctionManager = projectInnovationFunctionManager;
+    this.projectInnovationComplementarySolutionFunctionManager = projectInnovationComplementarySolutionFunctionManager;
   }
 
 
@@ -415,10 +429,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       contributingOrganizationsJson = null, isAllianceContribution = null, deliverablesJson = null,
       intellectualProperty = null, hasFurtherDevelopment = null, hasLegalRestrictions = null, hasAssetPotential = null,
       hasCgiarContribution = null, beneficiariesNarrative = null, reasonNotCgiarContribution = null,
-      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null, 
-      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null, povertyScore = null,
-      knowledgeToolUsesNarrative = null, foreseeBarriers = null,
-      cheaperAlternatives = null, simplerUse = null, performBetter = null, innovationDesirable = null, innovationCommercially = null, innovationSupported = null, evidenceUptake = null;
+      scalingReadiness = null, knowledgeMethodsAndToolsNarrative = null, knowledgeResultsNarrative = null,
+      genderScore = null, climateChangeScore = null, foodSecurityScore = null, enviromentalScore = null,
+      povertyScore = null, knowledgeToolUsesNarrative = null, foreseeBarriers = null, cheaperAlternatives = null,
+      simplerUse = null, performBetter = null, innovationDesirable = null, innovationCommercially = null,
+      innovationSupported = null, evidenceUptake = null;
 
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
     List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
@@ -475,30 +490,24 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         knowledgeResultsNarrative =
           (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeResultsNarrative() != null)
             ? projectInnovationInfo.getKnowledgeResultsNarrative() : null;
-        knowledgeToolUsesNarrative = 
+        knowledgeToolUsesNarrative =
           (projectInnovationInfo != null && projectInnovationInfo.getKnowledgeToolUsesNarrative() != null)
             ? projectInnovationInfo.getKnowledgeToolUsesNarrative() : null;
-        cheaperAlternatives = 
-          (projectInnovationInfo != null && projectInnovationInfo.getCheaperAlternatives() != null)
-            ? projectInnovationInfo.getCheaperAlternatives().toString() : null; 
-        simplerUse = 
-          (projectInnovationInfo != null && projectInnovationInfo.getSimplerUse() != null)
-            ? projectInnovationInfo.getSimplerUse().toString() : null; 
-        performBetter = 
-          (projectInnovationInfo != null && projectInnovationInfo.getPerformBetter() != null)
-            ? projectInnovationInfo.getPerformBetter().toString() : null; 
-        innovationDesirable = 
-          (projectInnovationInfo != null && projectInnovationInfo.getInnovationDesirable() != null)
-            ? projectInnovationInfo.getInnovationDesirable().toString() : null; 
-        innovationCommercially = 
+        cheaperAlternatives = (projectInnovationInfo != null && projectInnovationInfo.getCheaperAlternatives() != null)
+          ? projectInnovationInfo.getCheaperAlternatives().toString() : null;
+        simplerUse = (projectInnovationInfo != null && projectInnovationInfo.getSimplerUse() != null)
+          ? projectInnovationInfo.getSimplerUse().toString() : null;
+        performBetter = (projectInnovationInfo != null && projectInnovationInfo.getPerformBetter() != null)
+          ? projectInnovationInfo.getPerformBetter().toString() : null;
+        innovationDesirable = (projectInnovationInfo != null && projectInnovationInfo.getInnovationDesirable() != null)
+          ? projectInnovationInfo.getInnovationDesirable().toString() : null;
+        innovationCommercially =
           (projectInnovationInfo != null && projectInnovationInfo.getInnovationCommercially() != null)
-            ? projectInnovationInfo.getInnovationCommercially().toString() : null; 
-        innovationSupported = 
-          (projectInnovationInfo != null && projectInnovationInfo.getInnovationSupported() != null)
-            ? projectInnovationInfo.getInnovationSupported().toString() : null; 
-        evidenceUptake = 
-          (projectInnovationInfo != null && projectInnovationInfo.getEvidenceUptake() != null)
-            ? projectInnovationInfo.getEvidenceUptake().toString() : null;
+            ? projectInnovationInfo.getInnovationCommercially().toString() : null;
+        innovationSupported = (projectInnovationInfo != null && projectInnovationInfo.getInnovationSupported() != null)
+          ? projectInnovationInfo.getInnovationSupported().toString() : null;
+        evidenceUptake = (projectInnovationInfo != null && projectInnovationInfo.getEvidenceUptake() != null)
+          ? projectInnovationInfo.getEvidenceUptake().toString() : null;
 
         try {
           int scalingReadinessId = (projectInnovationInfo != null && projectInnovationInfo.getReadinessScale() != null)
@@ -636,38 +645,37 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         }
 
         // Impact Area - Old Version
-        /*try {
-          if (innovation.getProjectInnovationImpactAreas() != null) {
-            innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
-              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
-
-            // Prepare list of impact area IDs
-            List<Long> impactAreaIds = new ArrayList<>();
-
-            if (innovation.getImpactAreas() != null && !innovation.getImpactAreas().isEmpty()) {
-              for (ProjectInnovationImpactArea impactAreaItem : innovation.getImpactAreas()) {
-                if (impactAreaItem != null && impactAreaItem.getImpactArea() != null
-                  && impactAreaItem.getImpactArea().getId() != null) {
-                  impactAreaIds.add(impactAreaItem.getImpactArea().getId());
-                }
-              }
-            }
-
-            // Convert list to JSON string with brackets
-            impactAreaCode = objectMapper.writeValueAsString(impactAreaIds);
-          }
-        } catch (final NullPointerException e) {
-          System.out.println("NullPointerException while getting Impact Areas: " + e);
-        } catch (final Exception e) {
-          System.out.println("Unexpected error while getting Impact Areas: " + e);
-        } */
+        /*
+         * try {
+         * if (innovation.getProjectInnovationImpactAreas() != null) {
+         * innovation.setImpactAreas(new ArrayList<>(innovation.getProjectInnovationImpactAreas().stream()
+         * .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+         * // Prepare list of impact area IDs
+         * List<Long> impactAreaIds = new ArrayList<>();
+         * if (innovation.getImpactAreas() != null && !innovation.getImpactAreas().isEmpty()) {
+         * for (ProjectInnovationImpactArea impactAreaItem : innovation.getImpactAreas()) {
+         * if (impactAreaItem != null && impactAreaItem.getImpactArea() != null
+         * && impactAreaItem.getImpactArea().getId() != null) {
+         * impactAreaIds.add(impactAreaItem.getImpactArea().getId());
+         * }
+         * }
+         * }
+         * // Convert list to JSON string with brackets
+         * impactAreaCode = objectMapper.writeValueAsString(impactAreaIds);
+         * }
+         * } catch (final NullPointerException e) {
+         * System.out.println("NullPointerException while getting Impact Areas: " + e);
+         * } catch (final Exception e) {
+         * System.out.println("Unexpected error while getting Impact Areas: " + e);
+         * }
+         */
 
         // Impact Area - New version
         // Gender score
         if (innovation.getProjectInnovationInfo().getGenderScore() != null) {
           genderScore = innovation.getProjectInnovationInfo().getGenderScore().getDescription();
         }
-        
+
         // Climate change score
         if (innovation.getProjectInnovationInfo().getClimateChangeScore() != null) {
           climateChangeScore = innovation.getProjectInnovationInfo().getClimateChangeScore().getDescription();
@@ -789,6 +797,62 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           Log.error("error getting Complementary solutions " + e);
         }
 
+        try {
+          // Innovations Bundles
+          if (innovation.getProjectInnovationBundles() != null) {
+            innovation.setBundles(new ArrayList<>(innovation.getProjectInnovationBundles().stream()
+              .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+          }
+        } catch (Exception e) {
+          Log.error("error getting Innovations Bundles " + e);
+        }
+
+        // Complementary Solutions
+        try {
+          if (innovation.getProjectInnovationComplementarySolutions() != null) {
+
+            List<ProjectInnovationComplementarySolution> solutions = new ArrayList<>();
+            Long innovationIDLong = Long.parseLong(innovationID);
+            solutions = projectInnovationComplementarySolutionManager
+              .getProjectInnovationComplementarySolutionByInnovationAndPhase(innovationIDLong,
+                this.getActualPhase().getId());
+
+            innovation.setComplementarySolutions(solutions);
+            if (solutions != null && !solutions.isEmpty()) {
+              for (ProjectInnovationComplementarySolution solution : solutions) {
+                if (solution != null && solution.getId() != null) {
+
+                  List<ProjectInnovationComplementarySolutionFunction> validFunctions =
+                    projectInnovationComplementarySolutionFunctionManager
+                      .getProjectInnovationComplementarySolutionFunctionByComplementarySolutionId(solution.getId());
+
+                  if (validFunctions != null && !validFunctions.isEmpty()) {
+
+                    for (ProjectInnovationComplementarySolutionFunction function : validFunctions) {
+                      if (function.getProjectInnovationFunction() != null
+                        && function.getProjectInnovationFunction().getId() != null) {
+                        function.setProjectInnovationFunction(projectInnovationFunctionManager
+                          .getProjectInnovationFunctionById(function.getProjectInnovationFunction().getId()));
+                      }
+
+                      if (function.getProjectInnovationComplementarySolution() != null
+                        && function.getProjectInnovationComplementarySolution().getId() != null) {
+                        function.setProjectInnovationComplementarySolution(
+                          projectInnovationComplementarySolutionManager.getProjectInnovationComplementarySolutionById(
+                            function.getProjectInnovationComplementarySolution().getId()));
+                      }
+                    }
+
+                    solution.setComplementarySolutionFunctions(validFunctions);
+                  }
+                }
+              }
+            }
+          }
+        } catch (Exception e) {
+          Log.error("error getting complementary solutions " + e);
+        }
+
         contributingOrganizations = innovation.getContributingOrganizations(); // getContributingOrganizations()
         impactAreas = innovation.getImpactAreas(); // getImpactAreas()
         repIndInnovationNature = projectInnovationInfo.getRepIndInnovationNature();
@@ -809,7 +873,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         isAllianceContribution = Boolean.TRUE.equals(this.isAllianceSelected(innovation)) ? "Yes" : "No";
 
         // has foresee barriers
-        foreseeBarriers = Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getForeseeBarriers()) ? "Yes" : "No";
+        foreseeBarriers =
+          Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getForeseeBarriers()) ? "Yes" : "No";
 
       }
     } catch (Exception e) {
@@ -858,13 +923,13 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
         Boolean isScaling = org.getScaling();
         dto.put("isScaling", this.booleanToString(isScaling));
-        
+
         Boolean isDemand = org.getDemand();
         dto.put("isDemand", this.booleanToString(isDemand));
-        
+
         Boolean isInnovation = org.getInnovation();
         dto.put("isInnovation", this.booleanToString(isInnovation));
-        
+
         Boolean isOther = org.getOther();
         dto.put("isOther", this.booleanToString(isOther));
 
@@ -1082,13 +1147,15 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             actorMap.put("womenYouth", Boolean.TRUE.equals(actor.getWomenYouth()) ? "Yes" : "No");
             actorMap.put("womenYouthNumber", actor.getWomenYouthNumber() != null ? actor.getWomenYouthNumber() : null);
             actorMap.put("womenNotYouth", Boolean.TRUE.equals(actor.getWomenNotYouth()) ? "Yes" : "No");
-            actorMap.put("womenNotYouthNumber", actor.getWomenNonYouthNumber() != null ? actor.getWomenNonYouthNumber() : null);
+            actorMap.put("womenNotYouthNumber",
+              actor.getWomenNonYouthNumber() != null ? actor.getWomenNonYouthNumber() : null);
             actorMap.put("menYouth", Boolean.TRUE.equals(actor.getMenYouth()) ? "Yes" : "No");
             actorMap.put("menYouthNumber", actor.getMenYouthNumber() != null ? actor.getMenYouthNumber() : null);
             actorMap.put("menNotYouth", Boolean.TRUE.equals(actor.getMenNotYouth()) ? "Yes" : "No");
-            actorMap.put("menNotYouthNumber", actor.getMenNonYouthNumber() != null ? actor.getMenNonYouthNumber() : null);
-            //actorMap.put("nonbinaryYouth", Boolean.TRUE.equals(actor.getNonbinaryYouth()) ? "Yes" : "No");
-            //actorMap.put("nonbinaryNotYouth", Boolean.TRUE.equals(actor.getNonbinaryNotYouth()) ? "Yes" : "No");
+            actorMap.put("menNotYouthNumber",
+              actor.getMenNonYouthNumber() != null ? actor.getMenNonYouthNumber() : null);
+            // actorMap.put("nonbinaryYouth", Boolean.TRUE.equals(actor.getNonbinaryYouth()) ? "Yes" : "No");
+            // actorMap.put("nonbinaryNotYouth", Boolean.TRUE.equals(actor.getNonbinaryNotYouth()) ? "Yes" : "No");
             actorsList.add(actorMap);
           }
         }
@@ -1384,14 +1451,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       // Knowledge sharing tab
       jsonData.put("scalingBarriers", knowledgeToolUsesNarrative);
-      jsonData.put("cheaperAlternatives",cheaperAlternatives);
-      jsonData.put("simplerUse",simplerUse);
-      jsonData.put("performBetter",performBetter);
-      jsonData.put("innovationDesirable",innovationDesirable);
-      jsonData.put("innovationCommercially",innovationCommercially);
-      jsonData.put("innovationSupported",innovationSupported);
-      jsonData.put("evidenceUptake",evidenceUptake);
-      jsonData.put("foreseeBarriers",foreseeBarriers);
+      jsonData.put("cheaperAlternatives", cheaperAlternatives);
+      jsonData.put("simplerUse", simplerUse);
+      jsonData.put("performBetter", performBetter);
+      jsonData.put("innovationDesirable", innovationDesirable);
+      jsonData.put("innovationCommercially", innovationCommercially);
+      jsonData.put("innovationSupported", innovationSupported);
+      jsonData.put("evidenceUptake", evidenceUptake);
+      jsonData.put("foreseeBarriers", foreseeBarriers);
 
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
@@ -1430,8 +1497,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     footerMap.put("height", "30mm");
     try {
       jsonOptions.put("format", "A4");
-      //jsonOptions.put("height", "297mm");
-      //jsonOptions.put("width", "210mm");
+      // jsonOptions.put("height", "297mm");
+      // jsonOptions.put("width", "210mm");
       jsonOptions.put("orientation", "portrait");
       jsonOptions.put("border", "0");
       jsonOptions.put("zoomFactor", 1);

@@ -1096,7 +1096,7 @@
         [#-- Message to appear if a value overpass the total with a banish in 10 seconds --]
         <div class="col-md-12 message-overpass-total" style="display: none;">
           <div class="alert alert-warning">
-            <strong>Warning!</strong> The sum of the values in <b>Of which women</b> or <b>Of which youth</b> exceeds the total. The value will be modified to match the total.
+            <strong>Warning!</strong> The value in <b>Of which women</b> or <b>Of which youth</b> exceeds the total. The values will be modified to match the total.
           </div>
         </div>
         [#else]
