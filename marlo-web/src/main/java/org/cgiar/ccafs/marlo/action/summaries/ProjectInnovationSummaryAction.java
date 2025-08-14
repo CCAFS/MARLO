@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolutionFunction;
@@ -434,6 +435,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       povertyScore = null, knowledgeToolUsesNarrative = null, foreseeBarriers = null, cheaperAlternatives = null,
       simplerUse = null, performBetter = null, innovationDesirable = null, innovationCommercially = null,
       innovationSupported = null, evidenceUptake = null;
+    String bundlesJson = null, complementarySolutionsJson = null;
+
 
     List<ProjectInnovationDeliverable> deliverables = new ArrayList<>();
     List<ProjectInnovationContributingOrganization> contributingOrganizations = new ArrayList<>();
@@ -1142,6 +1145,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           if (actor != null && actor.getActor() != null) {
             Map<String, Object> actorMap = new HashMap<>();
             actorMap.put("type", actor.getActor().getName());
+            actorMap.put("total", actor.getTotal());
+            actorMap.put("other", actor.getOther() != null ? actor.getOther() : null);
             actorMap.put("name", actor.getActor().getName());
             actorMap.put("sexAgeNotApply", Boolean.TRUE.equals(actor.getSexAgeNotApply()) ? "Yes" : "No");
             actorMap.put("womenYouth", Boolean.TRUE.equals(actor.getWomenYouth()) ? "Yes" : "No");
@@ -1347,6 +1352,129 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       e.printStackTrace();
     }
 
+    // Innovation Bundles
+    try {
+      List<Map<String, Object>> bundlesDTO = new ArrayList<>();
+
+      if (innovation != null && innovation.getBundles() != null) {
+        for (ProjectInnovationBundle b : innovation.getBundles()) {
+          if (b != null && b.getSelectedInnovation() != null) {
+            Map<String, Object> dto = new HashMap<>();
+            ProjectInnovation sel = b.getSelectedInnovation();
+
+            dto.put("id", sel != null ? sel.getId() : null);
+
+            String selTitle = null;
+            try {
+              ProjectInnovationInfo selInfo = sel != null ? sel.getProjectInnovationInfo(phase) : null;
+              if (selInfo != null && selInfo.getTitle() != null) {
+                selTitle = selInfo.getTitle();
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("title", selTitle);
+
+            String selProjectAcronym = null;
+            try {
+              Project selProject = sel != null ? sel.getProject() : null;
+              if (selProject != null && selProject.getAcronym() != null) {
+                selProjectAcronym = selProject.getAcronym();
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("projectAcronym", selProjectAcronym);
+
+            String selProjectType = null;
+            try {
+              ProjectInnovationInfo selProjectInfo = sel != null ? sel.getProjectInnovationInfo(phase) : null;
+              if (selProjectInfo != null && selProjectInfo.getRepIndInnovationType() != null) {
+                selProjectType = selProjectInfo.getRepIndInnovationType().getName();
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("projectType", selProjectType);
+
+            String selProjectReadinessLevel = null;
+            try {
+              ProjectInnovationInfo selProjectInfo = sel != null ? sel.getProjectInnovationInfo(phase) : null;
+              if (selProjectInfo != null && selProjectInfo.getReadinessScale() != null) {
+                ScalingReadiness localScalingReadiness = scalingReadinessManager.getScalingReadinessById(selProjectInfo.getReadinessScale());
+                selProjectReadinessLevel = localScalingReadiness != null ? localScalingReadiness.getName() : null;
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("projectReadinessLevel", selProjectReadinessLevel);
+
+            String link =
+            this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?innovationID="
+            + sel.getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+            dto.put("url", link);
+
+            bundlesDTO.add(dto);
+          }
+        }
+      }
+
+      bundlesJson = objectMapper.writeValueAsString(bundlesDTO);
+    } catch (Exception e) {
+      System.out.println("Error getting bundles json: " + e.getMessage());
+      e.printStackTrace();
+    }
+
+    // Complementary Solution
+    try {
+      List<Map<String, Object>> solutionsDTO = new ArrayList<>();
+
+      if (innovation != null && innovation.getComplementarySolutions() != null) {
+        for (ProjectInnovationComplementarySolution s : innovation.getComplementarySolutions()) {
+          if (s != null) {
+            Map<String, Object> dto = new HashMap<>();
+
+            dto.put("id", s.getId());
+
+            try {
+              if (s.getTitle() != null && !s.getTitle().isEmpty()) {
+                dto.put("title", s.getTitle());
+              }
+              if (s.getShortDescription() != null && !s.getShortDescription().isEmpty()) {
+                dto.put("shortDescription", s.getShortDescription());
+              }
+              if (s.getShortTitle() != null && !s.getShortTitle().isEmpty()) {
+                dto.put("shortTitle", s.getShortTitle());
+              }
+              if (s.getProjectInnovationType() != null && s.getProjectInnovationType().getName() != null) {
+                dto.put("type", s.getProjectInnovationType().getName());
+              }
+            } catch (Exception ignore) {
+            }
+
+            // ProjectInnovationFunction
+            List<String> functionNames = new ArrayList<>();
+            try {
+              if (s.getComplementarySolutionFunctions() != null) {
+                for (ProjectInnovationComplementarySolutionFunction f : s.getComplementarySolutionFunctions()) {
+                  if (f != null && f.getProjectInnovationFunction() != null
+                    && f.getProjectInnovationFunction().getTitle() != null) {
+                    functionNames.add(f.getProjectInnovationFunction().getTitle());
+                  }
+                }
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("functions", functionNames.isEmpty() ? null : functionNames);
+
+            solutionsDTO.add(dto);
+          }
+        }
+      }
+
+      complementarySolutionsJson = objectMapper.writeValueAsString(solutionsDTO);
+    } catch (Exception e) {
+      System.out.println("Error getting complementary solutions json: " + e.getMessage());
+      e.printStackTrace();
+    }
+
+
     try {
       List<String> crpOutcomesList = crpOutcomes != null ? crpOutcomes.stream().map(outcome -> {
         if (outcome != null && outcome.getCrpOutcome() != null && outcome.getCrpOutcome().getComposedName() != null) {
@@ -1465,6 +1593,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("repIndStageInnovation", repIndStageInnovation != null ? repIndStageInnovation.getName() : null);
       jsonData.put("repIndRegion", repIndRegion != null ? repIndRegion.getName() : null);
       jsonData.put("repIndInnovationType", repIndInnovationType != null ? repIndInnovationType.getName() : null);
+      jsonData.put("repIndInnovationTypePRMS",
+        repIndInnovationType != null ? repIndInnovationType.getPrmsNameEquivalent() : null);
       jsonData.put("repIndInnovationNature", repIndInnovationNature != null ? repIndInnovationNature.getName() : null);
       jsonData.put("repIndDegreeInnovation", repIndDegreeInnovation != null ? repIndDegreeInnovation.getName() : null);
       jsonData.put("leadOrganization", leadOrganization != null ? leadOrganization.getComposedName() : null);
@@ -1488,6 +1618,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("myProjects", this.normalizeJson(myProjectsJson));
       jsonData.put("partnerships", this.normalizeJson(partnershipsJson));
       jsonData.put("isAllianceContribution", isAllianceContribution);
+      jsonData.put("innovationBundle", this.normalizeJson(bundlesJson));
+      jsonData.put("complementarySolutions", this.normalizeJson(complementarySolutionsJson));
       jsonData.put("timeCreation", this.getCurrentDatev2());
     } catch (Exception e) {
       System.out.println("error setting jsonData " + e);
