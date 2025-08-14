@@ -1384,6 +1384,32 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             }
             dto.put("projectAcronym", selProjectAcronym);
 
+            String selProjectType = null;
+            try {
+              ProjectInnovationInfo selProjectInfo = sel != null ? sel.getProjectInnovationInfo(phase) : null;
+              if (selProjectInfo != null && selProjectInfo.getRepIndInnovationType() != null) {
+                selProjectType = selProjectInfo.getRepIndInnovationType().getName();
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("projectType", selProjectType);
+
+            String selProjectReadinessLevel = null;
+            try {
+              ProjectInnovationInfo selProjectInfo = sel != null ? sel.getProjectInnovationInfo(phase) : null;
+              if (selProjectInfo != null && selProjectInfo.getReadinessScale() != null) {
+                ScalingReadiness localScalingReadiness = scalingReadinessManager.getScalingReadinessById(selProjectInfo.getReadinessScale());
+                selProjectReadinessLevel = localScalingReadiness != null ? localScalingReadiness.getName() : null;
+              }
+            } catch (Exception ignore) {
+            }
+            dto.put("projectReadinessLevel", selProjectReadinessLevel);
+
+            String link =
+            this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?innovationID="
+            + sel.getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
+            dto.put("url", link);
+
             bundlesDTO.add(dto);
           }
         }
@@ -1414,7 +1440,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
                 dto.put("shortDescription", s.getShortDescription());
               }
               if (s.getShortTitle() != null && !s.getShortTitle().isEmpty()) {
-                dto.put("shortDescription", s.getShortDescription());
+                dto.put("shortTitle", s.getShortTitle());
               }
               if (s.getProjectInnovationType() != null && s.getProjectInnovationType().getName() != null) {
                 dto.put("type", s.getProjectInnovationType().getName());
