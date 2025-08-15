@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -71,6 +72,35 @@ public class PortfolioManagementAction extends BaseAction {
       phases = phaseManager.findAll().stream()
         .filter(phase -> phase.getCrp() != null && phase.getCrp().getId() == globalUnitId)
         .sorted((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName())).collect(Collectors.toList());
+
+      try {
+        if (portfolios == null || portfolios.isEmpty()) {
+          return;
+        }
+
+        for (Portfolio p : portfolios) {
+          if (p == null) {
+            continue;
+          }
+
+          final Long id = p.getId();
+          if (id == null) {
+            p.setPortfolioPhases(Collections.emptyList());
+            continue;
+          }
+
+          try {
+            final List<PortfolioPhase> phases = portfolioRoleManager.getPortfolioPhasesByPortfolioID(id);
+            p.setPortfolioPhases((phases == null || phases.isEmpty()) ? Collections.emptyList() : phases);
+          } catch (Exception ex) {
+            logger.error("Error fetching phases for portfolioId={}", id, ex);
+            p.setPortfolioPhases(Collections.emptyList());
+          }
+        }
+
+      } catch (Exception e) {
+        logger.error("Error fetching portfolio phases: {}", e.getMessage(), e);
+      }
 
     } catch (Exception e) {
     }
