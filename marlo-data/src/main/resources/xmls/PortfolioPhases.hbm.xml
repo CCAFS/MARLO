@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2018 3:39:52 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class
+		name="org.cgiar.ccafs.marlo.data.model.PortfolioPhase"
+		table="portfolio_phases" optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<many-to-one name="portfolio"
+			class="org.cgiar.ccafs.marlo.data.model.Portfolio"
+			fetch="select">
+			<column name="portfolio_id" />
+		</many-to-one>		
+		<many-to-one name="phase"
+			class="org.cgiar.ccafs.marlo.data.model.Phase" fetch="select">
+			<column name="id_phase" />
+		</many-to-one>		
+	</class>
+</hibernate-mapping>

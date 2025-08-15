@@ -474,5 +474,7 @@
   <mapping resource="xmls/ProjectInnovationBundles.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationComplementarySolutions.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationComplementarySolutionFunctions.hbm.xml"/>
+  <mapping resource="xmls/Portfolios.hbm.xml"/>
+  <mapping resource="xmls/PortfolioPhases.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

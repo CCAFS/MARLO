@@ -59,9 +59,10 @@
 		<property name="orderIndex" type="java.lang.Integer">
             <column name="order_index" not-null="false" />
         </property>
-        <property name="afPhase" type="java.lang.Integer">
-            <column name="af_phase" not-null="false" />
-        </property>
+        <many-to-one name="portfolio"
+			class="org.cgiar.ccafs.marlo.data.model.Portfolio" fetch="select">
+			<column name="portfolio_id" not-null="false" />
+		</many-to-one>
 		<property name="value" type="java.math.BigDecimal">
 			<column name="value" precision="20" not-null="false" />
 		</property>
