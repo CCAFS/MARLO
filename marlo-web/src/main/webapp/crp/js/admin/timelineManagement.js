@@ -5,12 +5,12 @@ function init() {
   /* Declaring Events */
   attachEvents();
   
-  datePickerConfig({
-      "startDate": ".startDate",
-      "endDate": ".endDate",
-      defaultMinDateValue: $("#minDateValue").val(),
-      defaultMaxDateValue: $("#maxDateValue").val()
-  });
+	datePickerConfig({
+	  startDate: ".srfSlo:not(#srfSlo-template) .startDate",
+	  endDate:   ".srfSlo:not(#srfSlo-template) .endDate",
+	  defaultMinDateValue: $("#minDateValue").val(),
+	  defaultMaxDateValue: $("#maxDateValue").val()
+	});
 
 }
 
@@ -38,6 +38,21 @@ function attachEvents() {
     });
   });
 
+	
+	$(document).on('addComponent', function (e) {
+	  const $container = $(e.target); 
+
+	  $container.find('.startDate, .endDate').each(function () {
+	    try { $(this).datepicker('destroy'); } catch (err) {}
+	  });
+
+	  datePickerConfig({
+	    startDate: $container.find('.startDate'),
+	    endDate:   $container.find('.endDate'),
+	    defaultMinDateValue: $("#minDateValue").val(),
+	    defaultMaxDateValue: $("#maxDateValue").val()
+	  });
+	});
 }
 
 function addIdo() {
@@ -136,7 +151,6 @@ function date($start, $end, minDateStr, maxDateStr) {
     changeYear: true,
     numberOfMonths: 2,
     beforeShow: function(input, inst) {
-      // si está vacío, fija el primer día del mes actual visible
       if (!$start.val()) {
         var dp = $(this).datepicker('getDate');
         var today = new Date();
@@ -145,17 +159,14 @@ function date($start, $end, minDateStr, maxDateStr) {
       }
     },
     onChangeMonthYear: function(year, month /*1..12*/, inst) {
-      // Fija SIEMPRE el primer día del mes elegido
-      var selected = firstDayOf(inst.selectedYear, inst.selectedMonth); // month ya es 0..11 en inst
+      var selected = firstDayOf(inst.selectedYear, inst.selectedMonth); 
       $(this).datepicker('setDate', selected);
     },
     onSelect: function(dateText, inst) {
       var selected = $(this).datepicker('getDate');
       if (selected) {
-        // Asegura primer día del mes (por si se tecleó manual)
         var normalized = firstDayOf(selected.getFullYear(), selected.getMonth());
         $(this).datepicker('setDate', normalized);
-        // Ajusta min del END
         $end.datepicker('option', 'minDate', normalized);
       }
     }
@@ -170,7 +181,6 @@ function date($start, $end, minDateStr, maxDateStr) {
     changeYear: true,
     numberOfMonths: 2,
     beforeShow: function(input, inst) {
-      // si está vacío, fija el último día del mes actual visible
       if (!$end.val()) {
         var dp = $(this).datepicker('getDate');
         var today = new Date();
@@ -179,27 +189,22 @@ function date($start, $end, minDateStr, maxDateStr) {
       }
     },
     onChangeMonthYear: function(year, month /*1..12*/, inst) {
-      // Fija SIEMPRE el último día del mes elegido
       var selected = lastDayOf(inst.selectedYear, inst.selectedMonth);
       $(this).datepicker('setDate', selected);
     },
     onSelect: function(dateText, inst) {
       var selected = $(this).datepicker('getDate');
       if (selected) {
-        // Asegura último día del mes (por si se tecleó manual)
         var normalized = lastDayOf(selected.getFullYear(), selected.getMonth());
         $(this).datepicker('setDate', normalized);
-        // Ajusta max del START
         $start.datepicker('option', 'maxDate', normalized);
       }
     }
   });
 
-  // Quita el set “hoy” al hacer click (confunde la UX de mes/año)
   $start.off('click');
   $end.off('click');
 
-  // Opcional: prevenir escritura manual si quieres 100% comportamiento mensual
   // $start.attr('readonly', true);
   // $end.attr('readonly', true);
 }

@@ -1,0 +1,4 @@
+.ui-datepicker .ui-datepicker-calendar { display: table !important; }
+
+.ui-datepicker-multi .ui-datepicker-group { float: left; }
+.ui-datepicker { overflow: visible; }
