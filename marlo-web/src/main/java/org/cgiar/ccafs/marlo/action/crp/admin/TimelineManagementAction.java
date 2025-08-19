@@ -11,17 +11,19 @@
  ** along with MARLO.If not,see<http:// www.gnu.org/licenses/>.
  *****************************************************************/
 
-package org.cgiar.ccafs.marlo.action.superadmin;
+package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.superadmin.TimelineManagementValidator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -54,11 +56,20 @@ public class TimelineManagementAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
-    timelineActivities = timelineManager.findAll();
+    GlobalUnit globalUnit = this.getCurrentGlobalUnit();
+    if (globalUnit != null && globalUnit.getId() != null) {
+      timelineActivities = timelineManager.findAllByGlobalUnit(globalUnit.getId());
+    } else {
+      timelineActivities = Collections.emptyList();
+    }
 
     if (this.isHttpPost()) {
-      timelineActivities.clear();
+      if (timelineActivities == null) {
+        timelineActivities = new ArrayList<>();
+      } else {
+        // Clear the list to avoid duplicates
+        timelineActivities.clear();
+      }
     }
   }
 
