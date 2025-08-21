@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -75,15 +76,21 @@ public class TimelineManagementAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.canAccessSuperAdmin()) {
+    if (this.hasPermission("*")) {
       if (timelineActivities != null && !timelineActivities.isEmpty()) {
 
-        List<Long> IDs =
-          timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull).collect(Collectors.toList());
+        final Set<Long> keepIds = (timelineActivities == null) ? Collections.emptySet()
+          : timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull).collect(Collectors.toSet());
 
-        timelineManager.findAll().stream()
-          .filter(activityDB -> activityDB.getId() != null && !IDs.contains(activityDB.getId())).map(Timeline::getId)
-          .forEach(timelineManager::deleteTimeline);
+        // CRP null-safe
+        final GlobalUnit crp = getCurrentCrp();
+        if (crp != null && crp.getId() != null) {
+          final List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
+          if (existing != null && !existing.isEmpty()) {
+            existing.stream().filter(Objects::nonNull).map(Timeline::getId).filter(Objects::nonNull)
+              .filter(id -> !keepIds.contains(id)).forEach(timelineManager::deleteTimeline);
+          }
+        }
 
 
         for (Timeline activity : timelineActivities) {
@@ -94,6 +101,14 @@ public class TimelineManagementAction extends BaseAction {
           if (activity.getId() != null) {
             timeLineSave = timelineManager.getTimelineById(activity.getId());
           }
+
+          boolean hasAnyRequiredField =
+            (activity.getDescription() != null && !activity.getDescription().trim().isEmpty())
+              || activity.getStartDate() != null || activity.getEndDate() != null;
+          if (!hasAnyRequiredField) {
+            continue;
+          }
+
           if (activity.getDescription() != null) {
             timeLineSave.setDescription(activity.getDescription());
           }
@@ -112,6 +127,22 @@ public class TimelineManagementAction extends BaseAction {
 
           timelineManager.saveTimeline(timeLineSave);
 
+        }
+      } else {
+        try {
+          GlobalUnit crp = this.getCurrentCrp();
+          if (crp != null && crp.getId() != null) {
+            List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
+            if (existing != null && !existing.isEmpty()) {
+              for (Timeline t : existing) {
+                if (t != null && t.getId() != null) {
+                  timelineManager.deleteTimeline(t.getId());
+                }
+              }
+            }
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
 
