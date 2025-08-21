@@ -133,16 +133,10 @@ function datePickerConfig(opts) {
 
 function date($start, $end, minDateStr, maxDateStr) {
   var dateFormat = "yy-mm-dd";
-
-  // Usa los límites dinámicos si existen; fallback a tus rangos previos
   var minDate = minDateStr ? $.datepicker.parseDate(dateFormat, minDateStr) : new Date(2023,0,1);
   var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2026,11,31);
 
-  // Helper: primer/último día del mes visible
-  function firstDayOf(year, month0) { return new Date(year, month0, 1); }
-  function lastDayOf(year, month0)  { return new Date(year, month0 + 1, 0); }
-
-  // START
+  // START (sin normalizar al 1° del mes)
   $start.datepicker({
     dateFormat: dateFormat,
     minDate: minDate,
@@ -150,29 +144,19 @@ function date($start, $end, minDateStr, maxDateStr) {
     changeMonth: true,
     changeYear: true,
     numberOfMonths: 2,
-    beforeShow: function(input, inst) {
-      if (!$start.val()) {
-        var dp = $(this).datepicker('getDate');
-        var today = new Date();
-        var base = dp || new Date(today.getFullYear(), today.getMonth(), 1);
-        $(this).datepicker('setDate', firstDayOf(base.getFullYear(), base.getMonth()));
-      }
-    },
-    onChangeMonthYear: function(year, month /*1..12*/, inst) {
-      var selected = firstDayOf(inst.selectedYear, inst.selectedMonth); 
-      $(this).datepicker('setDate', selected);
-    },
-    onSelect: function(dateText, inst) {
-      var selected = $(this).datepicker('getDate');
-      if (selected) {
-        var normalized = firstDayOf(selected.getFullYear(), selected.getMonth());
-        $(this).datepicker('setDate', normalized);
-        $end.datepicker('option', 'minDate', normalized);
+    // no beforeShow que cambie la fecha
+    // no onChangeMonthYear que cambie la fecha
+    onSelect: function() {
+      var s = $start.datepicker('getDate');
+      if (s) {
+        $end.datepicker('option', 'minDate', s);
+        var e = $end.datepicker('getDate');
+        if (e && e < s) $end.datepicker('setDate', s);
       }
     }
   });
 
-  // END
+  // END (sin normalizar al último día del mes)
   $end.datepicker({
     dateFormat: dateFormat,
     minDate: minDate,
@@ -180,31 +164,14 @@ function date($start, $end, minDateStr, maxDateStr) {
     changeMonth: true,
     changeYear: true,
     numberOfMonths: 2,
-    beforeShow: function(input, inst) {
-      if (!$end.val()) {
-        var dp = $(this).datepicker('getDate');
-        var today = new Date();
-        var base = dp || new Date(today.getFullYear(), today.getMonth(), 1);
-        $(this).datepicker('setDate', lastDayOf(base.getFullYear(), base.getMonth()));
-      }
-    },
-    onChangeMonthYear: function(year, month /*1..12*/, inst) {
-      var selected = lastDayOf(inst.selectedYear, inst.selectedMonth);
-      $(this).datepicker('setDate', selected);
-    },
-    onSelect: function(dateText, inst) {
-      var selected = $(this).datepicker('getDate');
-      if (selected) {
-        var normalized = lastDayOf(selected.getFullYear(), selected.getMonth());
-        $(this).datepicker('setDate', normalized);
-        $start.datepicker('option', 'maxDate', normalized);
+    onSelect: function() {
+      var e = $end.datepicker('getDate');
+      if (e) {
+        $start.datepicker('option', 'maxDate', e);
+        var s = $start.datepicker('getDate');
+        if (s && s > e) $start.datepicker('setDate', e);
       }
     }
   });
-
-  $start.off('click');
-  $end.off('click');
-
-  // $start.attr('readonly', true);
-  // $end.attr('readonly', true);
 }
+
