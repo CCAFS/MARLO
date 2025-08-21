@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.PRMSInnovationDAO;
 import org.cgiar.ccafs.marlo.data.model.PRMSInnovation;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,10 +62,10 @@ public class PRMSInnovationMySQLDAO extends AbstractMarloDAO<PRMSInnovation, Lon
   public List<PRMSInnovation> findAll() {
     String query = "from " + PRMSInnovation.class.getName();
     List<PRMSInnovation> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
+    if (list == null || list.isEmpty()) {
+      return Collections.emptyList();
     }
-    return null;
+    return list;
   }
 
   @Override
