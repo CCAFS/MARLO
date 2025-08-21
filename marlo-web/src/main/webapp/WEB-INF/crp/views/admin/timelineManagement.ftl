@@ -43,7 +43,7 @@
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
+        [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
