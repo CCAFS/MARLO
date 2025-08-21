@@ -117,6 +117,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationBundle> bundles;
   private Set<ProjectInnovationComplementarySolution> ProjectInnovationComplementarySolutions = new HashSet<>(0);
   private List<ProjectInnovationComplementarySolution> complementarySolutions;
+  private List<ProjectInnovationPRMS> prmsInnovations;
 
   public List<ProjectInnovationActor> getActors() {
     return actors;
@@ -134,6 +135,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public List<ProjectInnovationBundle> getBundles() {
     return bundles;
   }
+
 
   public List<ProjectInnovationCenter> getCenters() {
     return centers;
@@ -218,11 +220,9 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .filter(pg -> pg.isActive() && pg.getPhase().equals(phase)).collect(Collectors.toList()));
   }
 
-
   public List<ProjectInnovationImpactArea> getImpactAreas() {
     return impactAreas;
   }
-
 
   public String getInnovationsComposedName() {
     if (this.projectInnovationInfo.getRepIndInnovationType() != null
@@ -236,12 +236,14 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     }
   }
 
+
   @Override
   public String getLogDeatil() {
     StringBuilder sb = new StringBuilder();
     sb.append("Id : ").append(this.getId());
     return sb.toString();
   }
+
 
   public List<ProjectInnovationMilestone> getMilestones() {
     return milestones;
@@ -259,14 +261,18 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     return pdfLink;
   }
 
+  public List<ProjectInnovationPRMS> getPrmsInnovations() {
+    return prmsInnovations;
+  }
+
   public Project getProject() {
     return this.project;
   }
 
+
   public Set<ProjectExpectedStudyInnovation> getProjectExpectedStudyInnovations() {
     return projectExpectedStudyInnovations;
   }
-
 
   public Set<ProjectInnovationActor> getProjectInnovationActors() {
     return projectInnovationActors;
@@ -492,6 +498,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.centers = centers;
   }
 
+
   public void setCommentStatus(String commentStatus) {
     this.commentStatus = commentStatus;
   }
@@ -499,7 +506,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setComplementarySolutions(List<ProjectInnovationComplementarySolution> complementarySolutions) {
     this.complementarySolutions = complementarySolutions;
   }
-
 
   public void setContributingOrganizations(List<ProjectInnovationContributingOrganization> contributingOrganizations) {
     this.contributingOrganizations = contributingOrganizations;
@@ -553,6 +559,10 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.pdfLink = pdfLink;
   }
 
+  public void setPrmsInnovations(List<ProjectInnovationPRMS> prmsInnovations) {
+    this.prmsInnovations = prmsInnovations;
+  }
+
   public void setProject(Project project) {
     this.project = project;
   }
@@ -568,6 +578,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setProjectInnovationAllianceLevers(Set<ProjectInnovationAllianceLevers> projectInnovationAllianceLevers) {
     this.projectInnovationAllianceLevers = projectInnovationAllianceLevers;
   }
+
 
   public void setProjectInnovationAllianceOrganizations(
     Set<ProjectInnovationAllianceOrganization> projectInnovationAllianceOrganizations) {
@@ -591,7 +602,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     Set<ProjectInnovationContributingOrganization> projectInnovationContributingOrganization) {
     this.projectInnovationContributingOrganization = projectInnovationContributingOrganization;
   }
-
 
   public void setProjectInnovationCountries(Set<ProjectInnovationCountry> projectInnovationCountries) {
     this.projectInnovationCountries = projectInnovationCountries;
@@ -668,6 +678,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
     this.projectInnovationShareds = projectInnovationShareds;
   }
 
+
   public void setProjectInnovationSubIdos(Set<ProjectInnovationSubIdo> projectInnovationSubIdos) {
     this.projectInnovationSubIdos = projectInnovationSubIdos;
   }
@@ -692,7 +703,6 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   public void setReferenceUrls(List<ProjectInnovationReferenceUrl> referenceUrls) {
     this.referenceUrls = referenceUrls;
   }
-
 
   public void setRegions(List<ProjectInnovationRegion> regions) {
     this.regions = regions;
