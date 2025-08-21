@@ -24,11 +24,11 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
   @Expose
   private String title;
   @Expose
-  private int prmsResultId;
+  private Long prmsResultId;
   @Expose
   private String description;
   @Expose
-  private int typeId;
+  private Long typeId;
   @Expose
   private String typeName;
   @Expose
@@ -36,7 +36,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
   @Expose
   private String pdfLink;
   @Expose
-  private int readinessLevelId;
+  private Long readinessLevelId;
   @Expose
   private String readinessLevelName;
 
@@ -48,11 +48,11 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     return pdfLink;
   }
 
-  public int getPrmsResultId() {
+  public Long getPrmsResultId() {
     return prmsResultId;
   }
 
-  public int getReadinessLevelId() {
+  public Long getReadinessLevelId() {
     return readinessLevelId;
   }
 
@@ -64,7 +64,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     return title;
   }
 
-  public int getTypeId() {
+  public Long getTypeId() {
     return typeId;
   }
 
@@ -80,16 +80,15 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     this.description = description;
   }
 
-
   public void setPdfLink(String pdfLink) {
     this.pdfLink = pdfLink;
   }
 
-  public void setPrmsResultId(int prmsResultId) {
+  public void setPrmsResultId(Long prmsResultId) {
     this.prmsResultId = prmsResultId;
   }
 
-  public void setReadinessLevelId(int readinessLevelId) {
+  public void setReadinessLevelId(Long readinessLevelId) {
     this.readinessLevelId = readinessLevelId;
   }
 
@@ -101,7 +100,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     this.title = title;
   }
 
-  public void setTypeId(int typeId) {
+  public void setTypeId(Long typeId) {
     this.typeId = typeId;
   }
 

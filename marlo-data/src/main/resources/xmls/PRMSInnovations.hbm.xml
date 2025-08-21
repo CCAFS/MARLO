@@ -14,10 +14,10 @@
     <property name="description" type="string">
       <column name="description" />
     </property>
-    <property name="prmsResultId" type="int">
+    <property name="prmsResultId" type="java.lang.Long">
     	<column name="prms_result_id" />
     </property>
-    <property name="typeId" type="int">
+    <property name="typeId" type="java.lang.Long">
     	<column name="type_id" />
     </property>
     <property name="typeName" type="string">
@@ -29,7 +29,7 @@
     <property name="pdfLink" type="string">
     	<column name="pdf_link" />
     </property>
-    <property name="readinessLevelId" type="int">
+    <property name="readinessLevelId" type="java.lang.Long">
     	<column name="readiness_level_id" />
     </property>
     <property name="readinessLevelName" type="string">
