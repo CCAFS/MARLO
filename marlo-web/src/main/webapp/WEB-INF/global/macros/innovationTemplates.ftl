@@ -62,18 +62,41 @@
               
 
     </div>
-    <div class="form-group col-md-12 margin-buttom-0 margin-top-10">
+    <div class="form-group col-md-12 margin-buttom-0 margin-top-10" style="height: 63px;" >
       <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" >
         <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
         <div class="prmsContents margin-left-10">
           <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
           <b class="prmsContents__amount font-size-12">No innovations mapped</b>
         </div>
-        <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-dismiss="modal"><span class="entypo--popup"></span>Map innovations</button>
+        <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal"><span class="entypo--popup"></span>Map innovations</button>
       </div>
-      <div class="col-md-6 grayPlatinumBox padding-left-16-px">
+      <div class="col-md-6 grayPlatinumBox padding-left-16-px" style="height: inherit; align-content: center;">
         <label class="displayContents">Status:</label>
         <label class="displayContents"><b>Not yet synchronized with PRMS</b></label>
+      </div>
+
+
+      [#-- PRMS Innovations List Modal --]
+      <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="prmsInnovationsModalLabel">[@s.text name="projectInnovations.prmsInnovations.title" /]</h4>
+            </div>
+            <div class="modal-body">
+              [#-- Note - Green --]
+              <div class="note">
+                <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
+              </div>
+
+              [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
+
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
       </div>
     </div>
   </div>
@@ -1505,4 +1528,58 @@
       <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
       <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
   </div>
+[/#macro]
+
+[#macro tablePRMSInnovation list selected={} ]
+
+  [#-- Scaling Innovation Titles --]
+  [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Innovation Title</th>
+        <th>Readiness level</th>
+        <th class="no-sort">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      [#list list as innovation]
+        [#-- Scaling Readiness value --]
+        [#local scaleReadiness = (innovation.readinessLevelId)!"" ]
+
+        [#local isScalingReadines = ((innovation.readinessLevelId?has_content))!false ]
+
+        [#local textBtn = "Map" /]
+        [#if selected?has_content]
+          [#list selected as sel]
+            [#if sel.selectedInnovation.id == innovation.id]
+              [#local innovationSelected = true /]
+              [#local textBtn = "Mapped" /]
+            [/#if]
+          [/#list]
+        [/#if]
+        <tr>
+          <td>${innovation.prmsResultId!''}</td>
+          <td>${innovation.title!''}</td>
+          [#-- Readiness Level --]
+          <td class="text-center">
+            [#if isScalingReadines]
+              <span class="inno-scale inno-scale-${scaleReadiness}">[@utilities.tableText value=scaleReadiness /]</span>
+              <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
+            [#else]
+              [@utilities.tableText value=(innovation.readinessLevel.name)!"" /]
+            [/#if]
+          </td>
+          <td>
+            <button class="btn btn-primary selectInnovation" data-id="${innovation.id!''}">Map</button>
+            <a href="${innovation.pdfLink}" target="_blank" rel="noopener noreferrer">
+              <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>
+          </td>
+        </tr>
+      [/#list]
+    </tbody>
+  </table>
 [/#macro]
