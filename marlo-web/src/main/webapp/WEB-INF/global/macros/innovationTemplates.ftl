@@ -1,9 +1,9 @@
 [#ftl]
 
 [#macro innovationDescription element name index=-1 template=false ]
-  <div class="borderBox generalInformationInnovations">    
+  <div class="borderBox borderBox--noPadding generalInformationInnovations margin-buttom-20">    
     [#-- General Inputs --]
-    <div class="form-group row">
+    <div class="form-group paddingBorderBox">
 
       [#-- hr in elements --]
       <hr class="line-hr" />
@@ -61,7 +61,21 @@
       </div>
               
 
-    </div>         
+    </div>
+    <div class="form-group col-md-12 margin-buttom-0 margin-top-10">
+      <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" >
+        <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
+        <div class="prmsContents margin-left-10">
+          <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
+          <b class="prmsContents__amount font-size-12">No innovations mapped</b>
+        </div>
+        <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-dismiss="modal"><span class="entypo--popup"></span>Map innovations</button>
+      </div>
+      <div class="col-md-6 grayPlatinumBox padding-left-16-px">
+        <label class="displayContents">Status:</label>
+        <label class="displayContents"><b>Not yet synchronized with PRMS</b></label>
+      </div>
+    </div>
   </div>
 [/#macro]
 
