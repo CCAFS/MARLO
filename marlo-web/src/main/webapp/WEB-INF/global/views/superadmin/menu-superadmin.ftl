@@ -34,7 +34,6 @@
   [#assign managers= [
     { 'slug': 'marloMessages',    'name': 'menu.superadmin.marloMessages', 'action': 'marloMessages',   'active': true },
     { 'slug': 'tipManagement',    'name': 'menu.superadmin.tipManagement', 'action': 'tipManagement',   'active': true },
-    { 'slug': 'timelineManagement',    'name': 'menu.superadmin.timelineManagement', 'action': 'timelineManagement',   'active': true}
     { 'slug': 'reportsManagement',    'name': 'menu.superadmin.reportsManagement', 'action': 'reportsManagement',   'active': true}
     { 'slug': 'buttonGuideManagement',    'name': 'menu.superadmin.buttonGuideManagement', 'action': 'buttonGuideManagement',   'active': true}
   ]/]

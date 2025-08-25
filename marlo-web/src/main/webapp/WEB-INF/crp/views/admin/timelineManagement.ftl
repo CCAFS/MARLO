@@ -2,14 +2,15 @@
 [#assign title = "Timeline Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/timelineManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/timelineManagement.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
  ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
-[#assign currentSection = "superadmin" /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/timeline.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
+[#assign currentSection = "admin" /]
 [#assign currentStage = "timelineManagement" /]
 
 [#assign breadCrumb = [
-  {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
+  {"label":"admin", "nameSpace":"", "action":"adminManagement"},
   {"label":"timelineManagement", "nameSpace":"", "action":""}
 ]/]
 
@@ -42,7 +43,7 @@
   <div class="container"> 
     <div class="row">
       <div class="col-md-3">
-        [#include "/WEB-INF/global/views/superadmin/menu-superadmin.ftl" /]
+        [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
         [@s.form action=actionName enctype="multipart/form-data" ]
@@ -83,10 +84,15 @@
     [#-- Remove Button --]
     <div class="remove-element removeElement sm" title="Remove"></div>
     
-    [#-- SLO Title --]
-    <div class="blockTitle closed">
-      <strong>Timeline Activity ${index+1}: </strong>${(element.description[0..*99])!'Timeline Activity'}...
-    </div>
+    [#-- Timeline Activity Title --]
+		<div class="blockTitle closed">
+		  <strong>Timeline Activity ${index + 1}: </strong>
+		  [#if element.description?has_content]
+		    ${ element.description?substring(0, (element.description?length > 99)?then(99, element.description?length)) }...
+		  [#else]
+		    Timeline Activity
+		  [/#if]
+		</div>
     
     <div class="blockContent" style="display:none">
       <hr />
