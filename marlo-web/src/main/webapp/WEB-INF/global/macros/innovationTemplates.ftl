@@ -1587,15 +1587,6 @@
 
         [#local isScalingReadines = ((innovation.readinessLevelId?has_content))!false ]
 
-        [#local textBtn = "Map" /]
-        [#if selected?has_content && selected.id?has_content]
-          [#list selected as sel]
-            [#if sel.selectedInnovation.id == innovation.id]
-              [#local innovationSelected = true /]
-              [#local textBtn = "Mapped" /]
-            [/#if]
-          [/#list]
-        [/#if]
         <tr>
           <td>${innovation.prmsResultId!''}</td>
           <td title="${innovation.title!''}">${title!''}</td>
@@ -1608,8 +1599,18 @@
               [@utilities.tableText value=(innovation.readinessLevel.name)!"" /]
             [/#if]
           </td>
+          [#assign textBtn = "Map" /]
+          [#assign innovationSelected = false /]
+          [#if selected?has_content]
+            [#list selected as sel]
+              [#if sel.PRMSInnovation.id == innovation.id]
+                [#assign innovationSelected = true /]
+                [#assign textBtn = "Mapped" /]
+              [/#if]
+            [/#list]
+          [/#if]
           <td class="text-center">
-            <button class="btn btn-primary selectInnovationPRMS" data-id="${innovation.id!''}">Map</button>
+            <button class="btn btn-primary selectInnovationPRMS" data-id="${innovation.id!''}" data-selected="${innovationSelected?then('true','false')}" style="opacity: ${innovationSelected?then('0.5','1')}">${textBtn!""}</button>
             <a href="${innovation.pdfLink}" target="_blank" rel="noopener noreferrer">
               <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
@@ -1622,8 +1623,8 @@
 
 [#macro hiddenMapPRMSInnovations element name index template=false editable=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
-  <div class="innovationMappedItem" id="innovationMappedItem-${template?string('template',index)}" style="display:none;">
+  <div class="innovationMappedItem" id="innovationMappedItem-${template?string('template',index)}" style="display:none;" data-id="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}">
       <input type="hidden" name="${customName}.id" value="${element.id!''}" />
-      <input type="hidden" id="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.selectedInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
+      <input type="hidden" id="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
   </div>
 [/#macro]

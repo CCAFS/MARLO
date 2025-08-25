@@ -483,8 +483,17 @@ function attachEvents() {
    */
   (function () {
     // Events
-    $('.selectInnovationPRMS').on('click', addMapInnovation);
-    $('.removeInnovationPRMS').on('click', removeMapInnovation);
+    $('.selectInnovationPRMS').on('click', function(e) {
+      e.preventDefault();
+      const $button = $(this);
+      const selected = $button.attr('data-selected');
+
+      if (selected === 'true') {
+        removeMapInnovation.call($button, e);
+      } else {
+        addMapInnovation.call($button, e);
+      }
+    });
     updateCounterInnovationsMapped();
 
     // Function
@@ -509,9 +518,12 @@ function attachEvents() {
 
       // Update reference hidden input to be save in database
       $newItem.find('input[type="hidden"]#reference-mapped').val(innovationId);
+      $newItem.attr('data-id', innovationId);
       
       // Change text of the button 
       $button.text('Mapped');
+      $button.attr('data-selected', 'true');
+      $button.css('opacity', '0.5');
 
       // Show the element
       $newItem.appendTo($listBlock).hide().show(350);
@@ -528,7 +540,23 @@ function attachEvents() {
 
       const $button = $(this);
 
+      const innovationID = $button.attr('data-id');
+
+      const $listBlock = $('#referenceMappedPRMSInnovations');
+
+      const item = $listBlock.find('.innovationMappedItem[data-id="' + innovationID + '"]');
+
+      item.remove();
+
       $button.text('Map');
+      $button.attr('data-selected', 'false');
+      $button.css('opacity', '1');
+
+      // Update indexes
+      updateIndexes();
+
+      // Update counter for mapped innovations
+      updateCounterInnovationsMapped();
 
     }
 
