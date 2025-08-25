@@ -477,6 +477,117 @@ function attachEvents() {
     }
   })();
 
+  /**
+   * Innovation PRMS
+   * 
+   */
+  (function () {
+    // Events
+    $('.selectInnovationPRMS').on('click', function(e) {
+      e.preventDefault();
+      const $button = $(this);
+      const selected = $button.attr('data-selected');
+
+      if (selected === 'true') {
+        removeMapInnovation.call($button, e);
+      } else {
+        addMapInnovation.call($button, e);
+      }
+    });
+    updateCounterInnovationsMapped();
+
+    // Function
+    function addMapInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      const innovationId = $button.attr('data-id');
+
+      const $listBlock = $('#referenceMappedPRMSInnovations');
+      const $template = $('#innovationMappedItem-template');
+
+      const $newItem = $template.clone(true).removeAttr('id');
+
+      $newItem.find('input').each(function (_i, e) {
+        if (e.name && e.name.includes("_TEMPLATE_")) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        }
+      });
+
+      // Update reference hidden input to be save in database
+      $newItem.find('input[type="hidden"]#reference-mapped').val(innovationId);
+      $newItem.attr('data-id', innovationId);
+      
+      // Change text of the button 
+      $button.text('Mapped');
+      $button.attr('data-selected', 'true');
+      $button.css('opacity', '0.5');
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+
+      // Update counter for mapped innovations
+      updateCounterInnovationsMapped();
+
+    }
+
+    function removeMapInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      const innovationID = $button.attr('data-id');
+
+      const $listBlock = $('#referenceMappedPRMSInnovations');
+
+      const item = $listBlock.find('.innovationMappedItem[data-id="' + innovationID + '"]');
+
+      item.remove();
+
+      $button.text('Map');
+      $button.attr('data-selected', 'false');
+      $button.css('opacity', '1');
+
+      // Update indexes
+      updateIndexes();
+
+      // Update counter for mapped innovations
+      updateCounterInnovationsMapped();
+
+    }
+
+    function updateCounterInnovationsMapped() {
+      const count = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').length;
+      const $noCountInfo = $('.prmsContents__no__amount');
+      const $countInfo = $('.prmsContents__amount');
+      if (count > 0) {
+        $noCountInfo.hide();
+        $countInfo.show();
+      } else {
+        $noCountInfo.show();
+        $countInfo.hide();
+      }
+
+      $countInfo.find('#modalCounterPRMS').text(count);
+    }
+
+    function updateIndexes() {
+      $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').each(function (i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+
+        $(innovation).find('label').each(function (_i, e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
+
+  })();
+
   const readinessModule = evidencesModule();
   readinessModule.init('Readiness');
 
@@ -595,6 +706,8 @@ function attachEvents() {
 
   addDataTableAllInnovations();
 
+  addDataTablePRMSInnovations();
+
   changeInformativeTextPRMSEquivalence();
 }
 
@@ -674,6 +787,13 @@ function counterSharedCluster() {
   $('div[listname="innovation.sharedInnovations"] .setSelect2').on('change', function () {
     currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
     $counter.text(currentAmount);
+  });
+
+  $('div[listname="innovation.sharedInnovations"] .removeElement').on('click', function () {
+    setTimeout(function () {
+      currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
+      $counter.text(currentAmount);
+    }, 500);
   });
 }
 
@@ -1692,6 +1812,77 @@ function changeInformativeTextPRMSEquivalence() {
       });
     } else {
       $blockPRMSEquivalence.hide();
+    }
+  });
+}
+
+function addDataTablePRMSInnovations() {
+  $('#table-prms-innovations').each(function (_i, table) {
+    // Skip empty tables or tables without proper structure
+    if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
+      console.warn('Skipping DataTables initialization for invalid table structure.');
+      return;
+    }
+
+    // Prevent re-initialization
+    if ($.fn.dataTable.isDataTable(table)) {
+      return;
+    }
+
+    // Get total number of columns
+    const columns = $(table).find('thead th').length;
+
+    const noSortColumns = [];
+    $(table).find('thead th.no-sort').each(function () {
+      noSortColumns.push($(this).index());
+    });
+
+    try {
+      $(table).DataTable({
+        // DataTables options
+        "bPaginate": true,
+        "bLengthChange": true,
+        "bFilter": true,
+        "bSort": true,
+        "bAutoWidth": false,
+        "iDisplayLength": 10,
+        "language": {
+          "searchPlaceholder": "Search...",
+          "emptyTable": "No innovation entries entered into the system yet."
+        },
+        "order": columns > 1 ? [[1, 'desc']] : [],
+        "columnDefs": [
+          { "targets": noSortColumns, "orderable": false }
+        ]
+      });
+
+      // Add styles to the table
+      const $table = $(table);
+      const $wrapper = $table.closest('.dataTables_wrapper');
+
+      if ($wrapper.length) {
+        const iconSearch = $("<div></div>").addClass("iconSearch");
+        const $filter = $wrapper.find('.dataTables_filter');
+
+        if ($filter.length) {
+          iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
+          $filter.parent().prepend(iconSearch);
+        }
+
+        const $length = $wrapper.find('.dataTables_length');
+        if ($length.length) {
+          $length.parent().css({
+            "position": "absolute",
+            "margin-left": "33%",
+            "bottom": "0",
+            "z-index": "1",
+            "width": "15%"
+          });
+        }
+      }
+    }
+    catch (error) {
+      console.error('Error initializing DataTable:', error);
     }
   });
 }

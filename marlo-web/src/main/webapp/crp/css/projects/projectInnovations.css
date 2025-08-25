@@ -272,10 +272,6 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   position: relative;
 }
 
-.generalInformationInnovations .form-group {
-  position: relative;
-}
-
 .generalInformationInnovations .form-group .line-hr{
   position: absolute; 
   top: 14%;
@@ -350,9 +346,49 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   border-radius: 100%;
 }
 
+#modalCounterPRMS{
+  display: inline-block;
+  background-color: #545454;
+  color: #DFDFDF;
+  width: 16px;
+  border-radius: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
 .copyButton{
   position: relative;
   top: 11px;
+}
+
+.btnPRMSInnovations{
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  color: #fff;
+  border-radius: 0.6rem;
+  background: #668FDA;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;  
+}
+
+.btnPRMSInnovations .entypo--popup{
+  margin-right: 6px;
+}
+
+.entypo--popup {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23000' d='M16 2H7.979C6.88 2 6 2.88 6 3.98V12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2m0 10H8V4h8zM4 10H2v6c0 1.1.9 2 2 2h6v-2H4z'/%3E%3C/svg%3E");
+  background-color: currentColor;
+  -webkit-mask-image: var(--svg);
+  mask-image: var(--svg);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 .grayBlueBox .elementsListComponent {
@@ -440,6 +476,11 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
 
 /** Select innovations **/
 .selectInnovationBundle {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+
+.selectInnovationPRMS {
   padding: 3px 9px;
   font-size: 12px;
 }
