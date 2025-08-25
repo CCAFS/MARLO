@@ -470,6 +470,11 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   font-size: 12px;
 }
 
+.selectInnovationPRMS {
+  padding: 3px 9px;
+  font-size: 12px;
+}
+
 .title-link:hover{
   text-decoration: underline;
   color: #1882aa;

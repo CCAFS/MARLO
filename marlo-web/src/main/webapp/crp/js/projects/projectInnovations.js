@@ -595,6 +595,8 @@ function attachEvents() {
 
   addDataTableAllInnovations();
 
+  addDataTablePRMSInnovations();
+
   changeInformativeTextPRMSEquivalence();
 }
 
@@ -1692,6 +1694,77 @@ function changeInformativeTextPRMSEquivalence() {
       });
     } else {
       $blockPRMSEquivalence.hide();
+    }
+  });
+}
+
+function addDataTablePRMSInnovations() {
+  $('#table-prms-innovations').each(function (_i, table) {
+    // Skip empty tables or tables without proper structure
+    if ($(table).find('thead th').length === 0 || $(table).find('tbody').length === 0) {
+      console.warn('Skipping DataTables initialization for invalid table structure.');
+      return;
+    }
+
+    // Prevent re-initialization
+    if ($.fn.dataTable.isDataTable(table)) {
+      return;
+    }
+
+    // Get total number of columns
+    const columns = $(table).find('thead th').length;
+
+    const noSortColumns = [];
+    $(table).find('thead th.no-sort').each(function () {
+      noSortColumns.push($(this).index());
+    });
+
+    try {
+      $(table).DataTable({
+        // DataTables options
+        "bPaginate": true,
+        "bLengthChange": true,
+        "bFilter": true,
+        "bSort": true,
+        "bAutoWidth": false,
+        "iDisplayLength": 10,
+        "language": {
+          "searchPlaceholder": "Search...",
+          "emptyTable": "No innovation entries entered into the system yet."
+        },
+        "order": columns > 1 ? [[1, 'desc']] : [],
+        "columnDefs": [
+          { "targets": noSortColumns, "orderable": false }
+        ]
+      });
+
+      // Add styles to the table
+      const $table = $(table);
+      const $wrapper = $table.closest('.dataTables_wrapper');
+
+      if ($wrapper.length) {
+        const iconSearch = $("<div></div>").addClass("iconSearch");
+        const $filter = $wrapper.find('.dataTables_filter');
+
+        if ($filter.length) {
+          iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width: 24px; margin: auto;">');
+          $filter.parent().prepend(iconSearch);
+        }
+
+        const $length = $wrapper.find('.dataTables_length');
+        if ($length.length) {
+          $length.parent().css({
+            "position": "absolute",
+            "margin-left": "33%",
+            "bottom": "0",
+            "z-index": "1",
+            "width": "25%"
+          });
+        }
+      }
+    }
+    catch (error) {
+      console.error('Error initializing DataTable:', error);
     }
   });
 }

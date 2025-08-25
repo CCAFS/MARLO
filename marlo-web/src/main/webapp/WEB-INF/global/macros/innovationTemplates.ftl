@@ -79,19 +79,26 @@
 
       [#-- PRMS Innovations List Modal --]
       <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg" style="width: 1100px;">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <button type="button" class="close" data-dismiss="modal" >&times;</button>
               <h4 class="modal-title" id="prmsInnovationsModalLabel">[@s.text name="projectInnovations.prmsInnovations.title" /]</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 6px;">
               [#-- Note - Green --]
               <div class="note">
                 <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
               </div>
 
               [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
+
+              <hr style="background: #CCC; width: 100%;" />
+
+              <div>
+                <label>[@s.text name="projectInnovations.prmsInnovations.additionalNotes" /]:</label>
+                [@s.text name="projectInnovations.prmsInnovations.additionalNotes.items" /]
+              </div>
 
             </div>
           </div>
@@ -1535,17 +1542,26 @@
   [#-- Scaling Innovation Titles --]
   [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
   
-  <table class="table table-striped">
+  <table id="table-prms-innovations" class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Innovation Title</th>
-        <th>Readiness level</th>
-        <th class="no-sort">Actions</th>
+        <th class="text-center">ID</th>
+        <th width="65%">Title</th>
+        <th width="15%">Readiness level</th>
+        <th class="no-sort" width="15%">Action</th>
       </tr>
     </thead>
     <tbody>
       [#list list as innovation]
+
+        [#local title]
+          [#if ((innovation.title?has_content))]
+            [@utilities.wordCutter string=(innovation.title)!"" maxPos=120 /]
+          [#else]
+            No provided
+          [/#if]
+        [/#local]
+
         [#-- Scaling Readiness value --]
         [#local scaleReadiness = (innovation.readinessLevelId)!"" ]
 
@@ -1562,7 +1578,7 @@
         [/#if]
         <tr>
           <td>${innovation.prmsResultId!''}</td>
-          <td>${innovation.title!''}</td>
+          <td>${title!''}</td>
           [#-- Readiness Level --]
           <td class="text-center">
             [#if isScalingReadines]
@@ -1572,8 +1588,8 @@
               [@utilities.tableText value=(innovation.readinessLevel.name)!"" /]
             [/#if]
           </td>
-          <td>
-            <button class="btn btn-primary selectInnovation" data-id="${innovation.id!''}">Map</button>
+          <td class="text-center">
+            <button class="btn btn-primary selectInnovationPRMS" data-id="${innovation.id!''}">Map</button>
             <a href="${innovation.pdfLink}" target="_blank" rel="noopener noreferrer">
               <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
             </a>
