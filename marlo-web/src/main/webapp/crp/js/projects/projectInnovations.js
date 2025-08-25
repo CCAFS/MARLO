@@ -677,6 +677,13 @@ function counterSharedCluster() {
     currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
     $counter.text(currentAmount);
   });
+
+  $('div[listname="innovation.sharedInnovations"] .removeElement').on('click', function () {
+    setTimeout(function () {
+      currentAmount = $('div[listname="innovation.sharedInnovations"] ul.list li').length;
+      $counter.text(currentAmount);
+    }, 500);
+  });
 }
 
 // Copy URL Button event
