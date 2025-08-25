@@ -32,7 +32,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
   @Expose
   private String typeName;
   @Expose
-  private int year;
+  private Integer year;
   @Expose
   private String pdfLink;
   @Expose
@@ -72,7 +72,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     return typeName;
   }
 
-  public int getYear() {
+  public Integer getYear() {
     return year;
   }
 
@@ -108,7 +108,7 @@ public class PRMSInnovation extends MarloBaseEntity implements java.io.Serializa
     this.typeName = typeName;
   }
 
-  public void setYear(int year) {
+  public void setYear(Integer year) {
     this.year = year;
   }
 }

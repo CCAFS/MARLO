@@ -1447,14 +1447,24 @@ public class ProjectInnovationAction extends BaseAction {
         }
 
         // Innovations PRMS
-        try {
-          List<ProjectInnovationPRMS> prmsInnovations =
-            projectInnovationPRMSManager.findByInnovationIDAndPhaseID(innovation.getId(), this.getPhaseID());
-          if (prmsInnovations != null && !prmsInnovations.isEmpty()) {
-            innovation.setPrmsInnovations(prmsInnovations);
-          }
-        } catch (RuntimeException e) {
-          e.printStackTrace();
+        /*
+         * try {
+         * if (innovation.getId() != null) {
+         * List<ProjectInnovationPRMS> prmsInnovations = projectInnovationPRMSManager
+         * .findByInnovationIDAndPhaseID(innovation.getId(), this.getActualPhase().getId());
+         * if (prmsInnovations != null && !prmsInnovations.isEmpty()) {
+         * innovation.setPrmsInnovations(new ArrayList<>(prmsInnovations));
+         * }
+         * }
+         * } catch (RuntimeException e) {
+         * e.printStackTrace();
+         * }
+         */
+
+        // Innovations PRMS
+        if (innovation.getProjectInnovationPRMS() != null) {
+          innovation.setPrmsInnovations(new ArrayList<>(innovation.getProjectInnovationPRMS().stream()
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
         // Innovations Bundles
@@ -2608,14 +2618,6 @@ public class ProjectInnovationAction extends BaseAction {
         toSave.setPRMSInnovation(incoming.getPRMSInnovation());
 
         projectInnovationPRMSManager.saveProjectInnovationPRMS(toSave);
-
-        // Keep owner set consistent
-        /*
-         * if (projectInnovation.getProjectInnovationPRMS() == null) {
-         * projectInnovation.setProjectInnovationPRMS(new HashSet<>());
-         * }
-         * projectInnovation.getProjectInnovationPRMS().add(toSave);
-         */
       }
 
     } catch (RuntimeException e) {
