@@ -63,7 +63,7 @@
 
     </div>
     <div class="form-group col-md-12 margin-buttom-0 margin-top-10" style="height: 63px;" >
-      <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" >
+      <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" style="height: inherit;">
         <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
         <div class="prmsContents margin-left-10">
           <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
