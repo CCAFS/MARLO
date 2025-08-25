@@ -477,6 +477,74 @@ function attachEvents() {
     }
   })();
 
+  /**
+   * Innovation PRMS
+   * 
+   */
+  (function () {
+    // Events
+    $('.selectInnovationPRMS').on('click', addMapInnovation);
+
+    // Function
+    function addMapInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      const innovationId = $button.attr('data-id');
+
+      const $listBlock = $('#referenceMappedPRMSInnovations');
+      const $template = $('#innovationMappedItem-template');
+
+      const $newItem = $template.clone(true).removeAttr('id');
+
+      $newItem.find('input').each(function (_i, e) {
+        if (e.name && e.name.includes("_TEMPLATE_")) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        }
+      });
+
+      // Update reference hidden input to be save in database
+      $newItem.find('input[type="hidden"]#reference-mapped').val(innovationId);
+      
+      // Change text of the button 
+      $button.text('Mapped');
+
+      // Show the element
+      $newItem.appendTo($listBlock).hide().show(350);
+      // Update indexes
+      updateIndexes();
+
+    }
+
+    function removeMapInnovation(e) {
+      e.preventDefault();
+
+      const $button = $(this);
+
+      $button.text('Map');
+
+    }
+
+    function updateCounterInnovationsMapped() {
+      const count = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').length;
+      $('.mappedInnovationsCount').text(count);
+    }
+
+    function updateIndexes() {
+      $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').each(function (i, innovation) {
+        $(innovation).setNameIndexes(1, i);
+
+        $(innovation).find('label').each(function (_i, e) {
+          const newForValue = $(e).prev('input').attr('id');
+          $(e).attr('for', newForValue);
+        });
+      });
+    }
+
+  })();
+
   const readinessModule = evidencesModule();
   readinessModule.init('Readiness');
 

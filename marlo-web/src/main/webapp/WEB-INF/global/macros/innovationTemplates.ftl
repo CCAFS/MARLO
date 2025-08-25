@@ -78,7 +78,7 @@
 
 
       [#-- PRMS Innovations List Modal --]
-      <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel" aria-hidden="true">
+      <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel">
         <div class="modal-dialog modal-lg" style="width: 1100px;">
           <div class="modal-content">
             <div class="modal-header">
@@ -105,6 +105,21 @@
         </div>
         <div class="clearfix"></div>
       </div>
+
+      [#-- Reference List of Mapped PRMS Innovations --]
+      <div id="referenceMappedPRMSInnovations" style="display: none;">
+      [#if element.prmsInnovations?has_content]
+        [#list element.prmsInnovations as prmsInnovation]
+          [@hiddenMapPRMSInnovations element=prmsInnovation name="innovation.prmsInnovations" index=prmsInnovation_index template=false editable=editable /]
+        [/#list]
+      [/#if]
+      </div>
+
+      [#-- Template hiddenMapPRMSInnovations --]
+      <div id="hiddenMapPRMSInnovations" style="display: none;">
+        [@hiddenMapPRMSInnovations element={} name="innovation.prmsInnovations" index=-1 template=true editable=editable /]
+      </div>
+
     </div>
   </div>
 [/#macro]
@@ -1578,7 +1593,7 @@
         [/#if]
         <tr>
           <td>${innovation.prmsResultId!''}</td>
-          <td>${title!''}</td>
+          <td title="${innovation.title!''}">${title!''}</td>
           [#-- Readiness Level --]
           <td class="text-center">
             [#if isScalingReadines]
@@ -1598,4 +1613,12 @@
       [/#list]
     </tbody>
   </table>
+[/#macro]
+
+[#macro hiddenMapPRMSInnovations element name index template=false editable=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div class="innovationMappedItem" id="innovationMappedItem-${template?string('template',index)}" style="display:none;">
+      <input type="hidden" name="${customName}.id" value="${element.id!''}" />
+      <input type="hidden" id="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.selectedInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
+  </div>
 [/#macro]
