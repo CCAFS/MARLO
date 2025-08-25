@@ -1829,6 +1829,16 @@ function addDataTablePRMSInnovations() {
       return;
     }
 
+    // Add mapped status data to each row for sorting
+    $(table).find('tbody tr').each(function() {
+      const $row = $(this);
+      const $button = $row.find('.selectInnovationPRMS');
+      const isMapped = $button.attr('data-selected') === 'true';
+      
+      // Add a data attribute to the row for sorting
+      $row.attr('data-mapped-status', isMapped ? '1' : '0');
+    });
+
     // Get total number of columns
     const columns = $(table).find('thead th').length;
 
@@ -1838,7 +1848,7 @@ function addDataTablePRMSInnovations() {
     });
 
     try {
-      $(table).DataTable({
+      const dataTable = $(table).DataTable({
         // DataTables options
         "bPaginate": true,
         "bLengthChange": true,
@@ -1852,9 +1862,33 @@ function addDataTablePRMSInnovations() {
         },
         "order": columns > 1 ? [[1, 'desc']] : [],
         "columnDefs": [
-          { "targets": noSortColumns, "orderable": false }
-        ]
+          { 
+            "targets": noSortColumns, 
+            "orderable": false 
+          }
+        ],
+        "drawCallback": function() {
+          // Re-sort to show mapped innovations first after each draw
+          this.api().rows().every(function() {
+            const $row = $(this.node());
+            const isMapped = $row.find('.selectInnovationPRMS').attr('data-selected') === 'true';
+            $row.attr('data-mapped-status', isMapped ? '1' : '0');
+          });
+        }
       });
+
+      // Custom sorting to show mapped innovations first
+      dataTable.rows().every(function() {
+        const $row = $(this.node());
+        const isMapped = $row.find('.selectInnovationPRMS').attr('data-selected') === 'true';
+        this.data()[this.data().length] = isMapped ? 1 : 0; // Add sort value
+      });
+
+      // Sort by mapped status (mapped first), then by ID
+      dataTable.order([
+        [3, 'desc'], // Assuming Action column for secondary sort
+        [0, 'asc']   // ID column for tertiary sort
+      ]).draw();
 
       // Add styles to the table
       const $table = $(table);
