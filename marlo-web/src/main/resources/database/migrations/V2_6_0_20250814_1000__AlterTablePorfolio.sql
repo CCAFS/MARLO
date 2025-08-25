@@ -1,2 +1,0 @@
-ALTER TABLE portfolios ADD global_unit_id bigint(20) NULL;
-ALTER TABLE portfolios ADD CONSTRAINT portfolios_global_units_FK FOREIGN KEY (global_unit_id) REFERENCES global_units(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

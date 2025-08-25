@@ -1,0 +1,1 @@
+ALTER TABLE crp_program_outcomes CHANGE af_phase portfolio_id bigint(20) NULL;
