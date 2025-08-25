@@ -22,6 +22,7 @@ public class Portfolio extends MarloAuditableEntity implements java.io.Serializa
   private GlobalUnit globalUnit;
 
   private List<PortfolioPhase> portfolioPhases;
+  private List<Long> selectedPhases;
 
   public Portfolio() {
   }
@@ -48,6 +49,10 @@ public class Portfolio extends MarloAuditableEntity implements java.io.Serializa
     return portfolioPhases;
   }
 
+  public List<Long> getSelectedPhases() {
+    return selectedPhases;
+  }
+
   public Date getStartDate() {
     return startDate;
   }
@@ -66,6 +71,10 @@ public class Portfolio extends MarloAuditableEntity implements java.io.Serializa
 
   public void setPortfolioPhases(List<PortfolioPhase> portfolioPhases) {
     this.portfolioPhases = portfolioPhases;
+  }
+
+  public void setSelectedPhases(List<Long> selectedPhases) {
+    this.selectedPhases = selectedPhases;
   }
 
   public void setStartDate(Date startDate) {

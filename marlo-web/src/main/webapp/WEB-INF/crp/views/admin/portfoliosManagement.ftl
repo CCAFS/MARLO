@@ -100,6 +100,12 @@
       </div>
       <div class="clearfix"></div>
         
+    [#-- Phases  --]
+    <div class="countriesBlock form-group" title="Select Phases clicking here">
+      [#-- Phases List --]
+      [@customForm.select name="${name}.selectedPhases" label=""  i18nkey="regionalMapping.CrpProgram.countries" listName="phases" keyFieldName="id"  displayFieldName="composedName" value="${name}.selectedPhases" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
+    </div>
+        
     </div>
   </div>
 [/#macro]
