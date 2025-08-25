@@ -28,7 +28,7 @@
 		<property name="active" type="boolean">
 			<column name="is_active" not-null="true" />
 		</property>
-		<property name="activeSince" type="timestamp" update="false">
+		<property name="activeSince" type="timestamp" insert="false" update="false">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="modificationJustification" type="string">

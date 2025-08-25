@@ -1588,7 +1588,7 @@
         [#local isScalingReadines = ((innovation.readinessLevelId?has_content))!false ]
 
         [#local textBtn = "Map" /]
-        [#if selected?has_content]
+        [#if selected?has_content && selected.id?has_content]
           [#list selected as sel]
             [#if sel.selectedInnovation.id == innovation.id]
               [#local innovationSelected = true /]
