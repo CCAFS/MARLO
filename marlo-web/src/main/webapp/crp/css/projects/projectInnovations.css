@@ -346,6 +346,16 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   border-radius: 100%;
 }
 
+#modalCounterPRMS{
+  display: inline-block;
+  background-color: #545454;
+  color: #DFDFDF;
+  width: 16px;
+  border-radius: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
 .copyButton{
   position: relative;
   top: 11px;

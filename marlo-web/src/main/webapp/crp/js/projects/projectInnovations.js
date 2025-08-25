@@ -484,6 +484,8 @@ function attachEvents() {
   (function () {
     // Events
     $('.selectInnovationPRMS').on('click', addMapInnovation);
+    $('.removeInnovationPRMS').on('click', removeMapInnovation);
+    updateCounterInnovationsMapped();
 
     // Function
     function addMapInnovation(e) {
@@ -516,6 +518,9 @@ function attachEvents() {
       // Update indexes
       updateIndexes();
 
+      // Update counter for mapped innovations
+      updateCounterInnovationsMapped();
+
     }
 
     function removeMapInnovation(e) {
@@ -529,7 +534,17 @@ function attachEvents() {
 
     function updateCounterInnovationsMapped() {
       const count = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').length;
-      $('.mappedInnovationsCount').text(count);
+      const $noCountInfo = $('.prmsContents__no__amount');
+      const $countInfo = $('.prmsContents__amount');
+      if (count > 0) {
+        $noCountInfo.hide();
+        $countInfo.show();
+      } else {
+        $noCountInfo.show();
+        $countInfo.hide();
+      }
+
+      $countInfo.find('#modalCounterPRMS').text(count);
     }
 
     function updateIndexes() {
@@ -1833,7 +1848,7 @@ function addDataTablePRMSInnovations() {
             "margin-left": "33%",
             "bottom": "0",
             "z-index": "1",
-            "width": "25%"
+            "width": "15%"
           });
         }
       }

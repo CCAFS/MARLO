@@ -67,7 +67,12 @@
         <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
         <div class="prmsContents margin-left-10">
           <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
-          <b class="prmsContents__amount font-size-12">No innovations mapped</b>
+          <div class="prmsContents__amount font-size-12" style="display: none;">
+            <span>Already Mapped:</span>
+            <span id="modalCounterPRMS">0</span>
+            <span><b>innovations</b></span>
+          </div>
+          <b class="prmsContents__no__amount font-size-12">No innovations mapped</b>
         </div>
         <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal"><span class="entypo--popup"></span>Map innovations</button>
       </div>
