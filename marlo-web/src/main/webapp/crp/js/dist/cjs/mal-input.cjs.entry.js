@@ -1,6 +1,6 @@
 'use strict';
 
-var index = require('./index-BDMyP6ST.js');
+var index = require('./index-CI1S0Ic_.js');
 
 const malInputCss = ":host{display:block}";
 

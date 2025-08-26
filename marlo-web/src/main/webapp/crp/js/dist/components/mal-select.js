@@ -1,4 +1,4 @@
-import { p as proxyCustomElement, H, d as createEvent, h, c as Host } from './p-LfeK-xMb.js';
+import { p as proxyCustomElement, H, d as createEvent, h, c as Host } from './p-CY-b_VSy.js';
 
 const malSelectCss = ":host{display:block}";
 
@@ -116,7 +116,7 @@ const MalSelect$1 = /*@__PURE__*/ proxyCustomElement(class MalSelect extends H {
         }
     }
     render() {
-        return (h(Host, { key: '56a93e3518dae75f744f8b21faf21e1672e86a65' }, h("div", { key: '08cdeeb6a33209bb555ddc9a056aedf69881464f', id: "react-dropdown" })));
+        return (h(Host, { key: '82ebc07899134c30e62615b91b81e0d94d9c8284' }, h("div", { key: '01a2f98aa261c76e283458107afdddd8ea8d7301', id: "react-dropdown" })));
     }
     static get watchers() { return {
         "data": ["onPropsChange"],

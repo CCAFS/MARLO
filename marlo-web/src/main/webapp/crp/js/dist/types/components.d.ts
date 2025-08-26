@@ -9,6 +9,27 @@ export namespace Components {
     interface MalInput {
     }
     interface MalMultiselect {
+        /**
+          * The data for the multiselect options.
+         */
+        "data": any[];
+        /**
+          * The label for the multiselect component.
+         */
+        "label": string;
+        /**
+          * The name of the multiselect component.
+         */
+        "name": string;
+        /**
+          * Whether to show the separate container for selected items.
+         */
+        "showSelectedContainer": boolean;
+        "value": any;
+        /**
+          * The options for the virtual scroller.
+         */
+        "virtualScrollerOptions": any;
     }
     interface MalSelect {
         /**
@@ -27,6 +48,10 @@ export namespace Components {
     interface MyComponent {
     }
 }
+export interface MalMultiselectCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMalMultiselectElement;
+}
 export interface MalSelectCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMalSelectElement;
@@ -38,7 +63,18 @@ declare global {
         prototype: HTMLMalInputElement;
         new (): HTMLMalInputElement;
     };
+    interface HTMLMalMultiselectElementEventMap {
+        "valueChange": any;
+    }
     interface HTMLMalMultiselectElement extends Components.MalMultiselect, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMalMultiselectElementEventMap>(type: K, listener: (this: HTMLMalMultiselectElement, ev: MalMultiselectCustomEvent<HTMLMalMultiselectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMalMultiselectElementEventMap>(type: K, listener: (this: HTMLMalMultiselectElement, ev: MalMultiselectCustomEvent<HTMLMalMultiselectElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLMalMultiselectElement: {
         prototype: HTMLMalMultiselectElement;
@@ -78,6 +114,31 @@ declare namespace LocalJSX {
     interface MalInput {
     }
     interface MalMultiselect {
+        /**
+          * The data for the multiselect options.
+         */
+        "data"?: any[];
+        /**
+          * The label for the multiselect component.
+         */
+        "label"?: string;
+        /**
+          * The name of the multiselect component.
+         */
+        "name"?: string;
+        /**
+          * Event emitted when the values changes.
+         */
+        "onValueChange"?: (event: MalMultiselectCustomEvent<any>) => void;
+        /**
+          * Whether to show the separate container for selected items.
+         */
+        "showSelectedContainer"?: boolean;
+        "value"?: any;
+        /**
+          * The options for the virtual scroller.
+         */
+        "virtualScrollerOptions"?: any;
     }
     interface MalSelect {
         /**
