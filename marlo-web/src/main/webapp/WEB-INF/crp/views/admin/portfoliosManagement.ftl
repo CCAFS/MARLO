@@ -103,7 +103,7 @@
     [#-- Phases  --]
     <div class="countriesBlock form-group" title="Select Phases clicking here">
       [#-- Phases List --]
-      [@customForm.select name="${name}.selectedPhases" label=""  i18nkey="portfolioManagement.associatedPhases" listName="phases" keyFieldName="id"  displayFieldName="composedName" value="${name}.selectedPhases" multiple=true required=true  className="countriesSelect form-control input-sm" /]              
+      [@customForm.select name="${name}.selectedPhases" label=""  i18nkey="portfolioManagement.phases" listName="phases" keyFieldName="id"  displayFieldName="composedName" value="${name}.selectedPhases" multiple=true required=true  className="countriesSelect form-control input-sm" /]              
     </div>
         
     </div>
