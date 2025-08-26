@@ -30,7 +30,7 @@ public class Clone {
    * NOTE: This variable (projectRoot) should be changed according to the local project location on each developer's
    * machine.
    */
-  public static String projectRoot = "D:\\MARLO-PROJECT - 4.5\\";
+  public static String projectRoot = "D:\\MARLO-PROJECT\\";
 
   public static String pathdao =
     projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
@@ -159,7 +159,7 @@ public class Clone {
      * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
      * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
      */
-    String[] model = {"OrganizationRole"};
+    String[] model = {"Portfolio", "PortfolioPhase"};
 
     for (int i = 0; i < model.length; i++) {
       generateDao(model[i]);
