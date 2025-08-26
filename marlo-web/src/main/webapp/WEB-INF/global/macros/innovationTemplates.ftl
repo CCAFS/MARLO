@@ -950,6 +950,7 @@
             [#-- multiselect organizations --]
             <div class="form-group">
               [@customForm.elementsListComponent name="${customName}.allianceOrganizations" elementType="institution" label="projectInnovations.anticipatedUsers.organizations" elementList=(element.allianceOrganizations)![] listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=true /]
+              <mal-multiselect name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true"></mal-multiselect>
             </div>
           </div>
           [#-- Element item Template --]
@@ -1247,7 +1248,7 @@
       <div class="col-md-6">
         [#local organizationId = (element.institution.id)!"" /]
         [@customForm.labelText name="${customName}.institution.id" text="projectInnovations.anticipatedUsers.organizations.name" required=true /]
-        <mal-select name="${customName}.institution.id" id="${customName}.institution.id" data-value="${organizationId}" class="allianceOrganizations-institutions" ></mal-select> 
+        [#-- <mal-select name="${customName}.institution.id" id="${customName}.institution.id" data-value="${organizationId}" class="allianceOrganizations-institutions" ></mal-select> --]
         [#-- [@customForm.select name="${customName}.institution.id" label="projectInnovations.anticipatedUsers.organizations.name"  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /] --]
       </div>
       <div class="col-md-6">
