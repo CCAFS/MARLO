@@ -1,24 +1,26 @@
+// Initialize when DOM is ready
 $(document).ready(init);
 
 function init() {
-
   /* Declaring Events */
   attachEvents();
-  
+
+  // Initialize Select2 on non-template selects
   addSelect2();
+
+  // Initialize any "filter" Select2 elements with custom options
   applySelect2Filters();
-	
-	datePickerConfig({
-	    "startDate": ".startDate",
-	    "endDate": ".endDate",
-	    defaultMinDateValue: $("#minDateValue").val(),
-	    defaultMaxDateValue: $("#maxDateValue").val()
-	});
-  
+
+  // Initialize datepickers per block (server-rendered blocks)
+  initPerBlockDatepickers($(document));
 }
 
+/* -------------------------------------------------------------------------- */
+/* Event wiring                                                               */
+/* -------------------------------------------------------------------------- */
 function attachEvents() {
 
+  // Filter by permission (legacy UI filter)
   $('#feedbackPermissionFilter').on('change', function () {
     const selectedId = $(this).val();
     $('.srfSlo').each(function () {
@@ -30,29 +32,28 @@ function attachEvents() {
       }
     });
   });
-  
+
   $('#clearFeedbackPermissionFilter').on('click', function () {
     $('#feedbackPermissionFilter').val(null).trigger('change');
   });
-  
+
+  // Scroll to new entry if present
   const newEntry = document.querySelector(".new-entry");
-    if (newEntry) {
-      newEntry.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-    }
-    
+  if (newEntry) {
+    newEntry.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+
+  // Add/remove handlers
   $('.addSlo').on('click', addIdo);
-
   $('.addIndicator').on('click', addIndicator);
-
   $('.addTargets').on('click', addTargets);
-
   $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
-
   $('.remove-element').on('click', removeElement);
 
+  // Collapsible block
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
@@ -65,32 +66,57 @@ function attachEvents() {
       $(this).find('textarea').autoGrow();
     });
   });
-  
-  $('#feedbackPermissionFilter').on('change', function () {
-  const selectedPermissionId = $(this).val();
 
+  // Filter by permission via data-permission-id (second legacy filter)
+  $('#feedbackPermissionFilter').on('change', function () {
+    const selectedPermissionId = $(this).val();
     $('.srfSlo').not('.is-template').each(function () {
       const itemPermissionId = $(this).data('permission-id') + "";
       const shouldShow = !selectedPermissionId || selectedPermissionId === itemPermissionId;
       $(this).toggle(shouldShow);
     });
   });
-  
+
+  // Prevent the hidden template from being posted (important for portfolios[-1] placeholders)
+  $('form').on('submit', function () {
+    $('#srfSlo-template').find('[name]').prop('disabled', true);
+  });
 }
 
+/* -------------------------------------------------------------------------- */
+/* Add/Remove blocks                                                          */
+/* -------------------------------------------------------------------------- */
 function addIdo() {
   console.log("add ido");
   var $itemsList = $(this).parent().find('.slos-list');
-  var $item = $("#srfSlo-template").clone(true).removeAttr("id");
-  $item.find('.blockTitle').trigger('click');
+  var $tpl = $("#srfSlo-template");
+  var $item = $tpl.clone(true).removeAttr("id"); // clone template and remove duplicate id
+
+  // Make sure the content is visible so widgets compute layout properly
+  $item.find('.blockContent').show();
+
+  // Clean field values in the cloned block
+  $item.find('input[type="hidden"][name$=".id"]').val('');
+  $item.find('input[type="text"]').val('');
+  $item.find('select').each(function () {
+    try { $(this).val(null).trigger('change'); } catch (e) {}
+  });
+  $item.find('.startDate, .endDate').prop('readonly', false);
+
+  // Append and animate
   $itemsList.append($item);
   $item.slideDown('slow');
+
+  // Update indexes with your existing utility
   updateIndexes();
-  $item.trigger('addComponent');
+
+  // Re-init widgets ONLY inside the cloned block
+  initSelect2Within($item);
+
+  // Re-init datepickers per block (Timeline-style: destroy -> re-init, local pair linkage)
+  wireDateRangeForBlock($item);  // ensures selecting a date actually sets input value
+  initDatepickers($item);        // optional: if Bootstrap Datepicker is also present
 }
-
-
-
 
 function addIndicator() {
   console.log("addIndicator");
@@ -133,27 +159,51 @@ function removeElement() {
   });
 }
 
+/* -------------------------------------------------------------------------- */
+/* Indexing                                                                   */
+/* -------------------------------------------------------------------------- */
 function updateIndexes() {
   $('.slos-list .srfSlo').each(function(i,slo) {
-    // Updating indexes
+    // Updating indexes (uses your custom setNameIndexes util)
     $(slo).setNameIndexes(1, i);
     $(slo).find('.srfSloIndicator').each(function(subIdoIndex,subIdo) {
-      // Updating indexes
       $(subIdo).setNameIndexes(2, subIdoIndex);
     });
   });
 
   $('.issues-list .srfCCIssue').each(function(i,crossCutting) {
-    // Updating indexes
     $(crossCutting).setNameIndexes(1, i);
-
   });
 }
 
+/* -------------------------------------------------------------------------- */
+/* Select2 helpers                                                            */
+/* -------------------------------------------------------------------------- */
+
+// Global Select2 init for non-template selects
 function addSelect2() {
-  $("form select").select2();
+  // Avoid initializing Select2 on the hidden template
+  $("form select").not("#srfSlo-template select").select2();
 }
 
+// Initialize Select2 only within a given block (used after cloning)
+function initSelect2Within($ctx) {
+  $ctx.find('select.countriesSelect').each(function () {
+    var $sel = $(this);
+    // Destroy previous Select2 instance if the template was already initialized
+    if ($sel.data('select2')) {
+      try { $sel.select2('destroy'); } catch (e) {}
+    }
+    $sel.prop('disabled', false);
+    $sel.select2({
+      width: '100%',
+      placeholder: (window.i18n_phases_placeholder || 'Select phases'),
+      dropdownParent: $sel.closest('.blockContent') // avoids clipping inside containers
+    });
+  });
+}
+
+// Special Select2 for "filters" (kept as you had it)
 function applySelect2Filters() {
   $('.select2-filter').select2({
     theme: 'bootstrap',
@@ -173,13 +223,105 @@ function applySelect2Filters() {
   });
 }
 
+/* -------------------------------------------------------------------------- */
+/* Datepickers                                                                */
+/* -------------------------------------------------------------------------- */
+
 /**
- * Attach to the date fields the datepicker plugin
+ * Initialize datepickers per block for already-rendered items.
+ * This ensures each cloned block has its own start/end linkage.
  */
-function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate));
+function initPerBlockDatepickers($ctx) {
+  $ctx.find('.srfSlo').not('.is-template').each(function () {
+    wireDateRangeForBlock($(this));
+  });
+  // If Bootstrap Datepicker is also present, run the destroy->reinit pass:
+  initDatepickers($ctx);
 }
 
+/**
+ * Wire one block's start/end date inputs so they update each other locally.
+ * - Destroys any previous plugin instances
+ * - Initializes jQuery UI datepicker range glue
+ * - Adds onSelect to ensure the input shows the chosen date
+ */
+function wireDateRangeForBlock($block) {
+  var $start = $block.find('input.startDate').first();
+  var $end   = $block.find('input.endDate').first();
+
+  if ($start.length === 0 && $end.length === 0) return;
+
+  // Destroy any existing datepicker instances (both jQuery UI and Bootstrap DP)
+  $start.add($end).each(function () {
+    try { if ($(this).hasClass('hasDatepicker')) { $(this).datepicker('destroy'); } } catch (e) {}
+    try { if ($(this).data('datepicker')) { $(this).datepicker('remove'); } } catch (e) {}
+    try { if ($(this).data('datepicker')) { $(this).datepicker('destroy'); } } catch (e) {}
+  });
+
+  // Use your existing "date" glue per block (jQuery UI datepicker)
+  date($start, $end);
+
+  // Force onSelect to always set the input value and update pair constraints locally
+  try {
+    $start.datepicker('option', 'onSelect', function () {
+      var sel = $start.datepicker('getDate');
+      if (sel) { $end.datepicker('option', 'minDate', sel); }
+    });
+  } catch (e) {}
+
+  try {
+    $end.datepicker('option', 'onSelect', function () {
+      var sel = $end.datepicker('getDate');
+      if (sel) { $start.datepicker('option', 'maxDate', sel); }
+    });
+  } catch (e) {}
+}
+
+// Bootstrap Datepicker / jQuery UI Datepicker re-init (Timeline-style fix)
+// Call this if your page uses Bootstrap Datepicker too.
+function initDatepickers($ctx) {
+  var isBootstrapDP = !!($.fn.datepicker && $.fn.datepicker.Constructor);
+
+  $ctx.find('input.startDate, input.endDate').each(function () {
+    var $inp = $(this);
+    var $container = $inp.closest('.blockContent'); // anchor dropdown to avoid clipping
+
+    try {
+      if (isBootstrapDP) {
+        // Bootstrap Datepicker
+        if ($inp.data('datepicker')) {
+          try { $inp.datepicker('remove'); } catch (e) {}
+          try { $inp.datepicker('destroy'); } catch (e) {}
+        }
+        $inp.datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true,
+          todayHighlight: true,
+          orientation: 'auto',
+          container: $container.length ? $container : 'body'
+        });
+      } else if ($.fn.datepicker) {
+        // jQuery UI Datepicker
+        if ($inp.hasClass('hasDatepicker')) {
+          $inp.datepicker('destroy');
+        }
+        $inp.datepicker({
+          dateFormat: 'yy-mm-dd',
+          changeMonth: true,
+          changeYear: true,
+          numberOfMonths: 2
+        });
+      }
+    } catch (e) {
+      // Silent catch to avoid breaking cloning if a lib is missing
+    }
+  });
+}
+
+/**
+ * Your original date range glue, now used per block.
+ * Accepts jQuery objects for start and end within the same block.
+ */
 function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var from = $(start).datepicker({
@@ -229,9 +371,6 @@ function date(start,end) {
     } catch(error) {
       date = null;
     }
-
     return date;
   }
 }
-
-

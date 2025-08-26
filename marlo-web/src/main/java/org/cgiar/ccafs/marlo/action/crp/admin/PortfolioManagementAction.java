@@ -38,30 +38,28 @@ import org.slf4j.LoggerFactory;
 public class PortfolioManagementAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
-  private final Logger logger = LoggerFactory.getLogger(FeedbackRolesPermissionsManagementAction.class);
+  private final Logger logger = LoggerFactory.getLogger(PortfolioManagementAction.class);
 
   private List<Portfolio> portfolios;
-  private List<Portfolio> portfolioPhases;
   private List<Phase> phases;
 
   private final PortfolioManager portfolioManager;
-  private final PortfolioPhaseManager portfolioRoleManager;
+  private final PortfolioPhaseManager portfolioPhaseManager;
   private final PhaseManager phaseManager;
 
 
   @Inject
   public PortfolioManagementAction(APConfig config, PortfolioManager portfolioManager,
-    PortfolioPhaseManager portfolioRoleManager, PhaseManager phaseManager) {
+    PortfolioPhaseManager portfolioPhaseManager, PhaseManager phaseManager) {
     super(config);
     this.portfolioManager = portfolioManager;
-    this.portfolioRoleManager = portfolioRoleManager;
+    this.portfolioPhaseManager = portfolioPhaseManager;
     this.phaseManager = phaseManager;
   }
 
   @Override
   public void prepare() throws Exception {
     portfolios = new ArrayList<>();
-    portfolioPhases = new ArrayList<>();
     phases = new ArrayList<>();
 
     try {
@@ -87,14 +85,19 @@ public class PortfolioManagementAction extends BaseAction {
           if (id == null) {
             p.setPortfolioPhases(Collections.emptyList());
             continue;
+
           }
 
           try {
-            final List<PortfolioPhase> phases = portfolioRoleManager.getPortfolioPhasesByPortfolioID(id);
+            final List<PortfolioPhase> phases = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(id);
             p.setPortfolioPhases((phases == null || phases.isEmpty()) ? Collections.emptyList() : phases);
           } catch (Exception ex) {
             logger.error("Error fetching phases for portfolioId={}", id, ex);
             p.setPortfolioPhases(Collections.emptyList());
+          }
+
+          if (p.getSelectedPhases() == null || p.getSelectedPhases().isEmpty()) {
+            p.setSelectedPhases(extractPhaseIds(p.getPortfolioPhases()));
           }
         }
 
@@ -102,15 +105,15 @@ public class PortfolioManagementAction extends BaseAction {
         logger.error("Error fetching portfolio phases: {}", e.getMessage(), e);
       }
 
-    } catch (Exception e) {
+
+    } catch (
+
+    Exception e) {
     }
 
     if (this.isHttpPost()) {
       if (portfolios != null) {
         portfolios.clear();
-      }
-      if (portfolioPhases != null) {
-        portfolioPhases.clear();
       }
       if (phases != null) {
         phases.clear();
@@ -121,68 +124,8 @@ public class PortfolioManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
-      if (portfolios != null) {
 
-        List<Long> inputIds =
-          portfolios.stream().map(Portfolio::getId).filter(Objects::nonNull).collect(Collectors.toList());
-
-        List<Portfolio> allExisting = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentGlobalUnit().getId());
-
-        if (allExisting != null && !allExisting.isEmpty()) {
-          allExisting.stream().filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
-            .forEach(portfolioToDelete -> {
-              try {
-                portfolioManager.deletePortfolio(portfolioToDelete.getId());
-              } catch (Exception e) {
-                logger.error("Error deleting portfolio with ID: {}", portfolioToDelete.getId(), e);
-              }
-            });
-        }
-
-        if (portfolios != null && !portfolios.isEmpty()) {
-          List<Long> newIds = new ArrayList<>();
-
-          for (Portfolio portfolio : portfolios) {
-            try {
-
-              Portfolio portfolioToSave =
-                (portfolio.getId() != null) ? portfolioManager.getPortfolioById(portfolio.getId()) : new Portfolio();
-
-              boolean isNew = portfolio.getId() == null;
-
-              portfolioToSave.setName(portfolio.getName());
-              portfolioToSave.setStartDate(portfolio.getStartDate());
-              portfolioToSave.setEndDate(portfolio.getEndDate());
-              portfolioToSave.setGlobalUnit(
-                portfolio.getGlobalUnit() != null ? portfolio.getGlobalUnit() : this.getCurrentGlobalUnit());
-
-              portfolioToSave = portfolioManager.savePortfolio(portfolioToSave);
-
-              // Check portfolio Phases
-              if (portfolio.getPortfolioPhases() != null && !portfolio.getPortfolioPhases().isEmpty()) {
-                for (PortfolioPhase portfolioPhase : portfolio.getPortfolioPhases()) {
-                  PortfolioPhase portfolioPhaseToSave = (portfolioPhase.getId() != null)
-                    ? portfolioRoleManager.getPortfolioPhaseById(portfolioPhase.getId()) : new PortfolioPhase();
-
-                  portfolioPhaseToSave.setPortfolio(portfolioToSave);
-                  portfolioPhaseToSave.setPhase(phaseManager.getPhaseById(portfolioPhase.getPhase().getId()));
-                  portfolioRoleManager.savePortfolioPhase(portfolioPhaseToSave);
-                }
-              }
-
-              if (isNew && portfolioToSave.getId() != null) {
-                newIds.add(portfolioToSave.getId());
-              }
-            } catch (Exception e) {
-              logger.error("Error saving FeedbackRolesPermission: {}", e.getMessage(), e);
-            }
-          }
-
-          if (!newIds.isEmpty()) {
-            this.getRequest().getSession().setAttribute("recentlyCreatedFRP", newIds);
-          }
-        }
-      }
+      savePortfolios();
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
@@ -207,6 +150,128 @@ public class PortfolioManagementAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
+  }
+
+  /**
+   * This method saves the portfolios and their associated phases.
+   */
+  public void savePortfolios() {
+    if (portfolios != null) {
+
+      List<Long> inputIds =
+        portfolios.stream().map(Portfolio::getId).filter(Objects::nonNull).collect(Collectors.toList());
+
+      List<Portfolio> allExisting = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentGlobalUnit().getId());
+
+      if (allExisting != null && !allExisting.isEmpty()) {
+        allExisting.stream().filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
+          .forEach(portfolioToDelete -> {
+            try {
+              portfolioManager.deletePortfolio(portfolioToDelete.getId());
+            } catch (Exception e) {
+              logger.error("Error deleting portfolio with ID: {}", portfolioToDelete.getId(), e);
+            }
+          });
+      }
+
+      if (portfolios != null && !portfolios.isEmpty()) {
+        List<Long> newIds = new ArrayList<>();
+
+        for (Portfolio portfolio : portfolios) {
+          try {
+
+            Portfolio portfolioToSave =
+              (portfolio.getId() != null) ? portfolioManager.getPortfolioById(portfolio.getId()) : new Portfolio();
+
+            boolean isNew = portfolio.getId() == null;
+
+            portfolioToSave.setName(portfolio.getName());
+            portfolioToSave.setStartDate(portfolio.getStartDate());
+            portfolioToSave.setEndDate(portfolio.getEndDate());
+            portfolioToSave.setGlobalUnit(
+              portfolio.getGlobalUnit() != null ? portfolio.getGlobalUnit() : this.getCurrentGlobalUnit());
+
+            portfolioToSave = portfolioManager.savePortfolio(portfolioToSave);
+
+            savePortFolioPhases(portfolio, portfolioToSave);
+
+            if (isNew && portfolioToSave.getId() != null) {
+              newIds.add(portfolioToSave.getId());
+            }
+          } catch (Exception e) {
+            logger.error("Error saving PortfolioPhase: {}", e.getMessage(), e);
+          }
+        }
+
+        if (!newIds.isEmpty()) {
+          this.getRequest().getSession().setAttribute("recentlyCreatedFRP", newIds);
+        }
+      }
+    }
+  }
+
+  /**
+   * This method saves the phases associated with a portfolio.
+   *
+   * @param portfolio The portfolio containing the selected phases to be saved.
+   * @param portfolioToSave The portfolio entity to which the phases will be associated.
+   */
+  public void savePortFolioPhases(Portfolio portfolio, Portfolio portfolioToSave) {
+    List<Long> selected = (portfolio.getSelectedPhases() == null) ? Collections.emptyList()
+      : portfolio.getSelectedPhases().stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+    List<PortfolioPhase> existing = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(portfolioToSave.getId());
+    if (existing == null) {
+      existing = Collections.emptyList();
+    }
+
+    final java.util.Map<Long, PortfolioPhase> existingByPhaseId =
+      existing.stream().filter(Objects::nonNull).filter(pp -> pp.getPhase() != null && pp.getPhase().getId() != null)
+        .collect(Collectors.toMap(pp -> pp.getPhase().getId(), pp -> pp, (a, b) -> a));
+
+    List<Long> keptPhaseIds = new ArrayList<>();
+    for (Long phaseId : selected) {
+      Phase phase = phaseManager.getPhaseById(phaseId);
+      if (phase == null) {
+        continue;
+      }
+
+      PortfolioPhase toSave = existingByPhaseId.get(phaseId);
+      if (toSave == null) {
+        toSave = new PortfolioPhase();
+      }
+      toSave.setPortfolio(portfolioToSave);
+      toSave.setPhase(phase);
+      portfolioPhaseManager.savePortfolioPhase(toSave);
+      keptPhaseIds.add(phaseId);
+    }
+
+
+    try {
+      for (PortfolioPhase pp : existing) {
+        Long phaseId = (pp != null && pp.getPhase() != null) ? pp.getPhase().getId() : null;
+        if (phaseId != null && !keptPhaseIds.contains(phaseId)) {
+          if (pp.getId() != null) {
+            portfolioPhaseManager.deletePortfolioPhase(pp.getId());
+          }
+        }
+      }
+    } catch (Exception ex) {
+      logger.warn("Could not delete removed PortfolioPhases for portfolioId={}", portfolioToSave.getId(), ex);
+    }
+  }
+
+  private List<Long> extractPhaseIds(List<PortfolioPhase> list) {
+    if (list == null || list.isEmpty()) {
+      return Collections.emptyList();
+    }
+    List<Long> ids = new ArrayList<>();
+    for (PortfolioPhase pp : list) {
+      if (pp != null && pp.getPhase() != null && pp.getPhase().getId() != null) {
+        ids.add(pp.getPhase().getId());
+      }
+    }
+    return ids;
   }
 
   public List<Portfolio> getPortfolios() {

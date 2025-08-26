@@ -2,7 +2,7 @@
 [#assign title = "Portfolios Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250815"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250826"
  ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/portfolioManagement.css"] /]
 [#assign currentSection = "admin" /]
@@ -103,7 +103,7 @@
     [#-- Phases  --]
     <div class="countriesBlock form-group" title="Select Phases clicking here">
       [#-- Phases List --]
-      [@customForm.select name="${name}.selectedPhases" label=""  i18nkey="regionalMapping.CrpProgram.countries" listName="phases" keyFieldName="id"  displayFieldName="composedName" value="${name}.selectedPhases" multiple=true required=true  className="countriesSelect form-control input-sm" disabled=!editable/]              
+      [@customForm.select name="${name}.selectedPhases" label=""  i18nkey="portfolioManagement.associatedPhases" listName="phases" keyFieldName="id"  displayFieldName="composedName" value="${name}.selectedPhases" multiple=true required=true  className="countriesSelect form-control input-sm" /]              
     </div>
         
     </div>
