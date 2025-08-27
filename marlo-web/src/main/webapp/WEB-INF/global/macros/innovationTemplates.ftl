@@ -225,7 +225,7 @@
                   </div>
                   <div class="modal-body">
                     [#-- Note - Green --]
-                    <div class="note">
+                    <div class="note--2">
                       <p>[@s.text name="projectInnovations.innovationTypeModal.note" /]</p>
                     </div>
                     <table class="table">
