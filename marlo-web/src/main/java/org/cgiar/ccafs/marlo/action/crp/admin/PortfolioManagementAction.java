@@ -69,7 +69,7 @@ public class PortfolioManagementAction extends BaseAction {
       portfolios = portfolioManager.getPortfoliosByGlobalUnitId(globalUnitId);
       phases = phaseManager.findAll().stream()
         .filter(phase -> phase.getCrp() != null && phase.getCrp().getId() == globalUnitId)
-        .sorted((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName())).collect(Collectors.toList());
+        .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList());
 
       try {
         if (portfolios == null || portfolios.isEmpty()) {
