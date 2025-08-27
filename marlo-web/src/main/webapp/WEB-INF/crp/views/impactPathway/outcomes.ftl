@@ -210,12 +210,23 @@
 
     <br />
     <div class="cont-btn-min">
-     <button   type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
+     <button type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
+    
+	  [#-- Portfolio --]
+    [#if action.hasSpecificities('portfolio_feature_active')]
+		  <div class="row form-group">
+				<div class="col-md-4">
+					[@customForm.select name="${outcomeCustomName}.portfolio.id" [#--  forcedValue="${(outcome.portfolio.name)!}"--] i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
+				</div>
+			</div>
+		[/#if]
+ 
     [#-- Outcome Statement --]
     <div class="form-group">
       [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
-    </div>
+    </div>   
+    
     [#-- Outcome Indicator --]
     [#if action.hasSpecificities('crp_ip_outcome_indicator')]
     <div class="form-group">
@@ -224,6 +235,7 @@
     [/#if]
 
     <div class="row form-group target-block to-minimize-outcome">
+
       [#-- Acronym --]
     	<div class="col-md-4">[@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]</div>
     
@@ -449,7 +461,7 @@
         	[#-- Code --]
 
         	<div class="col-md-4">     
-        		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editableMilestone /]
+        		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editable /]
 					</div>
           [#-- Year --]
           <div class="col-md-4">

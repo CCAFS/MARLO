@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FileDBManager;
 import org.cgiar.ccafs.marlo.data.manager.GeneralStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndAssesmentRiskManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndFollowingMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.PowbIndMilestoneRiskManager;
@@ -46,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
 import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Portfolio;
 import org.cgiar.ccafs.marlo.data.model.PowbIndAssesmentRisk;
 import org.cgiar.ccafs.marlo.data.model.PowbIndFollowingMilestone;
 import org.cgiar.ccafs.marlo.data.model.PowbIndMilestoneRisk;
@@ -170,7 +172,8 @@ public class OutcomesAction extends BaseAction {
   private PowbIndMilestoneRiskManager powbIndMilestoneRiskManager;
   private List<PowbIndFollowingMilestone> followingMilestones;
   private PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager;
-
+  private PortfolioManager portfolioManager;
+  private List<Portfolio> portfolios;
   private List<GeneralStatus> generalStatuses;
 
   @Inject
@@ -183,7 +186,8 @@ public class OutcomesAction extends BaseAction {
     PowbIndAssesmentRiskManager powbIndAssesmentRiskManager,
     RepIndGenderYouthFocusLevelManager repIndGenderYouthFocusLevelManager,
     PowbIndMilestoneRiskManager powbIndMilestoneRiskManager,
-    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager) {
+    PowbIndFollowingMilestoneManager powbIndFollowingMilestoneManager, GeneralStatusManager generalStatusManager,
+    PortfolioManager portfolioManager) {
     super(config);
     this.srfTargetUnitManager = srfTargetUnitManager;
     this.srfIdoManager = srfIdoManager;
@@ -205,6 +209,7 @@ public class OutcomesAction extends BaseAction {
     this.powbIndMilestoneRiskManager = powbIndMilestoneRiskManager;
     this.powbIndFollowingMilestoneManager = powbIndFollowingMilestoneManager;
     this.generalStatusManager = generalStatusManager;
+    this.portfolioManager = portfolioManager;
   }
 
 
@@ -654,6 +659,10 @@ public class OutcomesAction extends BaseAction {
       }
 
       if (this.isHttpPost()) {
+
+        if (portfolios != null) {
+          portfolios.clear();
+        }
         outcomes.clear();
       }
     }
@@ -669,6 +678,7 @@ public class OutcomesAction extends BaseAction {
     milestoneRisks = powbIndMilestoneRiskManager.findAll();
 
     followingMilestones = powbIndFollowingMilestoneManager.findAll();
+    portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
 
     /** */
 
@@ -847,6 +857,25 @@ public class OutcomesAction extends BaseAction {
       }
 
       programOutcomeIncoming.setCrpProgram(this.getSelectedProgram());
+
+      try {
+        if (programOutcomeIncoming.getPortfolio() != null) {
+          Long pid = programOutcomeIncoming.getPortfolio().getId();
+          if (pid == null || pid <= 0) {
+            programOutcomeIncoming.setPortfolio(null);
+          } else {
+            Portfolio p = portfolioManager.getPortfolioById(pid);
+            if (p == null) {
+              programOutcomeIncoming.setPortfolio(null);
+            } else {
+              programOutcomeIncoming.setPortfolio(p);
+            }
+          }
+        }
+      } catch (Exception e) {
+        programOutcomeIncoming.setPortfolio(null);
+      }
+
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
       // crpProgramOutcome.setModifiedBy(this.getCurrentUser());
@@ -1219,4 +1248,11 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
+  }
+
+  public void setPortfolios(List<Portfolio> portfolios) {
+    this.portfolios = portfolios;
+  }
 }
