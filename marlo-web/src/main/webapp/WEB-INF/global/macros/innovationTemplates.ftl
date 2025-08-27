@@ -213,6 +213,42 @@
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /]
             </div>
 
+            [#-- Modal with Table Comparative between innovation type and innovation type in PRMS --]
+            <div class="modal fade" id="innovationTypeComparisonModal" tabindex="-1" role="dialog" aria-labelledby="innovationTypeComparisonModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document" style="width: 1000px;">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="innovationTypeComparisonModalLabel">[@s.text name="projectInnovations.innovationTypeModal.title" /]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    [#-- Note - Green --]
+                    <div class="note">
+                      <p>[@s.text name="projectInnovations.innovationTypeModal.note" /]</p>
+                    </div>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>[@s.text name="projectInnovations.innovationTypeModal.columnInnovation" /]</th>
+                          <th>[@s.text name="projectInnovations.innovationTypeModal.columnPRMS" /]</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        [#list innovationTypeList as type]
+                        <tr>
+                          <td>${type.name}</td>
+                          <td>${type.prmsNameEquivalent!'No equivalent'}</td>
+                        </tr>
+                        [/#list]
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             [#-- Informative text - Compatibility with PRMS --]
             <div class="form-group prmsEquivalentBlock">
               [#local innovationTypeValue = (element.projectInnovationInfo?has_content && element.projectInnovationInfo.repIndInnovationType?has_content)?then(element.projectInnovationInfo.repIndInnovationType.id, -1) /]
