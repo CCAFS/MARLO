@@ -904,13 +904,16 @@ function updateAllianceTab() {
     if ($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
       // Show alliance tab after width calculation
       $('#allianceTab').show();
+      console.log('Alliance tab shown');
     } else {
       // Hide alliance tab after width calculation
       $('#allianceTab').hide();
+      console.log('Alliance tab hidden');
     }
     // Recalculate tab widths after animation completes
     updateWidthTab();
-  }, 250);
+
+  }, 400);
 }
 
 function updateBundleTab() {
