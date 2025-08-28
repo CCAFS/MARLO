@@ -669,12 +669,6 @@ function attachEvents() {
         $inputsValues.some(v => !initialInnovationsMappedReferencedValues.includes(v)) ||
         initialInnovationsMappedReferencedValues.some(iv => !$inputsValues.includes(iv));
 
-      console.log('currentValues', $inputsValues);
-      console.log('initialValues', initialInnovationsMappedReferencedValues);
-      console.log('val 1',validationIDEmpty.length > 0);
-      console.log('val 2',validationCurrentAmountChange);
-      console.log('val 3',validationDifferentIDs);
-
       if (validationCurrentAmountChange || (validationIDEmpty.length > 0 &&  validationDifferentIDs)) {
         $('.warningUnsaveInformation').show();
       } else {
