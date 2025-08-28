@@ -462,6 +462,11 @@
         </div>
 
         <div class="form-group row to-minimize">
+          [#-- Code --]
+        	<div class="col-md-3">     
+        		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editable /]
+					</div>
+        
           [#--  Status  --]
           <div class="col-md-3">
             [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="outcome.milestone.inputStatus" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
@@ -491,10 +496,6 @@
           <div class="col-md-3 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
             [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editableMilestone /]
           </div>
-          [#-- Code --]
-        	<div class="col-md-3">     
-        		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editable /]
-					</div>
         </div>
 
         [#-- POWB 2019 REQUIREMENTS --]
