@@ -125,15 +125,22 @@ function attachEvents() {
     // Events
     $('.addActors').on('click', addActor);
     $('.removeActor').on('click', removeActor);
+    // Add function to onChangeCheckboxSexAndAge -- General for all existing elements
     $('.actorsList .actorsInnovation').each(function (_i, e) {
       $(e).find('input[type="checkbox"].sexAgeNotApply').on('change', onChangeCheckboxSexAndAge);
     });
+    // Add function to make max value of input number -- General for all existing elements
     $('.actorsList .actorsInnovation').each(function (_i, e) {
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichWomen'));
       limitedValueFillInput($(e).find('input.input-total'), $(e).find('input.input-whichYouth'));
     });
+    // Add function to display or hide input if type "Other" is selected -- General for all existing elements
     $('.actorsList .actorsInnovation').each(function (_i, e) {
       $(e).find('select').on('change', function () {
+
+        // Update actor select options
+        updateActorSelectOptions();
+
         //get the text of the selected option
         const selectedText = $(this).find('option:selected').text();
         if (selectedText == "Other") {
@@ -143,6 +150,7 @@ function attachEvents() {
         }
       });
     });
+    updateActorSelectOptions();
 
     // Function
     function addActor() {
@@ -188,6 +196,10 @@ function attachEvents() {
 
       // Add event listener for select2 to display otherType
       $newItem.find('select').on('change', function () {
+
+        // Update actor select options
+        updateActorSelectOptions();
+
         const selectedText = $(this).find('option:selected').text();
         if (selectedText == "Other") {
           $newItem.find('.otherType').slideDown();
@@ -195,6 +207,9 @@ function attachEvents() {
           $newItem.find('.otherType').slideUp();
         }
       });
+
+      // Update actor select options
+      updateActorSelectOptions();
 
     }
 
@@ -205,6 +220,8 @@ function attachEvents() {
         $parent.remove();
         // Update indexes
         updateIndexes();
+        // Update actor select options
+        updateActorSelectOptions();
       });
     }
 
@@ -249,6 +266,47 @@ function attachEvents() {
         else {
           $checkboxGender.prop('checked', false);
         }
+      });
+    }
+
+    function updateActorSelectOptions() {
+      const $allSelects = $('.actorsList .actorsInnovation select');
+
+      // Single pass to collect all selected values
+      const selectedValues = new Set();
+      $allSelects.each(function() {
+        const value = this.value;
+        if (value) {
+          selectedValues.add(value);
+        }
+      });
+
+      // Single pass to update all options
+      $allSelects.each(function() {
+        const $select = $(this);
+        const currentValue = this.value;
+        
+        // Cache options for this select to avoid repeated DOM queries
+        const $options = $select.find('option');
+        
+        $options.each(function() {
+          const optionValue = this.value;
+          const isCurrentSelection = optionValue === currentValue;
+          const isAlreadySelected = selectedValues.has(optionValue);
+          
+          // Enable if it's the current selection or not selected elsewhere
+          this.disabled = !isCurrentSelection && isAlreadySelected;
+        });
+
+        // Reinitialize select2 to reflect changes
+        if ($select.data('select2')) {
+          $select.select2('destroy');
+        }
+        $select.select2({
+          width: '100%',
+          templateResult: formatList,
+          templateSelection: formatList
+        });
       });
     }
 
@@ -482,6 +540,10 @@ function attachEvents() {
    * 
    */
   (function () {
+    // Initial global values
+    const initialAmountInnovationsMapped = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').length;
+    const initialInnovationsMappedReferencedValues = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem input.reference-mapped').map(function() { return $(this).val(); }).get().sort((a,b) => a - b);
+
     // Events
     $('.selectInnovationPRMS').on('click', function(e) {
       e.preventDefault();
@@ -517,7 +579,7 @@ function attachEvents() {
       });
 
       // Update reference hidden input to be save in database
-      $newItem.find('input[type="hidden"]#reference-mapped').val(innovationId);
+      $newItem.find('input[type="hidden"].reference-mapped').val(innovationId);
       $newItem.attr('data-id', innovationId);
       
       // Change text of the button 
@@ -532,6 +594,9 @@ function attachEvents() {
 
       // Update counter for mapped innovations
       updateCounterInnovationsMapped();
+
+      // Display warning message if no PRMS innovations are mapped
+      displayWarningMessageNoPRMSInnovations();
 
     }
 
@@ -557,6 +622,9 @@ function attachEvents() {
 
       // Update counter for mapped innovations
       updateCounterInnovationsMapped();
+
+      // Display warning message if no PRMS innovations are mapped
+      displayWarningMessageNoPRMSInnovations();
 
     }
 
@@ -584,6 +652,28 @@ function attachEvents() {
           $(e).attr('for', newForValue);
         });
       });
+    }
+
+    function displayWarningMessageNoPRMSInnovations() {
+      const $items = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem');
+      const $inputIDs = $items.find('input[type="hidden"].id-mapped');
+
+      const currentAmount = $items.length;
+      const $inputsValues = $items.find('input[type="hidden"].reference-mapped').map(function() { return $(this).val(); }).get().sort((a,b) => a - b);
+
+      const validationIDEmpty = $inputIDs.filter(function() { return $(this).val().trim() === ""; });
+      const validationCurrentAmountChange = currentAmount !== initialAmountInnovationsMapped;
+      // Check if the current and initial values contain the same elements (order doesn't matter)
+      const validationDifferentIDs = 
+        $inputsValues.length !== initialInnovationsMappedReferencedValues.length ||
+        $inputsValues.some(v => !initialInnovationsMappedReferencedValues.includes(v)) ||
+        initialInnovationsMappedReferencedValues.some(iv => !$inputsValues.includes(iv));
+
+      if (validationCurrentAmountChange || (validationIDEmpty.length > 0 &&  validationDifferentIDs)) {
+        $('.warningUnsaveInformation').show();
+      } else {
+        $('.warningUnsaveInformation').hide();
+      }
     }
 
   })();
@@ -852,7 +942,8 @@ function updateAllianceTab() {
     }
     // Recalculate tab widths after animation completes
     updateWidthTab();
-  }, 250);
+
+  }, 400);
 }
 
 function updateBundleTab() {

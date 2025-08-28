@@ -3933,6 +3933,11 @@ button.ipGraph-btn {
 	font-size: 1.6rem;
 }
 
+.form-group .note--3 span {
+	color: #5f5e5e;
+	font-size: 12px;
+}
+
 #outputs #addOutputBlock {
 	text-align: center;
 	margin-bottom: 30px;

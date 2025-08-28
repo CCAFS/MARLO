@@ -350,10 +350,12 @@ div.countriesControlStyle div.selectList span.selection span.select2-selection u
   display: inline-block;
   background-color: #545454;
   color: #DFDFDF;
-  width: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 100%;
   text-align: center;
   font-weight: bold;
+  line-height: 20px;
 }
 
 .copyButton{
