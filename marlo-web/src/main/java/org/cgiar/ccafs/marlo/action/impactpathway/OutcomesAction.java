@@ -253,6 +253,25 @@ public class OutcomesAction extends BaseAction {
     return assessmentRisks;
   }
 
+  public boolean hasBaselineFile(CrpProgramOutcome outcome) {
+    try {
+      if (outcome == null || outcome.getFile() == null) {
+        return false;
+      }
+      String fname = StringUtils.stripToNull(outcome.getFile().getFileName());
+      if (fname == null) {
+        return false;
+      }
+
+      String crp = this.getActualPhase().getCrp().getAcronym();
+      String base = config.getUploadsBaseFolder();
+      String path = base + "/" + crp + "/projects/" + outcome.getId() + "/baseLine/" + fname;
+      return new java.io.File(path).exists();
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
   private Path getAutoSaveFilePath() {
     String composedClassName = selectedProgram.getClass().getSimpleName();
     String actionFile = this.getActionName().replace("/", "_");
