@@ -235,8 +235,6 @@ function initPerBlockDatepickers($ctx) {
   $ctx.find('.srfSlo').not('.is-template').each(function () {
     wireDateRangeForBlock($(this));
   });
-  // If Bootstrap Datepicker is also present, run the destroy->reinit pass:
-  initDatepickers($ctx);
 }
 
 /**
@@ -248,20 +246,27 @@ function initPerBlockDatepickers($ctx) {
 function wireDateRangeForBlock($block) {
   var $start = $block.find('input.startDate').first();
   var $end   = $block.find('input.endDate').first();
-
   if ($start.length === 0 && $end.length === 0) return;
 
-  // Destroy any existing datepicker instances (both jQuery UI and Bootstrap DP)
+// --- GUARDAR el valor pintado por el FTL antes de destruir ---
+var startVal = $start.val();
+var endVal   = $end.val();
+
+  // Destroy any existing datepicker instances
   $start.add($end).each(function () {
     try { if ($(this).hasClass('hasDatepicker')) { $(this).datepicker('destroy'); } } catch (e) {}
     try { if ($(this).data('datepicker')) { $(this).datepicker('remove'); } } catch (e) {}
     try { if ($(this).data('datepicker')) { $(this).datepicker('destroy'); } } catch (e) {}
   });
 
-  // Use your existing "date" glue per block (jQuery UI datepicker)
+  // Use your existing glue
   date($start, $end);
 
-  // Force onSelect to always set the input value and update pair constraints locally
+// --- RESTAURAR el valor y sincronizar el widget ---
+if (startVal) { try { $start.val(startVal); $start.datepicker('setDate', startVal); } catch(e) {} }
+if (endVal)   { try { $end.val(endVal);     $end.datepicker('setDate', endVal);   } catch(e) {} }
+
+  // onSelect constraints...
   try {
     $start.datepicker('option', 'onSelect', function () {
       var sel = $start.datepicker('getDate');
@@ -276,6 +281,7 @@ function wireDateRangeForBlock($block) {
     });
   } catch (e) {}
 }
+
 
 // Bootstrap Datepicker / jQuery UI Datepicker re-init (Timeline-style fix)
 // Call this if your page uses Bootstrap Datepicker too.

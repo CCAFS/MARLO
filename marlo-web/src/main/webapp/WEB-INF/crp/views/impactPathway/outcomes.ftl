@@ -4,15 +4,17 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20250204",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20250827",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  "${baseUrlCdn}/global/js/fieldsValidation.js",
+   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20221103",
-  "${baseUrlCdn}/global/css/impactGraphic.css"
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20250827",
+  "${baseUrlCdn}/global/css/impactGraphic.css",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
 /]
 [#assign currentSection = "impactPathway" /]
@@ -189,7 +191,7 @@
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
     <div class="leftHead">
       <!--<span class="index">${index+1}</span>-->
-      <span class="index"> ${(outcome.composeID)! "[New]"}</span>
+      <span class="index"> ${(outcome.year)! "[New]"}</span>
       <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="outcome.index.title"/]</span>
     </div>
     [#-- Outcome ID Parameter --]
@@ -213,14 +215,16 @@
      <button type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
     
-	  [#-- Portfolio --]
-    [#if action.hasSpecificities('portfolio_feature_active')]
-		  <div class="row form-group">
-				<div class="col-md-4">
-					[@customForm.select name="${outcomeCustomName}.portfolio.id" [#--  forcedValue="${(outcome.portfolio.name)!}"--] i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
+    <div class="form-group target-block to-minimize-outcome">
+		  [#-- Portfolio --]
+	    [#if action.hasSpecificities('portfolio_feature_active')]
+			  <div class="row form-group">
+					<div class="col-md-4">
+						[@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=false  className="milestoneStatus" editable=editable /]
+					</div>
 				</div>
-			</div>
-		[/#if]
+			[/#if]
+ 		</div>
  
     [#-- Outcome Statement --]
     <div class="form-group">
@@ -236,18 +240,14 @@
 
     <div class="row form-group target-block to-minimize-outcome">
 
-      [#-- Acronym --]
-    	<div class="col-md-4">[@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]</div>
-    
       [#-- Start Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!0}" type="text" i18nkey="outcome.startYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
+      <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!0}" type="text" i18nkey="outcome.startYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
       [#-- Target Year --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!0}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
-      [#-- Order --]
-      <div class="col-md-4">[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
+      <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!0}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>     
+      	   
       [#-- Target Unit --]
       [#if targetUnitList?has_content]
-      <div class="col-md-4 targetUnit-block">
+      <div class="col-md-3 targetUnit-block">
         [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
         [#-- If you dont find the target unit in the list, please add a new one clicking here --]
         [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if --]
@@ -257,12 +257,18 @@
       [/#if]
       [#-- Target Value --]
       [#local showTargetValue = (targetUnitList?has_content) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
-      <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
+      <div class="col-md-3 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
         [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
-      </div>
+      </div>      
+     </div>
       
+    <div class="row form-group target-block to-minimize-outcome">
+			[#-- Acronym --]
+    	<div class="col-md-3">[@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]</div>
+      [#-- Order --]
+	    <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
     </div>
-
+		</br>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
       <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">[@s.text name = "outcome.milestone.sectionTitle" /] <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
@@ -320,7 +326,7 @@
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
           [#if !isTemplate]
-            [#local hasFile = outcome.file?? && outcome.file.id?? /]
+						[#local hasFile = action.hasBaselineFile(outcome) /]
             <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
             [#-- Input File --]
             [#if editable]
@@ -430,49 +436,49 @@
     <div class="blockTitle opened">
       <div class="leftHead ${reqMilestonesFields?string('green', '')} sm">
         <!--<span class="index">${index+1}</span>-->
-        <span class="index">${(milestone.composeID)! "[New]"}</span>
-        <span class="elementId">${(milestoneYear)!} [@s.text name="outcome.milestone.index.title"/][#if hasExtendedYear] [@s.text name="outcome.milestone.extended.text"/] ${milestone.extendedYear} [/#if][#if isMilestoneNew][New][/#if]</span>
+        <span class="index">${(milestone.year)! "[New]"}</span>
+        <span class="elementId">${(milestone.crpProgramOutcome.acronym)!milestoneYear!} [@s.text name="outcome.milestone.index.title"/][#if hasExtendedYear] [@s.text name="outcome.milestone.extended.text"/] ${milestone.extendedYear} [/#if][#if isMilestoneNew] [New][/#if]</span>
       </div>
       <!-- <strong>SLO ${index+1}: </strong>  -->
-     ${(milestone.title)!""}
+  		<span class="milestoneTitlePreview">${(milestone.title)!""}</span>
       <!-- <small>(Alerts: 5) </small> -->
     </div>
+    
 
     <div class="blockContent" style="display:block">
       <div id="milestone-${isTemplate?string('template', index)}" class="milestone borderBox-no-border isNew-${isMilestoneNew?string}" style="display:${isTemplate?string('none','block')}">
 
-
-
-
-
         <input type="hidden" class="mileStoneId" name="${milestoneCustomName}.id" value="${(milestone.id)!}"/>
         <input type="hidden" class="mileStoneComposeId" name="${milestoneCustomName}.composeID" value="${(milestone.composeID)!}"/>
 
+[#-- 
         <div class="pull-right">
           [@popUps.relationsMacro element=(milestone)!{} /]
         </div>
-
+--]
         [#-- Milestone Statement --]
         <div class="form-group">
           [@customForm.textArea name="${milestoneCustomName}.title" i18nkey="outcome.milestone.statement" required=true className="milestone-statement limitWords-100" editable=editableMilestone /]
         </div>
 
         <div class="form-group row to-minimize">
-        	[#-- Code --]
-
-        	<div class="col-md-4">     
+          [#-- Code --]
+        	<div class="col-md-3">     
         		[@customForm.input name="${milestoneCustomName}.code" type="text"  i18nkey="outcome.milestone.code" required=false editable=editable /]
 					</div>
-          [#-- Year --]
-          <div class="col-md-4">
-            [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
-           </div>
+        
           [#--  Status  --]
-          <div class="col-md-4">
+          <div class="col-md-3">
             [@customForm.select name="${milestoneCustomName}.milestonesStatus.id" forcedValue="${(milestone.milestonesStatus.name)!}" i18nkey="outcome.milestone.inputStatus" listName="generalStatuses" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
           </div>
+          
+          [#-- Year --]
+          <div class="col-md-3">
+            [@customForm.select name="${milestoneCustomName}.year" value="${(milestone.year)!-1}"  i18nkey="outcome.milestone.inputTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneYear" editable=editableMilestone /]
+          </div>
+
           [#-- Extended Year --]
-          <div class="col-md-4 extendedYearBlock" style="display:${showExtendedYear?string('block', 'none')}">
+          <div class="col-md-3 extendedYearBlock" style="display:${showExtendedYear?string('block', 'none')}">
            [@customForm.select name="${milestoneCustomName}.extendedYear" value="${(milestone.extendedYear)!-1}"  i18nkey="outcome.milestone.inputNewTargetYear" listName="milestoneYears"  required=true  className=" targetYear milestoneExtendedYear" editable=editable /]
            [#if !editableMilestone][#if (milestone.extendedYear != -1)!false ]${(milestone.extendedYear)!}[/#if][/#if]
           </div>
@@ -481,13 +487,13 @@
         <div class="row form-group target-block to-minimize">
           [#-- Target Unit --]
           [#if targetUnitList?has_content]
-          <div class="col-md-4">
+          <div class="col-md-3">
             [@customForm.select name="${milestoneCustomName}.srfTargetUnit.id"  i18nkey="outcome.milestone.selectTargetUnit" placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editableMilestone  /]
           </div>
           [/#if]
           [#-- Target Value --]
           [#local showTargetValue = (targetUnitList?has_content) && (milestone.srfTargetUnit??) && (milestone.srfTargetUnit.id??) && (milestone.srfTargetUnit.id != -1) /]
-          <div class="col-md-4 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
+          <div class="col-md-3 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
             [@customForm.input name="${milestoneCustomName}.value" type="text"  i18nkey="outcome.milestone.inputTargetValue" placeholder="outcome.milestone.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editableMilestone /]
           </div>
         </div>

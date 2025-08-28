@@ -2,7 +2,7 @@
 [#assign title = "Portfolios Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250826"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250828"
  ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/portfolioManagement.css"] /]
 [#assign currentSection = "admin" /]
