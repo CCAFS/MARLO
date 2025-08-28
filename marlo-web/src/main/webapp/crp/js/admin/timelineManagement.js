@@ -5,12 +5,12 @@ function init() {
   /* Declaring Events */
   attachEvents();
   
-  datePickerConfig({
-      "startDate": ".startDate",
-      "endDate": ".endDate",
-      defaultMinDateValue: $("#minDateValue").val(),
-      defaultMaxDateValue: $("#maxDateValue").val()
-  });
+	datePickerConfig({
+	  startDate: ".srfSlo:not(#srfSlo-template) .startDate",
+	  endDate:   ".srfSlo:not(#srfSlo-template) .endDate",
+	  defaultMinDateValue: $("#minDateValue").val(),
+	  defaultMaxDateValue: $("#maxDateValue").val()
+	});
 
 }
 
@@ -38,6 +38,21 @@ function attachEvents() {
     });
   });
 
+	
+	$(document).on('addComponent', function (e) {
+	  const $container = $(e.target); 
+
+	  $container.find('.startDate, .endDate').each(function () {
+	    try { $(this).datepicker('destroy'); } catch (err) {}
+	  });
+
+	  datePickerConfig({
+	    startDate: $container.find('.startDate'),
+	    endDate:   $container.find('.endDate'),
+	    defaultMinDateValue: $("#minDateValue").val(),
+	    defaultMaxDateValue: $("#maxDateValue").val()
+	  });
+	});
 }
 
 function addIdo() {
@@ -112,60 +127,51 @@ function updateIndexes() {
 /**
  * Attach to the date fields the datepicker plugin
  */
-function datePickerConfig(element) {
-  date($(element.startDate), $(element.endDate));
+function datePickerConfig(opts) {
+  date($(opts.startDate), $(opts.endDate), opts.defaultMinDateValue, opts.defaultMaxDateValue);
 }
 
-function date(start,end) {
+function date($start, $end, minDateStr, maxDateStr) {
   var dateFormat = "yy-mm-dd";
-  var from = $(start).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2023-01-01',
-      maxDate: '2026-12-31',
-      changeMonth: true,
-      numberOfMonths: 2,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(end).datepicker("option", "minDate", selectedDate);
-        }
+  var minDate = minDateStr ? $.datepicker.parseDate(dateFormat, minDateStr) : new Date(2023,0,1);
+  var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2026,11,31);
+
+  // START (sin normalizar al 1° del mes)
+  $start.datepicker({
+    dateFormat: dateFormat,
+    minDate: minDate,
+    maxDate: maxDate,
+    changeMonth: true,
+    changeYear: true,
+    numberOfMonths: 2,
+    // no beforeShow que cambie la fecha
+    // no onChangeMonthYear que cambie la fecha
+    onSelect: function() {
+      var s = $start.datepicker('getDate');
+      if (s) {
+        $end.datepicker('option', 'minDate', s);
+        var e = $end.datepicker('getDate');
+        if (e && e < s) $end.datepicker('setDate', s);
       }
-  }).on("click", function() {
-    if(!$(this).val()) {
-      $(this).datepicker('setDate', new Date());
     }
   });
 
-  var to = $(end).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2023-01-01',
-      maxDate: '2026-12-31',
-      changeMonth: true,
-      numberOfMonths: 2,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(start).datepicker("option", "maxDate", selectedDate);
-        }
+  // END (sin normalizar al último día del mes)
+  $end.datepicker({
+    dateFormat: dateFormat,
+    minDate: minDate,
+    maxDate: maxDate,
+    changeMonth: true,
+    changeYear: true,
+    numberOfMonths: 2,
+    onSelect: function() {
+      var e = $end.datepicker('getDate');
+      if (e) {
+        $start.datepicker('option', 'maxDate', e);
+        var s = $start.datepicker('getDate');
+        if (s && s > e) $start.datepicker('setDate', e);
       }
-  }).on("click", function() {
-    if(!$(this).val()) {
-      $(this).datepicker('setDate', new Date());
     }
   });
-
-  function getDate(element) {
-    var date;
-    try {
-      date = $.datepicker.parseDate(dateFormat, element.value);
-    } catch(error) {
-      date = null;
-    }
-
-    return date;
-  }
 }
+
