@@ -540,6 +540,10 @@ function attachEvents() {
    * 
    */
   (function () {
+    // Initial global values
+    const initialAmountInnovationsMapped = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem').length;
+    const initialInnovationsMappedReferencedValues = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem input.reference-mapped').map(function() { return $(this).val(); }).get().sort((a,b) => a - b);
+
     // Events
     $('.selectInnovationPRMS').on('click', function(e) {
       e.preventDefault();
@@ -575,7 +579,7 @@ function attachEvents() {
       });
 
       // Update reference hidden input to be save in database
-      $newItem.find('input[type="hidden"]#reference-mapped').val(innovationId);
+      $newItem.find('input[type="hidden"].reference-mapped').val(innovationId);
       $newItem.attr('data-id', innovationId);
       
       // Change text of the button 
@@ -590,6 +594,9 @@ function attachEvents() {
 
       // Update counter for mapped innovations
       updateCounterInnovationsMapped();
+
+      // Display warning message if no PRMS innovations are mapped
+      displayWarningMessageNoPRMSInnovations();
 
     }
 
@@ -615,6 +622,9 @@ function attachEvents() {
 
       // Update counter for mapped innovations
       updateCounterInnovationsMapped();
+
+      // Display warning message if no PRMS innovations are mapped
+      displayWarningMessageNoPRMSInnovations();
 
     }
 
@@ -642,6 +652,34 @@ function attachEvents() {
           $(e).attr('for', newForValue);
         });
       });
+    }
+
+    function displayWarningMessageNoPRMSInnovations() {
+      const $items = $('#referenceMappedPRMSInnovations').find('.innovationMappedItem');
+      const $inputIDs = $items.find('input[type="hidden"].id-mapped');
+
+      const currentAmount = $items.length;
+      const $inputsValues = $items.find('input[type="hidden"].reference-mapped').map(function() { return $(this).val(); }).get().sort((a,b) => a - b);
+
+      const validationIDEmpty = $inputIDs.filter(function() { return $(this).val().trim() === ""; });
+      const validationCurrentAmountChange = currentAmount !== initialAmountInnovationsMapped;
+      // Check if the current and initial values contain the same elements (order doesn't matter)
+      const validationDifferentIDs = 
+        $inputsValues.length !== initialInnovationsMappedReferencedValues.length ||
+        $inputsValues.some(v => !initialInnovationsMappedReferencedValues.includes(v)) ||
+        initialInnovationsMappedReferencedValues.some(iv => !$inputsValues.includes(iv));
+
+      console.log('currentValues', $inputsValues);
+      console.log('initialValues', initialInnovationsMappedReferencedValues);
+      console.log('val 1',validationIDEmpty.length > 0);
+      console.log('val 2',validationCurrentAmountChange);
+      console.log('val 3',validationDifferentIDs);
+
+      if (validationCurrentAmountChange || (validationIDEmpty.length > 0 &&  validationDifferentIDs)) {
+        $('.warningUnsaveInformation').show();
+      } else {
+        $('.warningUnsaveInformation').hide();
+      }
     }
 
   })();
@@ -904,11 +942,9 @@ function updateAllianceTab() {
     if ($option.toArray().some((item) => item.innerHTML.toLowerCase().includes("alliance"))) {
       // Show alliance tab after width calculation
       $('#allianceTab').show();
-      console.log('Alliance tab shown');
     } else {
       // Hide alliance tab after width calculation
       $('#allianceTab').hide();
-      console.log('Alliance tab hidden');
     }
     // Recalculate tab widths after animation completes
     updateWidthTab();

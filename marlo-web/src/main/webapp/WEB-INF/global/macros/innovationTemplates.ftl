@@ -70,15 +70,15 @@
           <div class="prmsContents__amount font-size-12" style="display: none;">
             <span>Already Mapped:</span>
             <span id="modalCounterPRMS">0</span>
-            <span><b>innovations</b></span>
+            <span><b>innovation(s)</b></span>
           </div>
           <b class="prmsContents__no__amount font-size-12">No innovations mapped</b>
         </div>
         <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal"><span class="entypo--popup"></span>Map innovations</button>
       </div>
       <div class="col-md-6 grayPlatinumBox padding-left-16-px" style="height: inherit; align-content: center;">
-        <label class="displayContents">Status:</label>
-        <label class="displayContents"><b>Not yet synchronized with PRMS</b></label>
+        <label class="displayContents" style="cursor: auto;">Status:</label>
+        <label class="displayContents" style="cursor: auto;"><b>Not yet synchronized with PRMS</b></label>
       </div>
 
 
@@ -95,6 +95,9 @@
               <div class="note">
                 <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
               </div>
+
+              [#-- Note - Yellow - Warning No save information --]
+                <label class="note note--3 warningUnsaveInformation" style="display: none;"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >The mapped innovations changes are not save yet. Please save all the changes made after close the modal.</span></label>
 
               [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
 
@@ -1624,10 +1627,10 @@
         [#local isScalingReadines = ((innovation.readinessLevelId?has_content))!false ]
 
         <tr>
-          <td>${innovation.prmsResultId!''}</td>
-          <td title="${innovation.title!''}">${title!''}</td>
+          <td style="padding: 4px;">${innovation.prmsResultId!''}</td>
+          <td title="${innovation.title!''}" style="padding: 4px;">${title!''}</td>
           [#-- Readiness Level --]
-          <td class="text-center">
+          <td class="text-center" style="padding: 4px;">
             [#if isScalingReadines]
               <span class="inno-scale inno-scale-${scaleReadiness}">[@utilities.tableText value=scaleReadiness /]</span>
               <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
@@ -1645,7 +1648,7 @@
               [/#if]
             [/#list]
           [/#if]
-          <td class="text-center">
+          <td class="text-center" style="padding: 4px;">
             <button class="btn btn-primary selectInnovationPRMS" data-id="${innovation.id!''}" data-selected="${innovationSelected?then('true','false')}" style="opacity: ${innovationSelected?then('0.5','1')}">${textBtn!""}</button>
             <a href="${innovation.pdfLink}" target="_blank" rel="noopener noreferrer">
               <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
@@ -1660,7 +1663,7 @@
 [#macro hiddenMapPRMSInnovations element name index template=false editable=false]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
   <div class="innovationMappedItem" id="innovationMappedItem-${template?string('template',index)}" style="display:none;" data-id="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}">
-      <input type="hidden" name="${customName}.id" value="${element.id!''}" />
-      <input type="hidden" id="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
+      <input type="hidden" name="${customName}.id" value="${element.id!''}" class="id-mapped" />
+      <input type="hidden" class="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
   </div>
 [/#macro]
