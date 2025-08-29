@@ -252,6 +252,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle" />
     </set>
+    <set name="projectInnovationPRMS" table="project_innovation_prms"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="project_innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationPRMS" />
+    </set>
     <set name="projectInnovationSDGs" table="project_innovation_sdgs"
       inverse="true" lazy="true" fetch="select">
       <key>

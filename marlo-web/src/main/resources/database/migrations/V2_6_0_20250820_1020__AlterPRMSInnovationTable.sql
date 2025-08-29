@@ -1,0 +1,2 @@
+ALTER TABLE project_innovation_prms ADD id_phase bigint NULL;
+ALTER TABLE project_innovation_prms ADD CONSTRAINT project_innovation_prms_phases_FK FOREIGN KEY (id_phase) REFERENCES phases(id) ON DELETE RESTRICT ON UPDATE RESTRICT;

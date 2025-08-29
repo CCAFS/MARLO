@@ -1,9 +1,9 @@
 [#ftl]
 
 [#macro innovationDescription element name index=-1 template=false ]
-  <div class="borderBox generalInformationInnovations">    
+  <div class="borderBox borderBox--noPadding generalInformationInnovations margin-buttom-20">    
     [#-- General Inputs --]
-    <div class="form-group row">
+    <div class="form-group paddingBorderBox">
 
       [#-- hr in elements --]
       <hr class="line-hr" />
@@ -61,7 +61,74 @@
       </div>
               
 
-    </div>         
+    </div>
+    <div class="form-group col-md-12 margin-buttom-0 margin-top-10" style="height: 63px;" >
+      <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" style="height: inherit;">
+        <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
+        <div class="prmsContents margin-left-10">
+          <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
+          <div class="prmsContents__amount font-size-12" style="display: none;">
+            <span>Already Mapped:</span>
+            <span id="modalCounterPRMS">0</span>
+            <span><b>innovation(s)</b></span>
+          </div>
+          <b class="prmsContents__no__amount font-size-12">No innovations mapped</b>
+        </div>
+        <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal"><span class="entypo--popup"></span>Map innovations</button>
+      </div>
+      <div class="col-md-6 grayPlatinumBox padding-left-16-px" style="height: inherit; align-content: center;">
+        <label class="displayContents" style="cursor: auto;">Status:</label>
+        <label class="displayContents" style="cursor: auto;"><b>Not yet synchronized with PRMS</b></label>
+      </div>
+
+
+      [#-- PRMS Innovations List Modal --]
+      <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel">
+        <div class="modal-dialog modal-lg" style="width: 1100px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" >&times;</button>
+              <h4 class="modal-title" id="prmsInnovationsModalLabel">[@s.text name="projectInnovations.prmsInnovations.title" /]</h4>
+            </div>
+            <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 6px;">
+              [#-- Note - Green --]
+              <div class="note">
+                <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
+              </div>
+
+              [#-- Note - Yellow - Warning No save information --]
+                <label class="note note--3 warningUnsaveInformation" style="display: none;"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >The mapped innovations changes are not save yet. Please save all the changes made after close the modal.</span></label>
+
+              [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
+
+              <hr style="background: #CCC; width: 100%;" />
+
+              <div>
+                <label>[@s.text name="projectInnovations.prmsInnovations.additionalNotes" /]:</label>
+                [@s.text name="projectInnovations.prmsInnovations.additionalNotes.items" /]
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="clearfix"></div>
+      </div>
+
+      [#-- Reference List of Mapped PRMS Innovations --]
+      <div id="referenceMappedPRMSInnovations" style="display: none;">
+      [#if element.prmsInnovations?has_content]
+        [#list element.prmsInnovations as prmsInnovation]
+          [@hiddenMapPRMSInnovations element=prmsInnovation name="innovation.prmsInnovations" index=prmsInnovation_index template=false editable=editable /]
+        [/#list]
+      [/#if]
+      </div>
+
+      [#-- Template hiddenMapPRMSInnovations --]
+      <div id="hiddenMapPRMSInnovations" style="display: none;">
+        [@hiddenMapPRMSInnovations element={} name="innovation.prmsInnovations" index=-1 template=true editable=editable /]
+      </div>
+
+    </div>
   </div>
 [/#macro]
 
@@ -147,6 +214,42 @@
             [#-- Innovation Type --]
             <div class="form-group">
               [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" isNote=true helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /]
+            </div>
+
+            [#-- Modal with Table Comparative between innovation type and innovation type in PRMS --]
+            <div class="modal fade" id="innovationTypeComparisonModal" tabindex="-1" role="dialog" aria-labelledby="innovationTypeComparisonModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document" style="width: 1000px;">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="innovationTypeComparisonModalLabel">[@s.text name="projectInnovations.innovationTypeModal.title" /]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    [#-- Note - Green --]
+                    <div class="note--2">
+                      <p>[@s.text name="projectInnovations.innovationTypeModal.note" /]</p>
+                    </div>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>[@s.text name="projectInnovations.innovationTypeModal.columnInnovation" /]</th>
+                          <th>[@s.text name="projectInnovations.innovationTypeModal.columnPRMS" /]</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        [#list innovationTypeList as type]
+                        <tr>
+                          <td>${type.name}</td>
+                          <td>${type.prmsNameEquivalent!'No equivalent'}</td>
+                        </tr>
+                        [/#list]
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
 
             [#-- Informative text - Compatibility with PRMS --]
@@ -1490,5 +1593,77 @@
 
       <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
       <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
+  </div>
+[/#macro]
+
+[#macro tablePRMSInnovation list selected={} ]
+
+  [#-- Scaling Innovation Titles --]
+  [#local scalingInnovationTitles = ["Idea", "Basic Research", "Formulation", "Proof of Concept", "Controlled Testing","Model/Early Prototype","Semi-Controlled Testing","Prototype","Uncontrolled Testing","Proven Innovation"]]
+  
+  <table id="table-prms-innovations" class="table table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">ID</th>
+        <th width="65%">Title</th>
+        <th width="15%">Readiness level</th>
+        <th class="no-sort" width="15%">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      [#list list as innovation]
+
+        [#local title]
+          [#if ((innovation.title?has_content))]
+            [@utilities.wordCutter string=(innovation.title)!"" maxPos=120 /]
+          [#else]
+            No provided
+          [/#if]
+        [/#local]
+
+        [#-- Scaling Readiness value --]
+        [#local scaleReadiness = (innovation.readinessLevelId)!"" ]
+
+        [#local isScalingReadines = ((innovation.readinessLevelId?has_content))!false ]
+
+        <tr>
+          <td style="padding: 4px;">${innovation.prmsResultId!''}</td>
+          <td title="${innovation.title!''}" style="padding: 4px;">${title!''}</td>
+          [#-- Readiness Level --]
+          <td class="text-center" style="padding: 4px;">
+            [#if isScalingReadines]
+              <span class="inno-scale inno-scale-${scaleReadiness}">[@utilities.tableText value=scaleReadiness /]</span>
+              <span>${scalingInnovationTitles[scaleReadiness]!""}</span>
+            [#else]
+              [@utilities.tableText value=(innovation.readinessLevel.name)!"" /]
+            [/#if]
+          </td>
+          [#assign textBtn = "Map" /]
+          [#assign innovationSelected = false /]
+          [#if selected?has_content]
+            [#list selected as sel]
+              [#if sel.PRMSInnovation.id == innovation.id]
+                [#assign innovationSelected = true /]
+                [#assign textBtn = "Mapped" /]
+              [/#if]
+            [/#list]
+          [/#if]
+          <td class="text-center" style="padding: 4px;">
+            <button class="btn btn-primary selectInnovationPRMS" data-id="${innovation.id!''}" data-selected="${innovationSelected?then('true','false')}" style="opacity: ${innovationSelected?then('0.5','1')}">${textBtn!""}</button>
+            <a href="${innovation.pdfLink}" target="_blank" rel="noopener noreferrer">
+              <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
+            </a>
+          </td>
+        </tr>
+      [/#list]
+    </tbody>
+  </table>
+[/#macro]
+
+[#macro hiddenMapPRMSInnovations element name index template=false editable=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  <div class="innovationMappedItem" id="innovationMappedItem-${template?string('template',index)}" style="display:none;" data-id="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}">
+      <input type="hidden" name="${customName}.id" value="${element.id!''}" class="id-mapped" />
+      <input type="hidden" class="reference-mapped" name="${customName}.PRMSInnovation.id" value="${(element.PRMSInnovation?has_content)?then(element.PRMSInnovation.id,'')}" />
   </div>
 [/#macro]
