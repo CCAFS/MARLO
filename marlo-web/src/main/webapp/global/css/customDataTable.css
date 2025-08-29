@@ -233,30 +233,66 @@ table.dataTable a {
   margin-left: 0;
 }
 
+#table-prms-innovations_wrapper {
+  margin: 0;
+}
+
+#table-prms-innovations_wrapper .row,
 #table-all-innovations_wrapper .row{
   margin: 0;
 }
 
+#table-prms-innovations_wrapper .row:nth-child(1) div[class^="col-"]:last-child,
 #table-all-innovations_wrapper .row:nth-child(1) div[class^="col-"]:last-child {
   width: 100%;
 }
 
+#table-prms-innovations_wrapper .row:nth-child(1) div[class^="col-"]:last-child{
+  padding-right: 0;
+}
+
+#table-prms-innovations_wrapper .row:nth-child(2) > div[class^="col-"]{
+  padding-right: 0;
+  padding-left: 0;
+}
+
+#table-prms-innovations_wrapper .row:nth-child(3) > div[class^="col-"]{
+  padding-right: 0;
+  padding-left: 0;
+}
+
+#table-prms-innovations_wrapper .row:nth-child(3) {
+  margin-top: 6px !important;
+}
+
+#table-prms-innovations_filter.dataTables_filter,
 #table-all-innovations_filter.dataTables_filter{
   float: right !important;
   width: 70%;
   margin-bottom: 15px;
 }
 
+#table-prms-innovations_filter.dataTables_filter{
+  width: 100%;
+}
+
+#table-prms-innovations_filter.dataTables_filter label,
 #table-all-innovations_filter.dataTables_filter label{
     width: 100%;
 }
 
+#table-prms-innovations_filter.dataTables_filter label input,
 #table-all-innovations_filter.dataTables_filter label input {
     height: 30px;
     width: 100%;
     margin-left: 0;
 }
 
+#table-prms-innovations_filter.dataTables_filter label{
+  margin-bottom: 0;
+}
+
+#table-prms-innovations_wrapper .iconSearch,
 #table-all-innovations_wrapper .iconSearch {
     background: #0b7ba6;
     height: 30px;
@@ -267,6 +303,11 @@ table.dataTable a {
     display: flex;
 }
 
+#table-prms-innovations_wrapper .iconSearch {
+  right: 0;
+}
+
+#table-prms-innovations_info,
 #table-all-innovations_info {
   width: 75%;
   white-space: wrap;

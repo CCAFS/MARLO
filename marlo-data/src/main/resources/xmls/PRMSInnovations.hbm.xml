@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="org.cgiar.ccafs.marlo.data.model.PRMSInnovation" table="prms_innovations"
+    optimistic-lock="none">
+      <id name="id" type="java.lang.Long">
+      <column name="id" />
+     <generator class="identity" />
+    </id>
+    <property name="title" type="text">
+      <column name="title" />
+    </property>
+    <property name="description" type="text">
+      <column name="description" />
+    </property>
+    <property name="prmsResultId" type="java.lang.Long">
+    	<column name="prms_result_id" />
+    </property>
+    <property name="typeId" type="java.lang.Long">
+    	<column name="type_id" />
+    </property>
+    <property name="typeName" type="text">
+    	<column name="type_name" />
+    </property>
+    <property name="year" type="java.lang.Integer">
+		<column name="year" />
+    </property>
+    <property name="pdfLink" type="text">
+    	<column name="pdf_link" />
+    </property>
+    <property name="readinessLevelId" type="java.lang.Long">
+    	<column name="readiness_level_id" />
+    </property>
+    <property name="readinessLevelName" type="text">
+    	<column name="readiness_level_name" />
+    </property>
+  </class>
+</hibernate-mapping>

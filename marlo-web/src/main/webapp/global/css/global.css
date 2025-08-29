@@ -381,11 +381,15 @@ span.badge.fieldError {
 }
 
 .margin-buttom-10{
-	margin-bottom: 1rem;
+	margin-bottom: 1rem !important;
+}
+
+.margin-buttom-20 {
+	margin-bottom: 2rem !important;
 }
 
 .margin-buttom-0 {
-	margin-bottom: 0rem;
+	margin-bottom: 0rem !important;
 }
 
 .margin-right-10 {
@@ -3929,6 +3933,11 @@ button.ipGraph-btn {
 	font-size: 1.6rem;
 }
 
+.form-group .note--3 span {
+	color: #5f5e5e;
+	font-size: 12px;
+}
+
 #outputs #addOutputBlock {
 	text-align: center;
 	margin-bottom: 30px;
@@ -5775,6 +5784,22 @@ ul#deliverablesFilesMessages>li {
 	margin: 0;
 }
 
+.grayNeutralBox {
+	background-color: #DFDFDF;
+	border: 1px solid #B4B4B4;
+	padding: 12px 16px;
+	position: relative;
+	overflow: hidden;
+}
+
+.grayPlatinumBox {
+	background: #E7E7E7;
+	border: 1px solid #B4B4B4;
+	padding: 12px 16px;
+	position: relative;
+	overflow: hidden;
+}
+
 .grayBlueBox {
 	background: #ECF3F4;
 	border-radius: 10px;
@@ -5797,6 +5822,14 @@ ul#deliverablesFilesMessages>li {
 	transition: box-shadow 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 	background: #fff;
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+}
+
+.borderBox--noPadding {
+	padding: 0;
+}
+
+.paddingBorderBox {
+	padding: 9px 22px 9px 22px;
 }
 
 .borderBox:hover {
@@ -7779,6 +7812,10 @@ a.form-button.button-history {
 	font-weight: normal !important;
 }
 
+.font-size-12 {
+	font-size: 12px;
+}
+
 .under-construction-icon {
 	margin-left: 5px;
 }
@@ -8652,6 +8689,14 @@ img.qaOptionsComment {
 	display: none;
 }
 
+.displayContents {
+	display: contents;
+}
+
+.displayFlex {
+	display: flex;
+}
+
 .page_load {
 	display: flex;
 	background-color: #50505070;
@@ -8837,6 +8882,14 @@ img.qaOptionsComment {
 
 .padding-left-2{
 	padding-left: 2rem !important;
+}
+
+.padding-left-1{
+	padding-left: 1rem !important;
+}
+
+.padding-left-16-px{
+	padding-left: 16px !important;
 }
 
 .padding-left-0{

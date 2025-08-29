@@ -1,0 +1,1 @@
+RENAME TABLE prms_innovation_aiccra TO project_innovation_prms;

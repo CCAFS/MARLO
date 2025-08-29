@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_prms ADD CONSTRAINT innovation_prms_project_innovations_FK FOREIGN KEY (project_innovation_id) REFERENCES project_innovations(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
