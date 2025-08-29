@@ -9,6 +9,10 @@ export declare class MalMultiselect {
      */
     name: string;
     /**
+     * The reference of the multiselect component.
+     */
+    reference: string;
+    /**
      * The data for the multiselect options.
      */
     data: any[];

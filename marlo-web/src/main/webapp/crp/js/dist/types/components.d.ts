@@ -22,6 +22,10 @@ export namespace Components {
          */
         "name": string;
         /**
+          * The reference of the multiselect component.
+         */
+        "reference": string;
+        /**
           * Whether to show the separate container for selected items.
          */
         "showSelectedContainer": boolean;
@@ -130,6 +134,10 @@ declare namespace LocalJSX {
           * Event emitted when the values changes.
          */
         "onValueChange"?: (event: MalMultiselectCustomEvent<any>) => void;
+        /**
+          * The reference of the multiselect component.
+         */
+        "reference"?: string;
         /**
           * Whether to show the separate container for selected items.
          */

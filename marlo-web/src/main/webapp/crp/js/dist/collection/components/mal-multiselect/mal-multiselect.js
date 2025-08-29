@@ -9,6 +9,10 @@ export class MalMultiselect {
      */
     name = '';
     /**
+     * The reference of the multiselect component.
+     */
+    reference = '';
+    /**
      * The data for the multiselect options.
      */
     data = [];
@@ -115,7 +119,9 @@ export class MalMultiselect {
             />
 
             <div v-if="showSelectedContainer" class="mt-2 flex flex-wrap gap-2">
-              <div v-for="(item, idx) in selectedValues" :key="idx" class="p-chip p-component">
+              <div v-for="(item, index) in selectedValues" :key="index" class="p-chip p-component">
+                <input type="hidden" :name="'${stencilComponent.name}[' + index + '].id'" >
+                <input type="hidden" :name="'${stencilComponent.name}[' + index + '].${stencilComponent.reference}'" :value="item" >
                 <span class="p-chip-text">{{ getLabelForValue(item) }}</span>
                 <span class="pi pi-times p-chip-remove-icon"
                       style="cursor:pointer;margin-left:0.5rem"
@@ -169,7 +175,7 @@ export class MalMultiselect {
      * @returns The rendered multiselect component.
      */
     render() {
-        return (h(Host, { key: '27f72caf68caf10b78d81677812ee0642567fb15' }, h("div", { key: 'e17b76b97a4ccb8cbf95510874424b516c8dcae4', id: "multi-select-container" })));
+        return (h(Host, { key: 'fe56f8d9770a8504423c7686939d94c20682da76' }, h("div", { key: 'a0b4a7cc981a981cca2bada215657a018a0a2cb2', id: "multi-select-container" })));
     }
     static get is() { return "mal-multiselect"; }
     static get originalStyleUrls() {
@@ -198,6 +204,26 @@ export class MalMultiselect {
                 "docs": {
                     "tags": [],
                     "text": "The name of the multiselect component."
+                },
+                "getter": false,
+                "setter": false,
+                "reflect": false,
+                "defaultValue": "''"
+            },
+            "reference": {
+                "type": "string",
+                "attribute": "reference",
+                "mutable": false,
+                "complexType": {
+                    "original": "string",
+                    "resolved": "string",
+                    "references": {}
+                },
+                "required": false,
+                "optional": false,
+                "docs": {
+                    "tags": [],
+                    "text": "The reference of the multiselect component."
                 },
                 "getter": false,
                 "setter": false,
