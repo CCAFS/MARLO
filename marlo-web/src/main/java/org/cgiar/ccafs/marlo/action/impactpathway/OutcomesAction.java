@@ -405,6 +405,18 @@ public class OutcomesAction extends BaseAction {
     Comparator<CrpMilestone> milestoneComparator = new ComparatorChain<>(new MilestoneComparators.YearComparator())
       .thenComparing(new MilestoneComparators.ComposedIdComparator());
 
+    try {
+      if (outcomes != null && !outcomes.isEmpty()) {
+        outcomes.sort(Comparator.comparing((CrpProgramOutcome o) -> {
+          String desc = o.getDescription();
+          return desc != null && desc.toLowerCase().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED.toLowerCase());
+        }).thenComparing(CrpProgramOutcome::getId));
+      }
+
+    } catch (Exception e) {
+      LOG.error("OutcomesAction: unable to sort outcomes", e);
+    }
+
     for (CrpProgramOutcome crpProgramOutcome : outcomes) {
 
       crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive())
