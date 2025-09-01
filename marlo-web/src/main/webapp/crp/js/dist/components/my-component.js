@@ -1,4 +1,4 @@
-import { p as proxyCustomElement, H, h } from './p-LfeK-xMb.js';
+import { p as proxyCustomElement, H, h } from './p-CY-b_VSy.js';
 
 const myComponentCss = ":host{display:block}";
 
@@ -56,7 +56,7 @@ const MyComponent$1 = /*@__PURE__*/ proxyCustomElement(class MyComponent extends
         }
     }
     render() {
-        return (h("div", { key: '99173880fecac94ae1283a424248dbc44612c6cb' }, h("div", { key: 'c8370401d0ceaa4569ad671a6bffa2d8fa5309dd', id: "vue-counter" }), h("style", { key: '8e675f030c236659db49ed243dfac8265c6b9c95' }, `
+        return (h("div", { key: '1a35a1c2199a9c8be63be3d2df70c2fbda7b66d8' }, h("div", { key: 'd72f44361add83840a9e6037c2df812612681eb4', id: "vue-counter" }), h("style", { key: '08f7dd9371ef93df84197ad6435b0c35cac7da03' }, `
           .counter-container {
             padding: 20px;
             text-align: center;

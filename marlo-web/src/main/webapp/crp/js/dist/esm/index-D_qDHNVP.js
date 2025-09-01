@@ -1,5 +1,3 @@
-'use strict';
-
 const NAMESPACE = 'marlo-stencil-components';
 const BUILD = /* marlo-stencil-components */ { hydratedSelectorName: "hydrated", lazyLoad: true, updatable: true};
 
@@ -293,6 +291,9 @@ var Host = {};
 var isHost = (node) => node && node.$tag$ === Host;
 var parsePropertyValue = (propValue, propType) => {
   if (propValue != null && !isComplexType(propValue)) {
+    if (propType & 4 /* Boolean */) {
+      return propValue === "false" ? false : propValue === "" || !!propValue;
+    }
     if (propType & 1 /* String */) {
       return String(propValue);
     }
@@ -1293,14 +1294,7 @@ var bootstrapLazy = (lazyBundles, options = {}) => {
 // src/runtime/nonce.ts
 var setNonce = (nonce) => plt.$nonce$ = nonce;
 
-exports.Host = Host;
-exports.bootstrapLazy = bootstrapLazy;
-exports.createEvent = createEvent;
-exports.getElement = getElement;
-exports.h = h;
-exports.promiseResolve = promiseResolve;
-exports.registerInstance = registerInstance;
-exports.setNonce = setNonce;
-//# sourceMappingURL=index-BDMyP6ST.js.map
+export { Host as H, bootstrapLazy as b, createEvent as c, getElement as g, h, promiseResolve as p, registerInstance as r, setNonce as s };
+//# sourceMappingURL=index-D_qDHNVP.js.map
 
-//# sourceMappingURL=index-BDMyP6ST.js.map
+//# sourceMappingURL=index-D_qDHNVP.js.map

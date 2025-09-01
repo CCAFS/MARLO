@@ -256,6 +256,9 @@ var Host = {};
 var isHost = (node) => node && node.$tag$ === Host;
 var parsePropertyValue = (propValue, propType) => {
   if (propValue != null && !isComplexType(propValue)) {
+    if (propType & 4 /* Boolean */) {
+      return propValue === "false" ? false : propValue === "" || !!propValue;
+    }
     if (propType & 1 /* String */) {
       return String(propValue);
     }
@@ -1096,6 +1099,6 @@ var setNonce = (nonce) => plt.$nonce$ = nonce;
 var setPlatformOptions = (opts) => Object.assign(plt, opts);
 
 export { H, setNonce as a, setPlatformOptions as b, Host as c, createEvent as d, getAssetPath as g, h, proxyCustomElement as p, setAssetPath as s };
-//# sourceMappingURL=p-LfeK-xMb.js.map
+//# sourceMappingURL=p-CY-b_VSy.js.map
 
-//# sourceMappingURL=p-LfeK-xMb.js.map
+//# sourceMappingURL=p-CY-b_VSy.js.map

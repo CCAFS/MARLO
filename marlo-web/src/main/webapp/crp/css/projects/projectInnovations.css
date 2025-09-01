@@ -898,3 +898,142 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   overflow: hidden;
   font-size: 12px;
 }
+
+mal-multiselect {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Style the label container */
+mal-multiselect .p-multiselect-label-container {
+  padding: 4px 3px;
+}
+
+/* Style the dropdown arrow */
+mal-multiselect .p-multiselect-dropdown {
+  background: transparent;
+  border: none;
+}
+
+/* Style selected items container to match list appearance */
+mal-multiselect .mt-2.flex.flex-wrap.gap-2 {
+  padding: 6px 0px;
+  min-height: 40px;
+  background-color: #fff;
+}
+
+mal-multiselect .p-multiselect {
+  background-color: #fff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 100%;
+  padding: 3px 6px 3px 3px;
+}
+
+/* Style individual selected items (chips) to match list items */
+mal-multiselect .p-chip {
+  background-color: #F7F7F7 !important;
+  border: 1px solid #E0E0E0 !important;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 2px !important;
+  margin-bottom: 5px !important;
+  padding: 1px 24px 0px 6px !important;
+  position: relative;
+  height: 24px;
+  font-size: 14px;
+}
+
+mal-multiselect .p-chip:hover {
+  background-color: #F4F4F4 !important;
+  color: #444;
+}
+
+/* Style chip text */
+mal-multiselect .p-chip-text {
+  font-size: 0.95em;
+  color: #444;
+  width: 90%;
+  display: block;
+  float: left;
+}
+
+/* Style remove icon to match removeElement styling */
+mal-multiselect .p-chip-remove-icon {
+  background-color: #D5504C !important;
+  color: white !important;
+  border-radius: 0px 3px 0px 8px !important;
+  padding: 2px 4px !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  cursor: pointer !important;
+  margin-left: 0 !important;
+}
+
+mal-multiselect .p-chip-remove-icon:hover {
+  opacity: 0.8;
+}
+
+/* Style the dropdown panel when open */
+mal-multiselect .p-multiselect-panel {
+  border: 1px solid #E0E0E0 !important;
+  border-radius: 0 !important;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1) !important;
+}
+
+.p-multiselect-overlay {
+  background-color: #fff !important;
+  padding: 6px;
+  border: 1px solid #aaa !important;
+}
+
+.p-multiselect-overlay .p-multiselect-header {
+  border-bottom: 1px solid #E0E0E0 !important;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+}
+
+.p-multiselect-overlay .p-multiselect-header .p-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  margin-right: 6px;
+  border: 1px solid #aaa;
+}
+
+.p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container{
+  padding: 6px;
+  border: 1px solid #ccc;
+}
+
+.p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container:focus-within {
+  border: 1.5px solid #000;
+}
+
+.p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container .p-multiselect-filter {
+  width: 98%;
+}
+
+.p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container .p-inputicon {
+  top: 25%;
+  right: 6px;
+}
+
+.p-multiselect-overlay .p-multiselect-list-container {
+
+}
+
+.p-multiselect-overlay .p-multiselect-list-container .p-multiselect-option {
+
+}
+
+.p-multiselect-overlay .p-multiselect-list-container .p-multiselect-option:hover {
+  background-color: #F4F4F4 !important;
+  color: #444 !important;
+}
+
+.p-multiselect-overlay .p-multiselect-list-container .p-multiselect-option:focus {
+  background-color: #F4F4F4 !important;
+  color: #444 !important;
+}

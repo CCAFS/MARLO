@@ -116,30 +116,30 @@
 
     [#-- <script type="module" src="https://cdn.jsdelivr.net/gh/yecksin/marlo-stencil-components@main/dist/esm/marlo-stencil-components.js?v=2"></script> --]
 
-        <!-- React dependencies -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <!-- React dependencies -->
+    <#--      <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-transition-group/dist/react-transition-group.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-transition-group/dist/react-transition-group.min.js" crossorigin></script>  -->
 
     <!-- Make ReactTransitionGroup available globally -->
-    <script>
+    <#--      <script>
       window.ReactTransitionGroup = {
         Transition: ReactTransitionGroup.Transition,
         TransitionGroup: ReactTransitionGroup.TransitionGroup,
         CSSTransition: ReactTransitionGroup.CSSTransition
       };
-    </script>
+    </script>  -->
     
     <!-- Load PrimeReact - CHANGED: Use full UMD bundle instead of individual components -->
-    <link rel="stylesheet" href="https://unpkg.com/primereact/resources/themes/lara-light-indigo/theme.css" />
+    <#--      <link rel="stylesheet" href="https://unpkg.com/primereact/resources/themes/lara-light-indigo/theme.css" />
     <link rel="stylesheet" href="https://unpkg.com/primereact/resources/primereact.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />
+    <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css" />  -->
     
     <!-- Use complete PrimeReact UMD bundle instead of individual components -->
-    <script src="https://unpkg.com/primereact/primereact.all.min.js"></script>
+    <#--  <script src="https://unpkg.com/primereact/primereact.all.min.js"></script>  -->
     
     <!-- Make PrimeReact available globally -->
-    <script>
+    <#--      <script>
       // Create a complete mock of the style system
       const createEmptyStyleHook = () => ({
         bind: () => {},
@@ -166,7 +166,7 @@
         equals: (a, b) => JSON.stringify(a) === JSON.stringify(b),
         isEmpty: (value) => value === null || value === undefined || value === '' 
       };
-    </script>
+    </script>  -->
 
   </head>
   <body class="mode-${editable?string('editable', 'readOnly')}">
