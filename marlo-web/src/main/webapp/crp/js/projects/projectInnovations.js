@@ -1546,7 +1546,7 @@ function dynamicStatusCheckedForEvidences() {
 }
 
 function initDropdownOrganization() {
-  const dropdowns = document.querySelectorAll('.allianceOrganizations-institutions');
+  const dropdown = document.querySelector('.allianceOrganizations-institutions');
 
   $.ajax({
     url: `${baseURL}/getInstitutionsService.do`,
@@ -1558,21 +1558,28 @@ function initDropdownOrganization() {
         return { label: item.name, value: item.id };
       });
 
-      // Apply data to all dropdowns with the class
-      dropdowns.forEach(dropdown => {
-        dropdown.data = options;
+      dropdown.data = options;
 
-        // Set initial value if available
-        const initialValue = dropdown.getAttribute("data-value");
-        if (initialValue) {
-          dropdown.value = parseInt(initialValue);
-        }
+      // Set initial value if available
+      const initialValue = dropdown.getAttribute("data-value");
+      if (initialValue) {
+        const json = JSON.parse(initialValue);
 
-        // Listen for value changes
-        dropdown.addEventListener('valueChange', (event) => {
-          console.log('Selected value:', event.detail);
-          console.log('This is the dropdown:', dropdown);
-        });
+        const values = json.map(item => options[item.value].value);
+
+        dropdown.value = values;
+
+        setTimeout(() => {
+          $(dropdown).find('.p-chip').each(function(index, chip) {
+            $(chip).find('input').first().val(json[index].id);
+          });
+        },100);
+      }
+
+      // Listen for value changes
+      dropdown.addEventListener('valueChange', (event) => {
+        console.log('Selected value:', event.detail);
+        console.log('This is the dropdown:', dropdown);
       });
 
     },
