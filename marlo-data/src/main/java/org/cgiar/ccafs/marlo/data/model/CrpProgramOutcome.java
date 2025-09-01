@@ -62,9 +62,9 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   @Expose
   private Integer orderIndex;
   @Expose
-  private Integer afPhase;
-  @Expose
   private BigDecimal value;
+  @Expose
+  private Portfolio portfolio;
 
 
   private Set<CrpOutcomeSubIdo> crpOutcomeSubIdos = new HashSet<CrpOutcomeSubIdo>(0);
@@ -115,6 +115,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
+    this.setPortfolio(other.getPortfolio());
   }
 
 
@@ -141,6 +142,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
+    this.setPortfolio(other.getPortfolio());
   }
 
   @Override
@@ -166,12 +168,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   public String getAcronym() {
     return acronym;
   }
-
-
-  public Integer getAfPhase() {
-    return afPhase;
-  }
-
 
   public String getComposedName() {
     if (this.getCrpProgram() != null && this.getCrpProgram().getAcronym() != null && description != null) {
@@ -259,6 +255,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return phase;
   }
 
+  public Portfolio getPortfolio() {
+    return portfolio;
+  }
+
   public Set<ProjectFurtherContribution> getProjectFurtherContributions() {
     return projectFurtherContributions;
   }
@@ -289,10 +289,6 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setAcronym(String acronym) {
     this.acronym = acronym;
-  }
-
-  public void setAfPhase(Integer afPhase) {
-    this.afPhase = afPhase;
   }
 
   public void setComposeID(String composeID) {
@@ -353,6 +349,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setPhase(Phase phase) {
     this.phase = phase;
+  }
+
+  public void setPortfolio(Portfolio portfolio) {
+    this.portfolio = portfolio;
   }
 
   public void setProjectFurtherContributions(Set<ProjectFurtherContribution> projectFurtherContributions) {
