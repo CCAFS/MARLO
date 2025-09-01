@@ -11,9 +11,9 @@
 ] /]
 
 [#assign moduleJS = [
-  "${baseUrlMedia}/js/dist/components/my-component.js",
-  "${baseUrlMedia}/js/dist/components/mal-multiselect.js",
-  "${baseUrlMedia}/js/dist/components/mal-select.js"
+  "${baseUrlMedia}/js/dist/components/my-component.js?20250825",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20250825",
+  "${baseUrlMedia}/js/dist/components/mal-select.js?20250825",
 ] /]
 
 
