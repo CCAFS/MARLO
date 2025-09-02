@@ -29,6 +29,10 @@ export namespace Components {
           * Whether to show the separate container for selected items.
          */
         "showSelectedContainer": boolean;
+        /**
+          * Whether to show the checkbox all inside the header of the multiselect.
+         */
+        "showToggleAll": boolean;
         "value": any;
         /**
           * The options for the virtual scroller.
@@ -142,6 +146,10 @@ declare namespace LocalJSX {
           * Whether to show the separate container for selected items.
          */
         "showSelectedContainer"?: boolean;
+        /**
+          * Whether to show the checkbox all inside the header of the multiselect.
+         */
+        "showToggleAll"?: boolean;
         "value"?: any;
         /**
           * The options for the virtual scroller.

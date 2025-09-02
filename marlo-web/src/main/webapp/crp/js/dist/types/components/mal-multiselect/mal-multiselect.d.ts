@@ -30,6 +30,10 @@ export declare class MalMultiselect {
      */
     showSelectedContainer: boolean;
     /**
+     * Whether to show the checkbox all inside the header of the multiselect.
+     */
+    showToggleAll: boolean;
+    /**
      * Event emitted when the values changes.
      */
     valueChange: EventEmitter<any>;
