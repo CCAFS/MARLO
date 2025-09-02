@@ -969,6 +969,11 @@ mal-multiselect .p-chip-remove-icon {
   right: 0 !important;
   cursor: pointer !important;
   margin-left: 0 !important;
+  background-image: url(../../../global/images/icon-remove.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 20px !important;
+  height: 12px !important;
 }
 
 mal-multiselect .p-chip-remove-icon:hover {
@@ -1020,12 +1025,9 @@ mal-multiselect .p-multiselect-panel {
   right: 6px;
 }
 
-.p-multiselect-overlay .p-multiselect-list-container {
-
-}
-
-.p-multiselect-overlay .p-multiselect-list-container .p-multiselect-option {
-
+.p-multiselect-overlay .p-multiselect-list-container .p-virtualscroller {
+  scrollbar-width: thin;
+  scrollbar-color: #aaa transparent;
 }
 
 .p-multiselect-overlay .p-multiselect-list-container .p-multiselect-option:hover {

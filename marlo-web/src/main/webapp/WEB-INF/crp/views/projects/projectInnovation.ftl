@@ -11,15 +11,15 @@
 ] /]
 
 [#assign moduleJS = [
-  "${baseUrlMedia}/js/dist/components/my-component.js?20250825",
-  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20250825",
-  "${baseUrlMedia}/js/dist/components/mal-select.js?20250825"
+  "${baseUrlMedia}/js/dist/components/my-component.js?20250902",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20250902",
+  "${baseUrlMedia}/js/dist/components/mal-select.js?20250902"
 ] /]
 
 
 
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20250828",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250902",
   "${baseUrlCdn}/global/css/customDataTable.css?20250825"
 ] /]
 [#assign currentSection = "projects" /]
