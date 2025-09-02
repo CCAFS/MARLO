@@ -30,6 +30,10 @@ export class MalMultiselect {
      */
     showSelectedContainer = false;
     /**
+     * Whether to show the checkbox all inside the header of the multiselect.
+     */
+    showToggleAll = false;
+    /**
      * Event emitted when the values changes.
      */
     valueChange;
@@ -77,6 +81,7 @@ export class MalMultiselect {
                         selectedValues: stencilComponent.value || [],
                         options: stencilComponent.data || [],
                         showSelectedContainer: stencilComponent.showSelectedContainer || false,
+                        showToggleAll: stencilComponent.showToggleAll || false,
                         virtualScrollerOptions: {
                             itemSize: 38,
                             showLoader: true,
@@ -116,6 +121,7 @@ export class MalMultiselect {
               class="w-full p-multiselect"
               :maxSelectedLabels="showSelectedContainer ? 0 : 3"
               :selectedItemTemplate="showSelectedContainer ? () => null : null"
+              :showToggleAll="showToggleAll"
             />
 
             <div v-if="showSelectedContainer" class="mt-2 flex flex-wrap gap-2">
@@ -175,7 +181,7 @@ export class MalMultiselect {
      * @returns The rendered multiselect component.
      */
     render() {
-        return (h(Host, { key: 'fe56f8d9770a8504423c7686939d94c20682da76' }, h("div", { key: 'a0b4a7cc981a981cca2bada215657a018a0a2cb2', id: "multi-select-container" })));
+        return (h(Host, { key: '1d7dd56f8e82909f24ca9ba6203e4e8fafa88c28' }, h("div", { key: '69913eb2f84f1f26e938737d8363a1e8f9ff37dc', id: "multi-select-container" })));
     }
     static get is() { return "mal-multiselect"; }
     static get originalStyleUrls() {
@@ -322,6 +328,26 @@ export class MalMultiselect {
                 "docs": {
                     "tags": [],
                     "text": "Whether to show the separate container for selected items."
+                },
+                "getter": false,
+                "setter": false,
+                "reflect": false,
+                "defaultValue": "false"
+            },
+            "showToggleAll": {
+                "type": "boolean",
+                "attribute": "show-toggle-all",
+                "mutable": false,
+                "complexType": {
+                    "original": "boolean",
+                    "resolved": "boolean",
+                    "references": {}
+                },
+                "required": false,
+                "optional": false,
+                "docs": {
+                    "tags": [],
+                    "text": "Whether to show the checkbox all inside the header of the multiselect."
                 },
                 "getter": false,
                 "setter": false,

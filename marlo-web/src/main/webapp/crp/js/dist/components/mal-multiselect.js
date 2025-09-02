@@ -35,6 +35,10 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
      */
     showSelectedContainer = false;
     /**
+     * Whether to show the checkbox all inside the header of the multiselect.
+     */
+    showToggleAll = false;
+    /**
      * Event emitted when the values changes.
      */
     valueChange;
@@ -82,6 +86,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
                         selectedValues: stencilComponent.value || [],
                         options: stencilComponent.data || [],
                         showSelectedContainer: stencilComponent.showSelectedContainer || false,
+                        showToggleAll: stencilComponent.showToggleAll || false,
                         virtualScrollerOptions: {
                             itemSize: 38,
                             showLoader: true,
@@ -121,6 +126,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
               class="w-full p-multiselect"
               :maxSelectedLabels="showSelectedContainer ? 0 : 3"
               :selectedItemTemplate="showSelectedContainer ? () => null : null"
+              :showToggleAll="showToggleAll"
             />
 
             <div v-if="showSelectedContainer" class="mt-2 flex flex-wrap gap-2">
@@ -180,7 +186,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
      * @returns The rendered multiselect component.
      */
     render() {
-        return (h(Host, { key: 'fe56f8d9770a8504423c7686939d94c20682da76' }, h("div", { key: 'a0b4a7cc981a981cca2bada215657a018a0a2cb2', id: "multi-select-container" })));
+        return (h(Host, { key: '1d7dd56f8e82909f24ca9ba6203e4e8fafa88c28' }, h("div", { key: '69913eb2f84f1f26e938737d8363a1e8f9ff37dc', id: "multi-select-container" })));
     }
     static get watchers() { return {
         "value": ["onPropsChange"],
@@ -194,7 +200,8 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
         "value": [1032],
         "label": [1],
         "virtualScrollerOptions": [8, "virtual-scroller-options"],
-        "showSelectedContainer": [4, "show-selected-container"]
+        "showSelectedContainer": [4, "show-selected-container"],
+        "showToggleAll": [4, "show-toggle-all"]
     }, undefined, {
         "value": ["onPropsChange"],
         "data": ["onPropsChange"]
