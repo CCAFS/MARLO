@@ -326,7 +326,11 @@
         <div class="form-group fileUploadContainer">
           <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
           [#if !isTemplate]
-						[#local hasFile = (outcome??) && action.hasBaselineFile(outcome) /]
+          	[#if outcome?has_content]
+							[#local hasFile = (outcome??) && action.hasBaselineFile(outcome) /]
+						[#else]
+							[#local hasFile = false/]
+						[/#if]
             <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
             [#-- Input File --]
             [#if editable]
