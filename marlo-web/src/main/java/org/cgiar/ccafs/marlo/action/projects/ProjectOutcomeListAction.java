@@ -77,7 +77,6 @@ public class ProjectOutcomeListAction extends BaseAction {
   private GlobalUnitProjectManager globalUnitProjectManager;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private ProjectMilestoneManager projectMilestoneManager;
-  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
 
   // Front-end
@@ -104,7 +103,7 @@ public class ProjectOutcomeListAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
     ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
+    FeedbackQACommentManager commentManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -114,7 +113,6 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.projectMilestoneManager = projectMilestoneManager;
-    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
   }
 

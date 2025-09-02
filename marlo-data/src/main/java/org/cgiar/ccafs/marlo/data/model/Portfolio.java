@@ -21,10 +21,16 @@ public class Portfolio extends MarloAuditableEntity implements java.io.Serializa
   @Expose
   private GlobalUnit globalUnit;
 
+  private Boolean associatedToCurrentPhase;
+
   private List<PortfolioPhase> portfolioPhases;
   private List<Long> selectedPhases;
 
   public Portfolio() {
+  }
+
+  public Boolean getAssociatedToCurrentPhase() {
+    return associatedToCurrentPhase;
   }
 
   public Date getEndDate() {
@@ -55,6 +61,10 @@ public class Portfolio extends MarloAuditableEntity implements java.io.Serializa
 
   public Date getStartDate() {
     return startDate;
+  }
+
+  public void setAssociatedToCurrentPhase(Boolean associatedToCurrentPhase) {
+    this.associatedToCurrentPhase = associatedToCurrentPhase;
   }
 
   public void setEndDate(Date endDate) {
