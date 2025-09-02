@@ -271,14 +271,6 @@ public class ProjectInnovationValidator extends BaseValidator {
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"crpOutcomes"}));
     }
 
-    if (innovationInfo != null && (innovationInfo.getAreUsersDetermined() == null)) {
-      action.addMessage(action.getText("areUsersDetermined"));
-      action.addMissingField("innovation.areUsersDetermined");
-      action.getInvalidFields().put("list-innovation.projectInnovationInfo.areUsersDetermined",
-        action.getText(InvalidFieldsMessages.EMPTYFIELD));
-    }
-
-
     if (!action.isAiccra() && innovationInfo != null && (innovationInfo.getHasMilestones() == null)) {
       action.addMessage(action.getText("projectOutcomes"));
       action.addMissingField("innovation.projectOutcomes");
@@ -979,70 +971,78 @@ public class ProjectInnovationValidator extends BaseValidator {
            */
         }
 
-        if (innovationInfo.getAreUsersDetermined() != null && innovationInfo.getAreUsersDetermined()) {
-          // Validate actors
-          if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
-            action.addMessage(action.getText("innovation.actors"));
-            action.addMissingField("innovation.actors");
-            action.getInvalidFields().put("add-innovation.actors",
-              action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"actors"}));
-          }
+        if (innovationInfo != null && (innovationInfo.getAreUsersDetermined() == null)) {
+          action.addMessage(action.getText("areUsersDetermined"));
+          action.addMissingField("innovation.areUsersDetermined");
+          action.getInvalidFields().put("input-innovation.projectInnovationInfo.areUsersDetermined",
+            action.getText(InvalidFieldsMessages.EMPTYFIELD));
+        } else {
 
-          try {
-            if (projectInnovation.getActors() != null && !projectInnovation.getActors().isEmpty()) {
-              int count = 0;
-              for (ProjectInnovationActor actor : projectInnovation.getActors()) {
-                if (actor.getActor() == null || actor.getActor().getId() == null || actor.getActor().getId() == -1) {
-                  action.addMessage(action.getText("actors[" + count + "] type"));
-                  action.addMissingField("innovation.actors[" + count + "].id");
-                  action.getInvalidFields().put("list-innovation.actors[" + count + "].actor.id",
-                    action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
-                }
-                if (actor.getTotal() == null || actor.getActor().getId() == -1) {
-                  action.addMessage(action.getText("actors[" + count + "] total"));
-                  action.addMissingField("innovation.actors[" + count + "].total");
-                  action.getInvalidFields().put("input-innovation.actors[" + count + "].total",
-                    action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
-                }
-
-                count++;
-              }
-
+          if (innovationInfo.getAreUsersDetermined() != null && innovationInfo.getAreUsersDetermined()) {
+            // Validate actors
+            if (projectInnovation.getActors() == null || projectInnovation.getActors().isEmpty()) {
+              action.addMessage(action.getText("innovation.actors"));
+              action.addMissingField("innovation.actors");
+              action.getInvalidFields().put("add-innovation.actors",
+                action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"actors"}));
             }
-          } catch (Exception e) {
-            Log.error("error validating actors " + e);
-          }
 
-          // Validate organizations
-          if (projectInnovation.getAllianceOrganizations() == null
-            || projectInnovation.getAllianceOrganizations().isEmpty()) {
-            action.addMessage(action.getText("innovation.allianceOrganizations"));
-            action.addMissingField("innovation.allianceOrganizations");
-            action.getInvalidFields().put("list-innovation.allianceOrganizations",
-              action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"allianceOrganizations"}));
-          }
+            try {
+              if (projectInnovation.getActors() != null && !projectInnovation.getActors().isEmpty()) {
+                int count = 0;
+                for (ProjectInnovationActor actor : projectInnovation.getActors()) {
+                  if (actor.getActor() == null || actor.getActor().getId() == null || actor.getActor().getId() == -1) {
+                    action.addMessage(action.getText("actors[" + count + "] type"));
+                    action.addMissingField("innovation.actors[" + count + "].id");
+                    action.getInvalidFields().put("list-innovation.actors[" + count + "].actor.id",
+                      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
+                  }
+                  if (actor.getTotal() == null || actor.getActor().getId() == -1) {
+                    action.addMessage(action.getText("actors[" + count + "] total"));
+                    action.addMissingField("innovation.actors[" + count + "].total");
+                    action.getInvalidFields().put("input-innovation.actors[" + count + "].total",
+                      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"actors"}));
+                  }
 
-          try {
-            if (projectInnovation.getAllianceOrganizations() != null
-              && !projectInnovation.getAllianceOrganizations().isEmpty()) {
-
-              int count = 0;
-              for (ProjectInnovationAllianceOrganization allianceOrganizations : projectInnovation
-                .getAllianceOrganizations()) {
-                if (allianceOrganizations.getInstitution() == null
-                  || allianceOrganizations.getInstitution().getId() == null
-                  || allianceOrganizations.getInstitution().getId() == -1) {
-                  action.addMessage(action.getText("innovation.allianceOrganizations[" + count + "].institution.id"));
-                  action.addMissingField("innovation.allianceOrganizations[" + count + ".institution");
-                  action.getInvalidFields().put("list-innovation.allianceOrganizations[" + count + "].institution.id",
-                    action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"institution"}));
+                  count++;
                 }
-                count++;
-              }
 
+              }
+            } catch (Exception e) {
+              Log.error("error validating actors " + e);
             }
-          } catch (Exception e) {
-            Log.error("error validating actors " + e);
+
+            // Validate organizations
+            if (projectInnovation.getAllianceOrganizations() == null
+              || projectInnovation.getAllianceOrganizations().isEmpty()) {
+              action.addMessage(action.getText("innovation.allianceOrganizations"));
+              action.addMissingField("innovation.allianceOrganizations");
+              action.getInvalidFields().put("list-innovation.allianceOrganizations",
+                action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"allianceOrganizations"}));
+            }
+
+            try {
+              if (projectInnovation.getAllianceOrganizations() != null
+                && !projectInnovation.getAllianceOrganizations().isEmpty()) {
+
+                int count = 0;
+                for (ProjectInnovationAllianceOrganization allianceOrganizations : projectInnovation
+                  .getAllianceOrganizations()) {
+                  if (allianceOrganizations.getInstitution() == null
+                    || allianceOrganizations.getInstitution().getId() == null
+                    || allianceOrganizations.getInstitution().getId() == -1) {
+                    action.addMessage(action.getText("innovation.allianceOrganizations[" + count + "].institution.id"));
+                    action.addMissingField("innovation.allianceOrganizations[" + count + ".institution");
+                    action.getInvalidFields().put("list-innovation.allianceOrganizations[" + count + "].institution.id",
+                      action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"institution"}));
+                  }
+                  count++;
+                }
+
+              }
+            } catch (Exception e) {
+              Log.error("error validating actors " + e);
+            }
           }
         }
 
