@@ -2,10 +2,12 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +40,17 @@ public class TimelineInformationServiceAction extends BaseAction {
     information = new ArrayList<Map<String, Object>>();
 
     try {
-      timelineList = timelineManager.findAll();
+      GlobalUnit globalUnit = this.getCurrentGlobalUnit();
+      if (globalUnit != null && globalUnit.getId() != null) {
+        timelineList = timelineManager.findAllByGlobalUnit(globalUnit.getId());
+      } else {
+        timelineList = Collections.emptyList();
+      }
 
       try {
+        if (timelineList == null) {
+          timelineList = new ArrayList<>();
+        }
         timelineList = timelineList.stream()
           .sorted(Comparator.comparing(Timeline::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
           .collect(Collectors.toList());

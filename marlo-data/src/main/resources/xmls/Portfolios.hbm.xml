@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Jun 27, 2017 2:55:00 PM by Hibernate Tools 4.3.1.Final -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.Portfolio" table="portfolios"  optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>      
+        <property name="name" type="string">
+            <column name="name" sql-type="TEXT" />
+        </property>
+        <property name="startDate" type="date">
+            <column name="start_date" length="10" />
+        </property>
+        <property name="endDate" type="date">
+            <column name="end_date" length="10" />
+        </property>
+        <many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+          <column name="created_by" not-null="true" />
+        </many-to-one>
+        <many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+          <column name="modified_by" not-null="true" />
+        </many-to-one>
+        <property name="active" type="boolean">
+          <column name="is_active" not-null="true" />
+        </property>
+        <property name="activeSince" type="timestamp" update="false">
+          <column name="active_since" length="19" not-null="true" />
+        </property>
+        <many-to-one name="globalUnit"
+            class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

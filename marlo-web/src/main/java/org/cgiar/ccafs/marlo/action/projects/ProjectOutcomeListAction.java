@@ -331,7 +331,8 @@ public class ProjectOutcomeListAction extends BaseAction {
 
     mainOutcomes = allProjectOutcomes.stream().filter(po -> {
       CrpProgramOutcome cpo = po.getCrpProgramOutcome();
-      return cpo != null && Integer.valueOf(2).equals(cpo.getAfPhase());
+      return cpo != null && cpo.getPortfolio() != null
+        && Integer.valueOf(2).equals(cpo.getPortfolio().getId().intValue());
     }).sorted(Comparator.comparing(po -> po.getCrpProgramOutcome().getOrderIndex())).collect(Collectors.toList());
 
     deprecatedOutcomes = allProjectOutcomes.stream().filter(po -> isDeprecated(po.getCrpProgramOutcome()))
@@ -458,7 +459,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       return true;
     }
 
-    if (cpo.getAfPhase() != null && cpo.getAfPhase() < 2) {
+    if (cpo.getPortfolio() != null && cpo.getPortfolio().getId() < 2) {
       return true;
     }
 

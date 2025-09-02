@@ -10,7 +10,7 @@
 [#assign currentStage = "feedbackRolesPermissionsManagement" /]
 
 [#assign breadCrumb = [
-  {"label":"admin", "nameSpace":"", "action":"marloBoard"},
+  {"label":"admin", "nameSpace":"", "action":"adminManagement"},
   {"label":"feedbackRolesPermissionsManagement", "nameSpace":"", "action":""}
 ]/]
 

@@ -189,12 +189,32 @@
       </result>
     </action>
     
+    <action name="{crp}/timelineManagement"
+			class="org.cgiar.ccafs.marlo.action.crp.admin.TimelineManagementAction">
+      		<interceptor-ref name="crpAdminStack" />
+			<result name="input">/WEB-INF/crp/views/admin/timelineManagement.ftl</result>
+			<result name="success" type="redirectAction">
+			    <param name="actionName">${crpSession}/timelineManagement</param>			
+				<param name="edit">true</param>
+			</result>
+	</action>
+    
     <action name="{crp}/feedbackRolesPermissionsManagement"
       class="org.cgiar.ccafs.marlo.action.crp.admin.FeedbackRolesPermissionsManagementAction">
       <interceptor-ref name="crpAdminStack" />
       <result name="input">/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl</result>
       <result name="success" type="redirectAction">
         <param name="actionName">${crpSession}/feedbackRolesPermissionsManagement</param>
+        <param name="edit">true</param>
+      </result>
+    </action>
+    
+    <action name="{crp}/portfolioManagement"
+      class="org.cgiar.ccafs.marlo.action.crp.admin.PortfolioManagementAction">
+      <interceptor-ref name="crpAdminStack" />
+      <result name="input">/WEB-INF/crp/views/admin/portfoliosManagement.ftl</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">${crpSession}/portfolioManagement</param>
         <param name="edit">true</param>
       </result>
     </action>

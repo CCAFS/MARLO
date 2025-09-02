@@ -266,6 +266,11 @@ public class OutcomeValidator extends BaseValidator
 
 
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
+      action.addMessage(action.getText("outcome.action.startYear.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].startYear", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       action.addMessage(action.getText("outcome.action.year.required", params));
       action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
     }
