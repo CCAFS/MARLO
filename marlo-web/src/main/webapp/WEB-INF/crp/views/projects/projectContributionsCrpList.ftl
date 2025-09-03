@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250730",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250903",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
@@ -171,91 +171,121 @@
 				  </div>
 				
 				[#elseif action.hasSpecificities('portfolio_feature_active')]
-				[#-- Portfolio specificity active --]
+				  [#-- Portfolio specificity active --]
 				
-					[#assign portfoliosList = (portfolios)![]]
-					[#assign outcomesList   = (project.outcomes)![]]
-					
-					[#-- group outcomes by outcome portafolio: projectOutcome.crpProgramOutcome.portfolio --]
-					[#assign outcomesByPortfolio = {}]
-					[#assign portfolioLabels = {}]
-					
-					[#list outcomesList as po]
-					  [#assign outcome = po.crpProgramOutcome!]
-						[#assign pf = (outcome.portfolio)!]
-						[#assign pid = (pf.id?string)!'__no_portfolio__']
-						[#assign label = (pf.acronym)!((pf.name)!'Portfolio Unassigned')]
-						[#assign currentList = (outcomesByPortfolio[pid?string])![]]
-					  [#assign outcomesByPortfolio = outcomesByPortfolio + { (pid) : currentList + [ po ] } ]
-					  [#assign portfolioLabels = portfolioLabels + { (pid) : label } ]
-					[/#list]
-					
-					[#-- Orden de tabs: primero 'portfolios' en su orden, luego los detectados faltantes, y al final Unassigned --]
-					[#assign explicitOrder = []]
-					[#list portfoliosList as pf]
-					  [#if pf?? && pf.id??]
-					    [#assign explicitOrder = explicitOrder + [ pf.id ] ]
-							[#assign lbl = (pf.acronym)!((pf.name)!("Portfolio " + (pf.id)!))]
-					    [#assign portfolioLabels = portfolioLabels + { (pf.id) : lbl } ]
-					    [#if !(outcomesByPortfolio?keys?seq_contains(pf.id))]
-					      [#assign outcomesByPortfolio = outcomesByPortfolio + { (pf.id) : [] } ]
-					    [/#if]
-					  [/#if]
-					[/#list]
-					
-					[#assign discoveredIds = outcomesByPortfolio?keys]
-					[#assign remainingIds  = discoveredIds?filter(id -> !(explicitOrder?seq_contains(id)) && id != "__no_portfolio__")]
-					[#assign hasUnassigned = discoveredIds?seq_contains("__no_portfolio__")]
-					[#assign pfOrder       = explicitOrder + remainingIds + (hasUnassigned?then(["__no_portfolio__"], []))]
-					[#assign numericIds = []]
-					[#assign hasUnassigned = false]
-					
-					[#list pfOrder as id]
-					  [#if id == "__no_portfolio__"]
-					    [#assign hasUnassigned = true]
-					  [#else]
-					    [#assign numericIds = numericIds + [ id?number ]]
-					  [/#if]
-					[/#list]
-					
-					[#assign numericIds = numericIds?sort]
-					
-					[#assign pfOrderSorted = []]
-					[#list numericIds as nid]
-					  [#assign pfOrderSorted = pfOrderSorted + [ nid?string ]]
-					[/#list]
-					
-					[#if hasUnassigned]
-					  [#assign pfOrderSorted = pfOrderSorted + ["__no_portfolio__"]]
-					[/#if]
-					
-					<br>
-					
-					[#-- Render Tabs per Portafolio --]
-					[#if pfOrderSorted?has_content]
+				  [#assign portfoliosList = (portfolios)![]]
+				  [#assign outcomesList   = (project.outcomes)![]]
+				
+				  [#-- Agrupar outcomes por portfolio del outcome --]
+				  [#assign outcomesByPortfolio = {}]
+				  [#assign portfolioLabels = {}]
+				
+				  [#list outcomesList as po]
+				    [#assign outcome = po.crpProgramOutcome!]
+				    [#assign pf = (outcome.portfolio)!]
+				    [#assign pid = (pf.id?string)!'__no_portfolio__']
+				    [#assign label = (pf.acronym)!((pf.name)!'Portfolio Unassigned')]
+				
+				    [#assign currentList = (outcomesByPortfolio[pid])![]]
+				    [#assign outcomesByPortfolio = outcomesByPortfolio + { (pid) : currentList + [ po ] }]
+				    [#assign portfolioLabels = portfolioLabels + { (pid) : label }]
+				  [/#list]
+				
+				  [#-- Orden de tabs: primero 'portfolios' en su orden, luego detectados faltantes, y al final Unassigned --]
+				  [#assign explicitOrder = []]
+				  [#list portfoliosList as pf]
+				    [#if pf?? && pf.id??]
+				      [#assign pfid = pf.id?string]
+				      [#assign explicitOrder = explicitOrder + [ pfid ]]
+				
+				      [#assign lbl = (pf.acronym)!((pf.name)!("Portfolio " + (pf.id)!))]
+				      [#assign portfolioLabels = portfolioLabels + { (pfid) : lbl }]
+				
+				
+				    [/#if]
+				  [/#list]
+				
+				  [#assign discoveredIds = outcomesByPortfolio?keys]
+				  [#-- FreeMarker no tiene lambdas: construir remainingIds “a mano” --]
+				  [#assign remainingIds = []]
+				  [#list discoveredIds as id]
+				    [#if !(explicitOrder?seq_contains(id)) && id != "__no_portfolio__"]
+				      [#assign remainingIds = remainingIds + [ id ]]
+				    [/#if]
+				  [/#list]
+				
+				  [#assign hasUnassignedKey = discoveredIds?seq_contains("__no_portfolio__")]
+				  [#assign pfOrder = explicitOrder + remainingIds + (hasUnassignedKey?then(["__no_portfolio__"], []))]
+				
+				  [#-- Orden numérico ascendente por id, dejando Unassigned al final --]
+				  [#assign numericIds = []]
+				  [#assign hasUnassignedTab = false]
+				  [#list pfOrder as id]
+				    [#if id == "__no_portfolio__"]
+				      [#assign hasUnassignedTab = true]
+				    [#else]
+				      [#assign numericIds = numericIds + [ id?number ]]
+				    [/#if]
+				  [/#list]
+				  [#assign numericIds = numericIds?sort]
+				  [#assign pfOrderSorted = []]
+				  [#list numericIds as nid]
+				    [#assign pfOrderSorted = pfOrderSorted + [ nid?string ]]
+				  [/#list]
+				  [#if hasUnassignedTab]
+				    [#assign pfOrderSorted = pfOrderSorted + ["__no_portfolio__"]]
+				  [/#if]
+				
+				  <br>
+				
+				[#-- Mapa id(string) -> boolean con el flag associatedToCurrentPhase para pintar el badge --]
+				[#assign associatedMap = {}]
+				[#list portfoliosList as p]
+				  [#if p?? && p.id??]
+				    [#assign associatedMap = associatedMap + { (p.id?string) : ((p.associatedToCurrentPhase)!false) }]
+				  [/#if]
+				[/#list]
+				
+				
+				[#-- IDs de portfolios con al menos 1 indicador --]
+				[#assign pfVisible = []]
+				[#list pfOrderSorted as tid]
+				  [#assign listByPf = (outcomesByPortfolio[tid])![]]
+				  [#if listByPf?has_content]
+				    [#assign pfVisible = pfVisible + [ tid ] ]
+				  [/#if]
+				[/#list]
+				
+				  [#-- Render Tabs por Portafolio --]
+					[#if pfVisible?has_content]
 					  <ul class="nav nav-tabs" role="tablist">
-					    [#list pfOrderSorted as tid]
+					    [#list pfVisible as tid]
 					      <li role="presentation" class="${(tid?index==0)?string('active','')}">
 					        <a href="#pf-tab-${tid}" data-toggle="tab">
-						        [#if portfolioLabels[tid] != "Portfolio Unassigned"]
-									    <span class="glyphicon glyphicon-briefcase"></span>
-									  [/#if]
+					          [#if portfolioLabels[tid] != "Portfolio Unassigned"]
+					            <span class="glyphicon glyphicon-briefcase"></span>
+					          [/#if]
 					          ${portfolioLabels[tid]!('Portfolio ' + tid)}
+					          [#if (associatedMap[tid])!false]
+					            <span class="label label-success" style="margin-left:6px;">Current</span>
+					          [/#if]
 					        </a>
 					      </li>
 					    [/#list]
 					  </ul>
 					
 					  <div class="tab-content">
-					    [#list pfOrder as tid]
+					    [#list pfVisible as tid]
 					      <div class="tab-pane ${(tid?index==0)?string('active','')}" id="pf-tab-${tid}">
 					        <br>
-					        <table id="projectOutcomesList" class="table table-striped table-hover">
+					        <table id="projectOutcomesList-${tid}" class="table table-striped table-hover dt-outcomes">
 					          <thead>
 					            <tr>
 					              <th>[@s.text name="global.flagship" /]</th>
 					              [#if (action.isAFPhase(actualPhase.id))!false]
 					                <th>Performance Indicator</th>
+					              [#else]
+					                <th>Performance Indicator 2023</th>
 					              [/#if]
 					              <th></th>
 					              [#if action.hasSpecificities('feedback_active') ]
@@ -266,15 +296,9 @@
 					            </tr>
 					          </thead>
 					          <tbody>
-					            [#assign listByPf = (outcomesByPortfolio[tid])![]]
-					            [#if listByPf?has_content]
-					              [#-- Orden opcional: por descripción del outcome --]
-					              [#list listByPf?sort_by(['crpProgramOutcome','description']) as projectOutcome]
-					                [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
-					              [/#list]
-					            [#else]
-					              <tr><td colspan="6" class="text-center"><em>No indicators in this portfolio.</em></td></tr>
-					            [/#if]
+					            [#list (outcomesByPortfolio[tid])![] ?sort_by(['crpProgramOutcome','description']) as projectOutcome]
+					              [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+					            [/#list]
 					          </tbody>
 					        </table>
 					      </div>
@@ -283,8 +307,8 @@
 					[#else]
 					  <p class="emptyMessage text-center">There are no indicators to display.</p>
 					[/#if]
-					
 				[#else]
+
 					[#-- Without tabs --]
 					  <br>
 					  <table id="projectOutcomesList" class="table table-striped table-hover">

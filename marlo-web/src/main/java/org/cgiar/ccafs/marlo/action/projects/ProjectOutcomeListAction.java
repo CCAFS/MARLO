@@ -20,9 +20,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -36,6 +37,8 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Portfolio;
+import org.cgiar.ccafs.marlo.data.model.PortfolioPhase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -78,6 +81,8 @@ public class ProjectOutcomeListAction extends BaseAction {
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private FeedbackQACommentManager commentManager;
+  private PortfolioPhaseManager portfolioPhaseManager;
+  private PortfolioManager portfolioManager;
 
   // Front-end
   private long projectID;
@@ -90,12 +95,14 @@ public class ProjectOutcomeListAction extends BaseAction {
   private List<ProjectOutcome> allProjectOutcomes;
   private List<ProjectOutcome> deprecatedOutcomes;
   private List<ProjectOutcome> mainOutcomes;
+  private List<Portfolio> portfolios;
   private ProjectLp6Contribution projectLp6Contribution;
   private Map<String, Object> status;
   private boolean contributionValue;
   private long phaseID;
   private Phase phase;
   private boolean showDeprecatedTab;
+  private long actualPortfolioID;
 
 
   @Inject
@@ -103,7 +110,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
     ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager,
-    FeedbackQACommentManager commentManager) {
+    FeedbackQACommentManager commentManager, PortfolioPhaseManager portfolioPhaseManager,
+    PortfolioManager portfolioManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -114,6 +122,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.commentManager = commentManager;
+    this.portfolioPhaseManager = portfolioPhaseManager;
+    this.portfolioManager = portfolioManager;
   }
 
   public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
@@ -345,7 +355,7 @@ public class ProjectOutcomeListAction extends BaseAction {
     showDeprecatedTab = deprecatedOutcomes != null && !deprecatedOutcomes.isEmpty();
 
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-
+    updatePortfolioBooleanValue();
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)
@@ -359,6 +369,16 @@ public class ProjectOutcomeListAction extends BaseAction {
           .collect(Collectors.toList()));
 
       outcomes.addAll(outcomesT);
+    }
+
+    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && outcomes != null && !outcomes.isEmpty()) {
+      try {
+        outcomes =
+          outcomes.stream().filter(o -> o != null && o.getPortfolio() != null && o.getPortfolio().getId() != null
+            && o.getPortfolio().getId().equals(actualPortfolioID)).collect(Collectors.toList());
+      } catch (Exception e) {
+        Log.error("Error filtering outcomes by portfolio", e);
+      }
     }
 
     List<CrpProgram> programs = new ArrayList<>();
@@ -413,6 +433,53 @@ public class ProjectOutcomeListAction extends BaseAction {
       }
     }
 
+  }
+
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
+  }
+
+  public void setPortfolios(List<Portfolio> portfolios) {
+    this.portfolios = portfolios;
+  }
+
+  public void updatePortfolioBooleanValue() {
+    try {
+      Long currentPhaseId = this.getActualPhase().getId();
+      portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
+      if (portfolios == null || portfolios.isEmpty()) {
+        return;
+      }
+
+      for (Portfolio pf : portfolios) {
+        boolean associated = false;
+
+        if (pf != null && pf.getId() != null) {
+          Long pid = pf.getId();
+
+          List<PortfolioPhase> ppList = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(pid);
+
+          if (ppList != null && !ppList.isEmpty()) {
+            for (PortfolioPhase pp : ppList) {
+              if (pp != null && pp.getPhase() != null && currentPhaseId.equals(pp.getPhase().getId())) {
+                associated = true;
+                actualPortfolioID = pf.getId();
+                break;
+              }
+            }
+          }
+
+          if (!associated && pf.getSelectedPhases() != null) {
+            associated = pf.getSelectedPhases().contains(currentPhaseId);
+          }
+        }
+
+        pf.setAssociatedToCurrentPhase(associated);
+      }
+
+    } catch (Exception e) {
+      Log.error("Error updating portfolio boolean value", e);
+    }
   }
 
 

@@ -264,6 +264,11 @@ public class OutcomeValidator extends BaseValidator
       }
     }
 
+    if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
+      || outcome.getPortfolio().getId() == -1) {
+      action.addMessage(action.getText("outcome.action.portfolio.required", params));
+      action.getInvalidFields().put("input-outcomes[" + i + "].portfolio", InvalidFieldsMessages.EMPTYFIELD);
+    }
 
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
       action.addMessage(action.getText("outcome.action.startYear.required", params));
