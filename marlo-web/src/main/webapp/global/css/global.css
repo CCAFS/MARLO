@@ -401,7 +401,7 @@ span.badge.fieldError {
 }
 
 textarea.fieldError,
-input.fieldError,
+input.fieldError:not(:checked),
 textarea.fieldError:focus,
 input.fieldError:focus {
 	border-color: #F44 !important;
@@ -411,16 +411,18 @@ input.fieldError:focus {
 
 div.fieldError,
 label.fieldError,
+input[type="checkbox"].fieldError:not(:checked) + label.fieldError,
+input[type="radio"].fieldError:not(:checked) + label.fieldError,
 small.fieldError {
 	border-color: #F44 !important;
 	color: #EE1D1D !important;
 	font-weight: 600 !important;
 }
 
-div.fieldError button {
-	border-color: #F44 !important;
-	color: #EE1D1D !important;
-	font-weight: 600 !important;
+input[type="checkbox"].fieldError:checked + label.fieldError,
+input[type="radio"].fieldError:checked + label.fieldError {
+	color: #0A2842 !important;
+	font-weight: 400 !important;
 }
 
 .fieldFocus {

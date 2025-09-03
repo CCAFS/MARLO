@@ -1,14 +1,196 @@
-import { r as registerInstance, h, c as createEvent, g as getElement, H as Host } from './index-CZWClHa_.js';
+import { r as registerInstance, c as createEvent, g as getElement, h, H as Host } from './index-D_qDHNVP.js';
 
 const malMultiselectCss = ":host{display:block}";
 
 const MalMultiselect = class {
     constructor(hostRef) {
         registerInstance(this, hostRef);
+        this.valueChange = createEvent(this, "valueChange");
     }
+    get el() { return getElement(this); }
+    /**
+     * The name of the multiselect component.
+     */
+    name = '';
+    /**
+     * The reference of the multiselect component.
+     */
+    reference = '';
+    /**
+     * The data for the multiselect options.
+     */
+    data = [];
+    value;
+    /**
+     * The label for the multiselect component.
+     */
+    label = '';
+    /**
+     * The options for the virtual scroller.
+     */
+    virtualScrollerOptions = { itemSize: 38 };
+    /**
+     * Whether to show the separate container for selected items.
+     */
+    showSelectedContainer = false;
+    /**
+     * Whether to show the checkbox all inside the header of the multiselect.
+     */
+    showToggleAll = false;
+    /**
+     * Event emitted when the values changes.
+     */
+    valueChange;
+    vueApp = null;
+    onPropsChange() {
+        this.updateVueComponent();
+    }
+    updateVueComponent() {
+        if (this.vueApp) {
+            // Update the existing Vue app instead of recreating it
+            const vueInstance = this.vueApp._instance.proxy;
+            vueInstance.selectedValues = this.value || [];
+            vueInstance.options = this.data || [];
+        }
+    }
+    initializeMultiSelectVue() {
+        const { createApp } = window.Vue;
+        if (!createApp) {
+            console.error('Vue 3 is not available');
+            return;
+        }
+        const PrimeVue = window.PrimeVue;
+        if (!PrimeVue || !PrimeVue.MultiSelect) {
+            console.error('PrimeVue or MultiSelect component is not available');
+            return;
+        }
+        const container = this.el.querySelector('#multi-select-container');
+        if (!container) {
+            console.error('Container not found');
+            return;
+        }
+        // Properly unmount existing app
+        if (this.vueApp) {
+            this.vueApp.unmount();
+            this.vueApp = null;
+        }
+        // Clear previous content
+        container.innerHTML = '';
+        // Store reference to Stencil component
+        const stencilComponent = this;
+        try {
+            this.vueApp = createApp({
+                data() {
+                    return {
+                        selectedValues: stencilComponent.value || [],
+                        options: stencilComponent.data || [],
+                        showSelectedContainer: stencilComponent.showSelectedContainer || false,
+                        showToggleAll: stencilComponent.showToggleAll || false,
+                        virtualScrollerOptions: {
+                            itemSize: 38,
+                            showLoader: true,
+                            loading: false,
+                            numToleratedItems: 10,
+                        }
+                    };
+                },
+                methods: {
+                    onSelectionChange(event) {
+                        console.log('Event:', event);
+                        this.selectedValues = event.value;
+                        stencilComponent.value = event.value;
+                        stencilComponent.valueChange.emit(event.value);
+                    },
+                    onLazyLoad(_event) {
+                        this.loading = false;
+                    },
+                    getLabelForValue(val) {
+                        const found = this.options.find(opt => opt.value === val);
+                        return found ? found.label : val;
+                    }
+                },
+                template: `
+          <div class="p-component">
+            <MultiSelect 
+              v-model="selectedValues"
+              :options="options"
+              optionLabel="label"
+              optionValue="value"
+              :placeholder="'${stencilComponent.label || 'Select options'}'"
+              @change="onSelectionChange"
+              display="chip"
+              :virtualScrollerOptions="virtualScrollerOptions"
+              :filter="true"
+              filterPlaceholder="Search options..."
+              class="w-full p-multiselect"
+              :maxSelectedLabels="showSelectedContainer ? 0 : 3"
+              :selectedItemTemplate="showSelectedContainer ? () => null : null"
+              :showToggleAll="showToggleAll"
+            />
+
+            <div v-if="showSelectedContainer" class="mt-2 flex flex-wrap gap-2">
+              <div v-for="(item, index) in selectedValues" :key="index" class="p-chip p-component">
+                <input type="hidden" :name="'${stencilComponent.name}[' + index + '].id'" >
+                <input type="hidden" :name="'${stencilComponent.name}[' + index + '].${stencilComponent.reference}'" :value="item" >
+                <span class="p-chip-text">{{ getLabelForValue(item) }}</span>
+                <span class="pi pi-times p-chip-remove-icon"
+                      style="cursor:pointer;margin-left:0.5rem"
+                      @click="selectedValues = selectedValues.filter(v => v !== item); onSelectionChange({value: selectedValues})">
+                </span>
+              </div>
+            </div>
+
+          </div>
+        `
+            });
+            // Use PrimeVue
+            this.vueApp.use(PrimeVue.Config, {
+                theme: {
+                    preset: 'Aura'
+                },
+            });
+            // Register MultiSelect component
+            this.vueApp.component('MultiSelect', PrimeVue.MultiSelect);
+            // Mount the this.vueApp
+            this.vueApp.mount(container);
+        }
+        catch (error) {
+            console.error('Error mounting MultiSelect:', error);
+        }
+    }
+    componentDidLoad() {
+        const checkVue = () => {
+            if (window.Vue && window.PrimeVue) {
+                this.initializeMultiSelectVue();
+            }
+            else {
+                setTimeout(checkVue, 100);
+            }
+        };
+        checkVue();
+    }
+    disconnectedCallback() {
+        // Properly unmount Vue app
+        if (this.vueApp) {
+            this.vueApp.unmount();
+            this.vueApp = null;
+        }
+        const container = this.el.querySelector('#multi-select-container');
+        if (container) {
+            container.innerHTML = '';
+        }
+    }
+    /**
+     * Renders the multiselect component.
+     * @returns The rendered multiselect component.
+     */
     render() {
-        return h("h1", { key: '867c2b602281f5373d82dc5ce382e644eda998d2' }, "Hello World");
+        return (h(Host, { key: '1d7dd56f8e82909f24ca9ba6203e4e8fafa88c28' }, h("div", { key: '69913eb2f84f1f26e938737d8363a1e8f9ff37dc', id: "multi-select-container" })));
     }
+    static get watchers() { return {
+        "value": ["onPropsChange"],
+        "data": ["onPropsChange"]
+    }; }
 };
 MalMultiselect.style = malMultiselectCss;
 
@@ -127,7 +309,7 @@ const MalSelect = class {
         }
     }
     render() {
-        return (h(Host, { key: '56a93e3518dae75f744f8b21faf21e1672e86a65' }, h("div", { key: '08cdeeb6a33209bb555ddc9a056aedf69881464f', id: "react-dropdown" })));
+        return (h(Host, { key: '82ebc07899134c30e62615b91b81e0d94d9c8284' }, h("div", { key: '01a2f98aa261c76e283458107afdddd8ea8d7301', id: "react-dropdown" })));
     }
     static get watchers() { return {
         "data": ["onPropsChange"],
@@ -221,7 +403,7 @@ const MyComponent = class {
         }
     }
     render() {
-        return (h("div", { key: '99173880fecac94ae1283a424248dbc44612c6cb' }, h("div", { key: 'c8370401d0ceaa4569ad671a6bffa2d8fa5309dd', id: "vue-counter" }), h("style", { key: '8e675f030c236659db49ed243dfac8265c6b9c95' }, `
+        return (h("div", { key: '1a35a1c2199a9c8be63be3d2df70c2fbda7b66d8' }, h("div", { key: 'd72f44361add83840a9e6037c2df812612681eb4', id: "vue-counter" }), h("style", { key: '08f7dd9371ef93df84197ad6435b0c35cac7da03' }, `
           .counter-container {
             padding: 20px;
             text-align: center;
