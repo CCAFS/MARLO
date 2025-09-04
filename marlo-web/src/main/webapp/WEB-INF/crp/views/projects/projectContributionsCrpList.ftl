@@ -171,12 +171,10 @@
 				  </div>
 				
 				[#elseif action.hasSpecificities('portfolio_feature_active')]
-				  [#-- Portfolio specificity active --]
 				
 				  [#assign portfoliosList = (portfolios)![]]
 				  [#assign outcomesList   = (project.outcomes)![]]
 				
-				  [#-- Agrupar outcomes por portfolio del outcome --]
 				  [#assign outcomesByPortfolio = {}]
 				  [#assign portfolioLabels = {}]
 				
@@ -191,7 +189,6 @@
 				    [#assign portfolioLabels = portfolioLabels + { (pid) : label }]
 				  [/#list]
 				
-				  [#-- Orden de tabs: primero 'portfolios' en su orden, luego detectados faltantes, y al final Unassigned --]
 				  [#assign explicitOrder = []]
 				  [#list portfoliosList as pf]
 				    [#if pf?? && pf.id??]
@@ -206,7 +203,6 @@
 				  [/#list]
 				
 				  [#assign discoveredIds = outcomesByPortfolio?keys]
-				  [#-- FreeMarker no tiene lambdas: construir remainingIds “a mano” --]
 				  [#assign remainingIds = []]
 				  [#list discoveredIds as id]
 				    [#if !(explicitOrder?seq_contains(id)) && id != "__no_portfolio__"]
@@ -217,7 +213,6 @@
 				  [#assign hasUnassignedKey = discoveredIds?seq_contains("__no_portfolio__")]
 				  [#assign pfOrder = explicitOrder + remainingIds + (hasUnassignedKey?then(["__no_portfolio__"], []))]
 				
-				  [#-- Orden numérico ascendente por id, dejando Unassigned al final --]
 				  [#assign numericIds = []]
 				  [#assign hasUnassignedTab = false]
 				  [#list pfOrder as id]
@@ -238,7 +233,6 @@
 				
 				  <br>
 				
-				[#-- Mapa id(string) -> boolean con el flag associatedToCurrentPhase para pintar el badge --]
 				[#assign associatedMap = {}]
 				[#list portfoliosList as p]
 				  [#if p?? && p.id??]
@@ -249,16 +243,17 @@
 				
 				[#-- IDs de portfolios con al menos 1 indicador --]
 				[#assign pfVisible = []]
-				[#list pfOrderSorted as tid]
-				  [#if tid != "__no_portfolio__"]
-
-				  	[#assign listByPf = (outcomesByPortfolio[tid])![]]
-					  [#if listByPf?has_content]
-					    [#assign pfVisible = pfVisible + [ tid ] ]
-					  [/#if]
-					  
-					[/#if]
+				[#list portfoliosList as pf]
+				  [#if pf?? && pf.id??]
+				    [#assign tid = pf.id?string]
+				    [#assign listByPf = (outcomesByPortfolio[tid])![]]
+				    [#if listByPf?has_content]
+				      [#assign pfVisible = pfVisible + [ tid ] ]
+				      [#assign portfolioLabels = portfolioLabels + { (tid) : (pf.acronym)!((pf.name)!('Portfolio ' + tid)) } ]
+				    [/#if]
+				  [/#if]
 				[/#list]
+
 				
 				[#assign activeTid = ""]
 				[#list pfVisible as tid]
@@ -281,9 +276,8 @@
 						          <span class="glyphicon glyphicon-briefcase"></span>
 						        [/#if]
 						        ${portfolioLabels[tid]!('Portfolio ' + tid)}
-						        [#-- Badge solo si es el “Current” --]
 						        [#if (associatedMap[tid])!false]
-						          <span class="label label-success" style="margin-left:6px;">Current</span>
+						          <span class="label label-primary" style="margin-left:6px;">Current</span>
 						        [/#if]
 						      </a>
 						    </li>
@@ -318,7 +312,6 @@
 						        </tbody>
 						      </table>
 						
-						      [#-- Add New Outcome SOLO en el tab “Current” --]
 						      [#if canEdit && (associatedMap[tid])!false]
 						        <div class="addNewOutcome">
 						          <div class="outcomesListBlock">

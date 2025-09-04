@@ -59,6 +59,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -104,6 +107,8 @@ public class ProjectOutcomeListAction extends BaseAction {
   private boolean showDeprecatedTab;
   private long actualPortfolioID;
 
+  private Set<Long> hiddenPortfolioIds = new HashSet<>();
+  private Date currentPortfolioEndDate;
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -318,6 +323,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     } catch (Exception e) {
 
     }
+    updatePortfolioBooleanValue();
+
 
     contributionValue =
       Boolean.parseBoolean(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_LP6_CONTRIBUTION_VALUE)));
@@ -349,13 +356,21 @@ public class ProjectOutcomeListAction extends BaseAction {
         return (cpo != null && cpo.getOrderIndex() != null) ? cpo.getOrderIndex() : Integer.MAX_VALUE;
       })).collect(Collectors.toList());
 
+    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && hiddenPortfolioIds != null
+      && !hiddenPortfolioIds.isEmpty()) {
+
+      mainOutcomes = mainOutcomes.stream().filter(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        Long pid = (cpo != null && cpo.getPortfolio() != null) ? cpo.getPortfolio().getId() : null;
+        return pid == null || !hiddenPortfolioIds.contains(pid);
+      }).collect(Collectors.toList());
+    }
 
     project.setOutcomes(mainOutcomes);
 
     showDeprecatedTab = deprecatedOutcomes != null && !deprecatedOutcomes.isEmpty();
 
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-    updatePortfolioBooleanValue();
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)
@@ -372,12 +387,14 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
 
     if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && outcomes != null && !outcomes.isEmpty()) {
-      try {
-        outcomes =
-          outcomes.stream().filter(o -> o != null && o.getPortfolio() != null && o.getPortfolio().getId() != null
-            && o.getPortfolio().getId().equals(actualPortfolioID)).collect(Collectors.toList());
-      } catch (Exception e) {
-        Log.error("Error filtering outcomes by portfolio", e);
+      outcomes = outcomes.stream().filter(o -> o != null && o.getPortfolio() != null && o.getPortfolio().getId() != null
+        && o.getPortfolio().getId().equals(actualPortfolioID)).collect(Collectors.toList());
+
+      if (hiddenPortfolioIds != null && !hiddenPortfolioIds.isEmpty()) {
+        outcomes = outcomes.stream().filter(o -> {
+          Long pid = (o != null && o.getPortfolio() != null) ? o.getPortfolio().getId() : null;
+          return pid == null || !hiddenPortfolioIds.contains(pid);
+        }).collect(Collectors.toList());
       }
     }
 
@@ -447,23 +464,28 @@ public class ProjectOutcomeListAction extends BaseAction {
     try {
       Long currentPhaseId = this.getActualPhase().getId();
       portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
+      hiddenPortfolioIds = new HashSet<>();
+      currentPortfolioEndDate = null;
+
       if (portfolios == null || portfolios.isEmpty()) {
         return;
       }
 
+      Portfolio currentPortfolio = null;
       for (Portfolio pf : portfolios) {
         boolean associated = false;
 
         if (pf != null && pf.getId() != null) {
           Long pid = pf.getId();
-
           List<PortfolioPhase> ppList = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(pid);
 
           if (ppList != null && !ppList.isEmpty()) {
             for (PortfolioPhase pp : ppList) {
               if (pp != null && pp.getPhase() != null && currentPhaseId.equals(pp.getPhase().getId())) {
                 associated = true;
-                actualPortfolioID = pf.getId();
+                if (currentPortfolio == null) {
+                  currentPortfolio = pf;
+                }
                 break;
               }
             }
@@ -471,10 +493,38 @@ public class ProjectOutcomeListAction extends BaseAction {
 
           if (!associated && pf.getSelectedPhases() != null) {
             associated = pf.getSelectedPhases().contains(currentPhaseId);
+            if (associated && currentPortfolio == null) {
+              currentPortfolio = pf;
+            }
           }
         }
 
         pf.setAssociatedToCurrentPhase(associated);
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+      }
+
+      if (currentPortfolioEndDate != null) {
+        for (Portfolio p : portfolios) {
+          Date pe = p.getEndDate();
+          if (pe != null && pe.after(currentPortfolioEndDate)) {
+            hiddenPortfolioIds.add(p.getId());
+          }
+        }
+      }
+
+      if (currentPortfolioEndDate != null) {
+        portfolios = portfolios.stream().filter(p -> {
+          Date pe = p.getEndDate();
+          return pe == null || !pe.after(currentPortfolioEndDate);
+        }).collect(Collectors.toList());
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+        actualPortfolioID = currentPortfolio.getId(); // <<< agrega esta línea
       }
 
     } catch (Exception e) {
