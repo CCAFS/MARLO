@@ -35,6 +35,8 @@ import org.cgiar.ccafs.marlo.data.manager.ImpactAreaManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyAllianceLeversOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCenterManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
@@ -97,6 +99,8 @@ import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Portfolio;
+import org.cgiar.ccafs.marlo.data.model.PortfolioPhase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
@@ -162,6 +166,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -233,7 +238,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager;
   private final GeneralStatusManager generalStatusManager;
 
-
   private final CrpMilestoneManager milestoneManager;
   private final ProjectOutcomeManager projectOutcomeManager;
   private final CrpProgramOutcomeManager crpProgramOutcomeManager;
@@ -273,11 +277,12 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private final AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
   private final ImpactAreaManager impactAreaManager;
 
-
   private final GlobalTargetManager globalTargetManager;
   private final ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager;
 
   private final ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager;
+  private final PortfolioManager portfolioManager;
+  private final PortfolioPhaseManager portfolioPhaseManager;
   // Variables
   private final ProjectExpectedStudiesValidator projectExpectedStudiesValidator;
   private GlobalUnit loggedCrp;
@@ -308,9 +313,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<Institution> institutions;
   private List<Project> myProjects;
   private List<FeedbackQACommentableFields> feedbackComments;
+  private List<Portfolio> portfolios;
   private String transaction;
   private String tag;
-
   private int previousYear;
   private int previousMaturityID;
   private int previousTagID;
@@ -323,27 +328,18 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private int newExpectedYear;
   private List<ProjectOutcome> projectOutcomes;
-
   private List<CrpProgramOutcome> crpOutcomes;
-
   private List<ProjectExpectedStudyTag> tagList;
-
-
   private List<QuantificationType> quantificationTypes;
-
-
   private List<AllianceLever> allianceLeverList;
   private List<ProjectPartner> partners;
   private List<ProjectPartnerPerson> partnerPersons;
-
-
   private List<Institution> partnerInstitutions;
-
-
   private Boolean isManagingPartnerPersonRequerid;
-
-
   private List<ImpactArea> impactAreasList;
+  private long actualPortfolioID;
+  private Set<Long> hiddenPortfolioIds = new HashSet<>();
+  private Date currentPortfolioEndDate;
 
   @Inject
   public ProjectExpectedStudiesAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
@@ -393,7 +389,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     AllianceLeversSdgContributionManager allianceLeversSdgContributionManager, ImpactAreaManager impactAreaManager,
     GlobalTargetManager globalTargetManager,
     ProjectExpectedStudyImpactAreaManager projectExpectedStudyImpactAreaManager,
-    ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager) {
+    ProjectExpectedStudyGlobalTargetManager projectExpectedStudyGlobalTargetManager, PortfolioManager portfolioManager,
+    PortfolioPhaseManager portfolioPhaseManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -465,6 +462,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.globalTargetManager = globalTargetManager;
     this.projectExpectedStudyImpactAreaManager = projectExpectedStudyImpactAreaManager;
     this.projectExpectedStudyGlobalTargetManager = projectExpectedStudyGlobalTargetManager;
+    this.portfolioManager = portfolioManager;
+    this.portfolioPhaseManager = portfolioPhaseManager;
   }
 
   /**
@@ -504,6 +503,13 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
+  }
+
+  public void setPortfolios(List<Portfolio> portfolios) {
+    this.portfolios = portfolios;
+  }
 
   public void fillAllianceLevers() {
     try {
@@ -1595,11 +1601,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
 
-
         this.partners = new ArrayList<>();
         this.partnerInstitutions = new ArrayList<>();
         this.isManagingPartnerPersonRequerid = this.hasSpecificities(APConstants.CRP_MANAGING_PARTNERS_CONTACT_PERSONS);
 
+        // Portfolios
+        try {
+          portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentGlobalUnit().getId());
+          this.updatePortfolioBooleanValue();
+        } catch (Exception e) {
+          this.logger.error("Error loading portfolios", e);
+        }
 
         final List<ProjectPartner> partnersTmp = this.projectPartnerManager
           .findAllByPhaseProject(this.expectedStudy.getProject().getId(), this.getActualPhase().getId());
@@ -1881,6 +1893,20 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         projectOutcomesList = projectL.getProjectOutcomes().stream().filter(
           po -> po.isActive() && (po.getPhase() != null) && po.getPhase().getId().equals(this.getActualPhase().getId()))
           .collect(Collectors.toList());
+
+        try {
+          if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && projectOutcomesList != null
+            && !projectOutcomesList.isEmpty()) {
+            projectOutcomesList = projectOutcomesList.stream()
+              .filter(
+                o -> o != null && o.getCrpProgramOutcome() != null && o.getCrpProgramOutcome().getPortfolio() != null
+                  && o.getCrpProgramOutcome().getPortfolio().getId() != null
+                  && o.getCrpProgramOutcome().getPortfolio().getId().equals(actualPortfolioID))
+              .collect(Collectors.toList());
+          }
+        } catch (Exception e) {
+          logger.error(" unable to filter by portfolio the outcomes");
+        }
 
         if (projectOutcomesList != null) {
           this.crpOutcomes = new ArrayList<>();
@@ -4802,6 +4828,78 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     } catch (Exception e) {
       Log.error("error in validateIfcontainsSdgcontribution method " + e);
       return false;
+    }
+  }
+
+  public void updatePortfolioBooleanValue() {
+    try {
+      Long currentPhaseId = this.getActualPhase().getId();
+      portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
+      hiddenPortfolioIds = new HashSet<>();
+      currentPortfolioEndDate = null;
+
+      if (portfolios == null || portfolios.isEmpty()) {
+        return;
+      }
+
+      Portfolio currentPortfolio = null;
+      for (Portfolio pf : portfolios) {
+        boolean associated = false;
+
+        if (pf != null && pf.getId() != null) {
+          Long pid = pf.getId();
+          List<PortfolioPhase> ppList = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(pid);
+
+          if (ppList != null && !ppList.isEmpty()) {
+            for (PortfolioPhase pp : ppList) {
+              if (pp != null && pp.getPhase() != null && currentPhaseId.equals(pp.getPhase().getId())) {
+                associated = true;
+                if (currentPortfolio == null) {
+                  currentPortfolio = pf;
+                }
+                break;
+              }
+            }
+          }
+
+          if (!associated && pf.getSelectedPhases() != null) {
+            associated = pf.getSelectedPhases().contains(currentPhaseId);
+            if (associated && currentPortfolio == null) {
+              currentPortfolio = pf;
+            }
+          }
+        }
+
+        pf.setAssociatedToCurrentPhase(associated);
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+      }
+
+      if (currentPortfolioEndDate != null) {
+        for (Portfolio p : portfolios) {
+          Date pe = p.getEndDate();
+          if (pe != null && pe.after(currentPortfolioEndDate)) {
+            hiddenPortfolioIds.add(p.getId());
+          }
+        }
+      }
+
+      if (currentPortfolioEndDate != null) {
+        portfolios = portfolios.stream().filter(p -> {
+          Date pe = p.getEndDate();
+          return pe == null || !pe.after(currentPortfolioEndDate);
+        }).collect(Collectors.toList());
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+        actualPortfolioID = currentPortfolio.getId(); // <<< agrega esta línea
+      }
+
+    } catch (Exception e) {
+      Log.error("Error updating portfolio boolean value", e);
     }
   }
 

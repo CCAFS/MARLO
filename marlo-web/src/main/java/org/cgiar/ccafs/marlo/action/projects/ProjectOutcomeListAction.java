@@ -524,7 +524,7 @@ public class ProjectOutcomeListAction extends BaseAction {
 
       if (currentPortfolio != null) {
         currentPortfolioEndDate = currentPortfolio.getEndDate();
-        actualPortfolioID = currentPortfolio.getId(); // <<< agrega esta línea
+        actualPortfolioID = currentPortfolio.getId();
       }
 
     } catch (Exception e) {
