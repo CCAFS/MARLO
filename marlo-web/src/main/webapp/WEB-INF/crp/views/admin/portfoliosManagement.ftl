@@ -76,6 +76,7 @@
     
     [#-- Description --]
     <div class="blockTitle closed">
+    	<span class="glyphicon glyphicon-briefcase"></span>
       <strong>Portfolio ${index+1}:</strong> ${(element.name)!''} 
     </div>
     

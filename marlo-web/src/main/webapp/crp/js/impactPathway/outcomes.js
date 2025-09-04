@@ -19,19 +19,12 @@ function init() {
   $('.outcomes-list input.contribution').percentageInput();
 
   $(document).ready(function(){
-    $('[data-toggle="popover"]').popover();   
-		
-		var $tables = $('table.deliverableList, table.innovationList, table.evidencieList, table#projectOutcomesList');
-		$tables.each(function() {
-		  var $table = $(this);
-		  initializeDataTable($table);
-		});
+		$('[data-toggle="popover"]').popover();
 
-		//Add styles to the table
-		var iconSearch = $("<div></div>").addClass("iconSearch");
-		var divDataTables_filter = document.querySelectorAll('.dataTables_filter');
-		iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-		iconSearch.prependTo(divDataTables_filter);
+		var $tables = $('table.deliverableList, table.innovationList, table.evidencieList, table.dt-outcomes');
+		$tables.each(function() {
+		  initializeDataTable($(this));
+		});
 });
 
 
@@ -724,41 +717,32 @@ function updateAllIndexes() {
 }
 
 function initializeDataTable($table) {
-  var table = $table.DataTable({
-    "bPaginate": true, // This option enable the table pagination
-    "bLengthChange": true, // This option disables the select table size option
-    "bFilter": true, // This option enable the search
-    "bSort": true, // this option enable the sort of contents by columns
-    "bAutoWidth": false, // This option enables the auto adjust columns width
-    "iDisplayLength": 25, // Number of rows to show on the table
-    "language": {
+  var dt = $table.DataTable({
+    paging: true,
+    bLengthChange: true,
+    searching: true,
+    ordering: true,
+    autoWidth: false,
+    iDisplayLength: 25,
+    language: {
       searchPlaceholder: "Search..."
     },
-    "fnDrawCallback": function() {
-      // This function locates the add activity button at left to the filter box
-      var table = $(this).parent().find("table");
-      if ($(table).attr("id") == "currentActivities") {
-        $("#currentActivities_filter").prepend($("#addActivity"));
-      }
-    },
-    "order": [
-      [3, 'asc']
+    order: [[1, 'asc']],
+    columnDefs: [
+      { targets: 2, orderable: false },
+      { targets: -1, orderable: false }
     ],
-    aoColumnDefs: [
-      {
-        bSortable: true,
-        aTargets: [-1]
-      },
-      {
-        sType: "natural",
-        aTargets: [0]
+    drawCallback: function () {
+      var $wrapper = $table.closest('.dataTables_wrapper');
+      if ($wrapper.length && !$wrapper.data('search-icon-added')) {
+        var $filter = $wrapper.find('.dataTables_filter');
+        if ($filter.length) {
+          var $icon = $('<div class="iconSearch"></div>');
+          $icon.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search" style="width:24px;margin:auto;">');
+          $icon.prependTo($filter);
+          $wrapper.data('search-icon-added', true);
+        }
       }
-    ]
+    }
   });
-
-  //Add styles to the table
-  var iconSearch = $("<div></div>").addClass("iconSearch");
-  var divDataTables_filter = $table.find('.dataTables_filter');
-  iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-  iconSearch.prependTo(divDataTables_filter);
 }
