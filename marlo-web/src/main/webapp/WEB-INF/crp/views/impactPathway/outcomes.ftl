@@ -215,7 +215,7 @@
      <button type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
     
-    <div class="form-group target-block to-minimize-outcome">
+    <div class="form-group">
 		  [#-- Portfolio --]
 	    [#if action.hasSpecificities('portfolio_feature_active')]
 			  <div class="row form-group">
