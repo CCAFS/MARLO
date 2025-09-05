@@ -987,8 +987,22 @@
               <div class="clearfix"></div>
             [/#if] --]
             [#-- multiselect organizations --]
+            <br>
+            [#-- data multiselect to be process after load --]
+            [#-- Convert allianceOrganizations to a string for data-value --]
+            [#local customValueOrganizations = "[]" /]
+            [#if (element.allianceOrganizations)?has_content]
+              [#local orgList = [] /]
+              [#list element.allianceOrganizations as organization]
+              [#local orgList = orgList + ['{"id": "' + (organization.id!"") + '", "value": "' + (organization.institution.id!"") + '"}'] /]
+              [/#list]
+              [#local customValueOrganizations = "[" + orgList?join(",") + "]" /]
+            [/#if]
             <div class="form-group">
-              [@customForm.elementsListComponent name="${customName}.allianceOrganizations" elementType="institution" label="projectInnovations.anticipatedUsers.organizations" elementList=(element.allianceOrganizations)![] listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=true /]
+              <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+              <br>
+              <mal-multiselect name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true" reference="institution.id" data-value='${customValueOrganizations}'>
+              </mal-multiselect>
             </div>
           </div>
           [#-- Element item Template --]
@@ -1286,7 +1300,7 @@
       <div class="col-md-6">
         [#local organizationId = (element.institution.id)!"" /]
         [@customForm.labelText name="${customName}.institution.id" text="projectInnovations.anticipatedUsers.organizations.name" required=true /]
-        <mal-select name="${customName}.institution.id" id="${customName}.institution.id" data-value="${organizationId}" class="allianceOrganizations-institutions" ></mal-select> 
+        [#-- <mal-select name="${customName}.institution.id" id="${customName}.institution.id" data-value="${organizationId}" class="allianceOrganizations-institutions" ></mal-select> --]
         [#-- [@customForm.select name="${customName}.institution.id" label="projectInnovations.anticipatedUsers.organizations.name"  i18nkey="projectInnovations.anticipatedUsers.organizations" listName="institutions" keyFieldName="id" displayFieldName="composedNameType" required=false editable=true /] --]
       </div>
       <div class="col-md-6">
