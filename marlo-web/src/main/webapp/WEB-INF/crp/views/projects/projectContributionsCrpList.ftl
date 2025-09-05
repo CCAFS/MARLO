@@ -288,15 +288,11 @@
 						  [#list pfVisible as tid]
 						    <div class="tab-pane ${(tid == activeTid)?string('active','')}" id="pf-tab-${tid}">
 						      <br>
-						      <table id="projectOutcomesList-${tid}" class="table table-striped table-hover dt-outcomes">
+						      <table id="projectOutcomesList-${tid}" class="table table-projectOutcomesList table-striped table-hover dt-outcomes">
 						        <thead>
 						          <tr>
 						            <th>[@s.text name="global.flagship" /]</th>
-						            [#if (action.isAFPhase(actualPhase.id))!false]
-						              <th>Performance Indicator</th>
-						            [#else]
-						              <th>Performance Indicator 2023</th>
-						            [/#if]
+						            <th style="text-align:center;">Performance Indicator</th>
 						            <th></th>
 						            [#if action.hasSpecificities('feedback_active') ]
 						              <th><div style="text-align:center;">Feedback Comments</div></th>
