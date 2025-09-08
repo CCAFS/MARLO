@@ -355,14 +355,7 @@ function date(start,end) {
       maxDate: '2029-12-31',
       changeMonth: true,
       numberOfMonths: 2,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(end).datepicker("option", "minDate", selectedDate);
-        }
-      }
+      changeYear: true
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
@@ -375,14 +368,7 @@ function date(start,end) {
       maxDate: '2029-12-31',
       changeMonth: true,
       numberOfMonths: 2,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        if(selectedDate != "") {
-          $(start).datepicker("option", "maxDate", selectedDate);
-        }
-      }
+      changeYear: true
   }).on("click", function() {
     if(!$(this).val()) {
       $(this).datepicker('setDate', new Date());
