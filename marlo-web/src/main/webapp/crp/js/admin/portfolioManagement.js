@@ -248,9 +248,10 @@ function wireDateRangeForBlock($block) {
   var $end   = $block.find('input.endDate').first();
   if ($start.length === 0 && $end.length === 0) return;
 
-// --- GUARDAR el valor pintado por el FTL antes de destruir ---
-var startVal = $start.val();
-var endVal   = $end.val();
+  // --- GUARDAR el valor pintado por el FTL antes de destruir ---
+  var startVal = $start.val();
+  var endVal   = $end.val();
+  var dateFormat = "yy-mm-dd";
 
   // Destroy any existing datepicker instances
   $start.add($end).each(function () {
@@ -262,9 +263,27 @@ var endVal   = $end.val();
   // Use your existing glue
   date($start, $end);
 
-// --- RESTAURAR el valor y sincronizar el widget ---
-if (startVal) { try { $start.val(startVal); $start.datepicker('setDate', startVal); } catch(e) {} }
-if (endVal)   { try { $end.val(endVal);     $end.datepicker('setDate', endVal);   } catch(e) {} }
+  // Restore the original values (if any) so they show in the inputs
+  if (startVal) {
+    var parsedStart = tryParseDate(startVal);
+    parsedStart = $.datepicker.formatDate(dateFormat, parsedStart);
+    if (parsedStart) {
+      $start.datepicker('setDate', parsedStart);
+    } else {
+      $start.val(startVal);
+      console.error("Error parsing start date:", startVal);
+    }
+  }
+  if (endVal) {
+    try {
+      var parsedEnd = tryParseDate(endVal);
+      parsedEnd = $.datepicker.formatDate(dateFormat, parsedEnd);
+      $end.datepicker('setDate', parsedEnd);
+    } catch (e) { 
+      $end.val(endVal);
+      console.error("Error parsing end date:", e);
+    }
+  }
 
   // onSelect constraints...
   try {
@@ -379,4 +398,35 @@ function date(start,end) {
     }
     return date;
   }
+}
+
+function tryParseDate(dateStr) {
+  if (!dateStr) return null;
+
+  // This is neccesary due to database is always bringing dates in mm/dd/yyyy format but no is standardized
+  // Try multiple formats to parse the date
+  var formats = [
+    "m/d/y",      // 1/1/25 (2-digit year)
+    "mm/d/y",     // 01/1/25
+    "m/dd/y",     // 1/01/25
+    "mm/dd/y",    // 01/01/25
+    "m/d/yy",     // 1/1/2025 (4-digit year)
+    "mm/d/yy",    // 01/1/2025
+    "m/dd/yy",    // 1/01/2025
+    "mm/dd/yy",   // 01/01/2025
+    "m/d/yyyy",   // 1/1/2025
+    "mm/dd/yyyy"  // 01/01/2025
+  ];
+
+  for(var i=0; i<formats.length; i++) {
+    try {
+      var parsed = $.datepicker.parseDate(formats[i], dateStr);
+      return parsed;
+    } catch(error) {
+      // Try next format
+      continue;
+    }
+  }
+
+  return null;
 }
