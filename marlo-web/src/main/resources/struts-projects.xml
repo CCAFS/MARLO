@@ -1187,9 +1187,25 @@
 				<param name="projectID">${projectID}</param>
 			</result>
 		</action>
+		
+		<action name="{crp}/ai"
+			class="org.cgiar.ccafs.marlo.action.ai.AiAction">
+		    <interceptor-ref name="editAiStack" />
+			<result name="input">/WEB-INF/crp/views/ai/aiDashboard.ftl</result>
+			<result name="success" type="redirectAction">
+				<param name="edit">true</param>
+				<param name="actionName">${crpSession}/ai</param>
+			</result>
+			<result name="redirect" type="redirectAction">
+				<param name="actionName">${url}</param>
+				<param name="edit">true</param>
+			</result>
+	    </action>
 	</package>
 
 	<package name="clusters" namespace="/clusters"
+		extends="projects" />
+	<package name="ai" namespace="/ai"
 		extends="projects" />
 
 </struts>
