@@ -105,6 +105,7 @@ public class ProjectLeaderEditAction extends BaseAction {
             break;
           case PARTNERS:
             validateProject.validateProjectParnters(this, this.projectId, this.getCurrentCrp());
+            break;
             /*
              * case BUDGET:
              * validateProject.validateProjectBudgets(this, this.projectId);
