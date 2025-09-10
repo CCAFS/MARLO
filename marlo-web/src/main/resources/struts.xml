@@ -103,6 +103,9 @@
 
 			<interceptor name="canEditProject"
 				class="org.cgiar.ccafs.marlo.interceptor.project.EditProjectInterceptor" />
+				
+			<interceptor name="canEditAi"
+				class="org.cgiar.ccafs.marlo.interceptor.project.EditAiInterceptor" />
 
 			<interceptor name="canEditPublication"
 				class="org.cgiar.ccafs.marlo.interceptor.publication.PublicationInterceptor" />
@@ -277,6 +280,18 @@
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
 				<interceptor-ref name="canEditProject" />
+				<interceptor-ref name="keepRedirectMessages" />
+				<interceptor-ref name="accessibleStage" />
+				<interceptor-ref name="trimInputs" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+			
+			<interceptor-stack name="editAiStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="validCrp" />
+				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="canEditAi" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
