@@ -49,10 +49,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -403,23 +405,24 @@ public class ProjectActivitiesAction extends BaseAction {
       } else {
         this.setDraft(false);
 
-        List<Activity> activities =
-          this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
-
-        project.setProjectActivities(new ArrayList<Activity>(activities));
-        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-        if (project.getProjectActivities() != null) {
-          for (Activity openActivity : project.getProjectActivities()) {
-            openActivity
-              .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
-                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
-                  && da.getDeliverable().isActive()
-                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
-                .collect(Collectors.toList())));
+        List<Activity> activities = new ArrayList<>(Optional
+          .ofNullable(this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId()))
+          .orElse(Collections.emptyList()));
+        if (activities != null && !activities.isEmpty()) {
+          project.setProjectActivities(new ArrayList<Activity>(activities));
+          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+          if (project.getProjectActivities() != null) {
+            for (Activity openActivity : project.getProjectActivities()) {
+              openActivity
+                .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
+                  .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
+                    && da.getDeliverable().isActive()
+                    && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                    && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+                  .collect(Collectors.toList())));
+            }
           }
         }
-
       }
 
       status = new HashMap<>();
