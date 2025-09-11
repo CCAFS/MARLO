@@ -168,5 +168,5 @@ function initializeDataTable($table) {
   var divDataTables_filter = $table.find('.dataTables_filter');
   iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
   iconSearch.prependTo(divDataTables_filter);
-  $table.find('.dataTables_info').css('width', '35%');
+  $table.next().css('width', '35%');
 }

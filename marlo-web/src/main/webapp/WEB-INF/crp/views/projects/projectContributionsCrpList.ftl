@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250903",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250911",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
@@ -270,7 +270,7 @@
 					[#if pfVisible?has_content]
 					  <ul class="nav nav-tabs" role="tablist">
 						  [#list pfVisible as tid]
-						    <li role="presentation" class="${(tid == activeTid)?string('active','')}">
+						    <li role="presentation" class="${(tid == activeTid)?string('active','')}" style="width: ${(60/pfVisible?size)!}%; text-align: center;">
 						      <a href="#pf-tab-${tid}" data-toggle="tab">
 						        [#if portfolioLabels[tid] != "Portfolio Unassigned"]
 						          <span class="glyphicon glyphicon-briefcase"></span>
@@ -291,14 +291,14 @@
 						      <table id="projectOutcomesList-${tid}" class="table table-projectOutcomesList table-striped table-hover dt-outcomes">
 						        <thead>
 						          <tr>
-						            <th>[@s.text name="global.flagship" /]</th>
-						            <th style="text-align:center;">Performance Indicator</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">[@s.text name="global.flagship" /]</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Performance Indicator</th>
 						            <th></th>
 						            [#if action.hasSpecificities('feedback_active') ]
-						              <th><div style="text-align:center;">Feedback Comments</div></th>
+						              <th><div style="text-align:center; padding-right: 10px; align-content: center;">Feedback Comments</div></th>
 						            [/#if]
-						            <th>Status</th>
-						            <th>Remove</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Status</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Remove</th>
 						          </tr>
 						        </thead>
 						        <tbody>
