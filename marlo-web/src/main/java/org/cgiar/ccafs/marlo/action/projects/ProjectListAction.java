@@ -590,7 +590,8 @@ public class ProjectListAction extends BaseAction {
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
           }
-          if (project.getProjecInfoPhase(this.getActualPhase()) == null) {
+          if ((project.getProjecInfoPhase(this.getActualPhase()) == null) || project.isActive() == false
+            || project.getProjecInfoPhase(this.getActualPhase()).isActive() == false) {
             myProjects.remove(project);
           }
         }
