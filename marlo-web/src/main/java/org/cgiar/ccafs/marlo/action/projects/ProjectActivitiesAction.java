@@ -584,7 +584,6 @@ public class ProjectActivitiesAction extends BaseAction {
       // Check activities from UI
       if (projectActivitiesDB != null && !projectActivitiesDB.isEmpty()) {
         this.deleteActivities(projectActivitiesDB);
-        this.saveActivitiesNewData();
       } else {
         // Delete activities
         if (activitiesDB != null && !activitiesDB.isEmpty()) {
@@ -592,6 +591,12 @@ public class ProjectActivitiesAction extends BaseAction {
             activityManager.deleteActivity(activity.getId());
           }
         }
+      }
+
+      try {
+        this.saveActivitiesNewData();
+      } catch (Exception e) {
+        logger.error("Error saving activities", e);
       }
 
 
