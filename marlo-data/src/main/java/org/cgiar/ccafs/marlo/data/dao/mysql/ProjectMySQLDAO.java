@@ -58,78 +58,58 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
   public boolean deleteOnCascade(String tableName, String columnName, Long columnValue, long userID,
     String justification) {
-
+    String schema = apConfig.getMysqlDatabase();
     StringBuilder query = new StringBuilder();
 
-
     try {
-
-      // Let's find all the tables that are related to the current table.
-      query.append("SELECT * FROM information_schema.KEY_COLUMN_USAGE ");
-      query.append("WHERE TABLE_SCHEMA = '");
-      query.append(apConfig.getMysqlDatabase());
-      query.append("' ");
-      query.append("AND REFERENCED_TABLE_NAME = '");
-      query.append(tableName);
-      query.append("' ");
-      query.append("AND REFERENCED_COLUMN_NAME = '");
-      query.append(columnName);
-      query.append("' ");
-      //
+      query.setLength(0);
+      query.append("SELECT TABLE_NAME, COLUMN_NAME ").append("FROM information_schema.KEY_COLUMN_USAGE ")
+        .append("WHERE TABLE_SCHEMA='").append(schema).append("' ").append("AND REFERENCED_TABLE_NAME='")
+        .append(tableName).append("' ").append("AND REFERENCED_COLUMN_NAME='").append(columnName).append("'");
 
       List<Map<String, Object>> rsReferences = super.findCustomQuery(query.toString());
 
-
-      String table, column;
-
       for (Map<String, Object> map : rsReferences) {
-        table = map.get("TABLE_NAME").toString();
-        column = map.get("COLUMN_NAME").toString();
+        String refTable = String.valueOf(map.get("TABLE_NAME"));
+        String refColumn = String.valueOf(map.get("COLUMN_NAME"));
+
+        boolean hasIsActive = this.hasColumn(schema, refTable, "is_active");
+        boolean hasModifiedBy = this.hasColumn(schema, refTable, "modified_by");
+        boolean hasJustf = this.hasColumn(schema, refTable, "modification_justification");
+
+        if (!hasIsActive) {
+          LOG.warn("Tabla `" + refTable + "` no tiene columna `is_active`. Se omite soft-delete.");
+          continue;
+        }
+
+        List<String> setParts = new ArrayList<>();
+        setParts.add("`is_active` = 0");
+        if (hasModifiedBy) {
+          setParts.add("`modified_by` = " + userID);
+        }
+        if (hasJustf) {
+          setParts.add("`modification_justification` = '" + this.escapeSql(justification) + "'");
+        }
+
+        String setClause = String.join(", ", setParts);
 
         query.setLength(0);
-        query.append("SELECT COUNT(*) FROM information_schema.COLUMNS ");
-        query.append("WHERE TABLE_SCHEMA = '");
-        query.append(apConfig.getMysqlDatabase());
-        query.append("' ");
-        query.append("AND TABLE_NAME = '");
-        query.append(table);
-        query.append("' ");
-        query.append("AND COLUMN_NAME = 'is_active'");
-        List<Map<String, Object>> rsColumnExist = super.findCustomQuery(query.toString());
-        if (!rsColumnExist.isEmpty()) {
-          try {
-            query.setLength(0);
-            query.append("UPDATE ");
-            query.append(table);
-            query.append(" SET is_active = 0, modified_by = " + userID + ", modification_justification = '"
-              + justification + "' ");
-            query.append("WHERE ");
-            query.append(column);
-            query.append(" = '" + columnValue + "'");
+        query.append("UPDATE `").append(refTable).append("` ").append("SET ").append(setClause).append(" ")
+          .append("WHERE `").append(refColumn).append("` = ").append(columnValue);
 
-            super.executeUpdateQuery(query.toString());
-          } catch (Exception e) {
-
-            // Adding logging, but really we should re-throw the exception.
-            LOG.error("Unable to execute query: " + query, e);
-
-          }
-
-
+        try {
+          super.executeUpdateQuery(query.toString());
+        } catch (Exception e) {
+          LOG.error("Unable to execute query: " + query, e);
+          return false;
         }
       }
-
-
-    } catch (Exception e)
-
-    {
-      // Adding logging, but really we should re-throw the exception.
+    } catch (Exception e) {
       LOG.error("Unable to execute query: " + query, e);
       return false;
     }
 
     return true;
-
   }
 
   @Override
@@ -140,6 +120,14 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     project.setActive(false);
     this.save(project);
   }
+
+  private String escapeSql(String s) {
+    if (s == null) {
+      return "";
+    }
+    return s.replace("'", "''");
+  }
+
 
   @Override
   public boolean existProject(long projectID) {
@@ -158,7 +146,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return project;
 
   }
-
 
   @Override
   public List<Project> findAll() {
@@ -187,6 +174,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
 
     return result;
   }
+
 
   @Override
   public List<Project> getActiveProjectsByPhase(Phase phase, int year, String[] projectStatuses) {
@@ -231,7 +219,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     StringBuilder query = new StringBuilder();
     query.append(
       "select distinct p.id as projectId,pi.id as info  from projects p inner join projects_info pi on pi.project_id=p.id inner join global_unit_projects gup on gup.project_id = p.id ");
-    query.append("where p.is_active=1 and gup.`origin`=1 and gup.global_unit_id=");
+    query.append("where p.is_active=1 and pi.is_active=1 and gup.`origin`=1 and gup.global_unit_id=");
     query.append(crpId);
     query.append(" and pi.`status` in (" + ProjectStatusEnum.Cancelled.getStatusId() + " , "
       + ProjectStatusEnum.Complete.getStatusId() + " ) and pi.id_phase=" + phaseID);
@@ -291,7 +279,6 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     return list;
   }
 
-
   @Override
   public List<Project> getProjectWebPageList(Long globalunit_id) {
     List<Project> projectList = new ArrayList<Project>();
@@ -323,6 +310,16 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     }
 
     return list;
+  }
+
+
+  private boolean hasColumn(String schema, String table, String column) {
+    StringBuilder q = new StringBuilder();
+    q.append("SELECT 1 FROM information_schema.COLUMNS ").append("WHERE TABLE_SCHEMA='").append(schema).append("' ")
+      .append("AND TABLE_NAME='").append(table).append("' ").append("AND COLUMN_NAME='").append(column).append("' ")
+      .append("LIMIT 1");
+    List<Map<String, Object>> rows = super.findCustomQuery(q.toString());
+    return !rows.isEmpty();
   }
 
 
