@@ -380,6 +380,7 @@ public class OutcomesAction extends BaseAction {
       targetYears.add(2028);
       targetYears.add(2029);
       targetYears.add(2030);
+      targetYears.add(2031);
 
     } else {
       while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {

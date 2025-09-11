@@ -134,7 +134,7 @@ function datePickerConfig(opts) {
 function date($start, $end, minDateStr, maxDateStr) {
   var dateFormat = "yy-mm-dd";
   var minDate = minDateStr ? $.datepicker.parseDate(dateFormat, minDateStr) : new Date(2023,0,1);
-  var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2026,11,31);
+  var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2031,11,31);
 
   // START (sin normalizar al 1° del mes)
   $start.datepicker({
