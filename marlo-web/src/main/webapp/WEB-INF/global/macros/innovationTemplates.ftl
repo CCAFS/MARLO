@@ -994,7 +994,11 @@
             [#if (element.allianceOrganizations)?has_content]
               [#local orgList = [] /]
               [#list element.allianceOrganizations as organization]
-              [#local orgList = orgList + ['{"id": "' + (organization.id!"") + '", "value": "' + (organization.institution.id!"") + '"}'] /]
+              
+	              [#if organization?? && organization.institution??]
+								  [#local orgList = orgList + ['{"id": "' + (organization.id!"") + '", "value": "' + (organization.institution.id!"") + '"}' ] /]
+								[/#if]
+              
               [/#list]
               [#local customValueOrganizations = "[" + orgList?join(",") + "]" /]
             [/#if]
