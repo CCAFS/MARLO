@@ -2,10 +2,9 @@
 [#assign title = "Portfolios Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250908",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/portfolioManagement.js?20250910"
  ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/portfolioManagement.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
-  "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css"] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/portfolioManagement.css"] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "portfolioManagement" /]
 
@@ -77,7 +76,6 @@
     
     [#-- Description --]
     <div class="blockTitle closed">
-    	<span class="glyphicon glyphicon-briefcase"></span>
       <strong>Portfolio ${index+1}:</strong> ${(element.name)!''} 
     </div>
     
