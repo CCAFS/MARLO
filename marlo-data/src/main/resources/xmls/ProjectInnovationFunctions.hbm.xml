@@ -12,6 +12,9 @@
 		<property name="title" type="string">
       		<column name="title" not-null="true" />
     	</property>
+    	<property name="orderIndex" type="int">
+			<column name="order_index" not-null="true" />
+		</property>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">
 			<column name="modified_by" />
