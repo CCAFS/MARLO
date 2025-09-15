@@ -19,7 +19,7 @@
 
 
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20250902",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20250915",
   "${baseUrlCdn}/global/css/customDataTable.css?20250825"
 ] /]
 [#assign currentSection = "projects" /]
