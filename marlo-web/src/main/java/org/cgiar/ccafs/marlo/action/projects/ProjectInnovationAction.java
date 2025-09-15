@@ -1573,6 +1573,17 @@ public class ProjectInnovationAction extends BaseAction {
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
         this.optionList = this.repIndOptionsManager.findAll();
         this.projectInnovationFunctionList = this.projectInnovationFunctionManager.findAll();
+        try {
+        	if(projectInnovationFunctionList != null && !projectInnovationFunctionList.isEmpty()) {
+				projectInnovationFunctionList = projectInnovationFunctionList.stream()
+						.filter(pif -> pif != null && pif.isActive())
+						.sorted(Comparator.comparing(ProjectInnovationFunction::getOrderIndex))
+						.collect(Collectors.toList());
+        	}
+        } catch (Exception e) {
+			Log.error("error getting project innovation functions " + e);
+		}
+        
         this.toolCategoryList.sort((o1, o2) -> {
           try {
             int num1 = Integer.parseInt(o1.getDescription());

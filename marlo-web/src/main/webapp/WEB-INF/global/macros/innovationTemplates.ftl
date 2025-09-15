@@ -769,7 +769,7 @@
         </div>
         [#-- Innovations selected - bundles --]
         <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
-          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
+          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=false /]</label>
           [#-- Innovation selected List - bundles --]
           <div class="innovationBundleList">
             [#if element.bundles?has_content]
@@ -869,9 +869,9 @@
           [#local simplerUseValue = (element.projectInnovationInfo.simplerUse)!{} /]
           [#local performBetterValue = (element.projectInnovationInfo.performBetter)!{} /]
 
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" value=(cheaperAlternativesValue) label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(simplerUseValue) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(performBetterValue) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable /]   
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.cheaperAlternatives" id="${customName}.projectInnovationInfo.cheaperAlternatives" value=(cheaperAlternativesValue) label="projectInnovations.sharing.technicalExcellence.cheaperAlternatives" required=true editable=editable subLabelLeft="projectInnovations.sharing.technicalExcellence.cheaperAlternatives.subLabel.left" subLabelRight="projectInnovations.sharing.technicalExcellence.cheaperAlternatives.subLabel.right" /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(simplerUseValue) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable subLabelLeft="projectInnovations.sharing.technicalExcellence.simplerUse.subLabel.left" subLabelRight="projectInnovations.sharing.technicalExcellence.simplerUse.subLabel.right" /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(performBetterValue) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable subLabelLeft="projectInnovations.sharing.technicalExcellence.performBetter.subLabel.left" subLabelRight="projectInnovations.sharing.technicalExcellence.performBetter.subLabel.right" /]
 
           [#-- Demand and Investment --]
           <label class="label--2 col-md-12 blueLightColor">
@@ -881,8 +881,8 @@
           [#local innovationDesirableValue = (element.projectInnovationInfo.innovationDesirable)!{} /]
           [#local innovationCommerciallyValue = (element.projectInnovationInfo.innovationCommercially)!{} /]
 
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(innovationDesirableValue) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(innovationCommerciallyValue) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(innovationDesirableValue) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable subLabelLeft="projectInnovations.sharing.demand&Investment.innovationDesirable.subLabel.left" subLabelRight="projectInnovations.sharing.demand&Investment.innovationDesirable.subLabel.right" /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(innovationCommerciallyValue) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable subLabelLeft="projectInnovations.sharing.demand&Investment.innovationCommercially.subLabel.left" subLabelRight="projectInnovations.sharing.demand&Investment.innovationCommercially.subLabel.right" /]
           
           [#-- Sustained use --]
           <label class="label--2 col-md-12 blueLightColor">
@@ -892,9 +892,9 @@
           [#local innovationSupportedValue = (element.projectInnovationInfo.innovationSupported)!{} /]
           [#local evidenceUptakeValue = (element.projectInnovationInfo.evidenceUptake)!{} /]
 
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(innovationSupportedValue) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable /]
-          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(evidenceUptakeValue) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable /]
-          
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(innovationSupportedValue) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable subLabelLeft="projectInnovations.sharing.sustainedUse.innovationSupported.subLabel.left" subLabelRight="projectInnovations.sharing.sustainedUse.innovationSupported.subLabel.right" /]
+          [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(evidenceUptakeValue) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable subLabelLeft="projectInnovations.sharing.sustainedUse.evidenceUptake.subLabel.left" subLabelRight="projectInnovations.sharing.sustainedUse.evidenceUptake.subLabel.right" /]
+
         </div>
       </div>
 
@@ -1003,7 +1003,7 @@
               [#local customValueOrganizations = "[" + orgList?join(",") + "]" /]
             [/#if]
             <div class="form-group">
-              <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+              <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=false /]</label>
               <br>
               <mal-multiselect name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true" reference="institution.id" data-value='${customValueOrganizations}'>
               </mal-multiselect>
