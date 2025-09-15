@@ -1,0 +1,1 @@
+ALTER TABLE project_innovation_functions ADD order_index INT NULL;

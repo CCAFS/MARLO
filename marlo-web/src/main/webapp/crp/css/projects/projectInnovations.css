@@ -573,6 +573,12 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
   display: none;
 }
 
+.subLabel {
+  font-size: 12px;
+  font-weight: 400;
+  font-style: italic;
+}
+
 .evidences label{
   color: #0A2842;
   font-size: 12px;

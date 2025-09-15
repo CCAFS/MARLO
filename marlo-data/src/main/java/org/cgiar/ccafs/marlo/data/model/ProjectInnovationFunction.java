@@ -25,6 +25,9 @@ public class ProjectInnovationFunction extends MarloAuditableEntity implements j
 
   @Expose
   private String title;
+  
+  @Expose
+  private int orderIndex;
 
   public ProjectInnovationFunction() {
   }
@@ -71,6 +74,14 @@ public class ProjectInnovationFunction extends MarloAuditableEntity implements j
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  public int getOrderIndex() {
+	return orderIndex;
+  }
+
+  public void setOrderIndex(int orderIndex) {
+	this.orderIndex = orderIndex;
   }
 
   @Override

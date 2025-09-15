@@ -1013,6 +1013,7 @@ public class ProjectInnovationValidator extends BaseValidator {
             }
 
             // Validate organizations
+            /*
             if (projectInnovation.getAllianceOrganizations() == null
               || projectInnovation.getAllianceOrganizations().isEmpty()) {
               action.addMessage(action.getText("innovation.allianceOrganizations"));
@@ -1020,7 +1021,7 @@ public class ProjectInnovationValidator extends BaseValidator {
               action.getInvalidFields().put("list-innovation.allianceOrganizations",
                 action.getText(InvalidFieldsMessages.EMPTYFIELD, new String[] {"allianceOrganizations"}));
             }
-
+*/
             try {
               if (projectInnovation.getAllianceOrganizations() != null
                 && !projectInnovation.getAllianceOrganizations().isEmpty()) {
@@ -1164,12 +1165,13 @@ public class ProjectInnovationValidator extends BaseValidator {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
 
       // Validate bundles
+    	/*
       if (projectInnovation.getBundles() == null || projectInnovation.getBundles().isEmpty()) {
         action.addMessage(action.getText("innovation.bundles"));
         action.addMissingField("innovation.bundles");
         action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
       }
-
+*/
       // Validate Complementary Solutions
       if (projectInnovation.getComplementarySolutions() != null
         && !projectInnovation.getComplementarySolutions().isEmpty()) {

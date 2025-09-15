@@ -567,16 +567,20 @@
   [/#if]
 [/#macro]
 
-[#macro likertScale id name label="" i18nkey="" scaleNumber=5 disabled=false editable=true required=false value="" checked=true cssClass="" cssClassLabel="" inline=true]
+[#macro likertScale id name label="" subLabelLeft="" subLabelRight="" i18nkey="" scaleNumber=5 disabled=false editable=true required=false value="" checked=true cssClass="" cssClassLabel="" inline=true]
   <div class="feedback-flex-items"></div>
   <div class="likertScale col-md-12 ${cssClass}">
     <label class="col-md-12">
       [@s.text name=label /][@req required=required && editable /]
     </label>
+    <label class="col-md-5 text-left subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelLeft /]</label>
+    <label class="col-md-5 text-right subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelRight /]</label>
+    <div class="clearfix"></div>
     [#if editable]
       [#list 1..scaleNumber as i]
         [#local isChecked = (value?has_content && value == i)!false /]
-        <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
+        [#local widthComponent = (80/scaleNumber) /]
+        <div class="[#if i == 1]text-left[#elseif i == scaleNumber]text-right[#else]text-center[/#if]" style="display: flex; justify-content: center; align-items: center; width:${widthComponent}%; float:left;">
           [@radioFlat id="${id}-${i}" name="${name}" i18nkey=i label=i disabled="${disabled?string}" editable=editable value="${i}" checked=isChecked canComment=false inline=true /]
         </div> 
       [/#list]
