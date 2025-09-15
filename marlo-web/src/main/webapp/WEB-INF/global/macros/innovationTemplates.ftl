@@ -769,7 +769,7 @@
         </div>
         [#-- Innovations selected - bundles --]
         <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
-          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=editable /]</label>
+          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=false /]</label>
           [#-- Innovation selected List - bundles --]
           <div class="innovationBundleList">
             [#if element.bundles?has_content]
@@ -1003,7 +1003,7 @@
               [#local customValueOrganizations = "[" + orgList?join(",") + "]" /]
             [/#if]
             <div class="form-group">
-              <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=true /]</label>
+              <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /]:[@customForm.req required=false /]</label>
               <br>
               <mal-multiselect name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true" reference="institution.id" data-value='${customValueOrganizations}'>
               </mal-multiselect>
