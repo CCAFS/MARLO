@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "jsUri"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250730",
+  "${baseUrlMedia}/js/projects/projectContributionsCrpList.js?20250911",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
@@ -170,31 +170,203 @@
 				    [/#if]
 				  </div>
 				
-				[#else]
+				[#elseif action.hasSpecificities('portfolio_feature_active')]
+				
+				  [#assign portfoliosList = (portfolios)![]]
+				  [#assign outcomesList   = (project.outcomes)![]]
+				
+				  [#assign outcomesByPortfolio = {}]
+				  [#assign portfolioLabels = {}]
+				
+				  [#list outcomesList as po]
+				    [#assign outcome = po.crpProgramOutcome!]
+				    [#assign pf = (outcome.portfolio)!]
+				    [#assign pid = (pf.id?string)!'__no_portfolio__']
+				    [#assign label = (pf.acronym)!((pf.name)!'Portfolio Unassigned')]
+				
+				    [#assign currentList = (outcomesByPortfolio[pid])![]]
+				    [#assign outcomesByPortfolio = outcomesByPortfolio + { (pid) : currentList + [ po ] }]
+				    [#assign portfolioLabels = portfolioLabels + { (pid) : label }]
+				  [/#list]
+				
+				  [#assign explicitOrder = []]
+				  [#list portfoliosList as pf]
+				    [#if pf?? && pf.id??]
+				      [#assign pfid = pf.id?string]
+				      [#assign explicitOrder = explicitOrder + [ pfid ]]
+				
+				      [#assign lbl = (pf.acronym)!((pf.name)!("Portfolio " + (pf.id)!))]
+				      [#assign portfolioLabels = portfolioLabels + { (pfid) : lbl }]
+				
+				
+				    [/#if]
+				  [/#list]
+				
+				  [#assign discoveredIds = outcomesByPortfolio?keys]
+				  [#assign remainingIds = []]
+				  [#list discoveredIds as id]
+				    [#if !(explicitOrder?seq_contains(id)) && id != "__no_portfolio__"]
+				      [#assign remainingIds = remainingIds + [ id ]]
+				    [/#if]
+				  [/#list]
+				
+				  [#assign hasUnassignedKey = discoveredIds?seq_contains("__no_portfolio__")]
+				  [#assign pfOrder = explicitOrder + remainingIds + (hasUnassignedKey?then(["__no_portfolio__"], []))]
+				
+				  [#assign numericIds = []]
+				  [#assign hasUnassignedTab = false]
+				  [#list pfOrder as id]
+				    [#if id == "__no_portfolio__"]
+				      [#assign hasUnassignedTab = true]
+				    [#else]
+				      [#assign numericIds = numericIds + [ id?number ]]
+				    [/#if]
+				  [/#list]
+				  [#assign numericIds = numericIds?sort]
+				  [#assign pfOrderSorted = []]
+				  [#list numericIds as nid]
+				    [#assign pfOrderSorted = pfOrderSorted + [ nid?string ]]
+				  [/#list]
+				  [#if hasUnassignedTab]
+				    [#assign pfOrderSorted = pfOrderSorted + ["__no_portfolio__"]]
+				  [/#if]
 				
 				  <br>
-				  <table id="projectOutcomesList" class="table table-striped table-hover">
-				    <thead>
-				      <tr>
-				        <th>[@s.text name="global.flagship" /]</th>
-				        [#if (action.isAFPhase(actualPhase.id))!false]
-				          <th>Performance Indicator</th>
-				        [/#if]
-				        <th></th>
-				        [#if action.hasSpecificities('feedback_active') ]
-				          <th><div style="text-align:center;">Feedback Comments</div></th>
-				        [/#if]
-				        <th>Status</th>
-				        <th>Remove</th>
-				      </tr>
-				    </thead>
-				    <tbody>
-				      [#list project.outcomes as projectOutcome]
-				        [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
-				      [/#list]
-				    </tbody>
-				  </table>
 				
+				[#assign associatedMap = {}]
+				[#list portfoliosList as p]
+				  [#if p?? && p.id??]
+				    [#assign associatedMap = associatedMap + { (p.id?string) : ((p.associatedToCurrentPhase)!false) }]
+				  [/#if]
+				[/#list]
+				
+				
+				[#-- IDs de portfolios con al menos 1 indicador --]
+				[#assign pfVisible = []]
+				[#list portfoliosList as pf]
+				  [#if pf?? && pf.id??]
+				    [#assign tid = pf.id?string]
+				    [#assign listByPf = (outcomesByPortfolio[tid])![]]
+				    [#if listByPf?has_content]
+				      [#assign pfVisible = pfVisible + [ tid ] ]
+				      [#assign portfolioLabels = portfolioLabels + { (tid) : (pf.acronym)!((pf.name)!('Portfolio ' + tid)) } ]
+				    [/#if]
+				  [/#if]
+				[/#list]
+
+				
+				[#assign activeTid = ""]
+				[#list pfVisible as tid]
+				  [#if (associatedMap[tid])!false]
+				    [#assign activeTid = tid]
+				    [#break]
+				  [/#if]
+				[/#list]
+				[#if activeTid == "" && pfVisible?has_content]
+				  [#assign activeTid = pfVisible[0]]
+				[/#if]
+				
+				  [#-- Render Tabs por Portafolio --]
+					[#if pfVisible?has_content]
+					  <ul class="nav nav-tabs" role="tablist">
+						  [#list pfVisible as tid]
+						    <li role="presentation" class="${(tid == activeTid)?string('active','')}" style="width: ${(60/pfVisible?size)!}%; text-align: center;">
+						      <a href="#pf-tab-${tid}" data-toggle="tab">
+						        [#if portfolioLabels[tid] != "Portfolio Unassigned"]
+						          <span class="glyphicon glyphicon-briefcase"></span>
+						        [/#if]
+						        ${portfolioLabels[tid]!('Portfolio ' + tid)}
+						        [#if (associatedMap[tid])!false]
+						          <span class="label label-primary" style="margin-left:6px;">Current</span>
+						        [/#if]
+						      </a>
+						    </li>
+						  [/#list]
+						</ul>
+						
+						<div class="tab-content">
+						  [#list pfVisible as tid]
+						    <div class="tab-pane ${(tid == activeTid)?string('active','')}" id="pf-tab-${tid}">
+						      <br>
+						      <table id="projectOutcomesList-${tid}" class="table table-projectOutcomesList table-striped table-hover dt-outcomes">
+						        <thead>
+						          <tr>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">[@s.text name="global.flagship" /]</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Performance Indicator</th>
+						            <th></th>
+						            [#if action.hasSpecificities('feedback_active') ]
+						              <th><div style="text-align:center; padding-right: 10px; align-content: center;">Feedback Comments</div></th>
+						            [/#if]
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Status</th>
+						            <th style="text-align:center; padding-right: 10px; align-content: center;">Remove</th>
+						          </tr>
+						        </thead>
+						        <tbody>
+						          [#list (outcomesByPortfolio[tid])![] ?sort_by(['crpProgramOutcome','description']) as projectOutcome]
+						            [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+						          [/#list]
+						        </tbody>
+						      </table>
+						
+						      [#if canEdit && (associatedMap[tid])!false]
+						        <div class="addNewOutcome">
+						          <div class="outcomesListBlock">
+						            <span id="outcomesSelectedIds" style="display:none">
+						              [#if project.outcomes?has_content]
+						                [#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list]
+						              [/#if]
+						            </span>
+						            [@customForm.select
+						              name="outcomeId"
+						              label=""
+						              disabled=!canEdit
+						              i18nkey="projectContributionsCrpList.selectOutcome"
+						              listName="outcomes"
+						              keyFieldName="id"
+						              displayFieldName="name"
+						              className=""
+						            /]
+						          </div>
+						          <div class="addOutcomeBlock">
+						            <a href="${baseUrl}/projects/${crpSession}/addNewProjectOuctome.do?projectID=${projectID}&outcomeId=-1&phaseID=${(actualPhase.id)!}">
+						              <div class="button-blue"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
+						            </a>
+						          </div>
+						        </div>
+						      [/#if]
+						
+						    </div>
+						  [/#list]
+						</div>
+
+					[#else]
+					  <p class="emptyMessage text-center">There are no indicators to display.</p>
+					[/#if]
+				[#else]
+
+					[#-- Without tabs --]
+					  <br>
+					  <table id="projectOutcomesList" class="table table-striped table-hover">
+					    <thead>
+					      <tr>
+					        <th>[@s.text name="global.flagship" /]</th>
+					        [#if (action.isAFPhase(actualPhase.id))!false]
+					          <th>Performance Indicator</th>
+					        [/#if]
+					        <th></th>
+					        [#if action.hasSpecificities('feedback_active') ]
+					          <th><div style="text-align:center;">Feedback Comments</div></th>
+					        [/#if]
+					        <th>Status</th>
+					        <th>Remove</th>
+					      </tr>
+					    </thead>
+					    <tbody>
+					      [#list project.outcomes as projectOutcome]
+					        [@outcomeContributionMacro projectOutcome=projectOutcome name="" index=projectOutcome_index /]
+					      [/#list]
+					    </tbody>
+					  </table>
 				[/#if]
 
             [#if !project.outcomes?has_content]
@@ -202,7 +374,8 @@
             [/#if]
 
             [#-- Add a new Outcomes --]
-            [#if canEdit]
+            [#if canEdit && !action.hasSpecificities('portfolio_feature_active')]
+
               <div class="addNewOutcome">
                 <div class="outcomesListBlock">
                   <span id="outcomesSelectedIds" style="display:none">[#if project.outcomes?has_content][#list project.outcomes as e]${e.crpProgramOutcome.id}[#if e_has_next],[/#if][/#list][/#if]</span>

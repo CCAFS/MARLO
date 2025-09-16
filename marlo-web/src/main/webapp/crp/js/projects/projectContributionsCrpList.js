@@ -43,7 +43,7 @@ $(document).ready(function() {
 
   lp6menu();
 
-  var $tables = $('table.deliverableList, table.innovationList, table.evidencieList, table#projectOutcomesList');
+  var $tables = $('table.deliverableList, table.innovationList, table.evidencieList, table#projectOutcomesList, table.table-projectOutcomesList');
   $tables.each(function() {
     var $table = $(this);
     initializeDataTable($table);
@@ -168,4 +168,5 @@ function initializeDataTable($table) {
   var divDataTables_filter = $table.find('.dataTables_filter');
   iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
   iconSearch.prependTo(divDataTables_filter);
+  $table.next().css('width', '35%');
 }

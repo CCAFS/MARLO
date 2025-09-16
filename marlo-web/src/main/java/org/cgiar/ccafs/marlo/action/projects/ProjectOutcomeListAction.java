@@ -20,9 +20,10 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
-import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioManager;
+import org.cgiar.ccafs.marlo.data.manager.PortfolioPhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
@@ -36,6 +37,8 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Portfolio;
+import org.cgiar.ccafs.marlo.data.model.PortfolioPhase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
@@ -56,6 +59,9 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -77,8 +83,9 @@ public class ProjectOutcomeListAction extends BaseAction {
   private GlobalUnitProjectManager globalUnitProjectManager;
   private ProjectLp6ContributionManager projectLp6ContributionManager;
   private ProjectMilestoneManager projectMilestoneManager;
-  private FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager;
   private FeedbackQACommentManager commentManager;
+  private PortfolioPhaseManager portfolioPhaseManager;
+  private PortfolioManager portfolioManager;
 
   // Front-end
   private long projectID;
@@ -91,20 +98,25 @@ public class ProjectOutcomeListAction extends BaseAction {
   private List<ProjectOutcome> allProjectOutcomes;
   private List<ProjectOutcome> deprecatedOutcomes;
   private List<ProjectOutcome> mainOutcomes;
+  private List<Portfolio> portfolios;
   private ProjectLp6Contribution projectLp6Contribution;
   private Map<String, Object> status;
   private boolean contributionValue;
   private long phaseID;
   private Phase phase;
   private boolean showDeprecatedTab;
+  private long actualPortfolioID;
 
+  private Set<Long> hiddenPortfolioIds = new HashSet<>();
+  private Date currentPortfolioEndDate;
 
   @Inject
   public ProjectOutcomeListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, SectionStatusManager sectionStatusManager,
     ProjectOutcomeManager projectOutcomeManager, GlobalUnitProjectManager globalUnitProjectManager,
     ProjectLp6ContributionManager projectLp6ContributionManager, ProjectMilestoneManager projectMilestoneManager,
-    FeedbackQACommentableFieldsManager feedbackQACommentableFieldsManager, FeedbackQACommentManager commentManager) {
+    FeedbackQACommentManager commentManager, PortfolioPhaseManager portfolioPhaseManager,
+    PortfolioManager portfolioManager) {
     super(config);
     this.projectManager = projectManager;
     this.sectionStatusManager = sectionStatusManager;
@@ -114,8 +126,9 @@ public class ProjectOutcomeListAction extends BaseAction {
     this.globalUnitProjectManager = globalUnitProjectManager;
     this.projectLp6ContributionManager = projectLp6ContributionManager;
     this.projectMilestoneManager = projectMilestoneManager;
-    this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+    this.portfolioPhaseManager = portfolioPhaseManager;
+    this.portfolioManager = portfolioManager;
   }
 
   public void addAllCrpMilestones(ProjectOutcome projectOutcome) {
@@ -310,6 +323,8 @@ public class ProjectOutcomeListAction extends BaseAction {
     } catch (Exception e) {
 
     }
+    updatePortfolioBooleanValue();
+
 
     contributionValue =
       Boolean.parseBoolean(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_LP6_CONTRIBUTION_VALUE)));
@@ -341,13 +356,21 @@ public class ProjectOutcomeListAction extends BaseAction {
         return (cpo != null && cpo.getOrderIndex() != null) ? cpo.getOrderIndex() : Integer.MAX_VALUE;
       })).collect(Collectors.toList());
 
+    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && hiddenPortfolioIds != null
+      && !hiddenPortfolioIds.isEmpty()) {
+
+      mainOutcomes = mainOutcomes.stream().filter(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        Long pid = (cpo != null && cpo.getPortfolio() != null) ? cpo.getPortfolio().getId() : null;
+        return pid == null || !hiddenPortfolioIds.contains(pid);
+      }).collect(Collectors.toList());
+    }
 
     project.setOutcomes(mainOutcomes);
 
     showDeprecatedTab = deprecatedOutcomes != null && !deprecatedOutcomes.isEmpty();
 
     GlobalUnitProject gp = globalUnitProjectManager.findByProjectId(project.getId());
-
     outcomes = new ArrayList<CrpProgramOutcome>();
     for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)
@@ -361,6 +384,18 @@ public class ProjectOutcomeListAction extends BaseAction {
           .collect(Collectors.toList()));
 
       outcomes.addAll(outcomesT);
+    }
+
+    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && outcomes != null && !outcomes.isEmpty()) {
+      outcomes = outcomes.stream().filter(o -> o != null && o.getPortfolio() != null && o.getPortfolio().getId() != null
+        && o.getPortfolio().getId().equals(actualPortfolioID)).collect(Collectors.toList());
+
+      if (hiddenPortfolioIds != null && !hiddenPortfolioIds.isEmpty()) {
+        outcomes = outcomes.stream().filter(o -> {
+          Long pid = (o != null && o.getPortfolio() != null) ? o.getPortfolio().getId() : null;
+          return pid == null || !hiddenPortfolioIds.contains(pid);
+        }).collect(Collectors.toList());
+      }
     }
 
     List<CrpProgram> programs = new ArrayList<>();
@@ -415,6 +450,86 @@ public class ProjectOutcomeListAction extends BaseAction {
       }
     }
 
+  }
+
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
+  }
+
+  public void setPortfolios(List<Portfolio> portfolios) {
+    this.portfolios = portfolios;
+  }
+
+  public void updatePortfolioBooleanValue() {
+    try {
+      Long currentPhaseId = this.getActualPhase().getId();
+      portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
+      hiddenPortfolioIds = new HashSet<>();
+      currentPortfolioEndDate = null;
+
+      if (portfolios == null || portfolios.isEmpty()) {
+        return;
+      }
+
+      Portfolio currentPortfolio = null;
+      for (Portfolio pf : portfolios) {
+        boolean associated = false;
+
+        if (pf != null && pf.getId() != null) {
+          Long pid = pf.getId();
+          List<PortfolioPhase> ppList = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(pid);
+
+          if (ppList != null && !ppList.isEmpty()) {
+            for (PortfolioPhase pp : ppList) {
+              if (pp != null && pp.getPhase() != null && currentPhaseId.equals(pp.getPhase().getId())) {
+                associated = true;
+                if (currentPortfolio == null) {
+                  currentPortfolio = pf;
+                }
+                break;
+              }
+            }
+          }
+
+          if (!associated && pf.getSelectedPhases() != null) {
+            associated = pf.getSelectedPhases().contains(currentPhaseId);
+            if (associated && currentPortfolio == null) {
+              currentPortfolio = pf;
+            }
+          }
+        }
+
+        pf.setAssociatedToCurrentPhase(associated);
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+      }
+
+      if (currentPortfolioEndDate != null) {
+        for (Portfolio p : portfolios) {
+          Date pe = p.getEndDate();
+          if (pe != null && pe.after(currentPortfolioEndDate)) {
+            hiddenPortfolioIds.add(p.getId());
+          }
+        }
+      }
+
+      if (currentPortfolioEndDate != null) {
+        portfolios = portfolios.stream().filter(p -> {
+          Date pe = p.getEndDate();
+          return pe == null || !pe.after(currentPortfolioEndDate);
+        }).collect(Collectors.toList());
+      }
+
+      if (currentPortfolio != null) {
+        currentPortfolioEndDate = currentPortfolio.getEndDate();
+        actualPortfolioID = currentPortfolio.getId();
+      }
+
+    } catch (Exception e) {
+      Log.error("Error updating portfolio boolean value", e);
+    }
   }
 
 

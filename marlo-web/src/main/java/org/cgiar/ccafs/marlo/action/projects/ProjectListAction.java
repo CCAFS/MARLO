@@ -562,12 +562,12 @@ public class ProjectListAction extends BaseAction {
     if (phase != null && phase.getId() != null && phaseManager.getPhaseById(phase.getId()) != null) {
       phase = phaseManager.getPhaseById(phase.getId());
     }
-    // cgamboa 09/05/2024 projectManager.findAll() != null is changed by projectManager.findAllQuantity() >0
+
     if (projectManager.findAllQuantity() > 0 && phase != null && phase.getProjectPhases() != null) {
       if (this.canAccessSuperAdmin() || this.canAcessCrpAdmin()) {
         myProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null && projectPhase.getProject().isActive() && projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()).isActive()) {
             myProjects.add(projectPhase.getProject());
           }
         }
@@ -575,7 +575,7 @@ public class ProjectListAction extends BaseAction {
       } else {
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
-          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null) {
+          if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null && projectPhase.getProject().isActive() && projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()).isActive()) {
             allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
           }
         }
@@ -590,7 +590,8 @@ public class ProjectListAction extends BaseAction {
           if (!allProjects.contains(project)) {
             myProjects.remove(project);
           }
-          if (project.getProjecInfoPhase(this.getActualPhase()) == null) {
+          if ((project.getProjecInfoPhase(this.getActualPhase()) == null) || project.isActive() == false
+            || project.getProjecInfoPhase(this.getActualPhase()).isActive() == false) {
             myProjects.remove(project);
           }
         }

@@ -12,6 +12,25 @@ function init() {
 	  defaultMaxDateValue: $("#maxDateValue").val()
 	});
 
+  var starVal = $('.srfSlo:not(#srfSlo-template) .startDate').val();
+  var endVal = $('.srfSlo:not(#srfSlo-template) .endDate').val();
+
+  if(starVal) {
+    var parsedStartDate = tryParseDate(starVal);
+    parsedStartDate = $.datepicker.formatDate("yy-mm-dd", parsedStartDate);
+    if(parsedStartDate) {
+      $('.srfSlo:not(#srfSlo-template) .startDate').val(parsedStartDate);
+    }
+  }
+
+  if(endVal) {
+    var parsedEndDate = tryParseDate(endVal);
+    parsedEndDate = $.datepicker.formatDate("yy-mm-dd", parsedEndDate);
+    if(parsedEndDate) {
+      $('.srfSlo:not(#srfSlo-template) .endDate').val(parsedEndDate);
+    }
+  }
+
 }
 
 function attachEvents() {
@@ -134,7 +153,7 @@ function datePickerConfig(opts) {
 function date($start, $end, minDateStr, maxDateStr) {
   var dateFormat = "yy-mm-dd";
   var minDate = minDateStr ? $.datepicker.parseDate(dateFormat, minDateStr) : new Date(2023,0,1);
-  var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2026,11,31);
+  var maxDate = maxDateStr ? $.datepicker.parseDate(dateFormat, maxDateStr) : new Date(2031,11,31);
 
   // START (sin normalizar al 1° del mes)
   $start.datepicker({
@@ -175,3 +194,33 @@ function date($start, $end, minDateStr, maxDateStr) {
   });
 }
 
+function tryParseDate(dateStr) {
+  if (!dateStr) return null;
+
+  // This is neccesary due to database is always bringing dates in mm/dd/yyyy format but no is standardized
+  // Try multiple formats to parse the date
+  var formats = [
+    "m/d/y",      // 1/1/25 (2-digit year)
+    "mm/d/y",     // 01/1/25
+    "m/dd/y",     // 1/01/25
+    "mm/dd/y",    // 01/01/25
+    "m/d/yy",     // 1/1/2025 (4-digit year)
+    "mm/d/yy",    // 01/1/2025
+    "m/dd/yy",    // 1/01/2025
+    "mm/dd/yy",   // 01/01/2025
+    "m/d/yyyy",   // 1/1/2025
+    "mm/dd/yyyy"  // 01/01/2025
+  ];
+
+  for(var i=0; i<formats.length; i++) {
+    try {
+      var parsed = $.datepicker.parseDate(formats[i], dateStr);
+      return parsed;
+    } catch(error) {
+      // Try next format
+      continue;
+    }
+  }
+
+  return null;
+}

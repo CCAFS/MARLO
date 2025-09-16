@@ -215,12 +215,12 @@
      <button type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
     </div>
     
-    <div class="form-group target-block to-minimize-outcome">
+    <div class="form-group">
 		  [#-- Portfolio --]
 	    [#if action.hasSpecificities('portfolio_feature_active')]
 			  <div class="row form-group">
 					<div class="col-md-4">
-						[@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=false  className="milestoneStatus" editable=editable /]
+						[@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
 					</div>
 				</div>
 			[/#if]

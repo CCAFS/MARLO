@@ -81,8 +81,7 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
-
+    return Collections.emptyList();
   }
 
   @Override
