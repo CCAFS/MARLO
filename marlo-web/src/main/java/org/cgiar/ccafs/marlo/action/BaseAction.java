@@ -5320,6 +5320,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     SectionStatus sectionStatus;
     Project project;
 
+    if (projectID <= 0 || section == null || section.isEmpty()) {
+      return returnValue;
+    }
+
     if (section != null && !section.isEmpty()) {
       if (ProjectSectionStatusEnum.value(section.toUpperCase()) == null) {
         return false;
@@ -5634,9 +5638,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
           }
           returnValue = true;
-          break;
+            break;
 
-        case INNOVATIONS:
+          case INNOVATIONS:
+            try {
+            project = this.projectManager.getProjectById(projectID);
+            List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
+              .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
+              && c.getProjectInnovationInfo(this.getActualPhase()).getYear().intValue() == this.getCurrentCycleYear())
+              .collect(Collectors.toList());
+
+            if (innovations.isEmpty()) {
+              return true;
+            }
+
+            for (ProjectInnovation projectInnovation : innovations) {
+              sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              if (sectionStatus != null) {
+              if (sectionStatus.getMissingFields().length() != 0) {
+                return false;
+              }
+              } else {
+              return false;
+              }
+            }
+            returnValue = true;
+            } catch (Exception e) {
+            LOG.error("Error validating innovations section for project " + projectID, e);
+            returnValue = false;
+            }
+
           project = this.projectManager.getProjectById(projectID);
           List<ProjectInnovation> innovations = project.getProjectInnovations().stream()
             .filter(c -> c.getProjectInnovationInfo(this.getActualPhase()) != null && c.isActive()
