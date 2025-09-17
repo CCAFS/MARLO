@@ -142,7 +142,30 @@
 
 
         [#-- Innovation Description --]
-        [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]          
+        [@innovations.innovationDescription element=(innovation)!{} name="innovation" index=0 /]
+
+        [#-- Information banner --]          
+        <div class="containerAlert alert-leftovers alert-leftovers--2 alertColorBackgroundInfo">
+          <div class="containerLine alertColorInfo"></div>
+          <div class="containerIcon">
+            <div class="containerIcon containerIcon--small alertColorInfo">
+              <img src="${baseUrlCdn}/global/images/icon-exclamation.png" height="16" width="16" />
+            </div>
+          </div>
+          <div class="containerText col-md-9">
+            <p class="alertText">Please check the reported innovations to enter all the new information regarding updates in MARLO. For more information, you can review the presentation performed in the webinar.</p>
+          </div>
+          <div class="ContainerDownload col-md-2">     
+          <a href="https://cgiar.sharepoint.com/:p:/s/AICCRA/EdfDKeegVkxHn2mdcBYmsy4Bh1kkzjX73X5673y3Ynjj7w?e=uCzD2T">     
+            <button class="DownloadButton DownloadButton--2" >
+              <div class="IconDownloadButton">
+                <img src="${baseUrlCdn}/global/images/icon-pptx.png" height="24" width="24"/>
+              </div>
+              <span for="">[@s.text name="See presentation" /]</span>
+            </button>
+            </a>
+          </div>   
+        </div>
 
         [#-- Content: All the information of the case study --]
         <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
