@@ -155,16 +155,19 @@
           <div class="containerText col-md-9">
             <p class="alertText">Please check the reported innovations to enter all the new information regarding updates in MARLO. For more information, you can review the presentation performed in the webinar.</p>
           </div>
-          <div class="ContainerDownload col-md-2">     
-          <a href="https://cgiar.sharepoint.com/:p:/s/AICCRA/EdfDKeegVkxHn2mdcBYmsy4Bh1kkzjX73X5673y3Ynjj7w?e=uCzD2T" target="_blank">     
-            <button class="DownloadButton DownloadButton--2" >
-              <div class="IconDownloadButton">
-                <img src="${baseUrlCdn}/global/images/icon-pptx.png" height="24" width="24"/>
-              </div>
-              <span for="">[@s.text name="See presentation" /]</span>
-            </button>
-            </a>
-          </div>   
+          <div class="ContainerDownload col-md-2">
+					  <a href="https://cgiar.sharepoint.com/:p:/s/AICCRA/EdfDKeegVkxHn2mdcBYmsy4Bh1kkzjX73X5673y3Ynjj7w?e=uCzD2T"
+					    target="_blank"
+					    rel="noopener noreferrer"
+					    class="DownloadButton DownloadButton--2"
+					    role="button">
+					    <div class="IconDownloadButton">
+					      <img src="${baseUrlCdn}/global/images/icon-pptx.png" height="24" width="24"/>
+					    </div>
+					    <span>[@s.text name="See presentation" /]</span>
+					  </a>
+					</div>
+  
         </div>
 
         [#-- Content: All the information of the case study --]
