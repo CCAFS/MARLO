@@ -539,16 +539,18 @@
             [#local isChecked = false /]
 
             <div class="containerRadioToCheckbox ${isOther?then('containerRadioToCheckbox--other','')}">
-              [#list element.allianceLevers as elementLever]
-                [#if elementLever.allianceLever.id == lever.id]
-                  <div class="form-group hiddenIdReference">
-                      [@customForm.input name="${customName}.allianceLevers[${elementLever_index}].id" editable=false display=false value="${elementLever.id!-1}" /]
-                  </div>
-                  [#local isChecked = true /]
-                  [#break /]
-                [/#if]
+              [#if element.allianceLevers?has_content]
+                [#list element.allianceLevers as elementLever]
+                  [#if elementLever.allianceLever.id == lever.id]
+                    <div class="form-group hiddenIdReference">
+                        [@customForm.input name="${customName}.allianceLevers[${elementLever_index}].id" editable=false display=false value="${elementLever.id!-1}" /]
+                    </div>
+                    [#local isChecked = true /]
+                    [#break /]
+                  [/#if]
 
-              [/#list]
+                [/#list]
+              [/#if]
  
               [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=((isChecked)||(lever.id == 3)) editable=editable disabled=(lever.id == 3) /]
               [#if isOther]
