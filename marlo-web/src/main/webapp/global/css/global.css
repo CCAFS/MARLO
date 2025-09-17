@@ -8487,6 +8487,11 @@ img.qaOptionsComment {
 	justify-content: center;
 }
 
+.containerIcon.containerIcon--small {
+	min-width: 30px;
+	height: 30px;
+}
+
 .containerIcon img {
 	width: 25px;
 }
@@ -8563,6 +8568,12 @@ img.qaOptionsComment {
 	width: 10px;
 }
 
+.DownloadButton.DownloadButton--2 span {
+	left: 15%;
+	width: 60px;
+	text-align: center;
+}
+
 .DownloadButton .IconDownloadButton {
 	position: absolute;
 	left: 70%;
@@ -8602,6 +8613,10 @@ img.qaOptionsComment {
 	align-items: center;
 }
 
+.DownloadButton.DownloadButton--2 {
+	background: #C43E1CD1;
+}
+
 
 .alert-leftovers {
 	position: relative;
@@ -8612,6 +8627,10 @@ img.qaOptionsComment {
 	border: 1px solid #EEE;
 	margin-bottom: 5px;
 	height: 100%;
+}
+
+.alert-leftovers.alert-leftovers--2 {
+	margin-bottom: 16px;
 }
 
 .containerButtonTemplate {
