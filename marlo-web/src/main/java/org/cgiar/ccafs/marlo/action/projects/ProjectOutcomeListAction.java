@@ -51,17 +51,17 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.util.Log;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
@@ -74,6 +74,22 @@ public class ProjectOutcomeListAction extends BaseAction {
    */
   private static final long serialVersionUID = 4520862722467820286L;
 
+  public static boolean isDeprecated(CrpProgramOutcome cpo) {
+    if (cpo == null) {
+      return true;
+    }
+
+    if (cpo.getPortfolio() != null && cpo.getPortfolio().getId() < 2) {
+      return true;
+    }
+
+    if (cpo.getDescription() != null && cpo.getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
+      return true;
+    }
+
+    return false;
+  }
+
   private ProjectManager projectManager;
   // GlobalUnit Manager
   private GlobalUnitManager crpManager;
@@ -85,8 +101,8 @@ public class ProjectOutcomeListAction extends BaseAction {
   private ProjectMilestoneManager projectMilestoneManager;
   private FeedbackQACommentManager commentManager;
   private PortfolioPhaseManager portfolioPhaseManager;
-  private PortfolioManager portfolioManager;
 
+  private PortfolioManager portfolioManager;
   // Front-end
   private long projectID;
   private long projectOutcomeID;
@@ -105,9 +121,10 @@ public class ProjectOutcomeListAction extends BaseAction {
   private long phaseID;
   private Phase phase;
   private boolean showDeprecatedTab;
-  private long actualPortfolioID;
 
+  private long actualPortfolioID;
   private Set<Long> hiddenPortfolioIds = new HashSet<>();
+
   private Date currentPortfolioEndDate;
 
   @Inject
@@ -218,6 +235,10 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
+  public List<ProjectOutcome> getAllProjectOutcomes() {
+    return allProjectOutcomes;
+  }
+
   public void getCommentStatuses() {
 
     try {
@@ -274,6 +295,14 @@ public class ProjectOutcomeListAction extends BaseAction {
     }
   }
 
+  public List<ProjectOutcome> getDeprecatedOutcomes() {
+    return deprecatedOutcomes;
+  }
+
+  public List<ProjectOutcome> getMainOutcomes() {
+    return mainOutcomes;
+  }
+
   public Long getOutcomeId() {
     return outcomeId;
   }
@@ -285,6 +314,10 @@ public class ProjectOutcomeListAction extends BaseAction {
   @Override
   public Long getPhaseID() {
     return phaseID;
+  }
+
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
   }
 
   public Project getProject() {
@@ -307,9 +340,15 @@ public class ProjectOutcomeListAction extends BaseAction {
     return status;
   }
 
+
   public boolean isContributionValue() {
     return contributionValue;
   }
+
+  public boolean isShowDeprecatedTab() {
+    return showDeprecatedTab;
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -344,11 +383,33 @@ public class ProjectOutcomeListAction extends BaseAction {
     List<ProjectOutcome> allProjectOutcomes = project.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
 
-    mainOutcomes = allProjectOutcomes.stream().filter(po -> {
-      CrpProgramOutcome cpo = po.getCrpProgramOutcome();
-      return cpo != null && cpo.getPortfolio() != null
-        && Integer.valueOf(2).equals(cpo.getPortfolio().getId().intValue());
-    }).sorted(Comparator.comparing(po -> po.getCrpProgramOutcome().getOrderIndex())).collect(Collectors.toList());
+    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE)) {
+      mainOutcomes = allProjectOutcomes.stream().filter(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        if (cpo == null || isDeprecated(cpo)) {
+          return false;
+        }
+        Long pid = (cpo.getPortfolio() != null) ? cpo.getPortfolio().getId() : null;
+        if (pid == null || !pid.equals(actualPortfolioID)) {
+          return false;
+        }
+        return hiddenPortfolioIds == null || !hiddenPortfolioIds.contains(pid);
+      }).sorted(Comparator.comparing(po -> {
+        Integer oi = po.getCrpProgramOutcome().getOrderIndex();
+        return (oi != null) ? oi : Integer.MAX_VALUE;
+      })).collect(Collectors.toList());
+
+    } else {
+      mainOutcomes = allProjectOutcomes.stream().filter(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        return cpo != null && !isDeprecated(cpo);
+      }).sorted(Comparator.comparing(po -> {
+        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
+        Integer oi = (cpo != null) ? cpo.getOrderIndex() : null;
+        return (oi != null) ? oi : Integer.MAX_VALUE;
+      })).collect(Collectors.toList());
+
+    }
 
     deprecatedOutcomes = allProjectOutcomes.stream().filter(po -> isDeprecated(po.getCrpProgramOutcome()))
       .sorted(Comparator.comparingInt(po -> {
@@ -356,17 +417,6 @@ public class ProjectOutcomeListAction extends BaseAction {
         return (cpo != null && cpo.getOrderIndex() != null) ? cpo.getOrderIndex() : Integer.MAX_VALUE;
       })).collect(Collectors.toList());
 
-    if (this.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE) && hiddenPortfolioIds != null
-      && !hiddenPortfolioIds.isEmpty()) {
-
-      mainOutcomes = mainOutcomes.stream().filter(po -> {
-        CrpProgramOutcome cpo = po.getCrpProgramOutcome();
-        Long pid = (cpo != null && cpo.getPortfolio() != null) ? cpo.getPortfolio().getId() : null;
-        return pid == null || !hiddenPortfolioIds.contains(pid);
-      }).collect(Collectors.toList());
-    }
-
-    project.setOutcomes(mainOutcomes);
 
     showDeprecatedTab = deprecatedOutcomes != null && !deprecatedOutcomes.isEmpty();
 
@@ -452,12 +502,73 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   }
 
-  public List<Portfolio> getPortfolios() {
-    return portfolios;
+
+  public void setAllProjectOutcomes(List<ProjectOutcome> allProjectOutcomes) {
+    this.allProjectOutcomes = allProjectOutcomes;
+  }
+
+
+  public void setContributionValue(boolean contributionValue) {
+    this.contributionValue = contributionValue;
+  }
+
+  public void setDeprecatedOutcomes(List<ProjectOutcome> deprecatedOutcomes) {
+    this.deprecatedOutcomes = deprecatedOutcomes;
+  }
+
+  public void setMainOutcomes(List<ProjectOutcome> mainOutcomes) {
+    this.mainOutcomes = mainOutcomes;
+  }
+
+  public void setOutcomeId(long outcomeId) {
+    this.outcomeId = outcomeId;
+  }
+
+  public void setOutcomeId(Long outcomeId) {
+    this.outcomeId = outcomeId;
+  }
+
+
+  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
+    this.outcomes = outcomes;
+  }
+
+  @Override
+  public void setPhaseID(Long phaseID) {
+    this.phaseID = phaseID;
   }
 
   public void setPortfolios(List<Portfolio> portfolios) {
     this.portfolios = portfolios;
+  }
+
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+
+  public void setProjectID(long projectID) {
+    this.projectID = projectID;
+  }
+
+
+  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
+    this.projectLp6Contribution = projectLp6Contribution;
+  }
+
+
+  public void setProjectOutcomeID(long projectOutcomeID) {
+    this.projectOutcomeID = projectOutcomeID;
+  }
+
+  public void setShowDeprecatedTab(boolean showDeprecatedTab) {
+    this.showDeprecatedTab = showDeprecatedTab;
+  }
+
+
+  public void setStatus(Map<String, Object> status) {
+    this.status = status;
   }
 
   public void updatePortfolioBooleanValue() {
@@ -530,104 +641,5 @@ public class ProjectOutcomeListAction extends BaseAction {
     } catch (Exception e) {
       Log.error("Error updating portfolio boolean value", e);
     }
-  }
-
-
-  public void setContributionValue(boolean contributionValue) {
-    this.contributionValue = contributionValue;
-  }
-
-  public void setOutcomeId(long outcomeId) {
-    this.outcomeId = outcomeId;
-  }
-
-
-  public void setOutcomeId(Long outcomeId) {
-    this.outcomeId = outcomeId;
-  }
-
-
-  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
-    this.outcomes = outcomes;
-  }
-
-
-  @Override
-  public void setPhaseID(Long phaseID) {
-    this.phaseID = phaseID;
-  }
-
-  public void setProject(Project project) {
-    this.project = project;
-  }
-
-  public void setProjectID(long projectID) {
-    this.projectID = projectID;
-  }
-
-  public void setProjectLp6Contribution(ProjectLp6Contribution projectLp6Contribution) {
-    this.projectLp6Contribution = projectLp6Contribution;
-  }
-
-  public static boolean isDeprecated(CrpProgramOutcome cpo) {
-    if (cpo == null) {
-      return true;
-    }
-
-    if (cpo.getPortfolio() != null && cpo.getPortfolio().getId() < 2) {
-      return true;
-    }
-
-    if (cpo.getDescription() != null && cpo.getDescription().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED)) {
-      return true;
-    }
-
-    return false;
-  }
-
-
-  public void setProjectOutcomeID(long projectOutcomeID) {
-    this.projectOutcomeID = projectOutcomeID;
-  }
-
-  public List<ProjectOutcome> getAllProjectOutcomes() {
-    return allProjectOutcomes;
-  }
-
-  public void setAllProjectOutcomes(List<ProjectOutcome> allProjectOutcomes) {
-    this.allProjectOutcomes = allProjectOutcomes;
-  }
-
-
-  public List<ProjectOutcome> getDeprecatedOutcomes() {
-    return deprecatedOutcomes;
-  }
-
-
-  public void setDeprecatedOutcomes(List<ProjectOutcome> deprecatedOutcomes) {
-    this.deprecatedOutcomes = deprecatedOutcomes;
-  }
-
-
-  public List<ProjectOutcome> getMainOutcomes() {
-    return mainOutcomes;
-  }
-
-
-  public void setMainOutcomes(List<ProjectOutcome> mainOutcomes) {
-    this.mainOutcomes = mainOutcomes;
-  }
-
-  public boolean isShowDeprecatedTab() {
-    return showDeprecatedTab;
-  }
-
-
-  public void setShowDeprecatedTab(boolean showDeprecatedTab) {
-    this.showDeprecatedTab = showDeprecatedTab;
-  }
-
-  public void setStatus(Map<String, Object> status) {
-    this.status = status;
   }
 }
