@@ -288,7 +288,7 @@
           [#if milestonesProjectYear?has_content]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list milestonesProjectYear as year]
-                <li class="[#if year == currentCycleYear]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year} </a></li>
+                <li class="[#if year == currentCycleYear]active[#elseif year_index == 0]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year} </a></li>
               [/#list]
             </ul>
           
@@ -297,7 +297,7 @@
           <div class="tab-content contributionContent">
           
               [#list milestonesProjectYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}" role="tab" data-toggle="tab">
+                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[#elseif year_index == 0]active[/#if]" id="milestoneYear-${year}" role="tab" data-toggle="tab">
                 
                 [#assign milestoneElement = action.milestonesYear!{}/]
                 [#assign milestoneIndex = (action.indexMilestone(year))!'-1' /]
