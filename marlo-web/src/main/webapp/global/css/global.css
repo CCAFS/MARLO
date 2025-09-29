@@ -78,7 +78,6 @@ select.input-sm {
 
 .container:not(.loginPage) {
 	position: relative;
-	width: 83% !important;
 }
 
 @media only screen and (max-width: 1300px) {
