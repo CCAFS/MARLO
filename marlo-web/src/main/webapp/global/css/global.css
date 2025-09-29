@@ -375,6 +375,10 @@ span.badge.fieldError {
 	min-height: 400px;
 }
 
+.width-100 {
+	width: 100% !important;
+}
+
 .margin-top-10{
 	margin-top: 1rem;
 }
