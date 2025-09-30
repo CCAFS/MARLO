@@ -901,8 +901,8 @@
       </div>
 
       [#-- hasKnowledgePotential --]
-      <div class="col-md-12">
-        [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" required=true /]
+      <div class="col-md-12 margin-top-10 form-group">
+        [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" required=true className="width-100" /]
         [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
         [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]    
 
@@ -945,7 +945,7 @@
       
       [#-- Anticipated users --]
       <div class="form-group col-md-12 block-innovationAnticipatedUsers">
-        [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" twoPoints=false required=true isMainTitle=true /]
+        [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" twoPoints=false required=true isMainTitle=true className="width-100" /]
         [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
         <div class="col-md-12">
           <div class="col-md-4">
@@ -1117,7 +1117,7 @@
 
       [#-- Evidence and Reference --]
       <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isMainTitle=true twoPoints=false classNameLabel="blueLightColor" /]
+        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isMainTitle=true twoPoints=false classNameLabel="blueLightColor" className="width-100" /]
         <br>
         <label class="note note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >Problem available</span></label>
         <div class="col-md-12">

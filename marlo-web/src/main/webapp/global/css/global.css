@@ -78,7 +78,6 @@ select.input-sm {
 
 .container:not(.loginPage) {
 	position: relative;
-	width: 83% !important;
 }
 
 @media only screen and (max-width: 1300px) {
@@ -374,6 +373,10 @@ span.badge.fieldError {
 
 .marlo-content {
 	min-height: 400px;
+}
+
+.width-100 {
+	width: 100% !important;
 }
 
 .margin-top-10{

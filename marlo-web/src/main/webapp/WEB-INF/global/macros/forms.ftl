@@ -570,41 +570,43 @@
 [#macro likertScale id name label="" subLabelLeft="" subLabelRight="" i18nkey="" scaleNumber=5 disabled=false editable=true required=false value="" checked=true cssClass="" cssClassLabel="" inline=true]
   <div class="feedback-flex-items"></div>
   <div class="likertScale col-md-12 ${cssClass}">
-    <label class="col-md-12">
+    <label class="col-md-12 col-sm-12 col-xs-12">
       [@s.text name=label /][@req required=required && editable /]
     </label>
-    <label class="col-md-5 text-left subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelLeft /]</label>
-    <label class="col-md-5 text-right subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelRight /]</label>
-    <div class="clearfix"></div>
-    [#if editable]
-      [#list 1..scaleNumber as i]
-        [#local isChecked = (value?has_content && value == i)!false /]
-        [#local widthComponent = (80/scaleNumber) /]
-        <div class="[#if i == 1]text-left[#elseif i == scaleNumber]text-right[#else]text-center[/#if]" style="display: flex; justify-content: center; align-items: center; width:${widthComponent}%; float:left;">
-          [@radioFlat id="${id}-${i}" name="${name}" i18nkey=i label=i disabled="${disabled?string}" editable=editable value="${i}" checked=isChecked canComment=false inline=true /]
-        </div> 
-      [/#list]
-    [#else]
-      [#--        <div class="col-md-4 " style="display: flex;">
-        <span> Value selected:&nbsp;</span>
-        [#if value?has_content]
-          <span class="${cssClass}"><b>${value}</b></span>
-        [#else]
-          <span class="${cssClass}"><b>No provided</b></span>
-        [/#if]
-      </div>  --]
+    <label class="col-md-5 col-sm-6 col-xs-6 text-left subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelLeft /]</label>
+    <label class="col-md-5 col-sm-6 col-xs-6 text-right subLabel ${cssClassLabel}" style="padding: 0;">[@s.text name=subLabelRight /]</label>
+    <div class="col-md-12">
+      [#if editable]
         [#list 1..scaleNumber as i]
           [#local isChecked = (value?has_content && value == i)!false /]
-          <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
-            <div class="fieldReference radioFlat ${inline?string('radio-inline', '')}">
-              <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${i}" [#if isChecked]checked[/#if] disabled />
-              <label for="${id}" class="radio-label disabled-label ${cssClassLabel}">
-                ${i}
-              </label>
-            </div>
+          [#local widthComponent = (80/scaleNumber) /]
+          <div class="[#if i == 1]text-left[#elseif i == scaleNumber]text-right[#else]text-center[/#if]" style="display: flex; justify-content: center; align-items: center; width:${widthComponent}%; float:left;">
+            [@radioFlat id="${id}-${i}" name="${name}" i18nkey=i label=i disabled="${disabled?string}" editable=editable value="${i}" checked=isChecked canComment=false inline=true /]
           </div> 
         [/#list]
-    [/#if]
+      [#else]
+        [#--        <div class="col-md-4 " style="display: flex;">
+          <span> Value selected:&nbsp;</span>
+          [#if value?has_content]
+            <span class="${cssClass}"><b>${value}</b></span>
+          [#else]
+            <span class="${cssClass}"><b>No provided</b></span>
+          [/#if]
+        </div>  --]
+          [#list 1..scaleNumber as i]
+            [#local isChecked = (value?has_content && value == i)!false /]
+            <div class="col-md-1 text-center" style="display: flex; justify-content: center; align-items: center;">
+              <div class="fieldReference radioFlat ${inline?string('radio-inline', '')}">
+                <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${i}" [#if isChecked]checked[/#if] disabled />
+                <label for="${id}" class="radio-label disabled-label ${cssClassLabel}">
+                  ${i}
+                </label>
+              </div>
+            </div> 
+          [/#list]
+      [/#if]
+      <div class="clearfix"></div>
+    </div>
   </div>
 [/#macro]
 
