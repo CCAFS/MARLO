@@ -121,14 +121,14 @@
 <nav id="mainMenu">
 <div class="menuContent">
 	<div class="container">
-	  <ul class="hidden-md hidden-lg">
+	  <ul class="hidden-md hidden-lg hidden-xl visible-sm visible-xs">
 	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">Main menu</span>
 	     <ul class="subMenu">
 	       [@mainMenuList /]
 	     </ul>
 	   </li>
 	  </ul>
-	  <ul class="visible-md-block visible-lg-block visible-ul">
+	  <ul class="visible-md-block visible-lg-block visible-xl-block visible-ul">
 	    [@mainMenuList /]
 	  </ul>
 
