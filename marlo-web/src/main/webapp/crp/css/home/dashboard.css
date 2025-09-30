@@ -803,7 +803,7 @@ span.timelineControl:hover {
   }
 
   .containerTextMap .textMap{
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .containerImgMap{
@@ -972,24 +972,25 @@ span.timelineControl:hover {
 @media (max-width:1000px){
 
   .containerTextMap {
-    margin: 10px 35px 30px 40px;
+    margin: 10px 35px 25px 40px;
   }
 
   .containerTextMap .titleMap {
-    font-size: 1em;
+    font-size: 1.35em;
   }
 
   .containerTextMap .textMap {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .containerImgMap {
-    min-width: 150px;
+    min-width: 30%;
+    min-height: 200px;
   }
 
   .containerImgMap img {
     width: 119px;
-    margin-top: 8px;
+    margin-top: 2rem;
   }
 
   .circleMap {
@@ -1178,7 +1179,7 @@ span.timelineControl:hover {
 	}
 	
 	.containerImgMap img{
-		width: 100%;
+		width: 75%;
 	}
 	
 	
