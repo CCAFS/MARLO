@@ -20,7 +20,7 @@
 
       [@s.form action=actionName method="POST" cssClass=""]
 
-        <div id="projectDescription" class="borderBox">
+        <div id="projectDescription" class="borderBox" style="height: calc(100vw / 4); display: flex; align-items: center;">
           <br/>
           <div class="col-lg-1 col-xl-2"></div>
           <div class="col-md-12 col-sm-12 col-xs-12 col-lg-10 col-xl-8 ">
