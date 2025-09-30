@@ -200,8 +200,8 @@
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
             <li role="presentation" style="width:${tabWidth}" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
               <a href="#innovationSharing" role="tab" data-toggle="tab">
-                <span class="hidden-sm hidden-xs hidden-md visible-lg">[@s.text name="projectInnovations.tab.innovationSharing" /]</span>
-                <span class="visible-sm visible-xs visible-md hidden-lg">[@s.text name="projectInnovations.tab.innovationSharing.abbreviature" /]</span>
+                <span class="hidden-sm hidden-xs hidden-md visible-lg visible-xl">[@s.text name="projectInnovations.tab.innovationSharing" /]</span>
+                <span class="visible-sm visible-xs visible-md hidden-lg hidden-xl">[@s.text name="projectInnovations.tab.innovationSharing.abbreviature" /]</span>
               </a>
             </li>
           </ul>
