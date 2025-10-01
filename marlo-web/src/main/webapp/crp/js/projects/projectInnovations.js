@@ -1185,6 +1185,8 @@ const deliverablePartnersModule = (function () {
     // Get new users list
     var $newUsersBlock = $partnerUsersBlock.clone(true);
 
+    console.log($newUsersBlock);
+
     $newUsersBlock.find('input').each(function (_i, user) {
       if ((user.id).includes('_TEMPLATE_')) {
         user.id = user.id.replace('_TEMPLATE_', '');
@@ -1199,6 +1201,39 @@ const deliverablePartnersModule = (function () {
 
     // Show them
     $usersBlock.append($newUsersBlock.html());
+
+    // Update indexes
+    if (!isResponsible) {
+      updateIndexes();
+    }
+  }
+
+  function updateIndexes() {
+    $('.projectInnovationsPartners .deliverablePartnerItem').each(function (i, partner) {
+
+      // Update deliverable partner index
+      $(partner).setNameIndexes(1, i);
+
+      $(partner).find('.deliverableUserItem').each(function (j, user) {
+        var personID = $(user).find('input[type="checkbox"]').val();
+        var customID = "jsGenerated-" + i + "-" + j + "-" + personID;
+        // Update user index
+        $(user).setNameIndexes(2, j);
+
+        //Remove name _TEMPLATE_ from inputs
+        $(user).find('input').each(function(_i,e) {
+          e.name = (e.name).replace("_TEMPLATE_", "");
+          e.id = (e.id).replace("_TEMPLATE_", "");
+        });
+
+        // Update user checks/radios labels and inputs ids
+        $(user).find('input[type="checkbox"]').attr('id', customID);
+        $(user).find('label.checkbox-label').attr('for', customID);
+      });
+
+    });
+
+    updateInstitutionSelects()
   }
 
   function updateInstitutionSelects() {

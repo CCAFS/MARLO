@@ -5,7 +5,7 @@
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250828",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250925",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20250717"
 ] /]
@@ -199,7 +199,10 @@
 
             [#assign isInnovationRightsComplete = (action.isInnovationRightsComplete())!false /]
             <li role="presentation" style="width:${tabWidth}" class="[#if indexTab==5]active[/#if] col-md ${isInnovationRightsComplete?then('submitted','toSubmit')}">
-              <a href="#innovationSharing" role="tab" data-toggle="tab">[@s.text name="projectInnovations.tab.innovationSharing" /]</a>
+              <a href="#innovationSharing" role="tab" data-toggle="tab">
+                <span class="hidden-sm hidden-xs hidden-md visible-lg visible-xl">[@s.text name="projectInnovations.tab.innovationSharing" /]</span>
+                <span class="visible-sm visible-xs visible-md hidden-lg hidden-xl">[@s.text name="projectInnovations.tab.innovationSharing.abbreviature" /]</span>
+              </a>
             </li>
           </ul>
 
@@ -242,9 +245,9 @@
   [#list partners as partner]
     <div class="institution-${partner.institution.id}">
       [#assign usersList = (action.getUserList(partner.institution.id))![]]
-      <div class="users-1">
+      <div class="users-2">
         [#list usersList as user]
-          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=true /]
+          [@deliverableMacros.deliverableUserMacro element={} user=user index=user_index name="_TEMPLATE_innovation.partnerships[0].partnershipPersons" isUserChecked=false isResponsable=false /]
         [/#list]
       </div>
     </div>

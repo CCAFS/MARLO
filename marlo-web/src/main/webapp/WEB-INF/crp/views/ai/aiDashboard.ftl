@@ -19,49 +19,37 @@
     <div class="col-md-12">
 
       [@s.form action=actionName method="POST" cssClass=""]
-        [#--  <h3 class="headTitle">[@s.text name="userIdea.title" /]</h3>--]
 
-
-        <div id="projectDescription" class="borderBox">
+        <div id="projectDescription" class="borderBox" style="height: calc(100vw / 4); display: flex; align-items: center;">
           <br/>
-
-          <div class="row align-items-center">
-            <div class="col-md-1">
-              <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png"
-                   width="90" alt="AI Assistant"/>
+          <div class="col-lg-1 col-xl-2"></div>
+          <div class="col-md-12 col-sm-12 col-xs-12 col-lg-10 col-xl-8 ">
+            <div class="row align-items-center">
+              <div class="col-md-1 col-sm-2 col-xs-2 col-lg-1 col-xl-1">
+                <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png"
+                    width="90" alt="AI Assistant"/>
+              </div>
+              <div class="col-md-10 col-sm-9 col-xs-9 col-lg-10 col-xl-10" style="margin-left: 5%;">
+                <h4 class="modal-title">Hello everyone,</h4>
+                <br>
+                [@s.text name="userIdea.description" /]
+              </div>
             </div>
-            <div class="col-md-11">
-       				<h4 class="modal-title">Hello everyone,</h4>
-       				<br>
-            	[@s.text name="userIdea.description" /]
+            <br>
+            <div class="clearfix"></div>
+
+            [#-- Respuesta (editable) --]
+            <div class="form-group metadataElement-objectives modal-title">
+              [@customForm.textArea
+                name="userIdea.answer"
+                i18nkey="userIdea.question.default"
+                required=false
+                className="metadataValue"
+                editable=true
+              /]
             </div>
           </div>
-          <br>
-					<br>
-					<div class="clearfix"></div>
-
-          [#-- 
-          <div class="form-group metadataElement-description">
-            [@customForm.input
-              name="userIdea.question"
-              i18nkey="userIdea.question"
-              required=true
-              className="project-title metadataValue"
-              editable=false
-            /]
-          </div>
---]
-
-          [#-- Respuesta (editable) --]
-          <div class="form-group metadataElement-objectives modal-title">
-            [@customForm.textArea
-              name="userIdea.answer"
-              i18nkey="userIdea.question.default"
-              required=false
-              className="metadataValue"
-              editable=true
-            /]
-          </div>
+          <div class="col-lg-1 col-xl-2"></div>
         </div>
   			<div class="clearfix"></div>
 
