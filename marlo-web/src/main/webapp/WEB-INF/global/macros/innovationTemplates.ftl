@@ -509,7 +509,7 @@
               </div>
               <label for="">[@customForm.text name="projectInnovations.communications.indicateResponsablePartner" readText=!editable/]:</label>
               <div class="projectInnovationsPartners">
-                [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=1 /]
+                [@deliverableMacros.deliverablePartnerMacro element=(element.partnerships[0])!{} name="innovation.partnerships" index=0 defaultType=2 /]
               </div>
             </div>
           
