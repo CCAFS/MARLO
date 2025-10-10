@@ -193,7 +193,7 @@
 -->
 	<build>
 		<finalName>${project.artifactId}</finalName>
-		<defaultGoal>tomcat7:run</defaultGoal>
+		<defaultGoal>cargo:run</defaultGoal>
 
 		<plugins>
 			<plugin>
@@ -203,19 +203,22 @@
 			</plugin>
 			<!-- Tomcat plugin just to test compatibilities with Tomcat. -->
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
 				<configuration>
-					<port>8080</port>
-					<useTestClasspath>true</useTestClasspath>
-					<httpsPort>8443</httpsPort>
-					<keystoreFile>${project.basedir}/.keystore</keystoreFile>
-					<keystorePass>d5jtY68oBqWj</keystorePass>
-					<contextFile>tomcat/context.xml</contextFile>
-					<!-- tomcat 7 plugin should only be run on local desktop -->
-					<systemProperties>
-						<spring.profiles.active>dev</spring.profiles.active>
-					</systemProperties>
+					<container>
+						<containerId>tomcat9x</containerId>
+						<type>embedded</type>
+						<systemProperties>
+							<spring.profiles.active>dev</spring.profiles.active>
+						</systemProperties>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.servlet.https.port>8443</cargo.servlet.https.port>
+						</properties>
+					</configuration>
 				</configuration>
 			</plugin>
 			<plugin>

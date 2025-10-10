@@ -52,7 +52,7 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-		<tomcat-catalina.version>8.0.53</tomcat-catalina.version>
+	<tomcat-catalina.version>9.0.96</tomcat-catalina.version>
 		<jackson.version>2.12.7</jackson.version>
 		<jackson.version.databind>2.12.7.1</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
@@ -67,7 +67,8 @@
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
 		<javax.inject.version>1</javax.inject.version>
-		<tomcat.version>8.0.53</tomcat.version>
+		<tomcat-catalina.version>9.0.96</tomcat-catalina.version>
+		<tomcat.version>9.0.96</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -751,9 +752,24 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.tomcat.maven</groupId>
-					<artifactId>tomcat7-maven-plugin</artifactId>
-					<version>2.2</version>
+					<groupId>org.codehaus.cargo</groupId>
+					<artifactId>cargo-maven3-plugin</artifactId>
+					<version>1.10.10</version>
+					<configuration>
+						<container>
+							<containerId>tomcat9x</containerId>
+							<type>embedded</type>
+							<systemProperties>
+								<spring.profiles.active>dev</spring.profiles.active>
+							</systemProperties>
+						</container>
+						<configuration>
+							<properties>
+								<cargo.servlet.port>8080</cargo.servlet.port>
+								<cargo.tomcat.ajp.port>8009</cargo.tomcat.ajp.port>
+							</properties>
+						</configuration>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
