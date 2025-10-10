@@ -71,6 +71,21 @@
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<!-- Target Java version for the build -->
+		<java.version>17</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+
+		<!-- Dependencias javax removidas en Java 9+ -->
+		<jaxb.version>2.3.1</jaxb.version>
+		<jaxb-runtime.version>2.3.8</jaxb-runtime.version>
+		<javax.activation.version>1.1.1</javax.activation.version>
+		<javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+		<jaxws.version>2.3.1</jaxws.version>
+		<jaxws-rt.version>2.3.3</jaxws-rt.version>
+		<javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
+		
+		
 	</properties>
 	<developers>
 		<developer>
@@ -605,6 +620,66 @@
 				<artifactId>commons-collections4</artifactId>
 				<version>4.4</version>
 			</dependency>
+
+			<!-- ============================================ -->
+			<!-- Dependencias JAVAX para Java 9+ -->
+			<!-- Módulos removidos del JDK que ahora son externos -->
+			<!-- ============================================ -->
+
+			<!-- JAXB API (para XML binding) -->
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+
+			<!-- JAXB Implementation -->
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${jaxb-runtime.version}</version>
+			</dependency>
+
+			<!-- JAX-WS (Web Services) -->
+			<dependency>
+				<groupId>javax.xml.ws</groupId>
+				<artifactId>jaxws-api</artifactId>
+				<version>${jaxws.version}</version>
+			</dependency>
+
+			<!-- Annotations API -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation-api.version}</version>
+			</dependency>
+			<!-- JAX-WS Runtime Implementation -->
+			<dependency>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-rt</artifactId>
+				<version>${jaxws-rt.version}</version>
+			</dependency>
+
+			<!-- Activation API --> 
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>${javax.activation.version}</version>
+			</dependency>
+
+			<!-- SOAP with Attachments API -->
+			<dependency>
+				<groupId>javax.xml.soap</groupId>
+				<artifactId>javax.xml.soap-api</artifactId>
+				<version>${javax.xml.soap-api.version}</version>
+			</dependency>
+
+			<!-- SAAJ Implementation -->
+			<dependency>
+				<groupId>com.sun.xml.messaging.saaj</groupId>
+				<artifactId>saaj-impl</artifactId>
+				<version>1.5.3</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<reporting>
@@ -617,12 +692,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.9.0</version>
+				<version>3.18.0</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>utf-8</sourceEncoding>
 					<minimumTokens>100</minimumTokens>
-					<targetJdk>1.8</targetJdk>
+					<targetJdk>17</targetJdk>
 					<excludeRoots>
 						<excludeRoot>target/generated-sources/annotations</excludeRoot>
 					</excludeRoots>
@@ -646,10 +721,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.5.1</version>
+					<version>3.10.1</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
+						<!-- Use the release flag so the compiler enforces the target platform -->
+						<release>${java.version}</release>
 						<debug>true</debug>
 						<annotationProcessorPaths>
 							<path>
@@ -683,7 +758,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.3</version>
+					<version>3.3.2</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
