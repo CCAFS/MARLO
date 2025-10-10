@@ -416,7 +416,7 @@
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
-		<defaultGoal>tomcat7:run</defaultGoal>
+		<defaultGoal>cargo:run</defaultGoal>
 
 		<plugins>
 			<plugin>
@@ -426,20 +426,37 @@
 			</plugin>
 			<!-- Tomcat plugin just to test compatibilities with Tomcat. -->
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
 				<configuration>
-					<port>8080</port>
-					<useTestClasspath>true</useTestClasspath>
-					<httpsPort>8443</httpsPort>
-					<keystoreFile>${project.basedir}/.keystore</keystoreFile>
-					<keystorePass>d5jtY68oBqWj</keystorePass>
-					<contextFile>tomcat/context.xml</contextFile>
-					<!-- tomcat 7 plugin should only be run on local desktop -->
-					<systemProperties>
-						<spring.profiles.active>dev</spring.profiles.active>
-					</systemProperties>
-					<update>true</update>
+					<container>
+						<containerId>tomcat9x</containerId>
+						<type>embedded</type>
+						<systemProperties>
+							<spring.profiles.active>dev</spring.profiles.active>
+						</systemProperties>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.protocol>https</cargo.protocol>
+							<cargo.tomcat.connector.clientAuth>false</cargo.tomcat.connector.clientAuth>
+							<cargo.tomcat.connector.sslProtocol>TLS</cargo.tomcat.connector.sslProtocol>
+							<cargo.tomcat.connector.keystoreFile>${project.basedir}/.keystore</cargo.tomcat.connector.keystoreFile>
+							<cargo.tomcat.connector.keystorePass>d5jtY68oBqWj</cargo.tomcat.connector.keystorePass>
+							<cargo.tomcat.connector.keyAlias>tomcat</cargo.tomcat.connector.keyAlias>
+							<cargo.tomcat.httpSecure>true</cargo.tomcat.httpSecure>
+							<cargo.servlet.https.port>8443</cargo.servlet.https.port>
+							<cargo.jvmargs>
+								--add-opens=java.base/java.lang=ALL-UNNAMED
+								--add-opens=java.base/java.io=ALL-UNNAMED
+								--add-opens=java.base/java.util=ALL-UNNAMED
+								--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+								--add-opens=java.base/java.text=ALL-UNNAMED
+								--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+							</cargo.jvmargs>
+						</properties>
+					</configuration>
 				</configuration>
 			</plugin>
 			<plugin>
