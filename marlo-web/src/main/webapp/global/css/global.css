@@ -8112,7 +8112,7 @@ img.qaCommentStatus {
 }
 
 .headerQaPopup img {
-	width: 36px;
+	width: 20px;
 }
 
 #qaPopup,
@@ -8336,10 +8336,10 @@ img.qaCommentStatus {
 }
 
 .track_icon {
-	width: 15px;
+	width: 20px;
 	position: absolute;
-	top: 0px;
-	right: 10px;
+	top: 5px;
+	right: 5px;
 	cursor: pointer;
 }
 
@@ -8409,9 +8409,13 @@ img.qaOptions {
 	cursor: pointer;
 }
 
+img.qaOptions:hover {
+	filter: brightness(0.8);
+}
+
 img.qaOptionsComment {
 	width: 22px;
-	margin-left: 3px;
+	margin-left: 5px;
 	cursor: pointer;
 }
 
@@ -8424,8 +8428,8 @@ img.qaOptionsComment {
 	cursor: pointer;
 	object-fit: contain;
 	position: absolute;
-	right: 30px;
-	top: 4px;
+	right: 12px;
+	top: 2px;
 }
 
 .closeComment:hover {
