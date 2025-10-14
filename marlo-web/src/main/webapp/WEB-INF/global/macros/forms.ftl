@@ -1513,7 +1513,7 @@
   <div class="containerQaPopup" id="containerQaPopup-${customName}">  
     <div class="headerQaPopup">
       <div id="titleQaPopup" class="titleQaPopup"></div>
-      <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove.png"></div>
+      <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove_v2.png"></div>
       
     </div>
     <div id="qaPopup-${customName}" class="qaPopup" style="display:none">
@@ -1591,10 +1591,10 @@
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
         
         <div class="containerSentCommentBtn" title="Send"><img class="sentCommentBtn" src="${baseUrlCdn}/global/images/send.png"></div>
-        <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
-        <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        <img class="agreeCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/agree_v2.png" title="Agree">
+        <img class="disagreeCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/disagree_v2.png" title="Disagree">
         [#if action.hasSpecificities('feedback_clarification_needed_active') ]
-        <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        <img class="clarificationCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/question_v2.png" title="Clarification needed">
         [/#if]
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
