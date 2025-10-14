@@ -751,7 +751,7 @@
 						<configLocation>../configuration/marlo-checkstyle.xml</configLocation>
 					</configuration>
 				</plugin>
-				<plugin>
+				<plugin>	
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven3-plugin</artifactId>
 					<version>1.10.10</version>
@@ -765,8 +765,17 @@
 						</container>
 						<configuration>
 							<properties>
+								<!-- SOLO HTTP EN 8080 -->
 								<cargo.servlet.port>8080</cargo.servlet.port>
-								<cargo.tomcat.ajp.port>8009</cargo.tomcat.ajp.port>
+								<!-- JVM Args para Java 17 -->
+								<cargo.jvmargs>
+									--add-opens=java.base/java.lang=ALL-UNNAMED
+									--add-opens=java.base/java.io=ALL-UNNAMED
+									--add-opens=java.base/java.util=ALL-UNNAMED
+									--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+									--add-opens=java.base/java.text=ALL-UNNAMED
+									--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+								</cargo.jvmargs>
 							</properties>
 						</configuration>
 					</configuration>
