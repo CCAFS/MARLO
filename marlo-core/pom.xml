@@ -216,7 +216,7 @@
 					<configuration>
 						<properties>
 							<cargo.servlet.port>8080</cargo.servlet.port>
-							<cargo.servlet.https.port>8443</cargo.servlet.https.port>
+							<cargo.servlet.https.port>8080</cargo.servlet.https.port>
 						</properties>
 					</configuration>
 				</configuration>
