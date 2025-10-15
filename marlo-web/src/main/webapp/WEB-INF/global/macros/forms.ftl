@@ -1420,13 +1420,17 @@
     <!--  [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]  -->
     <div class="commentCheckContainer">
       <div class="commentContainer">
-        <div class="commentTitle"></div>
+        <div class="commentTitle">
+          <p class="commentTitleText"></p>
+          <p class="commentTitleDate"></p>
+        </div>
         <p class="commentReadonly"></p> 
         [#if action.hasSpecificities('highlight_comments_active') ]
           <img src="${baseUrlCdn}/global/images/tracking.png" class="track_icon" title="Track your comment">
         [/#if]
         <textarea class="editCommentReadonly form-control" rows="2" cols="50" style="display:none"></textarea>
         <div class="containerReactionComment" style="display:none">
+            <hr />
           <p class="reactionComment"></p>
         </div>
       </div>
@@ -1474,7 +1478,10 @@
 [#macro qaCommentClarificationBlock]
   <div class="_TEMPLATE_replyContainer" replyId="">
     <div class="_TEMPLATE_replyTextContainer">
-      <div class="_TEMPLATE_replyTitle"></div>
+      <div class="_TEMPLATE_replyTitle">
+        <p class="_TEMPLATE_replyTitleText"></p>
+        <p class="_TEMPLATE_replyTitleDate"></p>
+      </div>
       <p class="replyReadonly"></p>
       <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>

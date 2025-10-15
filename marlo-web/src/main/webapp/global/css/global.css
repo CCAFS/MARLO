@@ -8183,7 +8183,7 @@ img.qaCommentStatus {
 
 .commentCheckContainer {
 	display: flex;
-	padding-right: 28px;
+	padding-right: 15px;
 	padding-left: 15px;
 	position: relative;
 }
@@ -8230,8 +8230,8 @@ img.qaCommentStatus {
 }
 
 .replyContainer, .replyTextAreaContainer {
-	padding-left: 25px;
-	padding-right: 20px;
+	padding-left: 15px;
+	padding-right: 15px;
 	margin-bottom: 10px;
 }
 
@@ -8245,6 +8245,14 @@ img.qaCommentStatus {
 
 .commentTitle {
 	padding-right: 37px !important;
+}
+
+.commentTitle p, .replyTitle p {
+	margin: 0;
+}
+
+.commentTitle .commentTitleDate, .replyTitle .replyTitleDate {
+	font-weight: 300;
 }
 
 .commentTitle,
@@ -8262,18 +8270,27 @@ img.qaCommentStatus {
 .replyReadonly {
 	color: black;
 	font-size: 13px;
-	padding: 4px 10px;
+	padding: 6px 10px;
+	margin: 0;
 }
 
 .containerReactionComment {
 	width: 100%;
-	background-color: #ffffffa1;
+	padding: 4px 4px;
+}
+
+.containerReactionComment hr {
+	background-color: #000; 
+	color: #000; 
+	border-color: #000; 
+	margin: 0 6px 6px 6px;
 }
 
 .containerReactionComment .reactionComment {
 	margin: 0px;
-	font-size: 12px;
+	font-size: 10px;
 	padding: 0px 5px;
+	color: black;
 }
 
 .checkContainer {
@@ -8336,11 +8353,12 @@ img.qaCommentStatus {
 }
 
 .track_icon {
-	width: 20px;
+	width: 24px;
 	position: absolute;
 	top: 5px;
 	right: 5px;
 	cursor: pointer;
+	top: calc(calc(45px / 2)/2);
 }
 
 
