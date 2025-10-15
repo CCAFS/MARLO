@@ -1378,7 +1378,7 @@
   <div class="containerQaPopup" id="containerQaPopup-${customName}">  
     <div class="headerQaPopup">
       <div id="titleQaPopup" class="titleQaPopup"></div>
-      <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove.png"></div>
+      <div class="closeComment" name="${name}" title="Close comments" ><img src="${baseUrlCdn}/global/images/icon_remove_v2.png"></div>
       
     </div>
     <div id="qaPopup-${customName}" class="qaPopup" style="display:none">
@@ -1420,17 +1420,21 @@
     <!--  [@customForm.textArea name="New comment" required=false className="limitWords-100" editable=editable showTitle=showTitle /]  -->
     <div class="commentCheckContainer">
       <div class="commentContainer">
-        <div class="commentTitle"></div>
+        <div class="commentTitle">
+          <p class="commentTitleText"></p>
+          <p class="commentTitleDate"></p>
+        </div>
         <p class="commentReadonly"></p> 
         [#if action.hasSpecificities('highlight_comments_active') ]
           <img src="${baseUrlCdn}/global/images/tracking.png" class="track_icon" title="Track your comment">
         [/#if]
         <textarea class="editCommentReadonly form-control" rows="2" cols="50" style="display:none"></textarea>
         <div class="containerReactionComment" style="display:none">
+            <hr />
           <p class="reactionComment"></p>
         </div>
       </div>
-      <div style="position: absolute; bottom: 0px !important; right: -2.5px;" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
+      <div class="deleteCommentBtnContainer" title="Delete comment"><div class="deleteCommentBtn qaOptions glyphicon glyphicon-trash" ></div></div>
       <div style="position: absolute; top: 0px !important; right: -2.5px;"><img class="goBackCommentBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
 
@@ -1441,8 +1445,8 @@
     <div class="replyTextAreaContainer">
       <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable placeholder="A comment is needed to change the status" /]
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-direction: column; padding: 20px 0;">
-        <div style="margin-left: 10px;"><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+      <div class="replyTextAreaContainerOptions">
+        <div><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
         <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
       </div>
     </div>
@@ -1456,10 +1460,10 @@
         <img class="correctCommentBtn qaOptionsComment" title="Admit comment" src="${baseUrlCdn}/global/images/correct.png">
         
         <div class="containerSentCommentBtn" title="Send"><img class="sentCommentBtn" src="${baseUrlCdn}/global/images/send.png"></div>
-        <img class="agreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/agree.png" title="Agree">
-        <img class="disagreeCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/disagree.png" title="Disagree">
+        <img class="agreeCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/agree_v2.png" title="Agree">
+        <img class="disagreeCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/disagree_v2.png" title="Disagree">
         [#if action.hasSpecificities('feedback_clarification_needed_active') ]
-        <img class="clarificationCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/question.png" title="Clarification needed">
+        <img class="clarificationCommentBtn qaOptions" width="20px" commentId="" src="${baseUrlCdn}/global/images/question_v2.png" title="Clarification needed">
         [/#if]
         <img class="replyCommentBtn qaOptions" commentId="" src="${baseUrlCdn}/global/images/auto-reply.png" title="Reply">
       </div>
@@ -1474,9 +1478,12 @@
 [#macro qaCommentClarificationBlock]
   <div class="_TEMPLATE_replyContainer" replyId="">
     <div class="_TEMPLATE_replyTextContainer">
-      <div class="_TEMPLATE_replyTitle"></div>
+      <div class="_TEMPLATE_replyTitle">
+        <p class="_TEMPLATE_replyTitleText"></p>
+        <p class="_TEMPLATE_replyTitleDate"></p>
+      </div>
       <p class="replyReadonly"></p>
-      <div style="position: absolute; bottom: 0px !important; right: -30px;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
+      <div class="deleteCommentBtnContainer" style="right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
       <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
     <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>

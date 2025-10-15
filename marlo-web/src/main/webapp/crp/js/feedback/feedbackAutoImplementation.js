@@ -793,7 +793,7 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
-      textarea.prev().text('Reason you disagree:')
+      textarea.prev().text('Reason for disagreement:')
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -806,7 +806,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
-      textarea.prev().text('Reply:');
+      textarea.prev().text('Reason for agreement (optional):');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -815,11 +815,14 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
+      block.find('.containerReactionComment').css('background', '#a8eaab');
+      block.find('.goBackCommentBtn').hide();
+      block.find('.goBackReplyBtn').hide();
 
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
-      textarea.prev().text('Your comments about the clarification needed:');
+      textarea.prev().text('Where clarification is needed:');
       block.find('img.clarificationCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
@@ -839,8 +842,8 @@ function hideShowOptionButtons(block, status) {
       block.find('img.agreeCommentBtn').show();
       block.find('img.disagreeCommentBtn').show();
       block.find('img.clarificationCommentBtn').show();
-      block.find('.commentTitle').css('font-style', 'normal');
-      block.find('.commentTitle').css('font-weight', '600');
+      block.find('.commentTitle .commentTitleText').css('font-style', 'normal');
+      block.find('.commentTitle .commentTitleText').css('font-weight', '600');
       block.find('.commentReadonly').css('font-style', 'normal');
       block.find('.commentReadonly').css('font-weight', '600');
       block.find('.dismissCommentBtn').hide();
@@ -856,8 +859,8 @@ function hideShowOptionButtons(block, status) {
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.commentTitle').css('font-style', 'oblique');
-      block.find('.commentTitle').css('font-weight', '200');
+      block.find('.commentTitle .commentTitleText').css('font-style', 'oblique');
+      block.find('.commentTitle .commentTitleText').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
 
@@ -872,8 +875,8 @@ function hideShowOptionButtons(block, status) {
       block.find('.correctCommentBtn').show();
       block.find('.editCommentBtn').show();
       block.find('.dismissCommentBtn').show();
-      block.find('.commentTitle').css('font-style', 'oblique');
-      block.find('.commentTitle').css('font-weight', '200');
+      block.find('.commentTitle .commentTitleText').css('font-style', 'oblique');
+      block.find('.commentTitle .commentTitleText').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
       break;
@@ -886,8 +889,8 @@ function changeBackgroundColorBlocks(block, status) {
   block.find('.replyTextContainer').css('background', 'white');
   switch (status) {
     case '0':
-      block.find('.commentContainer').css('background', '#e8a9a4');
-      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
+      block.find('.commentContainer').css('background', '#FFDDDA');
+      block.find('.replyTextContainer').last().css('background', '#FFDDDA');
       break;
     case '1':
       block.find('.commentContainer').css('background', '#a8eaab');
@@ -982,7 +985,8 @@ function loadCommentsByUser(name) {
                 block.find('textarea[id="New comment"]').hide();
                 block.find('textarea[id="New comment"]').next().next('p.charCount').hide();
                 block.find('.commentContainer').show();
-                block.find('.commentContainer .commentTitle').html(`Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                block.find('.commentContainer .commentTitle .commentTitleText').html(`Comment by ${qaComments[i][j].userName}`);
+                block.find('.commentContainer .commentTitle .commentTitleDate').html(`${qaComments[i][j].date.replace(' ', ' at ')}`);
                 block.find('.commentContainer p.commentReadonly').html(`${qaComments[i][j].comment}`);
                 block.find('.commentContainer textarea.editCommentReadonly').html(`${qaComments[i][j].comment}`);
                 block.find('.sendCommentContainer').hide();
@@ -1029,10 +1033,11 @@ function loadCommentsByUser(name) {
 
                 if (qaComments[i][j].status) {
                   block.find('.containerReactionComment').show();
-                  block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status) + `${qaComments[i][j].approvalUserName} at ${qaComments[i][j].approvalDate}`);
+                  block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status) + `${qaComments[i][j].approvalUserName} | ${qaComments[i][j].approvalDate.replace(' ', ' at ')}`);
                 } if (qaComments[i][j].status == '') {
                   block.find('.containerReactionComment').hide();
-                  block.find('.commentContainer .commentTitle').html(`[Draft] - Comment by ${qaComments[i][j].userName} at ${qaComments[i][j].date}`);
+                  block.find('.commentContainer .commentTitle .commentTitleText').html(`[Draft] - Comment by ${qaComments[i][j].userName}`);
+                  block.find('.commentContainer .commentTitle .commentTitleDate').html(`${qaComments[i][j].date.replace(' ', ' at ')}`);
                 }
 
                 if (userCanLeaveComments == 'true') {
@@ -1143,7 +1148,8 @@ function loadCommentsByUser(name) {
                     newReply.attr('replyId', reply.id);
                     newReply.find('.deleteReplyBtn').attr('replyId', reply.id);
                     newReply.find('.goBackReplyBtn').attr('commentId', qaComments[i][j].commentId);
-                    newReply.find('.replyTextContainer .replyTitle').html(`Reply by ${reply.userName} at ${reply.date}`);
+                    newReply.find('.replyTextContainer .replyTitle .replyTitleText').html(`Reply by ${reply.userName}`);
+                    newReply.find('.replyTextContainer .replyTitle .replyTitleDate').html(`${reply.date.replace(' ', ' at ')}`);
                     newReply.find('.replyTextContainer p.replyReadonly').html(`${reply.text}`);
 
                     // If the reply status is not '1', '6' or '0', then show the reply text area
@@ -1169,7 +1175,7 @@ function loadCommentsByUser(name) {
                     // This is a special case for the reply status '1' (accepted)
                     // It allows the go back button to be displayed
                     if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
-                      newReply.find('.goBackReplyBtn').show();
+                      //newReply.find('.goBackReplyBtn').show();
                     }
 
                     repliesContainer.append(newReply);
@@ -1185,7 +1191,7 @@ function loadCommentsByUser(name) {
                   // This is one of the main reason to refactor all the code related to comments and replies
                   switch (qaComments[i][j].status) {
                     case '0':
-                      block.find('.replyTextContainer').last().css('background', '#e8a9a4');
+                      block.find('.replyTextContainer').last().css('background', '#FFDDDA');
                       break;
                     case '1':
                       block.find('.replyTextContainer').last().css('background', '#a8eaab');
@@ -1249,7 +1255,7 @@ function loadCommentsByUser(name) {
                   repliesContainer.find('.goBackReplyBtn').hide();
                   block.find('.goBackCommentBtn').hide();
                   if (qaComments[i][j].status == '1') {
-                    block.find('.goBackCommentBtn').show();
+                    //block.find('.goBackCommentBtn').show();
                   } else {
                     block.find('.goBackCommentBtn').hide();
                   }
@@ -1257,7 +1263,7 @@ function loadCommentsByUser(name) {
                   block.find('.goBackCommentBtn').hide();
                   repliesContainer.find('.goBackReplyBtn').hide();
                   if (qaComments[i][j].status == '1') {
-                    repliesContainer.find('.goBackReplyBtn').last().show();
+                    //repliesContainer.find('.goBackReplyBtn').last().show();
                   } else {
                     repliesContainer.find('.goBackReplyBtn').last().hide();
                   }
