@@ -793,7 +793,7 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
-      textarea.prev().text('Reason you disagree:')
+      textarea.prev().text('Reason for disagreement:')
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('div.deleteCommentBtn').hide();
@@ -806,7 +806,7 @@ function hideShowOptionButtons(block, status) {
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
-      textarea.prev().text('Reply:');
+      textarea.prev().text('Reason for agreement (optional):');
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -815,11 +815,14 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
+      block.find('.containerReactionComment').css('background', '#a8eaab');
+      block.find('.goBackCommentBtn').hide();
+      block.find('.goBackReplyBtn').hide();
 
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
-      textarea.prev().text('Your comments about the clarification needed:');
+      textarea.prev().text('Where clarification is needed:');
       block.find('img.clarificationCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
@@ -1172,7 +1175,7 @@ function loadCommentsByUser(name) {
                     // This is a special case for the reply status '1' (accepted)
                     // It allows the go back button to be displayed
                     if((qaComments[i][j].status == '1') && (repliesSort[replies.length-1].userID != userID)) {
-                      newReply.find('.goBackReplyBtn').show();
+                      //newReply.find('.goBackReplyBtn').show();
                     }
 
                     repliesContainer.append(newReply);
@@ -1252,7 +1255,7 @@ function loadCommentsByUser(name) {
                   repliesContainer.find('.goBackReplyBtn').hide();
                   block.find('.goBackCommentBtn').hide();
                   if (qaComments[i][j].status == '1') {
-                    block.find('.goBackCommentBtn').show();
+                    //block.find('.goBackCommentBtn').show();
                   } else {
                     block.find('.goBackCommentBtn').hide();
                   }
@@ -1260,7 +1263,7 @@ function loadCommentsByUser(name) {
                   block.find('.goBackCommentBtn').hide();
                   repliesContainer.find('.goBackReplyBtn').hide();
                   if (qaComments[i][j].status == '1') {
-                    repliesContainer.find('.goBackReplyBtn').last().show();
+                    //repliesContainer.find('.goBackReplyBtn').last().show();
                   } else {
                     repliesContainer.find('.goBackReplyBtn').last().hide();
                   }

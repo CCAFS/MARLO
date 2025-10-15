@@ -8188,31 +8188,21 @@ img.qaCommentStatus {
 	position: relative;
 }
 
-.deleteReplyBtn {
-	padding: 6px;
-	background-color: #dd5555;
-	color: white;
-	border-radius: 100px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: max-content;
+.deleteCommentBtnContainer {
+	position: absolute; 
+	bottom: 0px !important; 
+	right: 20px; 
+	font-size: 12px;
 }
 
-.deleteCommentBtn {
+.deleteReplyBtn, .deleteCommentBtn {
 	padding: 6px;
-	background-color: #dd5555;
-	color: white;
-	border-radius: 100px;
+	color: #dd5555;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	height: max-content;
-	/* position: absolute;
-  right: 0;
-  bottom: 0; */
 }
 
 .commentContainer {
@@ -8230,9 +8220,39 @@ img.qaCommentStatus {
 }
 
 .replyContainer, .replyTextAreaContainer {
-	padding-left: 15px;
+	position: relative;
+}
+
+.replyContainer, .replyTextAreaContainer {
+	padding-left: 60px;
 	padding-right: 15px;
 	margin-bottom: 10px;
+}
+
+.replyContainer::before, .replyTextAreaContainer::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  width: 40px;
+  height: 50px;
+  border-left: 3px solid #E3E3E3;
+  border-bottom: 3px solid #E3E3E3;
+  border-radius: 0 0 0 10px;
+}
+
+.replyTextAreaContainer .textArea.fieldReference {
+	background-color: #E3E3E3;
+	padding: 5px 10px;
+}
+
+.replyTextAreaContainer .replyTextAreaContainerOptions {
+	background-color: #E3E3E3;
+	display: flex; 
+	justify-content: space-evenly; 
+	align-items: center; 
+	flex-direction: column; 
+	padding: 25px 10px 25px 0;
 }
 
 .replyWarningMessage {
@@ -8379,7 +8399,6 @@ img.qaCommentStatus {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-left: 10px;
 	background-color: #0b7ba6;
 	border-radius: 50%;
 	align-self: center;
