@@ -1,0 +1,2 @@
+ALTER TABLE innovation_catalog_comments ADD innovation_id bigint(20) NULL;
+ALTER TABLE innovation_catalog_comments ADD CONSTRAINT innovation_catalog_comments_project_innovations_FK FOREIGN KEY (innovation_id) REFERENCES project_innovations(id) ON DELETE RESTRICT ON UPDATE RESTRICT;
