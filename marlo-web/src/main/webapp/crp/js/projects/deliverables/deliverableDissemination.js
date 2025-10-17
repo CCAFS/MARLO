@@ -1,7 +1,7 @@
 var $deliverableDisseminationUrl, $handleField, $doiField;
 
 function sanitizeDeliverableMetadataElements() {
-  const LIMIT = 4090; 
+  const LIMIT = 3900; 
   const selector =
     'input[name^="deliverable.metadataElements"][name$=".elementValue"], ' +
     'textarea[name^="deliverable.metadataElements"][name$=".elementValue"]';
