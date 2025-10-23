@@ -42,7 +42,9 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
 import org.cgiar.ccafs.marlo.data.model.DeliverablePublicationMetadata;
 import org.cgiar.ccafs.marlo.data.model.DeliverableShfrmPriorityAction;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -331,7 +333,8 @@ public class DeliverableValidator extends BaseValidator {
                  * InvalidFieldsMessages.EMPTYFIELD);
                  * } else
                  */
-                if (deliverable.getResponsiblePartnership().get(i).getInstitution() != null
+                if (deliverable.getResponsiblePartnership().get(i) != null
+                  && deliverable.getResponsiblePartnership().get(i).getInstitution() != null
                   && deliverable.getResponsiblePartnership().get(i).getInstitution().getId() != null
                   && deliverable.getResponsiblePartnership().get(i).getInstitution().getId().longValue() > 0) {
                   /* if (isManagingPartnerPersonRequerid) { */
@@ -455,11 +458,12 @@ public class DeliverableValidator extends BaseValidator {
              * }
              */
             // Deliverable Quality Check
-            if (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType() != null
-              && (deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId() != null
-                && deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId().intValue() == 51
-                || deliverable.getDeliverableInfo(action.getActualPhase()).getDeliverableType().getId()
-                  .intValue() == 74)) {
+            Phase phase = (action != null) ? action.getActualPhase() : null;
+
+            Long typeId = java.util.Optional.ofNullable(deliverable).map(d -> d.getDeliverableInfo(phase))
+              .map(DeliverableInfo::getDeliverableType).map(DeliverableType::getId).orElse(null);
+
+            if (typeId != null && (typeId == 51 || typeId == 74)) {
               if (deliverable.getQualityCheck() != null) {
                 if (deliverable.getQualityCheck().getQualityAssurance() == null) {
                   action.addMessage(action.getText("project.deliverable.v.qualityCheck.assurance"));
