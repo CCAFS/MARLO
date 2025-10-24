@@ -45,13 +45,12 @@
 						  <div class="text-center" style="margin-top: 35px;">
 						    <a href="https://aiccra-reports-generator.streamlit.app/" target="_blank" class="button-blue"
 						       style="display: inline-block;
-						              width: 65%;
+						              width: 100%;
 						              min-width: 280px;
 						              margin: 0 auto;
 						              padding: 5px 0;
 						              border-radius: 8px;
 						              font-weight: 600;
-						              font-size: 16px;
 						              letter-spacing: 0.2px;
 						              text-decoration: none;
 						              color: white;">
@@ -67,13 +66,12 @@
 						  <div class="text-center" style="margin-top: 35px;">
 						    <a href="https://chatbot-aiccra.streamlit.app/" target="_blank" class="button-blue"
 						       style="display: inline-block;
-						              width: 65%;
+						              width: 100%;
 						              min-width: 280px;
 						              margin: 0 auto;
 						              padding: 5px 0;
 						              border-radius: 8px;
 						              font-weight: 600;
-						              font-size: 16px;
 						              letter-spacing: 0.2px;
 						              text-decoration: none;
 						              color: white;">
