@@ -20,15 +20,22 @@
 
       [@s.form action=actionName method="POST" cssClass=""]
 
-        <div id="projectDescription" class="borderBox" style="height; display: flex; align-items: center;">
+        <div id="projectDescription" class="borderBox" style="height; display: flex; align-items: center;">        
           <br/>
           <div class="col-lg-1 col-xl-2"></div>
           <div class="col-md-12 col-sm-12 col-xs-12 col-lg-10 col-xl-8 ">
             <div class="row align-items-center">
+                         
+             <h4 style="text-align: center; margin-bottom: 25px;">
+      				AI-CCRA
+    				 </h4>
+    				 
               <div class="col-md-1 col-sm-2 col-xs-2 col-lg-1 col-xl-1">
                 <img src="${baseUrlCdn}/global/images/asistente-de-inteligencia-artificial.png"
                     width="90" alt="AI Assistant"/>
               </div>
+
+    
               <div class="col-md-10 col-sm-9 col-xs-9 col-lg-10 col-xl-10" style="margin-left: 5%;">
                 <h4 class="modal-title">Hello everyone,</h4>
                 <br>
@@ -59,7 +66,7 @@
 						  </div>
 						</div>
 						
-						<div class="simpleBox" style="margin-top: 45px;">
+						<div class="simpleBox" style="margin-top: 15px;">
 						  <p><strong>AICCRA Chatbot</strong></p>
 						  The AICCRA Chatbot is an interactive assistant designed to answer specific, focused questions about the program’s data, indicators, and results. It provides quick, accurate, and contextualized responses drawn from AICCRA’s internal knowledge base — helping users retrieve relevant information without navigating full reports or datasets. Ideal for program staff, partners, and stakeholders, the chatbot improves access to institutional knowledge and supports informed decision-making through a conversational and user-friendly interface.
 						  
@@ -80,9 +87,9 @@
 						  </div>
 						</div>
 
+						<hr style="margin: 20px 0; border: none; border-top: none solid #ddd;">
 
-
-            [#-- Respuesta (editable) --]
+            [#-- answer  --]
             <div class="form-group metadataElement-objectives modal-title">
               [@customForm.textArea
                 name="userIdea.answer"
@@ -98,7 +105,7 @@
   			<div class="clearfix"></div>
 
 
-        [#-- Botones & hidden inputs dentro del form --]
+        [#-- Buttons & hidden inputs inside the form --]
         [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
       [/@s.form]
 
