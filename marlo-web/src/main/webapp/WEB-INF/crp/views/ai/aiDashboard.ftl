@@ -74,9 +74,7 @@
 				          </a>
 				        </div>
 				      </div>
-				
-				      <!-- separator + textarea -->
-				      <hr style="margin: 24px 0; border: none; border-top: 1px solid #ddd;">
+							<br>
 				      					    
 							  <div class=" containerAlert alert-leftovers alertColorBackgroundWarning" id="containerAlert">
 							    <div class="containerLine alertColorWarning"></div>
@@ -98,16 +96,52 @@
 							      <p class="alertText">[@s.text name="userIdea.question.default" /]</p>
 							    </div>
 							  </div>
-				      
-				      <div class="form-group metadataElement-objectives modal-title" style="margin-top: 8px;">
-				        [@customForm.textArea
-				          name="userIdea.answer"
-				          i18nkey=" "
-				          required=false
-				          className="metadataValue"
-				          editable=true
-				        /]
-				      </div>
+
+								<div class="form-group metadataElement-objectives modal-title ai-textarea-group">
+								  <div class="ai-textarea-wrapper">
+								    [@customForm.textArea
+								      name="userIdea.answer"
+								      i18nkey=" "
+								      required=false
+								      className="metadataValue ai-textarea-field"
+								      editable=true
+								    /]
+								
+								    <!-- Inline Send Button -->
+								    <button type="button" class="button-send-inline" title="Send Idea" disabled>
+								      <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
+								      <span></span>
+								    </button>
+								  </div>
+								</div>
+
+
+								<script>
+								  document.addEventListener('DOMContentLoaded', function() {
+								    const textarea = document.querySelector('textarea[name="userIdea.answer"]');
+								    const inlineSendBtn = document.querySelector('.button-send-inline');
+								    const saveBtn = document.querySelector('button[name="save"]'); // from buttons-projects.ftl include
+								
+								    if (textarea && inlineSendBtn && saveBtn) {
+								      const toggleButton = () => {
+								        const hasText = textarea.value.trim().length > 0;
+								        inlineSendBtn.disabled = !hasText;
+								      };
+								
+								      // Link inline button to original Save button
+								      inlineSendBtn.addEventListener('click', function() {
+								        saveBtn.click();
+								      });
+								
+								      // Initial state + input listener
+								      toggleButton();
+								      textarea.addEventListener('input', toggleButton);
+								    }
+								  });
+								</script>
+
+
+
 				
 				    </div>
 				    <div class="col-lg-1 col-xl-2"></div>
