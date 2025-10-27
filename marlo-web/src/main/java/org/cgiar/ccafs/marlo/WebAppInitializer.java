@@ -47,6 +47,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
+    try {
     AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
     appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class, MarloShiroConfiguration.class,
       MarloBusinessIntelligenceConfiguration.class, MarloFlywayConfiguration.class);
@@ -55,7 +56,10 @@ public class WebAppInitializer implements WebApplicationInitializer {
     servletContext.addListener(contextLoaderListener);
 
     // Get the Actual Spring environment
-    String activeEnv = appContext.getEnvironment().getActiveProfiles()[0];
+    String activeEnv = "";
+    if(appContext.getEnvironment().getActiveProfiles().length > 0){
+      activeEnv = appContext.getEnvironment().getActiveProfiles()[0];
+    }
 
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
       servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
@@ -129,7 +133,10 @@ public class WebAppInitializer implements WebApplicationInitializer {
     FilterRegistration.Dynamic CORSFilter =
       servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
     CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
-
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new ServletException("Error en WebAppInitializer", e);
+    }
 
   }
 }

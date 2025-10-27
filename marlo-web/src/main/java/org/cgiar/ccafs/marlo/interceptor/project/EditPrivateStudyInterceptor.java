@@ -121,7 +121,7 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     // Crp session is empty
     if (crpID == null) {
-      String[] actionMap = ActionContext.getContext().getName().split("/");
+      String[] actionMap = ActionContext.getContext().getActionName().split("/");
       if (actionMap.length > 1) {
         String enteredCrp = actionMap[0];
         crpID = crpManager.findGlobalUnitByAcronym(enteredCrp).getId();

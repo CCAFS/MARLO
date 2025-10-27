@@ -7645,7 +7645,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
 
     try {
-      ServletActionContext.getContext().setLocale(locale);
+      //ServletActionContext.getContext().setLocale(locale);
+      if (this.request != null) {
+        this.request.getSession().setAttribute("locale", locale);
+      }
     } catch (Exception e) {
 
     }
