@@ -1,0 +1,43 @@
+.ai-lead { line-height: 1.6; color: #555; }
+
+.ai-card  { border-radius: 10px; padding: 16px; }
+
+.ai-card + .ai-card { margin-top: 16px; }
+
+.ai-card h5 { margin: 10px 0 6px; }
+
+.ai-btn  { display:inline-block; width:100%; min-width:280px; padding:8px 0;
+				               border-radius:6px; font-weight:600; letter-spacing:.2px; color:#fff;
+				               text-decoration:none; }
+				               
+#projectDescription label.editable {
+  display: none;
+}
+
+/* === BUTTONS === */
+/* Main button style for navigation links (Report Generator / Chatbot) */
+.ai-btn {
+  display: inline-block;
+  width: 100%;
+  min-width: 280px;
+  padding: 4px 0;                /* Updated padding */
+  border-radius: 6px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  color: #fff;
+  background-color: #40aad4;     /* Added button color */
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+/* Button hover effect for better feedback */
+.ai-btn:hover {
+  background-color: #349cc2;     /* Slightly darker on hover */
+}
+
+/* Wraps the button and adds spacing above it */
+.ai-btn-wrap {
+  margin-top: 20px;
+  text-align: left;
+}
