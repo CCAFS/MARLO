@@ -41,3 +41,84 @@
   margin-top: 20px;
   text-align: left;
 }
+
+/* === Custom "Save" button styling for AI section === */
+.buttons-content .button-save {
+  background-color: #40aad4 !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: 6px;
+  padding: 6px 12px !important;
+  font-weight: 600;
+  letter-spacing: .2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover effect */
+.buttons-content .button-save:hover:enabled {
+  background-color: #349cc2 !important;
+}
+
+/* Disabled state */
+.buttons-content .button-save:disabled,
+.buttons-content .button-save[disabled] {
+  background-color: #a5d6e2 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* === TEXTAREA + INLINE SEND BUTTON === */
+.ai-textarea-group {
+  margin-top: 16px;
+}
+
+.ai-textarea-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Textarea expands to available width */
+.ai-textarea-field {
+  flex-grow: 1;
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Send button (styled like AI buttons, slightly wider) */
+.button-send-inline {
+  background-color: #40aad4;
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 24px;              /* wider button */
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hover state */
+.button-send-inline:hover:not(:disabled) {
+  background-color: #349cc2;
+}
+
+/* Disabled state */
+.button-send-inline:disabled {
+  background-color: #a5d6e2;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Hide original Save button only on the AI-CCRA page */
+section.container .buttons-content .button-save,
+div.container .buttons-content .button-save,
+.buttons .buttons-content .button-save,
+.buttons-content button[name="save"] {
+  display: none !important;
+}
