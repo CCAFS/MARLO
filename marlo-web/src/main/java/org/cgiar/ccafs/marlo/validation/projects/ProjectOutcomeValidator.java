@@ -171,7 +171,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
     List<String> params = new ArrayList<String>();
     int counter = i + 1;
     params.add(String.valueOf(counter));
-    if (projectMilestone != null) {
+    if (projectMilestone != null && projectMilestone.getCrpMilestone() != null
+      && projectMilestone.getCrpMilestone().getId() != null) {
+
       projectMilestone
         .setCrpMilestone(crpMilestoneManager.getCrpMilestoneById(projectMilestone.getCrpMilestone().getId()));
       if (projectMilestone.getCrpMilestone().getYear() == action.getCurrentCycleYear()) {
@@ -201,7 +203,6 @@ public class ProjectOutcomeValidator extends BaseValidator {
               InvalidFieldsMessages.EMPTYFIELD);
           }
         }
-      
 
         if (!action.isReportingActive()) {
           if (!(this.isValidString(projectMilestone.getNarrativeTarget())

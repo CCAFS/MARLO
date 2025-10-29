@@ -15,7 +15,7 @@
             <column name="deliverable_id" not-null="true" />
         </many-to-one>
         <property name="elementValue" type="string">
-            <column name="element_value" length="16777215" />
+            <column name="element_value" sql-type="TEXT"/>
         </property>
         <property name="hide" type="java.lang.Boolean">
             <column name="hide" />

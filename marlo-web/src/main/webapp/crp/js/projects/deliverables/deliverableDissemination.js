@@ -1,5 +1,28 @@
 var $deliverableDisseminationUrl, $handleField, $doiField;
 
+function sanitizeDeliverableMetadataElements() {
+  const LIMIT = 3900; 
+  const selector =
+    'input[name^="deliverable.metadataElements"][name$=".elementValue"], ' +
+    'textarea[name^="deliverable.metadataElements"][name$=".elementValue"]';
+  $(selector).each(function () {
+    const v = $(this).val() || '';
+    if (v.length > LIMIT) $(this).val(v.substring(0, LIMIT));
+  });
+}
+
+// Se recorta cuando el usuario escribe/pega
+$(document).on(
+  'input change keyup',
+  'input[name^="deliverable.metadataElements"][name$=".elementValue"], textarea[name^="deliverable.metadataElements"][name$=".elementValue"]',
+  function () { sanitizeDeliverableMetadataElements(); }
+);
+
+// Se recorta justo antes de enviar
+$(document).on('click submit', '#A4NH_deliverable_save, #A4NH_deliverable_saveTop, form', function () {
+  sanitizeDeliverableMetadataElements();
+});
+
 let WOSInstitutions = '';
 $(document).ready(init);
 $(document).ready(function () {
@@ -973,6 +996,7 @@ function updateReadOnly() {
 }
 
 function addDisseminationEvents() {
+	sanitizeDeliverableMetadataElements();
 
   // 
   $("#WOSSyncBtn").on("click", function () {
@@ -1580,6 +1604,8 @@ function setMetadata(data) {
       displayExtraFieldUrl(false, true);
     }
   }
+	
+	sanitizeDeliverableMetadataElements();
 
 }
 
