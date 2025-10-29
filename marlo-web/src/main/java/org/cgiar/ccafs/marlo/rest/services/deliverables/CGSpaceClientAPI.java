@@ -71,7 +71,14 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
     try {
       // 🔹 Ensure we are not appending an invalid /metadata suffix (DSpace 7 no longer uses it)
-      String requestUrl = link.replace("/metadata", "");
+      // If link already points to the DSpace 7 core API, ensure no trailing /metadata.
+      // If it's the legacy /rest/ API (DSpace 6), keep /metadata.
+      String requestUrl = link;
+      if (requestUrl.contains("/server/api/core/items/")) {
+        // DSpace 7 style: never use /metadata suffix here
+        requestUrl = requestUrl.replace("/metadata", "");
+      }
+
       String metadataJson = xmlReaderConnectionUtil.getJsonRestClient(requestUrl);
 
       // Detect whether response is DSpace 7 (JSON Object) or DSpace 6 (JSON Array)
@@ -106,6 +113,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
               if (value.isEmpty()) {
                 continue;
               }
+              trySetDoi(key, value, jo);
 
               switch (key) {
                 case "dc.contributor.author":
@@ -167,7 +175,12 @@ public class CGSpaceClientAPI extends MetadataClientApi {
                   break;
 
                 case "cg.identifier.doi":
-                  jo.put("doi", value);
+                case "dc.identifier.doi":
+                  trySetDoi(key, value, jo);
+                  // jo.put("doi", value);
+                  if (StringUtils.containsIgnoreCase(value, "hdl.handle.net/")) {
+                    jo.put("handle", value.trim());
+                  }
                   break;
 
                 case "cg.journal":
@@ -334,7 +347,6 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     return metadataModel;
   }
 
-
   /**
    * with the link get the id and make a connection to get the Metadata id connnection and format into the rest url
    * 
@@ -414,6 +426,37 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     // to return NOT_FOUND, indicating an invalid or unsupported URL.
     // ==========================================================
     return "";
+  }
+
+  /**
+   * Tries to extract a DOI from various keys/values and stores it in the JSON object.
+   * It saves the DOI in two ways:
+   * - "doiPlain": only the 10.xxxx/... part (útil para usos internos)
+   * - "doi": always as a full URL https://doi.org/10.xxxx/... (esto activa setDoi(...) para enriquecer)
+   */
+  private void trySetDoi(String key, String value, JSONObject jo) {
+    if (StringUtils.isBlank(value)) {
+      return;
+    }
+
+    boolean likelyDoiField = "cg.identifier.doi".equalsIgnoreCase(key) || "dc.identifier.doi".equalsIgnoreCase(key)
+      || key.toLowerCase().startsWith("dc.identifier") || key.toLowerCase().startsWith("cg.identifier")
+      || key.toLowerCase().contains("doi");
+
+    if (!likelyDoiField) {
+      return;
+    }
+
+    String doiRegex = "(?i)(?:https?://(?:dx\\.)?doi\\.org/)?(10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+)";
+    Matcher m = Pattern.compile(doiRegex).matcher(value);
+    if (m.find()) {
+      String plain = m.group(1); // 10.xxxx/....
+      String fullUrl = "https://doi.org/" + plain;
+
+      jo.put("doiPlain", plain);
+      jo.put("doi", fullUrl);
+      jo.put("persistentUrl", fullUrl);
+    }
   }
 
 }
