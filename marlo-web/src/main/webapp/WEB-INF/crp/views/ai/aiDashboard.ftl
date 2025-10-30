@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "AI-CRA" /]
+[#assign title = "AI-CCRA" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]
 [#assign customJS = ["${baseUrlCdn}/global/js/autoSave.js"] /]
