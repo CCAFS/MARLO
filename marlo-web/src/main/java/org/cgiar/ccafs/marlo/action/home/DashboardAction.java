@@ -209,11 +209,12 @@ public class DashboardAction extends BaseAction {
       AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
         .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
 
-
-      for (String permission : info.getStringPermissions()) {
-        if (permission.contains("project")) {
-          for (int i = 0; i > permission.split(":").length; i++) {
-            // System.out.println(permission.split(":")[i]);
+      if (info != null) {
+        for (String permission : info.getStringPermissions()) {
+          if (permission.contains("project")) {
+            for (int i = 0; i > permission.split(":").length; i++) {
+              // System.out.println(permission.split(":")[i]);
+            }
           }
         }
       }
