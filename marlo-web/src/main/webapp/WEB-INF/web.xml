@@ -6,29 +6,33 @@
         version="3.0">
  <display-name>Struts Blank</display-name>
 
- <filter>
+  <filter>
+    <filter-name>hibernateSessionFilter</filter-name>
+    <filter-class>org.springframework.orm.hibernate5.support.OpenSessionInViewFilter</filter-class>
+    <init-param>
+        <param-name>sessionFactoryBeanName</param-name>
+        <param-value>sessionFactory</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+      <filter-name>hibernateSessionFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <filter-name>struts2</filter-name>
     <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
-</filter>
-<filter-mapping>
-    <filter-name>struts2</filter-name>
-    <url-pattern>/*</url-pattern>
-</filter-mapping>
+  </filter>
+  <filter-mapping>
+      <filter-name>struts2</filter-name>
+      <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
-<!-- <filter>
-    <filter-name>hibernateSessionFilter</filter-name>
-    <filter-class>org.cgiar.ccafs.marlo.security.HibernateSessionFilter</filter-class>
-</filter>
-<filter-mapping>
-    <filter-name>hibernateSessionFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-</filter-mapping> -->
-
-<listener>
-  <listener-class>
-    org.cgiar.ccafs.marlo.security.SessionCounter
-  </listener-class>
-</listener>
+  <listener>
+    <listener-class>
+      org.cgiar.ccafs.marlo.security.SessionCounter
+    </listener-class>
+  </listener>
 
  <resource-ref>
       <description>MARLO Connection</description>

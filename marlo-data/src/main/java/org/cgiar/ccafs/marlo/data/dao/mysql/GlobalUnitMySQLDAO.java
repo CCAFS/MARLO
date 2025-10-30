@@ -25,11 +25,15 @@ import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Named
+// @Named
+@Repository
 public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> implements GlobalUnitDAO {
 
-  @Inject
+  @Autowired
   public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
@@ -63,6 +67,7 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
   }
 
   @Override
+  @Transactional
   public GlobalUnit find(long id) {
     return super.find(GlobalUnit.class, id);
 
@@ -70,6 +75,7 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
 
   @Override
   public List<GlobalUnit> findAll() {
+    System.out.println("*****FDIAZ - findAll - DAO");
     String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
     List<GlobalUnit> list = super.findAll(query);
     if (list.size() > 0) {

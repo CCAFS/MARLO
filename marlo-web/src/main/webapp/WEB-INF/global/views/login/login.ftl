@@ -36,11 +36,6 @@
         <label>[@s.text name="login.participating.platforms"/]:</label>    
         <div class="login-logos-container">
           <ul>
-          [#attempt] 
-            [#assign crpList = action.getCrpCategoryList("1") /]
-          [#recover]
-            [#assign crpList = [] /]
-          [/#attempt]
           [#if crpList?has_content]
             [#list crpList as crp]
               [@crpItem element=crp /]
@@ -59,11 +54,6 @@
         <label>[@s.text name="login.participating.centers"/]:</label>
         <div class="login-logos-container">
           <ul>
-          [#attempt] 
-            [#assign centerList = action.getCrpCategoryList("5") /]
-          [#recover]
-            [#assign centerList = [] /]
-          [/#attempt]
           [#if centerList?has_content]
             [#list centerList as center]
               [@crpItem element=center /]
@@ -80,11 +70,6 @@
         <label>[@s.text name="login.platforms"/]:</label>
         <div class="login-logos-container">
           <ul>
-            [#attempt] 
-              [#assign platformsList = action.getCrpCategoryList("3") /]
-            [#recover]
-              [#assign platformsList = [] /]
-            [/#attempt]
             [#if platformsList?has_content]
               [#list platformsList as platform]
                 [@crpItem element=platform /]

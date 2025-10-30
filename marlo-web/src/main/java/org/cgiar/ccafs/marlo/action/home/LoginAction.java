@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -77,7 +78,11 @@ public class LoginAction extends BaseAction {
 
   private final CustomParameterManager customParameterManager;
 
-  @Inject
+  private List<GlobalUnit> crpList;
+  private List<GlobalUnit> centerList;
+  private List<GlobalUnit> platformsList;
+
+  // @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
     CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
     super(config);
@@ -89,9 +94,18 @@ public class LoginAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    System.out.println("*****FDIAZ - execute");
+    crpList = getCrpCategoryList("1");
+    // centerList = new ArrayList<>();
+    // platformsList = new ArrayList<>();
+    platformsList = getCrpCategoryList("5");
+    centerList = getCrpCategoryList("3");
     return SUCCESS;
   }
 
+  public List<GlobalUnit> getCrpList() { return crpList; }
+  public List<GlobalUnit> getCenterList() { return centerList; }
+  public List<GlobalUnit> getPlatformsList() { return platformsList; }
 
   public String getCrp() {
     return crp;
@@ -103,6 +117,7 @@ public class LoginAction extends BaseAction {
   }
 
   private void getLoginMessages() {
+    System.out.println("*****FDIAZ - getLoginMessages");
     Session session = SecurityUtils.getSubject().getSession();
     if (session.getAttribute(APConstants.LOGIN_MESSAGE) != null) {
       switch ((String) session.getAttribute(APConstants.LOGIN_MESSAGE)) {
@@ -158,7 +173,7 @@ public class LoginAction extends BaseAction {
   }
 
   public String login() {
-
+    System.out.println("*****FDIAZ - login - LoginAction");
 
     if (user != null) {
 
@@ -213,7 +228,7 @@ public class LoginAction extends BaseAction {
   }
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
-
+    System.out.println("*****FDIAZ  - login2 - LoginAction");
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {

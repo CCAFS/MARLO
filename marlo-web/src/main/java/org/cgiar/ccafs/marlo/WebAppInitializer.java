@@ -64,6 +64,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
       servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
     removeSessionFromUrlFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
+
+    FilterRegistration.Dynamic CORSFilter =
+      servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
+    CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
+    
     /**
      * Need to use the DelegatingFilterProxy to allow the SessionFactory to be injected.
      */
@@ -92,11 +97,16 @@ public class WebAppInitializer implements WebApplicationInitializer {
     if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_API)) {
 
       /** This should ignore the /api/* mapping **/
-      FilterRegistration.Dynamic struts2Filter =
-        servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
-      struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
-      struts2Filter.setInitParameter("targetFilterLifecycle", "true");
-      struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+      // FilterRegistration.Dynamic struts2Filter =
+      //   servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
+      // struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
+      // struts2Filter.setInitParameter("targetFilterLifecycle", "true");
+      // struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+      FilterRegistration.Dynamic strutsFilter = 
+        servletContext.addFilter("StrutsFilter", new StrutsPrepareAndExecuteFilter());
+      // En Struts 6, se recomienda usar scanning de anotaciones en struts.xml
+      strutsFilter.setInitParameter("targetFilterLifecycle", "true");
+      strutsFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
     }
 
     if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)) {
@@ -130,9 +140,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
     }
     // End Check Spring Profile filters
-    FilterRegistration.Dynamic CORSFilter =
-      servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
-    CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
     } catch (Exception e) {
       e.printStackTrace();
       throw new ServletException("Error en WebAppInitializer", e);

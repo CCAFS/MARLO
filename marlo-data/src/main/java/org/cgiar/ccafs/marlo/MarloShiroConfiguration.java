@@ -18,9 +18,15 @@ package org.cgiar.ccafs.marlo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.authentication.DBAuthenticator;
+import org.cgiar.ccafs.marlo.security.authentication.LDAPAuthenticator;
+import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,6 +36,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MarloShiroConfiguration {
 
+  @Bean
+  public APCustomRealm apCustomRealm(DBAuthenticator dbAuthenticator,
+                                      LDAPAuthenticator ldapAuthenticator,
+                                      UserManager userManager,
+                                      APConfig apConfig) {
+      return new APCustomRealm(dbAuthenticator, ldapAuthenticator, userManager, apConfig);
+  }
 
   /**
    * The realm @APCustomRealm is discovered and initialized by Spring classpath scanning and is injected with other
@@ -37,8 +50,10 @@ public class MarloShiroConfiguration {
    * securityManager when notified by an @ApplicationEvent.
    */
   @Bean(name = "securityManager")
-  public DefaultWebSecurityManager securityManager() {
+  public DefaultWebSecurityManager securityManager(APCustomRealm apCustomRealm) {
     DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+    securityManager.setRealm(apCustomRealm);
+    SecurityUtils.setSecurityManager(securityManager);
     return securityManager;
   }
 

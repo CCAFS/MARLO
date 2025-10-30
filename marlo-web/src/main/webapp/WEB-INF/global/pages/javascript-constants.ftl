@@ -32,7 +32,7 @@
   var upKeepActive= ${((upKeepActive)!false)?string};
   var projectPreSetting= ${((project.projectInfo.projectEditLeader)!false)?string('0','1')};
   var currentUserName = "${(currentUser.composedCompleteName)!}";
-  var phaseID = ${(actualPhase.id)!'""'};
+  var phaseID = "${(actualPhase.id)!''?js_string}";
 
   
   var currentCenterID=${(centerID)!'-1'};

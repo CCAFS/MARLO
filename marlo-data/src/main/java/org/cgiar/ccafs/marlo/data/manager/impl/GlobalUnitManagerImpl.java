@@ -17,6 +17,9 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.GlobalUnitDAO;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,12 +29,12 @@ import javax.inject.Named;
 /**
  * @author Christian Garcia
  */
-@Named
+@Service
 public class GlobalUnitManagerImpl implements GlobalUnitManager {
 
 	private GlobalUnitDAO globalUnitDAO;
 
-	@Inject
+	@Autowired
 	public GlobalUnitManagerImpl(GlobalUnitDAO globalUnitDAO) {
 		this.globalUnitDAO = globalUnitDAO;
 
@@ -56,7 +59,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 
 	@Override
 	public List<GlobalUnit> findAll() {
-
+		System.out.println("*****FDIAZ - findAll - Impl");
 		return this.globalUnitDAO.findAll();
 
 	}
@@ -74,6 +77,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public GlobalUnit getGlobalUnitById(long globalUnitID) {
 
 		return this.globalUnitDAO.find(globalUnitID);

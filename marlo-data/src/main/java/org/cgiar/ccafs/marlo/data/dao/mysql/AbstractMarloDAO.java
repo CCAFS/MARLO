@@ -31,15 +31,19 @@ import org.hibernate.query.Query;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
  * @author Héctor F. Tobón R. - CIAT/CCAFS
  * @author Hermes Jimenez - CIAT/CCAFS
  */
+@Repository
 public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AbstractMarloDAO.class);
+  @Autowired
   private final SessionFactory sessionFactory;
 
   public AbstractMarloDAO(SessionFactory sessionFactory) {
@@ -171,6 +175,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return the object populated.
    */
   public T find(Class<T> clazz, ID id) {
+    System.out.println("*****FDIAZ - find - AbstractMarloDAO");
     T obj = sessionFactory.getCurrentSession().get(clazz, id);
 
     return obj;

@@ -157,6 +157,7 @@ import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This action aims to define general functionalities that are going to be used
@@ -302,11 +303,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * Use field injection in BaseAction only. Subclasses should use constructor
    * injection.
    */
-  @Inject
+  @Autowired
   private AuditLogManager auditLogManager;
-  @Inject
+  @Autowired
   private InstitutionManager institutionManager;
-  @Inject
+  @Autowired
   private GlobalUnitTypeManager globalUnitTypeManager;
   private String basePermission;
   protected boolean cancel;
@@ -324,81 +325,81 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // (generally is a project leader)
   private boolean switchSession;
   protected APConfig config;
-  @Inject
+  @Autowired
   private PhaseManager phaseManager;
 
-  @Inject
+  @Autowired
   private ClusterTypeManager clusterTypeManager;
 
   private CenterOutputsOutcomeManager centerOutputsOutcomeManager;
 
-  @Inject
+  @Autowired
   private ProjectLp6ContributionManager projectLp6ContributionManager;
 
-  @Inject
+  @Autowired
   private CrpClusterKeyOutputManager crpClusterKeyOutputManager;
 
-  @Inject
+  @Autowired
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
-  @Inject
+  @Autowired
   ActivityManager activityManager;
-  @Inject
+  @Autowired
   private CrpMilestoneManager crpMilestoneManager;
   private Long crpID;
 
   // Managers
-  @Inject
+  @Autowired
   private GlobalUnitManager crpManager;
 
-  @Inject
+  @Autowired
   private CrpPpaPartnerManager crpPpaPartnerManager;
 
-  @Inject
+  @Autowired
   private CrpProgramLeaderManager crpProgramLeaderManager;
 
-  @Inject
+  @Autowired
   private CrpProgramManager crpProgramManager;
 
-  @Inject
+  @Autowired
   private FeedbackRolesPermissionManager feedbackRolesPermissionManager;
 
-  @Inject
+  @Autowired
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
 
-  @Inject
+  @Autowired
   private CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager;
 
-  @Inject
+  @Autowired
   private CustomParameterManager customParameterManager;
 
-  @Inject
+  @Autowired
   private DeliverableTypeRuleManager deliverableTypeRuleManager;
 
-  @Inject
+  @Autowired
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
 
-  @Inject
+  @Autowired
   private DeliverableCrpOutcomeManager deliverableCrpOutcomeManager;
 
-  @Inject
+  @Autowired
   private DeliverableInfoManager deliverableInfoManager;
 
-  @Inject
+  @Autowired
   private ProjectPolicyManager projectPolicyManager;
 
-  @Inject
+  @Autowired
   private ProjectExpectedStudyInfoManager projectExpectedStudyInfoManager;
 
-  @Inject
+  @Autowired
   private ProjectPolicyInfoManager projectPolicyInfoManager;
 
-  @Inject
+  @Autowired
   private ProjectInnovationInfoManager projectInnovationInfoManager;
 
-  @Inject
+  @Autowired
   private ProjectInnovationSharedManager projectInnovationSharedManager;
-  @Inject
+  @Autowired
   private ExpectedStudyProjectManager expectedStudyProjectManager;
 
   // Variables
@@ -412,38 +413,38 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private GlobalUnit currentCrp;
   protected boolean delete;
 
-  @Inject
+  @Autowired
   private DeliverableManager deliverableManager;
 
-  @Inject
+  @Autowired
   private ProjectPolicyManager policyManager;
   private boolean draft;
 
-  @Inject
+  @Autowired
   private SrfTargetUnitManager targetUnitManager;
 
-  @Inject
+  @Autowired
   private LocElementTypeManager locElementTypeManager;
 
-  @Inject
+  @Autowired
   private ProjectBudgetManager projectBudgetManager;
 
-  @Inject
+  @Autowired
   private DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
 
-  @Inject
+  @Autowired
   private ShfrmPriorityActionManager shfrmPriorityActionManager;
-  @Inject
+  @Autowired
   private ProjectPartnerPersonManager partnerPersonManager;
-  @Inject
+  @Autowired
   private UserManager userManager;
 
-  @Inject
+  @Autowired
   private FileDBManager fileDBManager;
 
   private boolean fullEditable; // If user is able to edit all the form.
 
-  @Inject
+  @Autowired
   private FundingSourceManager fundingSourceManager;
 
   private HashMap<String, String> invalidFields;
@@ -461,27 +462,27 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean lessonsActive;
 
-  @Inject
+  @Autowired
   private LiaisonUserManager liaisonUserManager;
 
   protected boolean next;
   private Map<String, Parameter> parameters;
   private boolean planningActive;
   private int planningYear;
-  @Inject
+  @Autowired
   private ProjectComponentLessonManager projectComponentLessonManager;
-  @Inject
+  @Autowired
   private ProjectManager projectManager;
 
-  @Inject
+  @Autowired
   private ProjectOutcomeManager projectOutcomeManager;
 
-  @Inject
+  @Autowired
   private PowbSynthesisManager powbSynthesisManager;
 
-  @Inject
+  @Autowired
   private LiaisonInstitutionManager liaisonInstitutionManager;
-  @Inject
+  @Autowired
   private DeliverableTypeManager deliverableTypeManager;
   private boolean reportingActive;
 
@@ -489,51 +490,51 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected HttpServletRequest request;
 
-  @Inject
+  @Autowired
   private BudgetTypeManager budgetTypeManager;
 
   /**
    * *******************************************************
    * CENTER VARIABLES *******************************************************
    */
-  @Inject
+  @Autowired
   private ICenterTopicManager topicService;
 
-  @Inject
+  @Autowired
   private ICenterImpactManager impactService;
 
-  @Inject
+  @Autowired
   private ICenterOutcomeManager outcomeService;
-  @Inject
+  @Autowired
   private ICenterOutputManager outputService;
 
-  @Inject
+  @Autowired
   private ICenterSectionStatusManager secctionStatusService;
 
-  @Inject
+  @Autowired
   private ICenterCycleManager cycleService;
 
-  @Inject
+  @Autowired
   private ICenterProjectManager projectService;
 
-  @Inject
+  @Autowired
   private ICenterDeliverableManager deliverableService;
 
-  @Inject
+  @Autowired
   private ICenterSectionStatusManager sectionStatusService;
-  @Inject
+  @Autowired
   private ICapacityDevelopmentService capacityDevelopmentService;
 
-  @Inject
+  @Autowired
   private ProjectExpectedStudyManager projectExpectedStudyManager;
 
-  @Inject
+  @Autowired
   private ProjectInnovationManager projectInnovationManager;
 
-  @Inject
+  @Autowired
   private ButtonGuideContentManager buttonGuideContentManager;
 
-  @Inject
+  @Autowired
   private DeliverableClusterParticipantManager deliverableClusterParticipantManager;
 
   private String centerSession;
@@ -552,10 +553,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private boolean saveable; // If user is able to see the save, cancel, delete
   // buttons
-  @Inject
+  @Autowired
   private SectionStatusManager sectionStatusManager;
   // Config Variables
-  @Inject
+  @Autowired
   protected BaseSecurityContext securityContext;
 
   private Map<String, Object> session;
@@ -565,26 +566,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private String url;
 
-  @Inject
+  @Autowired
   private UserRoleManager userRoleManager;
-  @Inject
+  @Autowired
   private RoleManager roleManager;
-  @Inject
+  @Autowired
   private IpProgramManager ipProgramManager;
-  @Inject
+  @Autowired
   private IpLiaisonInstitutionManager ipLiaisonInstitutionManager;
   private List<Map<String, Object>> usersToActive;
-  @Inject
+  @Autowired
   private GlobalUnitProjectManager globalUnitProjectManager;
-  @Inject
+  @Autowired
   private ReportSynthesisManager reportSynthesisManager;
-  @Inject
+  @Autowired
   private MarloMessageManager marloMessageManager;
-  @Inject
+  @Autowired
   private ProjectPartnerPersonManager projectPartnerPersonManager;
-  @Inject
+  @Autowired
   private ProjectPartnerManager projectPartnerManager;
-  @Inject
+  @Autowired
   private DeliverableTraineesIndicatorManager deliverableTraineesIndicatorManager;
 
   private StringBuilder validationMessage = new StringBuilder();
@@ -2994,6 +2995,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * test the functionality)
    */
   public List<GlobalUnit> getCrpCategoryList(String category) {
+    System.out.println("*****FDIAZ - getCrpCategoryList");
     List<GlobalUnit> globalUnits = this.crpManager.findAll().stream()
       .filter(c -> c.isMarlo() && c.getGlobalUnitType().getId().intValue() == Integer.parseInt(category))
       .collect(Collectors.toList());
