@@ -14,7 +14,11 @@
 
     <defaultCache
             eternal="false"
-            overflowToDisk="false" />
+            overflowToDisk="false">
+      <sizeOfPolicy
+            maxDepth="0"
+            maxDepthExceededBehavior="abort"/>
+    </defaultCache>
             
     
   <cache
@@ -23,20 +27,32 @@
     eternal="false"
     timeToIdleSeconds="3600"
     timeToLiveSeconds="3600">
+    <sizeOfPolicy
+            maxDepth="0"
+            maxDepthExceededBehavior="abort"/>
   </cache>
 
   <cache
     name="org.hibernate.cache.spi.UpdateTimestampsCache"
     maxBytesLocalHeap="3M"
     eternal="true">
+    <sizeOfPolicy
+            maxDepth="0"
+            maxDepthExceededBehavior="abort"/>
   </cache>
     
     <cache name="org.cgiar.ccafs.marlo.data.model.Parameter"
            timeToLiveSeconds="5000">
+      <sizeOfPolicy
+            maxDepth="0"
+            maxDepthExceededBehavior="abort"/>
     </cache>
     
     <cache name="org.cgiar.ccafs.marlo.data.model.CustomParameter"
            timeToLiveSeconds="5000">
+      <sizeOfPolicy
+            maxDepth="0"
+            maxDepthExceededBehavior="abort"/>
     </cache>
     
 </ehcache>
