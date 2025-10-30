@@ -43,6 +43,7 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSAuthor;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitution;
 import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitutionToHandle;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 
 import java.io.FileNotFoundException;
@@ -50,6 +51,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -105,6 +108,8 @@ public class DeliverableMetadataByWOS extends BaseAction {
   private InstitutionManager institutionManager;
   private PhaseManager phaseManager;
   private DeliverableAltmetricInfoManager deliverableAltmetricInfoManager;
+  private RestConnectionUtil xmlReaderConnectionUtil;
+
 
   @Inject
   public DeliverableMetadataByWOS(APConfig config, DeliverableAffiliationManager deliverableAffiliationManager,
@@ -356,55 +361,57 @@ public class DeliverableMetadataByWOS extends BaseAction {
    *         if the data could not be retrieved.
    */
   private JsonElement readWOSDataFromClarisa2() {
-    String[] sources = {this.link, this.handle};
-    JsonElement element = null;
+    if (!this.hasSpecificities(APConstants.HANDLE_WOS_SERVICE_ACTIVE)) {
+      return null;
+    }
 
-    for (String source : sources) {
-      // Skip empty or null sources
-      if (source == null || source.isEmpty()) {
+    final RestConnectionUtil rest = new RestConnectionUtil();
+    final String[] sources = {this.link, this.handle};
+
+    for (String raw : sources) {
+      if (StringUtils.isBlank(raw)) {
         continue;
       }
 
-      // Check if the WOS service is active
-      if (!this.hasSpecificities(APConstants.HANDLE_WOS_SERVICE_ACTIVE)) {
-        break;
-      }
-
       try {
-        // Build the Clarisa URL using the configured pattern and current source
-        String urlStr = config.getClarisaWOSLink2().replace("{1}", source);
-        URL clarisaUrl = new URL(urlStr);
+        // --- STEP 1: Normalize and detect if it's a full URL ---
+        final String trimmed = raw.trim();
+        final boolean isUrl = trimmed.startsWith("http://") || trimmed.startsWith("https://");
 
-        // Build the Authorization header using Basic Auth
-        String loginData = config.getClarisaWOSUser() + ":" + config.getClarisaWOSPassword();
-        String encoded = Base64.encodeBase64String(loginData.getBytes());
+        // --- STEP 2: Encode the query parameter value if it's a URL ---
+        String valueForParam = isUrl ? URLEncoder.encode(trimmed, StandardCharsets.UTF_8.name()) : trimmed; // el handle
+        String urlStr = config.getClarisaWOSLink2().replace("{1}", valueForParam);
 
-        HttpURLConnection conn = (HttpURLConnection) clarisaUrl.openConnection();
-        conn.setRequestProperty("Authorization", "Basic " + encoded);
+        urlStr = urlStr.replaceFirst("^http://", "https://");
 
-        // Proceed only if response code is successful (under 300)
-        if (conn.getResponseCode() < 300) {
-          try (InputStreamReader reader = new InputStreamReader(conn.getInputStream())) {
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject = parser.parse(reader).getAsJsonObject();
+        // --- STEP 3: Force HTTPS to avoid 'UnsupportedSchemeException' if config uses http:// ---
+        String body = rest.getJsonRestClient(urlStr);
 
-            // Transform the result into the expected handle object
-            element = this.transformObjectToHandle(jsonObject);
-            break; // Exit loop on success
-          } catch (FileNotFoundException fnfe) {
-            // Clarisa responded with 200 but no content was found
-            element = JsonNull.INSTANCE;
-            break;
-          }
+        // --- STEP 4: Execute REST call using the internal MARLO RestConnectionUtil ---
+        if (StringUtils.isBlank(body) && isUrl && trimmed.contains("hdl.handle.net/")) {
+          String shortHandle = trimmed.replace("https://hdl.handle.net/", "").replace("http://hdl.handle.net/", "");
+          String urlShort = config.getClarisaWOSLink2().replace("{1}", shortHandle);
+          urlShort = urlShort.replaceFirst("^http://", "https://");
+          body = rest.getJsonRestClient(urlShort);
         }
 
+        if (StringUtils.isBlank(body)) {
+          continue;
+        }
+
+        // --- STEP 5: Fallback case ---
+        JsonElement parsed = JsonParser.parseString(body);
+        if (parsed != null && parsed.isJsonObject()) {
+          JsonElement transformed = this.transformObjectToHandle(parsed.getAsJsonObject());
+          return transformed != null ? transformed : parsed;
+        }
+        return parsed != null ? parsed : JsonNull.INSTANCE;
+
       } catch (Exception e) {
-        // Log and continue with the next source if any exception occurs
-        LOG.error("Error retrieving data from Clarisa using value: " + source);
+        LOG.error("Clarisa WOS fetch failed for [{}]: {}", raw, e.getMessage());
       }
     }
-
-    return element;
+    return JsonNull.INSTANCE;
   }
 
 
