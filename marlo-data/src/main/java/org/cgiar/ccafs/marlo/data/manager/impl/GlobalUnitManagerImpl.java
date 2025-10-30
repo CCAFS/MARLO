@@ -41,6 +41,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
+	@Transactional
 	public List<GlobalUnit> crpUsers(String emai) {
 		return this.globalUnitDAO.crpUsers(emai);
 	}
@@ -77,7 +78,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public GlobalUnit getGlobalUnitById(long globalUnitID) {
 
 		return this.globalUnitDAO.find(globalUnitID);

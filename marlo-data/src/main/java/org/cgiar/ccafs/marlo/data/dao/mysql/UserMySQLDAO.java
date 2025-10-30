@@ -30,18 +30,21 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-@Named
+@Repository
 public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDAO {
 
   public static Logger LOG = LoggerFactory.getLogger(UserMySQLDAO.class);
 
-  @Inject
+  @Autowired
   public UserMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
@@ -54,6 +57,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  @Transactional
   public String getEmailByUsername(String username) {
     String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
     Query<String> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, String.class);
@@ -87,6 +91,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  @Transactional
   public User getUser(String email) {
     // validate the email on lower charters
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
