@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * @author Hernán David Carvajal
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Component
+@Named
 public class BaseSecurityContext {
 
   private static Logger LOG = LoggerFactory.getLogger(BaseSecurityContext.class);
@@ -44,7 +44,7 @@ public class BaseSecurityContext {
    * 
    * @return an APCustomRealm object.
    */
-  @Autowired
+  // @Autowired
   public Realm getRealm() {
 
 

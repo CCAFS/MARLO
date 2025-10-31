@@ -65,7 +65,7 @@ import org.springframework.stereotype.Component;
  * @author Chirstian David Garcia
  * @author Hermes Jimenez
  */
-@Component("realm")
+@Named("realm")
 public class APCustomRealm extends AuthorizingRealm {
 
   // Logger
@@ -75,7 +75,7 @@ public class APCustomRealm extends AuthorizingRealm {
   private final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
   private final APConfig config;
 
-  @Autowired
+  // @Autowired
   private final UserManager userManager;
 
   private final Authenticator dbAuthenticator;
@@ -84,7 +84,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
   private Cache<Object, AuthorizationInfo> authorizationCache;
 
-  @Autowired
+  @Inject
   public APCustomRealm(@Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator,
     UserManager userManager, APConfig apConfig) {
     super(new MemoryConstrainedCacheManager());
