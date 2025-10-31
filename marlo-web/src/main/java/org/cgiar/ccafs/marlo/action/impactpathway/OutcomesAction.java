@@ -176,7 +176,7 @@ public class OutcomesAction extends BaseAction {
   private List<Portfolio> portfolios;
   private List<GeneralStatus> generalStatuses;
 
-  @Inject
+  // @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,

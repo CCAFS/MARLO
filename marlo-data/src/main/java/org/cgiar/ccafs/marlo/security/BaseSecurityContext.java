@@ -25,6 +25,8 @@ import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Contains the security methods based framework Apache shiro
@@ -32,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Hernán David Carvajal
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Named
+@Component
 public class BaseSecurityContext {
 
   private static Logger LOG = LoggerFactory.getLogger(BaseSecurityContext.class);
@@ -42,6 +44,7 @@ public class BaseSecurityContext {
    * 
    * @return an APCustomRealm object.
    */
+  @Autowired
   public Realm getRealm() {
 
 

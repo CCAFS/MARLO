@@ -66,6 +66,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  @Transactional
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
     List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();

@@ -78,7 +78,7 @@
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#-- Show custom value --]
       <p class="${allowTextEditor?string('decodeHTML trumbowyg-editor', '')}">
-        [#if (customValue?has_content)!false]${customValue?replace('\n', '<br>')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
+        [#if (customValue?has_content)!false]${customValue?markup_string?replace('\n', '\\lbr\\g')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
       </p>
     [/#if] 
   </div>
@@ -165,7 +165,9 @@
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
     <label for="${name}" class="${isMainTitle?string('label--2','')}">
-      [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
+      [#-- Normaliza labelTitle si es markup_output antes de comparar --]
+      [#local labelText = (labelTitle?is_markup_output)?then(labelTitle?no_esc, labelTitle)]
+      [#if labelText?string?trim != ""]${labelText}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
     </label>

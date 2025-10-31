@@ -53,6 +53,8 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -63,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Chirstian David Garcia
  * @author Hermes Jimenez
  */
-@Named("realm")
+@Component("realm")
 public class APCustomRealm extends AuthorizingRealm {
 
   // Logger
@@ -73,6 +75,7 @@ public class APCustomRealm extends AuthorizingRealm {
   private final AllowAllCredentialsMatcher credentialsMatcher = new AllowAllCredentialsMatcher();
   private final APConfig config;
 
+  @Autowired
   private final UserManager userManager;
 
   private final Authenticator dbAuthenticator;
@@ -81,7 +84,7 @@ public class APCustomRealm extends AuthorizingRealm {
 
   private Cache<Object, AuthorizationInfo> authorizationCache;
 
-  @Inject
+  @Autowired
   public APCustomRealm(@Named("DB") Authenticator dbAuthenticator, @Named("LDAP") Authenticator ldapAuthenticator,
     UserManager userManager, APConfig apConfig) {
     super(new MemoryConstrainedCacheManager());
