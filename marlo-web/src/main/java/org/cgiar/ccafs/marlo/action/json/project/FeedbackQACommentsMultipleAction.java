@@ -172,7 +172,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                               ? reply.getUser().getFirstName() + " " + reply.getUser().getLastName() : "");
                         replyMap.put("userID",
                           (reply.getUser() != null && reply.getUser().getId() != null) ? reply.getUser().getId() : "");
-                        replyMap.put("date", (reply.getCommentDate() != null) ? reply.getCommentDate().toString() : "");
+                        replyMap.put("date", formatDate(reply.getCommentDate()));
 
                         try {
                           if (reply.getFeedbackStatus() != null) {
@@ -219,9 +219,8 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                           replyMap.put("approvalUserName",
                             reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName());
                         }
-                        if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
-                          String dateString = reply.getApprovalDate().toString();
-                          replyMap.put("approvalDate", dateString);
+                        if (reply.getApprovalDate() != null) {
+                          replyMap.put("approvalDate", formatDate(reply.getApprovalDate()));
                         }
 
                         replyList.add(replyMap);
@@ -316,14 +315,14 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     }
                   }
                   if (comment.getApprovalDate() != null && comment.getApprovalDate().toString() != null) {
-                    String dateString = comment.getApprovalDate().toString();
+                    String dateString = formatDate(comment.getApprovalDate());
                     fieldsMap.put("approvalDate", dateString);
                   } else {
                     /*
                      * Get info from draft action
                      */
                     if (comment.getDraftActionDate() != null && comment.getDraftActionDate().toString() != null) {
-                      String dateString = comment.getDraftActionDate().toString();
+                      String dateString = formatDate(comment.getDraftActionDate());
                       fieldsMap.put("approvalDate", dateString);
                     } else {
                       fieldsMap.put("approvalDate", "");
@@ -339,7 +338,7 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     fieldsMap.put("editorUsername", "");
                   }
                   if (comment.getEditionDate() != null && comment.getEditionDate().toString() != null) {
-                    String dateString = comment.getEditionDate().toString();
+                    String dateString = formatDate(comment.getEditionDate());
                     fieldsMap.put("editionDate", dateString);
                   } else {
                     fieldsMap.put("editionDate", "");
@@ -351,14 +350,14 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
                     fieldsMap.put("fieldDescription", "");
                   }
                   if (comment.getCommentDate() != null && comment.getCommentDate().toString() != null) {
-                    String dateString = comment.getCommentDate().toString();
+                    String dateString = formatDate(comment.getCommentDate());
                     fieldsMap.put("date", dateString);
                   } else {
                     fieldsMap.put("date", "");
                   }
                   // draft message
                   if (comment.getDraftActionDate() != null && comment.getDraftActionDate().toString() != null) {
-                    String dateString = comment.getDraftActionDate().toString();
+                    String dateString = formatDate(comment.getDraftActionDate());
                     fieldsMap.put("draftActionDate", dateString);
                   } else {
                     fieldsMap.put("draftActionDate", "");
@@ -521,6 +520,14 @@ public class FeedbackQACommentsMultipleAction extends BaseAction {
     return SUCCESS;
   }
 
+
+  private String formatDate(Object date) {
+    if (date == null) {
+      return "";
+    }
+    String dateString = date.toString();
+    return dateString.replaceFirst("\\.0+$", "");
+  }
 
   public List<Map<String, Object>> getComments() {
     return comments;
