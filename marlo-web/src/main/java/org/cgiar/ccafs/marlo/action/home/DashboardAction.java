@@ -34,7 +34,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.SecurityContextHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
