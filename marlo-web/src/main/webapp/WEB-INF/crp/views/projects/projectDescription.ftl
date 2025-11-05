@@ -278,7 +278,7 @@
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
-                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
+                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
                       </ul>
                     </li>
                   [/#list]
