@@ -76,6 +76,9 @@ public class MetadataByLink extends BaseAction {
     }
 
     metadata = metadataClientApi.getMetadata(handleUrl);
+    if (metadata == null) {
+      return NOT_FOUND;
+    }
     return SUCCESS;
   }
 
