@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * @author Hernán David Carvajal
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@Named
+@Component
 public class BaseSecurityContext {
 
   private static Logger LOG = LoggerFactory.getLogger(BaseSecurityContext.class);

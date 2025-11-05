@@ -26,6 +26,8 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ import javax.inject.Named;
 /**
  * @author Christian Garcia
  */
-@Named
+@Service
 public class ProjectManagerImpl implements ProjectManager {
 
 
@@ -49,7 +51,7 @@ public class ProjectManagerImpl implements ProjectManager {
   // Managers
 
 
-  @Inject
+  @Autowired
   public ProjectManagerImpl(ProjectDAO projectDAO, UserRoleDAO userRoleDAO, RoleDAO roleDAO,
     GlobalUnitDAO globalUnitDAO) {
     this.projectDAO = projectDAO;

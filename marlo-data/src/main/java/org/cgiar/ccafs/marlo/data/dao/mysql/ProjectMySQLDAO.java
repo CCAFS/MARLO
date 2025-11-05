@@ -306,7 +306,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
     if (super.getTemTableUserId() == userId) {
       list = super.findCustomQuery(builder.toString());
     } else {
-      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+      list = super.excuteStoreProcedure("getPermissions", builder.toString(), Long.valueOf(userId).intValue());
     }
 
     return list;

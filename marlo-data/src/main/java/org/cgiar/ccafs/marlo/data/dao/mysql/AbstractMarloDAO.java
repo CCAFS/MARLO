@@ -23,7 +23,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+
 import org.hibernate.FlushMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
@@ -33,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian David García O. - CIAT/CCAFS
@@ -108,9 +113,11 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * 
    * @param sqlQuery is a string representing an SQL query.
    */
-
+  @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
     try {
+      LOG.debug("*****FDIAZ - storeProcedure1: " + storeProcedure);
+      LOG.debug("*****FDIAZ - sqlQuery1: " + sqlQuery);
       NativeQuery<Map<String, Object>> queryProcd =
         this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
       queryProcd.setFlushMode(FlushMode.COMMIT);
@@ -122,6 +129,30 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       return result;
     } catch (Exception e) {
       LOG.error(" error " + e.getMessage());
+      e.printStackTrace();
+      return null;
+    }
+
+  }
+
+  @Transactional
+  public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery, int userId) {
+    try {
+      LOG.debug("*****FDIAZ - storeProcedure2: " + storeProcedure);
+      LOG.debug("*****FDIAZ - sqlQuery2: " + sqlQuery);
+      Session session = sessionFactory.getCurrentSession();
+        StoredProcedureQuery spQuery = session.createStoredProcedureQuery(storeProcedure);
+      spQuery.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+      spQuery.setParameter(1, userId);
+      spQuery.execute();
+      NativeQuery<Map<String, Object>> query = this.sessionFactory.getCurrentSession().createSQLQuery(sqlQuery);
+      query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+      query.setFlushMode(FlushMode.COMMIT);
+      List<Map<String, Object>> result = query.list();
+      return result;
+    } catch (Exception e) {
+      LOG.error(" error " + e.getMessage());
+      e.printStackTrace();
       return null;
     }
 

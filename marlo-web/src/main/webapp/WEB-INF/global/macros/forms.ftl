@@ -33,7 +33,7 @@
           <nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>
         [#else]
           [#if isTargetValueNumber]
-            ${((customValue)!'0')?number?string(",##0")}
+            ${((customValue?markup_string)!'0')?number?string(",##0")}
           [#else]
             ${customValue}
           [/#if]
@@ -167,7 +167,7 @@
     <label for="${name}" class="${isMainTitle?string('label--2','')}">
       [#-- Normaliza labelTitle si es markup_output antes de comparar --]
       [#local labelText = (labelTitle?is_markup_output)?then(labelTitle?no_esc, labelTitle)]
-      [#if labelText?string?trim != ""]${labelText}:[/#if][@req required=required && editable /]
+      [#if labelText?markup_string?trim != ""]${labelText}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
     </label>
@@ -211,7 +211,7 @@
             
             [#assign key][@s.property value="${name}"/][/#assign]
             [#assign customValue][#if !stringKey][@s.property value="${listName}[${key}]"/][#else][@s.property value="${listName}['${key}']"/][/#if][/#assign]
-            [#if (key == "-1") || (customValue == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
+            [#if (key?markup_string == "-1") || (customValue?markup_string == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
             [#if customValue?has_content]
               ${customValue}
             [#else]
@@ -219,7 +219,7 @@
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [#else]
                 
-               [#if key!="-1"]
+               [#if key?markup_string!="-1"]
                   ${key}  
                [/#if]
 
