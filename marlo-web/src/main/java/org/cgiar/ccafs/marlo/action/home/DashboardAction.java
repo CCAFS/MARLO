@@ -34,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.SecurityContextHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,10 +48,12 @@ import javax.inject.Inject;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Component
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
@@ -76,7 +79,7 @@ public class DashboardAction extends BaseAction {
   private List<StudyHomeDTO> myStudies = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
 
-  @Inject
+  // @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
