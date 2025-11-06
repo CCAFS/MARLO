@@ -84,7 +84,7 @@ public class MarloDatabaseConfiguration {
     // config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
 
     config.setMaximumPoolSize(40);
-    config.setMinimumIdle(20);
+    config.setMinimumIdle(5);
     config.setIdleTimeout(5000);
     config.setConnectionTimeout(900000);
     // config.setConnectionTestQuery("SELECT 1");
