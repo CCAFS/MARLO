@@ -57,7 +57,6 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
-  @Transactional
   public String getEmailByUsername(String username) {
     String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
     Query<String> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, String.class);
@@ -66,7 +65,6 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
-  @Transactional
   public List<Map<String, Object>> getPermission(int userId, String crpId) {
     List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();
@@ -74,7 +72,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     if (super.getTemTableUserId() == userId) {
       list = super.findCustomQuery(builder.toString());
     } else {
-      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+      list = super.excuteStoreProcedure("getPermissions", builder.toString(), userId);
     }
     if (crpId == null) {
       list = list.stream().filter(c -> c.get("permission").toString().contains("api:")).collect(Collectors.toList());
@@ -92,7 +90,6 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
-  @Transactional
   public User getUser(String email) {
     // validate the email on lower charters
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
