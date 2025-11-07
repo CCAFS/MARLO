@@ -40,6 +40,7 @@ public class AiAction extends BaseAction {
   // Front-end
   private List<UserIdea> userIdeas;
   private UserIdea userIdea;
+  private String userEmail;
 
   @Inject
   public AiAction(APConfig config, UserIdeaManager userIdeaManager) {
@@ -57,6 +58,12 @@ public class AiAction extends BaseAction {
         userIdea = userIdeas.get(0);
       } else {
         userIdea = new UserIdea();
+      }
+
+      if (this.getCurrentUser() != null && this.getCurrentUser().getEmail() != null) {
+        this.userEmail = this.getCurrentUser().getEmail();
+      } else {
+        this.userEmail = null;
       }
     } catch (Exception e) {
       LOG.error("Error loading UserIdeas", e);
@@ -123,5 +130,11 @@ public class AiAction extends BaseAction {
 
   public void setUserIdea(UserIdea userIdea) {
     this.userIdea = userIdea;
+  }
+  public String getUserEmail() {
+    return userEmail;
+  }
+  public void setUserEmail(String userEmail) {
+    this.userEmail = userEmail;
   }
 }
