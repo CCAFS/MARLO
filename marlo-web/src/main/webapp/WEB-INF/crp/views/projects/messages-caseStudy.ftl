@@ -9,7 +9,7 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${expectedStudy.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${expectedStudy.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${expectedStudy.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="caseStudyID" value=caseStudyID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
@@ -73,5 +73,6 @@
   [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
+
 
 

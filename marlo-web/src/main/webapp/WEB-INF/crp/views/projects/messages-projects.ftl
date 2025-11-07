@@ -19,7 +19,7 @@
     [#else]
       <p>
         [@s.text name="message.historyVersion" ]
-          [@s.param]<span>${audit.element.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${audit.element.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${audit.element.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name=audit.name value=audit.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
         [/@s.text]
