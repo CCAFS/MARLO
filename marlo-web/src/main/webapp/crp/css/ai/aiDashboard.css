@@ -20,7 +20,7 @@
   display: inline-block;
   width: 100%;
   min-width: 280px;
-  padding: 4px 0;                /* Updated padding */
+  padding: 6px 0;                /* Updated padding */
   border-radius: 6px;
   font-weight: 600;
   letter-spacing: .2px;
