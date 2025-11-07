@@ -724,7 +724,7 @@ public class DeliverableValidator extends BaseValidator {
 
           // Commissioning study validator
           if (!(this.isValidString(dInfo.getCommissioningStudy())
-            && this.wordCount(dInfo.getActivityDescription()) <= 15)) {
+            && this.wordCount(dInfo.getCommissioningStudy()) <= 15)) {
             action.addMessage(action.getText("MELIA commissioning Study"));
             action.addMissingField("MELIA commissioning Study");
             action.getInvalidFields().put("input-deliverable.deliverableInfo.commissioningStudy",
