@@ -56,7 +56,7 @@
 				        <p class="ai-lead" style="margin: 6px 0 0;">
 				          [@s.text name="userIdea.reportGeneratorNarrative" /]
 				        </p>
-				          [#assign reportGeneratorUrl = "https://aiccra-reports-generator.streamlit.app/" /]
+				          [#assign reportGeneratorUrl = "https://oxnrkcntlheycdgcnilexrwp4i0tucqz.lambda-url.us-east-1.on.aws/ui" /]
 				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam /]
 
 				        <div class="text-start" style="margin-top: 20px;">
