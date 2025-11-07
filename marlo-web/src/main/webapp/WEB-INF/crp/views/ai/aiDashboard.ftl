@@ -135,7 +135,7 @@
 								    /]
 								
 								    <!-- Inline Send Button -->
-								    <button type="button" class="button-send-inline" title="Send Idea" disabled>
+								    <button type="button" class="button-send-inline" title="Send Comment" disabled>
 								      <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
 								      <span></span>
 								    </button>
