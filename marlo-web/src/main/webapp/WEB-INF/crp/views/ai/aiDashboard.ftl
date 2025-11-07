@@ -1,4 +1,5 @@
 [#ftl]
+[#setting url_escaping_charset='UTF-8']
 [#assign title = "AI-CCRA" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]
@@ -45,6 +46,8 @@
 				        </div>
 				      </div>
 				
+				      [#assign emailQueryParam = (userEmail?? && userEmail?has_content)?then("?user_email=" + (userEmail?url?replace("%40", "@")), "") /]
+
 				      <!-- Card: Report Generator -->
 				      <div class="simpleBox ai-card">
 				        <p class="ai-lead" style="margin-top: 7px;">
@@ -53,8 +56,11 @@
 				        <p class="ai-lead" style="margin: 6px 0 0;">
 				          [@s.text name="userIdea.reportGeneratorNarrative" /]
 				        </p>
+				          [#assign reportGeneratorUrl = "https://aiccra-reports-generator.streamlit.app/" /]
+				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam /]
+
 				        <div class="text-start" style="margin-top: 20px;">
-				          <a href="https://aiccra-reports-generator.streamlit.app/" target="_blank" class="button-blue ai-btn">
+				          <a href="${reportGeneratorHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to Report Generator" /]
 				          </a>
 				        </div>
@@ -69,7 +75,10 @@
 				        	[@s.text name="userIdea.ChatbotNarrative" /]
 				        </p>
 				        <div class="text-start" style="margin-top: 20px;">
-				          <a href="https://chatbot-aiccra.streamlit.app/" target="_blank" class="button-blue ai-btn">
+				          [#assign chatbotUrl = "https://chatbot-aiccra.streamlit.app/" /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam /]
+
+				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to AICCRA chatbot" /]
 				          </a>
 				        </div>
