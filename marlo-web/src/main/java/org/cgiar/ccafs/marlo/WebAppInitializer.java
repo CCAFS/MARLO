@@ -85,7 +85,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
      * Need to use the DelegatingFilterProxy to allow the shiroFilter to be instantiated properly.
      */
     FilterRegistration.Dynamic shiroFilter =
-      servletContext.addFilter("shiroFilter", new DelegatingFilterProxy("shiroFilter"));
+      servletContext.addFilter("shiroFilterFactoryBean", new DelegatingFilterProxy("shiroFilterFactoryBean"));
     shiroFilter.setInitParameter("targetFilterLifecycle", "true");
     shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
 
