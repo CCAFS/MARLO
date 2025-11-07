@@ -548,11 +548,13 @@
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
     <label for="${id}" class="radio-label ${cssClassLabel}">
-      [#if labelValue?contains(":")]
-        [#local labelArray = labelValue?split(":") /]
+      [#-- Si labelValue es markup_output, convertirlo a texto plano --]
+      [#local labelString = (labelValue?is_markup_output)?then(labelValue?markup_string, labelValue)]
+      [#if labelString?contains(":")]
+        [#local labelArray = labelString?split(":") /]
         <b>${labelArray[0]}</b>:${labelArray[1]}
       [#else]
-        ${labelValue}
+        ${labelString}
       [/#if]
     </label>
   </div>
@@ -617,16 +619,20 @@
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if disabled]readonly onclick="this.checked=!this.checked;"[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> 
-      [#if label?contains(":")]
-        [#local labelArray = label?split(":") /]
+      [#-- Convertir markup_output a texto antes de usar ?contains --]
+      [#local labelString = (label?is_markup_output)?then(label?markup_string, label)]
+
+      [#if labelString?contains(":")]
+        [#local labelArray = labelString?split(":") /]
         <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
       [#else]
         [#if isLabelDB]
-          ${label}
+          ${labelString}
         [#else]
-          [@s.text name=label /]
+          [@s.text name=labelString /]
         [/#if]
       [/#if] 
+
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>
