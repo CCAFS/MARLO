@@ -83,6 +83,24 @@
 				          </a>
 				        </div>
 				      </div>
+
+				      <!-- Card: Innovation Generator -->
+				      <div class="simpleBox ai-card">
+				        <p class="ai-lead" style="margin-top: 6px;">
+				        	🧠 <strong>Innovation Metadata Extractor</strong>
+				        </p>
+				        <p class="ai-lead" style="margin: 6px 0 0;">
+				        	[@s.text name="userIdea.innovationGenerator" /]
+				        </p>
+				        <div class="text-start" style="margin-top: 20px;">
+				          [#assign chatbotUrl = "https://oxnrkcntlheycdgcnilexrwp4i0tucqz.lambda-url.us-east-1.on.aws/ui/" /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam /]
+
+				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
+				            <span></span> [@s.text name="Go to Innovation Metadata Extractor" /]
+				          </a>
+				        </div>
+				      </div>
 							<br>
 				      					    
 							  <div class=" containerAlert alert-leftovers alertColorBackgroundWarning" id="containerAlert">
