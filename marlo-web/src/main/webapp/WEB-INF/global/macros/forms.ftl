@@ -61,13 +61,31 @@
     [#-- Get Custom Value --]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} ${isMainTitle?string('label--2','')} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
-        [#--  Help Text --]
+      [#assign markupKey = "markupOutput("]
+      <label for="${name}" 
+            class="${editable?string('editable', 'readOnly')} ${labelClass} ${isMainTitle?string('label--2','')} [#if powbInclude]powb-label[/#if]">
+        
+        [#assign labelAsString = (customLabel?is_markup_output)?then(customLabel?markup_string, customLabel!"")]
+        [#if labelAsString?has_content && labelAsString?starts_with(markupKey)]
+          ${(customLabel?is_markup_output)?then(customLabel?markup_string, customLabel)?no_esc}
+        [#else]
+          [@s.text name=labelAsString][@s.param]${paramText}[/@s.param][/@s.text]
+        [/#if]
+        
+        :[@req required=required && editable /]
+        
+        [#-- Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
+        
         [#if powbInclude]
-          <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+          <span class="powb-doc badge pull-right" 
+                title="[@s.text name='powb.includedField.title' /]">
+            [@s.text name='powb.includedField' /] 
+            <span class="glyphicon glyphicon-save-file"></span>
+          </span>
         [/#if]
       </label>
+
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
