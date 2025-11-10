@@ -1,8 +1,8 @@
 [#ftl]
+[#setting url_escaping_charset='UTF-8']
 [#assign title = "AI-CCRA" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/autoSave.js"] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/ai/aiDashboard.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
 [#assign currentSection = "ai" /]
@@ -45,6 +45,9 @@
 				        </div>
 				      </div>
 				
+				      [#assign emailQueryParam = (userEmail?? && userEmail?has_content)?then("?user_email=" + (userEmail?url?replace("%40", "@")), "") /]
+					  [#assign userName = (username?? && username?has_content)?then("&user=" + (username), "") /]
+
 				      <!-- Card: Report Generator -->
 				      <div class="simpleBox ai-card">
 				        <p class="ai-lead" style="margin-top: 7px;">
@@ -53,8 +56,11 @@
 				        <p class="ai-lead" style="margin: 6px 0 0;">
 				          [@s.text name="userIdea.reportGeneratorNarrative" /]
 				        </p>
+				          [#assign reportGeneratorUrl = "https://ia.prms.cgiar.org/web" /]
+				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam + userName /]
+
 				        <div class="text-start" style="margin-top: 20px;">
-				          <a href="https://aiccra-reports-generator.streamlit.app/" target="_blank" class="button-blue ai-btn">
+				          <a href="${reportGeneratorHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to Report Generator" /]
 				          </a>
 				        </div>
@@ -69,8 +75,29 @@
 				        	[@s.text name="userIdea.ChatbotNarrative" /]
 				        </p>
 				        <div class="text-start" style="margin-top: 20px;">
-				          <a href="https://chatbot-aiccra.streamlit.app/" target="_blank" class="button-blue ai-btn">
+				          [#assign chatbotUrl = "https://chatbot-aiccra.streamlit.app/" /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
+
+				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to AICCRA chatbot" /]
+				          </a>
+				        </div>
+				      </div>
+
+				      <!-- Card: Innovation Generator -->
+				      <div class="simpleBox ai-card">
+				        <p class="ai-lead" style="margin-top: 6px;">
+				        	🧠 <strong>Innovation Metadata Extractor</strong>
+				        </p>
+				        <p class="ai-lead" style="margin: 6px 0 0;">
+				        	[@s.text name="userIdea.innovationGenerator" /]
+				        </p>
+				        <div class="text-start" style="margin-top: 20px;">
+				          [#assign chatbotUrl = "https://oxnrkcntlheycdgcnilexrwp4i0tucqz.lambda-url.us-east-1.on.aws/ui" /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
+
+				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
+				            <span></span> [@s.text name="Go to Innovation Metadata Extractor" /]
 				          </a>
 				        </div>
 				      </div>
@@ -108,7 +135,7 @@
 								    /]
 								
 								    <!-- Inline Send Button -->
-								    <button type="button" class="button-send-inline" title="Send Idea" disabled>
+								    <button type="button" class="button-send-inline" title="Send Comment" disabled>
 								      <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
 								      <span></span>
 								    </button>
