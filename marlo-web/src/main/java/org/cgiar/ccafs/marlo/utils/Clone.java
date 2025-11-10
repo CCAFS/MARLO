@@ -1,182 +1,122 @@
 package org.cgiar.ccafs.marlo.utils;
 
-/*****************************************************************
- * This file is part of CCAFS Planning and Reporting Platform.
- * CCAFS P&R is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * at your option) any later version.
- * CCAFS P&R is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with CCAFS P&R. If not, see <http://www.gnu.org/licenses/>.
- *****************************************************************/
-
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Clone {
 
-  /**
-   * NOTE: This variable (projectRoot) should be changed according to the local project location on each developer's
-   * machine.
-   */
-  public static String projectRoot = "D:\\MARLO-PROJECT\\";
+  // ============================================================
+  // Base project path — adjust this only if MARLO is located
+  // somewhere else on your machine.
+  // ============================================================
+  public static final Path PROJECT_ROOT =
+    Paths.get(System.getProperty("user.home"), "Documents", "MARLO-PROJECT", "GitHub");
 
-  public static String pathdao =
-    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
-  public static String pathmysqldao =
-    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-  public static String pathmanager =
-    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-  public static String pathmodel =
-    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
-  public static String pathmanagerimpl =
-    projectRoot + "MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
+  // ============================================================
+  // Directory structure (OS-independent using Paths/resolve)
+  // ============================================================
+  public static final Path PATH_DAO = PROJECT_ROOT
+    .resolve(Paths.get("MARLO", "marlo-data", "src", "main", "java", "org", "cgiar", "ccafs", "marlo", "data", "dao"));
+  public static final Path PATH_MYSQL_DAO = PROJECT_ROOT.resolve(
+    Paths.get("MARLO", "marlo-data", "src", "main", "java", "org", "cgiar", "ccafs", "marlo", "data", "dao", "mysql"));
+  public static final Path PATH_MANAGER = PROJECT_ROOT.resolve(
+    Paths.get("MARLO", "marlo-data", "src", "main", "java", "org", "cgiar", "ccafs", "marlo", "data", "manager"));
+  public static final Path PATH_MODEL = PROJECT_ROOT.resolve(
+    Paths.get("MARLO", "marlo-data", "src", "main", "java", "org", "cgiar", "ccafs", "marlo", "data", "model"));
+  public static final Path PATH_MANAGER_IMPL = PROJECT_ROOT.resolve(Paths.get("MARLO", "marlo-data", "src", "main",
+    "java", "org", "cgiar", "ccafs", "marlo", "data", "manager", "impl"));
 
-  /*
-   * public static String pathdao =
-   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao";
-   * public static String pathmysqldao =
-   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\dao\\mysql";
-   * public static String pathmanager =
-   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager";
-   * public static String pathmodel =
-   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\model";
-   * public static String pathmanagerimpl =
-   * "D:\\MARLO-PROJECT - 4.5\\MARLO\\marlo-data\\src\\main\\java\\org\\cgiar\\ccafs\\marlo\\data\\manager\\impl";
-   */
-
-  // Copy the source file to target file.
-  // In case the dst file does not exist, it is created
-  public static void copy(File source, File target) throws IOException {
-
-    InputStream in = new FileInputStream(source);
-    OutputStream out = new FileOutputStream(target);
-
-    // Copy the bits from instream to outstream
-    byte[] buf = new byte[1024];
-    int len;
-
-    while ((len = in.read(buf)) > 0) {
-      out.write(buf, 0, len);
-    }
-
-    in.close();
-    out.close();
+  // ------------------------------------------------------------
+  // Copy utility – creates parent directories if they don’t exist
+  // ------------------------------------------------------------
+  private static void copy(Path source, Path target) throws IOException {
+    Files.createDirectories(target.getParent());
+    Files.copy(source, target);
   }
 
+  // ------------------------------------------------------------
+  // DAO generation from template
+  // ------------------------------------------------------------
+  private static void generateDao(String name) {
+    Path target = PATH_DAO.resolve(name + "DAO.java");
+    Path template = PATH_DAO.resolve("ReportSynthesisMeliaStudyDAO.java");
+    generateFromTemplate(template, target, name);
+  }
 
-  public static void generateDao(String nome) {
-    File target = new File(pathdao + "\\" + nome + "DAO.java");
+  // ------------------------------------------------------------
+  // Replaces template placeholders with the new class name
+  // ------------------------------------------------------------
+  private static void generateFromTemplate(Path template, Path target, String name) {
     try {
-      copy(new File(pathdao + "\\ReportSynthesisMeliaStudyDAO.java"), target);
-      String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("ReportSynthesisMeliaStudy", nome);
-      content = content.replaceAll("reportSynthesisMeliaStudy", miniscula(nome));
-      IOUtils.write(content, new FileOutputStream(target));
-      System.out.println();
+      copy(template, target);
+
+      // Java 8-compatible file read/write
+      byte[] bytes = Files.readAllBytes(target);
+      String content = new String(bytes, StandardCharsets.UTF_8);
+
+      content =
+        content.replace("ReportSynthesisMeliaStudy", name).replace("reportSynthesisMeliaStudy", lowerFirst(name));
+
+      Files.write(target, content.getBytes(StandardCharsets.UTF_8));
+
+      System.out.println("Generated: " + target);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
-  public static void generateManager(String nome) {
-    File target = new File(pathmanager + "\\" + nome + "Manager.java");
-    try {
-      copy(new File(pathmanager + "\\ReportSynthesisMeliaStudyManager.java"), target);
-      String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("ReportSynthesisMeliaStudy", nome);
-      content = content.replaceAll("reportSynthesisMeliaStudy", miniscula(nome));
-      IOUtils.write(content, new FileOutputStream(target));
-      System.out.println();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+  // ------------------------------------------------------------
+  // Manager generation from template
+  // ------------------------------------------------------------
+  private static void generateManager(String name) {
+    Path target = PATH_MANAGER.resolve(name + "Manager.java");
+    Path template = PATH_MANAGER.resolve("ReportSynthesisMeliaStudyManager.java");
+    generateFromTemplate(template, target, name);
+  }
+
+  // ------------------------------------------------------------
+  // ManagerImpl generation from template
+  // ------------------------------------------------------------
+  private static void generateManagerImpl(String name) {
+    Path target = PATH_MANAGER_IMPL.resolve(name + "ManagerImpl.java");
+    Path template = PATH_MANAGER_IMPL.resolve("ReportSynthesisMeliaStudyManagerImpl.java");
+    generateFromTemplate(template, target, name);
+  }
+
+  // ------------------------------------------------------------
+  // MySQL DAO generation from template
+  // ------------------------------------------------------------
+  private static void generateMysqlDao(String name) {
+    Path target = PATH_MYSQL_DAO.resolve(name + "MySQLDAO.java");
+    Path template = PATH_MYSQL_DAO.resolve("ReportSynthesisMeliaStudyMySQLDAO.java");
+    generateFromTemplate(template, target, name);
+  }
+
+  // ------------------------------------------------------------
+  // Converts the first character of a string to lowercase
+  // ------------------------------------------------------------
+  private static String lowerFirst(String s) {
+    if (s == null || s.isEmpty()) {
+      return s;
     }
-
+    return Character.toLowerCase(s.charAt(0)) + s.substring(1);
   }
 
-
-  public static void generateManagerImpl(String nome) {
-    File target = new File(pathmanagerimpl + "\\" + nome + "ManagerImpl.java");
-    try {
-      copy(new File(pathmanagerimpl + "\\ReportSynthesisMeliaStudyManagerImpl.java"), target);
-      String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("ReportSynthesisMeliaStudy", nome);
-      content = content.replaceAll("reportSynthesisMeliaStudy", miniscula(nome));
-      IOUtils.write(content, new FileOutputStream(target));
-      System.out.println();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
-
-  public static void generateMysqlDao(String nome) {
-    File target = new File(pathmysqldao + "\\" + nome + "MySQLDAO.java");
-    try {
-      copy(new File(pathmysqldao + "\\ReportSynthesisMeliaStudyMySQLDAO.java"), target);
-      String content = IOUtils.toString(new FileInputStream(target));
-      content = content.replaceAll("ReportSynthesisMeliaStudy", nome);
-      content = content.replaceAll("reportSynthesisMeliaStudy", miniscula(nome));
-      IOUtils.write(content, new FileOutputStream(target));
-      System.out.println();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
-
+  // ------------------------------------------------------------
+  // Entry point: specify all model names to generate related files
+  // ------------------------------------------------------------
   public static void main(String[] args) {
-    /*
-     * File folder = new File(pathmodel);
-     * File[] listOfFiles = folder.listFiles();
-     * for (int i = 0; i < listOfFiles.length; i++) {
-     * if (listOfFiles[i].isFile()) {
-     * System.out.print("\"" + listOfFiles[i].getName().replace(".java", "") + "\",");
-     * } else if (listOfFiles[i].isDirectory()) {
-     * System.out.println("Directory " + listOfFiles[i].getName());
-     * }
-     * }
-     */
+    String[] model = {"AiReportConfiguration"};
 
-
-    /*
-     * String[] model = {"EvidenceTag", "ProjectExpectedStudyInnovation", "ProjectExpectedStudyPolicy",
-     * "ProjectExpectedStudyLink", "ProjectExpectedStudyQuantification"};
-     */
-    String[] model = {"Portfolio", "PortfolioPhase"};
-
-    for (int i = 0; i < model.length; i++) {
-      generateDao(model[i]);
-      generateMysqlDao(model[i]);
-      generateManager(model[i]);
-      generateManagerImpl(model[i]);
-      System.out.println("generado para " + model[i]);
+    for (String m : model) {
+      generateDao(m);
+      generateMysqlDao(m);
+      generateManager(m);
+      generateManagerImpl(m);
+      System.out.println("✅ Generated for " + m);
     }
-
   }
-
-
-  public static String miniscula(String nome) {
-    char c[] = nome.toCharArray();
-    c[0] = Character.toLowerCase(c[0]);
-    nome = new String(c);
-    return nome;
-  }
-
 }
