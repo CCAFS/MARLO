@@ -41,6 +41,7 @@ public class AiAction extends BaseAction {
   private List<UserIdea> userIdeas;
   private UserIdea userIdea;
   private String userEmail;
+  private String username;
 
   @Inject
   public AiAction(APConfig config, UserIdeaManager userIdeaManager) {
@@ -60,10 +61,21 @@ public class AiAction extends BaseAction {
         userIdea = new UserIdea();
       }
 
-      if (this.getCurrentUser() != null && this.getCurrentUser().getEmail() != null) {
-        this.userEmail = this.getCurrentUser().getEmail();
-      } else {
-        this.userEmail = null;
+      if(this.getCurrentUser() != null){
+        if (this.getCurrentUser() != null && this.getCurrentUser().getFirstName() != null && 
+            this.getCurrentUser().getLastName() != null) {
+          String fullName =
+              this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName();
+          username = fullName;
+        } else {
+          username = "";
+        }
+
+        if (this.getCurrentUser() != null && this.getCurrentUser().getEmail() != null) {
+          this.userEmail = this.getCurrentUser().getEmail();
+        } else {
+          this.userEmail = null;
+        }
       }
     } catch (Exception e) {
       LOG.error("Error loading UserIdeas", e);
@@ -136,5 +148,11 @@ public class AiAction extends BaseAction {
   }
   public void setUserEmail(String userEmail) {
     this.userEmail = userEmail;
+  }
+  public String getUsername() {
+    return username;
+  }
+  public void setUsername(String username) {
+    this.username = username;
   }
 }

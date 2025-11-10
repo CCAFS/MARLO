@@ -3,7 +3,6 @@
 [#assign title = "AI-CCRA" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/autoSave.js"] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/ai/aiDashboard.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
 [#assign currentSection = "ai" /]
@@ -47,6 +46,7 @@
 				      </div>
 				
 				      [#assign emailQueryParam = (userEmail?? && userEmail?has_content)?then("?user_email=" + (userEmail?url?replace("%40", "@")), "") /]
+					  [#assign userName = (username?? && username?has_content)?then("&user=" + (username), "") /]
 
 				      <!-- Card: Report Generator -->
 				      <div class="simpleBox ai-card">
@@ -57,7 +57,7 @@
 				          [@s.text name="userIdea.reportGeneratorNarrative" /]
 				        </p>
 				          [#assign reportGeneratorUrl = "https://ia.prms.cgiar.org/web" /]
-				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam /]
+				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam + userName /]
 
 				        <div class="text-start" style="margin-top: 20px;">
 				          <a href="${reportGeneratorHref}" target="_blank" class="button-blue ai-btn">
@@ -76,7 +76,7 @@
 				        </p>
 				        <div class="text-start" style="margin-top: 20px;">
 				          [#assign chatbotUrl = "https://chatbot-aiccra.streamlit.app/" /]
-						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
 
 				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to AICCRA chatbot" /]
@@ -94,7 +94,7 @@
 				        </p>
 				        <div class="text-start" style="margin-top: 20px;">
 				          [#assign chatbotUrl = "https://oxnrkcntlheycdgcnilexrwp4i0tucqz.lambda-url.us-east-1.on.aws/ui" /]
-						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam /]
+						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
 
 				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
 				            <span></span> [@s.text name="Go to Innovation Metadata Extractor" /]
