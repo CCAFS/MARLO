@@ -8190,7 +8190,7 @@ img.qaCommentStatus {
 
 .deleteCommentBtnContainer {
 	position: absolute; 
-	bottom: 0px !important; 
+	bottom: 6px !important; 
 	right: 20px; 
 	font-size: 12px;
 }
@@ -8296,7 +8296,7 @@ img.qaCommentStatus {
 
 .containerReactionComment {
 	width: 100%;
-	padding: 4px 4px;
+	padding: 9px 4px;
 }
 
 .containerReactionComment hr {
