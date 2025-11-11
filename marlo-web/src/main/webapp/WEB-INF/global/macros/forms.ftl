@@ -200,27 +200,84 @@
       [#-- Help text --]
       [#if help!=""][#assign helpText][@s.text name="${help}" /][/#assign][#else][#assign helpText][/#assign][/#if]
       [#if editable]
+        [#assign currentValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue)]
+        [#assign cleanPlaceholder = (placeholderText?is_markup_output)?then(placeholderText?markup_string, placeholderText)]
+
         [#if keyFieldName == ""]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}"   /]
+            [@s.select 
+              name="${name}" 
+              list="${listName}" 
+              value="${currentValue}" 
+              disabled="${disabled?string}" 
+              cssClass="${className} form-control input-sm" 
+              multiple="true" 
+              tooltip="${helpText}" 
+            /]
           [#else]
             [#if header]
-              [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+                headerKey="-1" 
+                headerValue=cleanPlaceholder 
+              /]
             [#else]
-              [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+              /]
             [/#if]
           [/#if]
         [#else]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}" /]
+            [@s.select 
+              name="${name}" 
+              list="${listName}" 
+              listKey="${keyFieldName}" 
+              listValue="${displayFieldName}" 
+              value="${currentValue}" 
+              disabled="${disabled?string}" 
+              cssClass="${className} form-control input-sm" 
+              multiple="true" 
+              tooltip="${helpText}" 
+            /]
           [#else]
             [#if header]
-              [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                listKey="${keyFieldName}" 
+                listValue="${displayFieldName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+                headerKey="-1" 
+                headerValue=cleanPlaceholder 
+              /]
             [#else]
-              [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                listKey="${keyFieldName}" 
+                listValue="${displayFieldName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+              /]
             [/#if]
           [/#if]
-        [/#if] 
+        [/#if]
       [#else]
         <input type="hidden" name="${name}" value="${customValue}" class="${className}"/>
         [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign]  
