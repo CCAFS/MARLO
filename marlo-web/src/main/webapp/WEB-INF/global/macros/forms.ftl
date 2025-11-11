@@ -525,27 +525,40 @@
 [/#macro]
 
 [#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#-- Determinar valor actual --]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#-- Corrige markup_output si se genera por accidente --]
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="onoffswitch ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
+
     [#if editable]
       <div class="button-wrap">
-        [#-- Yes Button --]
         <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
-        [#-- No Button --]
         <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
-        [#-- Hidden Input --]
-        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!-1}" />
+        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio" value="${(customValue)!-1}" />
       </div>
-      [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
+      [#if disabled]
+        <input type="hidden" name="${name}" value="true" />
+      [/#if]
     [#else]
-      <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+      <p style="text-align:center; display:inline-block">
+        [#if customValue == "true"]
+          Yes
+        [#elseif customValue == "false"]
+          No
+        [#else]
+          Not selected
+        [/#if]
+      </p>
     [/#if]
   </div>
 [/#macro]
@@ -554,72 +567,106 @@
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="feedback-flex-items"></div>
   <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
     <div class="button-wrap radio-inline">  
       [#if editable]
-        [#-- Yes Button --]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
-        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
-        [#-- No Button --]
-        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue == "false")!false]checked[/#if] />
-        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+               [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+
+        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+               [#if (customValue == "false")!false]checked[/#if] />
+        <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
       [#else]
-        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+        <p style="text-align:center; display:inline-block">
+          [#if customValue == "true"]
+            Yes
+          [#elseif customValue == "false"]
+            No
+          [#else]
+            Not selected
+          [/#if]
+        </p>
       [/#if]
     </div>
   </div>
+
   <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
-    </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    <div class="numberOfCommentsBubble"><p></p></div>
+    <img src="${baseUrlCdn}/global/images/comment.png"
+         class="qaComment"
+         name="${name}"
+         fieldID=""
+         description="">
   </div>
 [/#macro]
 
 [#macro yesNoInputDeliverableParticipants name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
-  [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
+  [#local capacityEventType = ((deliverable.deliverableInfo?has_content) 
+      && (deliverable.deliverableInfo.deliverableType?has_content) 
+      && (deliverable.deliverableInfo.deliverableType.id?has_content) 
+      && deliverable.deliverableInfo.deliverableType.id == 145)!false]
+
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="feedback-flex-items"></div>
   <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
     <div class="button-wrap radio-inline">  
       [#if editable]
-        [#-- Yes Button --]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
-        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
-        [#-- No Button --]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+               [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+
         [#if capacityEventType]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
-          <label class="button-label no-button-label-disabled "> ${noLabel} </label>
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+                 [#if (customValue != "true")!false]checked[/#if] />
+          <label class="button-label no-button-label-disabled">${noLabel}</label>
         [#else]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
-          <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]"> ${noLabel} </label>      
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+                 [#if (customValue != "true")!false]checked[/#if] />
+          <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]">${noLabel}</label>
         [/#if]
       [#else]
-        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+        <p style="text-align:center; display:inline-block">
+          [#if customValue == "true"]
+            Yes
+          [#elseif customValue == "false"]
+            No
+          [#else]
+            Not selected
+          [/#if]
+        </p>
       [/#if]
     </div>
   </div>
+
   <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
-    </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    <div class="numberOfCommentsBubble"><p></p></div>
+    <img src="${baseUrlCdn}/global/images/comment.png"
+         class="qaComment"
+         name="${name}"
+         fieldID=""
+         description="">
   </div>
 [/#macro]
-
 
 [#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassContainer="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
