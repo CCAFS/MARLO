@@ -793,24 +793,27 @@ function hideShowOptionButtons(block, status) {
   switch (status) {
     case '0':
       textarea.prev().find('span.red.requiredTag').show();
-      textarea.prev().text('Reason for disagreement:')
+      textarea.prev().text('Reason for disagreement:');
+      textarea.attr("placeholder","A justification is required to proceed ");
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
-      block.find('div.deleteCommentBtn').hide();
+      block.find('div.deleteCommentBtn').show();
       block.find('img.clarificationCommentBtn').hide();
       block.find('.correctCommentBtn').hide();
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
+      block.find('.containerReactionComment').show();
 
       break;
     case '1':
       textarea.prev().find('span.red.requiredTag').hide();
       textarea.prev().text('Reason for agreement (optional):');
+      textarea.attr("placeholder","Add a justification, or just click the send button to confirm.");
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
-      block.find('div.deleteCommentBtn').hide();
+      block.find('div.deleteCommentBtn').show();
       block.find('.correctCommentBtn').hide();
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
@@ -818,11 +821,13 @@ function hideShowOptionButtons(block, status) {
       block.find('.containerReactionComment').css('background', '#a8eaab');
       block.find('.goBackCommentBtn').hide();
       block.find('.goBackReplyBtn').hide();
+      block.find('.containerReactionComment').show();
 
       break;
     case '2':
       textarea.prev().find('span.red.requiredTag').show();
       textarea.prev().text('Where clarification is needed:');
+      textarea.attr("placeholder","Leave a question");
       block.find('img.clarificationCommentBtn').hide();
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
@@ -831,6 +836,8 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
+      block.find('.containerReactionComment').show();
+
 
       break;
     case '4':
@@ -847,7 +854,7 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentReadonly').css('font-style', 'normal');
       block.find('.commentReadonly').css('font-weight', '600');
       block.find('.dismissCommentBtn').hide();
-      block.find('.containerReactionComment').css('background', '#f0f0f0');
+      block.find('.containerReactionComment').hide();
 
       break;
     case '6':
@@ -863,10 +870,13 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentTitle .commentTitleText').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
+      block.find('.containerReactionComment').show();
 
       break;
     case "":
       textarea.prev().text('Reply:');
+      textarea.prev().find('span.red.requiredTag').hide();
+      textarea.attr("placeholder","A comment is needed to change the status");
       block.find('img.agreeCommentBtn').hide();
       block.find('img.disagreeCommentBtn').hide();
       block.find('img.clarificationCommentBtn').hide();
@@ -879,6 +889,7 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentTitle .commentTitleText').css('font-weight', '200');
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
+      block.find('.containerReactionComment').css('background', '#f0f0f0');
       break;
   }
 }
