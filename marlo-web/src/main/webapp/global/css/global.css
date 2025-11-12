@@ -8190,7 +8190,7 @@ img.qaCommentStatus {
 
 .deleteCommentBtnContainer {
 	position: absolute; 
-	bottom: 0px !important; 
+	bottom: 6px !important; 
 	right: 20px; 
 	font-size: 12px;
 }
@@ -8257,10 +8257,11 @@ img.qaCommentStatus {
 
 .replyWarningMessage {
 	position: absolute;
-    bottom: -22px;
-    font-size: 0.85em;
+    bottom: -12px;
+    font-size: 0.7em;
     color: red;
-    width: 50%;
+    width: 39%;
+    padding-left: 10px;
 }
 
 .commentTitle {
@@ -8296,7 +8297,7 @@ img.qaCommentStatus {
 
 .containerReactionComment {
 	width: 100%;
-	padding: 4px 4px;
+	padding: 9px 4px;
 }
 
 .containerReactionComment hr {
