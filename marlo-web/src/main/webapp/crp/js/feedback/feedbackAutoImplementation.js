@@ -275,6 +275,7 @@ function attachEventsFeedback() {
     displayReplyComment(elementBasicInfo);
     block.find('.commentContainer').attr('status', '1');
 
+    /* This is an all behavoir that avoid the user to show the reply comment */
     /*     saveCommentStatus2(1, commentID, "", function() {
       getQAComments();
       loadCommentsByUser(name);
@@ -408,11 +409,13 @@ function attachEventsFeedback() {
     block.find('.buttonsContainer').hide();
     block.find('.optionsContainer').hide();
 
+    /* 
     textarea.prop('disabled', true);
     senNewComment.css({
       'background-color': '#afafaf',
       'pointer-events': 'none'
     })
+    */
   });
 
   // DEPRECATED: This code is commented out because it is not used anymore
@@ -650,11 +653,13 @@ function displayReplyComment(elementData, isDisplay = true) {
     block.find('.optionsContainer').hide();
     block.find('.replyWarningMessage').hide();
 
+    /*     
     textarea.prop('disabled', true);
     senNewComment.css({
       'background-color': '#afafaf',
       'pointer-events': 'none'
     });
+    */
   } else {
     block.find('.replyTextAreaContainer').css('display', 'none');
     block.find('.replyTextAreaContainer').find('.textArea').hide();
