@@ -2438,6 +2438,8 @@ input.userName {
   border: 1px solid #ededed;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
+  max-width: 520px;
+  width: 100%;
 }
 
 #loginFormContainer .loginForm p {margin: 0;}
