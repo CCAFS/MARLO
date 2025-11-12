@@ -272,12 +272,15 @@ function attachEventsFeedback() {
 
     hideShowOptionButtons(block, '1');
 
-    saveCommentStatus2(1, commentID, "", function() {
+    displayReplyComment(elementBasicInfo);
+    block.find('.commentContainer').attr('status', '1');
+
+    /*     saveCommentStatus2(1, commentID, "", function() {
       getQAComments();
       loadCommentsByUser(name);
       loadQACommentsIcons(contributionCRPAjaxURL, arrayName);
       changeBackgroundColorBlocks(block, '1');
-    });
+    }); */
   });
 
   $('div.deleteCommentBtn').on('click', function() {
@@ -494,7 +497,7 @@ function attachEventsFeedback() {
       const validationResult = validateReply(value || comment);
 
       // Check if the reply text is valid
-      if (validationResult.isValid) {
+      if (validationResult.isValid || feedback_comment_reaction === '1') {
         textarea.css('border', '1px solid #ccc');
         warningMessage.hide();
         textarea.addClass('blockLoading');
@@ -803,7 +806,7 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').hide();
 
       break;
     case '1':
@@ -818,10 +821,9 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.containerReactionComment').css('background', '#a8eaab');
       block.find('.goBackCommentBtn').hide();
       block.find('.goBackReplyBtn').hide();
-      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').hide();
 
       break;
     case '2':
@@ -836,7 +838,7 @@ function hideShowOptionButtons(block, status) {
       block.find('.editCommentBtn').hide();
       block.find('.containerSentCommentBtn').hide();
       block.find('.dismissCommentBtn').hide();
-      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').hide();
 
 
       break;
@@ -890,6 +892,7 @@ function hideShowOptionButtons(block, status) {
       block.find('.commentReadonly').css('font-style', 'oblique');
       block.find('.commentReadonly').css('font-weight', '400');
       block.find('.containerReactionComment').css('background', '#f0f0f0');
+      block.find('.containerReactionComment').hide();
       break;
   }
 }
@@ -902,14 +905,20 @@ function changeBackgroundColorBlocks(block, status) {
     case '0':
       block.find('.commentContainer').css('background', '#FFDDDA');
       block.find('.replyTextContainer').last().css('background', '#FFDDDA');
+      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').css('background', '#FFDDDA');
       break;
     case '1':
       block.find('.commentContainer').css('background', '#a8eaab');
       block.find('.replyTextContainer').last().css('background', '#a8eaab');
+      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').css('background', '#a8eaab');
       break;
     case '2':
       block.find('.commentContainer').css('background', '#a4cde8');
       block.find('.replyTextContainer').last().css('background', '#a4cde8');
+      block.find('.containerReactionComment').show();
+      block.find('.containerReactionComment').css('background', '#a4cde8');
       break;
     case '4':
       block.find('.commentContainer').css('background', '#f0f0f0');
@@ -1043,7 +1052,6 @@ function loadCommentsByUser(name) {
 
 
                 if (qaComments[i][j].status) {
-                  block.find('.containerReactionComment').show();
                   block.find('.containerReactionComment p.reactionComment').html(reactionName(qaComments[i][j].status) + `${qaComments[i][j].approvalUserName} | ${qaComments[i][j].approvalDate.replace(' ', ' at ')}`);
                 } if (qaComments[i][j].status == '') {
                   block.find('.containerReactionComment').hide();
@@ -1189,7 +1197,9 @@ function loadCommentsByUser(name) {
                       //newReply.find('.goBackReplyBtn').show();
                     }
 
-                    repliesContainer.append(newReply);
+                    if(reply.text != '') {
+                      repliesContainer.append(newReply);
+                    }
                   });
 
                   block.find('textarea[id="Reply"]').parent().hide();
