@@ -8257,10 +8257,11 @@ img.qaCommentStatus {
 
 .replyWarningMessage {
 	position: absolute;
-    bottom: -22px;
-    font-size: 0.85em;
+    bottom: -12px;
+    font-size: 0.7em;
     color: red;
-    width: 50%;
+    width: 39%;
+    padding-left: 10px;
 }
 
 .commentTitle {

@@ -1581,7 +1581,7 @@
       <p class="replyWarningMessage" style="display: none;">Please write a comment before saving your feedback.</p>
       [@customForm.textArea name="Reply" required=false className="limitWords-100" editable=editable placeholder="A comment is needed to change the status" /]
       <div class="replyTextAreaContainerOptions">
-        <div><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
+        <div><img class="goBackReplyContainer" src="${baseUrlCdn}/global/images/cancel-reply.png" title="Go back" style="width: 20px !important; cursor: pointer;"/></div>
         <div class="sendReplyContainer" commentId="" style="width: 20px !important; height: 20px !important;"><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send" style="width: 10px !important;"></div>
       </div>
     </div>
@@ -1619,7 +1619,7 @@
       </div>
       <p class="replyReadonly"></p>
       <div class="deleteCommentBtnContainer" style="right: 0;"><div class="deleteReplyBtn qaOptions glyphicon glyphicon-trash" style="display: none;"></div></div>
-      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/go-back.png" title="Go back" style="width: 26px !important;"/></div>
+      <div style="position: absolute; top: 0px !important; right: -30px;"><img class="goBackReplyBtn qaOptions" src="${baseUrlCdn}/global/images/cancel-reply.png" title="Go back" style="width: 26px !important;"/></div>
     </div>
     <div class="sendReplyContainer" commentId=""><img src="${baseUrlCdn}/global/images/send.png" class="sendComment" title="Send"></div>
   </div>
