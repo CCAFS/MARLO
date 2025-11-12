@@ -22,6 +22,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.mgt.WebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -79,8 +80,8 @@ public class MarloShiroConfiguration {
       return sessionManager;
   }
 
-  @Bean
-  protected org.apache.shiro.mgt.SecurityManager securityManager(APCustomRealm apCustomRealm) {
+  @Bean(name = "securityManager")
+  public WebSecurityManager securityManager(APCustomRealm apCustomRealm) {
       DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
       manager.setRealm(apCustomRealm);
       manager.setSessionManager(sessionManager());
