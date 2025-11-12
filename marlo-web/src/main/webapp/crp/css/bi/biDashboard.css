@@ -90,10 +90,6 @@ ul.nav li a {
   color: #fff;
 }
 
-.containerBI {
-  width: 98vw;
-}
-
 .headTitle-row-container {
   display: flex;
   justify-content: space-between;
