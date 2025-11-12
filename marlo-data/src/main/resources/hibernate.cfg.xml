@@ -20,6 +20,7 @@
  <property name="hibernate.hbm2ddl.auto">validate</property> 
  Model Mappings -->
   <mapping resource="xmls/DeliverableMetadataElements.hbm.xml"/>
+  <mapping resource="xmls/AiReportConfigurations.hbm.xml"/>
   <mapping resource="xmls/Auditlog.hbm.xml"/>
   <mapping resource="xmls/Users.hbm.xml"/>
   <mapping resource="xmls/CrpUsers.hbm.xml"/>
