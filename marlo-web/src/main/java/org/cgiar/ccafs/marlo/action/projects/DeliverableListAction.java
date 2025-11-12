@@ -115,6 +115,7 @@ public class DeliverableListAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+    this.deliverables = new ArrayList<>();
   }
 
   @Override
@@ -1264,9 +1265,11 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-  public void setDeliverables(List<Deliverable> deliverables) {
-    this.deliverables = deliverables;
-  }
+  // Removed setter for 'deliverables' to avoid Spring autowiring a bean named 'deliverables'
+  // into this action (caused a type conversion error when a Spring bean named
+  // 'deliverables' of a different type was present in the context). If a setter
+  // is required later for incoming parameters, add a differently named setter
+  // (e.g. setDeliverableList) to avoid name collision with Spring beans.
 
   public void setDeliverablesType(List<DeliverableType> deliverablesType) {
     this.deliverablesType = deliverablesType;
