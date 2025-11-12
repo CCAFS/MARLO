@@ -460,6 +460,10 @@ p.login-description{
   box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
   margin-top: 10px;
   z-index: 2;
+  max-width: 520px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #loginFormContainer .loginForm:not(.instructions) {
