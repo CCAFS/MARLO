@@ -45,62 +45,43 @@
 				        </div>
 				      </div>
 				
-				      [#assign emailQueryParam = (userEmail?? && userEmail?has_content)?then("?user_email=" + (userEmail?url?replace("%40", "@")), "") /]
-					  [#assign userName = (username?? && username?has_content)?then("&user=" + (username), "") /]
-
-				      <!-- Card: Report Generator -->
-				      <div class="simpleBox ai-card">
-				        <p class="ai-lead" style="margin-top: 7px;">
-				          🧾 <strong>AICCRA Report Generator</strong>
-				        </p>
-				        <p class="ai-lead" style="margin: 6px 0 0;">
-				          [@s.text name="userIdea.reportGeneratorNarrative" /]
-				        </p>
-				          [#assign reportGeneratorUrl = "https://ia.prms.cgiar.org/web" /]
-				          [#assign reportGeneratorHref = reportGeneratorUrl + emailQueryParam + userName /]
-
-				        <div class="text-start" style="margin-top: 20px;">
-				          <a href="${reportGeneratorHref}" target="_blank" class="button-blue ai-btn">
-				            <span></span> [@s.text name="Go to Report Generator" /]
-				          </a>
+				      [#if reportConfigurations?? && reportConfigurations?has_content]
+				        [#list reportConfigurations as report]
+				          <div class="simpleBox ai-card">
+				            [#if report.reportTitle?has_content]
+				              <p class="ai-lead" style="margin-top: 6px;">
+				                <strong>${report.reportTitle?html}</strong>
+				              </p>
+				            [/#if]
+				            [#if report.reportDescription?has_content]
+				              <p class="ai-lead" style="margin: 6px 0 0;">
+				                ${report.reportDescription?html}
+				              </p>
+				            [/#if]
+				            [#if report.buttonLink?has_content]
+				              [#assign rawLink = report.buttonLink?trim]
+				              [#assign resolvedLink = rawLink]
+				              [#if !rawLink?matches("^[a-zA-Z][a-zA-Z0-9+\\-.]*://.*")]
+				                [#assign resolvedLink = "//" + rawLink?remove_beginning("//")]
+				              [/#if]
+				              <div class="text-start" style="margin-top: 20px;">
+				                <a href="${resolvedLink?html}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
+				                  <span></span> ${(report.buttonLabel!report.reportTitle)?html}
+				                </a>
+				              </div>
+				            [/#if]
+				          </div>
+				        [/#list]
+				      [#else]
+				        <div class="simpleBox ai-card">
+				          <p class="ai-lead" style="margin-top: 6px;">
+				            <strong>[@s.text name="userIdea.noReportsConfigured" default="AI tools are currently unavailable." /]</strong>
+				          </p>
+				          <p class="ai-lead" style="margin: 6px 0 0;">
+				            [@s.text name="userIdea.noReportsConfiguredDescription" default="Please contact the MARLO support team if you believe this is an error." /]
+				          </p>
 				        </div>
-				      </div>
-				
-				      <!-- Card: Chatbot -->
-				      <div class="simpleBox ai-card">
-				        <p class="ai-lead" style="margin-top: 6px;">
-				          💬 <strong>AICCRA Chatbot</strong>
-				        </p>
-				        <p class="ai-lead" style="margin: 6px 0 0;">
-				        	[@s.text name="userIdea.ChatbotNarrative" /]
-				        </p>
-				        <div class="text-start" style="margin-top: 20px;">
-				          [#assign chatbotUrl = "https://chatbot-aiccra.streamlit.app/" /]
-						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
-
-				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
-				            <span></span> [@s.text name="Go to AICCRA chatbot" /]
-				          </a>
-				        </div>
-				      </div>
-
-				      <!-- Card: Innovation Generator -->
-				      <div class="simpleBox ai-card">
-				        <p class="ai-lead" style="margin-top: 6px;">
-				        	🧠 <strong>Innovation Metadata Extractor</strong>
-				        </p>
-				        <p class="ai-lead" style="margin: 6px 0 0;">
-				        	[@s.text name="userIdea.innovationGenerator" /]
-				        </p>
-				        <div class="text-start" style="margin-top: 20px;">
-				          [#assign chatbotUrl = "https://oxnrkcntlheycdgcnilexrwp4i0tucqz.lambda-url.us-east-1.on.aws/ui" /]
-						  [#assign chatbotURLHref = chatbotUrl + emailQueryParam + userName /]
-
-				          <a href="${chatbotURLHref}" target="_blank" class="button-blue ai-btn">
-				            <span></span> [@s.text name="Go to Innovation Metadata Extractor" /]
-				          </a>
-				        </div>
-				      </div>
+				      [/#if]
 							<br>
 				      					    
 							  <div class=" containerAlert alert-leftovers alertColorBackgroundWarning" id="containerAlert">
