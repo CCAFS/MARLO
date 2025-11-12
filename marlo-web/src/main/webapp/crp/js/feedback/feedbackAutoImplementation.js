@@ -275,6 +275,7 @@ function attachEventsFeedback() {
     displayReplyComment(elementBasicInfo);
     block.find('.commentContainer').attr('status', '1');
 
+    /* This is an all behavoir that avoid the user to show the reply comment */
     /*     saveCommentStatus2(1, commentID, "", function() {
       getQAComments();
       loadCommentsByUser(name);
@@ -408,11 +409,13 @@ function attachEventsFeedback() {
     block.find('.buttonsContainer').hide();
     block.find('.optionsContainer').hide();
 
+    /* 
     textarea.prop('disabled', true);
     senNewComment.css({
       'background-color': '#afafaf',
       'pointer-events': 'none'
     })
+    */
   });
 
   // DEPRECATED: This code is commented out because it is not used anymore
@@ -634,8 +637,9 @@ function extractBasicElementData(element) {
  * @param {Object} elementData - Object containing name, commentID, index, block, blockContainer, qaPopup, and containerQaPopup.
  * @param {boolean} isDisplay - Flag to determine whether to display or hide the reply comment box.
  */
-function displayReplyComment(elementData, isDisplay = true) {
+function displayReplyComment(elementData, isDisplay = true, options = {}) {
   const { block, blockContainer } = elementData;
+  const { placeholder = undefined, title = undefined } = options;
   let senNewComment = blockContainer.find('div[class="sendCommentContainer"]');
   let textarea = blockContainer.find('textarea[id="New comment"]');
 
@@ -650,11 +654,23 @@ function displayReplyComment(elementData, isDisplay = true) {
     block.find('.optionsContainer').hide();
     block.find('.replyWarningMessage').hide();
 
+    if (placeholder && title) {
+      block.find('.replyTextAreaContainer').find('.textArea').find('textarea').attr('placeholder', placeholder);
+      block.find('.replyTextAreaContainer').find('.textArea').find('label').text(title);
+    } else {
+      block.find('.replyTextAreaContainer').find('.textArea').find('textarea').attr('placeholder', 'Leave a question');
+      block.find('.replyTextAreaContainer').find('.textArea').find('label').text('Where clarification is needed');
+    }
+
+
+
+    /*     
     textarea.prop('disabled', true);
     senNewComment.css({
       'background-color': '#afafaf',
       'pointer-events': 'none'
     });
+    */
   } else {
     block.find('.replyTextAreaContainer').css('display', 'none');
     block.find('.replyTextAreaContainer').find('.textArea').hide();
@@ -1227,6 +1243,15 @@ function loadCommentsByUser(name) {
                       break;
                     case "":
                       break;
+                  }
+
+                  // EXTREME CASE: Open the reply textarea for a specific user and comment status
+                  // If there it's a field with "clarification needed" status and the user it's that left the comment, open reply container box automatically
+                  if (qaComments[i][j].status == '2' && qaComments[i][j].userID == userID) {
+                    displayReplyComment({block, blockContainer: block.parent().parent()}, true, {
+                      placeholder: "Please provide the clarification requested so the cluster leader can proceed.",
+                      title: "Provide clarification to the cluster leader"
+                    });
                   }
                 } else {
                   if (qaComments[i][j].status && qaComments[i][j].status != '') {
