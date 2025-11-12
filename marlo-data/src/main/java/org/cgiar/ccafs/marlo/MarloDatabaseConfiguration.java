@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>..
  *****************************************************************/
 
 package org.cgiar.ccafs.marlo;
@@ -36,7 +36,6 @@ import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 
 /**
  * Configuration for Database and Flyway beans.
@@ -97,7 +96,6 @@ public class MarloDatabaseConfiguration {
     config.addDataSourceProperty("autoReconnect", true);
     config.addDataSourceProperty("useSSL", false);
 
-
     HikariDataSource dataSource = new HikariDataSource(config);
     return dataSource;
   }
@@ -140,7 +138,8 @@ public class MarloDatabaseConfiguration {
    * @return
    */
   // @Bean
-  // public PersistenceExceptionTranslationPostProcessor getExceptionTranslation() {
+  // public PersistenceExceptionTranslationPostProcessor getExceptionTranslation()
+  // {
   // return new PersistenceExceptionTranslationPostProcessor();
   // }
 
