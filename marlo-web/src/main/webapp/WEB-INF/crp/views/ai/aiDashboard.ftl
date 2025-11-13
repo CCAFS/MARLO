@@ -45,6 +45,9 @@
 				        </div>
 				      </div>
 				
+				      [#assign emailQueryParam = (userEmail?? && userEmail?has_content)?then("?user_email=" + (userEmail?url?replace("%40", "@")), "") /]
+				      [#assign userNameQuery = (username?? && username?has_content)?then("&user=" + (username?url), "") /]
+
 				      [#if reportConfigurations?? && reportConfigurations?has_content]
 				        [#list reportConfigurations as report]
 				          <div class="simpleBox ai-card">
@@ -64,8 +67,25 @@
 				              [#if !rawLink?matches("^[a-zA-Z][a-zA-Z0-9+\\-.]*://.*")]
 				                [#assign resolvedLink = "//" + rawLink?remove_beginning("//")]
 				              [/#if]
+				              [#assign finalUrl = resolvedLink]
+				              [#if emailQueryParam?has_content || userNameQuery?has_content]
+				                [#assign additionalParams = ""]
+				                [#if emailQueryParam?has_content]
+				                  [#assign additionalParams = emailQueryParam]
+				                [/#if]
+				                [#if userNameQuery?has_content]
+				                  [#assign additionalParams = additionalParams + userNameQuery]
+				                [/#if]
+				                [#if additionalParams?has_content]
+				                  [#if finalUrl?contains("?")]
+				                    [#assign finalUrl = finalUrl + additionalParams?replace("?", "&")]
+				                  [#else]
+				                    [#assign finalUrl = finalUrl + additionalParams]
+				                  [/#if]
+				                [/#if]
+				              [/#if]
 				              <div class="text-start" style="margin-top: 20px;">
-				                <a href="${resolvedLink?html}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
+				                <a href="${finalUrl?html}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
 				                  <span></span> ${(report.buttonLabel!report.reportTitle)?html}
 				                </a>
 				              </div>
