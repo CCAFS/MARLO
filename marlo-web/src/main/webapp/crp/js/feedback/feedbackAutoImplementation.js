@@ -657,12 +657,7 @@ function displayReplyComment(elementData, isDisplay = true, options = {}) {
     if (placeholder && title) {
       block.find('.replyTextAreaContainer').find('.textArea').find('textarea').attr('placeholder', placeholder);
       block.find('.replyTextAreaContainer').find('.textArea').find('label').text(title);
-    } else {
-      block.find('.replyTextAreaContainer').find('.textArea').find('textarea').attr('placeholder', 'Leave a question');
-      block.find('.replyTextAreaContainer').find('.textArea').find('label').text('Where clarification is needed');
     }
-
-
 
     /*     
     textarea.prop('disabled', true);
