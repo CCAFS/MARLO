@@ -16,7 +16,9 @@
 package org.cgiar.ccafs.marlo.action.ai;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.AiReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.manager.UserIdeaManager;
+import org.cgiar.ccafs.marlo.data.model.AiReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.UserIdea;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.ArrayList;
@@ -36,17 +38,21 @@ public class AiAction extends BaseAction {
 
   // Managers
   private UserIdeaManager userIdeaManager;
+  private AiReportConfigurationManager aiReportConfigurationManager;
 
   // Front-end
   private List<UserIdea> userIdeas;
   private UserIdea userIdea;
   private String userEmail;
   private String username;
+  private List<AiReportConfiguration> reportConfigurations;
 
   @Inject
-  public AiAction(APConfig config, UserIdeaManager userIdeaManager) {
+  public AiAction(APConfig config, UserIdeaManager userIdeaManager,
+      AiReportConfigurationManager aiReportConfigurationManager) {
     super(config);
     this.userIdeaManager = userIdeaManager;
+    this.aiReportConfigurationManager = aiReportConfigurationManager;
   }
 
   @Override
@@ -81,6 +87,13 @@ public class AiAction extends BaseAction {
       LOG.error("Error loading UserIdeas", e);
       userIdeas = new ArrayList<>();
       userIdea = new UserIdea();
+    }
+
+    try {
+      reportConfigurations = aiReportConfigurationManager.findAll();
+    } catch (Exception e) {
+      LOG.error("Error loading AI report configurations", e);
+      reportConfigurations = new ArrayList<>();
     }
 
     if (this.isHttpPost()) {
@@ -154,5 +167,13 @@ public class AiAction extends BaseAction {
   }
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public List<AiReportConfiguration> getReportConfigurations() {
+    return reportConfigurations;
+  }
+
+  public void setReportConfigurations(List<AiReportConfiguration> reportConfigurations) {
+    this.reportConfigurations = reportConfigurations;
   }
 }
