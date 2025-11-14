@@ -8112,7 +8112,7 @@ img.qaCommentStatus {
 }
 
 .headerQaPopup img {
-	width: 36px;
+	width: 20px;
 }
 
 #qaPopup,
@@ -8183,36 +8183,26 @@ img.qaCommentStatus {
 
 .commentCheckContainer {
 	display: flex;
-	padding-right: 28px;
+	padding-right: 15px;
 	padding-left: 15px;
 	position: relative;
 }
 
-.deleteReplyBtn {
-	padding: 6px;
-	background-color: #dd5555;
-	color: white;
-	border-radius: 100px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: max-content;
+.deleteCommentBtnContainer {
+	position: absolute; 
+	bottom: 6px !important; 
+	right: 20px; 
+	font-size: 12px;
 }
 
-.deleteCommentBtn {
+.deleteReplyBtn, .deleteCommentBtn {
 	padding: 6px;
-	background-color: #dd5555;
-	color: white;
-	border-radius: 100px;
+	color: #dd5555;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	height: max-content;
-	/* position: absolute;
-  right: 0;
-  bottom: 0; */
 }
 
 .commentContainer {
@@ -8230,21 +8220,60 @@ img.qaCommentStatus {
 }
 
 .replyContainer, .replyTextAreaContainer {
-	padding-left: 25px;
-	padding-right: 20px;
+	position: relative;
+}
+
+.replyContainer, .replyTextAreaContainer {
+	padding-left: 60px;
+	padding-right: 15px;
 	margin-bottom: 10px;
+}
+
+.replyContainer::before, .replyTextAreaContainer::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  width: 40px;
+  height: 50px;
+  border-left: 3px solid #E3E3E3;
+  border-bottom: 3px solid #E3E3E3;
+  border-radius: 0 0 0 10px;
+}
+
+.replyTextAreaContainer .textArea.fieldReference {
+	background-color: #E3E3E3;
+	padding: 5px 10px;
+}
+
+.replyTextAreaContainer .replyTextAreaContainerOptions {
+	background-color: #E3E3E3;
+	display: flex; 
+	justify-content: space-evenly; 
+	align-items: center; 
+	flex-direction: column; 
+	padding: 25px 10px 25px 0;
 }
 
 .replyWarningMessage {
 	position: absolute;
-    bottom: -22px;
-    font-size: 0.85em;
+    bottom: -12px;
+    font-size: 0.7em;
     color: red;
-    width: 50%;
+    width: 39%;
+    padding-left: 10px;
 }
 
 .commentTitle {
 	padding-right: 37px !important;
+}
+
+.commentTitle p, .replyTitle p {
+	margin: 0;
+}
+
+.commentTitle .commentTitleDate, .replyTitle .replyTitleDate {
+	font-weight: 300;
 }
 
 .commentTitle,
@@ -8262,18 +8291,27 @@ img.qaCommentStatus {
 .replyReadonly {
 	color: black;
 	font-size: 13px;
-	padding: 4px 10px;
+	padding: 6px 10px;
+	margin: 0;
 }
 
 .containerReactionComment {
 	width: 100%;
-	background-color: #ffffffa1;
+	padding: 9px 4px;
+}
+
+.containerReactionComment hr {
+	background-color: #000; 
+	color: #000; 
+	border-color: #000; 
+	margin: 0 6px 6px 6px;
 }
 
 .containerReactionComment .reactionComment {
 	margin: 0px;
-	font-size: 12px;
+	font-size: 10px;
 	padding: 0px 5px;
+	color: black;
 }
 
 .checkContainer {
@@ -8336,11 +8374,12 @@ img.qaCommentStatus {
 }
 
 .track_icon {
-	width: 15px;
+	width: 24px;
 	position: absolute;
-	top: 0px;
-	right: 10px;
+	top: 5px;
+	right: 5px;
 	cursor: pointer;
+	top: calc(calc(45px / 2)/2);
 }
 
 
@@ -8361,7 +8400,6 @@ img.qaCommentStatus {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-left: 10px;
 	background-color: #0b7ba6;
 	border-radius: 50%;
 	align-self: center;
@@ -8409,9 +8447,13 @@ img.qaOptions {
 	cursor: pointer;
 }
 
+img.qaOptions:hover {
+	filter: brightness(0.8);
+}
+
 img.qaOptionsComment {
 	width: 22px;
-	margin-left: 3px;
+	margin-left: 5px;
 	cursor: pointer;
 }
 
@@ -8424,8 +8466,8 @@ img.qaOptionsComment {
 	cursor: pointer;
 	object-fit: contain;
 	position: absolute;
-	right: 30px;
-	top: 4px;
+	right: 12px;
+	top: 2px;
 }
 
 .closeComment:hover {
