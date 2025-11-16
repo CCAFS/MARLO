@@ -326,7 +326,7 @@ public class ProjectMySQLDAO extends AbstractMarloDAO<Project, Long> implements 
   @Override
   public Project save(Project project) {
     if (project.getId() == null) {
-      super.saveEntity(project);
+      project = super.saveEntity(project);
     } else {
       project = super.update(project);
     }

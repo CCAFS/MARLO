@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,6 +181,7 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  @Transactional
   public Project saveProject(Project project) {
 
     return projectDAO.save(project);
