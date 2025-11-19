@@ -18,11 +18,13 @@ package org.cgiar.ccafs.marlo.validation.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
+import org.cgiar.ccafs.marlo.data.manager.AllianceLeversSdgContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.SDGContributionManager;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
 import org.cgiar.ccafs.marlo.data.model.AllianceLeverOutcome;
+import org.cgiar.ccafs.marlo.data.model.AllianceLeversSdgContribution;
 import org.cgiar.ccafs.marlo.data.model.GlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -71,6 +73,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   private final AllianceLeverManager allianceLeverManager;
   private final SDGContributionManager sDGContributionManager;
   private InstitutionManager institutionManager;
+  private AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
 
   String oicrGeneral = "";
   String oicrAlliance = "";
@@ -80,11 +83,12 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
   @Inject
   public ProjectExpectedStudiesValidator(GlobalUnitManager crpManager, AllianceLeverManager allianceLeverManager,
-    SDGContributionManager sDGContributionManager, InstitutionManager institutionManager) {
+    SDGContributionManager sDGContributionManager, InstitutionManager institutionManager, AllianceLeversSdgContributionManager allianceLeversSdgContributionManager) {
     this.crpManager = crpManager;
     this.allianceLeverManager = allianceLeverManager;
     this.sDGContributionManager = sDGContributionManager;
     this.institutionManager = institutionManager;
+    this.allianceLeversSdgContributionManager = allianceLeversSdgContributionManager;
   }
 
   private Path getAutoSaveFilePath(ProjectExpectedStudy expectedStudy, long crpID, BaseAction action) {
@@ -339,35 +343,44 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
             isAllianceLeverSelected = true;
 
             // Validate SDG contributions selection
-            if (allianceLever != null) {
-              if ((allianceLever.getSdgContributions() == null || allianceLever.getSdgContributions().isEmpty())
-                && (allianceLever.getId() != null
-                  && allianceLever.getId() != APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID)) {
-                // Add message for missing SDG contributions
-                // for (int i = 0; i < sDGContributionList.size(); i++) {
-                action.addMessage(this.getTextCustom(action,
-                  "expectedStudy.allianceLevers[" + (allianceLever.getId() - 1) + "].sdgContributions[" + 0 + "].id"));
-                action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + (allianceLever.getId() - 1)
-                  + "].sdgContributions[" + 0 + "].id", InvalidFieldsMessages.CHECKBOX);
-                // }
-              } else {
-                // Validate each SDG contribution
-                if (allianceLever.getSdgContributions() != null) {
-                  for (SDGContribution sdgContribution : allianceLever.getSdgContributions()) {
-                    if (sdgContribution != null && sdgContribution.getId() == null) {
-                      // Add message for missing SDG contribution ID
+            if (allianceLever != null && allianceLever.getId() != null) {
 
-                      for (int i = 0; i < sDGContributionList.size(); i++) {
-                        action.addMessage(this.getTextCustom(action, "input-expectedStudy.allianceLevers["
-                          + (allianceLever.getId() - 1) + "].sdgContributions[" + i + "].id"));
-                        action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + allianceLeverIndex
-                          + "].sdgContributions[" + i + "].id", InvalidFieldsMessages.CHECKBOX);
+              try {
+                // Validate if alliance lever has sdg contributions assigned
+                List<AllianceLeversSdgContribution> allianceLeversSdgContributions =
+                  this.allianceLeversSdgContributionManager.findAllByLeverId(allianceLever.getId());
+                if (allianceLeversSdgContributions != null && !allianceLeversSdgContributions.isEmpty()) {
+
+                  if ((allianceLever.getSdgContributions() == null || allianceLever.getSdgContributions().isEmpty())
+                    && (allianceLever.getId() != APConstants.EXPECTED_OTHER_ALLIANCE_LEVER_ID)) {
+                    // Add message for missing SDG contributions
+                    // for (int i = 0; i < sDGContributionList.size(); i++) {
+                    action.addMessage(this.getTextCustom(action, "expectedStudy.allianceLevers["
+                      + (allianceLever.getId() - 1) + "].sdgContributions[" + 0 + "].id"));
+                    action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + (allianceLever.getId() - 1)
+                      + "].sdgContributions[" + 0 + "].id", InvalidFieldsMessages.CHECKBOX);
+                    // }
+                  } else {
+                    // Validate each SDG contribution
+                    if (allianceLever.getSdgContributions() != null) {
+                      for (SDGContribution sdgContribution : allianceLever.getSdgContributions()) {
+                        if (sdgContribution != null && sdgContribution.getId() == null) {
+                          // Add message for missing SDG contribution ID
+
+                          for (int i = 0; i < sDGContributionList.size(); i++) {
+                            action.addMessage(this.getTextCustom(action, "input-expectedStudy.allianceLevers["
+                              + (allianceLever.getId() - 1) + "].sdgContributions[" + i + "].id"));
+                            action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + allianceLeverIndex
+                              + "].sdgContributions[" + i + "].id", InvalidFieldsMessages.CHECKBOX);
+                          }
+                        }
                       }
                     }
                   }
                 }
+              } catch (Exception e) {
+                LOG.error(" error validating Alliance lever SDG contributions", e);
               }
-
             }
           }
           allianceLeverIndex++;
