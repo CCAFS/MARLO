@@ -542,6 +542,9 @@
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>
+				<configuration>
+					<skip>${minify.skip}</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<id>default-minify</id>
