@@ -246,13 +246,22 @@ $(".errorTag").on("click", function() {
 // VERIFY FIELD ERRORS IN HIDDEN ELEMENTS
 function verifyMissingFields(element) {
   if(errorList.length != 0) {
-    if($(element).find(".errorTag").exists() || $(element).find(".fieldError").exists()
-        || $(element).find(".missingSelect").exists()) {
+    var $element = $(element);
+    if($element.find(".errorTag").exists() || $element.find(".fieldError").exists()
+        || $element.find(".missingSelect").exists()) {
+      // Ensure collapsed blocks with errors are opened so users can spot issues quickly
+      var $blockTitle = $element.find(".blockTitle").first();
+      var $blockContent = $blockTitle.next(".blockContent");
+      if($blockTitle.length && $blockContent.length) {
+        $blockTitle.removeClass("closed").addClass("opened");
+        $blockContent.show();
+      }
+
       // Tag with message
       var tagElement = $("#test").clone(true).removeAttr("id");
       tagElement.attr("title", "Missing fields inside this block!");
-      $(element).append(tagElement);
-      var left = $(element).outerWidth();
+      $element.append(tagElement);
+      var left = $element.outerWidth();
       tagElement.offset({
           top: 0,
           left: left
