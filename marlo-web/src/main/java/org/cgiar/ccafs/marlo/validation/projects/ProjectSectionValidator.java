@@ -71,6 +71,7 @@ import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -83,6 +84,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectComponentLesson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyAllianceLeversOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyCountry;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyGlobalTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnershipsPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
@@ -1748,6 +1750,17 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         expectedStudy.setImpactAreas(new ArrayList<>(expectedStudy.getProjectExpectedStudyImpactAreas().stream()
           .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
           .collect(Collectors.toList())));
+        if (expectedStudy.getImpactAreas() != null && !expectedStudy.getImpactAreas().isEmpty()
+          && expectedStudy.getImpactAreas().get(0).getImpactArea() != null) {
+          ImpactArea impactAreaTmp = new ImpactArea();
+          impactAreaTmp.setId(expectedStudy.getImpactAreas().get(0).getImpactArea().getId());
+          impactAreaTmp.setName(expectedStudy.getImpactAreas().get(0).getImpactArea().getName());
+          impactAreaTmp
+            .setDescription(expectedStudy.getImpactAreas().get(0).getImpactArea().getDescription());
+          expectedStudy.setImpactArea(impactAreaTmp);
+        } else {
+          expectedStudy.setImpactArea(null);
+        }
       }
 
       // Expected Study global target
@@ -1755,7 +1768,14 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         expectedStudy.setGlobalTargets(new ArrayList<>(expectedStudy.getProjectExpectedStudyGlobalTargets().stream()
           .filter(o -> (o != null) && (o.getId() != null) && o.isActive() && o.getPhase().getId().equals(phase.getId()))
           .collect(Collectors.toList())));
-
+        if (expectedStudy.getImpactArea() != null) {
+          expectedStudy.getImpactArea().setGlobalTargets(new ArrayList<>());
+          for (ProjectExpectedStudyGlobalTarget projectExpectedStudyGlobalTarget : expectedStudy.getGlobalTargets()) {
+            if (projectExpectedStudyGlobalTarget.getGlobalTarget() != null) {
+              expectedStudy.getImpactArea().getGlobalTargets().add(projectExpectedStudyGlobalTarget.getGlobalTarget());
+            }
+          }
+        }
       }
 
       if (expectedStudy.getAllianceLever() != null) {
