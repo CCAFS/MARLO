@@ -3892,21 +3892,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getProjects() != null) {
       for (final ExpectedStudyProject studyProject : this.expectedStudy.getProjects()) {
+
         if (studyProject.getId() == null) {
-          final ExpectedStudyProject studyProjectSave = new ExpectedStudyProject();
-          studyProjectSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyProjectSave.setPhase(phase);
+            if (studyProject.getProject() == null || studyProject.getProject().getId() == null) {
+                continue;
+            }
 
-          final Project project = this.projectManager.getProjectById(studyProject.getProject().getId());
+            final ExpectedStudyProject studyProjectSave = new ExpectedStudyProject();
+            studyProjectSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyProjectSave.setPhase(phase);
 
-          studyProjectSave.setProject(project);
+            final Project project = this.projectManager
+                .getProjectById(studyProject.getProject().getId());
 
-          this.expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
-          // This is to add studyProjectSave to generate correct
-          // auditlog.
-          this.expectedStudy.getExpectedStudyProjects().add(studyProjectSave);
+            studyProjectSave.setProject(project);
+
+            this.expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
+
+            this.expectedStudy.getExpectedStudyProjects().add(studyProjectSave);
         }
       }
+
     }
 
   }
