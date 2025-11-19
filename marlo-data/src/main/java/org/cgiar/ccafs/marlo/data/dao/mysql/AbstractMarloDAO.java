@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.AuditLogContext;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 import java.io.Serializable;
 import java.util.List;
@@ -57,6 +59,8 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
 
   private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames) {
+    // Ensure context exists before trying to use it
+    ensureAuditLogContext();
     LOG.debug("Adding auditing fields to AuditLogContext");
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
     auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
@@ -67,6 +71,8 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
 
   private void addAuditLogFieldsToThreadStorage(Object entity, String actionName, List<String> relationsNames,
     Phase phase) {
+    // Ensure context exists before trying to use it
+    ensureAuditLogContext();
     LOG.debug("Adding auditing fields to AuditLogContext");
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
     auditLogContext.setEntityCanonicalName(entity.getClass().getCanonicalName());
@@ -400,9 +406,56 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param obj is the Object to be saved/updated.
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
+  @SuppressWarnings("unchecked")
   protected T saveEntity(T entity) {
-    sessionFactory.getCurrentSession().persist(entity);
+    // Ensure AuditLogContext exists before saving (required by Hibernate listeners)
+    ensureAuditLogContext();
+    
+    Session session = sessionFactory.getCurrentSession();
+    // Use save() to get ID immediately - it returns the generated ID
+    Serializable id = session.save(entity);
+    
+    // CRITICAL: save() returns the ID but may not set it on the entity immediately
+    // We must explicitly set it to ensure it's available
+    if (id != null && entity instanceof org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) {
+      org.cgiar.ccafs.marlo.data.model.MarloBaseEntity baseEntity = 
+        (org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) entity;
+      // Always set the ID from the return value of save()
+      baseEntity.setId((Long) id);
+      LOG.debug("Set ID {} on entity {} after save()", id, entity.getClass().getSimpleName());
+    } else if (id == null) {
+      LOG.warn("save() returned null ID for entity: {}", entity.getClass().getName());
+    }
+    
     return entity;
+  }
+  
+  /**
+   * Ensures that AuditLogContext exists in the thread. Creates a minimal context if it doesn't exist.
+   * This is required by Hibernate listeners (AuditColumnHibernateListener) before save operations.
+   */
+  private void ensureAuditLogContext() {
+    try {
+      AuditLogContextProvider.getAuditLogContext();
+      // Context already exists, nothing to do
+    } catch (RuntimeException e) {
+      // Context doesn't exist, create a minimal one
+      AuditLogContext context = new AuditLogContext();
+      // Try to get userId from Shiro if available
+      try {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject != null && subject.getPrincipal() != null) {
+          Long userId = (Long) subject.getPrincipal();
+          context.setCurrentUserId(userId);
+          LOG.debug("Set userId {} from Shiro in AuditLogContext", userId);
+        }
+      } catch (Exception ex) {
+        // Shiro not available, use default userId or leave null
+        LOG.debug("Could not get userId from Shiro: {}", ex.getMessage());
+      }
+      AuditLogContextProvider.push(context);
+      LOG.debug("Created minimal AuditLogContext for save operation");
+    }
   }
 
   /**
@@ -412,9 +465,25 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
+  @SuppressWarnings("unchecked")
   protected T saveEntity(T entity, String actionName, List<String> relationsName) {
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
-    sessionFactory.getCurrentSession().persist(entity);
+    Session session = sessionFactory.getCurrentSession();
+    // Use save() to get ID immediately - it returns the generated ID
+    Serializable id = session.save(entity);
+    
+    // CRITICAL: save() returns the ID but may not set it on the entity immediately
+    // We must explicitly set it to ensure it's available
+    if (id != null && entity instanceof org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) {
+      org.cgiar.ccafs.marlo.data.model.MarloBaseEntity baseEntity = 
+        (org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) entity;
+      // Always set the ID from the return value of save()
+      baseEntity.setId((Long) id);
+      LOG.debug("Set ID {} on entity {} after save()", id, entity.getClass().getSimpleName());
+    } else if (id == null) {
+      LOG.warn("save() returned null ID for entity: {}", entity.getClass().getName());
+    }
+    
     return entity;
   }
 
@@ -425,9 +494,25 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param actionName the action that called the save
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
+  @SuppressWarnings("unchecked")
   protected T saveEntity(T entity, String actionName, List<String> relationsName, Phase phase) {
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
-    sessionFactory.getCurrentSession().persist(entity);
+    Session session = sessionFactory.getCurrentSession();
+    // Use save() to get ID immediately - it returns the generated ID
+    Serializable id = session.save(entity);
+    
+    // CRITICAL: save() returns the ID but may not set it on the entity immediately
+    // We must explicitly set it to ensure it's available
+    if (id != null && entity instanceof org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) {
+      org.cgiar.ccafs.marlo.data.model.MarloBaseEntity baseEntity = 
+        (org.cgiar.ccafs.marlo.data.model.MarloBaseEntity) entity;
+      // Always set the ID from the return value of save()
+      baseEntity.setId((Long) id);
+      LOG.debug("Set ID {} on entity {} after save()", id, entity.getClass().getSimpleName());
+    } else if (id == null) {
+      LOG.warn("save() returned null ID for entity: {}", entity.getClass().getName());
+    }
+    
     return entity;
   }
 

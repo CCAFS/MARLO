@@ -173,11 +173,13 @@ public class SafeguardAction extends BaseAction {
    */
   private Path getAutoSaveFilePath() {
     // get the class simple name
-    String composedClassName = project.getClass().getSimpleName();
+    String composedClassName = (project != null) ? project.getClass().getSimpleName() : "Project";
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
+    // Use projectID if project is null, otherwise use project.getId()
+    Long id = (project != null && project.getId() != null) ? project.getId() : projectID;
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+    String autoSaveFile = id + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -510,6 +512,17 @@ public class SafeguardAction extends BaseAction {
   public String save() {
 
     if (this.hasPermission("canEdit")) {
+
+      // Ensure project is initialized
+      if (project == null && projectID > 0) {
+        project = projectManager.getProjectById(projectID);
+      }
+      
+      if (project == null) {
+        LOG.error("Cannot save safeguard: project is null and projectID is {}", projectID);
+        this.addActionError("Project not found");
+        return ERROR;
+      }
 
       // Saving project and add relations we want to save on the history
       Path path = this.getAutoSaveFilePath();

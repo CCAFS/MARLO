@@ -303,6 +303,9 @@ public class ProjectListAction extends BaseAction {
       Project project = new Project();
       project.setCreateDate(new Date());
       project = projectManager.saveProject(project);
+      if (project.getId() == null) {
+        throw new IllegalStateException("Failed to save project: project ID is null after save operation");
+      }
       projectID = project.getId();
 
       // Setting the Global Unit Project
@@ -335,6 +338,9 @@ public class ProjectListAction extends BaseAction {
       Project project = new Project();
       project.setCreateDate(new Date());
       project = projectManager.saveProject(project);
+      if (project.getId() == null) {
+        throw new IllegalStateException("Failed to save project: project ID is null after save operation");
+      }
       projectID = project.getId();
 
       // Setting the Global Unit Project
