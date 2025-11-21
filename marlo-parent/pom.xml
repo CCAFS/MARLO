@@ -812,6 +812,23 @@
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven3-plugin</artifactId>
 					<version>1.10.10</version>
+					<dependencies>
+                        <dependency>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>tomcat-catalina</artifactId>
+                            <version>${tomcat-catalina.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>tomcat-coyote</artifactId>
+                            <version>${tomcat-catalina.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>tomcat-util</artifactId>
+                            <version>${tomcat-catalina.version}</version>
+                        </dependency>
+                    </dependencies>
 					<configuration>
 						<container>
 							<containerId>tomcat9x</containerId>
