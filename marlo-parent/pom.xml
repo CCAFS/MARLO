@@ -52,7 +52,7 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-	<tomcat-catalina.version>9.0.96</tomcat-catalina.version>
+		<tomcat-catalina.version>9.0.96</tomcat-catalina.version>
 		<jackson.version>2.12.7</jackson.version>
 		<jackson.version.databind>2.12.7.1</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
@@ -67,7 +67,6 @@
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
 		<javax.inject.version>1</javax.inject.version>
-		<tomcat-catalina.version>9.0.96</tomcat-catalina.version>
 		<tomcat.version>9.0.96</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
@@ -145,8 +144,9 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
-				<version>9.0.96</version>
-				<scope>provided</scope> </dependency>
+				<version>${tomcat-catalina.version}</version>
+				<scope>provided</scope> 
+			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-juli</artifactId>
@@ -592,12 +592,6 @@
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
 				<version>${jackson.version.databind}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat</groupId>
-				<artifactId>tomcat-catalina</artifactId>
-				<version>${tomcat-catalina.version}</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mapstruct</groupId>
