@@ -143,6 +143,17 @@
 		<dependencies>
 			<!-- MARLO sub-modules should be defined here with the project.version -->
 			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-catalina</artifactId>
+				<version>9.0.96</version>
+				<scope>provided</scope> </dependency>
+			<dependency>
+				<groupId>org.apache.tomcat</groupId>
+				<artifactId>tomcat-juli</artifactId>
+				<version>9.0.96</version>
+				<scope>provided</scope> 
+			</dependency>
+			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>marlo-utils</artifactId>
 				<version>${project.version}</version>
