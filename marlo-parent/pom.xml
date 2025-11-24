@@ -144,8 +144,8 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
-				<version>9.0.96</version>
-				<scope>provided</scope> 
+				<version>${tomcat-catalina.version}</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
