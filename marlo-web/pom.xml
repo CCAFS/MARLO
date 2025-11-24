@@ -457,10 +457,10 @@
 		<groupId>org.apache.commons</groupId>
 		<artifactId>commons-text</artifactId>
 	</dependency>
-	<dependency>
+	<!-- <dependency>
 		<groupId>commons-fileupload</groupId>
 		<artifactId>commons-fileupload</artifactId>
-	</dependency>
+	</dependency> -->
 	<dependency>
 		<groupId>commons-io</groupId>
 		<artifactId>commons-io</artifactId>
