@@ -139,10 +139,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
       ServletRegistration.Dynamic dispatcher =
       servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
-      dispatcher.addMapping("/swagger-ui/*");
-      dispatcher.addMapping("/swagger-ui.html");
-      dispatcher.addMapping("/v3/api-docs/*");
-      dispatcher.addMapping(REST_API_REQUESTS);
       dispatcher.addMapping(REST_SWAGGER_REQUESTS);
 
     }
