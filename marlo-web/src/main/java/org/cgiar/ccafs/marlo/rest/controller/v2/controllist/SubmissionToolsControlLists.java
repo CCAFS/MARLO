@@ -51,14 +51,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
+
 
 
 @Configuration
 @PropertySource("classpath:clarisa.properties")
 @RestController
 @Api(tags = "Submission Tools Control Lists")
-@ApiIgnore
+
 @Named
 public class SubmissionToolsControlLists {
 

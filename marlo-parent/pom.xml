@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -157,6 +157,11 @@
 				<groupId>${project.groupId}</groupId>
 				<artifactId>marlo-utils</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>31.1-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
@@ -327,22 +332,8 @@
 				<artifactId>spring-test</artifactId>
 				<version>${org.springframework-version}</version>
 			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger2</artifactId>
-				<version>${springfox-swagger2.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.mapstruct</groupId>
-						<artifactId>mapstruct</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>io.springfox</groupId>
-				<artifactId>springfox-swagger-ui</artifactId>
-				<version>${springfox-swagger2.version}</version>
-			</dependency>
+			
+			
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
@@ -743,7 +734,12 @@
 				<artifactId>caffeine</artifactId>
 				<version>3.1.8</version>
 			</dependency>
-		</dependencies>
+		    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 	</dependencyManagement>
 	<reporting>
 		<plugins>
@@ -808,7 +804,12 @@
 							<artifactId>checkstyle</artifactId>
 							<version>8.18</version>
 						</dependency>
-					</dependencies>
+					    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 					<configuration>
 						<configLocation>../configuration/marlo-checkstyle.xml</configLocation>
 					</configuration>
@@ -833,7 +834,12 @@
                             <artifactId>tomcat-util</artifactId>
                             <version>9.0.110</version>
                         </dependency>
-                    </dependencies>
+                        <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 					<configuration>
 						<container>
 							<containerId>tomcat9x</containerId>
@@ -893,4 +899,5 @@
 		</license>
 	</licenses>
 </project>
+
 

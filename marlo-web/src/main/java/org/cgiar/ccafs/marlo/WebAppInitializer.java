@@ -129,12 +129,19 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
       /** Now add the Spring MVC dispatacher servlet config for our REST api **/
       AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-      dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
+      dispatcherContext.register(
+      MarloRestApiConfig.class,
+      MarloOpenApiConfig.class,
+      org.cgiar.ccafs.marlo.config.SpringDocWebConfig.class
+);
       dispatcherContext.setParent(appContext);
 
       ServletRegistration.Dynamic dispatcher =
-        servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+      servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
+      dispatcher.addMapping("/swagger-ui/*");
+      dispatcher.addMapping("/swagger-ui.html");
+      dispatcher.addMapping("/v3/api-docs/*");
       dispatcher.addMapping(REST_API_REQUESTS);
       dispatcher.addMapping(REST_SWAGGER_REQUESTS);
 
@@ -147,3 +154,5 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   }
 }
+
+

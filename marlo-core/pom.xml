@@ -86,20 +86,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-models</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -110,10 +97,7 @@
 			<artifactId>swagger-models</artifactId>
 			<version>1.5.21</version>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -181,7 +165,12 @@
 			<artifactId>saaj-impl</artifactId>
 		</dependency>
 
-	</dependencies>
+	    <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 <!--  
 	<repositories>
 		<repository>
@@ -242,3 +231,4 @@
 		</plugins>
 	</build>
 </project>
+
