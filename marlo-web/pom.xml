@@ -133,20 +133,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-models</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -157,15 +144,8 @@
 			<artifactId>swagger-models</artifactId>
 			<version>1.5.21</version>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-bean-validators</artifactId>
-			<version>2.9.2</version>
-		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -469,8 +449,12 @@
 		<groupId>com.github.ben-manes.caffeine</groupId>
 		<artifactId>caffeine</artifactId>
 	</dependency>
-
-	</dependencies>
+        <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 
 
 	<build>
@@ -539,6 +523,8 @@
 			</plugin>
 
 			<!-- MINIFYING CSS AND JS - TEST -->
+			
+			<!--
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>
@@ -556,17 +542,12 @@
 							<cssSourceIncludes>
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
-<!--  
-							<jsSourceDir>global</jsSourceDir>
-							<jsSourceIncludes>
-								<jsSourceInclude>js/**/*.js</jsSourceInclude>
-							</jsSourceIncludes>
--->
 						</configuration>
 						<goals>
 							<goal>minify</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>crp-minify</id>
 						<phase>package</phase>
@@ -580,12 +561,6 @@
 							<cssSourceIncludes>
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
-<!--  
-							<jsSourceDir>global</jsSourceDir>
-							<jsSourceIncludes>
-								<jsSourceInclude>js/**/*.js</jsSourceInclude>
-							</jsSourceIncludes>
--->
 						</configuration>
 						<goals>
 							<goal>minify</goal>
@@ -593,6 +568,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<!-- END -->
 
             <plugin>
@@ -688,3 +664,5 @@
 		</license>
 	</licenses>
 </project>
+
+

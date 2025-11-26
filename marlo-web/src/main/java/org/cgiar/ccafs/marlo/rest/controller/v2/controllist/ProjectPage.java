@@ -36,15 +36,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
+
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
  */
-// @ApiIgnore
+// 
 @RestController
 @Api(tags = "Project Page")
-@ApiIgnore
+
 public class ProjectPage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectPage.class);
