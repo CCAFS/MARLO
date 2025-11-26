@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -28,11 +28,11 @@
 			<email>c.d.garcia@cgiar.org</email>
 		</developer>
 		<developer>
-			<name>Héctor F. Tobón R.</name>
+			<name>HÃ©ctor F. TobÃ³n R.</name>
 			<email>h.f.tobon@cgiar.org</email>
 		</developer>
 		<developer>
-			<name>Hernán D. Carvajal B.</name>
+			<name>HernÃ¡n D. Carvajal B.</name>
 			<email>h.d.carvajal@cgiar.org</email>
 		</developer>
 		<developer>
@@ -664,5 +664,6 @@
 		</license>
 	</licenses>
 </project>
+
 
 
