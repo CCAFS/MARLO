@@ -360,9 +360,6 @@
 			<interceptor-ref name="editProjectListStack" />
 			<interceptor-ref name="editHighlight" />
 
-			<interceptor-ref name="defaultStack">
-				<param name="fileUpload.allowedTypes">image/bmp,image/gif,image/jpeg,image/png</param>
-			</interceptor-ref>
 			<result name="input">/WEB-INF/crp/views/projects/projectHighlight.ftl
 			</result>
 			<result name="success" type="redirectAction">
