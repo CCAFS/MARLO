@@ -140,6 +140,40 @@
 	<!-- Common dependencies go here. -->
 	<dependencyManagement>
 		<dependencies>
+        <!-- === FIX CVEs CRÍTICOS - MARLO === -->
+        <!-- Woodstox (XXE) -->
+        <dependency>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+            <version>6.5.1</version>
+        </dependency>
+
+        <!-- XMLGraphics (Information Exposure) -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>xmlgraphics-commons</artifactId>
+            <version>2.9</version>
+        </dependency>
+
+        <!-- BouncyCastle (Hash Collision) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.70</version>
+        </dependency>
+
+        <!-- Jersey (Race Condition) -->
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>2.35</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>2.35</version>
+        </dependency>
+        <!-- === FIN FIX CVEs CRÍTICOS === -->
 			<!-- MARLO sub-modules should be defined here with the project.version -->
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
@@ -899,6 +933,7 @@
 		</license>
 	</licenses>
 </project>
+
 
 
 
