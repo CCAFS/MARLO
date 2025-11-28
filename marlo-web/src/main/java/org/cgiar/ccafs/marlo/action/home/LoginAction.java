@@ -323,22 +323,51 @@ public class LoginAction extends BaseAction {
 
 
   public String logout() {
-    User user = (User) this.getSession().get(APConstants.SESSION_USER);
-    if (user != null) {
-      LOG.info("User {} logout succesfully", user.getEmail());
-    }
-    this.getSession().clear();
-    SecurityUtils.getSubject().logout();
-
-    // Hack for cleaning cached authorization.
-    for (Realm realm : ((RealmSecurityManager) SecurityUtils.getSecurityManager()).getRealms()) {
-      if (realm instanceof APCustomRealm) {
-        APCustomRealm customRealm = (APCustomRealm) realm;
-        customRealm.clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
+      try {
+          User user = (User) this.getSession().get(APConstants.SESSION_USER);
+          if (user != null) {
+              LOG.info("User {} logout successfully", user.getEmail());
+          }
+      } catch (Exception e) {
+          LOG.warn("Error getting user from session during logout", e);
       }
-    }
+      
+      try {
+          this.getSession().clear();
+      } catch (Exception e) {
+          LOG.warn("Error clearing session", e);
+      }
+      
+      try {
+          SecurityUtils.getSubject().logout();
+      } catch (Exception e) {
+          LOG.warn("Error during Shiro logout", e);
+      }
 
-    return SUCCESS;
+      try {
+          // Hack for cleaning cached authorization.
+          for (Realm realm : ((RealmSecurityManager) SecurityUtils.getSecurityManager()).getRealms()) {
+              if (realm instanceof APCustomRealm) {
+                  APCustomRealm customRealm = (APCustomRealm) realm;
+                  customRealm.clearCachedAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
+              }
+          }
+      } catch (Exception e) {
+          LOG.warn("Error clearing cached authorization", e);
+      }
+      
+      try {
+          // Invalidar sesión HTTP también
+          javax.servlet.http.HttpSession httpSession = 
+              ServletActionContext.getRequest().getSession(false);
+          if (httpSession != null) {
+              httpSession.invalidate();
+          }
+      } catch (Exception e) {
+          LOG.warn("Error invalidating HTTP session", e);
+      }
+
+      return SUCCESS;
   }
 
   public String randomColor() {
