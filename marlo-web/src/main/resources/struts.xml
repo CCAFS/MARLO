@@ -5,7 +5,6 @@
 <struts>
 	<constant name="struts.localizedTextProvider"
 		value="marloLocalizedTextProvider" />
-
 	<!-- Add addition packages and configuration here. -->
 	<constant name="struts.objectFactory"
 		value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
@@ -30,6 +29,9 @@
 
 	<constant name="struts.multipart.parser" value="jakarta" />
 
+	<constant name="struts.multipart.maxFiles" value="10000" />
+	<constant name="struts.multipart.maxSize" value="314572900" />
+	<constant name="struts.multipart.saveDir" value="/tmp" />
 
 	<!-- Spring MVC will power the REST services exposed by MARLO not Struts2 -->
 	<constant name="struts.action.excludePattern" value="/api/*" />

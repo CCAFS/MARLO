@@ -32,6 +32,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Objects;
 
 import javax.inject.Named;
 
@@ -74,6 +76,13 @@ public class OutcomeValidator extends BaseValidator
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outcomes"}));
 
     }
+    // ==========================================================
+    // FILTER NULL OUTCOMES BEFORE VALIDATION
+    // ==========================================================
+    outcomes = outcomes.stream()
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
     for (int i = 0; i < outcomes.size(); i++) {
       CrpProgramOutcome outcome = outcomes.get(i);
       this.validateOuctome(action, outcome, i);
@@ -247,6 +256,9 @@ public class OutcomeValidator extends BaseValidator
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
+    if (outcome == null) {
+        return;
+    }
 
     if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
       action.addMessage(action.getText("outcome.action.statement.required", params));

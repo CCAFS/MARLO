@@ -862,6 +862,11 @@ public class OutcomesAction extends BaseAction {
       // update outcome
       // CrpProgramOutcome crpProgramOutcomeDB = crpProgramOutcomeManager.updateOutcome(crpProgramOutcomeDetached,
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
+
+      if (programOutcomeIncoming == null) {
+          LOG.warn("Null Outcome found in 'outcomes' during saveCrpProgramOutcome()");
+          continue;
+      }
       CrpProgramOutcome crpProgramOutcome = null;
       CrpProgramOutcome crpProgramOutcomeTemp = null;
       if (programOutcomeIncoming != null && programOutcomeIncoming.getId() != null) {
