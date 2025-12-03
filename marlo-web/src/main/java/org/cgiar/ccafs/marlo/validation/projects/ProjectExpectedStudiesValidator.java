@@ -75,10 +75,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
   private InstitutionManager institutionManager;
   private AllianceLeversSdgContributionManager allianceLeversSdgContributionManager;
 
-  String oicrGeneral = "";
-  String oicrAlliance = "";
-  String oicrOneCgiar = "";
-  String oicrCommunication = "";
   private BaseAction baseValidator;
 
   @Inject
@@ -195,10 +191,21 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     baseValidator = new BaseAction();
 
+    int oicrGeneral = action.getMissingFields().length();
     this.validateGeneralInformation(action, project, projectExpectedStudy, saving);
+    this.updateGeneralInformationStatus(action, projectExpectedStudy, oicrGeneral, saving);
+
+    int oicrAlliance = action.getMissingFields().length();
     this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
+    this.updateAllianceAlignmentStatus(action, projectExpectedStudy, oicrAlliance, saving);
+
+    int oicrOneCgiar = action.getMissingFields().length();
     this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
+    this.updateOneCgiarAlignmentStatus(action, projectExpectedStudy, oicrOneCgiar, saving);
+
+    int oicrCommunication = action.getMissingFields().length();
     this.validateCommunications(action, project, projectExpectedStudy, saving);
+    this.updateCommunicationsStatus(action, projectExpectedStudy, oicrCommunication, saving);
     // this.validateAllianceOICRid(action, projectExpectedStudy);
 
 
@@ -210,9 +217,11 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
 
-    this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
-      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-      ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
+    if (saving) {
+      this.saveMissingFields(project, projectExpectedStudy, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus(), action);
+    }
 
 
   }
@@ -408,11 +417,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-    oicrAlliance = action.getMissingFields().toString();
-    if (projectExpectedStudy != null && projectExpectedStudy.getId() != null
-      && (oicrAlliance.length() > oicrGeneral.length())) {
-      BaseAction.getIsOicrAllianceAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
-    }
   }
 
 
@@ -422,6 +426,46 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.addMessage(this.getTextCustom(action, "AllianceOicr"));
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.allianceOicr",
         InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  private boolean hasNewMissingFields(BaseAction action, int startIndex) {
+    return action.getMissingFields().length() > startIndex;
+  }
+
+  private void updateAllianceAlignmentStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy,
+    int startIndex, boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setOicrAllianceAlignmentComplete(!hasMissing);
+    if (saving && hasMissing) {
+      BaseAction.getIsOicrAllianceAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+    }
+  }
+
+  private void updateCommunicationsStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setOicrCommunicationsComplete(!hasMissing);
+    if (saving && hasMissing) {
+      BaseAction.getIsOicrCommunicationsCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+    }
+  }
+
+  private void updateGeneralInformationStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy,
+    int startIndex, boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setOicrGeneralInformationComplete(!hasMissing);
+    if (saving && hasMissing) {
+      BaseAction.getIsOicrGeneralInformationCompleteMap().put("" + projectExpectedStudy.getId(), "1");
+    }
+  }
+
+  private void updateOneCgiarAlignmentStatus(BaseAction action, ProjectExpectedStudy projectExpectedStudy,
+    int startIndex, boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setOicrOneCgiarAlignmentComplete(!hasMissing);
+    if (saving && hasMissing) {
+      BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
     }
   }
 
@@ -444,12 +488,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.setOicrCommunicationsComplete(true);
       if (this.validateCommunicationsFields(action.getMissingFields().toString())) {
         action.setOicrCommunicationsComplete(false);
-      }
-
-      oicrCommunication = action.getMissingFields().toString();
-
-      if (oicrCommunication.length() > oicrOneCgiar.length()) {
-        BaseAction.getIsOicrCommunicationsCompleteMap().put("" + projectExpectedStudy.getId(), "1");
       }
 
     } catch (Exception e) {
@@ -488,12 +526,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     boolean saving) {
 
     this.validateProjectExpectedStudyGeneralInformation(projectExpectedStudy, action);
-    oicrGeneral = action.getMissingFields().toString();
-    if (oicrGeneral.length() > 0) {
-      BaseAction.getIsOicrGeneralInformationCompleteMap().put("" + projectExpectedStudy.getId(), "1");
-    }
-
-
   }
 
   /**
@@ -596,11 +628,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-
-    oicrOneCgiar = action.getMissingFields().toString();
-    if (oicrOneCgiar.length() > oicrAlliance.length()) {
-      BaseAction.getIsOicrOneCgiarAlignmentCompleteMap().put("" + projectExpectedStudy.getId(), "1");
-    }
 
 
   }
