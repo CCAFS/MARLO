@@ -7713,7 +7713,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     Map<String, Object> jsonRoot = new HashMap<>();
     Map<String, Object> jsonMainRoot = new HashMap<>();
     
-    String projectID = null, projectTitle = null, projectDescription = null;
+    String projectID = null;
     String phaseID = null, cycle = null, year = null, loggedCenter = null;
     
     final Phase phase = this.getSelectedPhase();
@@ -7725,16 +7725,20 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         cycle = this.getSelectedCycle();
         year = String.valueOf(this.getSelectedYear());
         loggedCenter = this.getLoggedCrp().getAcronym();
-        
+
+        // Project Info
+        String projectTitle = null, startDate = null, endDate = null, managementLiaison = null, status = null, leadOrganization = null, leader = null;
+
         if (projectInfo != null) {
+          startDate = projectInfo.getStartDate() != null ? projectInfo.getStartDate().toString() : null;
+          endDate = projectInfo.getEndDate() != null ? projectInfo.getEndDate().toString() : null;
+          
           projectTitle = projectInfo.getTitle();
-          projectDescription = projectInfo.getSummary();
         }
         
         // Set basic project data
         jsonData.put("projectID", projectID);
         jsonData.put("projectTitle", projectTitle);
-        jsonData.put("projectDescription", projectDescription);
         jsonData.put("phaseID", phaseID);
         jsonData.put("cycle", cycle);
         jsonData.put("year", year);
