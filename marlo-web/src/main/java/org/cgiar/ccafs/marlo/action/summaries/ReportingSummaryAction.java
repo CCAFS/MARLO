@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
@@ -192,6 +193,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final UserManager userManager;
   private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
+  private final MicroserviceReportAction microserviceReportAction;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -222,7 +224,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager,
+    MicroserviceReportAction microserviceReportAction) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -263,6 +266,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.userManager = userManager;
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
+    this.microserviceReportAction = microserviceReportAction;
   }
 
   /**
@@ -1173,27 +1177,33 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       LOG.error("Error generating LOG info " + e.getMessage());
     }
 
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-      String masterQueryName = "Main_Query";
-      Resource reportResource;
-      if (this.getSelectedCycle().equals("Planning")) {
+    boolean generatePentahoReport =
+      true;
 
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
-      } else {
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
-      }
-      // Get main report
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-      // General list to store parameters of Subreports
-      List<Object> args = new LinkedList<>();
-      // Verify if the project was found
-      if (project != null) {
-        // Get details band
-        ItemBand masteritemBand = masterReport.getItemBand();
-        // Create new empty subreport hash map
+    if (generatePentahoReport) {
+
+      try {
+        String masterQueryName = "Main_Query";
+        Resource reportResource;
+        if (this.getSelectedCycle().equals("Planning")) {
+
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
+        } else {
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
+        }
+        // Get main report
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+        // General list to store parameters of Subreports
+        List<Object> args = new LinkedList<>();
+        // Verify if the project was found
+        if (project != null) {
+          // Get details band
+          ItemBand masteritemBand = masterReport.getItemBand();
+          // Create new empty subreport hash map
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
@@ -1350,6 +1360,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+  } else {
+    // Specificity false - use microservice for report generation
+    try {
+      this.generateAndSendJson();
+      bytesPDF = os.toByteArray();
+    } catch (Exception e) {
+      if (e.getClass().getName().contains("ClientAbortException")) {
+        System.out.println("Client aborted the connection: " + e.getMessage());
+      } else {
+        System.out.println("Exception while generating JSON: " + e.getMessage());
+        throw e;
+      }
+    } finally {
+      try {
+        os.close();
+      } catch (Exception e) {
+        System.out.println("Error closing output stream: " + e.getMessage());
+      }
+    }
+  }
     return SUCCESS;
   }
 
@@ -7665,7 +7695,186 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
   }
 
-  @Override
+  /**
+   * Generate JSON data and send to microservice for PDF generation.
+   * This method is called when the specificity GENERATE_PENTAHO_REPORTING_SUMMARY_REPORT_ACTIVE is false.
+   * 
+   * @return SUCCESS after sending data to microservice
+   */
+  @SuppressWarnings("unused")
+  public String generateAndSendJson() {
+    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    
+    // Initialize JSON objects
+    Map<String, Object> jsonData = new HashMap<>();
+    Map<String, Object> jsonOptions = new HashMap<>();
+    Map<String, String> headerMap = new HashMap<>();
+    Map<String, String> footerMap = new HashMap<>();
+    Map<String, Object> jsonRoot = new HashMap<>();
+    Map<String, Object> jsonMainRoot = new HashMap<>();
+    
+    String projectID = null, projectTitle = null, projectDescription = null;
+    String phaseID = null, cycle = null, year = null, loggedCenter = null;
+    
+    final Phase phase = this.getSelectedPhase();
+    
+    try {
+      if (project != null) {
+        projectID = project.getId().toString();
+        phaseID = phase.getId().toString();
+        cycle = this.getSelectedCycle();
+        year = String.valueOf(this.getSelectedYear());
+        loggedCenter = this.getLoggedCrp().getAcronym();
+        
+        if (projectInfo != null) {
+          projectTitle = projectInfo.getTitle();
+          projectDescription = projectInfo.getSummary();
+        }
+        
+        // Set basic project data
+        jsonData.put("projectID", projectID);
+        jsonData.put("projectTitle", projectTitle);
+        jsonData.put("projectDescription", projectDescription);
+        jsonData.put("phaseID", phaseID);
+        jsonData.put("cycle", cycle);
+        jsonData.put("year", year);
+        jsonData.put("loggedCenter", loggedCenter);
+        jsonData.put("timeCreation", this.getCurrentDatev2());
+      }
+    } catch (Exception e) {
+      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
+    }
+    
+    // Set PDF options
+    headerMap.put("height", "40mm");
+    footerMap.put("height", "30mm");
+    try {
+      jsonOptions.put("format", "A4");
+      jsonOptions.put("orientation", "portrait");
+      jsonOptions.put("border", "0");
+      jsonOptions.put("zoomFactor", 1);
+      jsonOptions.put("header", headerMap);
+      jsonOptions.put("footer", footerMap);
+      jsonOptions.put("timeout", "300000");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonOptions: " + e.getMessage());
+    }
+    
+    try {
+      jsonRoot.put("data", jsonData);
+      jsonRoot.put("options", jsonOptions);
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot info: " + e.getMessage());
+    }
+    
+    // Load microservice configuration
+    this.microserviceReportAction.loadData();
+    
+    String reportName = null;
+    String bucketName = null;
+    
+    try {
+      reportName = "AICCRA-Project-" + project.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+      bucketName = this.config.getMicroserviceBucketname();
+      
+      jsonRoot.put("fileName", reportName);
+      jsonRoot.put("bucketName", bucketName);
+    } catch (Exception e) {
+      System.out.println("Error setting report name and bucket: " + e.getMessage());
+    }
+    
+    String username = null, password = null;
+    try {
+      username = this.config.getMicroserviceUsername();
+      password = this.config.getMicroservicePassword();
+    } catch (final Exception e) {
+      System.out.println("Error getting microservice credentials: " + e);
+    }
+    
+    try {
+      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+      jsonRoot.put("credentials", credentialsJson);
+      
+      jsonMainRoot.put("data", jsonRoot);
+      jsonMainRoot.put("pattern", "pdf.generate");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot and jsonMainRoot information: " + e);
+    }
+    
+    try {
+      final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
+      
+      System.out.println("Sending reporting summary to microservice: " + reportName);
+      // Note: Using sendOICRsQueueMessage as a generic method for sending reports
+      this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, reportName);
+      
+    } catch (final java.io.IOException e) {
+      System.out.println("Error generating JSON: " + e);
+    }
+    
+    return SUCCESS;
+  }
+
+  /**
+   * Get current date and time formatted as yyyyMMdd_HHmm
+   * 
+   * @return Formatted date-time string
+   */
+  private String getCurrentDateTime() {
+    java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+    String formattedDateTime = currentDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+    return formattedDateTime;
+  }
+
+  /**
+   * Get current date formatted as "Monday, March 17th, 2025, at 21:57"
+   * 
+   * @return Formatted date string with ordinal day suffix
+   */
+  private String getCurrentDatev2() {
+    // Define the date format: "Monday, March 17, 2025, at 21:57"
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(java.util.TimeZone.getTimeZone("CET")); // Set timezone to CET
+
+    // Format the current date without ordinal suffix
+    String formattedDate = formatter.format(new Date());
+
+    // Extract the day of the month
+    Calendar calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("CET"), Locale.US);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    // Get the appropriate ordinal suffix (st, nd, rd, th)
+    String ordinal = this.getDayOrdinal(day);
+
+    // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
+    return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+  /**
+   * Method to determine the ordinal suffix for a given day
+   * 
+   * @param day Day of the month
+   * @return Ordinal suffix (st, nd, rd, th)
+   */
+  private String getDayOrdinal(int day) {
+    // Special cases: 11th, 12th, 13th always use "th"
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+
+    // Determine suffix based on the last digit
+    switch (day % 10) {
+      case 1:
+        return "st"; // 1st, 21st, 31st
+      case 2:
+        return "nd"; // 2nd, 22nd
+      case 3:
+        return "rd"; // 3rd, 23rd
+      default:
+        return "th"; // 4th, 5th, ..., 24th, 25th, etc.
+    }
+  }
+
   /**
    * Prepare the parameters of the project.
    * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class
