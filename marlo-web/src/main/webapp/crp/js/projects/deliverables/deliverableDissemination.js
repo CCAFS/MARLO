@@ -827,7 +827,8 @@ function updateWOSFields(data) {
 
   }
 
-  if (nullDataPipe(isISI).toLowerCase() == 'yes') {
+  const isiValue = nullDataPipe(isISI).toLowerCase();
+  if (isiValue === 'yes' || isiValue === 'isi journal') {
     $('#WOS_tag_ISI_yes').show('slow');
     $('#WOS_tag_ISI__no').hide('slow');
   } else {
