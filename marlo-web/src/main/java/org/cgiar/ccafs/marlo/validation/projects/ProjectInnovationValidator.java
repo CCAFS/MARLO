@@ -61,12 +61,6 @@ public class ProjectInnovationValidator extends BaseValidator {
   private Boolean clearLead = false;
   private InstitutionManager institutionManager;
 
-  String innovationGeneral = "";
-  String innovationAlliance = "";
-  String innovationOneCgiar = "";
-  String innovationBundle = "";
-  String innovationRights = "";
-
   @Inject
   public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
     super();
@@ -154,11 +148,25 @@ public class ProjectInnovationValidator extends BaseValidator {
     resultProgessValidate = this.validateIsProgress(action);
     this.clearLead = clearLead;
     this.struts = struts;
+    int innovationGeneralStart = action.getMissingFields().length();
     this.validateGeneralInformation(action, project, projectInnovation, saving);
+    this.updateGeneralInformationStatus(action, projectInnovation, innovationGeneralStart, saving);
+
+    int innovationAllianceStart = action.getMissingFields().length();
     this.validateAllianceAlignment(action, project, projectInnovation, saving);
+    this.updateAllianceAlignmentStatus(action, projectInnovation, innovationAllianceStart, saving);
+
+    int innovationOneCgiarStart = action.getMissingFields().length();
     this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
+    this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
+
+    int innovationBundleStart = action.getMissingFields().length();
     this.validateInnovationBundle(action, project, projectInnovation, saving);
+    this.updateBundleStatus(action, projectInnovation, innovationBundleStart, saving);
+
+    int innovationRightsStart = action.getMissingFields().length();
     this.validateInnovationRights(action, project, projectInnovation, saving);
+    this.updateRightsStatus(action, projectInnovation, innovationRightsStart, saving);
 
     // The validator is called by Struts
     if (struts) {
@@ -170,9 +178,11 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    this.saveMissingFields(project, projectInnovation, action.getActualPhase().getDescription(),
-      action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
-      ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
+    if (saving) {
+      this.saveMissingFields(project, projectInnovation, action.getActualPhase().getDescription(),
+        action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
+        ProjectSectionStatusEnum.INNOVATIONS.getStatus(), action);
+    }
   }
 
   /**
@@ -196,10 +206,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    innovationAlliance = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationAlliance.length() > innovationGeneral.length())) {
-      BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
   }
 
   /**
@@ -610,13 +616,6 @@ public class ProjectInnovationValidator extends BaseValidator {
       action.getInvalidFields().put("input-innovation.projectInnovationInfo.innovationBundle",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-
-    innovationGeneral = action.getMissingFields().toString();
-    if (projectInnovation != null && projectInnovation.getId() != null && (innovationGeneral.length() > 0)) {
-      BaseAction.getIsInnovationGeneralInformationCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
-
-
     /*
      * if (action.getValidationMessage() == null || action.getValidationMessage().toString() == null
      * || action.getValidationMessage().toString().isEmpty()) {
@@ -702,10 +701,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
 
     }
-    innovationBundle = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationBundle.length() > innovationOneCgiar.length())) {
-      BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
   }
 
   /**
@@ -724,16 +719,16 @@ public class ProjectInnovationValidator extends BaseValidator {
 
         // Validate foresee barriers
         if (innovationInfo.getForeseeBarriers() == null) {
-          action.addMessage(action.getText("innovation.projectInnovationInfo.foreseeBarriers"));
+          action.addMessage(action.getText("projectInnovations.sharing.aboutTheTool.foreseeBarriers"));
           action.addMissingField("innovation.projectInnovationInfo.foreseeBarriers");
           action.getInvalidFields().put("input-innovation.projectInnovationInfo.foreseeBarriers",
             InvalidFieldsMessages.EMPTYFIELD);
         } else {
           if (Boolean.TRUE.equals(innovationInfo.getForeseeBarriers())) {
-            if (!(this.isValidString(innovationInfo.getKnowledgeResultsNarrative()))) {
-              action.addMessage(action.getText("innovation.projectInnovationInfo.knowledgeResultsNarrative"));
-              action.addMissingField("innovation.projectInnovationInfo.knowledgeResultsNarrative");
-              action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeResultsNarrative",
+            if (!(this.isValidString(innovationInfo.getKnowledgeToolUsesNarrative()))) {
+              action.addMessage(action.getText("projectInnovations.sharing.aboutTheTool.uses"));
+              action.addMissingField("innovation.projectInnovationInfo.knowledgeToolUsesNarrative");
+              action.getInvalidFields().put("input-innovation.projectInnovationInfo.knowledgeToolUsesNarrative",
                 InvalidFieldsMessages.EMPTYFIELD);
             }
           }
@@ -1126,12 +1121,57 @@ public class ProjectInnovationValidator extends BaseValidator {
 
       }
 
-      innovationRights = action.getMissingFields().toString();
-      if (projectInnovation.getId() != null && (innovationRights.length() > innovationBundle.length())) {
-        BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
-      }
     } catch (Exception e) {
       Log.error("error validating rights tab ");
+    }
+  }
+
+  private boolean hasNewMissingFields(BaseAction action, int startIndex) {
+    return action.getMissingFields().length() > startIndex;
+  }
+
+  private void updateAllianceAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationAllianceAlignmentComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateBundleStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationBundleComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateGeneralInformationStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationGeneralInformationComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationGeneralInformationCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateOneCgiarAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationOneCgiarAlignmentComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateRightsStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationRightsComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 
@@ -1222,10 +1262,6 @@ public class ProjectInnovationValidator extends BaseValidator {
        * }
        * }
        */
-    }
-    innovationOneCgiar = action.getMissingFields().toString();
-    if (projectInnovation.getId() != null && (innovationOneCgiar.length() > innovationAlliance.length())) {
-      BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 

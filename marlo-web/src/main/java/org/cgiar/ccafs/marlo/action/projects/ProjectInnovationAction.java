@@ -132,6 +132,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationFunction;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationImpactArea;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationPRMS;
@@ -2351,6 +2352,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveAllianceOrganizations(innovationDB, phase);
       this.saveActors(innovationDB, phase);
       this.saveToolCategories(innovationDB, phase);
+      this.verifyBundleType(innovationDB, phase);
       this.saveBundles(innovationDB, phase);
       this.saveComplementarySolutions(innovationDB, phase);
       this.savePrmsInnovations(innovationDB, phase);
@@ -2701,6 +2703,37 @@ public class ProjectInnovationAction extends BaseAction {
     } catch (Exception e) {
       logger.error("Error saving innovation bundles", e);
       System.out.println("Error saving innovation bundles: " + e);
+    }
+  }
+
+  public void verifyBundleType(ProjectInnovation projectInnovation, Phase phase) {
+    try {
+      if(projectInnovation != null && projectInnovation.getProjectInnovationInfo(phase) != null) {
+        ProjectInnovationInfo info = projectInnovation.getProjectInnovationInfo(phase);
+        if (info.getInnovationBundle() != null && info.getInnovationBundle() == false) {
+          if (innovation.getBundles() != null) {
+            innovation.getBundles().clear();
+          }
+          if (innovation.getComplementarySolutions() != null) {
+            innovation.getComplementarySolutions().forEach(solution -> {
+              if (solution == null) {
+                return;
+              }
+              if (solution.getComplementarySolutionFunctions() != null) {
+                solution.getComplementarySolutionFunctions().clear();
+              }
+              if (solution.getProjectInnovationComplementarySolutionFunctions() != null) {
+                solution.getProjectInnovationComplementarySolutionFunctions().clear();
+              }
+            });
+            innovation.getComplementarySolutions().clear();
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      logger.error("Error verifying bundle type", e);
+      System.out.println("Error verifying bundle type: " + e);
     }
   }
 
@@ -4752,6 +4785,66 @@ public class ProjectInnovationAction extends BaseAction {
 
 
       ProjectInnovationAction.getIsSaving().remove(innovationID + "");
+    }
+
+    this.evaluateTabsStatus();
+  }
+
+  private void evaluateTabsStatus() {
+    if (this.project == null || this.innovation == null || this.innovation.getId() == null) {
+      this.setInnovationGeneralInformationComplete(false);
+      this.setInnovationAllianceAlignmentComplete(false);
+      this.setInnovationOneCgiarAlignmentComplete(false);
+      this.setInnovationBundleComplete(false);
+      this.setInnovationRightsComplete(false);
+      return;
+    }
+
+    StringBuilder previousMissingFields = new StringBuilder(this.getMissingFields().toString());
+    StringBuilder previousValidationMessage = new StringBuilder(this.getValidationMessage().toString());
+    HashMap<String, String> previousInvalidFields =
+      this.getInvalidFields() != null ? new HashMap<>(this.getInvalidFields()) : new HashMap<>();
+    List<String> previousMessages = new ArrayList<>(this.getActionMessages());
+    List<String> previousErrors = new ArrayList<>(this.getActionErrors());
+
+    this.getMissingFields().setLength(0);
+    this.getValidationMessage().setLength(0);
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.clearMessages();
+    this.clearErrors();
+
+    Boolean currentClearLead = this.clearLead;
+    if (currentClearLead == null) {
+      currentClearLead = false;
+    }
+
+    this.validator.validate(this, this.project, this.innovation, currentClearLead, false, true,
+      this.getActualPhase().getYear(), this.getActualPhase().getUpkeep());
+
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.getInvalidFields().putAll(previousInvalidFields);
+
+    this.getMissingFields().setLength(0);
+    this.getMissingFields().append(previousMissingFields);
+    this.getValidationMessage().setLength(0);
+    this.getValidationMessage().append(previousValidationMessage);
+
+    this.clearMessages();
+    for (String message : previousMessages) {
+      this.addActionMessage(message);
+    }
+
+    this.clearErrors();
+    for (String error : previousErrors) {
+      this.addActionError(error);
     }
   }
 }
