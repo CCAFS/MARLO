@@ -7804,9 +7804,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
       
-      System.out.println("Sending reporting summary to microservice: " + reportName);
-      // Note: Using sendOICRsQueueMessage as a generic method for sending reports
-      this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, reportName);
+      System.out.println("Sending cluster report to microservice: " + reportName);
+      // Using sendClusterReportQueueMessage for cluster/project summary reports
+      this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
       
     } catch (final java.io.IOException e) {
       System.out.println("Error generating JSON: " + e);
