@@ -2276,9 +2276,61 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       ProjectExpectedStudiesAction.getIsSaving().remove(expectedID + "");
     }
 
+    this.evaluateTabsStatus();
+
 
   }
 
+
+  private void evaluateTabsStatus() {
+    if (this.project == null || this.expectedStudy == null || this.expectedStudy.getId() == null) {
+      this.setOicrGeneralInformationComplete(false);
+      this.setOicrAllianceAlignmentComplete(false);
+      this.setOicrOneCgiarAlignmentComplete(false);
+      this.setOicrCommunicationsComplete(false);
+      return;
+    }
+
+    StringBuilder previousMissingFields = new StringBuilder(this.getMissingFields().toString());
+    StringBuilder previousValidationMessage = new StringBuilder(this.getValidationMessage().toString());
+    HashMap<String, String> previousInvalidFields =
+      this.getInvalidFields() != null ? new HashMap<>(this.getInvalidFields()) : new HashMap<>();
+    List<String> previousMessages = new ArrayList<>(this.getActionMessages());
+    List<String> previousErrors = new ArrayList<>(this.getActionErrors());
+
+    this.getMissingFields().setLength(0);
+    this.getValidationMessage().setLength(0);
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.clearMessages();
+    this.clearErrors();
+
+    this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, false);
+
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.getInvalidFields().putAll(previousInvalidFields);
+    this.getMissingFields().setLength(0);
+    this.getMissingFields().append(previousMissingFields);
+    this.getValidationMessage().setLength(0);
+    this.getValidationMessage().append(previousValidationMessage);
+
+    this.clearMessages();
+    for (String message : previousMessages) {
+      this.addActionMessage(message);
+    }
+
+    this.clearErrors();
+    for (String error : previousErrors) {
+      this.addActionError(error);
+    }
+  }
 
   @Override
   public String save() {
@@ -4957,4 +5009,3 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
 }
-
