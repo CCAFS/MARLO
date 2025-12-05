@@ -641,15 +641,16 @@ public class ProjectInnovationValidator extends BaseValidator {
   public void validateInnovationBundle(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
+        ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
       // Validate bundles
-      /*
-       * if (projectInnovation.getBundles() == null || projectInnovation.getBundles().isEmpty()) {
-       * action.addMessage(action.getText("innovation.bundles"));
-       * action.addMissingField("innovation.bundles");
-       * action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
-       * }
-       */
+      
+       if (innovationInfo != null && innovationInfo.getInnovationBundle() && (projectInnovation.getBundles() == null || projectInnovation.getBundles().isEmpty())) {
+          action.addMessage(action.getText("projectInnovations.tab.bundleComposition"));
+          action.addMissingField("projectInnovations.tab.bundleComposition");
+          action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
+       }
+       
       // Validate Complementary Solutions
       if (projectInnovation.getComplementarySolutions() != null
         && !projectInnovation.getComplementarySolutions().isEmpty()) {
