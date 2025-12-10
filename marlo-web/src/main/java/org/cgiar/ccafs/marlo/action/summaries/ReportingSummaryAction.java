@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -194,6 +195,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
+  private String clusterReportTemplateData = null;
+  private String bucketName = null;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -225,7 +229,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
     DeliverableShfrmSubActionManager deliverableShfrmSubActionManager,
-    MicroserviceReportAction microserviceReportAction) {
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -267,6 +271,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
     this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
   }
 
   /**
@@ -1180,7 +1185,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     boolean generatePentahoReport =
-      true;
+      false;
 
     if (generatePentahoReport) {
 
@@ -7696,6 +7701,27 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   /**
+   * Load cluster/project template data from report_configurations table.
+   * Following the same pattern used in ProjectInnovationSummaryAction and BaseStudySummaryData.
+   * Extracts the projectTemplateData field and assigns it to clusterReportTemplateData.
+   */
+  public void loadClusterTemplateData() {
+    try {
+      List<ReportConfiguration> reportConfigurations = new ArrayList<>();
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        if (reportConfiguration.getProjectTemplateData() != null) {
+          this.clusterReportTemplateData = reportConfiguration.getProjectTemplateData();
+        }
+      }
+      this.bucketName = this.config.getMicroserviceBucketname();
+    } catch (final Exception e) {
+      System.out.println("error getting report configuration data " + e);
+    }
+  }
+
+  /**
    * Generate JSON data and send to microservice for PDF generation.
    * This method is called when the specificity GENERATE_PENTAHO_REPORTING_SUMMARY_REPORT_ACTIVE is false.
    * 
@@ -7771,8 +7797,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       System.out.println("Error setting jsonRoot info: " + e.getMessage());
     }
     
-    // Load microservice configuration
+    // Load microservice configuration and cluster template data
     this.microserviceReportAction.loadData();
+    this.loadClusterTemplateData();
     
     String reportName = null;
     String bucketName = null;
@@ -7783,6 +7810,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       
       jsonRoot.put("fileName", reportName);
       jsonRoot.put("bucketName", bucketName);
+      jsonRoot.put("templateData", this.clusterReportTemplateData);
     } catch (Exception e) {
       System.out.println("Error setting report name and bucket: " + e.getMessage());
     }
