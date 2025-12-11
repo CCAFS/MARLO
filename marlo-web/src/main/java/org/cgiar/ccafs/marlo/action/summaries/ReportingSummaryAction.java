@@ -7753,13 +7753,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         loggedCenter = this.getLoggedCrp().getAcronym();
 
         // Project Info
-        String projectTitle = null, startDate = null, endDate = null, managementLiaison = null, status = null, leadOrganization = null, leader = null;
+        String projectTitle = null;
 
         if (projectInfo != null) {
-          startDate = projectInfo.getStartDate() != null ? projectInfo.getStartDate().toString() : null;
-          endDate = projectInfo.getEndDate() != null ? projectInfo.getEndDate().toString() : null;
-          
           projectTitle = projectInfo.getTitle();
+        }
+        
+        Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+        if (!projectDescription.isEmpty()) {
+          jsonData.put("projectDescription", projectDescription);
         }
         
         // Set basic project data
@@ -7845,6 +7847,184 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     
     return SUCCESS;
+  }
+
+  private Map<String, Object> buildProjectDescriptionSection() {
+    Map<String, Object> projectDescription = new HashMap<>();
+    if (project == null || projectInfo == null) {
+      return projectDescription;
+    }
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    String startDate =
+      projectInfo.getStartDate() != null ? formatter.format(projectInfo.getStartDate()) : null;
+    String endDate = projectInfo.getEndDate() != null ? formatter.format(projectInfo.getEndDate()) : null;
+    String liaisonInstitution =
+      projectInfo.getLiaisonInstitution() != null ? projectInfo.getLiaisonInstitution().getName() : null;
+    String type = this.buildFundingTypeSummary();
+    String status = null;
+    if (projectInfo.getStatus() != null) {
+      status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
+    }
+
+    String orgLeader = null;
+    ProjectPartner projectLeader = null;
+    if (this.getSelectedPhase() != null) {
+      projectLeader = project.getLeader(this.getSelectedPhase());
+    }
+    if (projectLeader != null && projectLeader.getInstitution() != null) {
+      orgLeader = projectLeader.getInstitution().getComposedName();
+    }
+
+    String leader = null;
+    ProjectPartnerPerson leaderPerson = project.getLeaderPerson(this.getSelectedPhase());
+    if (leaderPerson != null && leaderPerson.getUser() != null) {
+      String leaderName = leaderPerson.getUser().getComposedName();
+      String leaderEmail = leaderPerson.getUser().getEmail();
+      leader = leaderName;
+      if (leaderEmail != null && !leaderEmail.isEmpty()) {
+        leader += " <" + leaderEmail + ">";
+      }
+    }
+
+    String summary = projectInfo.getSummary();
+    if (summary != null) {
+      summary = summary.replaceAll("\r", "\n").trim();
+      if (summary.isEmpty()) {
+        summary = null;
+      }
+    }
+
+    projectDescription.put("title", projectInfo.getTitle());
+    projectDescription.put("startDate", startDate);
+    projectDescription.put("endDate", endDate);
+    projectDescription.put("liaisonInstitution", liaisonInstitution);
+    projectDescription.put("liaisonLabel", this.getText("project.liaisonInstitution"));
+    projectDescription.put("liaisonContactLabel", this.getText("project.liaisonUser"));
+    projectDescription.put("type", type);
+    projectDescription.put("status", status);
+    projectDescription.put("leadOrganization", orgLeader);
+    projectDescription.put("leader", leader);
+    projectDescription.put("summary", summary);
+    projectDescription.put("cycle", this.getSelectedCycle());
+    projectDescription.put("crossCutting", this.buildCrossCuttingSummary());
+    projectDescription.put("hasRegions", this.hasProgramnsRegions());
+    projectDescription.put("flagships", this.buildProgramFocusList(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()));
+    projectDescription.put("regions", this.hasProgramnsRegions()
+      ? this.buildProgramFocusList(ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) : new ArrayList<>());
+    projectDescription.put("clusterActivities", this.buildClusterActivitiesList());
+
+    return projectDescription;
+  }
+
+  private String buildFundingTypeSummary() {
+    if (project == null || project.getProjectBudgets() == null || project.getProjectBudgets().isEmpty()) {
+      return null;
+    }
+
+    List<String> typeList = project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getBudgetType() != null
+        && pb.getFundingSource() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName() != null)
+      .map(pb -> pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName())
+      .collect(Collectors.toList());
+
+    if (typeList.isEmpty()) {
+      return null;
+    }
+
+    Set<String> distinctTypes = new LinkedHashSet<>(typeList);
+    return String.join(", ", distinctTypes);
+  }
+
+  private String buildCrossCuttingSummary() {
+    if (projectInfo == null) {
+      return null;
+    }
+
+    List<String> crossCuttingItems = new ArrayList<>();
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingNa())) {
+      crossCuttingItems.add("● N/A");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingCapacity())) {
+      crossCuttingItems.add("● Capacity Development");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingGender())) {
+      crossCuttingItems.add("● Gender");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingYouth())) {
+      crossCuttingItems.add("● Youth");
+    }
+
+    if (crossCuttingItems.isEmpty()) {
+      return null;
+    }
+    return String.join(" <br>", crossCuttingItems);
+  }
+
+  private List<Map<String, Object>> buildProgramFocusList(int programType) {
+    List<Map<String, Object>> programsData = new ArrayList<>();
+    if (project == null || project.getProjectFocuses() == null) {
+      return programsData;
+    }
+
+    List<ProjectFocus> focuses = project.getProjectFocuses().stream()
+      .sorted((f1, f2) -> f1.getCrpProgram().getAcronym().compareTo(f2.getCrpProgram().getAcronym()))
+      .filter(c -> c.isActive() && c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == programType && c.getPhase() != null
+        && c.getPhase().equals(this.getSelectedPhase()) && c.getCrpProgram().getResearchArea() == null
+        && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().isCenterType() == false)
+      .collect(Collectors.toList());
+
+    for (ProjectFocus focus : focuses) {
+      CrpProgram program = programManager.getCrpProgramById(focus.getCrpProgram().getId());
+      if (program == null) {
+        continue;
+      }
+      Map<String, Object> programData = new HashMap<>();
+      programData.put("id", program.getId());
+      programData.put("name", program.getName());
+      programData.put("acronym", program.getAcronym());
+      programData.put("composedName", program.getComposedName());
+      programsData.add(programData);
+    }
+    return programsData;
+  }
+
+  private List<Map<String, Object>> buildClusterActivitiesList() {
+    List<Map<String, Object>> activities = new ArrayList<>();
+    if (project == null || project.getProjectClusterActivities() == null) {
+      return activities;
+    }
+
+    List<ProjectClusterActivity> clusterActivities = new ArrayList<>();
+    for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList())) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      boolean duplicated = clusterActivities.stream()
+        .anyMatch(existing -> existing.getCrpClusterOfActivity().getId()
+          .equals(projectClusterActivity.getCrpClusterOfActivity().getId()));
+      if (!duplicated) {
+        clusterActivities.add(projectClusterActivity);
+      }
+    }
+
+    for (ProjectClusterActivity projectClusterActivity : clusterActivities) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      Map<String, Object> activityData = new HashMap<>();
+      activityData.put("id", projectClusterActivity.getCrpClusterOfActivity().getId());
+      activityData.put("name", projectClusterActivity.getCrpClusterOfActivity().getComposedName());
+      activityData.put("identifier", projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+      activities.add(activityData);
+    }
+    return activities;
   }
 
   /**
