@@ -30,10 +30,11 @@ SET project_template_data = '<!DOCTYPE html>
   .grid-item span { display: block; font-size: 11px; letter-spacing: 0.1em; color: #6a7a89; margin-bottom: 8px; text-transform: uppercase; }
   .grid-item strong { font-size: 16px; color: #1F1F1F; word-break: break-word; }
   .card { background: white; border-radius: 12px; padding: 18px; border: 1px solid #dfe6ee; box-shadow: 0 4px 12px rgba(10, 76, 112, 0.05); margin-top: 12px; }
+  .card p { white-space: pre-line; }
   .list-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid #dfe6ee; box-shadow: 0 4px 12px rgba(10, 76, 112, 0.05); }
   .list-card h4 { margin: 0 0 12px 0; font-size: 13px; letter-spacing: 0.08em; color: #6a7a89; text-transform: uppercase; }
   .list-card ul { list-style: none; padding: 0; margin: 0; }
-  .list-card li { font-size: 14px; padding: 8px 0; border-bottom: 1px solid #eef2f7; }
+  .list-card li { font-size: 14px; padding: 8px 0; border-bottom: 1px solid #eef2f7; white-space: pre-line; }
   .list-card li:last-child { border-bottom: none; }
   .list-card small { display: block; color: #6a7a89; font-size: 11px; letter-spacing: 0.05em; }
   #pageHeader, #pageFooter { position: fixed; left: 0; right: 0; height: 80px; padding: 15px 50px; background: white; box-sizing: border-box; }
@@ -116,6 +117,40 @@ SET project_template_data = '<!DOCTYPE html>
         <strong>{{#safeEmpty}}{{timeCreation}}{{/safeEmpty}}</strong>
       </div>
     </div>
+    <div class="grid grid--2">
+      <div class="grid-item">
+        <span>Flagship focus</span>
+        {{#flagshipsSummary}}
+          <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
+        {{/flagshipsSummary}}
+        {{^flagshipsSummary}}
+          <strong>No flagships reported</strong>
+        {{/flagshipsSummary}}
+      </div>
+      <div class="grid-item">
+        <span>Regional focus</span>
+        {{#hasRegions}}
+          {{#regionsSummary}}
+            <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
+          {{/regionsSummary}}
+          {{^regionsSummary}}
+            <strong>No regions reported</strong>
+          {{/regionsSummary}}
+        {{/hasRegions}}
+        {{^hasRegions}}
+          <strong>Not applicable</strong>
+        {{/hasRegions}}
+      </div>
+      <div class="grid-item">
+        <span>Cluster activities</span>
+        {{#clusterActivitiesSummary}}
+          <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
+        {{/clusterActivitiesSummary}}
+        {{^clusterActivitiesSummary}}
+          <strong>No cluster activities reported</strong>
+        {{/clusterActivitiesSummary}}
+      </div>
+    </div>
   </section>
 
   {{#projectDescription}}
@@ -161,7 +196,7 @@ SET project_template_data = '<!DOCTYPE html>
     <h3>Project summary</h3>
     <div class="card">
       {{#summary}}
-        <p>{{summary}}</p>
+        <p>{{#safeEmpty}}{{.}}{{/safeEmpty}}</p>
       {{/summary}}
       {{^summary}}
         <p>No summary provided.</p>
@@ -182,13 +217,43 @@ SET project_template_data = '<!DOCTYPE html>
   </section>
 
   <section class="section">
+    <h3>Challenges &amp; solutions</h3>
+    <div class="card">
+      {{#challengesSolutions}}
+        <p>{{#safeEmpty}}{{.}}{{/safeEmpty}}</p>
+      {{/challengesSolutions}}
+      {{^challengesSolutions}}
+        <p>No challenges reported.</p>
+      {{/challengesSolutions}}
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Lessons learned</h3>
+    <div class="card">
+      {{#lessonsLearned}}
+        <p>{{#safeEmpty}}{{.}}{{/safeEmpty}}</p>
+      {{/lessonsLearned}}
+      {{^lessonsLearned}}
+        <p>No lessons reported.</p>
+      {{/lessonsLearned}}
+    </div>
+  </section>
+
+  <section class="section">
     <h3>Flagships, regions & clusters</h3>
     <div class="grid grid--3">
       <div class="list-card">
         <h4>Flagships</h4>
         <ul>
           {{#flagships}}
-          <li><strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong><small>{{#safeEmpty}}{{acronym}}{{/safeEmpty}}</small></li>
+          <li>
+            <strong>
+              {{#composedName}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/composedName}}
+              {{^composedName}}{{#name}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/name}}{{/composedName}}
+            </strong>
+            {{#acronym}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/acronym}}
+          </li>
           {{/flagships}}
           {{^flagships}}
           <li>No flagships reported.</li>
@@ -200,7 +265,16 @@ SET project_template_data = '<!DOCTYPE html>
         <h4>Regions</h4>
         <ul>
           {{#regions}}
-          <li><strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong><small>{{#safeEmpty}}{{acronym}}{{/safeEmpty}}</small></li>
+          <li>
+            <strong>
+              {{#composedName}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/composedName}}
+              {{^composedName}}{{#name}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/name}}{{/composedName}}
+            </strong>
+            {{#acronym}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/acronym}}
+          </li>
+          {{/regions}}
+          {{^regions}}
+          <li>No regions reported.</li>
           {{/regions}}
         </ul>
       </div>
@@ -217,7 +291,13 @@ SET project_template_data = '<!DOCTYPE html>
         <h4>Cluster activities</h4>
         <ul>
           {{#clusterActivities}}
-          <li><strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong><small>{{#safeEmpty}}{{identifier}}{{/safeEmpty}}</small></li>
+          <li>
+            <strong>
+              {{#name}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/name}}
+              {{^name}}{{#identifier}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/identifier}}{{/name}}
+            </strong>
+            {{#identifier}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/identifier}}
+          </li>
           {{/clusterActivities}}
           {{^clusterActivities}}
           <li>No cluster activities reported.</li>

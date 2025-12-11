@@ -71,6 +71,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
@@ -87,6 +88,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -7711,8 +7713,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       reportConfigurations = reportConfigurationManager.findAll();
       if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
         ReportConfiguration reportConfiguration = reportConfigurations.get(0);
-        if (reportConfiguration.getProjectTemplateData() != null) {
-          this.clusterReportTemplateData = reportConfiguration.getProjectTemplateData();
+        String templateData = this.resolveProjectTemplateData(reportConfiguration);
+        if (templateData != null) {
+          this.clusterReportTemplateData = templateData;
         }
       }
       this.bucketName = this.config.getMicroserviceBucketname();
@@ -7887,13 +7890,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
-    String summary = projectInfo.getSummary();
-    if (summary != null) {
-      summary = summary.replaceAll("\r", "\n").trim();
-      if (summary.isEmpty()) {
-        summary = null;
-      }
-    }
+    String summary = this.getSanitizedText(projectInfo.getSummary());
 
     projectDescription.put("title", projectInfo.getTitle());
     projectDescription.put("startDate", startDate);
@@ -7909,10 +7906,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     projectDescription.put("cycle", this.getSelectedCycle());
     projectDescription.put("crossCutting", this.buildCrossCuttingSummary());
     projectDescription.put("hasRegions", this.hasProgramnsRegions());
-    projectDescription.put("flagships", this.buildProgramFocusList(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()));
-    projectDescription.put("regions", this.hasProgramnsRegions()
-      ? this.buildProgramFocusList(ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) : new ArrayList<>());
-    projectDescription.put("clusterActivities", this.buildClusterActivitiesList());
+    List<Map<String, Object>> flagships =
+      this.buildProgramFocusList(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    projectDescription.put("flagships", flagships);
+    projectDescription.put("flagshipsSummary", this.buildProgramSummary(flagships));
+
+    List<Map<String, Object>> regions = this.hasProgramnsRegions()
+      ? this.buildProgramFocusList(ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) : new ArrayList<>();
+    projectDescription.put("regions", regions);
+    projectDescription.put("regionsSummary", this.buildProgramSummary(regions));
+
+    List<Map<String, Object>> clusterActivities = this.buildClusterActivitiesList();
+    projectDescription.put("clusterActivities", clusterActivities);
+    projectDescription.put("clusterActivitiesSummary", this.buildClusterActivitiesSummary(clusterActivities));
+    projectDescription.put("challengesSolutions", this.getSanitizedText(projectInfo.getChallengesSolutions()));
+    projectDescription.put("lessonsLearned", this.getSanitizedText(projectInfo.getLessonsLearned()));
 
     return projectDescription;
   }
@@ -8025,6 +8033,95 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       activities.add(activityData);
     }
     return activities;
+  }
+
+  private String buildClusterActivitiesSummary(List<Map<String, Object>> activities) {
+    if (activities == null || activities.isEmpty()) {
+      return null;
+    }
+    List<String> names = activities.stream().map(activity -> {
+      Object name = activity.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object identifier = activity.get("identifier");
+      if (identifier != null && StringUtils.isNotBlank(identifier.toString())) {
+        return identifier.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private String buildProgramSummary(List<Map<String, Object>> programs) {
+    if (programs == null || programs.isEmpty()) {
+      return null;
+    }
+    List<String> names = programs.stream().map(program -> {
+      Object composed = program.get("composedName");
+      if (composed != null && StringUtils.isNotBlank(composed.toString())) {
+        return composed.toString().trim();
+      }
+      Object name = program.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object acronym = program.get("acronym");
+      if (acronym != null && StringUtils.isNotBlank(acronym.toString())) {
+        return acronym.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private String getSanitizedText(String value) {
+    if (value == null) {
+      return null;
+    }
+    String sanitized = value.replace("\r", "\n").trim();
+    return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  private String resolveProjectTemplateData(ReportConfiguration reportConfiguration) {
+    if (reportConfiguration == null) {
+      return null;
+    }
+    try {
+      Method getter = reportConfiguration.getClass().getMethod("getProjectTemplateData");
+      Object value = getter.invoke(reportConfiguration);
+      if (value != null) {
+        return value.toString();
+      }
+    } catch (Exception e) {
+      try {
+        Map<String, Object> configurationMap = reportConfiguration.convertToMap();
+        if (configurationMap != null && configurationMap.get("projectTemplateData") != null) {
+          return configurationMap.get("projectTemplateData").toString();
+        }
+      } catch (Exception inner) {
+        LOG.warn("Unable to resolve project template data via reflection", inner);
+      }
+    }
+    return null;
   }
 
   /**
