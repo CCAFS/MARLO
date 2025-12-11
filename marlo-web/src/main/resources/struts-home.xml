@@ -57,10 +57,7 @@
 
 		<action name="logout" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="logout">
-			<result name="success" type="redirectAction">
-				<param name="actionName">login</param>
-				<param name="namespace">/</param>
-			</result>
+			<result name="success">/WEB-INF/global/views/login/login.ftl</result>
 		</action>
 
 		<action name="{*}/crpDashboard"
