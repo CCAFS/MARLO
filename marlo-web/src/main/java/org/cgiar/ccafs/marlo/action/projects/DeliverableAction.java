@@ -2984,11 +2984,18 @@ public class DeliverableAction extends BaseAction {
             // For old crp outcomes
             try {
               if (deliverableOutcome.getId() != null) {
-                deliverableOutcomeSave =
+                DeliverableCrpOutcome existing =
                   deliverableCrpOutcomeManager.getDeliverableCrpOutcomeById(deliverableOutcome.getId());
+                if (existing != null) {
+                  deliverableOutcomeSave = existing;
+                } else {
+                  logger.warn("unable to find deliverable outcome with id {}", deliverableOutcome.getId());
+                  continue;
+                }
               }
             } catch (Exception e) {
               logger.error("unable to get old crp outcome", e);
+              continue;
             }
           }
 
