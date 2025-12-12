@@ -762,7 +762,7 @@
         <div class="form-group">
             <div class="col-md-12" style="display: flex; align-items: center; gap: 15px;">
             <div style="flex: 1;">
-              <label for="innovation.bundles" class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]: [@customForm.req required=true /]</label>
+              <label for="innovation.bundles" class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]: </label>
               <div class="note" style="align-items: center;">
               <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
               </div>

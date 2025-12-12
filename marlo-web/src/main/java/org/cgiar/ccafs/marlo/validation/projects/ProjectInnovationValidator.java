@@ -78,6 +78,11 @@ public class ProjectInnovationValidator extends BaseValidator {
   }
 
 
+  private boolean hasNewMissingFields(BaseAction action, int startIndex) {
+    return action.getMissingFields().length() > startIndex;
+  }
+
+
   /**
    * Validate the Alliance center selection
    *
@@ -104,6 +109,51 @@ public class ProjectInnovationValidator extends BaseValidator {
     return false;
   }
 
+  private void updateAllianceAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationAllianceAlignmentComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateBundleStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationBundleComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+
+  private void updateGeneralInformationStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationGeneralInformationComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationGeneralInformationCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateOneCgiarAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationOneCgiarAlignmentComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
+
+  private void updateRightsStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
+    boolean saving) {
+    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
+    action.setInnovationRightsComplete(!hasMissing);
+    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
+      BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
+    }
+  }
 
   public void validate(BaseAction action, Project project, ProjectInnovation projectInnovation, Boolean clearLead,
     boolean saving, boolean struts, int year, boolean upkeep) {
@@ -629,7 +679,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
   }
 
-
   /**
    * Validate the data of the bundle tab
    *
@@ -641,16 +690,17 @@ public class ProjectInnovationValidator extends BaseValidator {
   public void validateInnovationBundle(BaseAction action, Project project, ProjectInnovation projectInnovation,
     boolean saving) {
     if (projectInnovation.getProjectInnovationInfo(action.getActualPhase()) != null) {
-        ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
+      ProjectInnovationInfo innovationInfo = projectInnovation.getProjectInnovationInfo(action.getActualPhase());
 
       // Validate bundles
-      
-       if (innovationInfo != null && innovationInfo.getInnovationBundle() && (projectInnovation.getBundles() == null || projectInnovation.getBundles().isEmpty())) {
-          action.addMessage(action.getText("projectInnovations.tab.bundleComposition"));
-          action.addMissingField("projectInnovations.tab.bundleComposition");
-          action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
-       }
-       
+      /*
+       * if (innovationInfo != null && innovationInfo.getInnovationBundle() && (projectInnovation.getBundles() == null
+       * || projectInnovation.getBundles().isEmpty())) {
+       * action.addMessage(action.getText("projectInnovations.tab.bundleComposition"));
+       * action.addMissingField("projectInnovations.tab.bundleComposition");
+       * action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
+       * }
+       */
       // Validate Complementary Solutions
       if (projectInnovation.getComplementarySolutions() != null
         && !projectInnovation.getComplementarySolutions().isEmpty()) {
@@ -1124,55 +1174,6 @@ public class ProjectInnovationValidator extends BaseValidator {
 
     } catch (Exception e) {
       Log.error("error validating rights tab ");
-    }
-  }
-
-  private boolean hasNewMissingFields(BaseAction action, int startIndex) {
-    return action.getMissingFields().length() > startIndex;
-  }
-
-  private void updateAllianceAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
-    boolean saving) {
-    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
-    action.setInnovationAllianceAlignmentComplete(!hasMissing);
-    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
-      BaseAction.getIsInnovationAllianceAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
-  }
-
-  private void updateBundleStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
-    boolean saving) {
-    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
-    action.setInnovationBundleComplete(!hasMissing);
-    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
-      BaseAction.getIsInnovationBundleCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
-  }
-
-  private void updateGeneralInformationStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
-    boolean saving) {
-    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
-    action.setInnovationGeneralInformationComplete(!hasMissing);
-    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
-      BaseAction.getIsInnovationGeneralInformationCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
-  }
-
-  private void updateOneCgiarAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
-    boolean saving) {
-    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
-    action.setInnovationOneCgiarAlignmentComplete(!hasMissing);
-    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
-      BaseAction.getIsInnovationOneCgiarAlignmentCompleteMap().put("" + projectInnovation.getId(), "1");
-    }
-  }
-
-  private void updateRightsStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
-    boolean saving) {
-    boolean hasMissing = this.hasNewMissingFields(action, startIndex);
-    action.setInnovationRightsComplete(!hasMissing);
-    if (saving && hasMissing && projectInnovation != null && projectInnovation.getId() != null) {
-      BaseAction.getIsInnovationRightsCompleteMap().put("" + projectInnovation.getId(), "1");
     }
   }
 
