@@ -7763,9 +7763,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
         
         Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+        List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
         if (!projectDescription.isEmpty()) {
+          projectDescription.put("partners", partnersData);
           jsonData.put("projectDescription", projectDescription);
         }
+        jsonData.put("projectPartners", partnersData);
         
         // Set basic project data
         jsonData.put("projectID", projectID);
@@ -8062,6 +8065,117 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return summary;
   }
 
+  private List<Map<String, Object>> buildProjectPartnersData() {
+    List<Map<String, Object>> partnersData = new ArrayList<>();
+    if (project == null || project.getProjectPartners() == null) {
+      return partnersData;
+    }
+
+    List<ProjectPartner> partners = project.getProjectPartners().stream().filter(Objects::nonNull)
+      .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(p -> this.getPartnerDisplayName(p).toLowerCase(Locale.ENGLISH)))
+      .collect(Collectors.toList());
+
+    for (ProjectPartner partner : partners) {
+      Map<String, Object> partnerData = new HashMap<>();
+      partnerData.put("id", partner.getId());
+      partnerData.put("institutionName", this.getPartnerDisplayName(partner));
+      partnerData.put("institutionAcronym",
+        partner.getInstitution() != null ? partner.getInstitution().getAcronym() : null);
+      partnerData.put("responsibilities", this.getSanitizedText(partner.getResponsibilities()));
+      List<Map<String, Object>> locations = this.buildPartnerLocations(partner);
+      partnerData.put("locations", locations);
+      partnerData.put("locationsSummary", this.buildLocationsSummary(locations));
+      partnerData.put("persons", this.buildPartnerPersons(partner));
+      partnersData.add(partnerData);
+    }
+    return partnersData;
+  }
+
+  private List<Map<String, Object>> buildPartnerLocations(ProjectPartner partner) {
+    List<Map<String, Object>> locations = new ArrayList<>();
+    if (partner.getProjectPartnerLocations() == null) {
+      return locations;
+    }
+    partner.getProjectPartnerLocations().stream().filter(Objects::nonNull).filter(ProjectPartnerLocation::isActive)
+      .sorted(Comparator.comparing(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        if (institutionLocation != null && institutionLocation.getLocElement() != null
+          && institutionLocation.getLocElement().getName() != null) {
+          return institutionLocation.getLocElement().getName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        LocElement locElement = institutionLocation != null ? institutionLocation.getLocElement() : null;
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("name",
+          institutionLocation != null ? institutionLocation.getComposedName() : null);
+        locationData.put("country", locElement != null ? locElement.getName() : null);
+        locationData.put("isoCode", locElement != null ? locElement.getIsoAlpha2() : null);
+        locationData.put("city",
+          institutionLocation != null ? institutionLocation.getCity() : null);
+        locationData.put("headquarter",
+          institutionLocation != null ? institutionLocation.isHeadquater() : null);
+        locations.add(locationData);
+      });
+    return locations;
+  }
+
+  private String buildLocationsSummary(List<Map<String, Object>> locations) {
+    if (locations == null || locations.isEmpty()) {
+      return null;
+    }
+    List<String> names = locations.stream().map(location -> {
+      Object name = location.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString();
+      }
+      Object country = location.get("country");
+      if (country != null && StringUtils.isNotBlank(country.toString())) {
+        return country.toString();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(3).collect(Collectors.joining(", "));
+    if (names.size() > 3) {
+      summary = summary + " +" + (names.size() - 3) + " more";
+    }
+    return summary;
+  }
+
+  private List<Map<String, Object>> buildPartnerPersons(ProjectPartner partner) {
+    List<Map<String, Object>> persons = new ArrayList<>();
+    if (partner.getProjectPartnerPersons() == null) {
+      return persons;
+    }
+    partner.getProjectPartnerPersons().stream().filter(Objects::nonNull).filter(ProjectPartnerPerson::isActive)
+      .sorted(Comparator.comparing(person -> {
+        if (person.getUser() != null && person.getUser().getComposedCompleteName() != null) {
+          return person.getUser().getComposedCompleteName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(person -> {
+        Map<String, Object> personData = new HashMap<>();
+        personData.put("id", person.getId());
+        if (person.getUser() != null) {
+          personData.put("name", person.getUser().getComposedCompleteName());
+          personData.put("email", person.getUser().getEmail());
+        }
+        personData.put("role", this.getSanitizedText(person.getContactType()));
+        if (person.getPartnerDivision() != null) {
+          personData.put("division", person.getPartnerDivision().getComposedName());
+        }
+        persons.add(personData);
+      });
+    return persons;
+  }
+
   private String buildProgramSummary(List<Map<String, Object>> programs) {
     if (programs == null || programs.isEmpty()) {
       return null;
@@ -8099,6 +8213,30 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     String sanitized = value.replace("\r", "\n").trim();
     return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  private String getPartnerDisplayName(ProjectPartner partner) {
+    if (partner == null) {
+      return "";
+    }
+    try {
+      String composed = partner.getComposedName();
+      if (composed != null && !composed.trim().isEmpty()) {
+        return composed;
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+    if (partner.getInstitution() != null) {
+      if (partner.getInstitution().getComposedName() != null
+        && !partner.getInstitution().getComposedName().trim().isEmpty()) {
+        return partner.getInstitution().getComposedName();
+      }
+      if (partner.getInstitution().getName() != null) {
+        return partner.getInstitution().getName();
+      }
+    }
+    return "";
   }
 
   private String resolveProjectTemplateData(ReportConfiguration reportConfiguration) {
