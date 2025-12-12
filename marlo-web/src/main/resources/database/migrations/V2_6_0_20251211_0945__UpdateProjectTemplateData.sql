@@ -324,6 +324,54 @@ SET project_template_data = '<!DOCTYPE html>
   </section>
   {{/projectDescription}}
 
+  {{#projectLocations}}
+  <section class="section">
+    <h3>Project locations</h3>
+    <div class="grid grid--2">
+      <div class="grid-item">
+        <span>Global dimension</span>
+        {{#globalDimension}}
+          <strong>Yes</strong>
+        {{/globalDimension}}
+        {{^globalDimension}}
+          <strong>No</strong>
+        {{/globalDimension}}
+      </div>
+      <div class="grid-item">
+        <span>Regional dimension</span>
+        {{#regionalDimension}}
+          <strong>Yes</strong>
+        {{/regionalDimension}}
+        {{^regionalDimension}}
+          <strong>No</strong>
+        {{/regionalDimension}}
+      </div>
+    </div>
+    {{#hasLocations}}
+      <div class="grid grid--3">
+        {{#locationGroups}}
+        <div class="list-card">
+          <h4>{{#safeEmpty}}{{typeName}}{{/safeEmpty}}</h4>
+          <ul>
+            {{#locations}}
+            <li>
+              <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
+              {{#code}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/code}}
+              {{#parentName}}<small>{{#safeEmpty}}{{parentName}}{{/safeEmpty}}</small>{{/parentName}}
+              {{#latitude}}<small>{{#safeEmpty}}{{latitude}}{{/safeEmpty}}, {{#safeEmpty}}{{longitude}}{{/safeEmpty}}</small>{{/latitude}}
+            </li>
+            {{/locations}}
+          </ul>
+        </div>
+        {{/locationGroups}}
+      </div>
+    {{/hasLocations}}
+    {{^hasLocations}}
+      <p>No project locations reported.</p>
+    {{/hasLocations}}
+  </section>
+  {{/projectLocations}}
+
   <section class="section">
     <h3>Project partners</h3>
     {{#projectPartners}}

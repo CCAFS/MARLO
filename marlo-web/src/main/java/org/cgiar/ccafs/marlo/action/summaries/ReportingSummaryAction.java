@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManag
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
@@ -68,6 +69,7 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -85,6 +87,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -198,6 +201,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   private final MicroserviceReportAction microserviceReportAction;
   private final ReportConfigurationManager reportConfigurationManager;
+  private final ProjectLocationManager projectLocationManager;
   private String clusterReportTemplateData = null;
   private String bucketName = null;
 
@@ -231,7 +235,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
     DeliverableShfrmSubActionManager deliverableShfrmSubActionManager,
-    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager) {
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    ProjectLocationManager projectLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -274,6 +279,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
+    this.projectLocationManager = projectLocationManager;
   }
 
   /**
@@ -7767,6 +7773,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         projectDescription.put("partners", partnersData);
         jsonData.put("projectDescription", projectDescription);
         jsonData.put("projectPartners", partnersData);
+        jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
         
         // Set basic project data
         jsonData.put("projectID", projectID);
@@ -7802,6 +7809,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       System.out.println("Error setting jsonRoot info: " + e.getMessage());
     }
+    this.persistPayload(objectMapper, jsonRoot);
     
     // Load microservice configuration and cluster template data
     this.microserviceReportAction.loadData();
@@ -8063,6 +8071,93 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return summary;
   }
 
+  private Map<String, Object> buildProjectLocationsSection(Project projectDb) {
+    Map<String, Object> locations = new HashMap<>();
+    locations.put("hasLocations", false);
+    locations.put("globalDimension", false);
+    locations.put("regionalDimension", false);
+    if (projectDb == null) {
+      return locations;
+    }
+
+    ProjectInfo projectInfoPhase = projectDb.getProjecInfoPhase(this.getSelectedPhase());
+    if (projectInfoPhase != null) {
+      locations.put("globalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationGlobal()));
+      locations.put("regionalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationRegional()));
+    }
+
+    List<Map<String, Object>> groups = this.collectProjectLocationGroups(projectDb);
+    locations.put("locationGroups", groups);
+    locations.put("hasLocations", !groups.isEmpty());
+    return locations;
+  }
+
+  private List<Map<String, Object>> collectProjectLocationGroups(Project projectDb) {
+    if (projectDb == null) {
+      return Collections.emptyList();
+    }
+    List<ProjectLocation> phaseLocations = this.loadProjectLocationsByPhase(projectDb.getId());
+    LinkedHashMap<Long, Map<String, Object>> grouped = new LinkedHashMap<>();
+    for (ProjectLocation location : phaseLocations) {
+      LocElementType type = null;
+      LocElement locElement = location.getLocElement();
+      if (locElement != null && locElement.getLocElementType() != null) {
+        type = locElement.getLocElementType();
+      } else if (location.getLocElementType() != null) {
+        type = location.getLocElementType();
+      }
+      if (type == null) {
+        continue;
+      }
+      final LocElementType groupType = type;
+      Map<String, Object> group = grouped.computeIfAbsent(type.getId(), id -> {
+        Map<String, Object> data = new HashMap<>();
+        data.put("typeId", id);
+        data.put("typeName", groupType.getName());
+        data.put("locations", new ArrayList<Map<String, Object>>());
+        return data;
+      });
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      Map<String, Object> entry = new HashMap<>();
+      if (locElement != null) {
+        entry.put("name", locElement.getName());
+        entry.put("code", locElement.getIsoAlpha2());
+        entry.put("parentName",
+          locElement.getLocElement() != null ? locElement.getLocElement().getName() : null);
+        if (locElement.getLocGeoposition() != null) {
+          entry.put("latitude", this.formatCoordinate(locElement.getLocGeoposition().getLatitude()));
+          entry.put("longitude", this.formatCoordinate(locElement.getLocGeoposition().getLongitude()));
+        }
+      } else {
+        entry.put("name", type.getName());
+      }
+      entries.add(entry);
+    }
+
+    return grouped.values().stream().peek(group -> {
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      entries.sort(Comparator.comparing(
+        e -> StringUtils.defaultString((String) e.get("name")).toLowerCase(Locale.ENGLISH)));
+    }).collect(Collectors.toList());
+  }
+
+  private List<ProjectLocation> loadProjectLocationsByPhase(long projectId) {
+    return projectLocationManager.findAll().stream()
+      .filter(pl -> pl != null && pl.isActive() && pl.getProject() != null && pl.getProject().getId() != null
+        && pl.getProject().getId().longValue() == projectId && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+  }
+
+  private String formatCoordinate(Double value) {
+    if (value == null) {
+      return null;
+    }
+    return String.format(Locale.ENGLISH, "%.4f", value);
+  }
+
   private List<Map<String, Object>> buildProjectPartnersData() {
     List<Map<String, Object>> partnersData = new ArrayList<>();
     if (project == null || project.getProjectPartners() == null) {
@@ -8293,6 +8388,25 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
     return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Map<String, Object> jsonRoot) {
+    FileWriter writer = null;
+    try {
+      File payloadFile = new File(System.getProperty("user.dir"),
+        "reporting-summary-payload-" + System.currentTimeMillis() + ".json");
+      writer = new FileWriter(payloadFile);
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, jsonRoot);
+    } catch (Exception e) {
+      LOG.warn("Unable to persist reporting summary payload", e);
+    } finally {
+      if (writer != null) {
+        try {
+          writer.close();
+        } catch (IOException ignored) {
+        }
+      }
+    }
   }
 
   /**
