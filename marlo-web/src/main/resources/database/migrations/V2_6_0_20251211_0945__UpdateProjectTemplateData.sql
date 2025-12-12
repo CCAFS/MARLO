@@ -322,9 +322,11 @@ SET project_template_data = '<!DOCTYPE html>
       </div>
     </div>
   </section>
+  {{/projectDescription}}
+
   <section class="section">
     <h3>Project partners</h3>
-    {{#partners}}
+    {{#projectPartners}}
     <div class="partner-card">
       <div class="partner-card__header">
         <div class="partner-card__title">{{#safeEmpty}}{{institutionName}}{{/safeEmpty}}</div>
@@ -370,12 +372,11 @@ SET project_template_data = '<!DOCTYPE html>
         {{/persons}}
       </div>
     </div>
-    {{/partners}}
-    {{^partners}}
+    {{/projectPartners}}
+    {{^projectPartners}}
       <p>No partner information reported.</p>
-    {{/partners}}
+    {{/projectPartners}}
   </section>
-  {{/projectDescription}}
 
   <section class="section">
     <h3>Next steps</h3>

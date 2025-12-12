@@ -7764,10 +7764,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         
         Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
         List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
-        if (!projectDescription.isEmpty()) {
-          projectDescription.put("partners", partnersData);
-          jsonData.put("projectDescription", projectDescription);
-        }
+        projectDescription.put("partners", partnersData);
+        jsonData.put("projectDescription", projectDescription);
         jsonData.put("projectPartners", partnersData);
         
         // Set basic project data
