@@ -863,8 +863,19 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getCenterOutcomes().clear();
       }
 
-      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      LiaisonInstitution liaisonFromForm = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution();
 
+      if (this.isAiccra() && liaisonFromForm != null && liaisonFromForm.getId() != null) {
+          
+          Long newId = liaisonFromForm.getId();
+          LiaisonInstitution safeLiaison = new LiaisonInstitution();
+          safeLiaison.setId(newId);
+          
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(safeLiaison);
+
+      } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      }
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);
