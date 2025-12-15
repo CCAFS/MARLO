@@ -8260,7 +8260,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           personData.put("name", person.getUser().getComposedCompleteName());
           personData.put("email", person.getUser().getEmail());
         }
-        personData.put("role", this.getSanitizedText(person.getContactType()));
+        String role = this.getSanitizedText(person.getContactType());
+        if (this.isAiccra() && role != null) {
+          String normalizedRole = role.toUpperCase(Locale.ENGLISH);
+          if ("PL".equals(normalizedRole)) {
+            role = "Cluster leader";
+          } else if ("PC".equals(normalizedRole)) {
+            role = "Cluster Coordinator";
+          } else if ("CP".equals(normalizedRole)) {
+            role = "Cluster Collaborator";
+          }
+        }
+        personData.put("role", role);
         if (person.getPartnerDivision() != null) {
           personData.put("division", person.getPartnerDivision().getComposedName());
         }
