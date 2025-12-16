@@ -7815,7 +7815,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     } catch (Exception e) {
       System.out.println("Error setting jsonRoot info: " + e.getMessage());
     }
-    this.persistPayload(objectMapper, jsonRoot);
     
     // Load microservice configuration and cluster template data
     this.microserviceReportAction.loadData();
@@ -7855,6 +7854,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
+      this.persistPayload(objectMapper, jsonMainRoot);
       
       System.out.println("Sending cluster report to microservice: " + reportName);
       // Using sendClusterReportQueueMessage for cluster/project summary reports
@@ -8608,7 +8608,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
   }
 
-  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Map<String, Object> jsonRoot) {
+  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Object jsonRoot) {
     FileWriter writer = null;
     try {
       File payloadFile = new File(System.getProperty("user.dir"),
