@@ -49,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
@@ -76,6 +77,7 @@ import java.net.MalformedURLException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -189,6 +191,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ProjectOutcomeManager projectOutcomeManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private final HTMLParser htmlParser;
   private final ActivityManager activityManager;
@@ -228,7 +231,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, HTMLParser htmlParser,
+    ProjectOutcomeManager projectOutcomeManager, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
+    HTMLParser htmlParser,
     ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
@@ -267,6 +271,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectOutcomeManager = projectOutcomeManager;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.htmlParser = htmlParser;
     this.activityManager = activityManager;
@@ -7774,6 +7779,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         jsonData.put("projectDescription", projectDescription);
         jsonData.put("projectPartners", partnersData);
         jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
+        jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
         
         // Set basic project data
         jsonData.put("projectID", projectID);
@@ -8278,6 +8284,207 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         persons.add(personData);
       });
     return persons;
+  }
+
+  private List<Map<String, Object>> buildPerformanceIndicatorContributions() {
+    List<Map<String, Object>> contributions = new ArrayList<>();
+    if (project == null || project.getProjectOutcomes() == null) {
+      return contributions;
+    }
+
+    List<ProjectOutcomeIndicator> indicatorsList = new ArrayList<>();
+    try {
+      List<ProjectOutcomeIndicator> allIndicators = projectOutcomeIndicatorManager.findAll();
+      if (allIndicators != null) {
+        indicatorsList.addAll(allIndicators);
+      }
+    } catch (Exception e) {
+      LOG.warn("Unable to load project outcome indicators", e);
+    }
+
+    Map<Long, List<ProjectOutcomeIndicator>> indicatorsByOutcome = indicatorsList.stream().filter(Objects::nonNull)
+      .filter(ProjectOutcomeIndicator::isActive)
+      .filter(indicator -> indicator.getProjectOutcome() != null && indicator.getProjectOutcome().getId() != null)
+      .collect(Collectors.groupingBy(indicator -> indicator.getProjectOutcome().getId()));
+
+    List<ProjectOutcome> outcomes = project.getProjectOutcomes().stream().filter(Objects::nonNull)
+      .filter(outcome -> outcome.isActive() && outcome.getPhase() != null
+        && outcome.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(ProjectOutcome::getOrder, Comparator.nullsLast(Double::compareTo)))
+      .collect(Collectors.toList());
+
+    int order = 1;
+    for (ProjectOutcome summaryOutcome : outcomes) {
+      ProjectOutcome detailedOutcome = summaryOutcome;
+      try {
+        if (projectOutcomeManager != null) {
+          ProjectOutcome dbOutcome = projectOutcomeManager.getProjectOutcomeById(summaryOutcome.getId());
+          if (dbOutcome != null) {
+            detailedOutcome = dbOutcome;
+          }
+        }
+      } catch (Exception e) {
+        LOG.warn("Unable to reload project outcome {}", summaryOutcome.getId(), e);
+      }
+      if (detailedOutcome == null) {
+        continue;
+      }
+      List<ProjectOutcomeIndicator> outcomeIndicators =
+        indicatorsByOutcome.getOrDefault(detailedOutcome.getId(), Collections.emptyList());
+      contributions.add(this.buildPerformanceIndicatorContribution(detailedOutcome, outcomeIndicators, order++));
+    }
+    return contributions;
+  }
+
+  private Map<String, Object> buildPerformanceIndicatorContribution(ProjectOutcome outcome,
+    List<ProjectOutcomeIndicator> indicators, int order) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("order", order);
+    if (outcome == null) {
+      return data;
+    }
+    data.put("outcomeId", outcome.getId());
+    CrpProgramOutcome crpOutcome = outcome.getCrpProgramOutcome();
+    if (crpOutcome != null) {
+      data.put("programOutcome", this.getSanitizedText(crpOutcome.getDescription()));
+      data.put("indicator", this.getSanitizedText(crpOutcome.getIndicator()));
+      data.put("programOutcomeYear", crpOutcome.getYear());
+      data.put("programOutcomeValue", this.formatNumericValue(crpOutcome.getValue()));
+      if (crpOutcome.getSrfTargetUnit() != null) {
+        data.put("programOutcomeUnit", this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName()));
+      }
+      if (crpOutcome.getCrpProgram() != null) {
+        String flagshipName = this.getSanitizedText(crpOutcome.getCrpProgram().getComposedName());
+        if (flagshipName != null) {
+          data.put("flagship", flagshipName);
+        }
+        String flagshipAcronym = this.getSanitizedText(crpOutcome.getCrpProgram().getAcronym());
+        String badge = flagshipAcronym != null ? flagshipAcronym : flagshipName;
+        if (badge != null) {
+          data.put("flagshipBadge", badge);
+        }
+      }
+    }
+    data.put("targetNarrative", this.getSanitizedText(outcome.getNarrativeTarget()));
+    data.put("achievementNarrative", this.getSanitizedText(outcome.getNarrativeAchieved()));
+    data.put("targetValue", this.formatNumericValue(outcome.getExpectedValue()));
+    data.put("targetUnit", this.resolveUnitName(outcome.getExpectedUnit(), crpOutcome));
+    data.put("achievementValue", this.formatNumericValue(outcome.getAchievedValue()));
+    data.put("achievementUnit", this.resolveUnitName(outcome.getAchievedUnit(), crpOutcome));
+    data.put("communications", this.buildOutcomeCommunications(outcome));
+    data.put("lessonsLearned", this.extractLessons(outcome));
+
+    List<Map<String, Object>> milestoneData = this.buildOutcomeMilestones(outcome);
+    data.put("milestones", milestoneData);
+    data.put("hasMilestones", !milestoneData.isEmpty());
+
+    List<Map<String, Object>> indicatorResponses = this.buildOutcomeIndicatorResponses(indicators);
+    data.put("indicatorResponses", indicatorResponses);
+    data.put("hasIndicatorResponses", !indicatorResponses.isEmpty());
+
+    List<Map<String, Object>> nextUsers = this.buildOutcomeNextUsers(outcome);
+    data.put("nextUsers", nextUsers);
+    data.put("hasNextUsers", !nextUsers.isEmpty());
+    return data;
+  }
+
+  private List<Map<String, Object>> buildOutcomeMilestones(ProjectOutcome outcome) {
+    if (outcome.getProjectMilestones() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectMilestones().stream().filter(Objects::nonNull).filter(ProjectMilestone::isActive)
+      .filter(milestone -> {
+        int milestoneYear = milestone.getYear();
+        return milestoneYear <= 0 || milestoneYear == this.getSelectedYear();
+      })
+      .map(milestone -> {
+        Map<String, Object> milestoneData = new HashMap<>();
+        if (milestone.getCrpMilestone() != null) {
+          milestoneData.put("title", this.getSanitizedText(milestone.getCrpMilestone().getComposedName()));
+        }
+        milestoneData.put("year", milestone.getYear());
+        milestoneData.put("narrative", this.getSanitizedText(milestone.getNarrativeTarget()));
+        milestoneData.put("expectedValue", this.formatNumericValue(milestone.getExpectedValue()));
+        milestoneData.put("achievedValue", this.formatNumericValue(milestone.getAchievedValue()));
+        return milestoneData;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeIndicatorResponses(List<ProjectOutcomeIndicator> indicators) {
+    if (indicators == null || indicators.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return indicators.stream().filter(Objects::nonNull)
+      .filter(indicator -> indicator.getPhase() == null || indicator.getPhase().equals(this.getSelectedPhase()))
+      .map(indicator -> {
+        Map<String, Object> response = new HashMap<>();
+        if (indicator.getCrpProgramOutcomeIndicator() != null) {
+          response.put("question", this.getSanitizedText(indicator.getCrpProgramOutcomeIndicator().getIndicator()));
+        }
+        response.put("narrative", this.getSanitizedText(indicator.getNarrative()));
+        response.put("achievedNarrative", this.getSanitizedText(indicator.getAchievedNarrative()));
+        return response;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeNextUsers(ProjectOutcome outcome) {
+    if (outcome.getProjectNextusers() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectNextusers().stream().filter(Objects::nonNull).filter(ProjectNextuser::isActive)
+      .map(nextUser -> {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("name", this.getSanitizedText(nextUser.getNextUser()));
+        entry.put("knowledge", this.getSanitizedText(nextUser.getKnowledge()));
+        entry.put("strategies", this.getSanitizedText(nextUser.getStrategies()));
+        entry.put("knowledgeReport", this.getSanitizedText(nextUser.getKnowledgeReport()));
+        entry.put("strategiesReport", this.getSanitizedText(nextUser.getStrategiesReport()));
+        return entry;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private String buildOutcomeCommunications(ProjectOutcome outcome) {
+    if (outcome.getProjectCommunications() == null) {
+      return null;
+    }
+    List<String> communications = outcome.getProjectCommunications().stream().filter(Objects::nonNull)
+      .filter(ProjectCommunication::isActive).filter(communication -> communication.getYear() == this.getSelectedYear())
+      .map(ProjectCommunication::getCommunication).map(this::getSanitizedText).filter(Objects::nonNull)
+      .collect(Collectors.toList());
+    if (communications.isEmpty()) {
+      return null;
+    }
+    return String.join("\n\n", communications);
+  }
+
+  private String extractLessons(ProjectOutcome outcome) {
+    if (outcome.getProjectComponentLesson() != null && outcome.getProjectComponentLesson().getLessons() != null) {
+      return this.getSanitizedText(outcome.getProjectComponentLesson().getLessons());
+    }
+    return null;
+  }
+
+  private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
+    if (specificUnit != null && specificUnit.getName() != null) {
+      return this.getSanitizedText(specificUnit.getName());
+    }
+    if (crpOutcome != null && crpOutcome.getSrfTargetUnit() != null
+      && crpOutcome.getSrfTargetUnit().getName() != null) {
+      return this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName());
+    }
+    return null;
+  }
+
+  private String formatNumericValue(Number value) {
+    if (value == null) {
+      return null;
+    }
+    double numericValue = value.doubleValue();
+    if (Math.abs(numericValue - Math.rint(numericValue)) < 0.0000001d) {
+      return String.format(Locale.ENGLISH, "%.0f", numericValue);
+    }
+    DecimalFormat decimalFormat = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+    return decimalFormat.format(numericValue);
   }
 
   private String buildProgramSummary(List<Map<String, Object>> programs) {
