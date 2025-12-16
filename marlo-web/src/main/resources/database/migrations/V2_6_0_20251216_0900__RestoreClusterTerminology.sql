@@ -1,5 +1,6 @@
+--  Auto-generated SQL script #202512161615
 UPDATE report_configurations
-SET project_template_data = '<!DOCTYPE html>
+	SET project_template_data='<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -374,8 +375,7 @@ SET project_template_data = '<!DOCTYPE html>
             <li>
               <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
               {{#code}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/code}}
-              {{#parentName}}<small>{{#safeEmpty}}{{parentName}}{{/safeEmpty}}</small>{{/parentName}}
-              {{#latitude}}<small>{{#safeEmpty}}{{latitude}}{{/safeEmpty}}, {{#safeEmpty}}{{longitude}}{{/safeEmpty}}</small>{{/latitude}}
+              <small>{{#safeEmpty}}{{latitude}}{{/safeEmpty}}, {{#safeEmpty}}{{longitude}}{{/safeEmpty}}</small>
             </li>
             {{/locations}}
           </ul>
@@ -553,4 +553,4 @@ SET project_template_data = '<!DOCTYPE html>
 </div>
 </body>
 </html>'
-WHERE id = 1;
+	WHERE id=1;
