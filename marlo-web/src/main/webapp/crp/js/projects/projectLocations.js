@@ -448,7 +448,8 @@ function addRegion(option) {
 
   // Check if is already selected
   $list.find('.region').each(function(i,e) {
-    if($(e).find('input.rId').val() == optionValue) {
+    var existingId = $(e).find('input.rId').val();
+    if(existingId == optionValue) {
       canAdd = false;
       return;
     }
@@ -460,14 +461,21 @@ function addRegion(option) {
   // Set region parameters
   $item.find(".name").attr("title", $(option).text());
   $item.find(".name").html(v);
+  
+  var isScope = (optionScope === "true");
+  
   $item.find(".rId").val(optionValue);
+  
+  if(isScope) {
+    $item.find(".rId").attr("name", "project.projectRegions[-1].locElementTypeId");
+  }
+  
   $item.find(".regionScope").val(optionScope);
   $item.find(".id").val(-1);
   $list.append($item);
   $item.show('slow');
   updateRegionList($list);
   checkRegionList($list);
-
 }
 
 function removeRegion() {
@@ -837,6 +845,13 @@ function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
 
   $locationItem.show("slow");
   updateIndex();
+  // Update names with correct indices
+  var levelIndex = $('.locationsDataTable .locationLevel').index($locationItem);
+  $locationItem.find('input').each(function() {
+    var name = $(this).attr('name');
+    name = name.replace('locationsData[-1]', 'locationsData[' + levelIndex + ']');
+    $(this).attr('name', name);
+  });
   if(locationIsList == "true") {
     if(locationName != "Country") {
       $locationItem.find(".allCountriesQuestion").show();
@@ -916,6 +931,17 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
         // update indexes
         updateIndex();
         checkItems($list.parents("#selectsContent"));
+
+        // Update names with correct indices
+        var $level = $list.closest('.locationLevel');
+        var levelIndex = $('.locationsDataTable .locationLevel').index($level);
+        var subIndex = $list.find('.locElement').length - 1;
+        $item.find('input').each(function() {
+          var name = $(this).attr('name');
+          name = name.replace('locationsData[-1]', 'locationsData[' + levelIndex + ']');
+          name = name.replace('locElements[-1]', 'locElements[' + subIndex + ']');
+          $(this).attr('name', name);
+        });
       }
   });
   $('#inputFormWrapper .nameWrapper input').val('');
@@ -1005,6 +1031,16 @@ function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
       }
       locationContent.find(".countriesList").children().append($item);
       $item.show("slow");
+
+      // Update names with correct indices
+      var levelIndex = $('.locationsDataTable .locationLevel').index(locationContent.closest('.locationLevel'));
+      var subIndex = locationContent.find('.locElement').length - 1;
+      $item.find('input').each(function() {
+        var name = $(this).attr('name');
+        name = name.replace('locationsData[-1]', 'locationsData[' + levelIndex + ']');
+        name = name.replace('locElements[-1]', 'locElements[' + subIndex + ']');
+        $(this).attr('name', name);
+      });
 
       // Show and hide Successfully added message
       $('#alert-succesfully-added').slideDown();
