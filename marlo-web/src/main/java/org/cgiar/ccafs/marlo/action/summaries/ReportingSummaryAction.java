@@ -7784,6 +7784,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Set basic project data
         jsonData.put("projectID", projectID);
         jsonData.put("projectTitle", projectTitle);
+        jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
         jsonData.put("phaseID", phaseID);
         jsonData.put("cycle", cycle);
         jsonData.put("year", year);
@@ -7824,7 +7825,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String bucketName = null;
     
     try {
-      reportName = "AICCRA-Project-" + project.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+      reportName = "AICCRA-Cluster-" + project.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
       bucketName = this.config.getMicroserviceBucketname();
       
       jsonRoot.put("fileName", reportName);
@@ -7879,7 +7880,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String endDate = projectInfo.getEndDate() != null ? formatter.format(projectInfo.getEndDate()) : null;
     String liaisonInstitution =
       projectInfo.getLiaisonInstitution() != null ? projectInfo.getLiaisonInstitution().getName() : null;
-    String type = this.buildFundingTypeSummary();
+    String type = projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null
+      ? projectInfo.getClusterType().getName() : null;
     String status = null;
     if (projectInfo.getStatus() != null) {
       status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
@@ -7897,12 +7899,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     String leader = null;
     ProjectPartnerPerson leaderPerson = project.getLeaderPerson(this.getSelectedPhase());
     if (leaderPerson != null && leaderPerson.getUser() != null) {
-      String leaderName = leaderPerson.getUser().getComposedName();
-      String leaderEmail = leaderPerson.getUser().getEmail();
-      leader = leaderName;
-      if (leaderEmail != null && !leaderEmail.isEmpty()) {
-        leader += " <" + leaderEmail + ">";
-      }
+      leader = leaderPerson.getUser().getComposedName();
     }
 
     String summary = this.getSanitizedText(projectInfo.getSummary());
@@ -8128,7 +8125,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       Map<String, Object> entry = new HashMap<>();
       if (locElement != null) {
         entry.put("name", locElement.getName());
-        entry.put("code", locElement.getIsoAlpha2());
         entry.put("parentName",
           locElement.getLocElement() != null ? locElement.getLocElement().getName() : null);
         if (locElement.getLocGeoposition() != null) {

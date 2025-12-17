@@ -81,7 +81,7 @@ UPDATE report_configurations
 <body>
 <div id="pageHeader">
   <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/AICCRA-logo.png" class="logo" alt="AICCRA logo" />
-  <span style="font-size: 12px; letter-spacing: 0.3em; color: #6a7a89;">CLUSTER SUMMARY</span>
+  <span style="font-size: 12px; letter-spacing: 0.3em; color: #6a7a89;">{{projectAcronym}} CLUSTER SUMMARY</span>
 </div>
 <div class="page">
   <section>
@@ -94,20 +94,16 @@ UPDATE report_configurations
         <td>{{#safeEmpty}}{{projectID}}{{/safeEmpty}}</td>
       </tr>
       <tr>
-        <th>Phase identifier</th>
-        <td>{{#safeEmpty}}{{phaseID}}{{/safeEmpty}}</td>
+        <th>Cluster name</th>
+        <td>{{#safeEmpty}}{{projectTitle}}{{/safeEmpty}}</td>
       </tr>
       <tr>
-        <th>Reporting year</th>
+        <th>Report year</th>
         <td>{{#safeEmpty}}{{year}}{{/safeEmpty}}</td>
       </tr>
       <tr>
-        <th>Reporting cycle</th>
+        <th>Report cycle</th>
         <td>{{#safeEmpty}}{{cycle}}{{/safeEmpty}}</td>
-      </tr>
-      <tr>
-        <th>Logged center</th>
-        <td>{{#safeEmpty}}{{loggedCenter}}{{/safeEmpty}}</td>
       </tr>
     </table>
   </section>
@@ -115,81 +111,15 @@ UPDATE report_configurations
   <section class="section">
     <h3>Key badges</h3>
     <div>
-      <span class="badge">Cluster {{#safeEmpty}}{{projectID}}{{/safeEmpty}}</span>
-      <span class="badge">Phase {{#safeEmpty}}{{phaseID}}{{/safeEmpty}}</span>
+      <span class="badge">{{#safeEmpty}}{{projectAcronym}}{{/safeEmpty}} Cluster</span>
+      <span class="badge">{{#safeEmpty}}{{cycle}}{{/safeEmpty}} Phase</span>
       <span class="badge">Year {{#safeEmpty}}{{year}}{{/safeEmpty}}</span>
-    </div>
-  </section>
-
-  <section class="section">
-    <h3>Reporting context</h3>
-    <div class="grid">
-      <div class="grid-item">
-        <span>Cluster title</span>
-        <strong>{{#safeEmpty}}{{projectTitle}}{{/safeEmpty}}</strong>
-      </div>
-      <div class="grid-item">
-        <span>Cycle</span>
-        <strong>{{#safeEmpty}}{{cycle}}{{/safeEmpty}}</strong>
-      </div>
-      <div class="grid-item">
-        <span>Logged center</span>
-        <strong>{{#safeEmpty}}{{loggedCenter}}{{/safeEmpty}}</strong>
-      </div>
-    </div>
-    <div class="grid">
-      <div class="grid-item">
-        <span>Phase identifier</span>
-        <strong>{{#safeEmpty}}{{phaseID}}{{/safeEmpty}}</strong>
-      </div>
-      <div class="grid-item">
-        <span>Year</span>
-        <strong>{{#safeEmpty}}{{year}}{{/safeEmpty}}</strong>
-      </div>
-      <div class="grid-item">
-        <span>Generated on</span>
-        <strong>{{#safeEmpty}}{{timeCreation}}{{/safeEmpty}}</strong>
-      </div>
-    </div>
-    <div class="grid grid--2">
-      <div class="grid-item">
-        <span>Flagship focus</span>
-        {{#flagshipsSummary}}
-          <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
-        {{/flagshipsSummary}}
-        {{^flagshipsSummary}}
-          <strong>No flagships reported</strong>
-        {{/flagshipsSummary}}
-      </div>
-      <div class="grid-item">
-        <span>Regional focus</span>
-        {{#hasRegions}}
-          {{#regionsSummary}}
-            <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
-          {{/regionsSummary}}
-          {{^regionsSummary}}
-            <strong>No regions reported</strong>
-          {{/regionsSummary}}
-        {{/hasRegions}}
-        {{^hasRegions}}
-          <strong>Not applicable</strong>
-        {{/hasRegions}}
-      </div>
-      <div class="grid-item">
-        <span>Cluster activities</span>
-        {{#clusterActivitiesSummary}}
-          <strong>{{#safeEmpty}}{{.}}{{/safeEmpty}}</strong>
-        {{/clusterActivitiesSummary}}
-        {{^clusterActivitiesSummary}}
-          <strong>No cluster activities reported</strong>
-        {{/clusterActivitiesSummary}}
-      </div>
     </div>
   </section>
 
   {{#projectDescription}}
   <section class="section">
-    <h3>Cluster timeline & contacts</h3>
+    <h3>Cluster Information</h3>
     <div class="grid grid--2">
       <div class="grid-item">
         <span>Start date</span>
@@ -235,18 +165,6 @@ UPDATE report_configurations
       {{^summary}}
         <p>No summary provided.</p>
       {{/summary}}
-    </div>
-  </section>
-
-  <section class="section">
-    <h3>Cross-cutting focus</h3>
-    <div class="card">
-      {{#crossCutting}}
-        <p>{{{crossCutting}}}</p>
-      {{/crossCutting}}
-      {{^crossCutting}}
-        <p>No cross-cutting focus reported.</p>
-      {{/crossCutting}}
     </div>
   </section>
 
@@ -321,27 +239,77 @@ UPDATE report_configurations
         </ul>
       </div>
       {{/hasRegions}}
-      <div class="list-card">
-        <h4>Cluster activities</h4>
-        <ul>
-          {{#clusterActivities}}
-          <li>
-            <strong>
-              {{#name}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/name}}
-              {{^name}}{{#identifier}}{{#safeEmpty}}{{.}}{{/safeEmpty}}{{/identifier}}{{/name}}
-            </strong>
-            {{#identifier}}<small>{{#safeEmpty}}{{.}}{{/safeEmpty}}</small>{{/identifier}}
-          </li>
-          {{/clusterActivities}}
-          {{^clusterActivities}}
-          <li>No cluster activities reported.</li>
-          {{/clusterActivities}}
-        </ul>
-      </div>
+
     </div>
   </section>
   {{/projectDescription}}
 
+  <section class="section">
+    <h3>Cross-cutting dimenssions</h3>
+    <div class="card">
+      {{#crossCutting}}
+        <p>{{{crossCutting}}}</p>
+      {{/crossCutting}}
+      {{^crossCutting}}
+        <p>No cross-cutting dimensions reported.</p>
+      {{/crossCutting}}
+    </div>
+  </section>
+
+  <br>
+  <section class="section">
+    <h3>Cluster partners</h3>
+    {{#projectPartners}}
+    <div class="partner-card">
+      <div class="partner-card__header">
+        <div class="partner-card__title">{{#safeEmpty}}{{institutionName}}{{/safeEmpty}}</div>
+      </div>
+      <div class="partner-card__section">
+        <span class="partner-card__label">Responsibilities</span>
+        {{#responsibilities}}
+          <p>{{#safeEmpty}}{{.}}{{/safeEmpty}}</p>
+        {{/responsibilities}}
+        {{^responsibilities}}
+          <p>No responsibilities reported.</p>
+        {{/responsibilities}}
+      </div>
+      <div class="partner-card__section">
+        <span class="partner-card__label">Locations</span>
+        <ul>
+          {{#locations}}
+          <li>
+            <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
+            {{#headquarter}}<span class="tag tag--muted">HQ</span>{{/headquarter}}
+          </li>
+          {{/locations}}
+          {{^locations}}
+          <li>No partner locations reported.</li>
+          {{/locations}}
+        </ul>
+      </div>
+      <div class="partner-card__section partner-card__contacts">
+        <span class="partner-card__label">Partner contacts</span>
+        {{#persons}}
+        <div class="partner-card__contact">
+          <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
+          {{#role}}<span class="partner-card__role">{{#safeEmpty}}{{.}}{{/safeEmpty}}</span>{{/role}}
+          {{^role}}<span class="partner-card__role partner-card__role--muted">&lt;Not provided&gt;</span>{{/role}}
+          {{#division}}<span class="tag tag--muted">{{#safeEmpty}}{{division}}{{/safeEmpty}}</span>{{/division}}
+          {{#email}}<span>{{#safeEmpty}}{{.}}{{/safeEmpty}}</span>{{/email}}
+        </div>
+        {{/persons}}
+        {{^persons}}
+        <p>No partner contacts reported.</p>
+        {{/persons}}
+      </div>
+    </div>
+    {{/projectPartners}}
+    {{^projectPartners}}
+      <p>No partner information reported.</p>
+    {{/projectPartners}}
+  </section>
+
+  <br>
   {{#projectLocations}}
   <section class="section">
     <h3>Cluster locations</h3>
@@ -389,6 +357,7 @@ UPDATE report_configurations
   </section>
   {{/projectLocations}}
 
+  <br>
   <section class="section">
     <h3>Contribution to performance indicators</h3>
     {{#performanceIndicatorContributions}}
@@ -485,60 +454,7 @@ UPDATE report_configurations
     {{/performanceIndicatorContributions}}
   </section>
 
-  <section class="section">
-    <h3>Cluster partners</h3>
-    {{#projectPartners}}
-    <div class="partner-card">
-      <div class="partner-card__header">
-        <div class="partner-card__title">{{#safeEmpty}}{{institutionName}}{{/safeEmpty}}</div>
-        {{#institutionAcronym}}<span class="tag">{{#safeEmpty}}{{institutionAcronym}}{{/safeEmpty}}</span>{{/institutionAcronym}}
-      </div>
-      <div class="partner-card__section">
-        <span class="partner-card__label">Responsibilities</span>
-        {{#responsibilities}}
-          <p>{{#safeEmpty}}{{.}}{{/safeEmpty}}</p>
-        {{/responsibilities}}
-        {{^responsibilities}}
-          <p>No responsibilities reported.</p>
-        {{/responsibilities}}
-      </div>
-      <div class="partner-card__section">
-        <span class="partner-card__label">Locations</span>
-        <ul>
-          {{#locations}}
-          <li>
-            <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
-            {{#country}}<small>{{#safeEmpty}}{{country}}{{/safeEmpty}}{{#isoCode}} ({{#safeEmpty}}{{isoCode}}{{/safeEmpty}}){{/isoCode}}</small>{{/country}}
-            {{#city}}<small>{{#safeEmpty}}{{city}}{{/safeEmpty}}</small>{{/city}}
-            {{#headquarter}}<span class="tag tag--muted">HQ</span>{{/headquarter}}
-          </li>
-          {{/locations}}
-          {{^locations}}
-          <li>No partner locations reported.</li>
-          {{/locations}}
-        </ul>
-      </div>
-      <div class="partner-card__section partner-card__contacts">
-        <span class="partner-card__label">Partner contacts</span>
-        {{#persons}}
-        <div class="partner-card__contact">
-          <strong>{{#safeEmpty}}{{name}}{{/safeEmpty}}</strong>
-          {{#role}}<span class="partner-card__role">{{#safeEmpty}}{{.}}{{/safeEmpty}}</span>{{/role}}
-          {{^role}}<span class="partner-card__role partner-card__role--muted">&lt;Not provided&gt;</span>{{/role}}
-          {{#division}}<span class="tag tag--muted">{{#safeEmpty}}{{division}}{{/safeEmpty}}</span>{{/division}}
-          {{#email}}<span>{{#safeEmpty}}{{.}}{{/safeEmpty}}</span>{{/email}}
-        </div>
-        {{/persons}}
-        {{^persons}}
-        <p>No partner contacts reported.</p>
-        {{/persons}}
-      </div>
-    </div>
-    {{/projectPartners}}
-    {{^projectPartners}}
-      <p>No partner information reported.</p>
-    {{/projectPartners}}
-  </section>
+
 
   <section class="section">
     <h3>Next steps</h3>
