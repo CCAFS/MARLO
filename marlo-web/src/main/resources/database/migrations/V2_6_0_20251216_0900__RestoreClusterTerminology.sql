@@ -193,10 +193,10 @@ UPDATE report_configurations
   </section>
 
   <section class="section">
-    <h3>Flagships, regions & clusters</h3>
+    <h3>Components & regional programs</h3>
     <div class="grid grid--3">
       <div class="list-card">
-        <h4>Flagships</h4>
+        <h4>Components</h4>
         <ul>
           {{#flagships}}
           <li>
@@ -208,13 +208,13 @@ UPDATE report_configurations
           </li>
           {{/flagships}}
           {{^flagships}}
-          <li>No flagships reported.</li>
+          <li>No components reported.</li>
           {{/flagships}}
         </ul>
       </div>
       {{#hasRegions}}
       <div class="list-card">
-        <h4>Regions</h4>
+        <h4>Regional programs</h4>
         <ul>
           {{#regions}}
           <li>
@@ -226,14 +226,14 @@ UPDATE report_configurations
           </li>
           {{/regions}}
           {{^regions}}
-          <li>No regions reported.</li>
+          <li>No regional programs reported.</li>
           {{/regions}}
         </ul>
       </div>
       {{/hasRegions}}
       {{^hasRegions}}
       <div class="list-card">
-        <h4>Regions</h4>
+        <h4>Regional programs</h4>
         <ul>
           <li>Not applicable for this cluster.</li>
         </ul>
