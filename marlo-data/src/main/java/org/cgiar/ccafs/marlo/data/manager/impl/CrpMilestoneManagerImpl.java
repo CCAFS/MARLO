@@ -30,14 +30,11 @@ import javax.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
  */
 @Named
-@Service("crpMilestoneManager")
 public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
 
   // Logger
@@ -101,7 +98,6 @@ public class CrpMilestoneManagerImpl implements CrpMilestoneManager {
   }
 
   @Override
-  @Transactional
   public CrpMilestone saveCrpMilestone(CrpMilestone crpAssumption) {
     return crpMilestoneDAO.save(crpAssumption);
   }

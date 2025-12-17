@@ -21,8 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcomeIndicator;
 import org.cgiar.ccafs.marlo.data.model.Phase;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,6 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
-@Service("crpProgramOutcomeIndicatorManager")
 public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeIndicatorManager {
 
 
@@ -159,7 +156,6 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
   }
 
   @Override
-  @Transactional
   public CrpProgramOutcomeIndicator
     saveCrpProgramOutcomeIndicator(CrpProgramOutcomeIndicator crpProgramOutcomeIndicator) {
 

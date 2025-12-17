@@ -22,8 +22,6 @@ import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,7 +32,6 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
-@Service("crpOutcomeSubIdoManager")
 public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
 
   // DAO
@@ -107,7 +104,6 @@ public class CrpOutcomeSubIdoManagerImpl implements CrpOutcomeSubIdoManager {
   }
 
   @Override
-  @Transactional
   public CrpOutcomeSubIdo saveCrpOutcomeSubIdo(CrpOutcomeSubIdo crpOutcomeSubIdo) {
     return crpOutcomeSubIdoDAO.save(crpOutcomeSubIdo);
   }
