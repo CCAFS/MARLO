@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CrpOutcomeSubIdoManager;
 import org.cgiar.ccafs.marlo.data.model.CrpAssumption;
 import org.cgiar.ccafs.marlo.data.model.CrpOutcomeSubIdo;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ import javax.inject.Named;
  * @author CCAFS
  */
 @Named
+@Service("crpAssumptionManager")
 public class CrpAssumptionManagerImpl implements CrpAssumptionManager {
 
   // DAO

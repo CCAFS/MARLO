@@ -20,6 +20,8 @@ import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +32,7 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
+@Service("crpProgramManager")
 public class CrpProgramManagerImpl implements CrpProgramManager {
 
   private CrpProgramDAO crpProgramDAO;
@@ -98,6 +101,7 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
+  @Transactional
   public CrpProgram saveCrpProgram(CrpProgram crpProgram, String actionName, List<String> relationsName, Phase phase) {
 
     return this.crpProgramDAO.save(crpProgram, actionName, relationsName, phase);

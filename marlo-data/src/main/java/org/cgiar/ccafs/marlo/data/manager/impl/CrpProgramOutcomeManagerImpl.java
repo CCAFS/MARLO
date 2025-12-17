@@ -19,16 +19,19 @@ import org.cgiar.ccafs.marlo.data.dao.CrpProgramOutcomeDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 
 /**
  * @author Christian Garcia
  */
 @Named
+@Service("crpProgramOutcomeManager")
 public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
 
   // Logger
@@ -262,6 +265,7 @@ public class CrpProgramOutcomeManagerImpl implements CrpProgramOutcomeManager {
   // }
 
   @Override
+  @Transactional
   public CrpProgramOutcome saveCrpProgramOutcome(CrpProgramOutcome crpProgramOutcome) {
     return crpProgramOutcomeDAO.save(crpProgramOutcome);
   }
