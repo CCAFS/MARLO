@@ -24,6 +24,7 @@ UPDATE report_configurations
   .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #f1f5f9; color: #0a4c70; font-size: 10px; margin-left: 6px; }
   .tag--muted { background: #e8edf3; color: #506b85; }
   .section { margin-top: 35px; }
+  .section--page-break { page-break-before: always; }
   .section h3 { font-size: 14px; text-transform: uppercase; color: #0a4c70; letter-spacing: 0.12em; margin-bottom: 8px; }
   .section p { margin: 0; line-height: 1.6; color: #333333; font-size: 12px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
@@ -118,7 +119,7 @@ UPDATE report_configurations
   </section>
 
   {{#projectDescription}}
-  <section class="section">
+  <section class="section section--page-break">
     <h3>Cluster Information</h3>
     <div class="grid grid--2">
       <div class="grid-item">
@@ -256,7 +257,7 @@ UPDATE report_configurations
   </section>
 
   <br>
-  <section class="section">
+  <section class="section section--page-break">
     <h3>Cluster partners</h3>
     {{#projectPartners}}
     <div class="partner-card">
@@ -310,7 +311,7 @@ UPDATE report_configurations
 
   <br>
   {{#projectLocations}}
-  <section class="section">
+  <section class="section section--page-break">
     <h3>Cluster locations</h3>
     <div class="grid grid--2">
       <div class="grid-item">
@@ -357,7 +358,7 @@ UPDATE report_configurations
   {{/projectLocations}}
 
   <br>
-  <section class="section">
+  <section class="section section--page-break">
     <h3>Contribution to performance indicators</h3>
     {{#performanceIndicatorContributions}}
     <div class="contribution-card">
