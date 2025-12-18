@@ -7781,6 +7781,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
         jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
         
+        // Set crossCutting at root level for template access (section is outside projectDescription block)
+        jsonData.put("crossCutting", projectDescription.get("crossCutting"));
+        
         // Set basic project data
         jsonData.put("projectID", projectID);
         jsonData.put("projectTitle", projectTitle);
