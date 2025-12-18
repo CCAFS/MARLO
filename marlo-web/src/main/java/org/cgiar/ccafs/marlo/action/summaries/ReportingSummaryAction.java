@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
@@ -46,7 +47,9 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManag
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
@@ -54,6 +57,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -66,11 +70,14 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -82,9 +89,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -182,6 +191,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ProjectOutcomeManager projectOutcomeManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private final HTMLParser htmlParser;
   private final ActivityManager activityManager;
@@ -192,6 +202,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final UserManager userManager;
   private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
+  private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
+  private final ProjectLocationManager projectLocationManager;
+  private String clusterReportTemplateData = null;
+  private String bucketName = null;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -216,13 +231,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, HTMLParser htmlParser,
+    ProjectOutcomeManager projectOutcomeManager, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
+    HTMLParser htmlParser,
     ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager,
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    ProjectLocationManager projectLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -253,6 +271,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectOutcomeManager = projectOutcomeManager;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.htmlParser = htmlParser;
     this.activityManager = activityManager;
@@ -263,6 +282,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.userManager = userManager;
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
+    this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
+    this.projectLocationManager = projectLocationManager;
   }
 
   /**
@@ -1173,27 +1195,33 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       LOG.error("Error generating LOG info " + e.getMessage());
     }
 
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-      String masterQueryName = "Main_Query";
-      Resource reportResource;
-      if (this.getSelectedCycle().equals("Planning")) {
+    boolean generatePentahoReport =
+      false;
 
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
-      } else {
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
-      }
-      // Get main report
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-      // General list to store parameters of Subreports
-      List<Object> args = new LinkedList<>();
-      // Verify if the project was found
-      if (project != null) {
-        // Get details band
-        ItemBand masteritemBand = masterReport.getItemBand();
-        // Create new empty subreport hash map
+    if (generatePentahoReport) {
+
+      try {
+        String masterQueryName = "Main_Query";
+        Resource reportResource;
+        if (this.getSelectedCycle().equals("Planning")) {
+
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
+        } else {
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
+        }
+        // Get main report
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+        // General list to store parameters of Subreports
+        List<Object> args = new LinkedList<>();
+        // Verify if the project was found
+        if (project != null) {
+          // Get details band
+          ItemBand masteritemBand = masterReport.getItemBand();
+          // Create new empty subreport hash map
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
@@ -1350,6 +1378,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+  } else {
+    // Specificity false - use microservice for report generation
+    try {
+      this.generateAndSendJson();
+      bytesPDF = os.toByteArray();
+    } catch (Exception e) {
+      if (e.getClass().getName().contains("ClientAbortException")) {
+        System.out.println("Client aborted the connection: " + e.getMessage());
+      } else {
+        System.out.println("Exception while generating JSON: " + e.getMessage());
+        throw e;
+      }
+    } finally {
+      try {
+        os.close();
+      } catch (Exception e) {
+        System.out.println("Error closing output stream: " + e.getMessage());
+      }
+    }
+  }
     return SUCCESS;
   }
 
@@ -7665,7 +7713,946 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
   }
 
-  @Override
+  /**
+   * Load cluster/project template data from report_configurations table.
+   * Following the same pattern used in ProjectInnovationSummaryAction and BaseStudySummaryData.
+   * Extracts the projectTemplateData field and assigns it to clusterReportTemplateData.
+   */
+  public void loadClusterTemplateData() {
+    try {
+      List<ReportConfiguration> reportConfigurations = new ArrayList<>();
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        String templateData = this.resolveProjectTemplateData(reportConfiguration);
+        if (templateData != null) {
+          this.clusterReportTemplateData = templateData;
+        }
+      }
+      this.bucketName = this.config.getMicroserviceBucketname();
+    } catch (final Exception e) {
+      System.out.println("error getting report configuration data " + e);
+    }
+  }
+
+  /**
+   * Generate JSON data and send to microservice for PDF generation.
+   * This method is called when the specificity GENERATE_PENTAHO_REPORTING_SUMMARY_REPORT_ACTIVE is false.
+   * 
+   * @return SUCCESS after sending data to microservice
+   */
+  @SuppressWarnings("unused")
+  public String generateAndSendJson() {
+    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    
+    // Initialize JSON objects
+    Map<String, Object> jsonData = new HashMap<>();
+    Map<String, Object> jsonOptions = new HashMap<>();
+    Map<String, String> headerMap = new HashMap<>();
+    Map<String, String> footerMap = new HashMap<>();
+    Map<String, Object> jsonRoot = new HashMap<>();
+    Map<String, Object> jsonMainRoot = new HashMap<>();
+    
+    String projectID = null;
+    String phaseID = null, cycle = null, year = null, loggedCenter = null;
+    
+    final Phase phase = this.getSelectedPhase();
+    
+    try {
+      if (project != null) {
+        projectID = project.getId().toString();
+        phaseID = phase.getId().toString();
+        cycle = this.getSelectedCycle();
+        year = String.valueOf(this.getSelectedYear());
+        loggedCenter = this.getLoggedCrp().getAcronym();
+
+        // Project Info
+        String projectTitle = null;
+
+        if (projectInfo != null) {
+          projectTitle = projectInfo.getTitle();
+        }
+        
+        Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+        List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
+        projectDescription.put("partners", partnersData);
+        jsonData.put("projectDescription", projectDescription);
+        jsonData.put("projectPartners", partnersData);
+        jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
+        jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
+        
+        // Set basic project data
+        jsonData.put("projectID", projectID);
+        jsonData.put("projectTitle", projectTitle);
+        jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
+        jsonData.put("phaseID", phaseID);
+        jsonData.put("cycle", cycle);
+        jsonData.put("year", year);
+        jsonData.put("loggedCenter", loggedCenter);
+        jsonData.put("timeCreation", this.getCurrentDatev2());
+        
+        // Set crossCutting at root level for template access (section is outside projectDescription block)
+        // Get it directly from buildCrossCuttingSummary to ensure it's properly set even if null
+        String crossCuttingValue = this.buildCrossCuttingSummary();
+        jsonData.put("crossCutting", crossCuttingValue);
+      }
+    } catch (Exception e) {
+      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
+    }
+    
+    // Set PDF options
+    headerMap.put("height", "40mm");
+    footerMap.put("height", "30mm");
+    try {
+      jsonOptions.put("format", "A4");
+      jsonOptions.put("orientation", "portrait");
+      jsonOptions.put("border", "0");
+      jsonOptions.put("zoomFactor", 1);
+      jsonOptions.put("header", headerMap);
+      jsonOptions.put("footer", footerMap);
+      jsonOptions.put("timeout", "300000");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonOptions: " + e.getMessage());
+    }
+    
+    try {
+      jsonRoot.put("data", jsonData);
+      jsonRoot.put("options", jsonOptions);
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot info: " + e.getMessage());
+    }
+    
+    // Load microservice configuration and cluster template data
+    this.microserviceReportAction.loadData();
+    this.loadClusterTemplateData();
+    
+    String reportName = null;
+    String bucketName = null;
+    
+    try {
+      reportName = "AICCRA-Cluster-" + project.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+      bucketName = this.config.getMicroserviceBucketname();
+      
+      jsonRoot.put("fileName", reportName);
+      jsonRoot.put("bucketName", bucketName);
+      jsonRoot.put("templateData", this.clusterReportTemplateData);
+    } catch (Exception e) {
+      System.out.println("Error setting report name and bucket: " + e.getMessage());
+    }
+    
+    String username = null, password = null;
+    try {
+      username = this.config.getMicroserviceUsername();
+      password = this.config.getMicroservicePassword();
+    } catch (final Exception e) {
+      System.out.println("Error getting microservice credentials: " + e);
+    }
+    
+    try {
+      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+      jsonRoot.put("credentials", credentialsJson);
+      
+      jsonMainRoot.put("data", jsonRoot);
+      jsonMainRoot.put("pattern", "pdf.generate");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot and jsonMainRoot information: " + e);
+    }
+    
+    try {
+      final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
+      this.persistPayload(objectMapper, jsonMainRoot);
+      
+      System.out.println("Sending cluster report to microservice: " + reportName);
+      // Using sendClusterReportQueueMessage for cluster/project summary reports
+      this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+      
+    } catch (final java.io.IOException e) {
+      System.out.println("Error generating JSON: " + e);
+    }
+    
+    return SUCCESS;
+  }
+
+  private Map<String, Object> buildProjectDescriptionSection() {
+    Map<String, Object> projectDescription = new HashMap<>();
+    if (project == null || projectInfo == null) {
+      return projectDescription;
+    }
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    String startDate =
+      projectInfo.getStartDate() != null ? formatter.format(projectInfo.getStartDate()) : null;
+    String endDate = projectInfo.getEndDate() != null ? formatter.format(projectInfo.getEndDate()) : null;
+    String liaisonInstitution =
+      projectInfo.getLiaisonInstitution() != null ? projectInfo.getLiaisonInstitution().getName() : null;
+    String type = projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null
+      ? projectInfo.getClusterType().getName() : null;
+    String status = null;
+    if (projectInfo.getStatus() != null) {
+      status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
+    }
+
+    String orgLeader = null;
+    ProjectPartner projectLeader = null;
+    if (this.getSelectedPhase() != null) {
+      projectLeader = project.getLeader(this.getSelectedPhase());
+    }
+    if (projectLeader != null && projectLeader.getInstitution() != null) {
+      orgLeader = projectLeader.getInstitution().getComposedName();
+    }
+
+    String leader = null;
+    ProjectPartnerPerson leaderPerson = project.getLeaderPerson(this.getSelectedPhase());
+    if (leaderPerson != null && leaderPerson.getUser() != null) {
+      leader = leaderPerson.getUser().getComposedName();
+    }
+
+    String summary = this.getSanitizedText(projectInfo.getSummary());
+
+    projectDescription.put("title", projectInfo.getTitle());
+    projectDescription.put("startDate", startDate);
+    projectDescription.put("endDate", endDate);
+    projectDescription.put("liaisonInstitution", liaisonInstitution);
+    projectDescription.put("liaisonLabel", this.getText("project.liaisonInstitution"));
+    projectDescription.put("liaisonContactLabel", this.getText("project.liaisonUser"));
+    projectDescription.put("type", type);
+    projectDescription.put("status", status);
+    projectDescription.put("leadOrganization", orgLeader);
+    projectDescription.put("leader", leader);
+    projectDescription.put("summary", summary);
+    projectDescription.put("cycle", this.getSelectedCycle());
+    projectDescription.put("crossCutting", this.buildCrossCuttingSummary());
+    projectDescription.put("hasRegions", this.hasProgramnsRegions());
+    List<Map<String, Object>> flagships =
+      this.buildProgramFocusList(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    projectDescription.put("flagships", flagships);
+    projectDescription.put("flagshipsSummary", this.buildProgramSummary(flagships));
+
+    List<Map<String, Object>> regions = this.hasProgramnsRegions()
+      ? this.buildProgramFocusList(ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) : new ArrayList<>();
+    projectDescription.put("regions", regions);
+    projectDescription.put("regionsSummary", this.buildProgramSummary(regions));
+
+    List<Map<String, Object>> clusterActivities = this.buildClusterActivitiesList();
+    projectDescription.put("clusterActivities", clusterActivities);
+    projectDescription.put("clusterActivitiesSummary", this.buildClusterActivitiesSummary(clusterActivities));
+    projectDescription.put("challengesSolutions", this.getSanitizedText(projectInfo.getChallengesSolutions()));
+    projectDescription.put("lessonsLearned", this.getSanitizedText(projectInfo.getLessonsLearned()));
+
+    return projectDescription;
+  }
+
+  private String buildFundingTypeSummary() {
+    if (project == null || project.getProjectBudgets() == null || project.getProjectBudgets().isEmpty()) {
+      return null;
+    }
+
+    List<String> typeList = project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getBudgetType() != null
+        && pb.getFundingSource() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName() != null)
+      .map(pb -> pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName())
+      .collect(Collectors.toList());
+
+    if (typeList.isEmpty()) {
+      return null;
+    }
+
+    Set<String> distinctTypes = new LinkedHashSet<>(typeList);
+    return String.join(", ", distinctTypes);
+  }
+
+  private String buildCrossCuttingSummary() {
+    if (projectInfo == null) {
+      return null;
+    }
+
+    List<String> crossCuttingItems = new ArrayList<>();
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingNa())) {
+      crossCuttingItems.add("● N/A");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingCapacity())) {
+      crossCuttingItems.add("● Capacity Development");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingGender())) {
+      crossCuttingItems.add("● Gender");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingYouth())) {
+      crossCuttingItems.add("● Youth");
+    }
+
+    if (crossCuttingItems.isEmpty()) {
+      return null;
+    }
+    return String.join(" <br>", crossCuttingItems);
+  }
+
+  private List<Map<String, Object>> buildProgramFocusList(int programType) {
+    List<Map<String, Object>> programsData = new ArrayList<>();
+    if (project == null || project.getProjectFocuses() == null) {
+      return programsData;
+    }
+
+    List<ProjectFocus> focuses = project.getProjectFocuses().stream()
+      .sorted((f1, f2) -> f1.getCrpProgram().getAcronym().compareTo(f2.getCrpProgram().getAcronym()))
+      .filter(c -> c.isActive() && c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == programType && c.getPhase() != null
+        && c.getPhase().equals(this.getSelectedPhase()) && c.getCrpProgram().getResearchArea() == null
+        && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().isCenterType() == false)
+      .collect(Collectors.toList());
+
+    for (ProjectFocus focus : focuses) {
+      CrpProgram program = programManager.getCrpProgramById(focus.getCrpProgram().getId());
+      if (program == null) {
+        continue;
+      }
+      Map<String, Object> programData = new HashMap<>();
+      programData.put("id", program.getId());
+      programData.put("name", program.getName());
+      programData.put("acronym", program.getAcronym());
+      programData.put("composedName", program.getComposedName());
+      programsData.add(programData);
+    }
+    return programsData;
+  }
+
+  private List<Map<String, Object>> buildClusterActivitiesList() {
+    List<Map<String, Object>> activities = new ArrayList<>();
+    if (project == null || project.getProjectClusterActivities() == null) {
+      return activities;
+    }
+
+    List<ProjectClusterActivity> clusterActivities = new ArrayList<>();
+    for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList())) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      boolean duplicated = clusterActivities.stream()
+        .anyMatch(existing -> existing.getCrpClusterOfActivity().getId()
+          .equals(projectClusterActivity.getCrpClusterOfActivity().getId()));
+      if (!duplicated) {
+        clusterActivities.add(projectClusterActivity);
+      }
+    }
+
+    for (ProjectClusterActivity projectClusterActivity : clusterActivities) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      Map<String, Object> activityData = new HashMap<>();
+      activityData.put("id", projectClusterActivity.getCrpClusterOfActivity().getId());
+      activityData.put("name", projectClusterActivity.getCrpClusterOfActivity().getComposedName());
+      activityData.put("identifier", projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+      activities.add(activityData);
+    }
+    return activities;
+  }
+
+  private String buildClusterActivitiesSummary(List<Map<String, Object>> activities) {
+    if (activities == null || activities.isEmpty()) {
+      return null;
+    }
+    List<String> names = activities.stream().map(activity -> {
+      Object name = activity.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object identifier = activity.get("identifier");
+      if (identifier != null && StringUtils.isNotBlank(identifier.toString())) {
+        return identifier.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private Map<String, Object> buildProjectLocationsSection(Project projectDb) {
+    Map<String, Object> locations = new HashMap<>();
+    locations.put("hasLocations", false);
+    locations.put("globalDimension", false);
+    locations.put("regionalDimension", false);
+    if (projectDb == null) {
+      return locations;
+    }
+
+    ProjectInfo projectInfoPhase = projectDb.getProjecInfoPhase(this.getSelectedPhase());
+    if (projectInfoPhase != null) {
+      locations.put("globalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationGlobal()));
+      locations.put("regionalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationRegional()));
+    }
+
+    List<Map<String, Object>> groups = this.collectProjectLocationGroups(projectDb);
+    locations.put("locationGroups", groups);
+    locations.put("hasLocations", !groups.isEmpty());
+    return locations;
+  }
+
+  private List<Map<String, Object>> collectProjectLocationGroups(Project projectDb) {
+    if (projectDb == null) {
+      return Collections.emptyList();
+    }
+    List<ProjectLocation> phaseLocations = this.loadProjectLocationsByPhase(projectDb.getId());
+    LinkedHashMap<Long, Map<String, Object>> grouped = new LinkedHashMap<>();
+    for (ProjectLocation location : phaseLocations) {
+      LocElementType type = null;
+      LocElement locElement = location.getLocElement();
+      if (locElement != null && locElement.getLocElementType() != null) {
+        type = locElement.getLocElementType();
+      } else if (location.getLocElementType() != null) {
+        type = location.getLocElementType();
+      }
+      if (type == null) {
+        continue;
+      }
+      final LocElementType groupType = type;
+      Map<String, Object> group = grouped.computeIfAbsent(type.getId(), id -> {
+        Map<String, Object> data = new HashMap<>();
+        data.put("typeId", id);
+        data.put("typeName", groupType.getName());
+        data.put("locations", new ArrayList<Map<String, Object>>());
+        return data;
+      });
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      Map<String, Object> entry = new HashMap<>();
+      if (locElement != null) {
+        entry.put("name", locElement.getName());
+        entry.put("parentName",
+          locElement.getLocElement() != null ? locElement.getLocElement().getName() : null);
+        if (locElement.getLocGeoposition() != null) {
+          entry.put("latitude", this.formatCoordinate(locElement.getLocGeoposition().getLatitude()));
+          entry.put("longitude", this.formatCoordinate(locElement.getLocGeoposition().getLongitude()));
+        }
+      } else {
+        entry.put("name", type.getName());
+      }
+      entries.add(entry);
+    }
+
+    return grouped.values().stream().peek(group -> {
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      entries.sort(Comparator.comparing(
+        e -> StringUtils.defaultString((String) e.get("name")).toLowerCase(Locale.ENGLISH)));
+    }).collect(Collectors.toList());
+  }
+
+  private List<ProjectLocation> loadProjectLocationsByPhase(long projectId) {
+    return projectLocationManager.findAll().stream()
+      .filter(pl -> pl != null && pl.isActive() && pl.getProject() != null && pl.getProject().getId() != null
+        && pl.getProject().getId().longValue() == projectId && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+  }
+
+  private String formatCoordinate(Double value) {
+    if (value == null) {
+      return null;
+    }
+    return String.format(Locale.ENGLISH, "%.4f", value);
+  }
+
+  private List<Map<String, Object>> buildProjectPartnersData() {
+    List<Map<String, Object>> partnersData = new ArrayList<>();
+    if (project == null || project.getProjectPartners() == null) {
+      return partnersData;
+    }
+
+    List<ProjectPartner> partners = project.getProjectPartners().stream().filter(Objects::nonNull)
+      .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(p -> this.getPartnerDisplayName(p).toLowerCase(Locale.ENGLISH)))
+      .collect(Collectors.toList());
+
+    for (ProjectPartner partner : partners) {
+      Map<String, Object> partnerData = new HashMap<>();
+      partnerData.put("id", partner.getId());
+      partnerData.put("institutionName", this.getPartnerDisplayName(partner));
+      partnerData.put("institutionAcronym",
+        partner.getInstitution() != null ? partner.getInstitution().getAcronym() : null);
+      partnerData.put("responsibilities", this.getSanitizedText(partner.getResponsibilities()));
+      List<Map<String, Object>> locations = this.buildPartnerLocations(partner);
+      partnerData.put("locations", locations);
+      partnerData.put("locationsSummary", this.buildLocationsSummary(locations));
+      partnerData.put("persons", this.buildPartnerPersons(partner));
+      partnersData.add(partnerData);
+    }
+    return partnersData;
+  }
+
+  private List<Map<String, Object>> buildPartnerLocations(ProjectPartner partner) {
+    List<Map<String, Object>> locations = new ArrayList<>();
+    if (partner.getProjectPartnerLocations() == null) {
+      return locations;
+    }
+    partner.getProjectPartnerLocations().stream().filter(Objects::nonNull).filter(ProjectPartnerLocation::isActive)
+      .sorted(Comparator.comparing(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        if (institutionLocation != null && institutionLocation.getLocElement() != null
+          && institutionLocation.getLocElement().getName() != null) {
+          return institutionLocation.getLocElement().getName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        LocElement locElement = institutionLocation != null ? institutionLocation.getLocElement() : null;
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("name",
+          institutionLocation != null ? institutionLocation.getComposedName() : null);
+        locationData.put("country", locElement != null ? locElement.getName() : null);
+        locationData.put("isoCode", locElement != null ? locElement.getIsoAlpha2() : null);
+        locationData.put("city",
+          institutionLocation != null ? institutionLocation.getCity() : null);
+        locationData.put("headquarter",
+          institutionLocation != null ? institutionLocation.isHeadquater() : null);
+        locations.add(locationData);
+      });
+    return locations;
+  }
+
+  private String buildLocationsSummary(List<Map<String, Object>> locations) {
+    if (locations == null || locations.isEmpty()) {
+      return null;
+    }
+    List<String> names = locations.stream().map(location -> {
+      Object name = location.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString();
+      }
+      Object country = location.get("country");
+      if (country != null && StringUtils.isNotBlank(country.toString())) {
+        return country.toString();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(3).collect(Collectors.joining(", "));
+    if (names.size() > 3) {
+      summary = summary + " +" + (names.size() - 3) + " more";
+    }
+    return summary;
+  }
+
+  private List<Map<String, Object>> buildPartnerPersons(ProjectPartner partner) {
+    List<Map<String, Object>> persons = new ArrayList<>();
+    if (partner.getProjectPartnerPersons() == null) {
+      return persons;
+    }
+    partner.getProjectPartnerPersons().stream().filter(Objects::nonNull).filter(ProjectPartnerPerson::isActive)
+      .sorted(Comparator.comparing(person -> {
+        if (person.getUser() != null && person.getUser().getComposedCompleteName() != null) {
+          return person.getUser().getComposedCompleteName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(person -> {
+        Map<String, Object> personData = new HashMap<>();
+        personData.put("id", person.getId());
+        if (person.getUser() != null) {
+          personData.put("name", person.getUser().getComposedCompleteName());
+          personData.put("email", person.getUser().getEmail());
+        }
+        String role = this.getSanitizedText(person.getContactType());
+        if (this.isAiccra() && role != null) {
+          String normalizedRole = role.toUpperCase(Locale.ENGLISH);
+          if ("PL".equals(normalizedRole)) {
+            role = "Cluster leader";
+          } else if ("PC".equals(normalizedRole)) {
+            role = "Cluster Coordinator";
+          } else if ("CP".equals(normalizedRole)) {
+            role = "Cluster Collaborator";
+          }
+        }
+        personData.put("role", role);
+        if (person.getPartnerDivision() != null) {
+          personData.put("division", person.getPartnerDivision().getComposedName());
+        }
+        persons.add(personData);
+      });
+    return persons;
+  }
+
+  private List<Map<String, Object>> buildPerformanceIndicatorContributions() {
+    List<Map<String, Object>> contributions = new ArrayList<>();
+    if (project == null || project.getProjectOutcomes() == null) {
+      return contributions;
+    }
+
+    List<ProjectOutcomeIndicator> indicatorsList = new ArrayList<>();
+    try {
+      List<ProjectOutcomeIndicator> allIndicators = projectOutcomeIndicatorManager.findAll();
+      if (allIndicators != null) {
+        indicatorsList.addAll(allIndicators);
+      }
+    } catch (Exception e) {
+      LOG.warn("Unable to load project outcome indicators", e);
+    }
+
+    Map<Long, List<ProjectOutcomeIndicator>> indicatorsByOutcome = indicatorsList.stream().filter(Objects::nonNull)
+      .filter(ProjectOutcomeIndicator::isActive)
+      .filter(indicator -> indicator.getProjectOutcome() != null && indicator.getProjectOutcome().getId() != null)
+      .collect(Collectors.groupingBy(indicator -> indicator.getProjectOutcome().getId()));
+
+    List<ProjectOutcome> outcomes = project.getProjectOutcomes().stream().filter(Objects::nonNull)
+      .filter(outcome -> outcome.isActive() && outcome.getPhase() != null
+        && outcome.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(ProjectOutcome::getOrder, Comparator.nullsLast(Double::compareTo)))
+      .collect(Collectors.toList());
+
+    int order = 1;
+    for (ProjectOutcome summaryOutcome : outcomes) {
+      ProjectOutcome detailedOutcome = summaryOutcome;
+      try {
+        if (projectOutcomeManager != null) {
+          ProjectOutcome dbOutcome = projectOutcomeManager.getProjectOutcomeById(summaryOutcome.getId());
+          if (dbOutcome != null) {
+            detailedOutcome = dbOutcome;
+          }
+        }
+      } catch (Exception e) {
+        LOG.warn("Unable to reload project outcome {}", summaryOutcome.getId(), e);
+      }
+      if (detailedOutcome == null) {
+        continue;
+      }
+      List<ProjectOutcomeIndicator> outcomeIndicators =
+        indicatorsByOutcome.getOrDefault(detailedOutcome.getId(), Collections.emptyList());
+      contributions.add(this.buildPerformanceIndicatorContribution(detailedOutcome, outcomeIndicators, order++));
+    }
+    return contributions;
+  }
+
+  private Map<String, Object> buildPerformanceIndicatorContribution(ProjectOutcome outcome,
+    List<ProjectOutcomeIndicator> indicators, int order) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("order", order);
+    if (outcome == null) {
+      return data;
+    }
+    data.put("outcomeId", outcome.getId());
+    CrpProgramOutcome crpOutcome = outcome.getCrpProgramOutcome();
+    if (crpOutcome != null) {
+      data.put("programOutcome", this.getSanitizedText(crpOutcome.getDescription()));
+      data.put("indicator", this.getSanitizedText(crpOutcome.getIndicator()));
+      data.put("programOutcomeYear", crpOutcome.getYear());
+      data.put("programOutcomeValue", this.formatNumericValue(crpOutcome.getValue()));
+      if (crpOutcome.getSrfTargetUnit() != null) {
+        data.put("programOutcomeUnit", this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName()));
+      }
+      if (crpOutcome.getCrpProgram() != null) {
+        String flagshipName = this.getSanitizedText(crpOutcome.getCrpProgram().getComposedName());
+        if (flagshipName != null) {
+          data.put("flagship", flagshipName);
+        }
+        String flagshipAcronym = this.getSanitizedText(crpOutcome.getCrpProgram().getAcronym());
+        String badge = flagshipAcronym != null ? flagshipAcronym : flagshipName;
+        if (badge != null) {
+          data.put("flagshipBadge", badge);
+        }
+      }
+    }
+    data.put("targetNarrative", this.getSanitizedText(outcome.getNarrativeTarget()));
+    data.put("achievementNarrative", this.getSanitizedText(outcome.getNarrativeAchieved()));
+    data.put("targetValue", this.formatNumericValue(outcome.getExpectedValue()));
+    data.put("targetUnit", this.resolveUnitName(outcome.getExpectedUnit(), crpOutcome));
+    data.put("achievementValue", this.formatNumericValue(outcome.getAchievedValue()));
+    data.put("achievementUnit", this.resolveUnitName(outcome.getAchievedUnit(), crpOutcome));
+    data.put("communications", this.buildOutcomeCommunications(outcome));
+    data.put("lessonsLearned", this.extractLessons(outcome));
+
+    List<Map<String, Object>> milestoneData = this.buildOutcomeMilestones(outcome);
+    data.put("milestones", milestoneData);
+    data.put("hasMilestones", !milestoneData.isEmpty());
+
+    List<Map<String, Object>> indicatorResponses = this.buildOutcomeIndicatorResponses(indicators);
+    data.put("indicatorResponses", indicatorResponses);
+    data.put("hasIndicatorResponses", !indicatorResponses.isEmpty());
+
+    List<Map<String, Object>> nextUsers = this.buildOutcomeNextUsers(outcome);
+    data.put("nextUsers", nextUsers);
+    data.put("hasNextUsers", !nextUsers.isEmpty());
+    return data;
+  }
+
+  private List<Map<String, Object>> buildOutcomeMilestones(ProjectOutcome outcome) {
+    if (outcome.getProjectMilestones() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectMilestones().stream().filter(Objects::nonNull).filter(ProjectMilestone::isActive)
+      .filter(milestone -> {
+        int milestoneYear = milestone.getYear();
+        return milestoneYear <= 0 || milestoneYear == this.getSelectedYear();
+      })
+      .map(milestone -> {
+        Map<String, Object> milestoneData = new HashMap<>();
+        if (milestone.getCrpMilestone() != null) {
+          milestoneData.put("title", this.getSanitizedText(milestone.getCrpMilestone().getComposedName()));
+        }
+        milestoneData.put("year", milestone.getYear());
+        milestoneData.put("narrative", this.getSanitizedText(milestone.getNarrativeTarget()));
+        milestoneData.put("expectedValue", this.formatNumericValue(milestone.getExpectedValue()));
+        milestoneData.put("achievedValue", this.formatNumericValue(milestone.getAchievedValue()));
+        return milestoneData;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeIndicatorResponses(List<ProjectOutcomeIndicator> indicators) {
+    if (indicators == null || indicators.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return indicators.stream().filter(Objects::nonNull)
+      .filter(indicator -> indicator.getPhase() == null || indicator.getPhase().equals(this.getSelectedPhase()))
+      .map(indicator -> {
+        Map<String, Object> response = new HashMap<>();
+        if (indicator.getCrpProgramOutcomeIndicator() != null) {
+          response.put("question", this.getSanitizedText(indicator.getCrpProgramOutcomeIndicator().getIndicator()));
+        }
+        response.put("narrative", this.getSanitizedText(indicator.getNarrative()));
+        response.put("achievedNarrative", this.getSanitizedText(indicator.getAchievedNarrative()));
+        return response;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeNextUsers(ProjectOutcome outcome) {
+    if (outcome.getProjectNextusers() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectNextusers().stream().filter(Objects::nonNull).filter(ProjectNextuser::isActive)
+      .map(nextUser -> {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("name", this.getSanitizedText(nextUser.getNextUser()));
+        entry.put("knowledge", this.getSanitizedText(nextUser.getKnowledge()));
+        entry.put("strategies", this.getSanitizedText(nextUser.getStrategies()));
+        entry.put("knowledgeReport", this.getSanitizedText(nextUser.getKnowledgeReport()));
+        entry.put("strategiesReport", this.getSanitizedText(nextUser.getStrategiesReport()));
+        return entry;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private String buildOutcomeCommunications(ProjectOutcome outcome) {
+    if (outcome.getProjectCommunications() == null) {
+      return null;
+    }
+    List<String> communications = outcome.getProjectCommunications().stream().filter(Objects::nonNull)
+      .filter(ProjectCommunication::isActive).filter(communication -> communication.getYear() == this.getSelectedYear())
+      .map(ProjectCommunication::getCommunication).map(this::getSanitizedText).filter(Objects::nonNull)
+      .collect(Collectors.toList());
+    if (communications.isEmpty()) {
+      return null;
+    }
+    return String.join("\n\n", communications);
+  }
+
+  private String extractLessons(ProjectOutcome outcome) {
+    if (outcome.getProjectComponentLesson() != null && outcome.getProjectComponentLesson().getLessons() != null) {
+      return this.getSanitizedText(outcome.getProjectComponentLesson().getLessons());
+    }
+    return null;
+  }
+
+  private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
+    if (specificUnit != null && specificUnit.getName() != null) {
+      return this.getSanitizedText(specificUnit.getName());
+    }
+    if (crpOutcome != null && crpOutcome.getSrfTargetUnit() != null
+      && crpOutcome.getSrfTargetUnit().getName() != null) {
+      return this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName());
+    }
+    return null;
+  }
+
+  private String formatNumericValue(Number value) {
+    if (value == null) {
+      return null;
+    }
+    double numericValue = value.doubleValue();
+    if (Math.abs(numericValue - Math.rint(numericValue)) < 0.0000001d) {
+      return String.format(Locale.ENGLISH, "%.0f", numericValue);
+    }
+    DecimalFormat decimalFormat = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+    return decimalFormat.format(numericValue);
+  }
+
+  private String buildProgramSummary(List<Map<String, Object>> programs) {
+    if (programs == null || programs.isEmpty()) {
+      return null;
+    }
+    List<String> names = programs.stream().map(program -> {
+      Object composed = program.get("composedName");
+      if (composed != null && StringUtils.isNotBlank(composed.toString())) {
+        return composed.toString().trim();
+      }
+      Object name = program.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object acronym = program.get("acronym");
+      if (acronym != null && StringUtils.isNotBlank(acronym.toString())) {
+        return acronym.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private String getSanitizedText(String value) {
+    if (value == null) {
+      return null;
+    }
+    String sanitized = value.replace("\r", "\n").trim();
+    return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  private String getPartnerDisplayName(ProjectPartner partner) {
+    if (partner == null) {
+      return "";
+    }
+    try {
+      String composed = partner.getComposedName();
+      if (composed != null && !composed.trim().isEmpty()) {
+        return composed;
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+    if (partner.getInstitution() != null) {
+      if (partner.getInstitution().getComposedName() != null
+        && !partner.getInstitution().getComposedName().trim().isEmpty()) {
+        return partner.getInstitution().getComposedName();
+      }
+      if (partner.getInstitution().getName() != null) {
+        return partner.getInstitution().getName();
+      }
+    }
+    return "";
+  }
+
+  private String resolveProjectTemplateData(ReportConfiguration reportConfiguration) {
+    if (reportConfiguration == null) {
+      return null;
+    }
+    try {
+      Method getter = reportConfiguration.getClass().getMethod("getProjectTemplateData");
+      Object value = getter.invoke(reportConfiguration);
+      if (value != null) {
+        return value.toString();
+      }
+    } catch (Exception e) {
+      try {
+        Map<String, Object> configurationMap = reportConfiguration.convertToMap();
+        if (configurationMap != null && configurationMap.get("projectTemplateData") != null) {
+          return configurationMap.get("projectTemplateData").toString();
+        }
+      } catch (Exception inner) {
+        LOG.warn("Unable to resolve project template data via reflection", inner);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get current date and time formatted as yyyyMMdd_HHmm
+   * 
+   * @return Formatted date-time string
+   */
+  private String getCurrentDateTime() {
+    java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+    String formattedDateTime = currentDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+    return formattedDateTime;
+  }
+
+  /**
+   * Get current date formatted as "Monday, March 17th, 2025, at 21:57"
+   * 
+   * @return Formatted date string with ordinal day suffix
+   */
+  private String getCurrentDatev2() {
+    // Define the date format: "Monday, March 17, 2025, at 21:57"
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(java.util.TimeZone.getTimeZone("CET")); // Set timezone to CET
+
+    // Format the current date without ordinal suffix
+    String formattedDate = formatter.format(new Date());
+
+    // Extract the day of the month
+    Calendar calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("CET"), Locale.US);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    // Get the appropriate ordinal suffix (st, nd, rd, th)
+    String ordinal = this.getDayOrdinal(day);
+
+    // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
+    return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Object jsonRoot) {
+    FileWriter writer = null;
+    try {
+      File payloadFile = new File(System.getProperty("user.dir"),
+        "reporting-summary-payload-" + System.currentTimeMillis() + ".json");
+      writer = new FileWriter(payloadFile);
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, jsonRoot);
+    } catch (Exception e) {
+      LOG.warn("Unable to persist reporting summary payload", e);
+    } finally {
+      if (writer != null) {
+        try {
+          writer.close();
+        } catch (IOException ignored) {
+        }
+      }
+    }
+  }
+
+  /**
+   * Method to determine the ordinal suffix for a given day
+   * 
+   * @param day Day of the month
+   * @return Ordinal suffix (st, nd, rd, th)
+   */
+  private String getDayOrdinal(int day) {
+    // Special cases: 11th, 12th, 13th always use "th"
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+
+    // Determine suffix based on the last digit
+    switch (day % 10) {
+      case 1:
+        return "st"; // 1st, 21st, 31st
+      case 2:
+        return "nd"; // 2nd, 22nd
+      case 3:
+        return "rd"; // 3rd, 23rd
+      default:
+        return "th"; // 4th, 5th, ..., 24th, 25th, etc.
+    }
+  }
+
   /**
    * Prepare the parameters of the project.
    * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class
