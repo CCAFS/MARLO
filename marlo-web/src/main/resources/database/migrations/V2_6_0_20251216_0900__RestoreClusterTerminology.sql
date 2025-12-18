@@ -247,12 +247,11 @@ UPDATE report_configurations
   <section class="section">
     <h3>Cross-cutting dimenssions</h3>
     <div class="card">
-      {{#crossCutting}}
+      {{#if crossCutting}}
         <p>{{{crossCutting}}}</p>
-      {{/crossCutting}}
-      {{^crossCutting}}
+      {{else}}
         <p>No cross-cutting dimensions reported.</p>
-      {{/crossCutting}}
+      {{/if}}
     </div>
   </section>
 
