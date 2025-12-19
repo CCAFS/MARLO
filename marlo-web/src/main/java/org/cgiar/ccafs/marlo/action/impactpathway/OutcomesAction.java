@@ -1257,38 +1257,7 @@ public class OutcomesAction extends BaseAction {
         programOutcomeIncoming.setPortfolio(null);
       }
 
-      // 1. Manejo del Archivo ENTRANTE (Formulario)
-      if (programOutcomeIncoming.getFile() != null) {
-          Long fileId = programOutcomeIncoming.getFile().getId();
-          String fileName = programOutcomeIncoming.getFile().getFileName();
-
-          // Caso A: Es un objeto "Fantasma" (sin ID, sin nombre) -> FORCE NULL
-          if (fileId == null && (fileName == null || fileName.trim().isEmpty())) {
-              programOutcomeIncoming.setFile(null);
-          }
-          // Caso B: Es un archivo existente (ID 1815) -> DEJARLO QUIETO
-          // Caso C: Es un archivo nuevo (ID null, nombre "doc.pdf") -> DEJARLO (Hibernate lo guardará)
-      }
-
       crpProgramOutcome.copyFields(programOutcomeIncoming);
-
-      // 3. Manejo del Archivo DESTINO (BD) - EL FIX DEL ERROR ACTUAL
-      // Verificamos si después de copiar, quedó un objeto "roto" (ID modificado a null)
-      if (crpProgramOutcome.getFile() != null) {
-          // Si el objeto de la BD tiene un archivo, pero el incoming le pasó uno sin ID...
-          // Hibernate puede confundirse.
-          
-          // REGLA DE ORO: Si querías borrar el archivo, 'programOutcomeIncoming.getFile()' debió ser NULL.
-          // Si 'copyFields' copió un objeto vacío sobre uno existente, ahí está el error.
-          
-          // Verifica si es un archivo fantasma y mátalo en el destino también
-          if (crpProgramOutcome.getFile().getId() == null) {
-              String fName = crpProgramOutcome.getFile().getFileName();
-              if (fName == null || fName.trim().isEmpty()) {
-                  crpProgramOutcome.setFile(null); // <--- ESTO ES LO QUE HIBERNATE QUIERE
-              }
-          }
-      }
 
       crpProgramOutcome.setModifiedBy(this.getCurrentUser());
       crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
