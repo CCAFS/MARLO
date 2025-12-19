@@ -506,7 +506,7 @@
           [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
           [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]
           [#assign changeFieldEmail = customForm.changedField('${name}.user.id') /]
-          [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName?html)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
+          [@customForm.input name="partner-${partnerIndex}-person-${index}" value="${(element.user.composedName)!}" className='userName ${partnerClass} ${changeFieldEmail}' type="text" disabled=!canEdit i18nkey="projectPartners.contactPersonEmail" required=isPPA readOnly=true editable=editable && canEditEmail /]
           <input class="userId" type="hidden" name="${name}.user.id" value="${(element.user.id)!}" />   
           [#if editable && canEditEmail]<div class="searchUser button-blue button-float">[@s.text name="form.buttons.searchUser" /]</div>[/#if]
         </div>
