@@ -12,6 +12,7 @@ UPDATE report_configurations
     margin: 0;
   }
   body { font-family: "Montserrat", "Arial", sans-serif; color: #1F1F1F; margin: 0; padding: 0; background-color: #f0f4f7; }
+  .page { padding: 110px 60px 80px 60px; background-color: #f8f9fb; min-height: 100vh; box-sizing: border-box; }
   h1 { font-size: 24px; color: #0a4c70; margin-bottom: 0; letter-spacing: 0.04em; }
   h2 { font-size: 18px; margin-top: 5px; color: #4b4b4b; font-weight: 500; }
   .caption { font-size: 11px; color: #6a7a89; text-transform: uppercase; letter-spacing: 0.2em; margin-top: 12px; }
