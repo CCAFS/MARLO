@@ -6,7 +6,8 @@
   "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
-  "${baseUrlCdn}/global/js/autoSave.js"
+  "${baseUrlCdn}/global/js/autoSave.js",
+  "${baseUrlCdn}/crp/js/projects/projectPartners.js"
   ] 
 /]
 [#assign customCSS = [
@@ -103,6 +104,9 @@
 [#-- UserItem Template --]
 [@userItem element={} name="project.partners[-1].users" index="-1" template=true /]
 
+[#-- Country Element Template --]
+[@locElementMacro element={} name="project.partners[-1].selectedLocations" index=-1 isTemplate=true /]
+
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro partnerMacro element name index isTemplate=false]
@@ -122,6 +126,28 @@
       <div class="clearfix"></div>
     </div>
     
+    [#-- Country Offices / Locations --]
+    <h5 class="sectionSubTitle">[@s.text name="projectPartners.countryOffices" /]</h5>
+    <div class="countries-list items-list simpleBox" listname="${customName}.selectedLocations">
+      <ul class="">
+        [#if (element.selectedLocations?has_content)!false]
+          [#list element.selectedLocations as locElement]
+            [@locElementMacro element=locElement!{} name="${customName}.selectedLocations" index=locElement_index /]
+          [/#list]
+        [#else] 
+          <p class="message text-center">No country office added</p>
+        [/#if]
+      </ul>
+      <div class="clearfix"></div> 
+      [#-- Add Location Element --]
+      [#if editable]
+        <hr />
+        <div class="form-group">
+          [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${customName}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
+        </div>
+      [/#if]
+    </div>
+
     [#-- Contact persons --]
     <div class="users-block">
       <div class="items-list simpleBox" listname="${customName}.users">
@@ -157,5 +183,19 @@
     [#if editable]
       <span class="glyphicon glyphicon-remove pull-right remove-userItem" aria-hidden="true"></span>
     [/#if]
+  </li>
+[/#macro]
+
+[#macro locElementMacro element name index isTemplate=false ]
+  <li id="locElement-${isTemplate?string('template', index)}" class="locElement userItem" style="display:${isTemplate?string('none','block')}">
+    [#assign locElementName = "${name}[${index}]" ]
+    [#-- Remove Button --]
+    [#if editable]<div class="removeLocElement removeIcon" title="Remove Location" style="top: 4px;"></div>[/#if] 
+    
+    [#-- Location Name --]
+    <span class="flag-icon" style="height: 31px; position: relative;"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}" style="position: absolute; top: 8px;"></i></span> <span class="name">${(element.composedName)!'{name}'}</span><br />
+    
+    [#-- Hidden inputs --]
+    <input type="hidden" class="locElementCountry" name="${locElementName}.locElement.isoAlpha2" value="${(element.locElement.isoAlpha2)!}" /> 
   </li>
 [/#macro]
