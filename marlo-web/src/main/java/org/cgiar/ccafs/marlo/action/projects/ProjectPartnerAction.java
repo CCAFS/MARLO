@@ -1797,8 +1797,7 @@ public class ProjectPartnerAction extends BaseAction {
             projectPartnerDB.setResponsibilities(projectPartnerClient.getResponsibilities());
             projectPartnerDB.setPhase(projectPartnerDB.getPhase());
             projectPartnerDB.setPartnerPersons(projectPartnerClient.getPartnerPersons());
-            // NOTE: Do NOT set selectedLocations here - it will be handled by saveLocations() method
-            // projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
+            projectPartnerDB.setSelectedLocations(projectPartnerClient.getSelectedLocations());
             projectPartnerDB.setSubDepartment(projectPartnerClient.getSubDepartment());
             projectPartnerDB.setPartnerContributors(projectPartnerDB.getPartnerContributors());
             try {
@@ -2602,4 +2601,3 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 }
-
