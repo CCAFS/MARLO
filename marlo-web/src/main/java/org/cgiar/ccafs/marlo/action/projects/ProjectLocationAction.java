@@ -1502,6 +1502,8 @@ public class ProjectLocationAction extends BaseAction {
           project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
         }
       }
+
+      
       locationValidator.validate(this, project, true);
     }
   }
