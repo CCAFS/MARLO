@@ -38,19 +38,27 @@ public class InstitutionLocation extends MarloBaseEntity implements java.io.Seri
     if (this == obj) {
       return true;
     }
-    if (obj == null) {
+    if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-
+    
     InstitutionLocation other = (InstitutionLocation) obj;
-    if (locElement == null) {
-      if (other.locElement != null) {
-        return false;
-      }
-    } else if (!this.getLocElement().getIsoAlpha2().equals(other.getLocElement().getIsoAlpha2())) {
+    
+    // Ambos son null - son iguales
+    if (locElement == null && other.locElement == null) {
+      return true;
+    }
+    
+    // Uno es null y el otro no - no son iguales
+    if (locElement == null || other.locElement == null) {
       return false;
     }
-    return true;
+    
+    // Ambos existen - comparar el isoAlpha2
+    return java.util.Objects.equals(
+      this.locElement.getIsoAlpha2(), 
+      other.locElement.getIsoAlpha2()
+    );
   }
 
 
@@ -95,14 +103,15 @@ public class InstitutionLocation extends MarloBaseEntity implements java.io.Seri
     return u;
   }
 
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((locElement == null) ? 0 : locElement.hashCode());
+    result = prime * result + ((locElement == null) ? 0 : 
+      (locElement.getIsoAlpha2() == null ? 0 : locElement.getIsoAlpha2().hashCode()));
     return result;
   }
+
 
   @Override
   public boolean isActive() {

@@ -1913,40 +1913,64 @@ public class ProjectPartnerAction extends BaseAction {
      * This is a small optimization to return the locations pre-fetched rather than get them one by one.
      */
 
-
     List<ProjectPartnerLocation> projectPartnerLocationsDB =
       projectPartnerDB.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    
     for (ProjectPartnerLocation projectPartnerLocationDB : projectPartnerLocationsDB) {
-      String isoAlpha2 = projectPartnerLocationDB.getInstitutionLocation().getLocElement().getIsoAlpha2();
-      // Check to see if an element in the collection has the same isoAplha2 code
-      if (projectPartnerClient.getSelectedLocations().stream()
-        .filter(c -> c.getLocElement().getIsoAlpha2().equals(isoAlpha2)).collect(Collectors.toList()).isEmpty()) {
-        // The location does not exist anymore so delete it.
-        LOG.debug("Deleting : " + projectPartnerLocationDB);
-        projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocationDB.getId());
+      // Verificar que institutionLocation y locElement no sean null
+      if (projectPartnerLocationDB.getInstitutionLocation() != null 
+          && projectPartnerLocationDB.getInstitutionLocation().getLocElement() != null) {
+        
+        String isoAlpha2 = projectPartnerLocationDB.getInstitutionLocation().getLocElement().getIsoAlpha2();
+        
+        // Check to see if an element in the collection has the same isoAplha2 code
+        if (projectPartnerClient.getSelectedLocations().stream()
+          .filter(c -> c.getLocElement() != null 
+                    && c.getLocElement().getIsoAlpha2() != null
+                    && c.getLocElement().getIsoAlpha2().equals(isoAlpha2))
+          .collect(Collectors.toList()).isEmpty()) {
+          // The location does not exist anymore so delete it.
+          LOG.debug("Deleting : " + projectPartnerLocationDB);
+          projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocationDB.getId());
+        }
+      } else {
+        LOG.warn("ProjectPartnerLocation has null InstitutionLocation or LocElement: " + projectPartnerLocationDB.getId());
       }
     }
+    
     for (InstitutionLocation updatedInstitutionLocationClient : projectPartnerClient.getSelectedLocations()) {
-      String isoAlpha2 = updatedInstitutionLocationClient.getLocElement().getIsoAlpha2();
-      // Check to see if the location is already saved by comparing the isoAplpha2 codes.
-      if (projectPartnerLocationsDB.stream()
-        .filter(c -> c.isActive() && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()))
-        .collect(Collectors.toList()).isEmpty()) {
-        LocElement locElement =
-          locationManager.getLocElementByISOCode(updatedInstitutionLocationClient.getLocElement().getIsoAlpha2());
-        InstitutionLocation institutionLocation =
-          institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
-        ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
-        partnerLocation.setInstitutionLocation(institutionLocation);
-        partnerLocation.setProjectPartner(projectPartnerDB);
-        partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
-        LOG.debug("Saving : " + partnerLocation);
-        // This is to add projectPartnerLocation to generate correct auditlog.
-        projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
+      // Verificar que locElement no sea null
+      if (updatedInstitutionLocationClient.getLocElement() != null 
+          && updatedInstitutionLocationClient.getLocElement().getIsoAlpha2() != null) {
+        
+        String isoAlpha2 = updatedInstitutionLocationClient.getLocElement().getIsoAlpha2();
+        
+        // Check to see if the location is already saved by comparing the isoAplpha2 codes.
+        if (projectPartnerLocationsDB.stream()
+          .filter(c -> c.isActive() 
+                    && c.getInstitutionLocation() != null
+                    && c.getInstitutionLocation().getLocElement() != null
+                    && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()))
+          .collect(Collectors.toList()).isEmpty()) {
+          
+          LocElement locElement =
+            locationManager.getLocElementByISOCode(updatedInstitutionLocationClient.getLocElement().getIsoAlpha2());
+          
+          InstitutionLocation institutionLocation =
+            institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
+          
+          ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+          partnerLocation.setInstitutionLocation(institutionLocation);
+          partnerLocation.setProjectPartner(projectPartnerDB);
+          partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
+          LOG.debug("Saving : " + partnerLocation);
+          // This is to add projectPartnerLocation to generate correct auditlog.
+          projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
+        }
+      } else {
+        LOG.warn("InstitutionLocation has null LocElement, skipping: " + updatedInstitutionLocationClient.getId());
       }
     }
-
-
   }
 
 
