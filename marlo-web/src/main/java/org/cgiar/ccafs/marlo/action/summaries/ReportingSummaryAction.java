@@ -8366,14 +8366,38 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         }
       }
     }
-    data.put("targetNarrative", this.getSanitizedText(outcome.getNarrativeTarget()));
-    data.put("achievementNarrative", this.getSanitizedText(outcome.getNarrativeAchieved()));
-    data.put("targetValue", this.formatNumericValue(outcome.getExpectedValue()));
-    data.put("targetUnit", this.resolveUnitName(outcome.getExpectedUnit(), crpOutcome));
-    data.put("achievementValue", this.formatNumericValue(outcome.getAchievedValue()));
-    data.put("achievementUnit", this.resolveUnitName(outcome.getAchievedUnit(), crpOutcome));
-    data.put("communications", this.buildOutcomeCommunications(outcome));
-    data.put("lessonsLearned", this.extractLessons(outcome));
+    String targetNarrative = this.getSanitizedText(outcome.getNarrativeTarget());
+    if (targetNarrative != null && !targetNarrative.trim().isEmpty()) {
+      data.put("targetNarrative", targetNarrative);
+    }
+    String achievementNarrative = this.getSanitizedText(outcome.getNarrativeAchieved());
+    if (achievementNarrative != null && !achievementNarrative.trim().isEmpty()) {
+      data.put("achievementNarrative", achievementNarrative);
+    }
+    String targetValue = this.formatNumericValue(outcome.getExpectedValue());
+    if (targetValue != null && !targetValue.trim().isEmpty()) {
+      data.put("targetValue", targetValue);
+    }
+    String targetUnit = this.resolveUnitName(outcome.getExpectedUnit(), crpOutcome);
+    if (targetUnit != null && !targetUnit.trim().isEmpty()) {
+      data.put("targetUnit", targetUnit);
+    }
+    String achievementValue = this.formatNumericValue(outcome.getAchievedValue());
+    if (achievementValue != null && !achievementValue.trim().isEmpty()) {
+      data.put("achievementValue", achievementValue);
+    }
+    String achievementUnit = this.resolveUnitName(outcome.getAchievedUnit(), crpOutcome);
+    if (achievementUnit != null && !achievementUnit.trim().isEmpty()) {
+      data.put("achievementUnit", achievementUnit);
+    }
+    String communications = this.buildOutcomeCommunications(outcome);
+    if (communications != null && !communications.isEmpty()) {
+      data.put("communications", communications);
+    }
+    String lessonsLearned = this.extractLessons(outcome);
+    if (lessonsLearned != null && !lessonsLearned.isEmpty()) {
+      data.put("lessonsLearned", lessonsLearned);
+    }
 
     List<Map<String, Object>> milestoneData = this.buildOutcomeMilestones(outcome);
     data.put("milestones", milestoneData);
@@ -8401,14 +8425,29 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .map(milestone -> {
         Map<String, Object> milestoneData = new HashMap<>();
         if (milestone.getCrpMilestone() != null) {
-          milestoneData.put("title", this.getSanitizedText(milestone.getCrpMilestone().getComposedName()));
+          String title = this.getSanitizedText(milestone.getCrpMilestone().getComposedName());
+          if (title != null && !title.trim().isEmpty()) {
+            milestoneData.put("title", title);
+          }
         }
-        milestoneData.put("year", milestone.getYear());
-        milestoneData.put("narrative", this.getSanitizedText(milestone.getNarrativeTarget()));
-        milestoneData.put("expectedValue", this.formatNumericValue(milestone.getExpectedValue()));
-        milestoneData.put("achievedValue", this.formatNumericValue(milestone.getAchievedValue()));
+        int year = milestone.getYear();
+        if (year > 0) {
+          milestoneData.put("year", year);
+        }
+        String narrative = this.getSanitizedText(milestone.getNarrativeTarget());
+        if (narrative != null && !narrative.trim().isEmpty()) {
+          milestoneData.put("narrative", narrative);
+        }
+        String expectedValue = this.formatNumericValue(milestone.getExpectedValue());
+        if (expectedValue != null && !expectedValue.trim().isEmpty()) {
+          milestoneData.put("expectedValue", expectedValue);
+        }
+        String achievedValue = this.formatNumericValue(milestone.getAchievedValue());
+        if (achievedValue != null && !achievedValue.trim().isEmpty()) {
+          milestoneData.put("achievedValue", achievedValue);
+        }
         return milestoneData;
-      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+      }).filter(entry -> !entry.isEmpty()).collect(Collectors.toList());
   }
 
   private List<Map<String, Object>> buildOutcomeIndicatorResponses(List<ProjectOutcomeIndicator> indicators) {
@@ -8420,12 +8459,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       .map(indicator -> {
         Map<String, Object> response = new HashMap<>();
         if (indicator.getCrpProgramOutcomeIndicator() != null) {
-          response.put("question", this.getSanitizedText(indicator.getCrpProgramOutcomeIndicator().getIndicator()));
+          String rawQuestion = indicator.getCrpProgramOutcomeIndicator().getIndicator();
+          String question = this.cleanHtmlText(rawQuestion);
+          if (question != null && !question.trim().isEmpty()) {
+            response.put("question", question);
+          }
         }
-        response.put("narrative", this.getSanitizedText(indicator.getNarrative()));
-        response.put("achievedNarrative", this.getSanitizedText(indicator.getAchievedNarrative()));
+        String narrative = this.getSanitizedText(indicator.getNarrative());
+        if (narrative != null && !narrative.trim().isEmpty()) {
+          response.put("narrative", narrative);
+        }
+        String achievedNarrative = this.getSanitizedText(indicator.getAchievedNarrative());
+        if (achievedNarrative != null && !achievedNarrative.trim().isEmpty()) {
+          response.put("achievedNarrative", achievedNarrative);
+        }
         return response;
-      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+      }).filter(entry -> !entry.isEmpty()).collect(Collectors.toList());
   }
 
   private List<Map<String, Object>> buildOutcomeNextUsers(ProjectOutcome outcome) {
@@ -8525,6 +8574,38 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     String sanitized = value.replace("\r", "\n").trim();
     return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  /**
+   * Cleans HTML tags and special characters from text.
+   * Removes HTML tags, converts HTML entities, and cleans up whitespace.
+   * 
+   * @param htmlText The HTML text to clean
+   * @return Cleaned plain text
+   */
+  private String cleanHtmlText(String htmlText) {
+    if (htmlText == null || htmlText.isEmpty()) {
+      return null;
+    }
+    
+    String cleaned = htmlText;
+    
+    // Remove HTML tags
+    cleaned = cleaned.replaceAll("<[^>]+>", "");
+    
+    // Replace common HTML entities
+    cleaned = cleaned.replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'");
+    
+    // Clean up whitespace
+    cleaned = cleaned.replaceAll("\\s+", " ").trim();
+    
+    return cleaned.isEmpty() ? null : cleaned;
   }
 
   private String getPartnerDisplayName(ProjectPartner partner) {
