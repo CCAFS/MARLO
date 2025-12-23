@@ -1880,17 +1880,26 @@ public class ProjectPartnerAction extends BaseAction {
       if (path.toFile().exists()) {
         path.toFile().delete();
       }
+
+      // --- AQUÍ DEBES COLOCARLO ---
+      this.getInvalidFields().clear(); // Borra los errores de validación (como el del Cluster Leader)
+      this.setActionMessages(null);    // Limpia mensajes previos
+      project = projectManager.getProjectById(projectID); // Recarga el proyecto para la vista
+      // ----------------------------
+
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
         Collection<String> messages = this.getActionMessages();
+        
+        // Como arriba hicimos .clear(), esta lista estará vacía
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
-          // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
           List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
           for (String key : keys) {
             this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
           }
 
         } else {
+          // Entrará aquí y mostrará el banner verde de éxito
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
         return SUCCESS;
@@ -1908,67 +1917,90 @@ public class ProjectPartnerAction extends BaseAction {
    * @param partner - the projectPartner edited in the UI
    */
   public void saveLocations(ProjectPartner projectPartnerClient, ProjectPartner projectPartnerDB) {
+    if (projectPartnerClient == null || projectPartnerDB == null || projectPartnerClient.getSelectedLocations() == null) {
+      return;
+    }
+
+    LOG.info(">>> Iniciando guardado de locaciones para Partner ID: " + projectPartnerDB.getId());
 
     /**
-     * This is a small optimization to return the locations pre-fetched rather than get them one by one.
+     * 1. Obtener las locaciones actuales de la base de datos que están activas.
      */
-
     List<ProjectPartnerLocation> projectPartnerLocationsDB =
       projectPartnerDB.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-    
+
+    /**
+     * 2. PROCESO DE BORRADO:
+     * Comparamos lo que hay en DB contra lo que viene de la UI (usando el código ISO como clave).
+     */
     for (ProjectPartnerLocation projectPartnerLocationDB : projectPartnerLocationsDB) {
-      // Verificar que institutionLocation y locElement no sean null
+      // Seguridad: Verificar que la relación en DB tenga país asignado
       if (projectPartnerLocationDB.getInstitutionLocation() != null 
           && projectPartnerLocationDB.getInstitutionLocation().getLocElement() != null) {
         
         String isoAlpha2 = projectPartnerLocationDB.getInstitutionLocation().getLocElement().getIsoAlpha2();
         
-        // Check to see if an element in the collection has the same isoAplha2 code
+        // Si el país que está en la DB NO está en la lista que envió el usuario, se marca para borrar.
         if (projectPartnerClient.getSelectedLocations().stream()
-          .filter(c -> c.getLocElement() != null 
+          .filter(c -> c != null && c.getLocElement() != null 
                     && c.getLocElement().getIsoAlpha2() != null
                     && c.getLocElement().getIsoAlpha2().equals(isoAlpha2))
           .collect(Collectors.toList()).isEmpty()) {
-          // The location does not exist anymore so delete it.
-          LOG.debug("Deleting : " + projectPartnerLocationDB);
+          
+          LOG.debug("Deleting location: " + isoAlpha2);
           projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocationDB.getId());
         }
-      } else {
-        LOG.warn("ProjectPartnerLocation has null InstitutionLocation or LocElement: " + projectPartnerLocationDB.getId());
       }
     }
     
+    /**
+     * 3. PROCESO DE GUARDADO:
+     * Recorremos las locaciones enviadas por el usuario (UI).
+     */
     for (InstitutionLocation updatedInstitutionLocationClient : projectPartnerClient.getSelectedLocations()) {
-      // Verificar que locElement no sea null
-      if (updatedInstitutionLocationClient.getLocElement() != null 
+      
+      // Validamos que el objeto enviado traiga el código ISO
+      if (updatedInstitutionLocationClient != null && updatedInstitutionLocationClient.getLocElement() != null 
           && updatedInstitutionLocationClient.getLocElement().getIsoAlpha2() != null) {
         
         String isoAlpha2 = updatedInstitutionLocationClient.getLocElement().getIsoAlpha2();
         
-        // Check to see if the location is already saved by comparing the isoAplpha2 codes.
-        if (projectPartnerLocationsDB.stream()
-          .filter(c -> c.isActive() 
+        // Verificamos si esta locación YA existe en la DB para no duplicarla
+        boolean alreadyExists = projectPartnerLocationsDB.stream()
+          .anyMatch(c -> c.isActive() 
                     && c.getInstitutionLocation() != null
                     && c.getInstitutionLocation().getLocElement() != null
-                    && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()))
-          .collect(Collectors.toList()).isEmpty()) {
+                    && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()));
+
+        if (!alreadyExists) {
+          // TRADUCCIÓN: Buscamos el objeto país real por su código ISO
+          LocElement locElement = locationManager.getLocElementByISOCode(isoAlpha2);
           
-          LocElement locElement =
-            locationManager.getLocElementByISOCode(updatedInstitutionLocationClient.getLocElement().getIsoAlpha2());
-          
-          InstitutionLocation institutionLocation =
-            institutionLocationManager.findByLocation(locElement.getId(), projectPartnerClient.getInstitution().getId());
-          
-          ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
-          partnerLocation.setInstitutionLocation(institutionLocation);
-          partnerLocation.setProjectPartner(projectPartnerDB);
-          partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
-          LOG.debug("Saving : " + partnerLocation);
-          // This is to add projectPartnerLocation to generate correct auditlog.
-          projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
+          if (locElement != null) {
+            // Buscamos la relación Institución-País (InstitutionLocation)
+            InstitutionLocation institutionLocation =
+              institutionLocationManager.findByLocation(locElement.getId(), projectPartnerDB.getInstitution().getId());
+            
+            // SEGURIDAD: Solo guardamos si encontramos la relación válida en la DB
+            if (institutionLocation != null) {
+              ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
+              partnerLocation.setInstitutionLocation(institutionLocation);
+              partnerLocation.setProjectPartner(projectPartnerDB);
+              
+              partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
+              LOG.info("Saved new location: " + isoAlpha2);
+              
+              // Agregar a la colección para auditoría
+              projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
+            } else {
+              LOG.warn("No se encontró InstitutionLocation para ISO: " + isoAlpha2 + " e Institución: " + projectPartnerDB.getInstitution().getId());
+            }
+          } else {
+            LOG.warn("No se encontró LocElement para el código ISO: " + isoAlpha2);
+          }
         }
       } else {
-        LOG.warn("InstitutionLocation has null LocElement, skipping: " + updatedInstitutionLocationClient.getId());
+        LOG.warn("Una locación de la UI viene nula o sin LocElement.");
       }
     }
   }
