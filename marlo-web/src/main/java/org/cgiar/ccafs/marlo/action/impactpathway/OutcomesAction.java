@@ -511,99 +511,86 @@ public class OutcomesAction extends BaseAction {
 
   /**
    * Reconstruye la lista basada SOLO en los parámetros que llegan.
-   * Si un ID no llega en el request, no se agrega a la lista, permitiendo que la lógica de borrado funcione.
    */
   private void manualBindingFix() {
-      LOG.info("Ejecutando manualBindingFix con Inteligencia de IDs...");
+      // Usamos LOG.debug en lugar de info para no saturar producción
+      LOG.debug("Ejecutando manualBindingFix con Inteligencia de IDs..."); 
+      
       javax.servlet.http.HttpServletRequest req = org.apache.struts2.ServletActionContext.getRequest();
       
-      // Mapa temporal para encontrar objetos existentes rápidamente por ID
-      Map<Long, CrpProgramOutcome> existingMap = new HashMap<>();
-      if (selectedProgram != null && selectedProgram.getCrpProgramOutcomes() != null) {
-          for (CrpProgramOutcome dbOutcome : selectedProgram.getCrpProgramOutcomes()) {
-              existingMap.put(dbOutcome.getId(), dbOutcome);
-          }
-      }
+      int i = 0;
+      boolean hasMoreOutcomes = true;
 
-      // Buscamos parámetros entrantes
-      for (int i = 0; i < 100; i++) {
+      // MEJORA: Usamos while para iterar indefinidamente hasta que no haya más datos
+      while (hasMoreOutcomes) {
           String keyDesc = "outcomesForm[" + i + "].description";
           String keyId = "outcomesForm[" + i + "].id";
-          // Clave del Portfolio para detectar si viene
           String keyPort = "outcomesForm[" + i + "].portfolio.id";
-          
-          // Si viene descripción, ID o Portfolio, procesamos este índice
-          if (req.getParameter(keyDesc) != null || req.getParameter(keyId) != null || req.getParameter(keyPort) != null) {
-              
-              // Rellenar huecos si es necesario
-              while (this.outcomesForm.size() <= i) {
-                  // TRUCO: Intentamos recuperar el objeto real de la BD si trae ID
-                  String idParam = req.getParameter("outcomesForm[" + (this.outcomesForm.size()) + "].id");
-                  CrpProgramOutcome outcomeToAdd = null;
 
-                  if (idParam != null && !idParam.isEmpty()) {
-                      try {
-                          Long id = Long.parseLong(idParam);
-                          // Si existe en BD, usamos ESE objeto (así equals() funciona perfecto)
-                          if (existingMap.containsKey(id)) {
-                              outcomeToAdd = existingMap.get(id);
-                          }
-                      } catch (NumberFormatException e) {
-                          // Ignorar, es un ID inválido o nuevo
-                      }
-                  }
-                  
-                  // Si no encontramos el viejo, creamos uno nuevo
-                  if (outcomeToAdd == null) {
-                      outcomeToAdd = new CrpProgramOutcome();
-                      // Inicialización segura
-                      outcomeToAdd.setSrfTargetUnit(new SrfTargetUnit());
-                  }
+          // Verificamos si existe al menos un dato para este índice
+          boolean indexExists = req.getParameter(keyDesc) != null 
+                            || req.getParameter(keyId) != null 
+                            || req.getParameter(keyPort) != null;
 
-                  if (outcomeToAdd.getSrfTargetUnit() == null) {
-                      outcomeToAdd.setSrfTargetUnit(new SrfTargetUnit());
-                  }
-                  
-                  this.outcomesForm.add(outcomeToAdd);
-                  // LOG.info(" FIX: Agregado outcome (ID: " + outcomeToAdd.getId() + ") en índice " + (this.outcomesForm.size() - 1));
-              }
-              
-              // === REPARACIÓN DE LISTAS ANIDADAS (MILESTONES) ===
-              // Misma lógica para hijos si es necesario...
-              CrpProgramOutcome currentOutcome = this.outcomesForm.get(i);
-              if (currentOutcome.getMilestones() == null) {
-                  currentOutcome.setMilestones(new ArrayList<>());
-              }
-              
-              for (int j = 0; j < 50; j++) {
-                  String keyMile = "outcomesForm[" + i + "].milestones[" + j + "].title";
-                  // Clave del Año del Milestone
-                  String keyMileYear = "outcomesForm[" + i + "].milestones[" + j + "].year";
-                  if (req.getParameter(keyMile) != null || req.getParameter(keyMileYear) != null) {
-                      while (currentOutcome.getMilestones().size() <= j) {
-                        CrpMilestone mile = new CrpMilestone();
-                        // INICIALIZAR HIJOS DEL MILESTONE
-                        mile.setSrfTargetUnit(new SrfTargetUnit());
-                        mile.setMilestonesStatus(new GeneralStatus());
-                        // Vinculación inversa importante
-                        mile.setCrpProgramOutcome(currentOutcome);
-
-                        // --- [FIX 2] INYECCIÓN MANUAL DEL AÑO DEL MILESTONE ---
-                        String yearRaw = req.getParameter("outcomesForm[" + i + "].milestones[" + currentOutcome.getMilestones().size() + "].year");
-                        if (yearRaw != null && !yearRaw.isEmpty()) {
-                            try {
-                                Integer y = Integer.parseInt(yearRaw);
-                                mile.setYear(y);
-                                // LOG.info("Manual Fix: Asignado Año " + y + " al milestone " + j);
-                            } catch (Exception e) {}
-                        }
-                        // ------------------------------------------------------
-                        
-                        currentOutcome.getMilestones().add(mile);
-                      }
-                  }
-              }
+          if (!indexExists) {
+              // MEJORA: Rompemos el bucle si no encontramos datos para el índice actual.
+              // NOTA: Esto asume que el frontend envía índices consecutivos (0, 1, 2...). 
+              // Si el frontend deja huecos (0, 2, 5), habría que usar un contador de "misses" antes de romper.
+              hasMoreOutcomes = false;
+              break; 
           }
+
+          // Rellenar la lista hasta el índice actual
+          while (this.outcomesForm.size() <= i) {
+              CrpProgramOutcome outcomeToAdd = new CrpProgramOutcome();
+              outcomeToAdd.setSrfTargetUnit(new SrfTargetUnit());
+              outcomeToAdd.setFile(new org.cgiar.ccafs.marlo.data.model.FileDB());
+              this.outcomesForm.add(outcomeToAdd);
+          }
+
+          // === LÓGICA DE MILESTONES (ANIDADO) ===
+          CrpProgramOutcome currentOutcome = this.outcomesForm.get(i);
+          if (currentOutcome.getMilestones() == null) {
+              currentOutcome.setMilestones(new ArrayList<>());
+          }
+
+          int j = 0;
+          boolean hasMoreMilestones = true;
+
+          // MEJORA: Bucle dinámico para milestones (sin límite de 50)
+          while (hasMoreMilestones) {
+              String keyMile = "outcomesForm[" + i + "].milestones[" + j + "].title";
+              String keyMileYear = "outcomesForm[" + i + "].milestones[" + j + "].year";
+              
+              boolean mileExists = req.getParameter(keyMile) != null || req.getParameter(keyMileYear) != null;
+
+              if (!mileExists) {
+                  hasMoreMilestones = false;
+                  break;
+              }
+
+              while (currentOutcome.getMilestones().size() <= j) {
+                  CrpMilestone mile = new CrpMilestone();
+                  mile.setSrfTargetUnit(new SrfTargetUnit());
+                  mile.setMilestonesStatus(new GeneralStatus());
+                  mile.setCrpProgramOutcome(currentOutcome);
+
+                  // --- INYECCIÓN MANUAL DEL AÑO DEL MILESTONE ---
+                  String yearRaw = req.getParameter("outcomesForm[" + i + "].milestones[" + j + "].year");
+                  if (yearRaw != null && !yearRaw.isEmpty()) {
+                      try {
+                          Integer y = Integer.parseInt(yearRaw);
+                          mile.setYear(y);
+                      } catch (NumberFormatException e) {
+                          // MEJORA: Loguear advertencia si el formato es inválido en lugar de ignorarlo
+                          LOG.warn("Formato de año inválido para milestone " + j + ": " + yearRaw);
+                      }
+                  }
+                  currentOutcome.getMilestones().add(mile);
+              }
+              j++; // Siguiente milestone
+          }
+          i++; // Siguiente outcome
       }
   }
 
@@ -639,19 +626,11 @@ public class OutcomesAction extends BaseAction {
               crpProgramID = history.getId();
               selectedProgram = history;
               
-              // PASAR DATOS A OUTCOMESFORM
-              // this.outcomesForm.addAll(history.getCrpProgramOutcomes().stream()
-              //   .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
-              //   .collect(Collectors.toList()));
-              
               this.setEditable(false);
               this.setCanEdit(false);
               programs = new ArrayList<>();
               this.loadInfo(); // Asegúrate de que loadInfo() ahora use outcomesForm internamente si es necesario, o déjalo como está si solo ordena.
               programs.add(history);
-              
-              // Lógica de diferencias (HistoryComparator) omitida por brevedad, pero iría aquí
-              // ...
           } else {
               programs = new ArrayList<>();
               this.setTransaction("-1");
@@ -701,19 +680,10 @@ public class OutcomesAction extends BaseAction {
                     AutoSaveReader autoSaveReader = new AutoSaveReader();
                     selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
                     
-                    // Copiar outcomes del autosave a outcomesForm
-                    // if (selectedProgram.getOutcomes() != null) {
-                    //     this.outcomesForm.addAll(selectedProgram.getOutcomes());
-                    // }
                     this.setDraft(true);
               } else {
                     // Carga normal de BD
                     LOG.info("Cargando desde BD...");
-                    // if (selectedProgram.getCrpProgramOutcomes() != null) {
-                    //     this.outcomesForm.addAll(selectedProgram.getCrpProgramOutcomes().stream()
-                    //       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
-                    //       .collect(Collectors.toList()));
-                    // }
                     this.loadInfo(); // Revisa que loadInfo ordene outcomesForm
                     this.setDraft(false);
               }
@@ -727,16 +697,6 @@ public class OutcomesAction extends BaseAction {
               // ... (resto de lógica de permisos)
           }
       }
-      
-      // LIMPIEZA PARA POST
-      // Si es un POST (estamos guardando), Struts va a llenar outcomesForm.
-      // Pero acabamos de llenarlo con datos de la BD arriba.
-      // El manualBindingFix se encargará de "expandir" la lista, y Struts SOBRESCRIBIRÁ los datos.
-      // Sin embargo, para evitar duplicados si la lógica es compleja, a veces se limpia.
-      // En tu caso, dado que usas IDs, es mejor dejar que Struts actualice los objetos existentes.
-      // Si tienes problemas de duplicados al guardar, aquí podrías evaluar limpiar outcomesForm
-      // solo si CONFÍAS plenamente en que el formulario trae TODOS los datos.
-      // if (this.isHttpPost()) { outcomesForm.clear(); } // Úsalo con precaución.
   }
 
   /**
@@ -1211,6 +1171,12 @@ public class OutcomesAction extends BaseAction {
           LOG.warn("Null Outcome found in 'outcomes' during saveCrpProgramOutcome()");
           continue;
       }
+
+      Long incomingFileId = null;
+      if (programOutcomeIncoming.getFile() != null) {
+        incomingFileId = programOutcomeIncoming.getFile().getId();
+      }
+
       CrpProgramOutcome crpProgramOutcome = null;
       CrpProgramOutcome crpProgramOutcomeTemp = null;
       if (programOutcomeIncoming != null && programOutcomeIncoming.getId() != null) {
@@ -1257,7 +1223,22 @@ public class OutcomesAction extends BaseAction {
         programOutcomeIncoming.setPortfolio(null);
       }
 
+      programOutcomeIncoming.setFile(null); 
+
       crpProgramOutcome.copyFields(programOutcomeIncoming);
+
+      if (incomingFileId != null) {
+          // Si viene un ID, buscamos ese archivo en la BD    
+          org.cgiar.ccafs.marlo.data.model.FileDB realFile = fileDBManager.getFileDBById(incomingFileId);    
+          crpProgramOutcome.setFile(realFile); 
+      } else {
+          // Si no viene ID, implica que el usuario no seleccionó archivo o lo borró.
+          // Aquí decides si mantienes el anterior o lo pones en null.
+          // Si quieres permitir borrar:
+          crpProgramOutcome.setFile(null); 
+          // Si quieres mantener el que ya tenía si no envían nada nuevo (lógica defensiva):
+          // No haces nada (el objeto ya tiene su file original cargado desde BD).
+      }
 
       crpProgramOutcome.setModifiedBy(this.getCurrentUser());
       crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
