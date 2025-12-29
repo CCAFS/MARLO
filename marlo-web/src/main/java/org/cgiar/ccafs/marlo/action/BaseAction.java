@@ -326,7 +326,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private boolean switchSession;
   protected APConfig config;
   @Autowired
-  private PhaseManager phaseManager;
+  protected PhaseManager phaseManager;
 
   @Autowired
   private ClusterTypeManager clusterTypeManager;

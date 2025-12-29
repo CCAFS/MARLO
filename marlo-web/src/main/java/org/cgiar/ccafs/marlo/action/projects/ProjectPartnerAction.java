@@ -67,6 +67,7 @@ import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDTO;
@@ -116,8 +117,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -130,6 +133,11 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.struts2.dispatcher.Parameter;
+import java.util.ArrayList;
+ import java.util.Map;
+ 
 
 
 public class ProjectPartnerAction extends BaseAction {
@@ -1720,9 +1728,454 @@ public class ProjectPartnerAction extends BaseAction {
     }
   }
 
+  private void manualBinding() {
+      Map<String, Parameter> params = this.getParameters();
+      
+      LOG.debug("=== Iniciando manualBinding para ProjectPartner ===");
+      
+      // Primero inicializar la lista de partners si es necesario
+      initializePartnersList(params);
+      
+      // Luego hacer el binding de cada campo
+      bindPartnersInstitution(params);
+      bindPartnersPartnerPersons(params);
+      bindPartnersSelectedLocations(params);
+      bindPartnersPartnerContributors(params);
+      
+      LOG.debug("=== Finalizando manualBinding para ProjectPartner ===");
+  }
+
+  // =====================================================
+  // INICIALIZAR LISTA DE PARTNERS
+  // =====================================================
+
+  private void initializePartnersList(Map<String, Parameter> params) {
+      // Encontrar el máximo índice de partners
+      int maxIndex = -1;
+      for (String key : params.keySet()) {
+          if (key.matches("project\\.partners\\[\\d+\\]\\.id")) {
+              int index = extractIndex(key);
+              if (index > maxIndex) {
+                  maxIndex = index;
+              }
+          }
+      }
+      
+      LOG.debug("Máximo índice de partners encontrado: " + maxIndex);
+      
+      if (maxIndex >= 0) {
+          if (project.getPartners() == null) {
+              project.setPartners(new ArrayList<>());
+          }
+          
+          // Crear los objetos ProjectPartner necesarios
+          while (project.getPartners().size() <= maxIndex) {
+              ProjectPartner newPartner = new ProjectPartner();
+              newPartner.setPartnerPersons(new ArrayList<>());
+              newPartner.setSelectedLocations(new ArrayList<>());
+              newPartner.setPartnerContributors(new ArrayList<>());
+              project.getPartners().add(newPartner);
+          }
+          
+          LOG.debug("Lista de partners inicializada con " + project.getPartners().size() + " elementos");
+          
+          // Bindear los IDs de los partners existentes
+          for (String key : params.keySet()) {
+              if (key.matches("project\\.partners\\[\\d+\\]\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  if (value != null && !value.isEmpty()) {
+                      try {
+                          Long id = Long.parseLong(value);
+                          project.getPartners().get(index).setId(id);
+                          LOG.debug("Partner[" + index + "].id bindeado: " + id);
+                      } catch (NumberFormatException e) {
+                          LOG.error("Error parseando partner.id: " + value, e);
+                      }
+                  }
+              }
+              
+              // Bindear phase.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.phase\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  if (value != null && !value.isEmpty()) {
+                      try {
+                          Long phaseId = Long.parseLong(value);
+                          Phase phase = phaseManager.getPhaseById(phaseId);
+                          if (phase != null) {
+                              project.getPartners().get(index).setPhase(phase);
+                              LOG.debug("Partner[" + index + "].phase bindeado: " + phaseId);
+                          }
+                      } catch (NumberFormatException e) {
+                          LOG.error("Error parseando partner.phase.id: " + value, e);
+                      }
+                  }
+              }
+              
+              // Bindear responsibilities
+              if (key.matches("project\\.partners\\[\\d+\\]\\.responsibilities")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  if (index < project.getPartners().size()) {
+                      project.getPartners().get(index).setResponsibilities(value);
+                      LOG.debug("Partner[" + index + "].responsibilities bindeado");
+                  }
+              }
+              
+              // Bindear subDepartment
+              if (key.matches("project\\.partners\\[\\d+\\]\\.subDepartment")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  if (index < project.getPartners().size()) {
+                      project.getPartners().get(index).setSubDepartment(value);
+                      LOG.debug("Partner[" + index + "].subDepartment bindeado");
+                  }
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // BIND PARTNERS INSTITUTION
+  // =====================================================
+
+  private void bindPartnersInstitution(Map<String, Parameter> params) {
+      for (String key : params.keySet()) {
+          if (key.matches("project\\.partners\\[\\d+\\]\\.institution\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < project.getPartners().size()) {
+                      Long institutionId = Long.parseLong(value);
+                      Institution institution = institutionManager.getInstitutionById(institutionId);
+                      if (institution != null) {
+                          project.getPartners().get(index).setInstitution(institution);
+                          LOG.debug("Partner[" + index + "].institution bindeado: " + institutionId);
+                      }
+                  }
+              } catch (Exception e) {
+                  LOG.error("Error bindeando partner.institution: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // BIND PARTNERS PARTNER PERSONS
+  // =====================================================
+
+  private void bindPartnersPartnerPersons(Map<String, Parameter> params) {
+      // Primero, encontrar e inicializar las listas de partnerPersons para cada partner
+      for (String key : params.keySet()) {
+          if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.id")) {
+              int partnerIndex = extractIndex(key);
+              int personIndex = extractSecondIndex(key);
+              
+              if (partnerIndex < project.getPartners().size()) {
+                  ProjectPartner partner = project.getPartners().get(partnerIndex);
+                  if (partner.getPartnerPersons() == null) {
+                      partner.setPartnerPersons(new ArrayList<>());
+                  }
+                  
+                  // Asegurar que la lista tenga suficientes elementos
+                  while (partner.getPartnerPersons().size() <= personIndex) {
+                      partner.getPartnerPersons().add(new ProjectPartnerPerson());
+                  }
+              }
+          }
+      }
+      
+      // Ahora hacer el binding de cada campo
+      for (String key : params.keySet()) {
+          try {
+              // Bind partnerPerson.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (personIndex < partner.getPartnerPersons().size()) {
+                          Long id = Long.parseLong(value);
+                          partner.getPartnerPersons().get(personIndex).setId(id);
+                          LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].id bindeado: " + id);
+                      }
+                  }
+              }
+              
+              // Bind partnerPerson.user.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.user\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (personIndex < partner.getPartnerPersons().size()) {
+                          Long userId = Long.parseLong(value);
+                          if (userId != -1) {
+                              User user = userManager.getUser(userId);
+                              if (user != null) {
+                                  partner.getPartnerPersons().get(personIndex).setUser(user);
+                                  LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].user bindeado: " + userId);
+                              }
+                          }
+                      }
+                  }
+              }
+              
+              // Bind partnerPerson.contactType
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.contactType")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (personIndex < partner.getPartnerPersons().size()) {
+                          partner.getPartnerPersons().get(personIndex).setContactType(value);
+                          LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].contactType bindeado: " + value);
+                      }
+                  }
+              }
+              
+              // Bind partnerPerson.partnerDivision.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.partnerDivision\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (personIndex < partner.getPartnerPersons().size()) {
+                          Long divisionId = Long.parseLong(value);
+                          if (divisionId != -1) {
+                              PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(divisionId);
+                              if (division != null) {
+                                  partner.getPartnerPersons().get(personIndex).setPartnerDivision(division);
+                                  LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].partnerDivision bindeado: " + divisionId);
+                              }
+                          }
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              LOG.error("Error bindeando partnerPerson: " + key, e);
+          }
+      }
+  }
+
+  // =====================================================
+  // BIND PARTNERS SELECTED LOCATIONS
+  // =====================================================
+
+  private void bindPartnersSelectedLocations(Map<String, Parameter> params) {
+    LOG.debug("=== Iniciando binding de selectedLocations ===");
+    
+    // Primero identificar qué partners tienen locaciones
+    Set<Integer> partnersWithLocations = new HashSet<>();
+    for (String key : params.keySet()) {
+        if (key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\[\\d+\\]\\.locElement\\.isoAlpha2") ||
+            key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\.locElement\\.isoAlpha2")) {
+            int partnerIndex = extractIndex(key);
+            partnersWithLocations.add(partnerIndex);
+        }
+    }
+    
+    LOG.debug("Partners con locaciones en UI: " + partnersWithLocations);
+    
+    // Limpiar las listas de todos los partners que tienen locaciones en la UI
+    for (int partnerIndex : partnersWithLocations) {
+        if (partnerIndex < project.getPartners().size()) {
+            ProjectPartner partner = project.getPartners().get(partnerIndex);
+            if (partner.getSelectedLocations() == null) {
+                partner.setSelectedLocations(new ArrayList<>());
+            } else {
+                LOG.debug("Limpiando selectedLocations existentes para Partner[" + partnerIndex + "]");
+                partner.getSelectedLocations().clear();
+            }
+        }
+    }
+    
+    // Ahora hacer el binding solo de las locaciones válidas
+    for (String key : params.keySet()) {
+        if (key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\[\\d+\\]\\.locElement\\.isoAlpha2") ||
+            key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\.locElement\\.isoAlpha2")) {
+            try {
+                int partnerIndex = extractIndex(key);
+                String isoAlpha2 = params.get(key).getValue();
+                
+                LOG.debug("Procesando locación para Partner[" + partnerIndex + "]: " + isoAlpha2);
+                
+                if (isoAlpha2 != null && !isoAlpha2.isEmpty() && !isoAlpha2.equals("-1") 
+                    && partnerIndex < project.getPartners().size()) {
+                    
+                    ProjectPartner partner = project.getPartners().get(partnerIndex);
+                    
+                    // Buscar el LocElement por su código ISO
+                    LocElement locElement = locationManager.getLocElementByISOCode(isoAlpha2);
+                    
+                    if (locElement != null) {
+                        // Crear un InstitutionLocation con el locElement
+                        InstitutionLocation institutionLocation = new InstitutionLocation();
+                        institutionLocation.setLocElement(locElement);
+                        
+                        // Verificar si ya existe para evitar duplicados
+                        boolean exists = partner.getSelectedLocations().stream()
+                            .anyMatch(loc -> loc.getLocElement() != null && 
+                                           isoAlpha2.equals(loc.getLocElement().getIsoAlpha2()));
+                        
+                        if (!exists) {
+                            partner.getSelectedLocations().add(institutionLocation);
+                            LOG.debug("✅ Partner[" + partnerIndex + "].selectedLocation agregado: " + isoAlpha2);
+                        } else {
+                            LOG.debug("⚠️  Locación duplicada ignorada: " + isoAlpha2);
+                        }
+                    } else {
+                        LOG.warn("❌ No se encontró LocElement para código ISO: " + isoAlpha2);
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error("Error bindeando selectedLocation: " + key, e);
+            }
+        }
+    }
+    
+    // Log final para verificar
+    for (int i = 0; i < project.getPartners().size(); i++) {
+        ProjectPartner partner = project.getPartners().get(i);
+        if (partner.getSelectedLocations() != null) {
+            LOG.debug("Partner[" + i + "] tiene " + partner.getSelectedLocations().size() + " locaciones después del binding");
+        }
+    }
+    
+    LOG.debug("=== Finalizando binding de selectedLocations ===");
+  }
+
+  // =====================================================
+  // BIND PARTNERS PARTNER CONTRIBUTORS
+  // =====================================================
+
+  private void bindPartnersPartnerContributors(Map<String, Parameter> params) {
+      // Primero, encontrar e inicializar las listas de partnerContributors para cada partner
+      for (String key : params.keySet()) {
+          if (key.matches("project\\.partners\\[\\d+\\]\\.partnerContributors\\[\\d+\\]\\.id")) {
+              int partnerIndex = extractIndex(key);
+              int contributorIndex = extractSecondIndex(key);
+              
+              if (partnerIndex < project.getPartners().size()) {
+                  ProjectPartner partner = project.getPartners().get(partnerIndex);
+                  if (partner.getPartnerContributors() == null) {
+                      partner.setPartnerContributors(new ArrayList<>());
+                  }
+                  
+                  // Asegurar que la lista tenga suficientes elementos
+                  while (partner.getPartnerContributors().size() <= contributorIndex) {
+                      ProjectPartnerContribution contribution = new ProjectPartnerContribution();
+                      contribution.setProjectPartnerContributor(new ProjectPartner());
+                      partner.getPartnerContributors().add(contribution);
+                  }
+              }
+          }
+      }
+      
+      // Ahora hacer el binding
+      for (String key : params.keySet()) {
+          try {
+              // Bind partnerContributor.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerContributors\\[\\d+\\]\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int contributorIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (contributorIndex < partner.getPartnerContributors().size()) {
+                          Long id = Long.parseLong(value);
+                          partner.getPartnerContributors().get(contributorIndex).setId(id);
+                          LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].id bindeado: " + id);
+                      }
+                  }
+              }
+              
+              // Bind partnerContributor.projectPartnerContributor.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerContributors\\[\\d+\\]\\.projectPartnerContributor\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int contributorIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (contributorIndex < partner.getPartnerContributors().size()) {
+                          Long contributorId = Long.parseLong(value);
+                          ProjectPartner contributor = projectPartnerManager.getProjectPartnerById(contributorId);
+                          if (contributor != null) {
+                              partner.getPartnerContributors().get(contributorIndex).setProjectPartnerContributor(contributor);
+                              LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].projectPartnerContributor bindeado: " + contributorId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind partnerContributor.projectPartnerContributor.institution.id
+              if (key.matches("project\\.partners\\[\\d+\\]\\.partnerContributors\\[\\d+\\]\\.projectPartnerContributor\\.institution\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int contributorIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && partnerIndex < project.getPartners().size()) {
+                      ProjectPartner partner = project.getPartners().get(partnerIndex);
+                      if (contributorIndex < partner.getPartnerContributors().size()) {
+                          Long institutionId = Long.parseLong(value);
+                          Institution institution = institutionManager.getInstitutionById(institutionId);
+                          if (institution != null) {
+                              ProjectPartnerContribution contribution = partner.getPartnerContributors().get(contributorIndex);
+                              if (contribution.getProjectPartnerContributor() == null) {
+                                  contribution.setProjectPartnerContributor(new ProjectPartner());
+                              }
+                              contribution.getProjectPartnerContributor().setInstitution(institution);
+                              LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].institution bindeado: " + institutionId);
+                          }
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              LOG.error("Error bindeando partnerContributor: " + key, e);
+          }
+      }
+  }
+
+  // =====================================================
+  // UTILITY METHODS
+  // =====================================================
+
+  /**
+   * Extrae el primer índice de un parámetro con formato "objeto[indice].propiedad"
+   */
+  private int extractIndex(String key) {
+      int startIdx = key.indexOf('[') + 1;
+      int endIdx = key.indexOf(']');
+      return Integer.parseInt(key.substring(startIdx, endIdx));
+  }
+
+  /**
+   * Extrae el segundo índice de un parámetro con formato "objeto[indice1].objeto2[indice2].propiedad"
+   */
+  private int extractSecondIndex(String key) {
+      int firstClose = key.indexOf(']');
+      int secondStart = key.indexOf('[', firstClose) + 1;
+      int secondEnd = key.indexOf(']', firstClose + 1);
+      return Integer.parseInt(key.substring(secondStart, secondEnd));
+  }
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+
+      this.manualBinding();
 
       this.setUsersToActive(new ArrayList<>());
 
@@ -1830,6 +2283,14 @@ public class ProjectPartnerAction extends BaseAction {
 
               }
             }
+          }
+
+          if (projectPartnerClient.getSelectedLocations() != null) {
+              // Filtrar cualquier locación nula o sin LocElement
+              projectPartnerClient.getSelectedLocations().removeIf(loc -> 
+                  loc == null || loc.getLocElement() == null || loc.getLocElement().getIsoAlpha2() == null
+              );
+              LOG.debug("Partner con " + projectPartnerClient.getSelectedLocations().size() + " locaciones válidas");
           }
 
 
