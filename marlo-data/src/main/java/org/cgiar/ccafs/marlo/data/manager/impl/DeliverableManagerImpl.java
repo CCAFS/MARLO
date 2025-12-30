@@ -119,6 +119,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  @Transactional
   public void deleteDeliverable(long deliverableId) {
 
     deliverableDAO.deleteDeliverable(deliverableId);

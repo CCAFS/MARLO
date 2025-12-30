@@ -180,6 +180,17 @@ public class DeliverableListAction extends BaseAction {
     deliverableID = Long
       .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
+    // Si deliverableID no se cargó en prepare(), intentar obtenerlo aquí
+    if (deliverableID <= 0) {
+        Parameter param = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
+        
+        if (param == null || !param.isDefined()) {
+            logger.error("deliverableID parameter not found");
+            return ERROR;
+        }
+        deliverableID = Long.parseLong(StringUtils.trim(param.getValue()));
+    }
+
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (deliverable != null) {
       if (deliverable.getSectionStatuses() != null) {
@@ -1175,8 +1186,15 @@ public class DeliverableListAction extends BaseAction {
     phase = phaseManager.getPhaseById(phase.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-      project = projectManager.getProjectById(projectID);
 
+      // AÑADIR: Extraer deliverableID si viene en el request
+      String deliverableParam = this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
+      if (StringUtils.isNotBlank(deliverableParam)) {
+          deliverableID = Long.parseLong(StringUtils.trim(deliverableParam));
+          logger.debug("prepare() - deliverableID loaded: {}", deliverableID);
+      }
+
+      project = projectManager.getProjectById(projectID);
       if (project != null) {
 
         allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
