@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerLocationDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerLocationManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import javax.inject.Inject;
  * @author Christian Garcia
  */
 @Named
+@Service("projectPartnerLocationManager")
 public class ProjectPartnerLocationManagerImpl implements ProjectPartnerLocationManager {
 
 
@@ -43,6 +46,7 @@ public class ProjectPartnerLocationManagerImpl implements ProjectPartnerLocation
   }
 
   @Override
+  @Transactional
   public void deleteProjectPartnerLocation(long projectPartnerLocationId) {
 
     projectPartnerLocationDAO.deleteProjectPartnerLocation(projectPartnerLocationId);

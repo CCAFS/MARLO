@@ -34,6 +34,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerContribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerLocation;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +47,7 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
+@Service("projectPartnerManager")
 public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
 
 
@@ -376,6 +379,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
+  @Transactional
   public ProjectPartner saveProjectPartner(ProjectPartner projectPartner) {
 
     ProjectPartner resultPartner = projectPartnerDAO.save(projectPartner);
