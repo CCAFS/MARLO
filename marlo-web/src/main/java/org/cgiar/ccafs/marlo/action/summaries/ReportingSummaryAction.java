@@ -7780,6 +7780,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         jsonData.put("projectPartners", partnersData);
         jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
         jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
+        jsonData.put("oicrs", this.buildOICRsList());
         
         // Set basic project data
         jsonData.put("projectID", projectID);
@@ -8512,6 +8513,573 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       return this.getSanitizedText(outcome.getProjectComponentLesson().getLessons());
     }
     return null;
+  }
+
+  private List<Map<String, Object>> buildOICRsList() {
+    List<Map<String, Object>> oicrs = new ArrayList<>();
+    if (project == null) {
+      return oicrs;
+    }
+
+    Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+
+    // Get direct project studies
+    List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
+      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedYear()))
+      .collect(Collectors.toList());
+    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
+      myStudies.addAll(projectExpectedStudies);
+    }
+
+    // Get shared studies
+    List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear()
+          .equals(this.getSelectedYear()))
+      .collect(Collectors.toList());
+
+    if (sharedStudies != null && !sharedStudies.isEmpty()) {
+      for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+        myStudies.add(expectedStudyProject.getProjectExpectedStudy());
+      }
+    }
+
+    if (myStudies != null && !myStudies.isEmpty()) {
+      for (ProjectExpectedStudy projectExpectedStudy : myStudies.stream()
+        .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList())) {
+        Map<String, Object> oicrData = this.buildOICRData(projectExpectedStudy);
+        if (oicrData != null && !oicrData.isEmpty()) {
+          oicrs.add(oicrData);
+        }
+      }
+    }
+
+    return oicrs;
+  }
+
+  private Map<String, Object> buildOICRData(ProjectExpectedStudy study) {
+    Map<String, Object> data = new HashMap<>();
+    if (study == null) {
+      return data;
+    }
+
+    ProjectExpectedStudyInfo studyInfo = study.getProjectExpectedStudyInfo(this.getSelectedPhase());
+    if (studyInfo == null) {
+      return data;
+    }
+
+    data.put("id", study.getId());
+
+    // Basic information
+    if (studyInfo.getTitle() != null) {
+      data.put("title", this.getSanitizedText(studyInfo.getTitle()));
+    }
+    if (studyInfo.getYear() != null) {
+      data.put("year", studyInfo.getYear());
+    }
+    if (studyInfo.getStatus() != null) {
+      data.put("status", this.getSanitizedText(studyInfo.getStatusName()));
+    }
+    if (studyInfo.getStudyType() != null) {
+      data.put("type", this.getSanitizedText(studyInfo.getStudyType().getName()));
+    }
+    if (studyInfo.getCommissioningStudy() != null) {
+      data.put("commissioningStudy", this.getSanitizedText(studyInfo.getCommissioningStudy()));
+    }
+
+    // Outcome/Impact statement
+    if (studyInfo.getOutcomeImpactStatement() != null) {
+      data.put("outcomeImpactStatement", this.getSanitizedText(studyInfo.getOutcomeImpactStatement()));
+    }
+
+    // Elaboration of Outcome/Impact Statement
+    if (studyInfo.getElaborationOutcomeImpactStatement() != null
+      && !studyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
+      data.put("elaborationOutcomeImpactStatement",
+        this.getSanitizedText(studyInfo.getElaborationOutcomeImpactStatement()));
+    }
+
+    // Top Level Comments
+    if (studyInfo.getTopLevelComments() != null && !studyInfo.getTopLevelComments().trim().isEmpty()) {
+      data.put("topLevelComments", this.getSanitizedText(studyInfo.getTopLevelComments()));
+    }
+
+    // Scope Comments
+    if (studyInfo.getScopeComments() != null && !studyInfo.getScopeComments().trim().isEmpty()) {
+      data.put("scopeComments", this.getSanitizedText(studyInfo.getScopeComments()));
+    }
+
+    // Quantification
+    if (studyInfo.getQuantification() != null && !studyInfo.getQuantification().trim().isEmpty()) {
+      data.put("quantification", this.getSanitizedText(studyInfo.getQuantification()));
+    }
+
+    // Maturity of Change (Stage Study)
+    if (studyInfo.getRepIndStageStudy() != null) {
+      data.put("stageStudy", this.getSanitizedText(studyInfo.getRepIndStageStudy().getName()));
+    }
+
+    // Stage Process
+    if (studyInfo.getRepIndStageProcess() != null) {
+      data.put("stageProcess", this.getSanitizedText(studyInfo.getRepIndStageProcess().getName()));
+    }
+
+    // Organization Type
+    if (studyInfo.getRepIndOrganizationType() != null) {
+      data.put("organizationType", this.getSanitizedText(studyInfo.getRepIndOrganizationType().getName()));
+    }
+
+    // Policy Investment Type
+    if (studyInfo.getRepIndPolicyInvestimentType() != null) {
+      data.put("policyInvestimentType", this.getSanitizedText(studyInfo.getRepIndPolicyInvestimentType().getName()));
+    }
+
+    // Policy Amount
+    if (studyInfo.getPolicyAmount() != null) {
+      data.put("policyAmount", this.formatNumericValue(studyInfo.getPolicyAmount()));
+    }
+
+    // Is Contribution
+    if (studyInfo.getIsContribution() != null) {
+      data.put("isContribution", studyInfo.getIsContribution());
+      data.put("isContributionText", studyInfo.getIsContribution() ? "Yes" : "No");
+    }
+
+    // Is SRF Target
+    if (studyInfo.getIsSrfTarget() != null && !studyInfo.getIsSrfTarget().isEmpty()) {
+      data.put("isSrfTarget", studyInfo.getIsSrfTarget());
+      data.put("isSrfTargetText", studyInfo.getIsSrfTarget().equals("targetsOptionYes") ? "Yes" : "No");
+    }
+
+    // CGIAR Innovation
+    if (studyInfo.getCgiarInnovation() != null && !studyInfo.getCgiarInnovation().trim().isEmpty()) {
+      data.put("cgiarInnovation", this.getSanitizedText(studyInfo.getCgiarInnovation()));
+    }
+
+    // Other Innovations Narrative
+    if (studyInfo.getOtherInnovationsNarrative() != null
+      && !studyInfo.getOtherInnovationsNarrative().trim().isEmpty()) {
+      data.put("otherInnovationsNarrative", this.getSanitizedText(studyInfo.getOtherInnovationsNarrative()));
+    }
+
+    // Communications Material
+    if (studyInfo.getComunicationsMaterial() != null && !studyInfo.getComunicationsMaterial().trim().isEmpty()) {
+      data.put("comunicationsMaterial", this.getSanitizedText(studyInfo.getComunicationsMaterial()));
+    }
+
+    // Contacts
+    if (studyInfo.getContacts() != null && !studyInfo.getContacts().trim().isEmpty()) {
+      data.put("contacts", this.getSanitizedText(studyInfo.getContacts()));
+    }
+
+    // Outcome Story
+    if (studyInfo.getOutcomeStory() != null && !studyInfo.getOutcomeStory().trim().isEmpty()) {
+      data.put("outcomeStory", this.getSanitizedText(studyInfo.getOutcomeStory()));
+    }
+
+    // COVID Analysis
+    if (studyInfo.getHasCovidAnalysis() != null) {
+      data.put("hasCovidAnalysis", studyInfo.getHasCovidAnalysis());
+    }
+
+    // Tag
+    if (studyInfo.getTag() != null && studyInfo.getTag().getTagName() != null) {
+      data.put("tag", this.getSanitizedText(studyInfo.getTag().getTagName()));
+    }
+
+    // Gender Relevance
+    if (studyInfo.getGenderLevel() != null) {
+      String genderRelevance = studyInfo.getGenderLevel().getPowbName();
+      if (studyInfo.getDescribeGender() != null && !studyInfo.getDescribeGender().trim().isEmpty()) {
+        genderRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeGender());
+      }
+      data.put("genderRelevance", genderRelevance);
+    }
+
+    // Youth Relevance
+    if (studyInfo.getYouthLevel() != null) {
+      String youthRelevance = studyInfo.getYouthLevel().getPowbName();
+      if (studyInfo.getDescribeYouth() != null && !studyInfo.getDescribeYouth().trim().isEmpty()) {
+        youthRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeYouth());
+      }
+      data.put("youthRelevance", youthRelevance);
+    }
+
+    // Capacity Development Relevance
+    if (studyInfo.getCapdevLevel() != null) {
+      String capacityRelevance = studyInfo.getCapdevLevel().getPowbName();
+      if (studyInfo.getDescribeCapdev() != null && !studyInfo.getDescribeCapdev().trim().isEmpty()) {
+        capacityRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeCapdev());
+      }
+      data.put("capacityRelevance", capacityRelevance);
+    }
+
+    // Climate Change Relevance
+    if (studyInfo.getClimateChangeLevel() != null) {
+      String climateRelevance = studyInfo.getClimateChangeLevel().getPowbName();
+      if (studyInfo.getDescribeClimateChange() != null && !studyInfo.getDescribeClimateChange().trim().isEmpty()) {
+        climateRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeClimateChange());
+      }
+      data.put("climateRelevance", climateRelevance);
+    }
+
+    // Other Cross-cutting Dimensions Selection
+    if (studyInfo.getOtherCrossCuttingSelection() != null
+      && !studyInfo.getOtherCrossCuttingSelection().trim().isEmpty()) {
+      data.put("otherCrossCuttingSelection", this.getSanitizedText(studyInfo.getOtherCrossCuttingSelection()));
+    }
+
+    // Other Cross-cutting Dimensions
+    if (studyInfo.getOtherCrossCuttingDimensions() != null
+      && !studyInfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
+      data.put("otherCrossCuttingDimensions", this.getSanitizedText(studyInfo.getOtherCrossCuttingDimensions()));
+    }
+
+    // Comments Relevance
+    if (studyInfo.getCommentsRelevance() != null && !studyInfo.getCommentsRelevance().trim().isEmpty()) {
+      data.put("commentsRelevance", this.getSanitizedText(studyInfo.getCommentsRelevance()));
+    }
+
+    // MELIA Publications
+    if (studyInfo.getMELIAPublications() != null && !studyInfo.getMELIAPublications().trim().isEmpty()) {
+      data.put("meliaPublications", this.getSanitizedText(studyInfo.getMELIAPublications()));
+    }
+
+    // Geographic scope
+    List<String> geographicScopes = new ArrayList<>();
+    if (study.getProjectExpectedStudyGeographicScopes() != null) {
+      geographicScopes = study.getProjectExpectedStudyGeographicScopes().stream()
+        .filter(gs -> gs.isActive() && gs.getPhase() != null && gs.getPhase().equals(this.getSelectedPhase())
+          && gs.getRepIndGeographicScope() != null)
+        .map(gs -> this.getSanitizedText(gs.getRepIndGeographicScope().getName()))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!geographicScopes.isEmpty()) {
+      data.put("geographicScopes", String.join(", ", geographicScopes));
+    }
+
+    // Regions
+    List<String> regions = new ArrayList<>();
+    if (study.getProjectExpectedStudyRegions() != null) {
+      regions = study.getProjectExpectedStudyRegions().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
+          && r.getLocElement() != null && r.getLocElement().getLocElementType() != null
+          && r.getLocElement().getLocElementType().getId() == 1)
+        .map(r -> this.getSanitizedText(r.getLocElement().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!regions.isEmpty()) {
+      data.put("regions", String.join(", ", regions));
+    }
+
+    // Countries
+    List<String> countries = new ArrayList<>();
+    if (study.getProjectExpectedStudyCountries() != null) {
+      countries = study.getProjectExpectedStudyCountries().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+          && c.getLocElement().getLocElementType().getId() == 2)
+        .map(c -> this.getSanitizedText(c.getLocElement().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!countries.isEmpty()) {
+      data.put("countries", String.join(", ", countries));
+    }
+
+    // Flagships
+    List<String> flagships = new ArrayList<>();
+    if (study.getProjectExpectedStudyFlagships() != null) {
+      flagships = study.getProjectExpectedStudyFlagships().stream()
+        .filter(f -> f.isActive() && f.getPhase() != null && f.getPhase().equals(this.getSelectedPhase())
+          && f.getCrpProgram() != null
+          && f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .map(f -> this.getSanitizedText(f.getCrpProgram().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!flagships.isEmpty()) {
+      data.put("flagships", String.join(", ", flagships));
+    }
+
+    // Regional Programs
+    List<String> regionalPrograms = new ArrayList<>();
+    if (study.getProjectExpectedStudyFlagships() != null) {
+      regionalPrograms = study.getProjectExpectedStudyFlagships().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
+          && r.getCrpProgram() != null
+          && r.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .map(r -> this.getSanitizedText(r.getCrpProgram().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!regionalPrograms.isEmpty()) {
+      data.put("regionalPrograms", String.join(", ", regionalPrograms));
+    }
+
+    // Sub-IDOs
+    List<String> subIdos = new ArrayList<>();
+    if (study.getProjectExpectedStudySubIdos() != null) {
+      subIdos = study.getProjectExpectedStudySubIdos().stream()
+        .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase())
+          && s.getSrfSubIdo() != null && s.getSrfSubIdo().getDescription() != null)
+        .map(s -> this.getSanitizedText(s.getSrfSubIdo().getDescription())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!subIdos.isEmpty()) {
+      data.put("subIdos", String.join(", ", subIdos));
+    }
+
+    // SRF Targets
+    List<String> srfTargets = new ArrayList<>();
+    if (study.getProjectExpectedStudySrfTargets() != null) {
+      srfTargets = study.getProjectExpectedStudySrfTargets().stream()
+        .filter(t -> t.isActive() && t.getPhase() != null && t.getPhase().equals(this.getSelectedPhase())
+          && t.getSrfSloIndicator() != null && t.getSrfSloIndicator().getTitle() != null)
+        .map(t -> {
+          String title = this.getSanitizedText(t.getSrfSloIndicator().getTitle());
+          String description = this.getSanitizedText(t.getSrfSloIndicator().getDescription());
+          if (title != null && description != null) {
+            return title + ": " + description;
+          }
+          return title != null ? title : description;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!srfTargets.isEmpty()) {
+      data.put("srfTargets", String.join(", ", srfTargets));
+    }
+
+    // Links
+    List<String> links = new ArrayList<>();
+    if (study.getProjectExpectedStudyLinks() != null) {
+      links = study.getProjectExpectedStudyLinks().stream()
+        .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
+          && l.getLink() != null)
+        .map(l -> this.getSanitizedText(l.getLink())).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!links.isEmpty()) {
+      data.put("links", links);
+    }
+
+    // CRPs
+    List<String> crps = new ArrayList<>();
+    if (study.getProjectExpectedStudyCrps() != null) {
+      crps = study.getProjectExpectedStudyCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getGlobalUnit() != null)
+        .map(c -> this.getSanitizedText(c.getGlobalUnit().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crps.isEmpty()) {
+      data.put("crps", String.join(", ", crps));
+    }
+
+    // Institutions (External Partners)
+    List<String> institutions = new ArrayList<>();
+    if (study.getProjectExpectedStudyInstitutions() != null) {
+      institutions = study.getProjectExpectedStudyInstitutions().stream()
+        .filter(i -> i.isActive() && i.getPhase() != null && i.getPhase().equals(this.getSelectedPhase())
+          && i.getInstitution() != null)
+        .map(i -> this.getSanitizedText(i.getInstitution().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!institutions.isEmpty()) {
+      data.put("institutions", String.join(", ", institutions));
+    }
+
+    // Centers
+    List<String> centers = new ArrayList<>();
+    if (study.getProjectExpectedStudyCenters() != null) {
+      centers = study.getProjectExpectedStudyCenters().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getInstitution() != null)
+        .map(c -> this.getSanitizedText(c.getInstitution().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!centers.isEmpty()) {
+      data.put("centers", String.join(", ", centers));
+    }
+
+    // Policies
+    List<String> policies = new ArrayList<>();
+    if (study.getProjectExpectedStudyPolicies() != null) {
+      policies = study.getProjectExpectedStudyPolicies().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase())
+          && p.getProjectPolicy() != null)
+        .map(p -> {
+          String composedName = p.getProjectPolicy().getComposedName();
+          return this.getSanitizedText(composedName);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!policies.isEmpty()) {
+      data.put("policies", String.join(", ", policies));
+    }
+
+    // Innovations
+    List<String> innovations = new ArrayList<>();
+    if (study.getProjectExpectedStudyInnovations() != null) {
+      innovations = study.getProjectExpectedStudyInnovations().stream()
+        .filter(i -> i.isActive() && i.getPhase() != null && i.getPhase().equals(this.getSelectedPhase())
+          && i.getProjectInnovation() != null)
+        .map(i -> {
+          String composedName = i.getProjectInnovation().getComposedName();
+          return this.getSanitizedText(composedName);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!innovations.isEmpty()) {
+      data.put("innovations", String.join(", ", innovations));
+    }
+
+    // Quantifications
+    List<Map<String, Object>> quantifications = new ArrayList<>();
+    if (study.getProjectExpectedStudyQuantifications() != null) {
+      quantifications = study.getProjectExpectedStudyQuantifications().stream()
+        .filter(q -> q.isActive() && q.getPhase() != null && q.getPhase().equals(this.getSelectedPhase()))
+        .map(q -> {
+          Map<String, Object> quantData = new HashMap<>();
+          if (q.getQuantificationType() != null) {
+            quantData.put("type", this.getSanitizedText(q.getQuantificationType().getName()));
+          }
+          if (q.getNumber() != null) {
+            quantData.put("number", this.formatNumericValue(q.getNumber()));
+          }
+          if (q.getTargetUnit() != null) {
+            quantData.put("unit", this.getSanitizedText(q.getTargetUnit()));
+          }
+          if (q.getComments() != null && !q.getComments().trim().isEmpty()) {
+            quantData.put("comments", this.getSanitizedText(q.getComments()));
+          }
+          return quantData;
+        }).filter(q -> !q.isEmpty()).collect(Collectors.toList());
+    }
+    if (!quantifications.isEmpty()) {
+      data.put("quantifications", quantifications);
+      data.put("hasQuantifications", true);
+    }
+
+    // Publications
+    List<Map<String, Object>> publications = new ArrayList<>();
+    if (study.getProjectExpectedStudyPublications() != null) {
+      publications = study.getProjectExpectedStudyPublications().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+        .map(p -> {
+          Map<String, Object> pubData = new HashMap<>();
+          if (p.getName() != null && !p.getName().trim().isEmpty()) {
+            pubData.put("name", this.getSanitizedText(p.getName()));
+          }
+          if (p.getPosition() != null) {
+            pubData.put("position", p.getPosition());
+          }
+          if (p.getAffiliation() != null && !p.getAffiliation().trim().isEmpty()) {
+            pubData.put("affiliation", this.getSanitizedText(p.getAffiliation()));
+          }
+          return pubData;
+        }).filter(p -> !p.isEmpty()).collect(Collectors.toList());
+    }
+    if (!publications.isEmpty()) {
+      data.put("publications", publications);
+      data.put("hasPublications", true);
+    }
+
+    // References (detailed)
+    List<Map<String, Object>> references = new ArrayList<>();
+    if (study.getProjectExpectedStudyReferences() != null) {
+      references = study.getProjectExpectedStudyReferences().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase()))
+        .map(r -> {
+          Map<String, Object> refData = new HashMap<>();
+          if (r.getReference() != null && !r.getReference().trim().isEmpty()) {
+            refData.put("reference", this.getSanitizedText(r.getReference()));
+          }
+          if (r.getLink() != null && !r.getLink().trim().isEmpty()) {
+            refData.put("link", this.getSanitizedText(r.getLink()));
+          }
+          if (r.getExternalAuthor() != null) {
+            refData.put("externalAuthor", r.getExternalAuthor());
+          }
+          return refData;
+        }).filter(r -> !r.isEmpty()).collect(Collectors.toList());
+    }
+    if (!references.isEmpty()) {
+      data.put("references", references);
+      data.put("hasReferences", true);
+    } else if (studyInfo.getReferencesText() != null && !studyInfo.getReferencesText().trim().isEmpty()) {
+      // Fallback to text references if detailed references are not available
+      data.put("referencesText", this.getSanitizedText(studyInfo.getReferencesText()));
+    }
+
+    // Project Outcomes
+    List<String> projectOutcomes = new ArrayList<>();
+    if (study.getProjectExpectedStudyProjectOutcomes() != null) {
+      projectOutcomes = study.getProjectExpectedStudyProjectOutcomes().stream()
+        .filter(po -> po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase())
+          && po.getProjectOutcome() != null)
+        .map(po -> {
+          if (po.getProjectOutcome().getCrpProgramOutcome() != null
+            && po.getProjectOutcome().getCrpProgramOutcome().getComposedName() != null) {
+            return this.getSanitizedText(po.getProjectOutcome().getCrpProgramOutcome().getComposedName());
+          }
+          return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!projectOutcomes.isEmpty()) {
+      data.put("projectOutcomes", String.join(", ", projectOutcomes));
+    }
+
+    // CRP Outcomes
+    List<String> crpOutcomes = new ArrayList<>();
+    if (study.getProjectExpectedStudyCrpOutcomes() != null) {
+      crpOutcomes = study.getProjectExpectedStudyCrpOutcomes().stream()
+        .filter(co -> co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
+          && co.getCrpOutcome() != null && co.getCrpOutcome().getComposedName() != null)
+        .map(co -> this.getSanitizedText(co.getCrpOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crpOutcomes.isEmpty()) {
+      data.put("crpOutcomes", String.join(", ", crpOutcomes));
+    }
+
+    // Alliance Levers
+    List<String> allianceLevers = new ArrayList<>();
+    if (study.getProjectExpectedStudySdgAllianceLevers() != null) {
+      allianceLevers = study.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(al -> al.isActive() && al.getPhase() != null && al.getPhase().equals(this.getSelectedPhase())
+          && al.getAllianceLever() != null)
+        .map(al -> this.getSanitizedText(al.getAllianceLever().getName())).filter(Objects::nonNull)
+        .distinct().collect(Collectors.toList());
+    }
+    if (!allianceLevers.isEmpty()) {
+      data.put("allianceLevers", String.join(", ", allianceLevers));
+    }
+
+    // Impact Areas
+    List<String> impactAreas = new ArrayList<>();
+    if (study.getProjectExpectedStudyImpactAreas() != null) {
+      impactAreas = study.getProjectExpectedStudyImpactAreas().stream()
+        .filter(ia -> ia.isActive() && ia.getPhase() != null && ia.getPhase().equals(this.getSelectedPhase())
+          && ia.getImpactArea() != null)
+        .map(ia -> this.getSanitizedText(ia.getImpactArea().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!impactAreas.isEmpty()) {
+      data.put("impactAreas", String.join(", ", impactAreas));
+    }
+
+    // Global Targets
+    List<String> globalTargets = new ArrayList<>();
+    if (study.getProjectExpectedStudyGlobalTargets() != null) {
+      globalTargets = study.getProjectExpectedStudyGlobalTargets().stream()
+        .filter(gt -> gt.isActive() && gt.getPhase() != null && gt.getPhase().equals(this.getSelectedPhase())
+          && gt.getGlobalTarget() != null)
+        .map(gt -> this.getSanitizedText(gt.getGlobalTarget().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!globalTargets.isEmpty()) {
+      data.put("globalTargets", String.join(", ", globalTargets));
+    }
+
+    return data;
   }
 
   private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
