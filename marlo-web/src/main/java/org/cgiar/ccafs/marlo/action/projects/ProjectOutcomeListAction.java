@@ -48,6 +48,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.AuditLogContext;
+import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -224,15 +226,27 @@ public class ProjectOutcomeListAction extends BaseAction {
 
   public String deleteProjectOutcome() {
     if (this.hasPermission("delete")) {
-      ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(outcomeId);
-      for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
-        sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+      // Configurar el contexto de auditoría
+      AuditLogContext context = new AuditLogContext();
+      context.setCurrentUserId(this.getCurrentUser().getId()); // o como se obtenga el usuario
+      AuditLogContextProvider.push(context);
+      try {
+        Log.info("Deleting project outcome with id " + outcomeId);
+        ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(outcomeId);
+        for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
+          sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
+        }
+        projectOutcomeManager.deleteProjectOutcome(outcome.getId());
+        return SUCCESS;
+      } finally {
+        AuditLogContextProvider.pop();
       }
-      projectOutcomeManager.deleteProjectOutcome(outcome.getId());
-      return SUCCESS;
-    } else {
-      return NOT_AUTHORIZED;
-    }
+      
+    } 
+    // else {
+    //   return NOT_AUTHORIZED;
+    // }
+    return NOT_AUTHORIZED;
   }
 
   public List<ProjectOutcome> getAllProjectOutcomes() {
