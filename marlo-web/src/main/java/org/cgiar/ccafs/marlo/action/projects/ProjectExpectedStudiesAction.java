@@ -503,12 +503,54 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-  public List<Portfolio> getPortfolios() {
-    return portfolios;
-  }
+  private void evaluateTabsStatus() {
+    if (this.project == null || this.expectedStudy == null || this.expectedStudy.getId() == null) {
+      this.setOicrGeneralInformationComplete(false);
+      this.setOicrAllianceAlignmentComplete(false);
+      this.setOicrOneCgiarAlignmentComplete(false);
+      this.setOicrCommunicationsComplete(false);
+      return;
+    }
 
-  public void setPortfolios(List<Portfolio> portfolios) {
-    this.portfolios = portfolios;
+    StringBuilder previousMissingFields = new StringBuilder(this.getMissingFields().toString());
+    StringBuilder previousValidationMessage = new StringBuilder(this.getValidationMessage().toString());
+    HashMap<String, String> previousInvalidFields =
+      this.getInvalidFields() != null ? new HashMap<>(this.getInvalidFields()) : new HashMap<>();
+    List<String> previousMessages = new ArrayList<>(this.getActionMessages());
+    List<String> previousErrors = new ArrayList<>(this.getActionErrors());
+
+    this.getMissingFields().setLength(0);
+    this.getValidationMessage().setLength(0);
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.clearMessages();
+    this.clearErrors();
+
+    this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, false);
+
+    if (this.getInvalidFields() == null) {
+      this.setInvalidFields(new HashMap<String, String>());
+    } else {
+      this.getInvalidFields().clear();
+    }
+    this.getInvalidFields().putAll(previousInvalidFields);
+    this.getMissingFields().setLength(0);
+    this.getMissingFields().append(previousMissingFields);
+    this.getValidationMessage().setLength(0);
+    this.getValidationMessage().append(previousValidationMessage);
+
+    this.clearMessages();
+    for (String message : previousMessages) {
+      this.addActionMessage(message);
+    }
+
+    this.clearErrors();
+    for (String error : previousErrors) {
+      this.addActionError(error);
+    }
   }
 
   public void fillAllianceLevers() {
@@ -541,7 +583,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
-
 
   public void fillAllianceLeversComment() {
     try {
@@ -657,6 +698,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return impactAreasList;
   }
 
+
   public List<ProjectInnovation> getInnovationsList() {
     return this.innovationsList;
   }
@@ -730,6 +772,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   public List<ProjectPolicy> getPolicyList() {
     return this.policyList;
+  }
+
+  public List<Portfolio> getPortfolios() {
+    return portfolios;
   }
 
   public Project getProject() {
@@ -2275,7 +2321,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       ProjectExpectedStudiesAction.getIsSaving().remove(expectedID + "");
     }
-
+    if (this.expectedStudy.getProjectExpectedStudyInfo() != null) {
+      this.evaluateTabsStatus();
+    }
 
   }
 
@@ -2585,7 +2633,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save primary alliance lever Information
    * 
@@ -2857,6 +2904,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save Expected Studies Centers/PPA partners Information
    * 
@@ -3028,7 +3076,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Crps Information
@@ -3237,6 +3284,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
+
   /**
    * Save imactArea related to the Expected Studies
    * 
@@ -3344,7 +3392,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * Save Expected Studies Institutions Information
    * 
@@ -3446,6 +3493,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       logger.error(" error in saveInstitutions function " + e.getMessage());
     }
   }
+
 
   /**
    * Save Expected Studies Link Information
@@ -3653,7 +3701,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
-
   /**
    * 08/01 save Deliverable Partnership Responsible
    *
@@ -3761,6 +3808,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   private void saveProjectExpectedstudyPartnershipsPersons(
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership,
@@ -3917,7 +3965,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Publications
    * 
@@ -4067,6 +4114,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
   }
 
+
   /**
    * Save Expected Studies References Information
    * 
@@ -4130,7 +4178,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
     }
   }
-
 
   /**
    * Save Expected Studies Regions Information
@@ -4243,6 +4290,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save primary alliance lever Information
@@ -4463,7 +4511,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
   }
 
-
   /**
    * Save Expected Studies Geographic Regions Information
    * 
@@ -4507,6 +4554,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     }
 
   }
+
 
   /**
    * Save Expected Studies SubIdos Information
@@ -4587,10 +4635,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.centers = centers;
   }
 
-
   public void setCountries(List<LocElement> countries) {
     this.countries = countries;
   }
+
 
   public void setCrpMilestonePrimary(long crpMilestonePrimary) {
     this.crpMilestonePrimary = crpMilestonePrimary;
@@ -4672,13 +4720,17 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.partners = partners;
   }
 
-
   public void setPolicyInvestimentTypes(List<RepIndPolicyInvestimentType> policyInvestimentTypes) {
     this.policyInvestimentTypes = policyInvestimentTypes;
   }
 
+
   public void setPolicyList(List<ProjectPolicy> policyList) {
     this.policyList = policyList;
+  }
+
+  public void setPortfolios(List<Portfolio> portfolios) {
+    this.portfolios = portfolios;
   }
 
   public void setProject(Project project) {
@@ -4754,89 +4806,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     this.transaction = transaction;
   }
 
-  @Override
-  public void validate() {
-    if (this.save) {
-      this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
-    }
-
-  }
-
-
-  public boolean validateIfconatinsAllianceLever(List<AllianceLever> allianceLeverList,
-    AllianceLever allianceLeverTmp) {
-    try {
-      if (allianceLeverList != null && !allianceLeverList.isEmpty()) {
-        for (AllianceLever internAllianceLever : allianceLeverList) {
-          if (allianceLeverTmp != null && allianceLeverTmp.getId() != null && allianceLeverTmp.getId() != null
-            && internAllianceLever != null && internAllianceLever.getId() != null
-            && internAllianceLever.getId() == allianceLeverTmp.getId()) {
-            return true;
-          }
-        }
-      }
-      return false;
-    } catch (Exception e) {
-      logger.error("error in validate contains method " + e);
-      return false;
-    }
-  }
-
-
-  public boolean validateIfconatinsGlobalTarget(List<GlobalTarget> globalTargetList, GlobalTarget globaltTargetTmp) {
-
-    if (globalTargetList != null) {
-
-      for (GlobalTarget globalTarget : globalTargetList) {
-        if (globalTarget != null && globalTarget.getId() != null && globaltTargetTmp.getId() != null) {
-          if (globalTarget.getId() == globaltTargetTmp.getId()) {
-            return true;
-
-          }
-        }
-      }
-    }
-
-    return false;
-  }
-
-
-  public boolean validateIfcontainsOutcomes(List<AllianceLeverOutcome> outcomeList, AllianceLeverOutcome outcomeTmp) {
-    try {
-      if (outcomeList != null) {
-        for (AllianceLeverOutcome outcomeCont : outcomeList) {
-          if (outcomeCont != null && outcomeCont.getId() != null && outcomeCont.getId().equals(outcomeTmp.getId())) {
-            return true;
-          }
-        }
-      }
-      return false;
-    } catch (Exception e) {
-      Log.error("error in validateIfcontainsOutcomes method " + e);
-      return false;
-    }
-  }
-
-
-  public boolean validateIfcontainsSdgcontribution(List<SDGContribution> sdgContributionList,
-    SDGContribution sdgContributionTmp) {
-    try {
-
-      if (sdgContributionList != null) {
-        for (SDGContribution SdgCont : sdgContributionList) {
-          if (SdgCont != null && SdgCont.getId() != null && SdgCont.getId().equals(sdgContributionTmp.getId())) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    } catch (Exception e) {
-      Log.error("error in validateIfcontainsSdgcontribution method " + e);
-      return false;
-    }
-  }
-
   public void updatePortfolioBooleanValue() {
     try {
       Long currentPhaseId = this.getActualPhase().getId();
@@ -4910,6 +4879,89 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   }
 
 
+  @Override
+  public void validate() {
+    if (this.save) {
+      this.projectExpectedStudiesValidator.validate(this, this.project, this.expectedStudy, true);
+    }
+
+  }
+
+
+  public boolean validateIfconatinsAllianceLever(List<AllianceLever> allianceLeverList,
+    AllianceLever allianceLeverTmp) {
+    try {
+      if (allianceLeverList != null && !allianceLeverList.isEmpty()) {
+        for (AllianceLever internAllianceLever : allianceLeverList) {
+          if (allianceLeverTmp != null && allianceLeverTmp.getId() != null && allianceLeverTmp.getId() != null
+            && internAllianceLever != null && internAllianceLever.getId() != null
+            && internAllianceLever.getId() == allianceLeverTmp.getId()) {
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (Exception e) {
+      logger.error("error in validate contains method " + e);
+      return false;
+    }
+  }
+
+
+  public boolean validateIfconatinsGlobalTarget(List<GlobalTarget> globalTargetList, GlobalTarget globaltTargetTmp) {
+
+    if (globalTargetList != null) {
+
+      for (GlobalTarget globalTarget : globalTargetList) {
+        if (globalTarget != null && globalTarget.getId() != null && globaltTargetTmp.getId() != null) {
+          if (globalTarget.getId() == globaltTargetTmp.getId()) {
+            return true;
+
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+
+  public boolean validateIfcontainsOutcomes(List<AllianceLeverOutcome> outcomeList, AllianceLeverOutcome outcomeTmp) {
+    try {
+      if (outcomeList != null) {
+        for (AllianceLeverOutcome outcomeCont : outcomeList) {
+          if (outcomeCont != null && outcomeCont.getId() != null && outcomeCont.getId().equals(outcomeTmp.getId())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (Exception e) {
+      Log.error("error in validateIfcontainsOutcomes method " + e);
+      return false;
+    }
+  }
+
+  public boolean validateIfcontainsSdgcontribution(List<SDGContribution> sdgContributionList,
+    SDGContribution sdgContributionTmp) {
+    try {
+
+      if (sdgContributionList != null) {
+        for (SDGContribution SdgCont : sdgContributionList) {
+          if (SdgCont != null && SdgCont.getId() != null && SdgCont.getId().equals(sdgContributionTmp.getId())) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    } catch (Exception e) {
+      Log.error("error in validateIfcontainsSdgcontribution method " + e);
+      return false;
+    }
+  }
+
+
   /**
    * Validate OICR tag comparing level of maturity and year changes
    * 
@@ -4963,4 +5015,3 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
 }
-

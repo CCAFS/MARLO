@@ -759,9 +759,21 @@
       [#-- Select an innovation --]
       [#-- Table with all innovations and a selector list --]
       <div class="form-group">
-        <label class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]:</label>
-        <div class="note" style="align-items: center;">
-          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
+        <div class="form-group">
+            <div class="col-md-12" style="display: flex; align-items: center; gap: 15px;">
+            <div style="flex: 1;">
+              <label for="innovation.bundles" class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]: </label>
+              <div class="note" style="align-items: center;">
+              <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
+              </div>
+            </div>
+            <div class="commentNumberContainer" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+              <div class="numberOfCommentsBubble">
+              <p></p>
+              </div>
+              <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.bundles" fieldID="" description="">
+            </div>
+            </div>
         </div>
         [#-- Table --]
         <div class="col-md-12 simpleBox">
@@ -786,13 +798,24 @@
             [@innovationSelectedMacro element={} name="innovation.bundles" index=-1 template=true editable=editable /]
           </div>
         </div>
+        <div class="clearfix"></div>
       </div>
 
 
       [#-- Add complementary innovation --]
       [#-- A module that creates accordions with inner unique data --]
       <div class="form-group">
-        <label class="label--2">[@s.text name="projectInnovations.bundle.complementaryInnovations" /]:</label>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div style="flex: 1;">
+            <label for="innovation.complementarySolutions" class="label--2">[@s.text name="projectInnovations.bundle.complementaryInnovations" /]:</label>
+          </div>
+          <div class="commentNumberContainer" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <div class="numberOfCommentsBubble">
+              <p></p>
+            </div>
+            <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.complementarySolutions" fieldID="" description="">
+          </div>
+        </div>
         <br />
         <div class="col-md-12">
           <div class="complementarySolutionsBlock">
@@ -1612,7 +1635,7 @@
       <input type="hidden" id="reference-selected" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
 
       <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
-      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
+      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
   </div>
 [/#macro]
 
