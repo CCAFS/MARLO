@@ -477,8 +477,8 @@
     [#else]
       [#local canEditContactType = editable || isTemplate /]
     [/#if]
-  
     
+
     [#if customForm.changedField('${name}.id') != '']
       <span class="label label-info pull-right">Added/Updated</span> 
     [/#if]
@@ -487,7 +487,18 @@
         [#-- Contact type --]
         <div class="col-md-4 partnerPerson-type ${customForm.changedField('${name}.contactType')}">
           [#if canEditContactType]
-            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="'${(element.contactType)!'CP'}'" required=isPPA /]
+            [@customForm.select name="${name}.contactType" className="partnerPersonType" disabled=!canEdit i18nkey="projectPartners.personType" stringKey=true header=false listName="partnerPersonTypes" value="${(element.contactType)!'CP'}" required=isPPA /]
+              [#if (element.contactType)?has_content]
+                <script>
+                  (function() {
+                    const select = document.querySelector('select[name="${name}.contactType"]');
+                    if (select && select.value !== '${element.contactType}') {
+                      select.value = '${element.contactType}';
+                      console.log('FIXED: Corregido select ${name}.contactType de', select.options[select.selectedIndex].value, 'a ${element.contactType}');
+                    }
+                  })();
+                </script>
+              [/#if]
           [#else]
             <label class="readOnly">[@s.text name="projectPartners.personType" /]:</label>
             <div class="select"><p>[@s.text name="projectPartners.types.${(element.contactType)!'none'}"/]</p></div>
