@@ -1463,18 +1463,28 @@ public class ProjectPartnerAction extends BaseAction {
           projectPartner.setPartnerContributors(contributors);
 
           Institution institution = projectPartner.getInstitution();
-          if (institution != null) {
-            List<InstitutionLocation> institutionLocations = new ArrayList<>();
-            institutionLocations.addAll(institution.getLocations());
-            for (InstitutionLocation institutionLocation : institutionLocations) {
+          if (institution != null && institution.getLocations() != null) {
+            List<InstitutionLocation> availableLocations = new ArrayList<>();
+            
+            for (InstitutionLocation institutionLocation : institution.getLocations()) {
+              boolean isSelected = false;
+              
               if (projectPartner.getSelectedLocations() != null) {
-                if (projectPartner.getSelectedLocations().contains(institutionLocation)) {
-                  institution.getLocations().remove(institutionLocation);
-
+                for (InstitutionLocation selectedLocation : projectPartner.getSelectedLocations()) {
+                  if (institutionLocation.getId() != null && selectedLocation.getId() != null 
+                      && institutionLocation.getId().equals(selectedLocation.getId())) {
+                    isSelected = true;
+                    break;
+                  }
                 }
               }
-
+              
+              if (!isSelected) {
+                availableLocations.add(institutionLocation);
+              }
             }
+            
+            institution.setLocations(availableLocations);
           }
         }
 
