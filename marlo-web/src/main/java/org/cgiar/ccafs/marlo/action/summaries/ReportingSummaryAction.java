@@ -8671,9 +8671,40 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("comunicationsMaterial", this.getSanitizedText(studyInfo.getComunicationsMaterial()));
     }
 
-    // Contacts
-    if (studyInfo.getContacts() != null && !studyInfo.getContacts().trim().isEmpty()) {
-      data.put("contacts", this.getSanitizedText(studyInfo.getContacts()));
+    // Contacts - Extract from partnerships
+    List<String> contacts = new ArrayList<>();
+    if (study.getProjectExpectedStudyPartnerships() != null) {
+      contacts = study.getProjectExpectedStudyPartnerships().stream()
+        .filter(p -> p.isActive() 
+          && p.getPhase() != null 
+          && p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getProjectExpectedStudyPartnershipsPersons() != null
+          && p.getInstitution() != null)
+        .flatMap(p -> {
+          Institution institution = p.getInstitution();
+          String institutionName = institution.getComposedName() != null 
+            ? this.getSanitizedText(institution.getComposedName()) 
+            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+          return p.getProjectExpectedStudyPartnershipsPersons().stream()
+            .filter(pp -> pp.isActive() 
+              && pp.getUser() != null
+              && pp.getUser().getEmail() != null)
+            .map(pp -> {
+              User user = pp.getUser();
+              String userInfo = user.getComposedName(); // Returns "LastName, FirstName <email>"
+              String contactInfo = institutionName != null && !institutionName.trim().isEmpty()
+                ? institutionName + " - " + userInfo
+                : userInfo;
+              return this.getSanitizedText(contactInfo);
+            });
+        })
+        .filter(Objects::nonNull)
+        .distinct()
+        .sorted()
+        .collect(Collectors.toList());
+    }
+    if (!contacts.isEmpty()) {
+      data.put("contacts", String.join("; ", contacts));
     }
 
     // Outcome Story
@@ -8778,50 +8809,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // Countries
     List<String> countries = new ArrayList<>();
-    List<Long> countryIds = new ArrayList<>();
     if (study.getProjectExpectedStudyCountries() != null) {
       countries = study.getProjectExpectedStudyCountries().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
           && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
           && c.getLocElement().getLocElementType().getId() == 2)
-        .map(c -> {
-          if (c.getLocElement() != null && c.getLocElement().getId() != null) {
-            countryIds.add(c.getLocElement().getId());
-          }
-          return this.getSanitizedText(c.getLocElement().getName());
-        }).filter(Objects::nonNull)
+        .map(c -> this.getSanitizedText(c.getLocElement().getName())).filter(Objects::nonNull)
         .collect(Collectors.toList());
     }
     if (!countries.isEmpty()) {
       data.put("countries", String.join(", ", countries));
-    }
-
-    // Cities - Look for LocElements that are cities (types 3=Province, 4=District, 8=Village) 
-    // that are children of the countries listed
-    List<String> cities = new ArrayList<>();
-    if (!countryIds.isEmpty()) {
-      try {
-        List<LocElement> allLocElements = this.locElementManager.findAll();
-        cities = allLocElements.stream()
-          .filter(le -> le.isActive() 
-            && le.getLocElementType() != null
-            && (le.getLocElementType().getId() == 3L  // Province
-                || le.getLocElementType().getId() == 4L  // District
-                || le.getLocElementType().getId() == 8L) // Village
-            && le.getLocElement() != null  // Has a parent
-            && le.getLocElement().getId() != null
-            && countryIds.contains(le.getLocElement().getId()))  // Parent is one of the countries
-          .map(le -> this.getSanitizedText(le.getName()))
-          .filter(Objects::nonNull)
-          .distinct()
-          .sorted()
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        LOG.warn("Error extracting cities for OICR " + study.getId(), e);
-      }
-    }
-    if (!cities.isEmpty()) {
-      data.put("cities", String.join(", ", cities));
     }
 
     // Flagships
@@ -8932,46 +8929,27 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .collect(Collectors.toList());
     }
 
-            // Expected Study projectExpectedStudyPartnerships List (centers)
-            if (study.getProjectExpectedStudyPartnerships() != null) {
-              final List<ProjectExpectedStudyPartnership> deList =
-              study.getProjectExpectedStudyPartnerships().stream()
-                  .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-                    && dp.getProjectExpectedStudyPartnerType().getId()
-                      .equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER))
-                  .collect(Collectors.toList());
-              if ((deList != null) && !deList.isEmpty()) {
-                try {
-                  Collections.sort(deList, (p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()));
-                } catch (final Exception e) {
-                  LOG.warn("Unable to sort dlist", e);
-                }
-                study.setCenters(new ArrayList<>());
-                for (final ProjectExpectedStudyPartnership projectExpectedStudyPartnership : deList) {
-                  if (projectExpectedStudyPartnership.getInstitution() != null 
-                      && projectExpectedStudyPartnership.getInstitution().getId() != null
-                      && centers.stream().map(c -> {
-                          // c is the composedName string, need to get corresponding institution id from centers list
-                          // but 'centers' only has names, not ids; to check by id, need a list of ids of current centers
-                          // So get ids from study.getCenters() if possible
-                          List<Long> centerIds = study.getCenters() != null
-                              ? study.getCenters().stream()
-                                  .filter(pc -> pc.getInstitution() != null && pc.getInstitution().getId() != null)
-                                  .map(pc -> pc.getInstitution().getId())
-                                  .collect(Collectors.toList())
-                              : new ArrayList<>();
-                          return centerIds;
-                      })
-                      .findFirst()
-                      .orElse(new ArrayList<>())
-                      .stream()
-                      .noneMatch(id -> id.equals(projectExpectedStudyPartnership.getInstitution().getId()))) {
-                  study.getCenters().add(projectExpectedStudyPartnership);
-                  }
-                }
-    
-              }
-            }
+    if (study.getProjectExpectedStudyPartnerships() != null) {
+      List<String> partnershipCenters = study.getProjectExpectedStudyPartnerships().stream()
+        .filter(dp -> dp.isActive()
+          && dp.getPhase() != null
+          && dp.getPhase().getId().equals(this.getActualPhase().getId())
+          && dp.getProjectExpectedStudyPartnerType() != null
+          && dp.getProjectExpectedStudyPartnerType().getId().equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER)
+          && dp.getInstitution() != null
+          && dp.getInstitution().getComposedName() != null)
+        .sorted((p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()))
+        .map(dp -> this.getSanitizedText(dp.getInstitution().getComposedName()))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+      // Agregamos los centers de partnerships si aún no están en la lista final
+      for (String cName : partnershipCenters) {
+        if (!centers.contains(cName)) {
+          centers.add(cName);
+        }
+      }
+    }
 
     if (!centers.isEmpty()) {
       data.put("centers", String.join(", ", centers));
