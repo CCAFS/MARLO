@@ -1082,8 +1082,10 @@ async function onClickRemoveElement() {
     //Represents a collection of input elements that contain the information of the total participants for each shared clusters.
    var sumData = getSumTotalParticipants();
 
-    if (sumData > 0) { 
-      
+   //Check the amount of rows (clusters) inside the shared clusters list
+   const listClusterDM = document.querySelectorAll(".listClusterDM div.form-group.row");
+
+    if (sumData > 0 && listClusterDM.length > 1) { 
       try {
         // Wait for the user to click on the modal
         await alertRemoveIndicatorIPI2_3();
