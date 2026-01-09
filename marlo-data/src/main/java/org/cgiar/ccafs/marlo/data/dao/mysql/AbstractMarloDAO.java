@@ -88,6 +88,10 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @param obj is a persistence instance from the database model.
    */
   protected void delete(Object obj) {
+    if (obj == null) {
+      LOG.warn("Attempted to delete a null entity. Skipping delete().");
+      return;
+    }
     this.sessionFactory.getCurrentSession().delete(obj);
   }
 

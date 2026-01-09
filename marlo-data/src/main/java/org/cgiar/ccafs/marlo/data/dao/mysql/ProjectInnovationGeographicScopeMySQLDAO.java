@@ -39,7 +39,9 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
   @Override
   public void deleteProjectInnovationGeographicScope(long projectInnovationGeographicScopeId) {
     ProjectInnovationGeographicScope projectInnovationGeographicScope = this.find(projectInnovationGeographicScopeId);
-    this.delete(projectInnovationGeographicScope);
+    if (projectInnovationGeographicScope != null) {
+      this.delete(projectInnovationGeographicScope);
+    }
   }
 
   @Override

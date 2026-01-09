@@ -1145,8 +1145,11 @@ public class ProjectInnovationAction extends BaseAction {
           // Load Regions
           if (innovation.getRegions() != null) {
             for (ProjectInnovationRegion projectPolicyRegion : innovation.getRegions()) {
-              projectPolicyRegion
-                .setLocElement(locElementManager.getLocElementById(projectPolicyRegion.getLocElement().getId()));
+              if (projectPolicyRegion != null && projectPolicyRegion.getLocElement() != null
+                && projectPolicyRegion.getLocElement().getId() != null) {
+                projectPolicyRegion
+                  .setLocElement(locElementManager.getLocElementById(projectPolicyRegion.getLocElement().getId()));
+              }
             }
           }
         }
@@ -2553,6 +2556,21 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
       }
 
+      if (innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution() != null
+        && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() != null) {
+        Long ipInstitutionId = innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId();
+        if (ipInstitutionId <= 0) {
+          innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+        } else {
+          Institution dbInstitution = institutionManager.getInstitutionById(ipInstitutionId);
+          if (dbInstitution != null) {
+            innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(dbInstitution);
+          } else {
+            innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+          }
+        }
+      }
+
       if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != null
         && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() != 6) {
@@ -3453,47 +3471,44 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveGeographicScope(ProjectInnovation projectInnovation, Phase phase) {
-
-    // Search and deleted form Information
     if (projectInnovation.getProjectInnovationGeographicScopes() != null
       && !projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
 
       List<ProjectInnovationGeographicScope> scopePrev =
         new ArrayList<>(projectInnovation.getProjectInnovationGeographicScopes().stream()
-          .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+          .filter(nu -> nu != null && nu.getPhase() != null && nu.getPhase().getId().equals(phase.getId()))
+          .collect(Collectors.toList()));
 
       for (ProjectInnovationGeographicScope innovationScope : scopePrev) {
-        // if (innovation.getGeographicScopes() == null || !innovation.getGeographicScopes().contains(innovationScope))
-        // {
-        projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(innovationScope.getId());
-        // }
+        // ✅ Validación null agregada
+        if (innovationScope != null && innovationScope.getId() != null) {
+          projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(innovationScope.getId());
+        }
       }
     }
 
     // Save form Information
     if (innovation.getGeographicScopes() != null) {
       for (ProjectInnovationGeographicScope innovationScope : innovation.getGeographicScopes()) {
-
         if (innovationScope != null && innovationScope.getRepIndGeographicScope() != null
           && innovationScope.getRepIndGeographicScope().getId() != null) {
+          
           ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
           innovationScopeSave.setProjectInnovation(projectInnovation);
           innovationScopeSave.setPhase(phase);
 
           RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
             .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
+            
           if (repIndGeographicScope != null) {
             innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
-
             projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
-            // This is to add innovationCrpSave to generate correct auditlog.
             innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
           }
         }
       }
     }
   }
-
   /**
    * Save Project Innovation Impact Area
    * 
@@ -3972,7 +3987,12 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationShared innovationProject : projectPrev) {
         if (this.innovation.getSharedInnovations() == null
           || !this.innovation.getSharedInnovations().contains(innovationProject)) {
-          this.projectInnovationSharedManager.deleteProjectInnovationShared(innovationProject.getId());
+          if (innovationProject.getId() != null) {
+            this.projectInnovationSharedManager.deleteProjectInnovationShared(innovationProject.getId());
+          } else {
+            logger.warn("Skipping deletion of ProjectInnovationShared with null ID for innovation: {}",
+              projectInnovation.getId());
+          }
         }
       }
     }
@@ -3981,17 +4001,31 @@ public class ProjectInnovationAction extends BaseAction {
     if (this.innovation.getSharedInnovations() != null) {
       for (ProjectInnovationShared innovationProject : this.innovation.getSharedInnovations()) {
         if (innovationProject.getId() == null) {
+          
+          // Validar que el proyecto no sea nulo antes de intentar guardar
+          if (innovationProject.getProject() == null || innovationProject.getProject().getId() == null) {
+            logger.warn("Skipping ProjectInnovationShared with null project for innovation: {}", 
+                        projectInnovation.getId());
+            continue;
+          }
+          
           ProjectInnovationShared innovationProjectSave = new ProjectInnovationShared();
           innovationProjectSave.setProjectInnovation(projectInnovation);
           innovationProjectSave.setPhase(phase);
 
           Project project = this.projectManager.getProjectById(innovationProject.getProject().getId());
+          
+          // Validar que el proyecto exista en la base de datos
+          if (project == null) {
+            logger.warn("Project with ID {} not found for innovation: {}", 
+                        innovationProject.getProject().getId(), projectInnovation.getId());
+            continue;
+          }
 
           innovationProjectSave.setProject(project);
 
           this.projectInnovationSharedManager.saveProjectInnovationShared(innovationProjectSave);
-          // This is to add studyProjectSave to generate correct
-          // auditlog.
+          // This is to add studyProjectSave to generate correct auditlog.
           this.innovation.getProjectInnovationShareds().add(innovationProjectSave);
         }
       }
@@ -4177,7 +4211,8 @@ public class ProjectInnovationAction extends BaseAction {
         } else {
           if (studyReference.getDeliverableType() != null && studyReference.getDeliverableType().getId() != null
             && deliverableTypeManager.existDeliverableType(studyReference.getDeliverableType().getId())) {
-            studyReferenceSave.setDeliverableType(studyReference.getDeliverableType());
+            studyReferenceSave.setDeliverableType(
+              deliverableTypeManager.getDeliverableTypeById(studyReference.getDeliverableType().getId()));
           }
         }
         this.projectInnovationReferenceManager.saveProjectInnovationReference(studyReferenceSave);
@@ -4306,13 +4341,17 @@ public class ProjectInnovationAction extends BaseAction {
           innovationRegionSave.setProjectInnovation(projectInnovation);
           innovationRegionSave.setPhase(phase);
 
-          LocElement locElement = locElementManager.getLocElementById(innovationRegion.getLocElement().getId());
+          if (innovationRegion.getLocElement() != null && innovationRegion.getLocElement().getId() != null
+            && innovationRegion.getLocElement().getId() > 0) {
+            LocElement locElement = locElementManager.getLocElementById(innovationRegion.getLocElement().getId());
+            if (locElement != null) {
+              innovationRegionSave.setLocElement(locElement);
 
-          innovationRegionSave.setLocElement(locElement);
-
-          projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
-          // This is to add innovationCrpSave to generate correct auditlog.
-          innovation.getProjectInnovationRegions().add(innovationRegionSave);
+              projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
+              // This is to add innovationCrpSave to generate correct auditlog.
+              innovation.getProjectInnovationRegions().add(innovationRegionSave);
+            }
+          }
         }
       }
     }
@@ -4755,6 +4794,39 @@ public class ProjectInnovationAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      try {
+        boolean isPost = this.getRequest() != null && this.getRequest().getMethod() != null
+          && this.getRequest().getMethod().equalsIgnoreCase("POST");
+
+        if (isPost && this.innovation != null && this.innovation.getReferences() != null) {
+          for (int i = 0; i < this.innovation.getReferences().size(); i++) {
+            ProjectInnovationReference ref = this.innovation.getReferences().get(i);
+            if (ref == null) {
+              continue;
+            }
+
+            String deliverableTypeParam =
+              StringUtils.trim(this.getRequest().getParameter("innovation.references[" + i + "].deliverableType.id"));
+            String deliverableCategoryParam = StringUtils
+              .trim(this.getRequest().getParameter("innovation.references[" + i + "].deliverableType.deliverableCategory.id"));
+
+            if (deliverableTypeParam != null && !deliverableTypeParam.isEmpty()) {
+              try {
+                Long deliverableTypeId = Long.parseLong(deliverableTypeParam);
+                if (deliverableTypeId != null && deliverableTypeId != -1
+                  && deliverableTypeManager.existDeliverableType(deliverableTypeId)) {
+                  ref.setDeliverableType(deliverableTypeManager.getDeliverableTypeById(deliverableTypeId));
+                }
+              } catch (Exception e) {
+                Log.error("Error parsing deliverableType.id for reference index " + i + ": " + e);
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        Log.error("Error normalizing reference deliverable type params before validation: " + e);
+      }
+
       // Change the parameters for the new way to validate the data
       validator.validate(this, project, innovation, clearLead, true, true, this.getActualPhase().getYear(),
         this.getActualPhase().getUpkeep());
