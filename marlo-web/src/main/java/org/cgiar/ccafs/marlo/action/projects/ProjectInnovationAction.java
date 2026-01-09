@@ -195,6 +195,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -2954,6 +2955,33 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveBundles(ProjectInnovation projectInnovation, Phase phase) {
     try {
+      // Leer selectedInnovation.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+      HttpServletRequest request = this.getRequest();
+      Map<Integer, Long> selectedInnovationIds = new HashMap<>();
+      
+      java.util.Enumeration<String> paramNames = request.getParameterNames();
+      while (paramNames.hasMoreElements()) {
+        String key = paramNames.nextElement();
+        if (key.startsWith("innovation.bundles[") && key.endsWith("].selectedInnovation.id")) {
+          try {
+            int startIdx = key.indexOf('[') + 1;
+            int endIdx = key.indexOf(']');
+            int index = Integer.parseInt(key.substring(startIdx, endIdx));
+            String value = request.getParameter(key);
+            if (value != null && !value.isEmpty()) {
+              Long selectedId = Long.parseLong(value);
+              selectedInnovationIds.put(index, selectedId);
+              logger.info("Parsed from request: bundles[" + index + "].selectedInnovation.id = " + selectedId);
+            }
+          } catch (NumberFormatException e) {
+            logger.warn("Could not parse selectedInnovation.id from parameter: " + key);
+          }
+        }
+      }
+      
+      logger.info("saveBundles called - innovation.getBundles(): " + (innovation.getBundles() != null ? innovation.getBundles().size() : "null"));
+      logger.info("selectedInnovationIds from request: " + selectedInnovationIds);
+      
       if (projectInnovation.getProjectInnovationBundles() != null
         && !projectInnovation.getProjectInnovationBundles().isEmpty()) {
         List<ProjectInnovationBundle> bundlePrev = new ArrayList<>();
@@ -2971,22 +2999,30 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
       if (innovation.getBundles() != null && !innovation.getBundles().isEmpty()) {
+        int index = 0;
         for (ProjectInnovationBundle bundle : innovation.getBundles()) {
           if (bundle.getId() != null && bundle.getId() == -1) {
             bundle.setId(null);
           }
 
-          boolean saveBundleProcess = false;
-
+          // Rehidratar selectedInnovation desde BD usando ID del request (patrón Struts 6)
+          ProjectInnovation selectedInnovationManaged = null;
+          Long selectedId = selectedInnovationIds.get(index);
+          
+          if (selectedId == null && bundle.getSelectedInnovation() != null && bundle.getSelectedInnovation().getId() != null) {
+            selectedId = bundle.getSelectedInnovation().getId();
+          }
+          
           try {
-            if (bundle.getSelectedInnovation() != null && bundle.getSelectedInnovation().getId() != null) {
-              saveBundleProcess = true;
+            if (selectedId != null && selectedId > 0) {
+              selectedInnovationManaged = projectInnovationManager.getProjectInnovationById(selectedId);
+              logger.info("Rehidratado selectedInnovation ID: " + selectedId + " -> " + (selectedInnovationManaged != null ? "found" : "null"));
             }
           } catch (Exception e) {
-            logger.error("unable to validate bundle fields", e);
+            logger.error("unable to rehydrate selectedInnovation", e);
           }
 
-          if (saveBundleProcess) {
+          if (selectedInnovationManaged != null) {
             ProjectInnovationBundle bundleToSave = new ProjectInnovationBundle();
 
             try {
@@ -2999,11 +3035,12 @@ public class ProjectInnovationAction extends BaseAction {
 
             bundleToSave.setPhase(phase);
             bundleToSave.setProjectInnovation(projectInnovation);
-            bundleToSave.setSelectedInnovation(bundle.getSelectedInnovation());
+            bundleToSave.setSelectedInnovation(selectedInnovationManaged);
 
             projectInnovationBundleManager.saveProjectInnovationBundle(bundleToSave);
             innovation.getProjectInnovationBundles().add(bundleToSave);
           }
+          index++;
         }
       }
     } catch (Exception e) {
