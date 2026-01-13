@@ -2677,6 +2677,39 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveActors(ProjectInnovation projectInnovation, Phase phase) {
+    // Debug logging para Struts 6
+    logger.info("saveActors called - innovation.getActors(): " + (innovation.getActors() != null ? innovation.getActors().size() : "null"));
+    if (innovation.getActors() != null) {
+      for (ProjectInnovationActor a : innovation.getActors()) {
+        logger.info("Actor - id: " + a.getId() + ", actor: " + (a.getActor() != null ? a.getActor().getId() : "null") + ", total: " + a.getTotal());
+      }
+    }
+    
+    // Leer actor.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    HttpServletRequest request = this.getRequest();
+    Map<Integer, Long> actorTypeIds = new HashMap<>();
+    
+    java.util.Enumeration<String> paramNames = request.getParameterNames();
+    while (paramNames.hasMoreElements()) {
+      String key = paramNames.nextElement();
+      if (key.startsWith("innovation.actors[") && key.endsWith("].actor.id")) {
+        try {
+          int startIdx = key.indexOf('[') + 1;
+          int endIdx = key.indexOf(']');
+          int index = Integer.parseInt(key.substring(startIdx, endIdx));
+          String value = request.getParameter(key);
+          if (value != null && !value.isEmpty() && !value.equals("-1")) {
+            Long actorId = Long.parseLong(value);
+            actorTypeIds.put(index, actorId);
+            logger.info("Parsed from request: actors[" + index + "].actor.id = " + actorId);
+          }
+        } catch (NumberFormatException e) {
+          logger.warn("Could not parse actor.id from parameter: " + key);
+        }
+      }
+    }
+    logger.info("actorTypeIds from request: " + actorTypeIds);
+    
     // Search and deleted form Information
     try {
       if (projectInnovation.getProjectInnovationActors() != null
@@ -3358,6 +3391,33 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(ProjectInnovation projectInnovation, Phase phase) {
+    // Debug logging para Struts 6
+    logger.info("saveCrpOutcomes called - innovation.getCrpOutcomes(): " + (innovation.getCrpOutcomes() != null ? innovation.getCrpOutcomes().size() : "null"));
+    
+    // Leer crpOutcome.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    HttpServletRequest request = this.getRequest();
+    Map<Integer, Long> crpOutcomeIds = new HashMap<>();
+    
+    java.util.Enumeration<String> paramNames = request.getParameterNames();
+    while (paramNames.hasMoreElements()) {
+      String key = paramNames.nextElement();
+      if (key.startsWith("innovation.crpOutcomes[") && key.endsWith("].crpOutcome.id")) {
+        try {
+          int startIdx = key.indexOf('[') + 1;
+          int endIdx = key.indexOf(']');
+          int index = Integer.parseInt(key.substring(startIdx, endIdx));
+          String value = request.getParameter(key);
+          if (value != null && !value.isEmpty() && !value.equals("-1")) {
+            Long outcomeId = Long.parseLong(value);
+            crpOutcomeIds.put(index, outcomeId);
+            logger.info("Parsed from request: crpOutcomes[" + index + "].crpOutcome.id = " + outcomeId);
+          }
+        } catch (NumberFormatException e) {
+          logger.warn("Could not parse crpOutcome.id from parameter: " + key);
+        }
+      }
+    }
+    logger.info("crpOutcomeIds from request: " + crpOutcomeIds);
 
     // Search and deleted form Information
     try {
@@ -3368,9 +3428,12 @@ public class ProjectInnovationAction extends BaseAction {
           new ArrayList<>(projectInnovation.getProjectInnovationCrpOutcomes().stream()
             .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
+        // Crear set de IDs que se mantienen (desde request)
+        Set<Long> keepIds = new HashSet<>(crpOutcomeIds.values());
+        
         for (ProjectInnovationCrpOutcome innovationOutcome : outcomePrev) {
-          if (this.innovation.getCrpOutcomes() == null
-            || !this.innovation.getCrpOutcomes().contains(innovationOutcome)) {
+          if (innovationOutcome.getCrpOutcome() != null && 
+              !keepIds.contains(innovationOutcome.getCrpOutcome().getId())) {
             this.projectInnovationCrpOutcomeManager.deleteProjectInnovationCrpOutcome(innovationOutcome.getId(),
               this.getActualPhase().getId());
           }
@@ -3380,38 +3443,33 @@ public class ProjectInnovationAction extends BaseAction {
       logger.error("unable to delete crp outcome", e);
     }
 
-    // Save form Information
-    if (this.innovation.getCrpOutcomes() != null) {
-      for (ProjectInnovationCrpOutcome innovationOutcome : this.innovation.getCrpOutcomes()) {
-        ProjectInnovationCrpOutcome innovationOutcomeSave = new ProjectInnovationCrpOutcome();
-
-        if (innovationOutcome != null) {
-          // For new crp outcomes
-          if (innovationOutcome.getId() == null) {
-            innovationOutcomeSave.setProjectInnovation(projectInnovation);
-            innovationOutcomeSave.setPhase(phase);
-          } else {
-            // For old crp outcomes
-            try {
-              if (innovationOutcome.getId() != null) {
-                innovationOutcomeSave =
-                  projectInnovationCrpOutcomeManager.getProjectInnovationCrpOutcomeById(innovationOutcome.getId());
-              }
-            } catch (Exception e) {
-              logger.error("unable to get old crp outcome", e);
-            }
-          }
-
-          if (innovationOutcome.getCrpOutcome() != null && innovationOutcome.getCrpOutcome().getId() != null) {
-            CrpProgramOutcome outcome =
-              crpProgramOutcomeManager.getCrpProgramOutcomeById(innovationOutcome.getCrpOutcome().getId());
-            if (outcome != null) {
-              innovationOutcomeSave.setCrpOutcome(outcome);
-            }
-
+    // Save form Information - usar IDs del request
+    if (!crpOutcomeIds.isEmpty()) {
+      for (Map.Entry<Integer, Long> entry : crpOutcomeIds.entrySet()) {
+        Long crpOutcomeId = entry.getValue();
+        
+        // Verificar si ya existe este outcome para esta innovación y fase
+        boolean exists = false;
+        if (projectInnovation.getProjectInnovationCrpOutcomes() != null) {
+          exists = projectInnovation.getProjectInnovationCrpOutcomes().stream()
+            .anyMatch(o -> o.getPhase().getId().equals(phase.getId()) && 
+                          o.getCrpOutcome() != null && 
+                          o.getCrpOutcome().getId().equals(crpOutcomeId));
+        }
+        
+        if (!exists) {
+          ProjectInnovationCrpOutcome innovationOutcomeSave = new ProjectInnovationCrpOutcome();
+          innovationOutcomeSave.setProjectInnovation(projectInnovation);
+          innovationOutcomeSave.setPhase(phase);
+          
+          CrpProgramOutcome outcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(crpOutcomeId);
+          if (outcome != null) {
+            innovationOutcomeSave.setCrpOutcome(outcome);
             this.projectInnovationCrpOutcomeManager.saveProjectInnovationCrpOutcome(innovationOutcomeSave);
-            // This is to add studyCrpSave to generate correct auditlog.
-            if (!this.innovation.getProjectInnovationCrpOutcomes().contains(innovationOutcomeSave)) {
+            logger.info("Saved new CrpOutcome: " + crpOutcomeId);
+            
+            // Add to set for audit log
+            if (this.innovation.getProjectInnovationCrpOutcomes() != null) {
               this.innovation.getProjectInnovationCrpOutcomes().add(innovationOutcomeSave);
             }
           }
@@ -3508,6 +3566,36 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveGeographicScope(ProjectInnovation projectInnovation, Phase phase) {
+    // Debug logging para Struts 6
+    logger.info("saveGeographicScope called - innovation.getGeographicScopes(): " + 
+      (innovation.getGeographicScopes() != null ? innovation.getGeographicScopes().size() : "null"));
+    
+    // Leer repIndGeographicScope.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    HttpServletRequest request = this.getRequest();
+    Map<Integer, Long> geographicScopeIds = new HashMap<>();
+    
+    java.util.Enumeration<String> paramNames = request.getParameterNames();
+    while (paramNames.hasMoreElements()) {
+      String key = paramNames.nextElement();
+      if (key.startsWith("innovation.geographicScopes[") && key.endsWith("].repIndGeographicScope.id")) {
+        try {
+          int startIdx = key.indexOf('[') + 1;
+          int endIdx = key.indexOf(']');
+          int index = Integer.parseInt(key.substring(startIdx, endIdx));
+          String value = request.getParameter(key);
+          if (value != null && !value.isEmpty() && !value.equals("-1")) {
+            Long scopeId = Long.parseLong(value);
+            geographicScopeIds.put(index, scopeId);
+            logger.info("Parsed from request: geographicScopes[" + index + "].repIndGeographicScope.id = " + scopeId);
+          }
+        } catch (NumberFormatException e) {
+          logger.warn("Could not parse repIndGeographicScope.id from parameter: " + key);
+        }
+      }
+    }
+    logger.info("geographicScopeIds from request: " + geographicScopeIds);
+    
+    // Delete previous scopes for this phase
     if (projectInnovation.getProjectInnovationGeographicScopes() != null
       && !projectInnovation.getProjectInnovationGeographicScopes().isEmpty()) {
 
@@ -3517,29 +3605,28 @@ public class ProjectInnovationAction extends BaseAction {
           .collect(Collectors.toList()));
 
       for (ProjectInnovationGeographicScope innovationScope : scopePrev) {
-        // ✅ Validación null agregada
         if (innovationScope != null && innovationScope.getId() != null) {
           projectInnovationGeographicScopeManager.deleteProjectInnovationGeographicScope(innovationScope.getId());
         }
       }
     }
 
-    // Save form Information
-    if (innovation.getGeographicScopes() != null) {
-      for (ProjectInnovationGeographicScope innovationScope : innovation.getGeographicScopes()) {
-        if (innovationScope != null && innovationScope.getRepIndGeographicScope() != null
-          && innovationScope.getRepIndGeographicScope().getId() != null) {
-          
+    // Save form Information - usar IDs del request
+    if (!geographicScopeIds.isEmpty()) {
+      for (Map.Entry<Integer, Long> entry : geographicScopeIds.entrySet()) {
+        Long scopeId = entry.getValue();
+        
+        RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager.getRepIndGeographicScopeById(scopeId);
+        if (repIndGeographicScope != null) {
           ProjectInnovationGeographicScope innovationScopeSave = new ProjectInnovationGeographicScope();
           innovationScopeSave.setProjectInnovation(projectInnovation);
           innovationScopeSave.setPhase(phase);
-
-          RepIndGeographicScope repIndGeographicScope = repIndGeographicScopeManager
-            .getRepIndGeographicScopeById(innovationScope.getRepIndGeographicScope().getId());
-            
-          if (repIndGeographicScope != null) {
-            innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
-            projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
+          innovationScopeSave.setRepIndGeographicScope(repIndGeographicScope);
+          
+          projectInnovationGeographicScopeManager.saveProjectInnovationGeographicScope(innovationScopeSave);
+          logger.info("Saved GeographicScope: " + scopeId);
+          
+          if (innovation.getProjectInnovationGeographicScopes() != null) {
             innovation.getProjectInnovationGeographicScopes().add(innovationScopeSave);
           }
         }
@@ -4351,6 +4438,35 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveRegions(ProjectInnovation projectInnovation, Phase phase) {
+    // Debug logging para Struts 6
+    logger.info("saveRegions called - innovation.getRegions(): " + 
+      (innovation.getRegions() != null ? innovation.getRegions().size() : "null"));
+    
+    // Leer locElement.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    HttpServletRequest request = this.getRequest();
+    Map<Integer, Long> regionIds = new HashMap<>();
+    
+    java.util.Enumeration<String> paramNames = request.getParameterNames();
+    while (paramNames.hasMoreElements()) {
+      String key = paramNames.nextElement();
+      if (key.startsWith("innovation.regions[") && key.endsWith("].locElement.id")) {
+        try {
+          int startIdx = key.indexOf('[') + 1;
+          int endIdx = key.indexOf(']');
+          int index = Integer.parseInt(key.substring(startIdx, endIdx));
+          String value = request.getParameter(key);
+          if (value != null && !value.isEmpty() && !value.equals("-1")) {
+            Long regionId = Long.parseLong(value);
+            regionIds.put(index, regionId);
+            logger.info("Parsed from request: regions[" + index + "].locElement.id = " + regionId);
+          }
+        } catch (NumberFormatException e) {
+          logger.warn("Could not parse locElement.id from parameter: " + key);
+        }
+      }
+    }
+    logger.info("regionIds from request: " + regionIds);
+    
     try {
       // Search and deleted form Information
       if (projectInnovation.getProjectInnovationRegions() != null
@@ -4360,32 +4476,46 @@ public class ProjectInnovationAction extends BaseAction {
           new ArrayList<>(projectInnovation.getProjectInnovationRegions().stream()
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
+        // Crear set de IDs que se mantienen (desde request)
+        Set<Long> keepIds = new HashSet<>(regionIds.values());
+        
         for (ProjectInnovationRegion innovationRegion : regionPrev) {
-          if (innovation.getRegions() == null || !innovation.getRegions().contains(innovationRegion)) {
+          if (innovationRegion.getLocElement() != null && 
+              !keepIds.contains(innovationRegion.getLocElement().getId())) {
             projectInnovationRegionManager.deleteProjectInnovationRegion(innovationRegion.getId());
           }
         }
       }
     } catch (Exception e) {
-      Log.error("error in sdg save process " + e);
+      logger.error("error in regions delete process " + e);
     }
 
-    // Save form Information
-    if (innovation.getRegions() != null) {
-      for (ProjectInnovationRegion innovationRegion : innovation.getRegions()) {
-        if (innovationRegion.getId() == null) {
-          ProjectInnovationRegion innovationRegionSave = new ProjectInnovationRegion();
-          innovationRegionSave.setProjectInnovation(projectInnovation);
-          innovationRegionSave.setPhase(phase);
+    // Save form Information - usar IDs del request
+    if (!regionIds.isEmpty()) {
+      for (Map.Entry<Integer, Long> entry : regionIds.entrySet()) {
+        Long regionId = entry.getValue();
+        
+        // Verificar si ya existe esta región para esta innovación y fase
+        boolean exists = false;
+        if (projectInnovation.getProjectInnovationRegions() != null) {
+          exists = projectInnovation.getProjectInnovationRegions().stream()
+            .anyMatch(r -> r.isActive() && r.getPhase().getId().equals(phase.getId()) && 
+                          r.getLocElement() != null && 
+                          r.getLocElement().getId().equals(regionId));
+        }
+        
+        if (!exists) {
+          LocElement locElement = locElementManager.getLocElementById(regionId);
+          if (locElement != null) {
+            ProjectInnovationRegion innovationRegionSave = new ProjectInnovationRegion();
+            innovationRegionSave.setProjectInnovation(projectInnovation);
+            innovationRegionSave.setPhase(phase);
+            innovationRegionSave.setLocElement(locElement);
 
-          if (innovationRegion.getLocElement() != null && innovationRegion.getLocElement().getId() != null
-            && innovationRegion.getLocElement().getId() > 0) {
-            LocElement locElement = locElementManager.getLocElementById(innovationRegion.getLocElement().getId());
-            if (locElement != null) {
-              innovationRegionSave.setLocElement(locElement);
-
-              projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
-              // This is to add innovationCrpSave to generate correct auditlog.
+            projectInnovationRegionManager.saveProjectInnovationRegion(innovationRegionSave);
+            logger.info("Saved Region: " + regionId);
+            
+            if (innovation.getProjectInnovationRegions() != null) {
               innovation.getProjectInnovationRegions().add(innovationRegionSave);
             }
           }
