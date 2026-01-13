@@ -7759,21 +7759,45 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     final Phase phase = this.getSelectedPhase();
     
     try {
-      if (project != null) {
+      if (project == null) {
+        System.out.println("[generateAndSendJson] ERROR: Project is null!");
+        return SUCCESS;
+      }
+      
+      if (phase == null) {
+        System.out.println("[generateAndSendJson] ERROR: Selected phase is null!");
+        return SUCCESS;
+      }
+      
+      System.out.println("[generateAndSendJson] Starting JSON data generation for project: " + project.getId());
+      
+      try {
         projectID = project.getId().toString();
         phaseID = phase.getId().toString();
         cycle = this.getSelectedCycle();
-        year = String.valueOf(this.getSelectedYear());
+        // Use phase.getYear() instead of getSelectedYear() for consistency
+        year = String.valueOf(phase.getYear());
         loggedCenter = this.getLoggedCrp().getAcronym();
+        System.out.println("[generateAndSendJson] Basic project info extracted - ID: " + projectID + ", Phase: " + phaseID + ", Year: " + year);
+      } catch (Exception e) {
+        System.out.println("[generateAndSendJson] ERROR extracting basic project info: " + e.getClass().getName() + " - " + e.getMessage());
+        e.printStackTrace();
+        throw e;
+      }
 
         // Project Info
         String projectTitle = null;
-
+        try {
         if (projectInfo != null) {
           projectTitle = projectInfo.getTitle();
+          }
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR getting project title: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
         }
         
         // Set basic project data FIRST to ensure they are always included
+        try {
         jsonData.put("projectID", projectID);
         jsonData.put("projectTitle", projectTitle);
         jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
@@ -7782,25 +7806,99 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         jsonData.put("year", year);
         jsonData.put("loggedCenter", loggedCenter);
         jsonData.put("timeCreation", this.getCurrentDatev2());
+          System.out.println("[generateAndSendJson] Basic project data added to JSON");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR setting basic project data: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
         
-        Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
-        List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
-        projectDescription.put("partners", partnersData);
-        jsonData.put("projectDescription", projectDescription);
-        jsonData.put("projectPartners", partnersData);
-        jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
-        jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
-        jsonData.put("oicrs", this.buildOICRsList());
-        jsonData.put("deliverables", this.buildDeliverablesList());
-        jsonData.put("innovations", this.buildInnovationsList());
-        
-        // Set crossCutting at root level for template access (section is outside projectDescription block)
-        // Get it directly from buildCrossCuttingSummary to ensure it's properly set even if null
-        String crossCuttingValue = this.buildCrossCuttingSummary();
-        jsonData.put("crossCutting", crossCuttingValue);
-      }
+        try {
+          System.out.println("[generateAndSendJson] Building project description section...");
+          Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+          System.out.println("[generateAndSendJson] Project description built successfully");
+          
+          System.out.println("[generateAndSendJson] Building project partners data...");
+          List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
+          System.out.println("[generateAndSendJson] Project partners built: " + partnersData.size() + " partners");
+          
+          projectDescription.put("partners", partnersData);
+          jsonData.put("projectDescription", projectDescription);
+          jsonData.put("projectPartners", partnersData);
     } catch (Exception e) {
-      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
+          System.out.println("[generateAndSendJson] ERROR building project description/partners: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building project locations section...");
+          jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
+          System.out.println("[generateAndSendJson] Project locations built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building project locations: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building performance indicator contributions...");
+          jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
+          System.out.println("[generateAndSendJson] Performance indicator contributions built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building performance indicator contributions: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building OICRs list...");
+          jsonData.put("oicrs", this.buildOICRsList());
+          System.out.println("[generateAndSendJson] OICRs list built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building OICRs list: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building deliverables list...");
+          jsonData.put("deliverables", this.buildDeliverablesList());
+          System.out.println("[generateAndSendJson] Deliverables list built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building deliverables list: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building innovations list...");
+          jsonData.put("innovations", this.buildInnovationsList());
+          System.out.println("[generateAndSendJson] Innovations list built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building innovations list: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        try {
+          System.out.println("[generateAndSendJson] Building cross cutting summary...");
+          String crossCuttingValue = this.buildCrossCuttingSummary();
+          jsonData.put("crossCutting", crossCuttingValue);
+          System.out.println("[generateAndSendJson] Cross cutting summary built successfully");
+        } catch (Exception e) {
+          System.out.println("[generateAndSendJson] ERROR building cross cutting summary: " + e.getClass().getName() + " - " + e.getMessage());
+          e.printStackTrace();
+          throw e;
+        }
+        
+        System.out.println("[generateAndSendJson] All JSON data sections built successfully");
+    } catch (Exception e) {
+      System.out.println("[generateAndSendJson] ERROR setting reporting summary JSON data:");
+      System.out.println("  Exception Type: " + e.getClass().getName());
+      System.out.println("  Exception Message: " + (e.getMessage() != null ? e.getMessage() : "(null)"));
+      System.out.println("  Exception Cause: " + (e.getCause() != null ? e.getCause().getClass().getName() + " - " + e.getCause().getMessage() : "(null)"));
+      e.printStackTrace();
     }
     
     // Set PDF options
@@ -9599,27 +9697,142 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private List<Map<String, Object>> buildDeliverablesList() {
     List<Map<String, Object>> deliverables = new ArrayList<>();
     if (project == null) {
+      System.out.println("[buildDeliverablesList] Project is null, returning empty list");
       return deliverables;
     }
 
     Set<Deliverable> myDeliverables = new HashSet<>();
+    int selectedYear = this.getSelectedPhase().getYear();
+    System.out.println("[buildDeliverablesList] Starting with selectedYear: " + selectedYear);
 
-    // Get direct project deliverables
-    List<Deliverable> projectDeliverables = project.getDeliverables().stream()
-      .filter(d -> d.isActive() && d.getDeliverableInfo(this.getSelectedPhase()) != null
-        && d.getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear())
+    // STEP 1: Get all deliverables from project
+    List<Deliverable> allProjectDeliverables = project.getDeliverables().stream()
+      .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
       .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 1 - Total deliverables in project: " + allProjectDeliverables.size());
+
+    // STEP 2: Filter by isActive
+    List<Deliverable> activeDeliverables = allProjectDeliverables.stream()
+      .filter(d -> d.isActive())
+      .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 2 - Active deliverables: " + activeDeliverables.size());
+
+    // STEP 3: Filter by deliverableInfo not null
+    List<Deliverable> withInfoDeliverables = activeDeliverables.stream()
+      .filter(d -> d.getDeliverableInfo(this.getSelectedPhase()) != null)
+      .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 3 - Deliverables with info: " + withInfoDeliverables.size());
+
+    // STEP 4: Apply year validation logic - check each condition separately
+    List<Deliverable> projectDeliverables = new ArrayList<>();
+    int extendedStatusId = Integer.parseInt(ProjectStatusEnum.Extended.getStatusId());
+    int ongoingStatusId = Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId());
+    int completeStatusId = Integer.parseInt(ProjectStatusEnum.Complete.getStatusId());
+    
+    System.out.println("[buildDeliverablesList] STEP 4 - Status IDs - Extended: " + extendedStatusId 
+      + ", Ongoing: " + ongoingStatusId + ", Complete: " + completeStatusId);
+
+    for (Deliverable d : withInfoDeliverables) {
+      DeliverableInfo info = d.getDeliverableInfo(this.getSelectedPhase());
+      boolean matches = false;
+
+      // Condition 1: Status is null and year matches
+      if (info.getStatus() == null && info.getYear() == selectedYear) {
+        matches = true;
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches
+      else if (info.getStatus() != null && info.getStatus().intValue() == extendedStatusId) {
+        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+          matches = true;
+        }
+      }
+      // Condition 3: Status is Ongoing and year matches
+      else if (info.getStatus() != null && info.getStatus().intValue() == ongoingStatusId) {
+        if (info.getYear() == selectedYear) {
+          matches = true;
+        }
+      }
+      // Condition 4: Status is Complete
+      else if (info.getStatus() != null && info.getStatus().intValue() == completeStatusId) {
+        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+          matches = true;
+        } else if (info.getNewExpectedYear() == null && info.getYear() == selectedYear) {
+          matches = true;
+        }
+      }
+
+      if (matches) {
+        projectDeliverables.add(d);
+      }
+    }
+
+    System.out.println("[buildDeliverablesList] STEP 4 - Final filtered project deliverables: " + projectDeliverables.size());
     if (projectDeliverables != null && !projectDeliverables.isEmpty()) {
       myDeliverables.addAll(projectDeliverables);
     }
 
-    // Get shared deliverables
-    List<ProjectDeliverableShared> sharedDeliverables = projectDeliverableSharedManager
-      .getByProjectAndPhase(project.getId(), this.getSelectedPhase().getId()).stream()
-      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-        && c.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
-        && c.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getYear() == this.getSelectedYear())
+    // STEP 5: Get shared deliverables
+    System.out.println("[buildDeliverablesList] STEP 5 - Getting shared deliverables for project: " + project.getId() 
+      + ", phase: " + this.getSelectedPhase().getId());
+    List<ProjectDeliverableShared> allSharedDeliverables = projectDeliverableSharedManager
+      .getByProjectAndPhase(project.getId(), this.getSelectedPhase().getId());
+    System.out.println("[buildDeliverablesList] STEP 5.1 - Total shared deliverables from DB: " + allSharedDeliverables.size());
+
+    // STEP 6: Filter shared deliverables by isActive
+    List<ProjectDeliverableShared> activeShared = allSharedDeliverables.stream()
+      .filter(c -> c.isActive())
       .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 6 - Active shared deliverables: " + activeShared.size());
+
+    // STEP 7: Filter shared deliverables by phase
+    List<ProjectDeliverableShared> phaseMatchedShared = activeShared.stream()
+      .filter(c -> c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 7 - Phase matched shared deliverables: " + phaseMatchedShared.size());
+
+    // STEP 8: Filter shared deliverables by deliverableInfo not null
+    List<ProjectDeliverableShared> withInfoShared = phaseMatchedShared.stream()
+      .filter(c -> c.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+      .collect(Collectors.toList());
+    System.out.println("[buildDeliverablesList] STEP 8 - Shared deliverables with info: " + withInfoShared.size());
+
+    // STEP 9: Apply year validation logic for shared deliverables
+    List<ProjectDeliverableShared> sharedDeliverables = new ArrayList<>();
+    for (ProjectDeliverableShared c : withInfoShared) {
+      DeliverableInfo info = c.getDeliverable().getDeliverableInfo(this.getSelectedPhase());
+      boolean matches = false;
+
+      // Condition 1: Status is null and year matches
+      if (info.getStatus() == null && info.getYear() == selectedYear) {
+        matches = true;
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches
+      else if (info.getStatus() != null && info.getStatus().intValue() == extendedStatusId) {
+        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+          matches = true;
+        }
+      }
+      // Condition 3: Status is Ongoing and year matches
+      else if (info.getStatus() != null && info.getStatus().intValue() == ongoingStatusId) {
+        if (info.getYear() == selectedYear) {
+          matches = true;
+        }
+      }
+      // Condition 4: Status is Complete
+      else if (info.getStatus() != null && info.getStatus().intValue() == completeStatusId) {
+        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+          matches = true;
+        } else if (info.getNewExpectedYear() == null && info.getYear() == selectedYear) {
+          matches = true;
+        }
+      }
+
+      if (matches) {
+        sharedDeliverables.add(c);
+      }
+    }
+
+    System.out.println("[buildDeliverablesList] STEP 9 - Final filtered shared deliverables: " + sharedDeliverables.size());
 
     if (sharedDeliverables != null && !sharedDeliverables.isEmpty()) {
       for (ProjectDeliverableShared deliverableShared : sharedDeliverables) {
@@ -9627,45 +9840,119 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
+    System.out.println("[buildDeliverablesList] Total unique deliverables (direct + shared): " + myDeliverables.size());
+
+    // Validate all possible errors such as nulls, empty lists, inconsistent values, and unexpected exceptions
     if (myDeliverables != null && !myDeliverables.isEmpty()) {
-      for (Deliverable deliverable : myDeliverables.stream()
-        .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList())) {
-        Map<String, Object> deliverableData = this.buildDeliverableData(deliverable);
-        if (deliverableData != null && !deliverableData.isEmpty()) {
+      List<Deliverable> safeList;
+      try {
+        safeList = myDeliverables.stream()
+          .filter(Objects::nonNull)
+          .filter(d -> d.getId() != null)
+          .sorted((s1, s2) -> s1.getId().compareTo(s2.getId()))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        System.out.println("[buildDeliverablesList] ERROR sorting deliverables list: " + e.getMessage());
+        e.printStackTrace();
+        safeList = new ArrayList<>();
+      }
+      for (Deliverable deliverable : safeList) {
+        try {
+          if (deliverable == null) {
+            System.out.println("[buildDeliverablesList] WARNING: Null deliverable found. Skipping.");
+            continue;
+          }
+          Map<String, Object> deliverableData = null;
+          try {
+            deliverableData = this.buildDeliverableData(deliverable);
+          } catch (Exception ex) {
+            System.out.println("[buildDeliverablesList] ERROR building deliverable data for deliverable ID: "
+              + (deliverable.getId() != null ? deliverable.getId() : "UNKNOWN") + " - " + ex.getMessage());
+            ex.printStackTrace();
+            continue;
+          }
+          if (deliverableData == null) {
+            System.out.println("[buildDeliverablesList] WARNING: Null deliverableData for deliverable ID: "
+              + (deliverable.getId() != null ? deliverable.getId() : "UNKNOWN") + ". Skipping.");
+            continue;
+          }
+          if (deliverableData.isEmpty()) {
+            System.out.println("[buildDeliverablesList] INFO: deliverableData is empty for deliverable ID: "
+              + (deliverable.getId() != null ? deliverable.getId() : "UNKNOWN") + ". Skipping.");
+            continue;
+          }
+          if (!deliverableData.containsKey("id")) {
+            System.out.println("[buildDeliverablesList] INFO: deliverableData missing 'id' key for deliverable ID: "
+              + (deliverable.getId() != null ? deliverable.getId() : "UNKNOWN") + ". Skipping.");
+            continue;
+          }
           deliverables.add(deliverableData);
+        } catch (Exception exAll) {
+          System.out.println("[buildDeliverablesList] UNEXPECTED ERROR while processing deliverables: " + exAll.getMessage());
+          exAll.printStackTrace();
         }
+      }
+    } else {
+      if (myDeliverables == null) {
+        System.out.println("[buildDeliverablesList] WARNING: myDeliverables list is NULL");
+      } else {
+        System.out.println("[buildDeliverablesList] INFO: myDeliverables list is empty");
       }
     }
 
+    System.out.println("[buildDeliverablesList] Final deliverables list size: " + deliverables.size());
     return deliverables;
   }
 
   private Map<String, Object> buildDeliverableData(Deliverable deliverable) {
     Map<String, Object> data = new HashMap<>();
-    if (deliverable == null) {
-      return data;
-    }
+    Long deliverableId = null;
+    
+    try {
+      if (deliverable == null) {
+        System.out.println("[buildDeliverableData] ERROR: Deliverable is null");
+        return data;
+      }
+      
+      deliverableId = deliverable.getId();
+      System.out.println("[buildDeliverableData] Starting for deliverable ID: " + deliverableId);
+      
+      DeliverableInfo deliverableInfo = null;
+      try {
+        deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+        if (deliverableInfo == null) {
+          System.out.println("[buildDeliverableData] ERROR: DeliverableInfo is null for deliverable ID: " + deliverableId);
+          return data;
+        }
+        System.out.println("[buildDeliverableData] DeliverableInfo retrieved successfully for ID: " + deliverableId);
+      } catch (Exception e) {
+        System.out.println("[buildDeliverableData] ERROR getting DeliverableInfo for ID: " + deliverableId + " - " + e.getMessage());
+        e.printStackTrace();
+        return data;
+      }
 
-    DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
-    if (deliverableInfo == null) {
-      return data;
-    }
-
-    // Basic info
-    data.put("id", deliverable.getId());
-    if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
-      data.put("title", this.getSanitizedText(deliverableInfo.getTitle()));
-    }
-    data.put("year", deliverableInfo.getYear());
-    if (deliverableInfo.getNewExpectedYear() != null) {
-      data.put("newExpectedYear", deliverableInfo.getNewExpectedYear());
-    }
-    if (deliverableInfo.getStatus() != null) {
-      data.put("status", deliverableInfo.getStatus());
-    }
-    if (deliverableInfo.getStatusDescription() != null && !deliverableInfo.getStatusDescription().trim().isEmpty()) {
-      data.put("statusDescription", this.getSanitizedText(deliverableInfo.getStatusDescription()));
-    }
+      // Basic info
+      try {
+        data.put("id", deliverableId);
+        System.out.println("[buildDeliverableData] Basic info section - ID set for: " + deliverableId);
+        
+        if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
+          data.put("title", this.getSanitizedText(deliverableInfo.getTitle()));
+        }
+        data.put("year", deliverableInfo.getYear());
+        if (deliverableInfo.getNewExpectedYear() != null) {
+          data.put("newExpectedYear", deliverableInfo.getNewExpectedYear());
+        }
+        if (deliverableInfo.getStatus() != null) {
+          data.put("status", deliverableInfo.getStatus());
+        }
+        if (deliverableInfo.getStatusDescription() != null && !deliverableInfo.getStatusDescription().trim().isEmpty()) {
+          data.put("statusDescription", this.getSanitizedText(deliverableInfo.getStatusDescription()));
+        }
+      } catch (Exception e) {
+        System.out.println("[buildDeliverableData] ERROR setting basic info for ID: " + deliverableId + " - " + e.getMessage());
+        e.printStackTrace();
+      }
 
     // Description
     if (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().trim().isEmpty()) {
@@ -9694,17 +9981,24 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Countries
-    List<String> countries = new ArrayList<>();
-    if (deliverable.getDeliverableLocations() != null) {
-      countries = deliverable.getDeliverableLocations().stream()
-        .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
-          && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
-          && l.getLocElement().getLocElementType().getId() == 2)
-        .map(l -> this.getSanitizedText(l.getLocElement().getName())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    }
-    if (!countries.isEmpty()) {
-      data.put("countries", String.join(", ", countries));
+    try {
+      System.out.println("[buildDeliverableData] Processing countries for ID: " + deliverableId);
+      List<String> countries = new ArrayList<>();
+      if (deliverable.getDeliverableLocations() != null) {
+        countries = deliverable.getDeliverableLocations().stream()
+          .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
+            && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
+            && l.getLocElement().getLocElementType().getId() == 2)
+          .map(l -> this.getSanitizedText(l.getLocElement().getName())).filter(Objects::nonNull)
+          .collect(Collectors.toList());
+      }
+      if (!countries.isEmpty()) {
+        data.put("countries", String.join(", ", countries));
+      }
+      System.out.println("[buildDeliverableData] Countries processed: " + countries.size() + " for ID: " + deliverableId);
+    } catch (Exception e) {
+      System.out.println("[buildDeliverableData] ERROR processing countries for ID: " + deliverableId + " - " + e.getMessage());
+      e.printStackTrace();
     }
 
     // Regions
@@ -9787,53 +10081,67 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Partnerships - Contacts (Responsible)
-    List<String> contacts = new ArrayList<>();
-    if (deliverable.getDeliverableUserPartnerships() != null) {
-      contacts = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
-          && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
-          && p.getDeliverablePartnerType() != null
-          && p.getDeliverablePartnerType().getId()
-            .equals(Long.valueOf(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)))
-        .flatMap(p -> {
-          Institution institution = p.getInstitution();
-          String institutionName = institution.getComposedName() != null
-            ? this.getSanitizedText(institution.getComposedName())
-            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
-          return p.getDeliverableUserPartnershipPersons().stream()
-            .filter(pp -> pp.isActive() && pp.getUser() != null && pp.getUser().getEmail() != null)
-            .map(pp -> {
-              User user = pp.getUser();
-              String userInfo = user.getComposedName();
-              String contactInfo = (institutionName != null && !institutionName.isEmpty())
-                ? institutionName + " - " + userInfo
-                : userInfo;
-              return this.getSanitizedText(contactInfo);
-            });
-        }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
-    }
-    if (!contacts.isEmpty()) {
-      data.put("contacts", String.join("; ", contacts));
+    try {
+      System.out.println("[buildDeliverableData] Processing contacts/partnerships for ID: " + deliverableId);
+      List<String> contacts = new ArrayList<>();
+      if (deliverable.getDeliverableUserPartnerships() != null) {
+        contacts = deliverable.getDeliverableUserPartnerships().stream()
+          .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+            && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
+            && p.getDeliverablePartnerType() != null
+            && p.getDeliverablePartnerType().getId()
+              .equals(Long.valueOf(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)))
+          .flatMap(p -> {
+            Institution institution = p.getInstitution();
+            String institutionName = institution.getComposedName() != null
+              ? this.getSanitizedText(institution.getComposedName())
+              : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+            return p.getDeliverableUserPartnershipPersons().stream()
+              .filter(pp -> pp.isActive() && pp.getUser() != null && pp.getUser().getEmail() != null)
+              .map(pp -> {
+                User user = pp.getUser();
+                String userInfo = user.getComposedName();
+                String contactInfo = (institutionName != null && !institutionName.isEmpty())
+                  ? institutionName + " - " + userInfo
+                  : userInfo;
+                return this.getSanitizedText(contactInfo);
+              });
+          }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
+      }
+      if (!contacts.isEmpty()) {
+        data.put("contacts", String.join("; ", contacts));
+      }
+      System.out.println("[buildDeliverableData] Contacts processed: " + contacts.size() + " for ID: " + deliverableId);
+    } catch (Exception e) {
+      System.out.println("[buildDeliverableData] ERROR processing contacts/partnerships for ID: " + deliverableId + " - " + e.getMessage());
+      e.printStackTrace();
     }
 
     // Funding sources
-    List<String> fundingSources = new ArrayList<>();
-    if (deliverable.getDeliverableFundingSources() != null) {
-      fundingSources = deliverable.getDeliverableFundingSources().stream()
-        .filter(fs -> fs.isActive() && fs.getPhase() != null && fs.getPhase().equals(this.getSelectedPhase())
-          && fs.getFundingSource() != null)
-        .map(fs -> {
-          FundingSource fundingSource = fs.getFundingSource();
-          String name = fundingSource.getComposedName() != null ? fundingSource.getComposedName()
-            : (fundingSource.getFundingSourceInfo(this.getSelectedPhase()) != null
-              && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle() != null
-                ? fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle()
-                : "");
-          return this.getSanitizedText(name);
-        }).filter(Objects::nonNull).filter(s -> !s.isEmpty()).collect(Collectors.toList());
-    }
-    if (!fundingSources.isEmpty()) {
-      data.put("fundingSources", String.join(", ", fundingSources));
+    try {
+      System.out.println("[buildDeliverableData] Processing funding sources for ID: " + deliverableId);
+      List<String> fundingSources = new ArrayList<>();
+      if (deliverable.getDeliverableFundingSources() != null) {
+        fundingSources = deliverable.getDeliverableFundingSources().stream()
+          .filter(fs -> fs.isActive() && fs.getPhase() != null && fs.getPhase().equals(this.getSelectedPhase())
+            && fs.getFundingSource() != null)
+          .map(fs -> {
+            FundingSource fundingSource = fs.getFundingSource();
+            String name = fundingSource.getComposedName() != null ? fundingSource.getComposedName()
+              : (fundingSource.getFundingSourceInfo(this.getSelectedPhase()) != null
+                && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle() != null
+                  ? fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle()
+                  : "");
+            return this.getSanitizedText(name);
+          }).filter(Objects::nonNull).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+      }
+      if (!fundingSources.isEmpty()) {
+        data.put("fundingSources", String.join(", ", fundingSources));
+      }
+      System.out.println("[buildDeliverableData] Funding sources processed: " + fundingSources.size() + " for ID: " + deliverableId);
+    } catch (Exception e) {
+      System.out.println("[buildDeliverableData] ERROR processing funding sources for ID: " + deliverableId + " - " + e.getMessage());
+      e.printStackTrace();
     }
 
     // Gender levels
@@ -10014,11 +10322,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Remaining pending
-    if (deliverableInfo.getRemainingPending() != null) {
-      data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
+    try {
+      if (deliverableInfo.getRemainingPending() != null) {
+        data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
+      }
+    } catch (Exception e) {
+      System.out.println("[buildDeliverableData] ERROR setting remaining pending for ID: " + deliverableId + " - " + e.getMessage());
+      e.printStackTrace();
     }
 
+    System.out.println("[buildDeliverableData] Completed successfully for deliverable ID: " + deliverableId + ", data keys: " + data.keySet().size());
     return data;
+    } catch (Exception e) {
+      System.out.println("[buildDeliverableData] UNEXPECTED ERROR in buildDeliverableData for ID: " + deliverableId + " - " + e.getMessage());
+      e.printStackTrace();
+      return data;
+    }
   }
 
   private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
