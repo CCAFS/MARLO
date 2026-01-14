@@ -9,8 +9,18 @@
 			<!-- Json interceptors -->
 			<interceptor name="SecurityControl"
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
+			
+			<interceptor name="requireUser"
+				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
 
 			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="SecurityControl" />
+				<interceptor-ref name="prepare" />
+			</interceptor-stack>
+			
+			<interceptor-stack name="jsonStackWithAudit">
+				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="prepare" />
@@ -592,6 +602,7 @@
 
 		<action name="unsubmitProject"
 			class="org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction">
+			<interceptor-ref name="jsonStackWithAudit" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
