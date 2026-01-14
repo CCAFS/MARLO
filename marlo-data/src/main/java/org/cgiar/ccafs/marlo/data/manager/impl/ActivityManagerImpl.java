@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
@@ -137,6 +139,7 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
+  @Transactional
   public void deleteActivity(long activityId) {
 
     Activity activity = this.getActivityById(activityId);
@@ -227,6 +230,7 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
+  @Transactional
   public Activity saveActivity(Activity activity) {
 
     Activity resultActivity = activityDAO.save(activity);

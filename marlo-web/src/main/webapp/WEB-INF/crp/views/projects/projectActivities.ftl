@@ -278,7 +278,7 @@
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
     <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.devliverableInfo.title" value="${(element.deliverable.devliverableInfo.title)!'null'}" />
-    <span class="name">${(element.deliverable.composedName)!'null'}</span>
+    <span class="name">[#if element.deliverable??]${element.deliverable.composedName?no_esc}[#else]null[/#if]</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]
