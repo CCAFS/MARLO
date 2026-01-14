@@ -7760,145 +7760,51 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     try {
       if (project == null) {
-        System.out.println("[generateAndSendJson] ERROR: Project is null!");
         return SUCCESS;
       }
       
       if (phase == null) {
-        System.out.println("[generateAndSendJson] ERROR: Selected phase is null!");
         return SUCCESS;
       }
       
-      System.out.println("[generateAndSendJson] Starting JSON data generation for project: " + project.getId());
-      
-      try {
-        projectID = project.getId().toString();
-        phaseID = phase.getId().toString();
-        cycle = this.getSelectedCycle();
-        // Use phase.getYear() instead of getSelectedYear() for consistency
-        year = String.valueOf(phase.getYear());
-        loggedCenter = this.getLoggedCrp().getAcronym();
-        System.out.println("[generateAndSendJson] Basic project info extracted - ID: " + projectID + ", Phase: " + phaseID + ", Year: " + year);
-      } catch (Exception e) {
-        System.out.println("[generateAndSendJson] ERROR extracting basic project info: " + e.getClass().getName() + " - " + e.getMessage());
-        e.printStackTrace();
-        throw e;
-      }
+      projectID = project.getId().toString();
+      phaseID = phase.getId().toString();
+      cycle = this.getSelectedCycle();
+      year = String.valueOf(phase.getYear());
+      loggedCenter = this.getLoggedCrp().getAcronym();
 
-        // Project Info
-        String projectTitle = null;
-        try {
-        if (projectInfo != null) {
-          projectTitle = projectInfo.getTitle();
-          }
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR getting project title: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-        }
-        
-        // Set basic project data FIRST to ensure they are always included
-        try {
-        jsonData.put("projectID", projectID);
-        jsonData.put("projectTitle", projectTitle);
-        jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
-        jsonData.put("phaseID", phaseID);
-        jsonData.put("cycle", cycle);
-        jsonData.put("year", year);
-        jsonData.put("loggedCenter", loggedCenter);
-        jsonData.put("timeCreation", this.getCurrentDatev2());
-          System.out.println("[generateAndSendJson] Basic project data added to JSON");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR setting basic project data: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building project description section...");
-          Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
-          System.out.println("[generateAndSendJson] Project description built successfully");
-          
-          System.out.println("[generateAndSendJson] Building project partners data...");
-          List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
-          System.out.println("[generateAndSendJson] Project partners built: " + partnersData.size() + " partners");
-          
-          projectDescription.put("partners", partnersData);
-          jsonData.put("projectDescription", projectDescription);
-          jsonData.put("projectPartners", partnersData);
+      // Project Info
+      String projectTitle = null;
+      if (projectInfo != null) {
+        projectTitle = projectInfo.getTitle();
+      }
+      
+      // Set basic project data FIRST to ensure they are always included
+      jsonData.put("projectID", projectID);
+      jsonData.put("projectTitle", projectTitle);
+      jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
+      jsonData.put("phaseID", phaseID);
+      jsonData.put("cycle", cycle);
+      jsonData.put("year", year);
+      jsonData.put("loggedCenter", loggedCenter);
+      jsonData.put("timeCreation", this.getCurrentDatev2());
+      
+      Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+      List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
+      projectDescription.put("partners", partnersData);
+      jsonData.put("projectDescription", projectDescription);
+      jsonData.put("projectPartners", partnersData);
+      jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
+      jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
+      jsonData.put("oicrs", this.buildOICRsList());
+      jsonData.put("deliverables", this.buildDeliverablesList());
+      jsonData.put("innovations", this.buildInnovationsList());
+      
+      // Set crossCutting at root level for template access (section is outside projectDescription block)
+      String crossCuttingValue = this.buildCrossCuttingSummary();
+      jsonData.put("crossCutting", crossCuttingValue);
     } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building project description/partners: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building project locations section...");
-          jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
-          System.out.println("[generateAndSendJson] Project locations built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building project locations: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building performance indicator contributions...");
-          jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
-          System.out.println("[generateAndSendJson] Performance indicator contributions built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building performance indicator contributions: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building OICRs list...");
-          jsonData.put("oicrs", this.buildOICRsList());
-          System.out.println("[generateAndSendJson] OICRs list built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building OICRs list: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building deliverables list...");
-          jsonData.put("deliverables", this.buildDeliverablesList());
-          System.out.println("[generateAndSendJson] Deliverables list built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building deliverables list: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building innovations list...");
-          jsonData.put("innovations", this.buildInnovationsList());
-          System.out.println("[generateAndSendJson] Innovations list built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building innovations list: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        try {
-          System.out.println("[generateAndSendJson] Building cross cutting summary...");
-          String crossCuttingValue = this.buildCrossCuttingSummary();
-          jsonData.put("crossCutting", crossCuttingValue);
-          System.out.println("[generateAndSendJson] Cross cutting summary built successfully");
-        } catch (Exception e) {
-          System.out.println("[generateAndSendJson] ERROR building cross cutting summary: " + e.getClass().getName() + " - " + e.getMessage());
-          e.printStackTrace();
-          throw e;
-        }
-        
-        System.out.println("[generateAndSendJson] All JSON data sections built successfully");
-    } catch (Exception e) {
-      System.out.println("[generateAndSendJson] ERROR setting reporting summary JSON data:");
-      System.out.println("  Exception Type: " + e.getClass().getName());
-      System.out.println("  Exception Message: " + (e.getMessage() != null ? e.getMessage() : "(null)"));
-      System.out.println("  Exception Cause: " + (e.getCause() != null ? e.getCause().getClass().getName() + " - " + e.getCause().getMessage() : "(null)"));
-      e.printStackTrace();
+      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
     }
     
     // Set PDF options
@@ -9731,34 +9637,73 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     System.out.println("[buildDeliverablesList] STEP 4 - Status IDs - Extended: " + extendedStatusId 
       + ", Ongoing: " + ongoingStatusId + ", Complete: " + completeStatusId);
+    System.out.println("[buildDeliverablesList] STEP 4 - Selected Year for filtering: " + selectedYear);
+    System.out.println("[buildDeliverablesList] STEP 4 - Processing " + withInfoDeliverables.size() + " deliverables for year validation");
+
+    // Counters for each condition
+    int condition1Matches = 0; // Status null, year matches
+    int condition2Matches = 0; // Status Extended, newExpectedYear matches
+    int condition3Matches = 0; // Status Ongoing, year matches
+    int condition4Matches = 0; // Status Complete
+    int noMatches = 0;
 
     for (Deliverable d : withInfoDeliverables) {
       DeliverableInfo info = d.getDeliverableInfo(this.getSelectedPhase());
       boolean matches = false;
+      
+      Integer status = info.getStatus();
+      int year = info.getYear();
+      Integer newExpectedYear = info.getNewExpectedYear();
 
       // Condition 1: Status is null and year matches
-      if (info.getStatus() == null && info.getYear() == selectedYear) {
-        matches = true;
-      }
-      // Condition 2: Status is Extended and newExpectedYear matches
-      else if (info.getStatus() != null && info.getStatus().intValue() == extendedStatusId) {
-        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+      if (status == null) {
+        if (year == selectedYear) {
           matches = true;
+          condition1Matches++;
+        }
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches (or year if newExpectedYear is null/-1)
+      else if (status != null && status.intValue() == extendedStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            condition2Matches++;
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            condition2Matches++;
+          }
         }
       }
       // Condition 3: Status is Ongoing and year matches
-      else if (info.getStatus() != null && info.getStatus().intValue() == ongoingStatusId) {
-        if (info.getYear() == selectedYear) {
+      else if (status != null && status.intValue() == ongoingStatusId) {
+        if (year == selectedYear) {
           matches = true;
+          condition3Matches++;
         }
       }
       // Condition 4: Status is Complete
-      else if (info.getStatus() != null && info.getStatus().intValue() == completeStatusId) {
-        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
-          matches = true;
-        } else if (info.getNewExpectedYear() == null && info.getYear() == selectedYear) {
-          matches = true;
+      else if (status != null && status.intValue() == completeStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            condition4Matches++;
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            condition4Matches++;
+          }
         }
+      }
+      // No condition matched
+      else {
+        noMatches++;
       }
 
       if (matches) {
@@ -9766,6 +9711,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
+    System.out.println("[buildDeliverablesList] STEP 4 - SUMMARY:");
+    System.out.println("[buildDeliverablesList] STEP 4 -   Condition 1 matches (Status null, year match): " + condition1Matches);
+    System.out.println("[buildDeliverablesList] STEP 4 -   Condition 2 matches (Status Extended, newExpectedYear match): " + condition2Matches);
+    System.out.println("[buildDeliverablesList] STEP 4 -   Condition 3 matches (Status Ongoing, year match): " + condition3Matches);
+    System.out.println("[buildDeliverablesList] STEP 4 -   Condition 4 matches (Status Complete): " + condition4Matches);
+    System.out.println("[buildDeliverablesList] STEP 4 -   No matches: " + noMatches);
     System.out.println("[buildDeliverablesList] STEP 4 - Final filtered project deliverables: " + projectDeliverables.size());
     if (projectDeliverables != null && !projectDeliverables.isEmpty()) {
       myDeliverables.addAll(projectDeliverables);
@@ -9798,33 +9749,114 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // STEP 9: Apply year validation logic for shared deliverables
     List<ProjectDeliverableShared> sharedDeliverables = new ArrayList<>();
+    System.out.println("[buildDeliverablesList] STEP 9 - Processing " + withInfoShared.size() + " shared deliverables for year validation");
+    System.out.println("[buildDeliverablesList] STEP 9 - Selected Year for filtering: " + selectedYear);
+    
+    // Counters for each condition
+    int sharedCondition1Matches = 0; // Status null, year matches
+    int sharedCondition2Matches = 0; // Status Extended, newExpectedYear matches
+    int sharedCondition3Matches = 0; // Status Ongoing, year matches
+    int sharedCondition4Matches = 0; // Status Complete
+    int sharedNoMatches = 0;
+    
     for (ProjectDeliverableShared c : withInfoShared) {
       DeliverableInfo info = c.getDeliverable().getDeliverableInfo(this.getSelectedPhase());
       boolean matches = false;
+      String matchReason = "";
+      Long deliverableId = c.getDeliverable().getId();
+      
+      // Get values for logging
+      Integer status = info.getStatus();
+      int year = info.getYear();
+      Integer newExpectedYear = info.getNewExpectedYear();
+      
+      System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - Status: " + status 
+        + ", Year: " + year + ", NewExpectedYear: " + newExpectedYear);
 
       // Condition 1: Status is null and year matches
-      if (info.getStatus() == null && info.getYear() == selectedYear) {
-        matches = true;
-      }
-      // Condition 2: Status is Extended and newExpectedYear matches
-      else if (info.getStatus() != null && info.getStatus().intValue() == extendedStatusId) {
-        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
+      if (status == null) {
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - Condition 1: Status is null");
+        if (year == selectedYear) {
           matches = true;
+          matchReason = "Condition 1: Status null, year=" + year + " matches selectedYear=" + selectedYear;
+          sharedCondition1Matches++;
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+        } else {
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH: year=" + year + " != selectedYear=" + selectedYear);
+        }
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches (or year if newExpectedYear is null/-1)
+      else if (status != null && status.intValue() == extendedStatusId) {
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - Condition 2: Status is Extended (" + extendedStatusId + ")");
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - newExpectedYear=" + newExpectedYear + ", selectedYear=" + selectedYear);
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            matchReason = "Condition 2a: Status Extended, newExpectedYear=" + newExpectedYear + " matches selectedYear=" + selectedYear;
+            sharedCondition2Matches++;
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+          } else {
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH (2a): newExpectedYear=" + newExpectedYear + " != selectedYear=" + selectedYear);
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - newExpectedYear is " + (newExpectedYear == null ? "null" : "-1") + ", checking year=" + year + " vs selectedYear=" + selectedYear);
+          if (year == selectedYear) {
+            matches = true;
+            matchReason = "Condition 2b: Status Extended, newExpectedYear " + (newExpectedYear == null ? "null" : "-1") + ", year=" + year + " matches selectedYear=" + selectedYear;
+            sharedCondition2Matches++;
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+          } else {
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH (2b): year=" + year + " != selectedYear=" + selectedYear);
+          }
         }
       }
       // Condition 3: Status is Ongoing and year matches
-      else if (info.getStatus() != null && info.getStatus().intValue() == ongoingStatusId) {
-        if (info.getYear() == selectedYear) {
+      else if (status != null && status.intValue() == ongoingStatusId) {
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - Condition 3: Status is Ongoing (" + ongoingStatusId + ")");
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - year=" + year + ", selectedYear=" + selectedYear);
+        if (year == selectedYear) {
           matches = true;
+          matchReason = "Condition 3: Status Ongoing, year=" + year + " matches selectedYear=" + selectedYear;
+          sharedCondition3Matches++;
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+        } else {
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH: year=" + year + " != selectedYear=" + selectedYear);
         }
       }
       // Condition 4: Status is Complete
-      else if (info.getStatus() != null && info.getStatus().intValue() == completeStatusId) {
-        if (info.getNewExpectedYear() != null && info.getNewExpectedYear() == selectedYear) {
-          matches = true;
-        } else if (info.getNewExpectedYear() == null && info.getYear() == selectedYear) {
-          matches = true;
+      else if (status != null && status.intValue() == completeStatusId) {
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - Condition 4: Status is Complete (" + completeStatusId + ")");
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - newExpectedYear=" + newExpectedYear + ", selectedYear=" + selectedYear);
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            matchReason = "Condition 4a: Status Complete, newExpectedYear=" + newExpectedYear + " matches selectedYear=" + selectedYear;
+            sharedCondition4Matches++;
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+          } else {
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH (4a): newExpectedYear=" + newExpectedYear + " != selectedYear=" + selectedYear);
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - newExpectedYear is " + (newExpectedYear == null ? "null" : "-1") + ", checking year=" + year + " vs selectedYear=" + selectedYear);
+          if (year == selectedYear) {
+            matches = true;
+            matchReason = "Condition 4b: Status Complete, newExpectedYear " + (newExpectedYear == null ? "null" : "-1") + ", year=" + year + " matches selectedYear=" + selectedYear;
+            sharedCondition4Matches++;
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✓ MATCH: " + matchReason);
+          } else {
+            System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH (4b): year=" + year + " != selectedYear=" + selectedYear);
+          }
         }
+      }
+      // No condition matched
+      else {
+        System.out.println("[buildDeliverablesList] STEP 9 - Shared D" + deliverableId + " - ✗ NO MATCH: Status=" + status 
+          + " does not match any condition (not null, Extended, Ongoing, or Complete)");
+        sharedNoMatches++;
       }
 
       if (matches) {
@@ -9832,6 +9864,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
+    System.out.println("[buildDeliverablesList] STEP 9 - SUMMARY:");
+    System.out.println("[buildDeliverablesList] STEP 9 -   Condition 1 matches (Status null, year match): " + sharedCondition1Matches);
+    System.out.println("[buildDeliverablesList] STEP 9 -   Condition 2 matches (Status Extended, newExpectedYear match): " + sharedCondition2Matches);
+    System.out.println("[buildDeliverablesList] STEP 9 -   Condition 3 matches (Status Ongoing, year match): " + sharedCondition3Matches);
+    System.out.println("[buildDeliverablesList] STEP 9 -   Condition 4 matches (Status Complete): " + sharedCondition4Matches);
+    System.out.println("[buildDeliverablesList] STEP 9 -   No matches: " + sharedNoMatches);
     System.out.println("[buildDeliverablesList] STEP 9 - Final filtered shared deliverables: " + sharedDeliverables.size());
 
     if (sharedDeliverables != null && !sharedDeliverables.isEmpty()) {
@@ -9906,53 +9944,56 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
   private Map<String, Object> buildDeliverableData(Deliverable deliverable) {
     Map<String, Object> data = new HashMap<>();
-    Long deliverableId = null;
-    
-    try {
-      if (deliverable == null) {
-        System.out.println("[buildDeliverableData] ERROR: Deliverable is null");
-        return data;
-      }
-      
-      deliverableId = deliverable.getId();
-      System.out.println("[buildDeliverableData] Starting for deliverable ID: " + deliverableId);
-      
-      DeliverableInfo deliverableInfo = null;
-      try {
-        deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
-        if (deliverableInfo == null) {
-          System.out.println("[buildDeliverableData] ERROR: DeliverableInfo is null for deliverable ID: " + deliverableId);
-          return data;
-        }
-        System.out.println("[buildDeliverableData] DeliverableInfo retrieved successfully for ID: " + deliverableId);
-      } catch (Exception e) {
-        System.out.println("[buildDeliverableData] ERROR getting DeliverableInfo for ID: " + deliverableId + " - " + e.getMessage());
-        e.printStackTrace();
-        return data;
-      }
+    if (deliverable == null) {
+      return data;
+    }
 
-      // Basic info
-      try {
-        data.put("id", deliverableId);
-        System.out.println("[buildDeliverableData] Basic info section - ID set for: " + deliverableId);
-        
-        if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
-          data.put("title", this.getSanitizedText(deliverableInfo.getTitle()));
-        }
-        data.put("year", deliverableInfo.getYear());
-        if (deliverableInfo.getNewExpectedYear() != null) {
-          data.put("newExpectedYear", deliverableInfo.getNewExpectedYear());
-        }
-        if (deliverableInfo.getStatus() != null) {
-          data.put("status", deliverableInfo.getStatus());
-        }
-        if (deliverableInfo.getStatusDescription() != null && !deliverableInfo.getStatusDescription().trim().isEmpty()) {
-          data.put("statusDescription", this.getSanitizedText(deliverableInfo.getStatusDescription()));
-        }
-      } catch (Exception e) {
-        System.out.println("[buildDeliverableData] ERROR setting basic info for ID: " + deliverableId + " - " + e.getMessage());
-        e.printStackTrace();
+    DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+    if (deliverableInfo == null) {
+      return data;
+    }
+
+    // Basic info
+    data.put("id", deliverable.getId());
+    if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
+      data.put("title", this.getSanitizedText(deliverableInfo.getTitle()));
+    }
+    
+    // Store original year and newExpectedYear for reference
+    data.put("year", deliverableInfo.getYear());
+    Integer newExpectedYear = deliverableInfo.getNewExpectedYear();
+    // Only add newExpectedYear if it's valid (not null and not -1)
+    if (newExpectedYear != null && newExpectedYear != -1) {
+      data.put("newExpectedYear", newExpectedYear);
+    }
+    
+    // Calculate displayYear: use newExpectedYear if status is Extended/Ongoing/Complete and newExpectedYear is valid
+    Integer displayYear = deliverableInfo.getYear();
+    if (deliverableInfo.getStatus() != null) {
+      int status = deliverableInfo.getStatus().intValue();
+      boolean isExtended = status == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()); // 4
+      boolean isOngoing = status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()); // 3
+      boolean isComplete = status == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()); // 5
+      
+      if ((isExtended || isOngoing || isComplete) && newExpectedYear != null && newExpectedYear != -1) {
+        displayYear = newExpectedYear;
+        data.put("isExtended", true); // Flag to show "Extended from" in template if needed
       }
+    }
+    data.put("displayYear", displayYear);
+    
+    // Store status name instead of status number
+    if (deliverableInfo.getStatus() != null) {
+      ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(deliverableInfo.getStatus().intValue());
+      if (statusEnum != null) {
+        data.put("status", statusEnum.getStatus());
+      } else {
+        data.put("status", deliverableInfo.getStatus().toString()); // Fallback to number if enum not found
+      }
+    }
+    if (deliverableInfo.getStatusDescription() != null && !deliverableInfo.getStatusDescription().trim().isEmpty()) {
+      data.put("statusDescription", this.getSanitizedText(deliverableInfo.getStatusDescription()));
+    }
 
     // Description
     if (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().trim().isEmpty()) {
@@ -9981,24 +10022,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Countries
-    try {
-      System.out.println("[buildDeliverableData] Processing countries for ID: " + deliverableId);
-      List<String> countries = new ArrayList<>();
-      if (deliverable.getDeliverableLocations() != null) {
-        countries = deliverable.getDeliverableLocations().stream()
-          .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
-            && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
-            && l.getLocElement().getLocElementType().getId() == 2)
-          .map(l -> this.getSanitizedText(l.getLocElement().getName())).filter(Objects::nonNull)
-          .collect(Collectors.toList());
-      }
-      if (!countries.isEmpty()) {
-        data.put("countries", String.join(", ", countries));
-      }
-      System.out.println("[buildDeliverableData] Countries processed: " + countries.size() + " for ID: " + deliverableId);
-    } catch (Exception e) {
-      System.out.println("[buildDeliverableData] ERROR processing countries for ID: " + deliverableId + " - " + e.getMessage());
-      e.printStackTrace();
+    List<String> countries = new ArrayList<>();
+    if (deliverable.getDeliverableLocations() != null) {
+      countries = deliverable.getDeliverableLocations().stream()
+        .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
+          && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
+          && l.getLocElement().getLocElementType().getId() == 2)
+        .map(l -> this.getSanitizedText(l.getLocElement().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!countries.isEmpty()) {
+      data.put("countries", String.join(", ", countries));
     }
 
     // Regions
@@ -10081,68 +10115,36 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Partnerships - Contacts (Responsible)
-    try {
-      System.out.println("[buildDeliverableData] Processing contacts/partnerships for ID: " + deliverableId);
-      List<String> contacts = new ArrayList<>();
-      if (deliverable.getDeliverableUserPartnerships() != null) {
-        contacts = deliverable.getDeliverableUserPartnerships().stream()
-          .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
-            && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
-            && p.getDeliverablePartnerType() != null
-            && p.getDeliverablePartnerType().getId()
-              .equals(Long.valueOf(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)))
-          .flatMap(p -> {
-            Institution institution = p.getInstitution();
-            String institutionName = institution.getComposedName() != null
-              ? this.getSanitizedText(institution.getComposedName())
-              : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
-            return p.getDeliverableUserPartnershipPersons().stream()
-              .filter(pp -> pp.isActive() && pp.getUser() != null && pp.getUser().getEmail() != null)
-              .map(pp -> {
-                User user = pp.getUser();
-                String userInfo = user.getComposedName();
-                String contactInfo = (institutionName != null && !institutionName.isEmpty())
-                  ? institutionName + " - " + userInfo
-                  : userInfo;
-                return this.getSanitizedText(contactInfo);
-              });
-          }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
-      }
-      if (!contacts.isEmpty()) {
-        data.put("contacts", String.join("; ", contacts));
-      }
-      System.out.println("[buildDeliverableData] Contacts processed: " + contacts.size() + " for ID: " + deliverableId);
-    } catch (Exception e) {
-      System.out.println("[buildDeliverableData] ERROR processing contacts/partnerships for ID: " + deliverableId + " - " + e.getMessage());
-      e.printStackTrace();
+    List<String> contacts = new ArrayList<>();
+    if (deliverable.getDeliverableUserPartnerships() != null) {
+      contacts = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
+          && p.getDeliverablePartnerType() != null
+          && p.getDeliverablePartnerType().getId()
+            .equals(Long.valueOf(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)))
+        .flatMap(p -> {
+          Institution institution = p.getInstitution();
+          String institutionName = institution.getComposedName() != null
+            ? this.getSanitizedText(institution.getComposedName())
+            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+          return p.getDeliverableUserPartnershipPersons().stream()
+            .filter(pp -> pp.isActive() && pp.getUser() != null && pp.getUser().getEmail() != null)
+            .map(pp -> {
+              User user = pp.getUser();
+              String userInfo = user.getComposedName();
+              String contactInfo = (institutionName != null && !institutionName.isEmpty())
+                ? institutionName + " - " + userInfo
+                : userInfo;
+              return this.getSanitizedText(contactInfo);
+            });
+        }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
+    }
+    if (!contacts.isEmpty()) {
+      data.put("contacts", String.join("; ", contacts));
     }
 
-    // Funding sources
-    try {
-      System.out.println("[buildDeliverableData] Processing funding sources for ID: " + deliverableId);
-      List<String> fundingSources = new ArrayList<>();
-      if (deliverable.getDeliverableFundingSources() != null) {
-        fundingSources = deliverable.getDeliverableFundingSources().stream()
-          .filter(fs -> fs.isActive() && fs.getPhase() != null && fs.getPhase().equals(this.getSelectedPhase())
-            && fs.getFundingSource() != null)
-          .map(fs -> {
-            FundingSource fundingSource = fs.getFundingSource();
-            String name = fundingSource.getComposedName() != null ? fundingSource.getComposedName()
-              : (fundingSource.getFundingSourceInfo(this.getSelectedPhase()) != null
-                && fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle() != null
-                  ? fundingSource.getFundingSourceInfo(this.getSelectedPhase()).getTitle()
-                  : "");
-            return this.getSanitizedText(name);
-          }).filter(Objects::nonNull).filter(s -> !s.isEmpty()).collect(Collectors.toList());
-      }
-      if (!fundingSources.isEmpty()) {
-        data.put("fundingSources", String.join(", ", fundingSources));
-      }
-      System.out.println("[buildDeliverableData] Funding sources processed: " + fundingSources.size() + " for ID: " + deliverableId);
-    } catch (Exception e) {
-      System.out.println("[buildDeliverableData] ERROR processing funding sources for ID: " + deliverableId + " - " + e.getMessage());
-      e.printStackTrace();
-    }
+
 
     // Gender levels
     List<String> genderLevels = new ArrayList<>();
@@ -10322,22 +10324,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
 
     // Remaining pending
-    try {
-      if (deliverableInfo.getRemainingPending() != null) {
-        data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
-      }
-    } catch (Exception e) {
-      System.out.println("[buildDeliverableData] ERROR setting remaining pending for ID: " + deliverableId + " - " + e.getMessage());
-      e.printStackTrace();
+    if (deliverableInfo.getRemainingPending() != null) {
+      data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
     }
 
-    System.out.println("[buildDeliverableData] Completed successfully for deliverable ID: " + deliverableId + ", data keys: " + data.keySet().size());
     return data;
-    } catch (Exception e) {
-      System.out.println("[buildDeliverableData] UNEXPECTED ERROR in buildDeliverableData for ID: " + deliverableId + " - " + e.getMessage());
-      e.printStackTrace();
-      return data;
-    }
   }
 
   private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
