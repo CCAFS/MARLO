@@ -10239,11 +10239,13 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       for (DeliverableMetadataElement element : elements) {
         Map<String, Object> elementData = new HashMap<>();
         if (element.getMetadataElement() != null) {
-          String elementName = element.getMetadataElement().getEcondedName() != null
+          String encodedName = element.getMetadataElement().getEcondedName() != null
             ? element.getMetadataElement().getEcondedName()
             : (element.getMetadataElement().getElement() != null ? element.getMetadataElement().getElement() : "");
-          if (!elementName.isEmpty()) {
-            elementData.put("name", this.getSanitizedText(elementName));
+          if (!encodedName.isEmpty()) {
+            // Convert technical code to readable name using i18n
+            String readableName = this.getMetadataElementReadableName(encodedName);
+            elementData.put("name", this.getSanitizedText(readableName));
           }
         }
         if (element.getElementValue() != null) {
@@ -10391,6 +10393,86 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     String sanitized = value.replace("\r", "\n").trim();
     return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  /**
+   * Converts metadata element encoded name (technical code) to readable name using i18n.
+   * Maps codes like "dc.title", "dc.date" to i18n keys like "metadata.title", "metadata.date"
+   * 
+   * @param encodedName The technical code (e.g., "dc.title", "dc.description.abstract")
+   * @return Readable name from i18n properties, or the original code if no mapping found
+   */
+  private String getMetadataElementReadableName(String encodedName) {
+    if (encodedName == null || encodedName.isEmpty()) {
+      return encodedName;
+    }
+
+    // Map encoded names to i18n keys
+    String i18nKey = null;
+    if (encodedName.equals("dc.title")) {
+      i18nKey = "metadata.title";
+    } else if (encodedName.equals("dc.description.abstract")) {
+      i18nKey = "metadata.description";
+    } else if (encodedName.equals("dc.date")) {
+      i18nKey = "metadata.date";
+    } else if (encodedName.equals("dc.language")) {
+      i18nKey = "metadata.language";
+    } else if (encodedName.equals("cg:coverage.country") || encodedName.equals("dc.coverage.country")) {
+      i18nKey = "metadata.countries";
+    } else if (encodedName.equals("marlo.keywords") || encodedName.equals("dc.subject")) {
+      i18nKey = "metadata.keywords";
+    } else if (encodedName.equals("dc.identifier.citation")) {
+      i18nKey = "metadata.citation";
+    } else if (encodedName.equals("marlo.handle") || encodedName.equals("dc.identifier.uri")) {
+      i18nKey = "metadata.handle";
+    } else if (encodedName.equals("marlo.doi") || encodedName.equals("dc.identifier.doi")) {
+      i18nKey = "metadata.doi";
+    } else if (encodedName.equals("marlo.authors") || encodedName.equals("dc.creator")) {
+      i18nKey = "metadata.creator";
+    } else {
+      // Try to extract a key from the encoded name
+      // For example: "dc.title" -> "metadata.title", "marlo.something" -> "metadata.something"
+      if (encodedName.startsWith("dc.")) {
+        String suffix = encodedName.substring(3); // Remove "dc."
+        // Handle special cases
+        if (suffix.equals("identifier.citation")) {
+          i18nKey = "metadata.citation";
+        } else if (suffix.equals("identifier.uri")) {
+          i18nKey = "metadata.handle";
+        } else if (suffix.equals("identifier.doi")) {
+          i18nKey = "metadata.doi";
+        } else if (suffix.equals("coverage.country")) {
+          i18nKey = "metadata.countries";
+        } else {
+          i18nKey = "metadata." + suffix;
+        }
+      } else if (encodedName.startsWith("marlo.")) {
+        String suffix = encodedName.substring(6); // Remove "marlo."
+        i18nKey = "metadata." + suffix;
+      } else if (encodedName.startsWith("cg:")) {
+        String suffix = encodedName.substring(3); // Remove "cg:"
+        if (suffix.equals("coverage.country")) {
+          i18nKey = "metadata.countries";
+        } else {
+          i18nKey = "metadata." + suffix.replace(":", ".");
+        }
+      }
+    }
+
+    // Try to get the readable name from i18n
+    if (i18nKey != null) {
+      try {
+        String readableName = this.getText(i18nKey);
+        if (readableName != null && !readableName.isEmpty() && !readableName.equals(i18nKey)) {
+          return readableName;
+        }
+      } catch (Exception e) {
+        // If i18n key doesn't exist, fall through to return original
+      }
+    }
+
+    // Fallback: return the original encoded name if no mapping found
+    return encodedName;
   }
 
   /**
