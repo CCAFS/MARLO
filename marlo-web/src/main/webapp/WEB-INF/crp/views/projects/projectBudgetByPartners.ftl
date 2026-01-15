@@ -390,7 +390,7 @@
         [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
       [#else]  
         <div class="${customForm.changedField(customName+'.genderPercentage')}">
-          <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+          <div class="input"><p><span>${((element.genderPercentage)!0)?number?string("0.00")}%</span></p></div>
           <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
         </div>
       [/#if]
@@ -427,9 +427,14 @@
     [/#if]
     
     [#-- End Date --]
-    [#local fsEndDate]${(element.fundingSource.fundingSourceInfo.endDate)!}[/#local]
-    [#if (element.fundingSource.fundingSourceInfo.status == 4)!true]
-      [#local fsEndDate][#if (element.fundingSource.fundingSourceInfo.extensionDate??)!false]${(element.fundingSource.fundingSourceInfo.extensionDate)!}[#else]${(element.fundingSource.fundingSourceInfo.endDate)!}[/#if][/#local]
+    [#if (element.fundingSource.fundingSourceInfo)?? ]
+      [#local fsEndDateObj = (element.fundingSource.fundingSourceInfo.endDate)! /]
+      [#if (element.fundingSource.fundingSourceInfo.status == 4)!true]
+        [#local fsEndDateObj = ((element.fundingSource.fundingSourceInfo.extensionDate??)!false)?then(element.fundingSource.fundingSourceInfo.extensionDate!, element.fundingSource.fundingSourceInfo.endDate!) /]
+      [/#if]
+      [#local fsEndDate = (fsEndDateObj?string)!'' /]
+    [#else]
+      [#local fsEndDate = '' /]
     [/#if]
     
     <p class="checked">
@@ -500,7 +505,7 @@
               [@customForm.input name="${customName}.genderPercentage" i18nkey="budget.genderPercentage" showTitle=false className="percentageInput cycle-planning type-${(element.fundingSource.fundingSourceInfo.budgetType.id)!'none'}" required=true   /]
             [#else]  
               <div class="${customForm.changedField(customName+'.genderPercentage')}">
-                <div class="input"><p><span>${((element.genderPercentage)!0)}%</span></p></div>
+                <div class="input"><p><span>${((element.genderPercentage)!0)?number?string("0.00")}%</span></p></div>
                 <input type="hidden" name="${customName}.genderPercentage"  value="${(element.genderPercentage)!0}" />
               </div>
             [/#if]
@@ -516,7 +521,7 @@
     <div class="">
       <small class="pull-right">
         [#if fsEndDate?has_content]
-          [#local fsYear = fsEndDate?date?string('yyyy')?number ]
+          [#local fsYear = fsEndDateObj?string('yyyy')?number ]
           [#local validDate = (fsYear >= actualPhase.year)!false ]
           <nobr><p class="${(!validDate)?string('fieldError', '')}">End date: ${fsEndDate}</p></nobr>
         [#else]

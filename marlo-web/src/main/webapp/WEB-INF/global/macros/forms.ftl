@@ -35,7 +35,7 @@
       <p>
       [#if (customValue?has_content)!false] 
         [#if isCurrencyInput]
-          <nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>
+          <nobr>US$ ${((customValue?markup_string)!'0')?number?string(",##0.00")}</nobr>
         [#else]
           [#if isTargetValueNumber]
             ${((customValue?markup_string)!'0')?number?string(",##0")}

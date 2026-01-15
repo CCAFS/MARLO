@@ -99,13 +99,14 @@
           [#-- End Date --]
           <td class="">
             [#if (project.fundingSourceInfo.status)?? || project.fundingSourceInfo.status=4]
-              [#local fsEndDate][#if (project.fundingSourceInfo.extensionDate??)!false]${(project.fundingSourceInfo.extensionDate)!}[#else]${(project.fundingSourceInfo.endDate)!}[/#if][/#local]
+              [#local fsEndDateObj = ((project.fundingSourceInfo.extensionDate??)!false)?then(project.fundingSourceInfo.extensionDate!, project.fundingSourceInfo.endDate!) /]
             [#else]
-              [#local fsEndDate]${(project.fundingSourceInfo.endDate)!}[/#local]
+              [#local fsEndDateObj = project.fundingSourceInfo.endDate! /]
             [/#if]
+            [#local fsEndDate = (fsEndDateObj?string)!'' /]
             
             [#if fsEndDate?has_content]
-              [#local fsYear = fsEndDate?date?string('yyyy')?number ]
+              [#local fsYear = fsEndDateObj?string('yyyy')?number ]
               [#local validDate = (fsYear >= actualPhase.year)!false ]
               <span class="hidden">${fsYear}</span>
               <nobr><p class="${(!validDate)?string('fieldError', '')}">${fsEndDate}</p></nobr>
@@ -116,12 +117,12 @@
           </td>
           [#-- Direct Donor --]
           <td class="" title="${(project.fundingSourceInfo.directDonor.composedName)!}">
-            ${(project.fundingSourceInfo.directDonor.acronymName)!'<p style="opacity:0.5">Not defined</p>'}
+            [#if (project.fundingSourceInfo.directDonor.acronymName)?has_content]${project.fundingSourceInfo.directDonor.acronymName}[#else]<p style="opacity:0.5">Not defined</p>[/#if]
           </td>
           
           [#-- Original Donor --]
           <td class="" title="${(project.fundingSourceInfo.originalDonor.composedName)!}"> 
-            ${(project.fundingSourceInfo.originalDonor.acronymName)!'<p style="opacity:0.5">Not defined</p>'}
+            [#if (project.fundingSourceInfo.originalDonor.acronymName)?has_content]${project.fundingSourceInfo.originalDonor.acronymName}[#else]<p style="opacity:0.5">Not defined</p>[/#if]
           </td>
           
           [#-- Field Check --]
