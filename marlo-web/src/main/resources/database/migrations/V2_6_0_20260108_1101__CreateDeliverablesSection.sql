@@ -894,7 +894,7 @@ UPDATE report_configurations
       {{/if}}
       {{#if crpOutcomes}}
       <div class="contribution-card__block">
-        <h4>Performance Indicators/h4>
+        <h4>Performance Indicators</h4>
         <p>{{#safeEmpty}}{{crpOutcomes}}{{/safeEmpty}}</p>
       </div>
       {{/if}}
