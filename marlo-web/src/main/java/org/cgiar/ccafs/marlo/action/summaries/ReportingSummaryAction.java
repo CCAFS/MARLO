@@ -10114,6 +10114,117 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("activities", String.join(", ", activities));
     }
 
+    // Funding Sources
+    List<Map<String, Object>> fundingSourcesList = new ArrayList<>();
+    StringBuilder fundingSourcesText = new StringBuilder();
+    if (deliverable.getDeliverableFundingSources() != null) {
+      List<DeliverableFundingSource> deliverableFundingSources = deliverable.getDeliverableFundingSources().stream()
+        .filter(dfs -> dfs.isActive() && dfs.getPhase() != null && dfs.getPhase().equals(this.getSelectedPhase())
+          && dfs.getFundingSource() != null
+          && dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+        .sorted((dfs1, dfs2) -> Long.compare(dfs1.getFundingSource().getId(), dfs2.getFundingSource().getId()))
+        .collect(Collectors.toList());
+
+      for (DeliverableFundingSource dfs : deliverableFundingSources) {
+        FundingSource fundingSource = dfs.getFundingSource();
+        FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getSelectedPhase());
+
+        if (fundingSourceInfo != null) {
+          Map<String, Object> fsData = new HashMap<>();
+          // Add ID
+          if (fundingSource.getId() != null) {
+            fsData.put("id", fundingSource.getId());
+          }
+          // Add name/title
+          if (fundingSourceInfo.getTitle() != null && !fundingSourceInfo.getTitle().trim().isEmpty()) {
+            String title = this.getSanitizedText(fundingSourceInfo.getTitle());
+            fsData.put("name", title);
+            fsData.put("title", title);
+          } else if (fundingSource.getComposedName() != null && !fundingSource.getComposedName().trim().isEmpty()) {
+            String name = this.getSanitizedText(fundingSource.getComposedName());
+            fsData.put("name", name);
+            fsData.put("title", name);
+          }
+          // Add finance code
+          if (fundingSourceInfo.getFinanceCode() != null && !fundingSourceInfo.getFinanceCode().trim().isEmpty()) {
+            fsData.put("financeCode", this.getSanitizedText(fundingSourceInfo.getFinanceCode()));
+          }
+          // Add geographic scope
+          List<String> geographicScopeList = new ArrayList<>();
+          // Check if global
+          if (fundingSourceInfo.isGlobal()) {
+            geographicScopeList.add("Global");
+          }
+          // Add regions
+          if (fundingSource.getFundingSourceLocations() != null) {
+            List<String> fsRegions = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElement() != null && fl.getLocElementType() == null
+                && fl.getLocElement().getLocElementType() != null
+                && fl.getLocElement().getLocElementType().getId() == 1)
+              .map(fl -> this.getSanitizedText(fl.getLocElement().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            geographicScopeList.addAll(fsRegions);
+            // Add scope regions (when LocElementType is used instead of LocElement)
+            List<String> fsScopeRegions = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElementType() != null && fl.getLocElement() == null)
+              .map(fl -> this.getSanitizedText(fl.getLocElementType().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            geographicScopeList.addAll(fsScopeRegions);
+            // Add countries
+            List<String> fsCountries = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElement() != null && fl.getLocElementType() == null
+                && fl.getLocElement().getLocElementType() != null
+                && fl.getLocElement().getLocElementType().getId() == 2)
+              .map(fl -> this.getSanitizedText(fl.getLocElement().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            if (!fsCountries.isEmpty()) {
+              geographicScopeList.addAll(fsCountries);
+            }
+          }
+          if (!geographicScopeList.isEmpty()) {
+            fsData.put("geographicScope", String.join(", ", geographicScopeList));
+          }
+          // Add description
+          if (fundingSourceInfo.getDescription() != null && !fundingSourceInfo.getDescription().trim().isEmpty()) {
+            fsData.put("description", this.getSanitizedText(fundingSourceInfo.getDescription()));
+          }
+
+          if (!fsData.isEmpty()) {
+            fundingSourcesList.add(fsData);
+
+            // Build text format for backward compatibility
+            String fsText = "● ";
+            if (fundingSource.getId() != null) {
+              fsText += "FS" + fundingSource.getId();
+            }
+            if (fundingSourceInfo.getFinanceCode() != null && !fundingSourceInfo.getFinanceCode().trim().isEmpty()) {
+              fsText += " (" + this.getSanitizedText(fundingSourceInfo.getFinanceCode()) + ")";
+            }
+            fsText += " - ";
+            if (fundingSourceInfo.getTitle() != null && !fundingSourceInfo.getTitle().trim().isEmpty()) {
+              fsText += this.getSanitizedText(fundingSourceInfo.getTitle());
+            } else if (fundingSource.getComposedName() != null && !fundingSource.getComposedName().trim().isEmpty()) {
+              fsText += this.getSanitizedText(fundingSource.getComposedName());
+            }
+            fsText += "<br>";
+            fundingSourcesText.append(fsText);
+          }
+        }
+      }
+    }
+
+    // Add funding sources: structured list preferred, fallback to text format
+    if (!fundingSourcesList.isEmpty()) {
+      data.put("hasFundingSources", true);
+      data.put("fundingSources", fundingSourcesList);
+    } else if (fundingSourcesText.length() > 0) {
+      // Text format for backward compatibility when no structured data
+      data.put("fundingSources", fundingSourcesText.toString());
+    }
+
     // Partnerships - Contacts (Responsible)
     List<String> contacts = new ArrayList<>();
     if (deliverable.getDeliverableUserPartnerships() != null) {
@@ -10297,6 +10408,73 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("shfrmContributionNarrative", this.getSanitizedText(deliverableInfo.getShfrmContributionNarrative()));
     }
 
+    // SHFRM Priority Actions and Sub Actions (only if contributingShfrm is Yes)
+    if (deliverableInfo.getContributingShfrm() != null && deliverableInfo.getContributingShfrm()) {
+      List<Map<String, Object>> shfrmPriorityActionsList = new ArrayList<>();
+      try {
+        List<DeliverableShfrmPriorityAction> actions = deliverableShfrmPriorityActionManager
+          .findByDeliverableAndPhase(deliverable.getId(), this.getSelectedPhase().getId());
+
+        if (actions != null && !actions.isEmpty()) {
+          for (DeliverableShfrmPriorityAction action : actions) {
+            if (action != null && action.getShfrmPriorityAction() != null
+              && action.getShfrmPriorityAction().getId() != null) {
+              Map<String, Object> actionData = new HashMap<>();
+              
+              // Add priority action info
+              if (action.getShfrmPriorityAction().getComposedName() != null) {
+                actionData.put("name", this.getSanitizedText(action.getShfrmPriorityAction().getComposedName()));
+              } else if (action.getShfrmPriorityAction().getName() != null) {
+                actionData.put("name", this.getSanitizedText(action.getShfrmPriorityAction().getName()));
+              }
+              if (action.getShfrmPriorityAction().getId() != null) {
+                actionData.put("id", action.getShfrmPriorityAction().getId());
+              }
+
+              // Add sub actions
+              List<DeliverableShfrmSubAction> subActions = deliverableShfrmSubActionManager
+                .findByPriorityActionAndPhase(action.getId(), this.getSelectedPhase().getId());
+
+              if (subActions != null && !subActions.isEmpty()) {
+                List<Map<String, Object>> subActionsList = new ArrayList<>();
+                for (DeliverableShfrmSubAction subAction : subActions) {
+                  if (subAction != null && subAction.getShfrmSubAction() != null) {
+                    Map<String, Object> subActionData = new HashMap<>();
+                    if (subAction.getShfrmSubAction().getComposedName() != null) {
+                      subActionData.put("name", this.getSanitizedText(subAction.getShfrmSubAction().getComposedName()));
+                    } else if (subAction.getShfrmSubAction().getName() != null) {
+                      subActionData.put("name", this.getSanitizedText(subAction.getShfrmSubAction().getName()));
+                    }
+                    if (subAction.getShfrmSubAction().getId() != null) {
+                      subActionData.put("id", subAction.getShfrmSubAction().getId());
+                    }
+                    if (!subActionData.isEmpty()) {
+                      subActionsList.add(subActionData);
+                    }
+                  }
+                }
+                if (!subActionsList.isEmpty()) {
+                  actionData.put("hasSubActions", true);
+                  actionData.put("subActions", subActionsList);
+                }
+              }
+
+              if (!actionData.isEmpty()) {
+                shfrmPriorityActionsList.add(actionData);
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting shfrm actions and subactions for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      if (!shfrmPriorityActionsList.isEmpty()) {
+        data.put("hasShfrmPriorityActions", true);
+        data.put("shfrmPriorityActions", shfrmPriorityActionsList);
+      }
+    }
+
     // MELIA study
     if (deliverableInfo.getMeliaStudy() != null) {
       data.put("meliaStudy", deliverableInfo.getMeliaStudy() ? "Yes" : "No");
@@ -10328,6 +10506,42 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Remaining pending
     if (deliverableInfo.getRemainingPending() != null) {
       data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
+    }
+
+    // Shared deliverables (projects that share this deliverable)
+    List<String> sharedProjects = new ArrayList<>();
+    try {
+      List<ProjectDeliverableShared> deliverablesShared = projectDeliverableSharedManager
+        .getByDeliverable(deliverable.getId(), this.getSelectedPhase().getId());
+
+      if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+        deliverablesShared = deliverablesShared.stream()
+          .filter(ds -> ds.isActive() && ds.getProject() != null && ds.getPhase() != null
+            && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+
+        for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+          if (deliverableShared.getProject() != null) {
+            String projectInfo = null;
+            if (deliverableShared.getProject().getAcronym() != null
+              && !deliverableShared.getProject().getAcronym().trim().isEmpty()) {
+              projectInfo = this.getSanitizedText(deliverableShared.getProject().getAcronym());
+            } else if (deliverableShared.getProject().getComposedName() != null
+              && !deliverableShared.getProject().getComposedName().trim().isEmpty()) {
+              projectInfo = this.getSanitizedText(deliverableShared.getProject().getComposedName());
+            }
+            if (projectInfo != null && !projectInfo.trim().isEmpty()) {
+              sharedProjects.add(projectInfo);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("Error getting shared deliverables for deliverable " + deliverable.getId() + ": " + e);
+    }
+
+    if (!sharedProjects.isEmpty()) {
+      data.put("sharedProjects", String.join(", ", sharedProjects));
     }
 
     return data;
