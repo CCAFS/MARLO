@@ -10309,6 +10309,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (dissemination.getType() != null) {
           data.put("disseminationType", this.getSanitizedText(dissemination.getType()));
         }
+        // Dissemination channel
+        if (dissemination.getDisseminationChannel() != null
+          && !dissemination.getDisseminationChannel().trim().isEmpty()) {
+          try {
+            RepositoryChannel repositoryChannel = repositoryChannelManager
+              .getRepositoryChannelByShortName(dissemination.getDisseminationChannel());
+            if (repositoryChannel != null && repositoryChannel.getName() != null) {
+              data.put("disseminationChannel", this.getSanitizedText(repositoryChannel.getName()));
+            } else {
+              data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
+            }
+          } catch (Exception e) {
+            LOG.error("Error getting repository channel for deliverable " + deliverable.getId() + ": " + e);
+            data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
+          }
+        }
+        // Is open access
+        if (dissemination.getIsOpenAccess() != null) {
+          data.put("isOpenAccess", dissemination.getIsOpenAccess() ? "Yes" : "No");
+        }
       }
     }
 
@@ -10327,13 +10347,50 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
-    // Metadata elements
-    List<Map<String, Object>> metadataElements = new ArrayList<>();
+    // Metadata elements - Handle and DOI
+    String handle = null;
+    String doi = null;
     if (deliverable.getDeliverableMetadataElements() != null) {
-      List<DeliverableMetadataElement> elements = deliverable.getDeliverableMetadataElements().stream()
+      List<DeliverableMetadataElement> metadataElementsList = deliverable.getDeliverableMetadataElements().stream()
         .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase())
           && e.getMetadataElement() != null && e.getElementValue() != null
           && !e.getElementValue().trim().isEmpty())
+        .collect(Collectors.toList());
+
+      // Get Handle (metadata element ID 35)
+      try {
+        DeliverableMetadataElement handleElement = metadataElementsList.stream()
+          .filter(e -> e.getMetadataElement() != null && e.getMetadataElement().getId() != null
+            && e.getMetadataElement().getId().longValue() == 35L)
+          .findFirst().orElse(null);
+        if (handleElement != null && handleElement.getElementValue() != null
+          && !handleElement.getElementValue().trim().isEmpty()) {
+          handle = this.getSanitizedText(handleElement.getElementValue());
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting Handle for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      // Get DOI (metadata element ID 36)
+      try {
+        DeliverableMetadataElement doiElement = metadataElementsList.stream()
+          .filter(e -> e.getMetadataElement() != null && e.getMetadataElement().getId() != null
+            && e.getMetadataElement().getId().longValue() == 36L)
+          .findFirst().orElse(null);
+        if (doiElement != null && doiElement.getElementValue() != null
+          && !doiElement.getElementValue().trim().isEmpty()) {
+          doi = this.getSanitizedText(doiElement.getElementValue());
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting DOI for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      // Build metadata elements list (excluding Handle and DOI as they are shown separately)
+      List<Map<String, Object>> metadataElements = new ArrayList<>();
+      List<DeliverableMetadataElement> elements = metadataElementsList.stream()
+        .filter(e -> e.getMetadataElement() != null
+          && (e.getMetadataElement().getId() == null
+            || (e.getMetadataElement().getId().longValue() != 35L && e.getMetadataElement().getId().longValue() != 36L)))
         .sorted((e1, e2) -> {
           if (e1.getMetadataElement() != null && e2.getMetadataElement() != null) {
             String name1 = e1.getMetadataElement().getEcondedName() != null
@@ -10366,10 +10423,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           metadataElements.add(elementData);
         }
       }
+      if (!metadataElements.isEmpty()) {
+        data.put("hasMetadataElements", true);
+        data.put("metadataElements", metadataElements);
+      }
     }
-    if (!metadataElements.isEmpty()) {
-      data.put("hasMetadataElements", true);
-      data.put("metadataElements", metadataElements);
+
+    // Add Handle and DOI separately
+    if (handle != null && !handle.trim().isEmpty()) {
+      data.put("handle", handle);
+    }
+    if (doi != null && !doi.trim().isEmpty()) {
+      data.put("doi", doi);
     }
 
     // Publication metadata
@@ -10474,6 +10539,67 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         data.put("shfrmPriorityActions", shfrmPriorityActionsList);
       }
     }
+
+    // Deliverable Participants
+    Boolean hasParticipants = false;
+    String hasParticipantsText = "No";
+    if (deliverable.getDeliverableParticipants() != null) {
+      List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList());
+
+      if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+        DeliverableParticipant participant = deliverableParticipants.get(0);
+        if (participant.getHasParticipants() != null) {
+          hasParticipants = participant.getHasParticipants();
+          hasParticipantsText = hasParticipants ? "Yes" : "No";
+        }
+
+        // Only show participant details if hasParticipants is true
+        if (hasParticipants) {
+          Map<String, Object> participantData = new HashMap<>();
+
+          if (participant.getEventActivityName() != null && !participant.getEventActivityName().trim().isEmpty()) {
+            participantData.put("eventActivityName", this.getSanitizedText(participant.getEventActivityName()));
+          }
+          if (participant.getRepIndTypeActivity() != null && participant.getRepIndTypeActivity().getId() != null
+            && participant.getRepIndTypeActivity().getId() != -1) {
+            participantData.put("activityType", this.getSanitizedText(participant.getRepIndTypeActivity().getName()));
+          }
+          if (participant.getAcademicDegree() != null && !participant.getAcademicDegree().trim().isEmpty()) {
+            participantData.put("academicDegree", this.getSanitizedText(participant.getAcademicDegree()));
+          }
+          if (participant.getParticipants() != null) {
+            participantData.put("totalParticipants", participant.getParticipants());
+          }
+          if (participant.getFemales() != null) {
+            participantData.put("females", participant.getFemales());
+          }
+          if (participant.getAfrican() != null) {
+            participantData.put("africans", participant.getAfrican());
+          }
+          if (participant.getYouth() != null) {
+            participantData.put("youth", participant.getYouth());
+          }
+          if (participant.getRepIndTypeParticipant() != null && participant.getRepIndTypeParticipant().getId() != null
+            && participant.getRepIndTypeParticipant().getId() != -1) {
+            participantData.put("participantType", this.getSanitizedText(participant.getRepIndTypeParticipant().getName()));
+          }
+          if (participant.getFocus() != null && !participant.getFocus().trim().isEmpty()) {
+            participantData.put("focus", this.getSanitizedText(participant.getFocus()));
+          }
+          if (participant.getLikelyOutcomes() != null && !participant.getLikelyOutcomes().trim().isEmpty()) {
+            participantData.put("likelyOutcomes", this.getSanitizedText(participant.getLikelyOutcomes()));
+          }
+
+          if (!participantData.isEmpty()) {
+            data.put("participant", participantData);
+          }
+        }
+      }
+    }
+    data.put("hasParticipants", hasParticipants);
+    data.put("hasParticipantsText", hasParticipantsText);
 
     // MELIA study
     if (deliverableInfo.getMeliaStudy() != null) {
