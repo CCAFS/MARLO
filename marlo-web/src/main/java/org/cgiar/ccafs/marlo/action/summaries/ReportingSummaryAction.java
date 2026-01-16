@@ -10338,11 +10338,60 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getSelectedPhase()))
         .findFirst().orElse(null);
       if (qualityCheck != null) {
-        if (qualityCheck.getFileAssurance() != null && qualityCheck.getFileAssurance().getFileName() != null) {
-          data.put("fileAssurance", this.getSanitizedText(qualityCheck.getFileAssurance().getFileName()));
+        Map<String, Object> qualityCheckData = new HashMap<>();
+        boolean hasQualityCheckInfo = false;
+
+        // Quality Assurance
+        if (qualityCheck.getQualityAssurance() != null) {
+          qualityCheckData.put("qualityAssurance", this.getSanitizedText(qualityCheck.getQualityAssurance().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getQualityAssurance().getId() != null
+            && qualityCheck.getQualityAssurance().getId().longValue() == 2L) {
+            if (qualityCheck.getFileAssurance() != null && qualityCheck.getFileAssurance().getFileName() != null) {
+              qualityCheckData.put("fileAssurance", this.getSanitizedText(qualityCheck.getFileAssurance().getFileName()));
+            }
+            if (qualityCheck.getLinkAssurance() != null && !qualityCheck.getLinkAssurance().trim().isEmpty()) {
+              qualityCheckData.put("linkAssurance", this.getSanitizedText(qualityCheck.getLinkAssurance()));
+            }
+          }
         }
-        if (qualityCheck.getFileDictionary() != null && qualityCheck.getFileDictionary().getFileName() != null) {
-          data.put("fileDictionary", this.getSanitizedText(qualityCheck.getFileDictionary().getFileName()));
+
+        // Data Dictionary
+        if (qualityCheck.getDataDictionary() != null) {
+          qualityCheckData.put("dataDictionary", this.getSanitizedText(qualityCheck.getDataDictionary().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getDataDictionary().getId() != null
+            && qualityCheck.getDataDictionary().getId().longValue() == 2L) {
+            if (qualityCheck.getFileDictionary() != null && qualityCheck.getFileDictionary().getFileName() != null) {
+              qualityCheckData.put("fileDictionary", this.getSanitizedText(qualityCheck.getFileDictionary().getFileName()));
+            }
+            if (qualityCheck.getLinkDictionary() != null && !qualityCheck.getLinkDictionary().trim().isEmpty()) {
+              qualityCheckData.put("linkDictionary", this.getSanitizedText(qualityCheck.getLinkDictionary()));
+            }
+          }
+        }
+
+        // Data Tools
+        if (qualityCheck.getDataTools() != null) {
+          qualityCheckData.put("dataTools", this.getSanitizedText(qualityCheck.getDataTools().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getDataTools().getId() != null
+            && qualityCheck.getDataTools().getId().longValue() == 2L) {
+            if (qualityCheck.getFileTools() != null && qualityCheck.getFileTools().getFileName() != null) {
+              qualityCheckData.put("fileTools", this.getSanitizedText(qualityCheck.getFileTools().getFileName()));
+            }
+            if (qualityCheck.getLinkTools() != null && !qualityCheck.getLinkTools().trim().isEmpty()) {
+              qualityCheckData.put("linkTools", this.getSanitizedText(qualityCheck.getLinkTools()));
+            }
+          }
+        }
+
+        if (hasQualityCheckInfo) {
+          data.put("hasQualityCheck", true);
+          data.put("qualityCheck", qualityCheckData);
         }
       }
     }
