@@ -48,8 +48,6 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -76,10 +74,6 @@ import org.apache.commons.lang3.RandomStringUtils;
  * @author Christian Garcia
  */
 public class CrpAdminManagmentAction extends BaseAction {
-
-
-  private static final Logger LOG = LoggerFactory.getLogger(CrpAdminManagmentAction.class);
-
 
   private static final long serialVersionUID = 3355662668874414548L;
 
@@ -1006,15 +1000,10 @@ public class CrpAdminManagmentAction extends BaseAction {
 
   @Override
   public String save() {
-    LOG.info("=== DEBUG: save() method STARTED ===");
-    
     if (this.hasPermission("*")) {
       this.setUsersToActive(new ArrayList<>());
 
-      LOG.info("DEBUG: Calling savePmuRoleData()...");
       this.savePmuRoleData();
-      
-      LOG.info("DEBUG: Calling saveProgramsData()...");
       this.saveProgramsData();
 
 
@@ -1071,10 +1060,8 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
       messages = this.getActionMessages();
       
-      LOG.info("=== DEBUG: save() method COMPLETED SUCCESSFULLY ===");
       return SUCCESS;
     } else {
-      LOG.info("=== DEBUG: save() method FAILED - NOT AUTHORIZED ===");
       return NOT_AUTHORIZED;
     }
 
@@ -1196,85 +1183,33 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
   private void saveProgramsData() {
-    LOG.info("=== DEBUG: saveProgramsData() STARTED ===");
-    
     List<CrpProgram> fgProgramsRewiev =
       crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
-    
-    LOG.info("DEBUG: Found " + (fgProgramsRewiev != null ? fgProgramsRewiev.size() : 0) + " existing flagship programs");
-    LOG.info("DEBUG: Current flagshipsPrograms list size: " + (flagshipsPrograms != null ? flagshipsPrograms.size() : 0));
-    
-    if (flagshipsPrograms != null) {
-      LOG.info("DEBUG: Current flagship programs in list:");
-      for (CrpProgram fp : flagshipsPrograms) {
-        LOG.info("  - ID: " + fp.getId() + ", Name: " + fp.getName() + ", Acronym: " + fp.getAcronym());
-      }
-    }
     
     // Removing crp flagship program type
     if (fgProgramsRewiev != null) {
       for (CrpProgram crpProgram : fgProgramsRewiev) {
-        LOG.info("DEBUG: Checking existing program - ID: " + crpProgram.getId() + ", Name: " + crpProgram.getName());
         
         boolean isInList = flagshipsPrograms.contains(crpProgram);
-        LOG.info("DEBUG: Is program in current list? " + isInList);
-        
-        // Additional debugging for contains() method
-        if (!isInList) {
-          LOG.info("DEBUG: Checking each program in list for match:");
-          if (flagshipsPrograms != null) {
-            for (CrpProgram listProgram : flagshipsPrograms) {
-              boolean sameId = (listProgram.getId() != null && crpProgram.getId() != null && 
-                              listProgram.getId().equals(crpProgram.getId()));
-              boolean sameName = (listProgram.getName() != null && crpProgram.getName() != null && 
-                                listProgram.getName().equals(crpProgram.getName()));
-              LOG.info("  - List Program ID: " + listProgram.getId() + " vs Target ID: " + crpProgram.getId() + " -> Same: " + sameId);
-              LOG.info("  - List Program Name: '" + listProgram.getName() + "' vs Target Name: '" + crpProgram.getName() + "' -> Same: " + sameName);
-              LOG.info("  - equals() result: " + listProgram.equals(crpProgram));
-            }
-          }
-        }
         
         if (!isInList) {
-          LOG.info("DEBUG: Program should be DELETED - checking conditions...");
           CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
           
           List<CrpProgramLeader> activeLeaders = crpProgramBD.getCrpProgramLeaders().stream()
             .filter(c -> c.isActive()).collect(Collectors.toList());
           
-          LOG.info("DEBUG: Active leaders count: " + activeLeaders.size());
-          
           if (activeLeaders.isEmpty()) {
-            LOG.info("DEBUG: No active leaders - proceeding with deletion...");
             
             List<LiaisonInstitution> activeInstitutions = crpProgram.getLiaisonInstitutions().stream()
               .filter(c -> c.isActive()).collect(Collectors.toList());
             
-            LOG.info("DEBUG: Active liaison institutions to delete: " + activeInstitutions.size());
-            
             for (LiaisonInstitution institution : activeInstitutions) {
-              LOG.info("DEBUG: Deleting liaison institution ID: " + institution.getId());
-              try {
-                liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
-                LOG.info("DEBUG: Liaison institution deleted successfully");
-              } catch (Exception e) {
-                LOG.error("ERROR: Failed to delete liaison institution: " + e.getMessage());
-                e.printStackTrace();
-              }
+              liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
             }
 
-            LOG.info("DEBUG: Deleting program ID: " + crpProgram.getId());
-            try {
-              crpProgramManager.deleteCrpProgram(crpProgram.getId());
-              LOG.info("DEBUG: Program deleted successfully");
-            } catch (Exception e) {
-              LOG.error("ERROR: Failed to delete program: " + e.getMessage());
-              e.printStackTrace();
-            }
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
           } else {
-            LOG.info("DEBUG: Program has active leaders - removing them first...");
             for (CrpProgramLeader leader : activeLeaders) {
-              LOG.info("  - Removing Active Leader: " + leader.getUser().getComposedName());
               
               // Remove user roles for this leader
               List<UserRole> userRoles = leader.getUser().getUserRoles().stream()
@@ -1282,14 +1217,7 @@ public class CrpAdminManagmentAction extends BaseAction {
                 .collect(Collectors.toList());
               
               for (UserRole userRole : userRoles) {
-                LOG.info("    - Deleting user role ID: " + userRole.getId());
-                try {
-                  userRoleManager.deleteUserRole(userRole.getId());
-                  LOG.info("    - User role deleted successfully");
-                } catch (Exception e) {
-                  LOG.error("    - ERROR: Failed to delete user role: " + e.getMessage());
-                  e.printStackTrace();
-                }
+                userRoleManager.deleteUserRole(userRole.getId());
               }
               
               // Remove liaison users for this leader
@@ -1299,60 +1227,28 @@ public class CrpAdminManagmentAction extends BaseAction {
                 .collect(Collectors.toList());
               
               for (LiaisonUser liaisonUser : liaisonUsers) {
-                LOG.info("    - Deleting liaison user ID: " + liaisonUser.getId());
-                try {
-                  liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-                  LOG.info("    - Liaison user deleted successfully");
-                } catch (Exception e) {
-                  LOG.error("    - ERROR: Failed to delete liaison user: " + e.getMessage());
-                  e.printStackTrace();
-                }
+                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
               }
               
               // Remove the program leader itself
-              LOG.info("  - Deleting program leader ID: " + leader.getId());
-              try {
-                crpProgramLeaderManager.deleteCrpProgramLeader(leader.getId());
-                LOG.info("  - Program leader deleted successfully");
-              } catch (Exception e) {
-                LOG.error("  - ERROR: Failed to delete program leader: " + e.getMessage());
-                e.printStackTrace();
-              }
+              crpProgramLeaderManager.deleteCrpProgramLeader(leader.getId());
             }
             
             // Now proceed with program deletion
-            LOG.info("DEBUG: All leaders removed - now proceeding with program deletion...");
             
             List<LiaisonInstitution> activeInstitutions = crpProgram.getLiaisonInstitutions().stream()
               .filter(c -> c.isActive()).collect(Collectors.toList());
             
-            LOG.info("DEBUG: Active liaison institutions to delete: " + activeInstitutions.size());
-            
             for (LiaisonInstitution institution : activeInstitutions) {
-              LOG.info("DEBUG: Deleting liaison institution ID: " + institution.getId());
-              try {
-                liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
-                LOG.info("DEBUG: Liaison institution deleted successfully");
-              } catch (Exception e) {
-                LOG.error("ERROR: Failed to delete liaison institution: " + e.getMessage());
-                e.printStackTrace();
-              }
+              liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
             }
 
-            LOG.info("DEBUG: Deleting program ID: " + crpProgram.getId());
-            try {
-              crpProgramManager.deleteCrpProgram(crpProgram.getId());
-              LOG.info("DEBUG: Program deleted successfully");
-            } catch (Exception e) {
-              LOG.error("ERROR: Failed to delete program: " + e.getMessage());
-              e.printStackTrace();
-            }
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
         }
       }
     }
     
-    LOG.info("=== DEBUG: Starting to process new/updated programs ===");
     CrpProgram crpProgramDb = null;
     // Add crp flagship program type
     if (flagshipsPrograms != null) {
@@ -1369,15 +1265,11 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgram.setCrp(loggedCrp);
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
           
-          // Update baseLine after initial save to ensure checkbox value is preserved
-          crpProgramDb.setBaseLine(crpProgram.getBaseLine());
-          crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
           LiaisonInstitution liasonInstitution = new LiaisonInstitution();
           liasonInstitution.setAcronym(crpProgramDb.getAcronym());
           liasonInstitution.setCrp(loggedCrp);
           liasonInstitution.setCrpProgram(crpProgramDb);
           liasonInstitution.setName(crpProgramDb.getName());
-
 
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
@@ -1410,8 +1302,6 @@ public class CrpAdminManagmentAction extends BaseAction {
         this.programManagerData(crpProgramDb, crpProgram);
       }
     }
-    
-    LOG.info("=== DEBUG: saveProgramsData() COMPLETED ===");
   }
 
 
