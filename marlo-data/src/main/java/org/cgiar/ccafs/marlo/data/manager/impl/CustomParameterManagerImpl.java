@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CustomParameterDAO;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class CustomParameterManagerImpl implements CustomParameterManager {
   }
 
   @Override
+  @Transactional
   public CustomParameter saveCustomParameter(CustomParameter customParameter) {
 
     return customParameterDAO.save(customParameter);
