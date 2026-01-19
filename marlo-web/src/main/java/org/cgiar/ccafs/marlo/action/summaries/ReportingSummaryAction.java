@@ -9164,7 +9164,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null
         && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
-        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedYear()))
+        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedPhase().getYear()))
       .collect(Collectors.toList());
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       myInnovations.addAll(projectInnovations);
@@ -9176,7 +9176,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null
         && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
         && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear()
-          .equals(this.getSelectedYear()))
+          ==(this.getSelectedPhase().getYear()))
       .collect(Collectors.toList());
 
     if (sharedInnovations != null && !sharedInnovations.isEmpty()) {
@@ -9583,12 +9583,71 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
       for (ProjectInnovationReference reference : innovationReferences) {
         Map<String, Object> referenceData = new HashMap<>();
-        if (reference.getReference() != null && !reference.getReference().trim().isEmpty()) {
-          referenceData.put("reference", this.getSanitizedText(reference.getReference()));
+        
+        // Check if evidence by deliverable is false or null
+        Boolean evidenceByDeliverable = reference.getEvidenceByDeliverable();
+        if (evidenceByDeliverable == null || !evidenceByDeliverable) {
+          // Show reference, category and subCategory
+          if (reference.getReference() != null && !reference.getReference().trim().isEmpty()) {
+            referenceData.put("reference", this.getSanitizedText(reference.getReference()));
+          }
+          
+          // Category and SubCategory from deliverableType
+          if (reference.getDeliverableType() != null) {
+            DeliverableType deliverableType = reference.getDeliverableType();
+            
+            // Category (parent)
+            if (deliverableType.getDeliverableCategory() != null 
+                && deliverableType.getDeliverableCategory().getName() != null 
+                && !deliverableType.getDeliverableCategory().getName().trim().isEmpty()) {
+              referenceData.put("category", this.getSanitizedText(deliverableType.getDeliverableCategory().getName()));
+            }
+            
+            // SubCategory (deliverableType name itself)
+            if (deliverableType.getName() != null && !deliverableType.getName().trim().isEmpty()) {
+              referenceData.put("subCategory", this.getSanitizedText(deliverableType.getName()));
+            }
+          }
+        } else {
+          // evidenceByDeliverable is true: show deliverable id and title
+          if (reference.getDeliverable() != null) {
+            referenceData.put("deliverableId", reference.getDeliverable().getId());
+            
+            // Get deliverable title from DeliverableInfo
+            Deliverable deliverable = reference.getDeliverable();
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null) {
+              DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+              if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
+                referenceData.put("deliverableTitle", this.getSanitizedText(deliverableInfo.getTitle()));
+              }
+            }
+          }
         }
-        if (reference.getExternalAuthor() != null) {
-          referenceData.put("externalAuthor", reference.getExternalAuthor());
+        
+        // Cross-cutting dimensions - show only if they are true
+        List<String> crossCuttingDimensions = new ArrayList<>();
+        if (reference.getGender() != null && reference.getGender()) {
+          crossCuttingDimensions.add("Gender");
         }
+        if (reference.getClimateChange() != null && reference.getClimateChange()) {
+          crossCuttingDimensions.add("Climate Change");
+        }
+        if (reference.getNutrition() != null && reference.getNutrition()) {
+          crossCuttingDimensions.add("Nutrition");
+        }
+        if (reference.getEnvironmental() != null && reference.getEnvironmental()) {
+          crossCuttingDimensions.add("Environmental");
+        }
+        if (reference.getPoverty() != null && reference.getPoverty()) {
+          crossCuttingDimensions.add("Poverty");
+        }
+        if (reference.getInnovationReadiness() != null && reference.getInnovationReadiness()) {
+          crossCuttingDimensions.add("Innovation Readiness");
+        }
+        if (!crossCuttingDimensions.isEmpty()) {
+          referenceData.put("crossCuttingDimensions", crossCuttingDimensions);
+        }
+        
         references.add(referenceData);
       }
     }
