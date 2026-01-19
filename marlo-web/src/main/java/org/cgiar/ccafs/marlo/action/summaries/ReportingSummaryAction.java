@@ -9164,7 +9164,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null
         && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
-        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedPhase().getYear()))
+        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear()==(this.getSelectedPhase().getYear()))
       .collect(Collectors.toList());
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       myInnovations.addAll(projectInnovations);
@@ -9314,6 +9314,57 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Beneficiaries narrative
     if (innovationInfo.getBeneficiariesNarrative() != null && !innovationInfo.getBeneficiariesNarrative().trim().isEmpty()) {
       data.put("beneficiariesNarrative", this.getSanitizedText(innovationInfo.getBeneficiariesNarrative()));
+    }
+
+    // Are users determined and actors
+    if (innovationInfo.getAreUsersDetermined() != null) {
+      data.put("areUsersDetermined", innovationInfo.getAreUsersDetermined());
+      
+      if (innovationInfo.getAreUsersDetermined() && innovation.getProjectInnovationActors() != null) {
+        List<Map<String, Object>> actorsList = new ArrayList<>();
+        List<ProjectInnovationActor> innovationActors = innovation.getProjectInnovationActors().stream()
+          .filter(a -> a.isActive() && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase())
+            && a.getActor() != null)
+          .sorted((a1, a2) -> {
+            if (a1.getActor() != null && a2.getActor() != null && a1.getActor().getName() != null
+              && a2.getActor().getName() != null) {
+              return a1.getActor().getName().compareTo(a2.getActor().getName());
+            }
+            return 0;
+          })
+          .collect(Collectors.toList());
+        
+        for (ProjectInnovationActor actor : innovationActors) {
+          Map<String, Object> actorData = new HashMap<>();
+          if (actor.getActor().getName() != null && !actor.getActor().getName().trim().isEmpty()) {
+            actorData.put("type", this.getSanitizedText(actor.getActor().getName()));
+          }
+          if (actor.getTotal() != null) {
+            actorData.put("total", actor.getTotal());
+          }
+          if (actor.getOther() != null && !actor.getOther().trim().isEmpty()) {
+            actorData.put("other", this.getSanitizedText(actor.getOther()));
+          }
+          if (actor.getWomenYouthNumber() != null) {
+            actorData.put("womenYouthNumber", actor.getWomenYouthNumber());
+          }
+          if (actor.getWomenNonYouthNumber() != null) {
+            actorData.put("womenNonYouthNumber", actor.getWomenNonYouthNumber());
+          }
+          if (actor.getMenYouthNumber() != null) {
+            actorData.put("menYouthNumber", actor.getMenYouthNumber());
+          }
+          if (actor.getMenNonYouthNumber() != null) {
+            actorData.put("menNonYouthNumber", actor.getMenNonYouthNumber());
+          }
+          actorsList.add(actorData);
+        }
+        
+        if (!actorsList.isEmpty()) {
+          data.put("actors", actorsList);
+          data.put("hasActors", true);
+        }
+      }
     }
 
     // Has CGIAR contribution
