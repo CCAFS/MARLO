@@ -43,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -179,6 +181,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectPolicyManager projectPolicyManager;
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
+  private final ProjectInnovationRegionManager projectInnovationRegionManager;
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
   private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private final RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private final ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
@@ -220,6 +224,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
     ProjectLp6ContributionManager projectLp6ContributionManager,
@@ -259,6 +265,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectPolicyManager = projectPolicyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
@@ -9164,7 +9172,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
       .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null
         && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
-        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedPhase().getYear()))
+        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear()==(this.getSelectedPhase().getYear()))
       .collect(Collectors.toList());
     if (projectInnovations != null && !projectInnovations.isEmpty()) {
       myInnovations.addAll(projectInnovations);
@@ -9261,11 +9269,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("region", this.getSanitizedText(innovationInfo.getRepIndRegion().getName()));
     }
 
-    // Geographic scope
-    if (innovationInfo.getRepIndGeographicScope() != null) {
-      data.put("geographicScope", this.getSanitizedText(innovationInfo.getRepIndGeographicScope().getName()));
-    }
-
     // Evidence link
     if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
       data.put("evidenceLink", this.getSanitizedText(innovationInfo.getEvidenceLink()));
@@ -9316,6 +9319,105 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("beneficiariesNarrative", this.getSanitizedText(innovationInfo.getBeneficiariesNarrative()));
     }
 
+    // Scaling readiness
+    if (innovationInfo.getReadinessScale() != null) {
+      data.put("readinessScale", innovationInfo.getReadinessScale());
+    }
+    if (innovationInfo.getReadinessReason() != null && !innovationInfo.getReadinessReason().trim().isEmpty()) {
+      data.put("readinessReason", this.getSanitizedText(innovationInfo.getReadinessReason()));
+    }
+    if (innovationInfo.getCheaperAlternatives() != null) {
+      data.put("cheaperAlternatives", innovationInfo.getCheaperAlternatives());
+    }
+    if (innovationInfo.getSimplerUse() != null) {
+      data.put("simplerUse", innovationInfo.getSimplerUse());
+    }
+    if (innovationInfo.getPerformBetter() != null) {
+      data.put("performBetter", innovationInfo.getPerformBetter());
+    }
+    if (innovationInfo.getInnovationDesirable() != null) {
+      data.put("innovationDesirable", innovationInfo.getInnovationDesirable());
+    }
+    if (innovationInfo.getInnovationCommercially() != null) {
+      data.put("innovationCommercially", innovationInfo.getInnovationCommercially());
+    }
+    if (innovationInfo.getInnovationSupported() != null) {
+      data.put("innovationSupported", innovationInfo.getInnovationSupported());
+    }
+    if (innovationInfo.getEvidenceUptake() != null) {
+      data.put("evidenceUptake", innovationInfo.getEvidenceUptake());
+    }
+
+    // Knowledge potential
+    if (innovationInfo.getHasKnowledgePotential() != null) {
+      data.put("hasKnowledgePotential", innovationInfo.getHasKnowledgePotential().getId());
+      // Only add reasonKnowledgePotential if hasKnowledgePotential ID is 2
+      if (innovationInfo.getHasKnowledgePotential().getId() != null 
+          && innovationInfo.getHasKnowledgePotential().getId().equals(2L)
+          && innovationInfo.getReasonKnowledgePotential() != null 
+          && !innovationInfo.getReasonKnowledgePotential().trim().isEmpty()) {
+        data.put("reasonKnowledgePotential", this.getSanitizedText(innovationInfo.getReasonKnowledgePotential()));
+        data.put("showReasonKnowledgePotential", true);
+      }
+    }
+
+    // Knowledge methods and tools narrative
+    if (innovationInfo.getKnowledgeMethodsAndToolsNarrative() != null 
+        && !innovationInfo.getKnowledgeMethodsAndToolsNarrative().trim().isEmpty()) {
+      data.put("knowledgeMethodsAndToolsNarrative", this.getSanitizedText(innovationInfo.getKnowledgeMethodsAndToolsNarrative()));
+    }
+
+    // Are users determined and actors
+    if (innovationInfo.getAreUsersDetermined() != null) {
+      data.put("areUsersDetermined", innovationInfo.getAreUsersDetermined());
+      
+      if (innovationInfo.getAreUsersDetermined() && innovation.getProjectInnovationActors() != null) {
+        List<Map<String, Object>> actorsList = new ArrayList<>();
+        List<ProjectInnovationActor> innovationActors = innovation.getProjectInnovationActors().stream()
+          .filter(a -> a.isActive() && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase())
+            && a.getActor() != null)
+          .sorted((a1, a2) -> {
+            if (a1.getActor() != null && a2.getActor() != null && a1.getActor().getName() != null
+              && a2.getActor().getName() != null) {
+              return a1.getActor().getName().compareTo(a2.getActor().getName());
+            }
+            return 0;
+          })
+          .collect(Collectors.toList());
+        
+        for (ProjectInnovationActor actor : innovationActors) {
+          Map<String, Object> actorData = new HashMap<>();
+          if (actor.getActor().getName() != null && !actor.getActor().getName().trim().isEmpty()) {
+            actorData.put("type", this.getSanitizedText(actor.getActor().getName()));
+          }
+          if (actor.getTotal() != null) {
+            actorData.put("total", actor.getTotal());
+          }
+          if (actor.getOther() != null && !actor.getOther().trim().isEmpty()) {
+            actorData.put("other", this.getSanitizedText(actor.getOther()));
+          }
+          if (actor.getWomenYouthNumber() != null) {
+            actorData.put("womenYouthNumber", actor.getWomenYouthNumber());
+          }
+          if (actor.getWomenNonYouthNumber() != null) {
+            actorData.put("womenNonYouthNumber", actor.getWomenNonYouthNumber());
+          }
+          if (actor.getMenYouthNumber() != null) {
+            actorData.put("menYouthNumber", actor.getMenYouthNumber());
+          }
+          if (actor.getMenNonYouthNumber() != null) {
+            actorData.put("menNonYouthNumber", actor.getMenNonYouthNumber());
+          }
+          actorsList.add(actorData);
+        }
+        
+        if (!actorsList.isEmpty()) {
+          data.put("actors", actorsList);
+          data.put("hasActors", true);
+        }
+      }
+    }
+
     // Has CGIAR contribution
     if (innovationInfo.getHasCgiarContribution() != null) {
       data.put("hasCgiarContribution", innovationInfo.getHasCgiarContribution() ? "Yes" : "No");
@@ -9330,46 +9432,110 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("intellectualPropertyInstitution",
         this.getSanitizedText(innovationInfo.getIntellectualPropertyInstitution().getComposedName()));
     }
-
-    // Countries
-    List<String> countries = new ArrayList<>();
-    if (innovation.getProjectInnovationCountries() != null) {
-      countries = innovation.getProjectInnovationCountries().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-          && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-          && c.getLocElement().getLocElementType().getId() == 2)
-        .map(c -> this.getSanitizedText(c.getLocElement().getName())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    
+    // Legal restrictions
+    if (innovationInfo.getHasLegalRestrictions() != null) {
+      data.put("hasLegalRestrictions", innovationInfo.getHasLegalRestrictions() ? "Yes" : "No");
     }
-    if (!countries.isEmpty()) {
-      data.put("countries", String.join(", ", countries));
+    
+    // Asset potential
+    if (innovationInfo.getHasAssetPotential() != null) {
+      data.put("hasAssetPotential", innovationInfo.getHasAssetPotential() ? "Yes" : "No");
     }
-
-    // Regions
-    List<String> regions = new ArrayList<>();
-    if (innovation.getProjectInnovationRegions() != null) {
-      regions = innovation.getProjectInnovationRegions().stream()
-        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
-          && r.getLocElement() != null && r.getLocElement().getLocElementType() != null
-          && r.getLocElement().getLocElementType().getId() == 1)
-        .map(r -> this.getSanitizedText(r.getLocElement().getName())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    }
-    if (!regions.isEmpty()) {
-      data.put("regions", String.join(", ", regions));
+    
+    // Further development
+    if (innovationInfo.getHasFurtherDevelopment() != null) {
+      data.put("hasFurtherDevelopment", innovationInfo.getHasFurtherDevelopment() ? "Yes" : "No");
     }
 
+    // Geographic information (structured like OICRs)
+    // Determine if geographic scope is Regional or National
+    boolean isRegional = false;
+    boolean isNational = false;
+    
     // Geographic scopes
     List<String> geographicScopes = new ArrayList<>();
     if (innovation.getProjectInnovationGeographicScopes() != null) {
-      geographicScopes = innovation.getProjectInnovationGeographicScopes().stream()
+      List<ProjectInnovationGeographicScope> geographicScopeList = innovation.getProjectInnovationGeographicScopes().stream()
         .filter(gs -> gs.isActive() && gs.getPhase() != null && gs.getPhase().equals(this.getSelectedPhase())
           && gs.getRepIndGeographicScope() != null)
-        .map(gs -> this.getSanitizedText(gs.getRepIndGeographicScope().getName())).filter(Objects::nonNull)
-        .distinct().collect(Collectors.toList());
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationGeographicScope geographicScope : geographicScopeList) {
+        Long scopeId = geographicScope.getRepIndGeographicScope().getId();
+        // Check if Regional (ID == 2)
+        if (scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isRegional = true;
+        }
+        // Check if National/Multi-national/Sub-national (ID != Global && ID != Regional)
+        if (!scopeId.equals(this.getReportingIndGeographicScopeGlobal())
+            && !scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isNational = true;
+        }
+        String scopeName = this.getSanitizedText(geographicScope.getRepIndGeographicScope().getName());
+        if (scopeName != null && !scopeName.isEmpty()) {
+          geographicScopes.add(scopeName);
+        }
+      }
     }
     if (!geographicScopes.isEmpty()) {
       data.put("geographicScopes", String.join(", ", geographicScopes));
+    }
+
+    // Regions - only show if geographic scope is Regional
+    // Read directly from project_innovation_regions table
+    if (isRegional) {
+      List<String> regions = new ArrayList<>();
+      List<ProjectInnovationRegion> innovationRegions = 
+        projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationRegions != null && !innovationRegions.isEmpty()) {
+        // Load LocElement for each region to ensure relationships are loaded
+        for (ProjectInnovationRegion region : innovationRegions) {
+          if (region != null && region.isActive() && region.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(region.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 1) {
+              String regionName = this.getSanitizedText(locElement.getName());
+              if (regionName != null && !regionName.isEmpty()) {
+                regions.add(regionName);
+              }
+            }
+          }
+        }
+      }
+      if (!regions.isEmpty()) {
+        data.put("regions", String.join(", ", regions));
+      }
+    }
+
+    // Countries - only show if geographic scope is National/Multi-national/Sub-national
+    // Also check if hasSpecifiedOutputCountries is true
+    // Read directly from project_innovation_countries table
+    if (isNational || (innovationInfo.getHasSpecifiedOutputCountries() != null 
+        && innovationInfo.getHasSpecifiedOutputCountries())) {
+      List<String> countries = new ArrayList<>();
+      List<ProjectInnovationCountry> innovationCountries = 
+        projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationCountries != null && !innovationCountries.isEmpty()) {
+        // Load LocElement for each country to ensure relationships are loaded
+        for (ProjectInnovationCountry country : innovationCountries) {
+          if (country != null && country.isActive() && country.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(country.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 2) {
+              String countryName = this.getSanitizedText(locElement.getName());
+              if (countryName != null && !countryName.isEmpty()) {
+                countries.add(countryName);
+              }
+            }
+          }
+        }
+      }
+      if (!countries.isEmpty()) {
+        data.put("countries", String.join(", ", countries));
+      }
     }
 
     // Organizations
@@ -9385,17 +9551,103 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("organizations", String.join(", ", organizations));
     }
 
-    // Contributing organizations
-    List<String> contributingOrganizations = new ArrayList<>();
+    // Contributing external partners (with roles)
+    List<Map<String, Object>> contributingPartners = new ArrayList<>();
     if (innovation.getProjectInnovationContributingOrganization() != null) {
-      contributingOrganizations = innovation.getProjectInnovationContributingOrganization().stream()
+      List<ProjectInnovationContributingOrganization> partnersList = innovation.getProjectInnovationContributingOrganization().stream()
         .filter(co -> co.isActive() && co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
           && co.getInstitution() != null)
-        .map(co -> this.getSanitizedText(co.getInstitution().getComposedName())).filter(Objects::nonNull)
-        .sorted().collect(Collectors.toList());
+        .sorted((co1, co2) -> {
+          String name1 = co1.getInstitution() != null ? co1.getInstitution().getComposedName() : "";
+          String name2 = co2.getInstitution() != null ? co2.getInstitution().getComposedName() : "";
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationContributingOrganization partner : partnersList) {
+        Map<String, Object> partnerData = new HashMap<>();
+        String partnerName = this.getSanitizedText(partner.getInstitution().getComposedName());
+        if (partnerName != null && !partnerName.isEmpty()) {
+          partnerData.put("name", partnerName);
+          
+          // Determine role based on boolean flags
+          List<String> roles = new ArrayList<>();
+          if (Boolean.TRUE.equals(partner.getScaling())) {
+            roles.add("Scaling");
+          }
+          if (Boolean.TRUE.equals(partner.getDemand())) {
+            roles.add("Demand");
+          }
+          if (Boolean.TRUE.equals(partner.getInnovation())) {
+            roles.add("Innovation");
+          }
+          if (Boolean.TRUE.equals(partner.getOther())) {
+            roles.add("Other");
+          }
+          
+          if (!roles.isEmpty()) {
+            partnerData.put("role", String.join(", ", roles));
+          }
+          
+          contributingPartners.add(partnerData);
+        }
+      }
     }
-    if (!contributingOrganizations.isEmpty()) {
-      data.put("contributingOrganizations", String.join(", ", contributingOrganizations));
+    if (!contributingPartners.isEmpty()) {
+      data.put("contributingPartners", contributingPartners);
+      data.put("hasContributingPartners", true);
+    }
+
+    // Alliance Organizations
+    List<Map<String, Object>> allianceOrganizations = new ArrayList<>();
+    if (innovation.getProjectInnovationAllianceOrganizations() != null) {
+      List<ProjectInnovationAllianceOrganization> allianceOrgsList = innovation.getProjectInnovationAllianceOrganizations().stream()
+        .filter(ao -> ao.isActive() && ao.getPhase() != null && ao.getPhase().equals(this.getSelectedPhase()))
+        .sorted((ao1, ao2) -> {
+          String name1 = ao1.getOrganizationName() != null ? ao1.getOrganizationName() 
+            : (ao1.getInstitution() != null ? ao1.getInstitution().getComposedName() : "");
+          String name2 = ao2.getOrganizationName() != null ? ao2.getOrganizationName() 
+            : (ao2.getInstitution() != null ? ao2.getInstitution().getComposedName() : "");
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationAllianceOrganization allianceOrg : allianceOrgsList) {
+        Map<String, Object> allianceOrgData = new HashMap<>();
+        
+        // Get organization name (prefer organizationName, fallback to institution name)
+        String orgName = null;
+        if (allianceOrg.getOrganizationName() != null && !allianceOrg.getOrganizationName().trim().isEmpty()) {
+          orgName = this.getSanitizedText(allianceOrg.getOrganizationName());
+        } else if (allianceOrg.getInstitution() != null && allianceOrg.getInstitution().getComposedName() != null) {
+          orgName = this.getSanitizedText(allianceOrg.getInstitution().getComposedName());
+        }
+        
+        if (orgName != null && !orgName.isEmpty()) {
+          allianceOrgData.put("name", orgName);
+          
+          // Add institution type if available
+          if (allianceOrg.getInstitutionType() != null && allianceOrg.getInstitutionType().getName() != null) {
+            allianceOrgData.put("institutionType", this.getSanitizedText(allianceOrg.getInstitutionType().getName()));
+          }
+          
+          // Add scaling partner flag
+          if (allianceOrg.getScalingPartner() != null) {
+            allianceOrgData.put("scalingPartner", allianceOrg.getScalingPartner());
+          }
+          
+          // Add number if available
+          if (allianceOrg.getNumber() != null) {
+            allianceOrgData.put("number", allianceOrg.getNumber());
+          }
+          
+          allianceOrganizations.add(allianceOrgData);
+        }
+      }
+    }
+    if (!allianceOrganizations.isEmpty()) {
+      data.put("allianceOrganizations", allianceOrganizations);
+      data.put("hasAllianceOrganizations", true);
     }
 
     // CRPs
@@ -9559,6 +9811,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     if (!sdgs.isEmpty()) {
       data.put("sdgs", String.join(", ", sdgs));
+    }
+
+    // Impact area scores
+    // Gender score
+    if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getDescription() != null) {
+      data.put("genderScore", this.getSanitizedText(innovationInfo.getGenderScore().getDescription()));
+    }
+    
+    // Climate change score
+    if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getDescription() != null) {
+      data.put("climateChangeScore", this.getSanitizedText(innovationInfo.getClimateChangeScore().getDescription()));
+    }
+    
+    // Food security score
+    if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getDescription() != null) {
+      data.put("foodSecurityScore", this.getSanitizedText(innovationInfo.getFoodSecurityScore().getDescription()));
+    }
+    
+    // Environmental score
+    if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getDescription() != null) {
+      data.put("environmentalScore", this.getSanitizedText(innovationInfo.getEnvironmentalScore().getDescription()));
+    }
+    
+    // Poverty score
+    if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getDescription() != null) {
+      data.put("povertyScore", this.getSanitizedText(innovationInfo.getPovertyScore().getDescription()));
     }
 
     // Impact areas
