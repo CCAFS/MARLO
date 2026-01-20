@@ -43,6 +43,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -179,6 +181,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectPolicyManager projectPolicyManager;
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
+  private final ProjectInnovationRegionManager projectInnovationRegionManager;
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
   private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private final RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private final ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
@@ -220,6 +224,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager,
     ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
     ProjectLp6ContributionManager projectLp6ContributionManager,
@@ -259,6 +265,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectPolicyManager = projectPolicyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
     this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
@@ -9261,11 +9269,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("region", this.getSanitizedText(innovationInfo.getRepIndRegion().getName()));
     }
 
-    // Geographic scope
-    if (innovationInfo.getRepIndGeographicScope() != null) {
-      data.put("geographicScope", this.getSanitizedText(innovationInfo.getRepIndGeographicScope().getName()));
-    }
-
     // Evidence link
     if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
       data.put("evidenceLink", this.getSanitizedText(innovationInfo.getEvidenceLink()));
@@ -9382,45 +9385,94 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         this.getSanitizedText(innovationInfo.getIntellectualPropertyInstitution().getComposedName()));
     }
 
-    // Countries
-    List<String> countries = new ArrayList<>();
-    if (innovation.getProjectInnovationCountries() != null) {
-      countries = innovation.getProjectInnovationCountries().stream()
-        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
-          && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
-          && c.getLocElement().getLocElementType().getId() == 2)
-        .map(c -> this.getSanitizedText(c.getLocElement().getName())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    }
-    if (!countries.isEmpty()) {
-      data.put("countries", String.join(", ", countries));
-    }
-
-    // Regions
-    List<String> regions = new ArrayList<>();
-    if (innovation.getProjectInnovationRegions() != null) {
-      regions = innovation.getProjectInnovationRegions().stream()
-        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
-          && r.getLocElement() != null && r.getLocElement().getLocElementType() != null
-          && r.getLocElement().getLocElementType().getId() == 1)
-        .map(r -> this.getSanitizedText(r.getLocElement().getName())).filter(Objects::nonNull)
-        .collect(Collectors.toList());
-    }
-    if (!regions.isEmpty()) {
-      data.put("regions", String.join(", ", regions));
-    }
-
+    // Geographic information (structured like OICRs)
+    // Determine if geographic scope is Regional or National
+    boolean isRegional = false;
+    boolean isNational = false;
+    
     // Geographic scopes
     List<String> geographicScopes = new ArrayList<>();
     if (innovation.getProjectInnovationGeographicScopes() != null) {
-      geographicScopes = innovation.getProjectInnovationGeographicScopes().stream()
+      List<ProjectInnovationGeographicScope> geographicScopeList = innovation.getProjectInnovationGeographicScopes().stream()
         .filter(gs -> gs.isActive() && gs.getPhase() != null && gs.getPhase().equals(this.getSelectedPhase())
           && gs.getRepIndGeographicScope() != null)
-        .map(gs -> this.getSanitizedText(gs.getRepIndGeographicScope().getName())).filter(Objects::nonNull)
-        .distinct().collect(Collectors.toList());
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationGeographicScope geographicScope : geographicScopeList) {
+        Long scopeId = geographicScope.getRepIndGeographicScope().getId();
+        // Check if Regional (ID == 2)
+        if (scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isRegional = true;
+        }
+        // Check if National/Multi-national/Sub-national (ID != Global && ID != Regional)
+        if (!scopeId.equals(this.getReportingIndGeographicScopeGlobal())
+            && !scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isNational = true;
+        }
+        String scopeName = this.getSanitizedText(geographicScope.getRepIndGeographicScope().getName());
+        if (scopeName != null && !scopeName.isEmpty()) {
+          geographicScopes.add(scopeName);
+        }
+      }
     }
     if (!geographicScopes.isEmpty()) {
       data.put("geographicScopes", String.join(", ", geographicScopes));
+    }
+
+    // Regions - only show if geographic scope is Regional
+    // Read directly from project_innovation_regions table
+    if (isRegional) {
+      List<String> regions = new ArrayList<>();
+      List<ProjectInnovationRegion> innovationRegions = 
+        projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationRegions != null && !innovationRegions.isEmpty()) {
+        // Load LocElement for each region to ensure relationships are loaded
+        for (ProjectInnovationRegion region : innovationRegions) {
+          if (region != null && region.isActive() && region.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(region.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 1) {
+              String regionName = this.getSanitizedText(locElement.getName());
+              if (regionName != null && !regionName.isEmpty()) {
+                regions.add(regionName);
+              }
+            }
+          }
+        }
+      }
+      if (!regions.isEmpty()) {
+        data.put("regions", String.join(", ", regions));
+      }
+    }
+
+    // Countries - only show if geographic scope is National/Multi-national/Sub-national
+    // Also check if hasSpecifiedOutputCountries is true
+    // Read directly from project_innovation_countries table
+    if (isNational || (innovationInfo.getHasSpecifiedOutputCountries() != null 
+        && innovationInfo.getHasSpecifiedOutputCountries())) {
+      List<String> countries = new ArrayList<>();
+      List<ProjectInnovationCountry> innovationCountries = 
+        projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationCountries != null && !innovationCountries.isEmpty()) {
+        // Load LocElement for each country to ensure relationships are loaded
+        for (ProjectInnovationCountry country : innovationCountries) {
+          if (country != null && country.isActive() && country.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(country.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 2) {
+              String countryName = this.getSanitizedText(locElement.getName());
+              if (countryName != null && !countryName.isEmpty()) {
+                countries.add(countryName);
+              }
+            }
+          }
+        }
+      }
+      if (!countries.isEmpty()) {
+        data.put("countries", String.join(", ", countries));
+      }
     }
 
     // Organizations
