@@ -23,14 +23,18 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
  */
 @Named
+@Transactional
 public class CrpsSiteIntegrationManagerImpl implements CrpsSiteIntegrationManager {
 
-
+  private static final Logger LOG = LoggerFactory.getLogger(CrpsSiteIntegrationManagerImpl.class);
   private CrpsSiteIntegrationDAO crpsSiteIntegrationDAO;
   // Managers
 
@@ -68,9 +72,18 @@ public class CrpsSiteIntegrationManagerImpl implements CrpsSiteIntegrationManage
   }
 
   @Override
+  @Transactional
   public CrpsSiteIntegration saveCrpsSiteIntegration(CrpsSiteIntegration crpsSiteIntegration) {
-
-    return crpsSiteIntegrationDAO.save(crpsSiteIntegration);
+    LOG.info("=== SAVE CRPS SITE INTEGRATION CALLED ===");
+    LOG.info("=== CRPS SITE INTEGRATION DATA: {} ===", crpsSiteIntegration != null ? 
+      "ID: " + crpsSiteIntegration.getId() + ", LocElement: " + 
+      (crpsSiteIntegration.getLocElement() != null ? crpsSiteIntegration.getLocElement().getIsoAlpha2() : "NULL") : 
+      "NULL OBJECT");
+    
+    CrpsSiteIntegration result = crpsSiteIntegrationDAO.save(crpsSiteIntegration);
+    LOG.info("=== SAVE RESULT: {} ===", result != null ? "ID: " + result.getId() : "NULL");
+    
+    return result;
   }
 
 

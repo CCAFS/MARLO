@@ -24,8 +24,10 @@ import java.util.List;
 import javax.inject.Named;
 import javax.inject.Inject;
 import org.hibernate.SessionFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
+@Transactional
 public class CrpsSiteIntegrationMySQLDAO extends AbstractMarloDAO<CrpsSiteIntegration, Long> implements CrpsSiteIntegrationDAO {
 
 
