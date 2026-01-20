@@ -104,7 +104,7 @@
   [#local customName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.user.getComposedName())!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${customName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${customName}.role.id" value="${userRole}"/>
@@ -124,7 +124,7 @@
   [#local customName = "${name}[${element.id}]" /]
   <li id="user-${template?string('template',element.id)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- Activity Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.title?html)!'Unknown actibity'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span><span class="name"> ${(element.title)!'Unknown actibity'}</span>
     [#-- Hidden inputs --]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
     [#-- Remove Button --]
