@@ -9319,6 +9319,54 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("beneficiariesNarrative", this.getSanitizedText(innovationInfo.getBeneficiariesNarrative()));
     }
 
+    // Scaling readiness
+    if (innovationInfo.getReadinessScale() != null) {
+      data.put("readinessScale", innovationInfo.getReadinessScale());
+    }
+    if (innovationInfo.getReadinessReason() != null && !innovationInfo.getReadinessReason().trim().isEmpty()) {
+      data.put("readinessReason", this.getSanitizedText(innovationInfo.getReadinessReason()));
+    }
+    if (innovationInfo.getCheaperAlternatives() != null) {
+      data.put("cheaperAlternatives", innovationInfo.getCheaperAlternatives());
+    }
+    if (innovationInfo.getSimplerUse() != null) {
+      data.put("simplerUse", innovationInfo.getSimplerUse());
+    }
+    if (innovationInfo.getPerformBetter() != null) {
+      data.put("performBetter", innovationInfo.getPerformBetter());
+    }
+    if (innovationInfo.getInnovationDesirable() != null) {
+      data.put("innovationDesirable", innovationInfo.getInnovationDesirable());
+    }
+    if (innovationInfo.getInnovationCommercially() != null) {
+      data.put("innovationCommercially", innovationInfo.getInnovationCommercially());
+    }
+    if (innovationInfo.getInnovationSupported() != null) {
+      data.put("innovationSupported", innovationInfo.getInnovationSupported());
+    }
+    if (innovationInfo.getEvidenceUptake() != null) {
+      data.put("evidenceUptake", innovationInfo.getEvidenceUptake());
+    }
+
+    // Knowledge potential
+    if (innovationInfo.getHasKnowledgePotential() != null) {
+      data.put("hasKnowledgePotential", innovationInfo.getHasKnowledgePotential().getId());
+      // Only add reasonKnowledgePotential if hasKnowledgePotential ID is 2
+      if (innovationInfo.getHasKnowledgePotential().getId() != null 
+          && innovationInfo.getHasKnowledgePotential().getId().equals(2L)
+          && innovationInfo.getReasonKnowledgePotential() != null 
+          && !innovationInfo.getReasonKnowledgePotential().trim().isEmpty()) {
+        data.put("reasonKnowledgePotential", this.getSanitizedText(innovationInfo.getReasonKnowledgePotential()));
+        data.put("showReasonKnowledgePotential", true);
+      }
+    }
+
+    // Knowledge methods and tools narrative
+    if (innovationInfo.getKnowledgeMethodsAndToolsNarrative() != null 
+        && !innovationInfo.getKnowledgeMethodsAndToolsNarrative().trim().isEmpty()) {
+      data.put("knowledgeMethodsAndToolsNarrative", this.getSanitizedText(innovationInfo.getKnowledgeMethodsAndToolsNarrative()));
+    }
+
     // Are users determined and actors
     if (innovationInfo.getAreUsersDetermined() != null) {
       data.put("areUsersDetermined", innovationInfo.getAreUsersDetermined());
@@ -9383,6 +9431,21 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     if (innovationInfo.getIntellectualPropertyInstitution() != null) {
       data.put("intellectualPropertyInstitution",
         this.getSanitizedText(innovationInfo.getIntellectualPropertyInstitution().getComposedName()));
+    }
+    
+    // Legal restrictions
+    if (innovationInfo.getHasLegalRestrictions() != null) {
+      data.put("hasLegalRestrictions", innovationInfo.getHasLegalRestrictions() ? "Yes" : "No");
+    }
+    
+    // Asset potential
+    if (innovationInfo.getHasAssetPotential() != null) {
+      data.put("hasAssetPotential", innovationInfo.getHasAssetPotential() ? "Yes" : "No");
+    }
+    
+    // Further development
+    if (innovationInfo.getHasFurtherDevelopment() != null) {
+      data.put("hasFurtherDevelopment", innovationInfo.getHasFurtherDevelopment() ? "Yes" : "No");
     }
 
     // Geographic information (structured like OICRs)
@@ -9488,17 +9551,103 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("organizations", String.join(", ", organizations));
     }
 
-    // Contributing organizations
-    List<String> contributingOrganizations = new ArrayList<>();
+    // Contributing external partners (with roles)
+    List<Map<String, Object>> contributingPartners = new ArrayList<>();
     if (innovation.getProjectInnovationContributingOrganization() != null) {
-      contributingOrganizations = innovation.getProjectInnovationContributingOrganization().stream()
+      List<ProjectInnovationContributingOrganization> partnersList = innovation.getProjectInnovationContributingOrganization().stream()
         .filter(co -> co.isActive() && co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
           && co.getInstitution() != null)
-        .map(co -> this.getSanitizedText(co.getInstitution().getComposedName())).filter(Objects::nonNull)
-        .sorted().collect(Collectors.toList());
+        .sorted((co1, co2) -> {
+          String name1 = co1.getInstitution() != null ? co1.getInstitution().getComposedName() : "";
+          String name2 = co2.getInstitution() != null ? co2.getInstitution().getComposedName() : "";
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationContributingOrganization partner : partnersList) {
+        Map<String, Object> partnerData = new HashMap<>();
+        String partnerName = this.getSanitizedText(partner.getInstitution().getComposedName());
+        if (partnerName != null && !partnerName.isEmpty()) {
+          partnerData.put("name", partnerName);
+          
+          // Determine role based on boolean flags
+          List<String> roles = new ArrayList<>();
+          if (Boolean.TRUE.equals(partner.getScaling())) {
+            roles.add("Scaling");
+          }
+          if (Boolean.TRUE.equals(partner.getDemand())) {
+            roles.add("Demand");
+          }
+          if (Boolean.TRUE.equals(partner.getInnovation())) {
+            roles.add("Innovation");
+          }
+          if (Boolean.TRUE.equals(partner.getOther())) {
+            roles.add("Other");
+          }
+          
+          if (!roles.isEmpty()) {
+            partnerData.put("role", String.join(", ", roles));
+          }
+          
+          contributingPartners.add(partnerData);
+        }
+      }
     }
-    if (!contributingOrganizations.isEmpty()) {
-      data.put("contributingOrganizations", String.join(", ", contributingOrganizations));
+    if (!contributingPartners.isEmpty()) {
+      data.put("contributingPartners", contributingPartners);
+      data.put("hasContributingPartners", true);
+    }
+
+    // Alliance Organizations
+    List<Map<String, Object>> allianceOrganizations = new ArrayList<>();
+    if (innovation.getProjectInnovationAllianceOrganizations() != null) {
+      List<ProjectInnovationAllianceOrganization> allianceOrgsList = innovation.getProjectInnovationAllianceOrganizations().stream()
+        .filter(ao -> ao.isActive() && ao.getPhase() != null && ao.getPhase().equals(this.getSelectedPhase()))
+        .sorted((ao1, ao2) -> {
+          String name1 = ao1.getOrganizationName() != null ? ao1.getOrganizationName() 
+            : (ao1.getInstitution() != null ? ao1.getInstitution().getComposedName() : "");
+          String name2 = ao2.getOrganizationName() != null ? ao2.getOrganizationName() 
+            : (ao2.getInstitution() != null ? ao2.getInstitution().getComposedName() : "");
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationAllianceOrganization allianceOrg : allianceOrgsList) {
+        Map<String, Object> allianceOrgData = new HashMap<>();
+        
+        // Get organization name (prefer organizationName, fallback to institution name)
+        String orgName = null;
+        if (allianceOrg.getOrganizationName() != null && !allianceOrg.getOrganizationName().trim().isEmpty()) {
+          orgName = this.getSanitizedText(allianceOrg.getOrganizationName());
+        } else if (allianceOrg.getInstitution() != null && allianceOrg.getInstitution().getComposedName() != null) {
+          orgName = this.getSanitizedText(allianceOrg.getInstitution().getComposedName());
+        }
+        
+        if (orgName != null && !orgName.isEmpty()) {
+          allianceOrgData.put("name", orgName);
+          
+          // Add institution type if available
+          if (allianceOrg.getInstitutionType() != null && allianceOrg.getInstitutionType().getName() != null) {
+            allianceOrgData.put("institutionType", this.getSanitizedText(allianceOrg.getInstitutionType().getName()));
+          }
+          
+          // Add scaling partner flag
+          if (allianceOrg.getScalingPartner() != null) {
+            allianceOrgData.put("scalingPartner", allianceOrg.getScalingPartner());
+          }
+          
+          // Add number if available
+          if (allianceOrg.getNumber() != null) {
+            allianceOrgData.put("number", allianceOrg.getNumber());
+          }
+          
+          allianceOrganizations.add(allianceOrgData);
+        }
+      }
+    }
+    if (!allianceOrganizations.isEmpty()) {
+      data.put("allianceOrganizations", allianceOrganizations);
+      data.put("hasAllianceOrganizations", true);
     }
 
     // CRPs
@@ -9662,6 +9811,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
     if (!sdgs.isEmpty()) {
       data.put("sdgs", String.join(", ", sdgs));
+    }
+
+    // Impact area scores
+    // Gender score
+    if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getDescription() != null) {
+      data.put("genderScore", this.getSanitizedText(innovationInfo.getGenderScore().getDescription()));
+    }
+    
+    // Climate change score
+    if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getDescription() != null) {
+      data.put("climateChangeScore", this.getSanitizedText(innovationInfo.getClimateChangeScore().getDescription()));
+    }
+    
+    // Food security score
+    if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getDescription() != null) {
+      data.put("foodSecurityScore", this.getSanitizedText(innovationInfo.getFoodSecurityScore().getDescription()));
+    }
+    
+    // Environmental score
+    if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getDescription() != null) {
+      data.put("environmentalScore", this.getSanitizedText(innovationInfo.getEnvironmentalScore().getDescription()));
+    }
+    
+    // Poverty score
+    if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getDescription() != null) {
+      data.put("povertyScore", this.getSanitizedText(innovationInfo.getPovertyScore().getDescription()));
     }
 
     // Impact areas
