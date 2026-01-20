@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.UserRoleDAO;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class UserRoleManagerImpl implements UserRoleManager {
   }
 
   @Override
+  @Transactional
   public void deleteUserRole(long userRoleId) {
 
     userRoleDAO.deleteUserRole(userRoleId);
@@ -78,6 +80,7 @@ public class UserRoleManagerImpl implements UserRoleManager {
   }
 
   @Override
+  @Transactional
   public UserRole saveUserRole(UserRole userRole) {
 
     return userRoleDAO.save(userRole);

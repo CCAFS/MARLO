@@ -75,7 +75,6 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class CrpAdminManagmentAction extends BaseAction {
 
-
   private static final long serialVersionUID = 3355662668874414548L;
 
 
@@ -1060,6 +1059,7 @@ public class CrpAdminManagmentAction extends BaseAction {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
       messages = this.getActionMessages();
+      
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
@@ -1185,37 +1185,91 @@ public class CrpAdminManagmentAction extends BaseAction {
   private void saveProgramsData() {
     List<CrpProgram> fgProgramsRewiev =
       crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    
     // Removing crp flagship program type
     if (fgProgramsRewiev != null) {
       for (CrpProgram crpProgram : fgProgramsRewiev) {
-        if (!flagshipsPrograms.contains(crpProgram)) {
+        
+        boolean isInList = flagshipsPrograms.contains(crpProgram);
+        
+        if (!isInList) {
           CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
-          if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-            .isEmpty()) {
-            for (LiaisonInstitution institution : crpProgram.getLiaisonInstitutions().stream().filter(c -> c.isActive())
-              .collect(Collectors.toList())) {
+          
+          List<CrpProgramLeader> activeLeaders = crpProgramBD.getCrpProgramLeaders().stream()
+            .filter(c -> c.isActive()).collect(Collectors.toList());
+          
+          if (activeLeaders.isEmpty()) {
+            
+            List<LiaisonInstitution> activeInstitutions = crpProgram.getLiaisonInstitutions().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList());
+            
+            for (LiaisonInstitution institution : activeInstitutions) {
+              liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
+            }
+
+            crpProgramManager.deleteCrpProgram(crpProgram.getId());
+          } else {
+            for (CrpProgramLeader leader : activeLeaders) {
+              
+              // Remove user roles for this leader
+              List<UserRole> userRoles = leader.getUser().getUserRoles().stream()
+                .filter(ur -> ur.getRole().equals(fplRole) || ur.getRole().equals(fpmRole))
+                .collect(Collectors.toList());
+              
+              for (UserRole userRole : userRoles) {
+                userRoleManager.deleteUserRole(userRole.getId());
+              }
+              
+              // Remove liaison users for this leader
+              List<LiaisonUser> liaisonUsers = liaisonUserManager.findAll().stream()
+                .filter(lu -> lu.getUser().getId().equals(leader.getUser().getId()) 
+                          && lu.getCrp().getId().equals(loggedCrp.getId()))
+                .collect(Collectors.toList());
+              
+              for (LiaisonUser liaisonUser : liaisonUsers) {
+                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+              }
+              
+              // Remove the program leader itself
+              crpProgramLeaderManager.deleteCrpProgramLeader(leader.getId());
+            }
+            
+            // Now proceed with program deletion
+            
+            List<LiaisonInstitution> activeInstitutions = crpProgram.getLiaisonInstitutions().stream()
+              .filter(c -> c.isActive()).collect(Collectors.toList());
+            
+            for (LiaisonInstitution institution : activeInstitutions) {
               liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
             }
 
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
-
         }
       }
     }
+    
     CrpProgram crpProgramDb = null;
     // Add crp flagship program type
     if (flagshipsPrograms != null) {
       for (CrpProgram crpProgram : flagshipsPrograms) {
         if (crpProgram.getId() == null) {
+          // Validate that name is not null before saving
+          if (crpProgram.getName() == null || crpProgram.getName().trim().isEmpty()) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("list-flagshipsPrograms", "Program name cannot be null");
+            this.getInvalidFields().putAll(error);
+            continue;
+          }
+          
           crpProgram.setCrp(loggedCrp);
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgram);
+          
           LiaisonInstitution liasonInstitution = new LiaisonInstitution();
           liasonInstitution.setAcronym(crpProgramDb.getAcronym());
           liasonInstitution.setCrp(loggedCrp);
           liasonInstitution.setCrpProgram(crpProgramDb);
           liasonInstitution.setName(crpProgramDb.getName());
-
 
           liaisonInstitutionManager.saveLiaisonInstitution(liasonInstitution);
 
@@ -1223,9 +1277,13 @@ public class CrpAdminManagmentAction extends BaseAction {
           crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
           crpProgramDb.setCrp(loggedCrp);
           crpProgramDb.setAcronym(crpProgram.getAcronym());
-          crpProgramDb.setName(crpProgram.getName());
+          
+          // Protection against null names
+          if (crpProgram.getName() != null && !crpProgram.getName().trim().isEmpty()) {
+            crpProgramDb.setName(crpProgram.getName());
+          }
+          
           crpProgramDb.setBaseLine(crpProgram.getBaseLine());
-
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
 
           /**
@@ -1295,6 +1353,14 @@ public class CrpAdminManagmentAction extends BaseAction {
       } else {
         int index = 0;
         for (CrpProgram crpProgram : flagshipsPrograms) {
+          if (crpProgram.getName() == null || crpProgram.getName().trim().isEmpty()) {
+            error.put("list-flagshipsPrograms[" + index + "].name",
+              this.getText("CrpProgram.inputName.required"));
+          }
+          if (crpProgram.getAcronym() == null || crpProgram.getAcronym().trim().isEmpty()) {
+            error.put("list-flagshipsPrograms[" + index + "].acronym",
+              this.getText("CrpProgram.inputAcronym.required"));
+          }
           if (crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty()) {
             error.put("list-flagshipsPrograms[" + index + "].leaders",
               this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Flagship Leaders"}));

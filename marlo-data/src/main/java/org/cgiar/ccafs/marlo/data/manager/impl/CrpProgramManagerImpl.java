@@ -45,6 +45,7 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpProgram(long crpProgramId) {
 
     this.crpProgramDAO.deleteCrpProgram(crpProgramId);
@@ -95,6 +96,7 @@ public class CrpProgramManagerImpl implements CrpProgramManager {
   }
 
   @Override
+  @Transactional
   public CrpProgram saveCrpProgram(CrpProgram crpProgram) {
 
     return this.crpProgramDAO.save(crpProgram);
