@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizat
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
@@ -183,6 +184,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
   private final ProjectInnovationRegionManager projectInnovationRegionManager;
   private final ProjectInnovationCountryManager projectInnovationCountryManager;
+  private final ScalingReadinessManager scalingReadinessManager;
   private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private final RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private final ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
@@ -226,6 +228,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
     ProjectInnovationRegionManager projectInnovationRegionManager,
     ProjectInnovationCountryManager projectInnovationCountryManager,
+    ScalingReadinessManager scalingReadinessManager,
     ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
     ProjectLp6ContributionManager projectLp6ContributionManager,
@@ -267,6 +270,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
     this.projectInnovationRegionManager = projectInnovationRegionManager;
     this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.scalingReadinessManager = scalingReadinessManager;
     this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
@@ -9321,11 +9325,22 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // Scaling readiness
     if (innovationInfo.getReadinessScale() != null) {
-      data.put("readinessScale", innovationInfo.getReadinessScale());
+      // Subtract 1 because frontend sends ID
+      Integer adjustedReadinessScale = innovationInfo.getReadinessScale();
+      // Get the name from scaling_readiness table
+      try {
+        ScalingReadiness scalingReadiness = this.scalingReadinessManager.getScalingReadinessById(adjustedReadinessScale.longValue());
+        if (scalingReadiness != null && scalingReadiness.getName() != null) {
+          data.put("readinessScale", this.getSanitizedText(scalingReadiness.getName()));
+        } else {
+          data.put("readinessScale", adjustedReadinessScale);
+        }
+      } catch (Exception e) {
+        // If error getting name, use the adjusted ID
+        data.put("readinessScale", adjustedReadinessScale);
+      }
     }
-    if (innovationInfo.getReadinessReason() != null && !innovationInfo.getReadinessReason().trim().isEmpty()) {
-      data.put("readinessReason", this.getSanitizedText(innovationInfo.getReadinessReason()));
-    }
+
     if (innovationInfo.getCheaperAlternatives() != null) {
       data.put("cheaperAlternatives", innovationInfo.getCheaperAlternatives());
     }
