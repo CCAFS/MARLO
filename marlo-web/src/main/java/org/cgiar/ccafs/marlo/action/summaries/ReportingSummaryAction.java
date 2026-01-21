@@ -92,6 +92,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -2907,7 +2908,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Deliverable Crp Outcome list
           if (deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
           }
           if (deliverable.getCrpOutcomes() != null) {
             for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
@@ -2932,14 +2933,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverable Cluster participants
         if (deliverable.getDeliverableClusterParticipants() != null) {
           deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
 
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
         if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
@@ -2958,7 +2959,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           deliverable.setCountries(new ArrayList<>());
         } else {
           List<DeliverableLocation> countriesList = deliverableLocationManager
-            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
           deliverable.setCountries(countriesList);
         }
 
@@ -2982,7 +2983,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList())));
         }
@@ -3003,7 +3004,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverables shared
         try {
           List<ProjectDeliverableShared> deliverablesShared = null;
-          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getSelectedPhase().getId());
 
           if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
             deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
@@ -3020,6 +3021,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           } else {
             sharedClusters = "<Not provided>";
           }
+
+          
         } catch (Exception e) {
           LOG.error("error getting shared deliverables " + e);
         }
@@ -3031,7 +3034,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
-              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getPhase().getId().equals(this.getSelectedPhase().getId()) && da.getActivity() != null
               && da.getActivity().isActive() && da.getActivity().getProject() != null
               && da.getActivity().getProject().getId().equals(project.getId()))
             .collect(Collectors.toList());
@@ -3057,7 +3060,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
         if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
@@ -3192,18 +3195,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           try {
             if (deliverable.getDeliverableDisseminations().stream()
               .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                && this.getSelectedPhase() != null && this.getSelectedPhase().getId() != null
                 && d.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()) != null
               && !deliverable.getDeliverableDisseminations().stream()
                 .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                  && this.getSelectedPhase() != null && this.getActualPhase().getId() != null
                   && d.getPhase().getId().equals(this.getActualPhase().getId()))
                 .collect(Collectors.toList()).isEmpty()) {
               deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
                 .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
-                  && d.getPhase().getId().equals(this.getActualPhase().getId()))
+                  && this.getActualPhase() != null && this.getSelectedPhase().getId() != null
+                  && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
@@ -3716,7 +3719,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
           // Other partnert
           List<DeliverableUserPartnership> otherPartners = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 
@@ -3934,7 +3937,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Deliverable Crp Outcome list
           if (deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
           }
           if (deliverable.getCrpOutcomes() != null) {
             for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
@@ -3959,14 +3962,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverable Cluster participants
         if (deliverable.getDeliverableClusterParticipants() != null) {
           deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
 
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
         if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
@@ -3985,7 +3988,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           deliverable.setCountries(new ArrayList<>());
         } else {
           List<DeliverableLocation> countriesList = deliverableLocationManager
-            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
           deliverable.setCountries(countriesList);
         }
 
@@ -4009,7 +4012,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList())));
         }
@@ -4032,7 +4035,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
-              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getPhase().getId().equals(this.getSelectedPhase().getId()) && da.getActivity() != null
               && da.getActivity().isActive() && da.getActivity().getProject() != null
               && da.getActivity().getProject().getId().equals(project.getId()))
             .collect(Collectors.toList());
@@ -7810,6 +7813,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
       jsonData.put("oicrs", this.buildOICRsList());
       jsonData.put("deliverables", this.buildDeliverablesList());
+      
+      System.out.println("[generateAndSendJson] About to build activities list");
+      List<Map<String, Object>> activitiesList = this.buildActivitiesList();
+      System.out.println("[generateAndSendJson] Activities list built, size: " + (activitiesList != null ? activitiesList.size() : "NULL"));
+      jsonData.put("activities", activitiesList);
+      System.out.println("[generateAndSendJson] Activities added to JSON, verifying...");
+      Object activitiesInJson = jsonData.get("activities");
+      System.out.println("[generateAndSendJson] Activities in JSON: " + (activitiesInJson != null ? activitiesInJson.getClass().getSimpleName() + " (size: " + (activitiesInJson instanceof List ? ((List<?>) activitiesInJson).size() : "N/A") + ")" : "NULL"));
+      
       jsonData.put("innovations", this.buildInnovationsList());
       
       // Set crossCutting at root level for template access (section is outside projectDescription block)
@@ -10294,6 +10306,204 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     return deliverables;
   }
 
+  private List<Map<String, Object>> buildActivitiesList() {
+    List<Map<String, Object>> activities = new ArrayList<>();
+    System.out.println("[buildActivitiesList] Starting to build activities list");
+    
+    if (project == null) {
+      System.out.println("[buildActivitiesList] Project is null, returning empty list");
+      return activities;
+    }
+
+    if (this.getSelectedPhase() == null) {
+      System.out.println("[buildActivitiesList] Selected Phase is null, returning empty list");
+      return activities;
+    }
+
+    long projectID = project.getId();
+    long phaseID = this.getSelectedPhase().getId();
+    
+    System.out.println("[buildActivitiesList] Project ID: " + projectID);
+    System.out.println("[buildActivitiesList] Selected Phase ID: " + phaseID);
+    System.out.println("[buildActivitiesList] Selected Phase Year: " + this.getSelectedPhase().getYear());
+
+    try {
+      // Use the same logic as ProjectActivitiesAction: getActiveActivitiesByProject with Optional
+      // But use getSelectedPhase() to be consistent with OICRs and Innovations
+      System.out.println("[buildActivitiesList] Calling activityManager.getActiveActivitiesByProject(" + projectID + ", " + phaseID + ")");
+      List<Activity> projectActivities = new ArrayList<>(Optional
+        .ofNullable(this.activityManager.getActiveActivitiesByProject(projectID, phaseID))
+        .orElse(Collections.emptyList()));
+
+      System.out.println("[buildActivitiesList] Total activities returned from manager: " + projectActivities.size());
+
+      if (projectActivities != null && !projectActivities.isEmpty()) {
+        // Sort activities by ID (same as ProjectActivitiesAction)
+        projectActivities.sort((a1, a2) -> Long.compare(a1.getId(), a2.getId()));
+        System.out.println("[buildActivitiesList] Activities sorted, processing " + projectActivities.size() + " activities");
+
+        int processedCount = 0;
+        int addedCount = 0;
+        int skippedCount = 0;
+
+        // Process all activities - manager already filters by phase and active status
+        for (Activity activity : projectActivities) {
+          processedCount++;
+          System.out.println("[buildActivitiesList] Processing activity #" + processedCount + " - ID: " + (activity != null ? activity.getId() : "NULL"));
+          
+          if (activity == null) {
+            System.out.println("[buildActivitiesList] Activity is null, skipping");
+            skippedCount++;
+            continue;
+          }
+
+          System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - isActive: " + activity.isActive());
+          System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - Phase: " + (activity.getPhase() != null ? activity.getPhase().getId() : "NULL"));
+
+          // Build activity data - manager already filtered by phase and active
+          System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - Building data");
+          Map<String, Object> activityData = this.buildActivityData(activity);
+          
+          if (activityData == null) {
+            System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - activityData is null, skipping");
+            skippedCount++;
+            continue;
+          }
+          
+          if (activityData.isEmpty()) {
+            System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - activityData is empty, skipping");
+            skippedCount++;
+            continue;
+          }
+          
+          if (!activityData.containsKey("id")) {
+            System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - activityData missing 'id' key, skipping");
+            skippedCount++;
+            continue;
+          }
+          
+          System.out.println("[buildActivitiesList] Activity ID " + activity.getId() + " - Successfully added to list");
+          activities.add(activityData);
+          addedCount++;
+        }
+
+        System.out.println("[buildActivitiesList] SUMMARY - Processed: " + processedCount + ", Added: " + addedCount + ", Skipped: " + skippedCount);
+      } else {
+        System.out.println("[buildActivitiesList] No activities found or list is null/empty");
+      }
+    } catch (Exception e) {
+      System.err.println("[buildActivitiesList] ERROR building activities list: " + e.getMessage());
+      e.printStackTrace();
+    }
+
+    System.out.println("[buildActivitiesList] Final activities list size: " + activities.size());
+    return activities;
+  }
+
+  private Map<String, Object> buildActivityData(Activity activity) {
+    Map<String, Object> data = new HashMap<>();
+    if (activity == null) {
+      return data;
+    }
+
+    // Basic info
+    data.put("id", activity.getId());
+    
+    if (activity.getTitle() != null && !activity.getTitle().trim().isEmpty()) {
+      data.put("title", this.getSanitizedText(activity.getTitle()));
+    }
+    
+    if (activity.getDescription() != null && !activity.getDescription().trim().isEmpty()) {
+      data.put("description", this.getSanitizedText(activity.getDescription()));
+    }
+
+    // Dates
+    if (activity.getStartDate() != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      data.put("startDate", formatter.format(activity.getStartDate()));
+    }
+    
+    if (activity.getEndDate() != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      data.put("endDate", formatter.format(activity.getEndDate()));
+    }
+
+    // Status
+    if (activity.getActivityStatus() != null) {
+      ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(activity.getActivityStatus());
+      if (statusEnum != null) {
+        data.put("status", statusEnum.getStatus());
+      } else {
+        data.put("status", activity.getActivityStatus().toString());
+      }
+    }
+
+    // Activity Progress
+    if (activity.getActivityProgress() != null && !activity.getActivityProgress().trim().isEmpty()) {
+      data.put("activityProgress", this.getSanitizedText(activity.getActivityProgress()));
+    }
+
+    // Activity Leader (ProjectPartnerPerson)
+    if (activity.getProjectPartnerPerson() != null) {
+      ProjectPartnerPerson partnerPerson = activity.getProjectPartnerPerson();
+      if (partnerPerson.getUser() != null) {
+        String leaderName = partnerPerson.getUser().getComposedName();
+        if (leaderName != null && !leaderName.trim().isEmpty()) {
+          data.put("leader", this.getSanitizedText(leaderName));
+        }
+      }
+      // Institution
+      if (partnerPerson.getProjectPartner() != null 
+          && partnerPerson.getProjectPartner().getInstitution() != null) {
+        String institutionName = partnerPerson.getProjectPartner().getInstitution().getComposedName();
+        if (institutionName != null && !institutionName.trim().isEmpty()) {
+          data.put("institution", this.getSanitizedText(institutionName));
+        }
+      }
+    }
+
+    // Activity Title (for AICCRA)
+    if (activity.getActivityTitle() != null && activity.getActivityTitle().getTitle() != null) {
+      data.put("activityTitle", this.getSanitizedText(activity.getActivityTitle().getTitle()));
+    }
+
+    // Deliverables associated with this activity - using same logic as ProjectActivitiesAction
+    // But use getSelectedPhase() to be consistent with OICRs and Innovations
+    List<String> deliverablesList = new ArrayList<>();
+    if (activity.getDeliverableActivities() != null) {
+      List<DeliverableActivity> deliverableActivities = activity.getDeliverableActivities().stream()
+        .filter(da -> da != null && da.isActive() 
+            && da.getPhase() != null 
+            && da.getPhase().equals(this.getSelectedPhase())
+            && da.getDeliverable() != null 
+            && da.getDeliverable().isActive()
+            && da.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+            && da.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).isActive())
+        .sorted((da1, da2) -> Long.compare(da1.getDeliverable().getId(), da2.getDeliverable().getId()))
+        .collect(Collectors.toList());
+
+      for (DeliverableActivity deliverableActivity : deliverableActivities) {
+        Deliverable deliverable = deliverableActivity.getDeliverable();
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+        if (deliverableInfo != null && deliverableInfo.isActive()) {
+          String deliverableTitle = deliverableInfo.getTitle();
+          if (deliverableTitle != null && !deliverableTitle.trim().isEmpty()) {
+            deliverablesList.add("D" + deliverable.getId() + ": " + this.getSanitizedText(deliverableTitle));
+          } else {
+            deliverablesList.add("D" + deliverable.getId());
+          }
+        }
+      }
+    }
+    
+    if (!deliverablesList.isEmpty()) {
+      data.put("deliverables", String.join(", ", deliverablesList));
+      data.put("hasDeliverables", true);
+    }
+
+    return data;
+  }
+
   private Map<String, Object> buildDeliverableData(Deliverable deliverable) {
     Map<String, Object> data = new HashMap<>();
     if (deliverable == null) {
@@ -10581,7 +10791,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     List<String> contacts = new ArrayList<>();
     if (deliverable.getDeliverableUserPartnerships() != null) {
       contacts = deliverable.getDeliverableUserPartnerships().stream()
-        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getSelectedPhase().getId())
           && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
           && p.getDeliverablePartnerType() != null
           && p.getDeliverablePartnerType().getId()
