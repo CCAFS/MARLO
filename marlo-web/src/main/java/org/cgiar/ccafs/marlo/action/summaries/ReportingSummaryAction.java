@@ -10373,7 +10373,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // Deliverables associated with this activity - using same logic as ProjectActivitiesAction
     // But use getSelectedPhase() to be consistent with OICRs and Innovations
-    List<String> deliverablesList = new ArrayList<>();
+    List<Map<String, Object>> deliverablesList = new ArrayList<>();
     if (activity.getDeliverableActivities() != null) {
       List<DeliverableActivity> deliverableActivities = activity.getDeliverableActivities().stream()
         .filter(da -> da != null && da.isActive() 
@@ -10390,18 +10390,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Deliverable deliverable = deliverableActivity.getDeliverable();
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         if (deliverableInfo != null && deliverableInfo.isActive()) {
+          Map<String, Object> deliverableData = new HashMap<>();
+          deliverableData.put("id", deliverable.getId());
           String deliverableTitle = deliverableInfo.getTitle();
           if (deliverableTitle != null && !deliverableTitle.trim().isEmpty()) {
-            deliverablesList.add("D" + deliverable.getId() + ": " + this.getSanitizedText(deliverableTitle));
-          } else {
-            deliverablesList.add("D" + deliverable.getId());
+            deliverableData.put("title", this.getSanitizedText(deliverableTitle));
           }
+          deliverablesList.add(deliverableData);
         }
       }
     }
     
     if (!deliverablesList.isEmpty()) {
-      data.put("deliverables", String.join(", ", deliverablesList));
+      data.put("deliverables", deliverablesList);
       data.put("hasDeliverables", true);
     }
 
