@@ -8238,7 +8238,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         locationData.put("name",
           institutionLocation != null ? institutionLocation.getComposedName() : null);
         locationData.put("country", locElement != null ? locElement.getName() : null);
-        locationData.put("isoCode", locElement != null ? locElement.getIsoAlpha2() : null);
+        if (locElement != null && locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
+          String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
+          locationData.put("isoAlpha2", isoAlpha2);
+          String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+        } else {
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement != null && locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+        }
         locationData.put("city",
           institutionLocation != null ? institutionLocation.getCity() : null);
         locationData.put("headquarter",
@@ -8832,18 +8839,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("regions", String.join(", ", regions));
     }
 
-    // Countries
-    List<String> countries = new ArrayList<>();
+    // Countries - include ISO Alpha 2 for flag icons
+    List<Map<String, Object>> countries = new ArrayList<>();
     if (study.getProjectExpectedStudyCountries() != null) {
       countries = study.getProjectExpectedStudyCountries().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
           && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
           && c.getLocElement().getLocElementType().getId() == 2)
-        .map(c -> this.getSanitizedText(c.getLocElement().getName())).filter(Objects::nonNull)
+        .map(c -> {
+          Map<String, Object> countryData = new HashMap<>();
+          String countryName = this.getSanitizedText(c.getLocElement().getName());
+          countryData.put("name", countryName);
+          if (c.getLocElement().getIsoAlpha2() != null && !c.getLocElement().getIsoAlpha2().trim().isEmpty()) {
+            String isoAlpha2 = c.getLocElement().getIsoAlpha2().toLowerCase();
+            countryData.put("isoAlpha2", isoAlpha2);
+            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+          } else {
+            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+          }
+          return countryData;
+        })
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
     }
     if (!countries.isEmpty()) {
-      data.put("countries", String.join(", ", countries));
+      data.put("countries", countries);
     }
 
     // Flagships
@@ -9534,9 +9555,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Countries - only show if geographic scope is National/Multi-national/Sub-national
     // Also check if hasSpecifiedOutputCountries is true
     // Read directly from project_innovation_countries table
+    // Include ISO Alpha 2 for flag icons
     if (isNational || (innovationInfo.getHasSpecifiedOutputCountries() != null 
         && innovationInfo.getHasSpecifiedOutputCountries())) {
-      List<String> countries = new ArrayList<>();
+      List<Map<String, Object>> countries = new ArrayList<>();
       List<ProjectInnovationCountry> innovationCountries = 
         projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), this.getSelectedPhase().getId());
       if (innovationCountries != null && !innovationCountries.isEmpty()) {
@@ -9549,14 +9571,24 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 && locElement.getLocElementType().getId() == 2) {
               String countryName = this.getSanitizedText(locElement.getName());
               if (countryName != null && !countryName.isEmpty()) {
-                countries.add(countryName);
+                Map<String, Object> countryData = new HashMap<>();
+                countryData.put("name", countryName);
+                if (locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
+                  String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
+                  countryData.put("isoAlpha2", isoAlpha2);
+                  String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+                } else {
+                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+                }
+                countries.add(countryData);
               }
             }
           }
         }
       }
       if (!countries.isEmpty()) {
-        data.put("countries", String.join(", ", countries));
+        data.put("countries", countries);
       }
     }
 
@@ -9837,10 +9869,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               String iconName = this.transformSdgIconName(sdg.getIcon());
               String iconUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/sdg/" + iconName;
               sdgData.put("iconUrl", iconUrl);
-              System.out.println("[buildInnovationData] SDG Icon - Name: " + sdgName + ", DB Icon: " + sdg.getIcon() + ", Transformed: " + iconName + ", Full URL: " + iconUrl);
-            } else {
-              System.out.println("[buildInnovationData] SDG Icon - Name: " + sdgName + ", DB Icon: NULL or empty");
-            }
+            } 
             
             return sdgData;
           }
@@ -9908,6 +9937,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Show reference, category and subCategory
           if (reference.getReference() != null && !reference.getReference().trim().isEmpty()) {
             referenceData.put("reference", this.getSanitizedText(reference.getReference()));
+          }
+          
+          // Add link/URL if available
+          if (reference.getLink() != null && !reference.getLink().trim().isEmpty()) {
+            referenceData.put("link", this.getSanitizedText(reference.getLink()));
           }
           
           // Category and SubCategory from deliverableType
@@ -10373,7 +10407,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
     // Deliverables associated with this activity - using same logic as ProjectActivitiesAction
     // But use getSelectedPhase() to be consistent with OICRs and Innovations
-    List<String> deliverablesList = new ArrayList<>();
+    List<Map<String, Object>> deliverablesList = new ArrayList<>();
     if (activity.getDeliverableActivities() != null) {
       List<DeliverableActivity> deliverableActivities = activity.getDeliverableActivities().stream()
         .filter(da -> da != null && da.isActive() 
@@ -10390,18 +10424,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         Deliverable deliverable = deliverableActivity.getDeliverable();
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
         if (deliverableInfo != null && deliverableInfo.isActive()) {
+          Map<String, Object> deliverableData = new HashMap<>();
+          deliverableData.put("id", deliverable.getId());
           String deliverableTitle = deliverableInfo.getTitle();
           if (deliverableTitle != null && !deliverableTitle.trim().isEmpty()) {
-            deliverablesList.add("D" + deliverable.getId() + ": " + this.getSanitizedText(deliverableTitle));
-          } else {
-            deliverablesList.add("D" + deliverable.getId());
+            deliverableData.put("title", this.getSanitizedText(deliverableTitle));
           }
+          deliverablesList.add(deliverableData);
         }
       }
     }
     
     if (!deliverablesList.isEmpty()) {
-      data.put("deliverables", String.join(", ", deliverablesList));
+      data.put("deliverables", deliverablesList);
       data.put("hasDeliverables", true);
     }
 
@@ -10487,18 +10522,32 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       data.put("region", this.getSanitizedText(deliverableInfo.getRegion().getName()));
     }
 
-    // Countries
-    List<String> countries = new ArrayList<>();
+    // Countries - include ISO Alpha 2 for flag icons
+    List<Map<String, Object>> countries = new ArrayList<>();
     if (deliverable.getDeliverableLocations() != null) {
       countries = deliverable.getDeliverableLocations().stream()
         .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
           && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
           && l.getLocElement().getLocElementType().getId() == 2)
-        .map(l -> this.getSanitizedText(l.getLocElement().getName())).filter(Objects::nonNull)
+        .map(l -> {
+          Map<String, Object> countryData = new HashMap<>();
+          String countryName = this.getSanitizedText(l.getLocElement().getName());
+          countryData.put("name", countryName);
+          if (l.getLocElement().getIsoAlpha2() != null && !l.getLocElement().getIsoAlpha2().trim().isEmpty()) {
+            String isoAlpha2 = l.getLocElement().getIsoAlpha2().toLowerCase();
+            countryData.put("isoAlpha2", isoAlpha2);
+            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+          } else {
+            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+          }
+          return countryData;
+        })
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
     }
     if (!countries.isEmpty()) {
-      data.put("countries", String.join(", ", countries));
+      data.put("countries", countries);
     }
 
     // Regions
