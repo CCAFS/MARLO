@@ -80,7 +80,7 @@
 [#-- Institutions array --]
 <ul style="display:none">
 [#list institutions as institution]
-  <li id="institutionArray-${(institution.id)!}">${(institution.composedName?html)!}</li>
+  <li id="institutionArray-${(institution.id)!}">${(institution.composedName)!}</li>
 [/#list]
 </ul>
 
@@ -143,7 +143,7 @@
   [#assign userCustomName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName())!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${userCustomName}.user.id" value="${(element.user.id)!}"/>
     <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>
