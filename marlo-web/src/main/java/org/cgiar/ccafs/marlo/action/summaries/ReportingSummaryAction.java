@@ -7883,7 +7883,10 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-      this.persistPayload(objectMapper, jsonMainRoot);
+      // Only generate JSON file in non-production environments (local/test)
+      if (!this.config.isProduction()) {
+        this.persistPayload(objectMapper, jsonMainRoot);
+      }
       
       System.out.println("Sending cluster report to microservice: " + reportName);
       // Using sendClusterReportQueueMessage for cluster/project summary reports
