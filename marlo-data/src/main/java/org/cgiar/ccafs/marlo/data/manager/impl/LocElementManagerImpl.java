@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.LocElementDAO;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class LocElementManagerImpl implements LocElementManager {
   }
 
   @Override
+  @Transactional
   public void deleteLocElement(long locElementId) {
 
     this.locElementDAO.deleteLocElement(locElementId);

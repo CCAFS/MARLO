@@ -30,11 +30,14 @@ import org.cgiar.ccafs.marlo.data.model.LocElementType;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -46,6 +49,7 @@ public class CrpLocationsAction extends BaseAction {
 
 
   private static final long serialVersionUID = 7866923077836156028L;
+  private static final Logger LOG = LoggerFactory.getLogger(CrpLocationsAction.class);
 
 
   // GlobalUnit Manager
@@ -125,7 +129,16 @@ public class CrpLocationsAction extends BaseAction {
 
         if (locElementType.getLocationElements() != null) {
           for (LocElement locElement : locElementType.getLocationElements()) {
+            if (locElement == null) {
+              LOG.warn("Skipping null locElement in locationCustomNewData (new) for locElementType={}", locElementType.getName());
+              continue;
+            }
             if (locElement.getId() == null) {
+
+              if (locElement.getLocElement() == null || locElement.getLocElement().getIsoAlpha2() == null) {
+                LOG.warn("Skipping locElement with missing parent ISO code for locElementType={}", locElementType.getName());
+                continue;
+              }
 
               LocElement parentElement =
                 locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
@@ -145,10 +158,17 @@ public class CrpLocationsAction extends BaseAction {
 
         if (locElementType.getLocationElements() != null) {
           for (LocElement locElement : locElementType.getLocationElements()) {
+            if (locElement == null) {
+              LOG.warn("Skipping null locElement in locationCustomNewData (existing) for locElementTypeId={}", locElementType.getId());
+              continue;
+            }
             if (locElement.getId() == null) {
 
-
               LocElementType elementType = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+              if (locElement.getLocElement() == null || locElement.getLocElement().getIsoAlpha2() == null) {
+                LOG.warn("Skipping locElement with missing parent ISO code for locElementTypeId={}", locElementType.getId());
+                continue;
+              }
               LocElement parentElement =
                 locElementManager.getLocElementByISOCode(locElement.getLocElement().getIsoAlpha2());
 
@@ -168,6 +188,7 @@ public class CrpLocationsAction extends BaseAction {
 
           if (elementType.getLocElements() != null) {
             for (LocElement locElement : locElementType.getLocElements()) {
+              if (locElement == null) continue;
               locElementManager.deleteLocElement(locElement.getId());
             }
           }
@@ -189,19 +210,23 @@ public class CrpLocationsAction extends BaseAction {
         if (!loggedCrp.getLocationCustomElementTypes().contains(locElementType)) {
           if (locElementType.getLocElements() != null) {
             for (LocElement locElement : locElementType.getLocElements()) {
-              locElementManager.deleteLocElement(locElement.getId());
+              if (locElement != null) {
+                locElementManager.deleteLocElement(locElement.getId());
+              }
             }
           }
           locElementTypeManager.deleteLocElementType(locElementType.getId());
         } else {
           if (locElementType.getLocElements() != null) {
-
             LocElementType elementType = loggedCrp.getLocationCustomElementTypes().stream()
               .filter(le -> le.equals(locElementType)).collect(Collectors.toList()).get(0);
+              
             if (elementType.getLocationElements() != null) {
               for (LocElement locElement : locElementType.getLocElements()) {
-                if (!elementType.getLocationElements().contains(locElement)) {
-                  locElementManager.deleteLocElement(locElement.getId());
+                if (locElement != null) {
+                  if (!elementType.getLocationElements().contains(locElement)) {
+                    locElementManager.deleteLocElement(locElement.getId());
+                  }
                 }
               }
             }
@@ -444,7 +469,23 @@ public class CrpLocationsAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("*")) {
+    if (!this.hasPermission("*")) {
+      return NOT_AUTHORIZED;
+    }
+
+    try {
+      LOG.info("CrpLocationsAction.save() start for CRP id={} acronym={}",
+        loggedCrp != null ? loggedCrp.getId() : null,
+        loggedCrp != null ? loggedCrp.getAcronym() : null);
+
+      if (loggedCrp != null) {
+        LOG.debug("Before save: locationElementTypes size={} customLevels size={} locationCustomElementTypes size={}",
+          loggedCrp.getLocElementTypes() != null ? loggedCrp.getLocElementTypes().size() : 0,
+          loggedCrp.getCustomLevels() != null ? loggedCrp.getCustomLevels().size() : 0,
+          loggedCrp.getLocationCustomElementTypes() != null ? loggedCrp.getLocationCustomElementTypes().size() : 0);
+      }
+          // Manual binding for nested location lists (handles cases where client JS didn't set names)
+          this.manualBindingLocationElements();
 
       this.locationPreviousData();
       this.locationNewData();
@@ -461,9 +502,8 @@ public class CrpLocationsAction extends BaseAction {
       } else {
         this.addActionMessage("message:" + this.getText("saving.saved"));
       }
-      messages = this.getActionMessages();
 
-      if (loggedCrp.getLocElementTypes() != null) {
+      if (loggedCrp != null && loggedCrp.getLocElementTypes() != null) {
         loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>(loggedCrp.getLocElementTypes()));
 
         for (int i = 0; i < loggedCrp.getLocationElementTypes().size(); i++) {
@@ -471,9 +511,15 @@ public class CrpLocationsAction extends BaseAction {
             new ArrayList<LocElement>(loggedCrp.getLocationElementTypes().get(i).getLocElements()));
         }
       }
+
+      LOG.info("CrpLocationsAction.save() finished successfully for CRP id={}",
+        loggedCrp != null ? loggedCrp.getId() : null);
+
       return SUCCESS;
-    } else {
-      return NOT_AUTHORIZED;
+    } catch (Exception e) {
+      LOG.error("Error saving locations for CRP id={}: {}", loggedCrp != null ? loggedCrp.getId() : null, e.getMessage(), e);
+      this.addActionError(this.getText("error.saving") + " - " + e.getMessage());
+      return INPUT;
     }
   }
 
@@ -495,7 +541,6 @@ public class CrpLocationsAction extends BaseAction {
           crpLocElementTypeManager.deleteCrpLocElementType(crpLocElementType.getId());
         }
 
-
       } else {
 
         if (customLevelSelect.getCheck() != null && customLevelSelect.getCheck()) {
@@ -510,6 +555,164 @@ public class CrpLocationsAction extends BaseAction {
 
       }
 
+    }
+  }
+
+  /**
+   * Manual binding for locationElement nested objects when client-side JS is missing
+   * Simplified version - focuses only on binding, deletion is handled by locationCustomPreviousData()
+   */
+  private void manualBindingLocationElements() {
+    if (this.getRequest() == null || loggedCrp == null) {
+      return;
+    }
+
+    Map<String, String[]> params = this.getRequest().getParameterMap();
+
+    // Ensure top-level lists exist
+    if (loggedCrp.getLocationElementTypes() == null) {
+      loggedCrp.setLocationElementTypes(new ArrayList<LocElementType>());
+    }
+    if (loggedCrp.getLocationCustomElementTypes() == null) {
+      loggedCrp.setLocationCustomElementTypes(new ArrayList<LocElementType>());
+    }
+    if (loggedCrp.getCustomLevels() == null) {
+      loggedCrp.setCustomLevels(new ArrayList<CustomLevelSelect>());
+    }
+
+    for (String key : params.keySet()) {
+      try {
+        // Handle custom location types binding (Scope/Region Name)
+        if (key.startsWith("loggedCrp.locationCustomElementTypes[")) {
+          int idx = extractIndex(key);
+          int second = -1;
+          if (key.contains("locationElements[")) {
+            second = extractSecondIndex(key);
+          }
+
+          // Top-level custom element type properties (id/name/hasCoordinates)
+          if (!key.contains("locationElements[")) {
+            while (loggedCrp.getLocationCustomElementTypes().size() <= idx) {
+              loggedCrp.getLocationCustomElementTypes().add(new LocElementType());
+            }
+            LocElementType topType = loggedCrp.getLocationCustomElementTypes().get(idx);
+            String[] values = params.get(key);
+            if (key.endsWith(".id")) {
+              if (values != null && values.length > 0 && !values[0].trim().isEmpty()) {
+                try {
+                  topType.setId(Long.parseLong(values[0].trim()));
+                } catch (NumberFormatException e) {
+                  LOG.warn("Invalid custom LocElementType id: {}", values[0]);
+                }
+              }
+            } else if (key.endsWith(".name")) {
+              if (values != null && values.length > 0) {
+                topType.setName(values[0]);
+              }
+            } else if (key.endsWith(".hasCoordinates")) {
+              if (values != null && values.length > 0) {
+                String v = values[0].trim();
+                topType.setHasCoordinates("true".equalsIgnoreCase(v) || "on".equalsIgnoreCase(v) || "1".equals(v));
+              }
+            }
+            continue;
+          }
+
+          // Handle location elements within custom types
+          while (loggedCrp.getLocationCustomElementTypes().size() <= idx) {
+            loggedCrp.getLocationCustomElementTypes().add(new LocElementType());
+          }
+          LocElementType type = loggedCrp.getLocationCustomElementTypes().get(idx);
+          if (type.getLocationElements() == null) {
+            type.setLocationElements(new ArrayList<LocElement>());
+          }
+
+          if (second >= 0) {
+            while (type.getLocationElements().size() <= second) {
+              LocElement le = new LocElement();
+              le.setLocElement(new LocElement());
+              type.getLocationElements().add(le);
+            }
+            LocElement element = type.getLocationElements().get(second);
+            
+            // Ensure element and its nested objects are not null
+            if (element == null) {
+              element = new LocElement();
+              element.setLocElement(new LocElement());
+              type.getLocationElements().set(second, element);
+            }
+            if (element.getLocElement() == null) {
+              element.setLocElement(new LocElement());
+            }
+            
+            String[] values = params.get(key);
+            if (key.endsWith(".locElement.isoAlpha2")) {
+              if (values != null && values.length > 0) {
+                element.getLocElement().setIsoAlpha2(values[0].trim());
+              }
+            } else if (key.endsWith(".id")) {
+              if (values != null && values.length > 0 && !values[0].trim().isEmpty()) {
+                try {
+                  element.setId(Long.parseLong(values[0].trim()));
+                } catch (NumberFormatException e) {
+                  LOG.warn("Invalid locElement id: {}", values[0]);
+                }
+              }
+            } else if (key.endsWith(".name")) {
+              if (values != null && values.length > 0) {
+                element.setName(values[0]);
+              }
+            }
+          }
+        }
+
+        // Handle customLevels binding: loggedCrp.customLevels[i].locElementType.id and .check
+        if (key.startsWith("loggedCrp.customLevels[")) {
+          try {
+            int idx = extractIndex(key);
+            
+            // Use existing customLevels from prepare() if available
+            if (loggedCrp.getCustomLevels() != null && idx < loggedCrp.getCustomLevels().size()) {
+              CustomLevelSelect cls = loggedCrp.getCustomLevels().get(idx);
+              String[] values = params.get(key);
+              
+              if (key.endsWith(".check")) {
+                if (values != null && values.length > 0) {
+                  String v = values[0].trim();
+                  cls.setCheck("true".equalsIgnoreCase(v) || "on".equalsIgnoreCase(v) || "1".equals(v));
+                }
+              }
+            }
+          } catch (Exception e) {
+            LOG.error("Error binding customLevels key: {}", key, e);
+          }
+        }
+
+      } catch (Exception e) {
+        LOG.error("Error in manual binding for key: {}", key, e);
+      }
+    }
+  }
+
+  
+  private int extractIndex(String key) {
+    int startIdx = key.indexOf('[') + 1;
+    int endIdx = key.indexOf(']');
+    try {
+      return Integer.parseInt(key.substring(startIdx, endIdx));
+    } catch (NumberFormatException e) {
+      return -1;
+    }
+  }
+
+  private int extractSecondIndex(String key) {
+    int firstClose = key.indexOf(']');
+    int secondStart = key.indexOf('[', firstClose) + 1;
+    int secondEnd = key.indexOf(']', firstClose + 1);
+    try {
+      return Integer.parseInt(key.substring(secondStart, secondEnd));
+    } catch (Exception e) {
+      return -1;
     }
   }
 

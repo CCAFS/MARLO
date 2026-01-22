@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.LocGeopositionDAO;
 import org.cgiar.ccafs.marlo.data.manager.LocGeopositionManager;
 import org.cgiar.ccafs.marlo.data.model.LocGeoposition;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class LocGeopositionManagerImpl implements LocGeopositionManager {
   }
 
   @Override
+  @Transactional
   public void deleteLocGeoposition(long locGeopositionId) {
 
     locGeopositionDAO.deleteLocGeoposition(locGeopositionId);
