@@ -8238,7 +8238,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         locationData.put("name",
           institutionLocation != null ? institutionLocation.getComposedName() : null);
         locationData.put("country", locElement != null ? locElement.getName() : null);
-        locationData.put("isoCode", locElement != null ? locElement.getIsoAlpha2() : null);
+        if (locElement != null && locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
+          String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
+          locationData.put("isoAlpha2", isoAlpha2);
+          String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+        } else {
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement != null && locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+        }
         locationData.put("city",
           institutionLocation != null ? institutionLocation.getCity() : null);
         locationData.put("headquarter",
@@ -9930,6 +9937,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Show reference, category and subCategory
           if (reference.getReference() != null && !reference.getReference().trim().isEmpty()) {
             referenceData.put("reference", this.getSanitizedText(reference.getReference()));
+          }
+          
+          // Add link/URL if available
+          if (reference.getLink() != null && !reference.getLink().trim().isEmpty()) {
+            referenceData.put("link", this.getSanitizedText(reference.getLink()));
           }
           
           // Category and SubCategory from deliverableType
