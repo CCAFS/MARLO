@@ -78,6 +78,12 @@ function addDataTable() {
             "width": "25%"
           });
         }
+
+        var $info = $wrapper.find('.dataTables_info');
+        $info.css({
+          "width" : "75%",
+          "white-space" : "break-spaces"
+        });
       }
     } catch (error) {
       console.error('Error initializing DataTables:', error);

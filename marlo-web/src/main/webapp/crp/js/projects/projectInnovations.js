@@ -951,13 +951,18 @@ function updateBundleTab() {
   updateWidthTab();
 
   const innovationBundle = $('input[name="innovation.projectInnovationInfo.innovationBundle"][type="radio"]:checked');
+  // When phase is closed (read-only), radios are not rendered; leave tab visibility as set by the server (inline style)
+  if (innovationBundle.length === 0) {
+    updateWidthTab();
+    return;
+  }
+
   setTimeout(function () {
     if (innovationBundle.val() === "true") {
       $('#bundleTab').show();
     } else {
       $('#bundleTab').hide();
     }
-    // Recalculate tab widths after animation completes
     updateWidthTab();
   }, 250);
 }

@@ -120,12 +120,15 @@ $('.listindicators .setSelect2').select2().on('change', function() {
     //These is validation for the IPI 2.3 indicator is selected and is able to be removed
     var name = $(this).parent().find(".elementName").text();
 
+    //Check the amount of rows (clusters) inside the shared clusters list
+   const listClusterDM = document.querySelectorAll(".listClusterDM div.form-group.row");
+
 
     //This is a validation for the IPI 2.3 indicator is selected and is able to be removed
     if(name.includes("IPI 2.3")){
 
       var sumData = getSumTotalParticipants();
-      if (sumData > 0) { 
+      if (sumData > 0 && listClusterDM.length > 1) { 
         // If the flag is still in the list, the user is notified that the element is related to the IPI 2.3 indicator
         try {
           await alertRemoveIndicatorIPI2_3();
@@ -184,7 +187,7 @@ $('.listindicators .setSelect2').select2().on('change', function() {
   // Add hover to deleted button if the indicator is IPI 2.3 and is participant information
   $('.listindicators .removeElement').hover(function() {
     var name = $(this).parent().find(".elementName").text();
-    if(name.includes("IPI 2.3") && getSumTotalParticipants() > 0){
+    if(name.includes("IPI 2.3") && getSumTotalParticipants() > 0 && listClusterDM.length > 1){
       $(this).css('cursor', 'not-allowed');
       $(this).attr('title', 'This indicator can not be removed, since there are shared clusters with information in the "General Information"');
     }
