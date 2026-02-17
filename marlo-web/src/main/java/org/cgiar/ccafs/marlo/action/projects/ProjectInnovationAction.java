@@ -2590,9 +2590,18 @@ public class ProjectInnovationAction extends BaseAction {
       } catch (Exception e) {
         Log.error("error getting know potential " + e);
       }
+      if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() == null
+        || innovation.getProjectInnovationInfo().getHasKnowledgePotential().getId() == null
+        || innovation.getProjectInnovationInfo().getHasKnowledgePotential().getId().intValue() != 2) {
+        innovation.getProjectInnovationInfo().setReasonKnowledgePotential(null);
+      }
 
       // Clean text fields according to the boolean selection
-
+      if (innovation.getProjectInnovationInfo().getForeseeBarriers() == null
+        || !innovation.getProjectInnovationInfo().getForeseeBarriers()) {
+        // Narrative should not persist when the boolean toggle hides the field
+        innovation.getProjectInnovationInfo().setKnowledgeToolUsesNarrative(null);
+      }
       // Has tool URL true
       if (innovation.getProjectInnovationInfo().getHasToolUrl() != null
         && innovation.getProjectInnovationInfo().getHasToolUrl()) {

@@ -69,6 +69,9 @@ public class MicroserviceReportAction extends BaseAction {
   private String innovationsTemplateData = null;
   private String innovationsReportName = null;
   private String INNOVATION_MS_FM_URL = null;
+  private String clusterReportTemplateData = null;
+  private String clusterReportName = null;
+  private String CLUSTER_REPORT_MS_FM_URL = null;
   private String s3URL = null;
 
   private String jsonData = null;
@@ -193,6 +196,10 @@ public class MicroserviceReportAction extends BaseAction {
     return OICRsReportName;
   }
 
+  public String getClusterReportName() {
+    return clusterReportName;
+  }
+
   public long getProjectID() {
     return projectID;
   }
@@ -218,6 +225,7 @@ public class MicroserviceReportAction extends BaseAction {
       bucketName = config.getMicroserviceBucketname();
       OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
       INNOVATION_MS_FM_URL = config.getMicroserviceReportingUrl();
+      CLUSTER_REPORT_MS_FM_URL = config.getMicroserviceReportingUrl();
       s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
       System.out.println("error getting report configuration data " + e);
@@ -411,8 +419,83 @@ public class MicroserviceReportAction extends BaseAction {
     OICRsReportName = oICRsReportName;
   }
 
+  public void setClusterReportName(String clusterReportName) {
+    this.clusterReportName = clusterReportName;
+  }
 
   public void setProjectID(long projectID) {
     this.projectID = projectID;
+  }
+
+  public String sendClusterReportQueueMessage() {
+    this.loadData(); // Load necessary data before processing
+    String url = queueUrl;
+    ConnectionFactory factory = new ConnectionFactory();
+    try {
+      factory.setUri(url); // Set the connection URI
+      factory.setConnectionTimeout(60000);
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      Map<String, Object> data;
+      if (jsonData != null && !jsonData.isEmpty()) {
+        // If a pre-built JSON is provided, parse it directly
+        data = objectMapper.readValue(jsonData, Map.class);
+
+      } else {
+        // Manually construct the data object if jsonData is not provided
+        String link = "";
+
+        data = new HashMap<>();
+        data.put("pattern", "pdf.generate");
+
+        Map<String, Object> nestedData = new HashMap<>();
+        nestedData.put("templateData", clusterReportTemplateData);
+
+        Map<String, String> linkData = new HashMap<>();
+        linkData.put("link", link);
+
+        nestedData.put("data", linkData);
+        nestedData.put("clusterAcronym", false);
+        nestedData.put("fileName", clusterReportName);
+        nestedData.put("bucketName", bucketName);
+
+        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        nestedData.put("credentials", credentialsJson);
+        data.put("data", nestedData);
+      }
+
+      try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
+        // Declare the queue to ensure it exists and is durable
+        channel.queueDeclare(queueName, true, false, false, null);
+
+        // Convert the data to JSON format
+        String message = objectMapper.writeValueAsString(data);
+
+        // Publish the message to the queue
+        channel.basicPublish("", queueName, null, message.getBytes());
+        try {
+          System.out.println("s3URL " + s3URL);
+
+          this.downloadPDFByURL(clusterReportName, s3URL);
+        } catch (Exception e) {
+          System.out.println("error getting pdf by URL " + e);
+        }
+      }
+    } catch (URISyntaxException | NoSuchAlgorithmException |
+
+      KeyManagementException e) {
+      System.out.println("Queue connection error: " + e.getMessage());
+      return ERROR;
+    } catch (Exception e) {
+      System.out.println("Message sending error: " + e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  public void sendClusterReportQueueMessage(String json, String reportName) {
+    this.setClusterReportName(reportName);
+    this.setJsonData(json);
+    this.sendClusterReportQueueMessage();
   }
 }
