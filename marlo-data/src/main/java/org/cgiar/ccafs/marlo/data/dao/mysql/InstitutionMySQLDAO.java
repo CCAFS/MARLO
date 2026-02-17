@@ -125,7 +125,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
     String query = "select i from Institution i where i.name like concat('%', :institutionName, '%') "
       + "or i.acronym like concat('%', :institutionName, '%') or i.websiteLink like concat('%', :institutionName, '%') "
-      + "group by i.name, i.acronym, i.websiteLink order by (case when i.name like concat(:institutionName, '%') then 0 "
+      + "group by i.id, i.name, i.acronym, i.websiteLink order by (case when i.name like concat(:institutionName, '%') then 0 "
       + "when i.name like concat('% %', :institutionName, '% %') then 3 when i.name like concat('%', :institutionName) then 6 "
       + "when i.acronym like concat(:institutionName, '%') then 1 when i.acronym like concat('% %', :institutionName, '% %') then 4 "
       + "when i.acronym like concat('%', :institutionName) then 7 when i.websiteLink like concat(:institutionName, '%') then 2 "
