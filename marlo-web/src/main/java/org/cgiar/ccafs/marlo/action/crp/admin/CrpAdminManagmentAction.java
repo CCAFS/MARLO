@@ -1284,6 +1284,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           }
           
           crpProgramDb.setBaseLine(crpProgram.getBaseLine());
+          crpProgramDb.setColor(crpProgram.getColor());
           crpProgramDb = crpProgramManager.saveCrpProgram(crpProgramDb);
 
           /**
