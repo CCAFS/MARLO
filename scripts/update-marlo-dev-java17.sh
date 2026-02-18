@@ -15,12 +15,8 @@ if [ ! -f "$PROPS_FILE" ]; then
   exit 1
 fi
 
-# Resolve absolute path for backup
+# Resolve absolute path
 PROPS_ABS="$(cd "$(dirname "$PROPS_FILE")" && pwd)/$(basename "$PROPS_FILE")"
-BACKUP_FILE="${PROPS_ABS}.bak.$(date +%Y%m%d%H%M%S)"
-
-cp "$PROPS_ABS" "$BACKUP_FILE"
-echo "Backup created: $BACKUP_FILE"
 
 # https://localhost:8443 -> localhost:8080 (Java 17: HTTP on 8080)
 TMP_FILE="${PROPS_ABS}.tmp.$$"
