@@ -87,14 +87,19 @@
         <div class="">
           <!-- Nav tabs -->
           <ul class="nav nav-tabs" role="tablist">
+            [#-- All Users Tab --]
+            [#assign allUsersList = (action.getAllUsersWithRoles())![] /]
+            <li role="" class="active"><a href="#all-users" aria-controls="all-users" role="tab" data-toggle="tab" title="All Users (${allUsersList?size})">All Users</a></li>
+            
+            [#-- Role-specific tabs --]
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if role.description?substring(0, 3) != "API"]
                 [#if usersList?has_content]
                 [#if action.isAiccra()]
-                  <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.aiccraAcronymDimanic}</a></li>
+                  <li role=""><a href="#role-${role.id}" aria-controls="role-${role.id}" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.aiccraAcronymDimanic}</a></li>
                 [#else] 
-                   <li role="" class="[#if role?is_first]active[/#if]"><a href="#role-${role.id}" aria-controls="home" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronymDimanic}</a></li>
+                   <li role=""><a href="#role-${role.id}" aria-controls="role-${role.id}" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.acronymDimanic}</a></li>
                 [/#if]
                 [/#if]
               [/#if]
@@ -103,10 +108,38 @@
         
           <!-- Tab panes -->
           <div class="tab-content">
+            [#-- All Users Tab Content --]
+            <div role="tabpanel" class="tab-pane active" id="all-users">
+              <h4 class="sectionSubTitle">All Users</h4>
+              <table class="display table table-striped table-hover usersTable" width="100%">
+                <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Roles</th>
+                      <th>Email</th>
+                      <th>Last Login (${timeZone})</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list allUsersList as user]
+                  <tr>
+                    <td>${user.id}</td>
+                    <td>${(user.composedCompleteName)!}</td>
+                    <td>${(action.getUserRoles(user.id))!}</td>
+                    <td>${(user.email)!}</td>
+                    <td>${(user.lastLogin)!'<i> <span class="hide">aaa</span> Never logged in </i>'}</td>
+                  </tr>
+                  [/#list]
+                </tbody>
+              </table>
+            </div>
+            
+            [#-- Role-specific Tab Content --]
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
-                <div role="tabpanel" class="tab-pane [#if role?is_first]active[/#if]" id="role-${role.id}">
+                <div role="tabpanel" class="tab-pane" id="role-${role.id}">
                 [#if action.isAiccra()]
                   <h4 class="sectionSubTitle ">${role.aiccraAcronymDimanic}</h4>
                 [#else]
