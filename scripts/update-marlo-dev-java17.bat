@@ -20,14 +20,6 @@ if not exist "%PROPS_FILE%" (
   exit /b 1
 )
 
-REM Backup with timestamp
-for /f "delims=" %%I in ('powershell -NoProfile -Command "Get-Date -Format 'yyyyMMddHHmmss'" 2^>nul') do set "DT=%%I"
-if not defined DT set "DT=backup"
-set "BACKUP_FILE=%PROPS_FILE%.bak.%DT%"
-
-copy /Y "%PROPS_FILE%" "%BACKUP_FILE%" >nul
-echo Backup created: %BACKUP_FILE%
-
 REM Replace https://localhost:8443 with localhost:8080 (Java 17: HTTP on 8080)
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=$env:PROPS_FILE; $c=[System.IO.File]::ReadAllText($p); $c=$c.Replace('https://localhost:8443','localhost:8080'); [System.IO.File]::WriteAllText($p,$c)"
 
