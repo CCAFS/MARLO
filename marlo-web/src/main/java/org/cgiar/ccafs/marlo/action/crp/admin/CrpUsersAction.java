@@ -474,7 +474,11 @@ public class CrpUsersAction extends BaseAction {
                 || projectPartnerPerson.getProjectPartner().getProject()
                   .getProjecInfoPhase(this.getActualPhase()) != null
                   && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                || projectPartnerPerson.getProjectPartner().getProject()
+                  .getProjecInfoPhase(this.getActualPhase()) != null
+                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                 users.add(userRole);
               }
 
@@ -498,7 +502,8 @@ public class CrpUsersAction extends BaseAction {
                 .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
                 if (phasesProjects.contains(project.getProject())) {
                   if (project.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                     users.add(userRole);
                   }
 
@@ -824,6 +829,56 @@ public class CrpUsersAction extends BaseAction {
         sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
       }
     }
+  }
+
+  /**
+   * Get all unique users from all roles in the CRP
+   * 
+   * @return List of unique users
+   */
+  public List<User> getAllUsersWithRoles() {
+    Set<User> allUsersSet = new HashSet<>();
+    
+    for (UserRole userRole : this.users) {
+      if (userRole.getUser() != null && userRole.getUser().isActive()) {
+        allUsersSet.add(userRole.getUser());
+      }
+    }
+    
+    List<User> allUsers = new ArrayList<>(allUsersSet);
+    // Sort by user ID
+    allUsers.sort((u1, u2) -> u1.getId().compareTo(u2.getId()));
+    
+    return allUsers;
+  }
+
+  /**
+   * Get all roles for a specific user as comma-separated string
+   * 
+   * @param userID the user ID
+   * @return comma-separated list of role acronyms
+   */
+  public String getUserRoles(long userID) {
+    List<String> roleAcronyms = new ArrayList<>();
+    
+    for (UserRole userRole : this.users) {
+      if (userRole.getUser() != null && userRole.getUser().getId() == userID) {
+        Role role = userRole.getRole();
+        if (role != null && role.getAcronym() != null) {
+          if (this.isAiccra() && role.getAiccraAcronymDimanic() != null) {
+            if (!roleAcronyms.contains(role.getAiccraAcronymDimanic())) {
+              roleAcronyms.add(role.getAiccraAcronymDimanic());
+            }
+          } else if (role.getAcronymDimanic() != null) {
+            if (!roleAcronyms.contains(role.getAcronymDimanic())) {
+              roleAcronyms.add(role.getAcronymDimanic());
+            }
+          }
+        }
+      }
+    }
+    
+    return String.join(", ", roleAcronyms);
   }
 
   public void setCGIARUser(boolean isCGIARUser) {
