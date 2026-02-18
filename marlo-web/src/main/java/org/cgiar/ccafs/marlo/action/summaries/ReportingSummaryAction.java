@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.summaries;
 
+import org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.config.MarloLocalizedTextProvider;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
@@ -42,11 +43,16 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyQuantificationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
+import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionDeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLp6ContributionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectLocationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeIndicatorManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrossCuttingMarkerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyCrpManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyInnovationManager;
@@ -54,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyOwnerManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicySubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndPolicyInvestimentTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.manager.RepositoryChannelManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -66,11 +73,14 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -82,9 +92,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -170,6 +183,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectPolicyManager projectPolicyManager;
   private final ProjectInnovationManager projectInnovationManager;
   private final ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager;
+  private final ProjectInnovationRegionManager projectInnovationRegionManager;
+  private final ProjectInnovationCountryManager projectInnovationCountryManager;
+  private final ScalingReadinessManager scalingReadinessManager;
   private final ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager;
   private final RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager;
   private final ProjectExpectedStudyPolicyManager projectExpectedStudyPolicyManager;
@@ -182,6 +198,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager;
   private ProjectMilestoneManager projectMilestoneManager;
   private CrpProgramOutcomeManager crpProgramOutcomeManager;
+  private ProjectOutcomeManager projectOutcomeManager;
   private ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager;
   private final HTMLParser htmlParser;
   private final ActivityManager activityManager;
@@ -192,6 +209,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final UserManager userManager;
   private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
+  private final MicroserviceReportAction microserviceReportAction;
+  private final ReportConfigurationManager reportConfigurationManager;
+  private final ProjectLocationManager projectLocationManager;
+  private String clusterReportTemplateData = null;
+  private String bucketName = null;
 
   @Inject
   public ReportingSummaryAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -205,6 +227,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyLinkManager projectExpectedStudyLinkManager, ProjectPolicyManager projectPolicyManager,
     ProjectInnovationManager projectInnovationManager,
     ProjectInnovationContributingOrganizationManager projectInnovationContributingOrganizationManager,
+    ProjectInnovationRegionManager projectInnovationRegionManager,
+    ProjectInnovationCountryManager projectInnovationCountryManager,
+    ScalingReadinessManager scalingReadinessManager,
     ProjectLp6ContributionDeliverableManager projectLp6ContributionDeliverableManager,
     RepIndPolicyInvestimentTypeManager repIndPolicyInvestimentTypeManager,
     ProjectLp6ContributionManager projectLp6ContributionManager,
@@ -216,13 +241,16 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     ProjectExpectedStudyGeographicScopeManager projectExpectedStudyGeographicScopeManager,
     ProjectExpectedStudyQuantificationManager projectExpectedStudyQuantificationManager,
     ProjectMilestoneManager projectMilestoneManager, CrpProgramOutcomeManager crpProgramOutcomeManager,
-    ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager, HTMLParser htmlParser,
+    ProjectOutcomeManager projectOutcomeManager, ProjectOutcomeIndicatorManager projectOutcomeIndicatorManager,
+    HTMLParser htmlParser,
     ActivityManager activityManager, DeliverableActivityManager deliverableActivityManager,
     DeliverableLocationManager deliverableLocationManager,
     DeliverableGeographicRegionManager deliverableGeographicRegionManager,
     ProjectDeliverableSharedManager projectDeliverableSharedManager, UserManager userManager,
     DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager,
-    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager) {
+    DeliverableShfrmSubActionManager deliverableShfrmSubActionManager,
+    MicroserviceReportAction microserviceReportAction, ReportConfigurationManager reportConfigurationManager,
+    ProjectLocationManager projectLocationManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.programManager = programManager;
     this.institutionManager = institutionManager;
@@ -241,6 +269,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectPolicyManager = projectPolicyManager;
     this.projectInnovationManager = projectInnovationManager;
     this.projectInnovationContributingOrganizationManager = projectInnovationContributingOrganizationManager;
+    this.projectInnovationRegionManager = projectInnovationRegionManager;
+    this.projectInnovationCountryManager = projectInnovationCountryManager;
+    this.scalingReadinessManager = scalingReadinessManager;
     this.projectLp6ContributionDeliverableManager = projectLp6ContributionDeliverableManager;
     this.repIndPolicyInvestimentTypeManager = repIndPolicyInvestimentTypeManager;
     this.projectExpectedStudyPolicyManager = projectExpectedStudyPolicyManager;
@@ -253,6 +284,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.projectExpectedStudyQuantificationManager = projectExpectedStudyQuantificationManager;
     this.projectMilestoneManager = projectMilestoneManager;
     this.crpProgramOutcomeManager = crpProgramOutcomeManager;
+    this.projectOutcomeManager = projectOutcomeManager;
     this.projectOutcomeIndicatorManager = projectOutcomeIndicatorManager;
     this.htmlParser = htmlParser;
     this.activityManager = activityManager;
@@ -263,6 +295,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.userManager = userManager;
     this.deliverableShfrmPriorityActionManager = deliverableShfrmPriorityActionManager;
     this.deliverableShfrmSubActionManager = deliverableShfrmSubActionManager;
+    this.microserviceReportAction = microserviceReportAction;
+    this.reportConfigurationManager = reportConfigurationManager;
+    this.projectLocationManager = projectLocationManager;
   }
 
   /**
@@ -1173,27 +1208,33 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       LOG.error("Error generating LOG info " + e.getMessage());
     }
 
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-      String masterQueryName = "Main_Query";
-      Resource reportResource;
-      if (this.getSelectedCycle().equals("Planning")) {
+    boolean generatePentahoReport =
+      false;
 
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
-      } else {
-        reportResource = resourceManager.createDirectly(
-          this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
-      }
-      // Get main report
-      MasterReport masterReport = (MasterReport) reportResource.getResource();
-      // General list to store parameters of Subreports
-      List<Object> args = new LinkedList<>();
-      // Verify if the project was found
-      if (project != null) {
-        // Get details band
-        ItemBand masteritemBand = masterReport.getItemBand();
-        // Create new empty subreport hash map
+    if (generatePentahoReport) {
+
+      try {
+        String masterQueryName = "Main_Query";
+        Resource reportResource;
+        if (this.getSelectedCycle().equals("Planning")) {
+
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Planning).prpt"), MasterReport.class);
+        } else {
+          reportResource = resourceManager.createDirectly(
+            this.getClass().getResource("/pentaho/crp/ProjectFullPDF(Reporting).prpt"), MasterReport.class);
+        }
+        // Get main report
+        MasterReport masterReport = (MasterReport) reportResource.getResource();
+        // General list to store parameters of Subreports
+        List<Object> args = new LinkedList<>();
+        // Verify if the project was found
+        if (project != null) {
+          // Get details band
+          ItemBand masteritemBand = masterReport.getItemBand();
+          // Create new empty subreport hash map
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
@@ -1350,6 +1391,26 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
       + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
       + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+  } else {
+    // Specificity false - use microservice for report generation
+    try {
+      this.generateAndSendJson();
+      bytesPDF = os.toByteArray();
+    } catch (Exception e) {
+      if (e.getClass().getName().contains("ClientAbortException")) {
+        System.out.println("Client aborted the connection: " + e.getMessage());
+      } else {
+        System.out.println("Exception while generating JSON: " + e.getMessage());
+        throw e;
+      }
+    } finally {
+      try {
+        os.close();
+      } catch (Exception e) {
+        System.out.println("Error closing output stream: " + e.getMessage());
+      }
+    }
+  }
     return SUCCESS;
   }
 
@@ -2847,7 +2908,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Deliverable Crp Outcome list
           if (deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
           }
           if (deliverable.getCrpOutcomes() != null) {
             for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
@@ -2872,14 +2933,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverable Cluster participants
         if (deliverable.getDeliverableClusterParticipants() != null) {
           deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
 
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
         if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
@@ -2898,7 +2959,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           deliverable.setCountries(new ArrayList<>());
         } else {
           List<DeliverableLocation> countriesList = deliverableLocationManager
-            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
           deliverable.setCountries(countriesList);
         }
 
@@ -2922,7 +2983,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList())));
         }
@@ -2943,7 +3004,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverables shared
         try {
           List<ProjectDeliverableShared> deliverablesShared = null;
-          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
+          deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getSelectedPhase().getId());
 
           if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
             deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
@@ -2960,6 +3021,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           } else {
             sharedClusters = "<Not provided>";
           }
+
+          
         } catch (Exception e) {
           LOG.error("error getting shared deliverables " + e);
         }
@@ -2971,7 +3034,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
-              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getPhase().getId().equals(this.getSelectedPhase().getId()) && da.getActivity() != null
               && da.getActivity().isActive() && da.getActivity().getProject() != null
               && da.getActivity().getProject().getId().equals(project.getId()))
             .collect(Collectors.toList());
@@ -2997,7 +3060,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Get partner responsible and institution
         List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
           deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
             .collect(Collectors.toList());
         if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
@@ -3132,18 +3195,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           try {
             if (deliverable.getDeliverableDisseminations().stream()
               .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                && this.getSelectedPhase() != null && this.getSelectedPhase().getId() != null
                 && d.getPhase().getId().equals(this.getActualPhase().getId()))
               .collect(Collectors.toList()) != null
               && !deliverable.getDeliverableDisseminations().stream()
                 .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
+                  && this.getSelectedPhase() != null && this.getActualPhase().getId() != null
                   && d.getPhase().getId().equals(this.getActualPhase().getId()))
                 .collect(Collectors.toList()).isEmpty()) {
               deliverableDissemination = deliverable.getDeliverableDisseminations().stream()
                 .filter(d -> d != null && d.getPhase() != null && d.getPhase().getId() != null
-                  && this.getActualPhase() != null && this.getActualPhase().getId() != null
-                  && d.getPhase().getId().equals(this.getActualPhase().getId()))
+                  && this.getActualPhase() != null && this.getSelectedPhase().getId() != null
+                  && d.getPhase().getId().equals(this.getSelectedPhase().getId()))
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
@@ -3656,7 +3719,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
 
           // Other partnert
           List<DeliverableUserPartnership> otherPartners = deliverable.getDeliverableUserPartnerships().stream()
-            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+            .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getSelectedPhase().getId())
               && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_OTHER))
             .collect(Collectors.toList());
 
@@ -3874,7 +3937,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           // Deliverable Crp Outcome list
           if (deliverable.getDeliverableCrpOutcomes() != null) {
             deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-              .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
+              .filter(o -> o.getPhase().getId().equals(this.getSelectedPhase().getId())).collect(Collectors.toList())));
           }
           if (deliverable.getCrpOutcomes() != null) {
             for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
@@ -3899,14 +3962,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         // Deliverable Cluster participants
         if (deliverable.getDeliverableClusterParticipants() != null) {
           deliverable.setClusterParticipant(new ArrayList<>(deliverable.getDeliverableClusterParticipants().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
 
         // Setup Geographic Scope
         if (deliverable.getDeliverableGeographicScopes() != null) {
           deliverable.setGeographicScopes(new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getActualPhase().getId()))
+            .filter(o -> o.isActive() && o.getPhase().getId().equals(this.getSelectedPhase().getId()))
             .collect(Collectors.toList())));
         }
         if (deliverable.getGeographicScopes() != null && !deliverable.getGeographicScopes().isEmpty()) {
@@ -3925,7 +3988,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           deliverable.setCountries(new ArrayList<>());
         } else {
           List<DeliverableLocation> countriesList = deliverableLocationManager
-            .getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
+            .getDeliverableLocationbyPhase(deliverable.getId(), this.getSelectedPhase().getId());
           deliverable.setCountries(countriesList);
         }
 
@@ -3949,7 +4012,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getDeliverableGeographicRegions() != null
           && !deliverable.getDeliverableGeographicRegions().isEmpty()) {
           deliverable.setDeliverableRegions(new ArrayList<>(deliverableGeographicRegionManager
-            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getActualPhase().getId()).stream()
+            .getDeliverableGeographicRegionbyPhase(deliverable.getId(), this.getSelectedPhase().getId()).stream()
             .filter(le -> le.isActive() && le.getLocElement().getLocElementType().getId() == 1)
             .collect(Collectors.toList())));
         }
@@ -3972,7 +4035,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverableActivities != null && !deliverableActivities.isEmpty()) {
           deliverableActivities = deliverableActivities.stream()
             .filter(da -> da.isActive() && da.getPhase() != null
-              && da.getPhase().getId().equals(this.getActualPhase().getId()) && da.getActivity() != null
+              && da.getPhase().getId().equals(this.getSelectedPhase().getId()) && da.getActivity() != null
               && da.getActivity().isActive() && da.getActivity().getProject() != null
               && da.getActivity().getProject().getId().equals(project.getId()))
             .collect(Collectors.toList());
@@ -7668,7 +7731,3843 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     }
   }
 
-  @Override
+  /**
+   * Load cluster/project template data from report_configurations table.
+   * Following the same pattern used in ProjectInnovationSummaryAction and BaseStudySummaryData.
+   * Extracts the projectTemplateData field and assigns it to clusterReportTemplateData.
+   */
+  public void loadClusterTemplateData() {
+    try {
+      List<ReportConfiguration> reportConfigurations = new ArrayList<>();
+      reportConfigurations = reportConfigurationManager.findAll();
+      if (reportConfigurations != null && !reportConfigurations.isEmpty()) {
+        ReportConfiguration reportConfiguration = reportConfigurations.get(0);
+        String templateData = this.resolveProjectTemplateData(reportConfiguration);
+        if (templateData != null) {
+          this.clusterReportTemplateData = templateData;
+        }
+      }
+      this.bucketName = this.config.getMicroserviceBucketname();
+    } catch (final Exception e) {
+      System.out.println("error getting report configuration data " + e);
+    }
+  }
+
+  /**
+   * Generate JSON data and send to microservice for PDF generation.
+   * This method is called when the specificity GENERATE_PENTAHO_REPORTING_SUMMARY_REPORT_ACTIVE is false.
+   * 
+   * @return SUCCESS after sending data to microservice
+   */
+  @SuppressWarnings("unused")
+  public String generateAndSendJson() {
+    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    
+    // Initialize JSON objects
+    Map<String, Object> jsonData = new HashMap<>();
+    Map<String, Object> jsonOptions = new HashMap<>();
+    Map<String, String> headerMap = new HashMap<>();
+    Map<String, String> footerMap = new HashMap<>();
+    Map<String, Object> jsonRoot = new HashMap<>();
+    Map<String, Object> jsonMainRoot = new HashMap<>();
+    
+    String projectID = null;
+    String phaseID = null, cycle = null, year = null, loggedCenter = null;
+    
+    final Phase phase = this.getSelectedPhase();
+    
+    try {
+      if (project == null) {
+        return SUCCESS;
+      }
+      
+      if (phase == null) {
+        return SUCCESS;
+      }
+      
+      projectID = project.getId().toString();
+      phaseID = phase.getId().toString();
+      cycle = this.getSelectedCycle();
+      year = String.valueOf(phase.getYear());
+      loggedCenter = this.getLoggedCrp().getAcronym();
+
+      // Project Info
+      String projectTitle = null;
+      if (projectInfo != null) {
+        projectTitle = projectInfo.getTitle();
+      }
+      
+      // Set basic project data FIRST to ensure they are always included
+      jsonData.put("projectID", projectID);
+      jsonData.put("projectTitle", projectTitle);
+      jsonData.put("projectAcronym", project.getAcronym() != null ? project.getAcronym().toUpperCase() : "");
+      jsonData.put("phaseID", phaseID);
+      jsonData.put("cycle", cycle);
+      jsonData.put("year", year);
+      jsonData.put("loggedCenter", loggedCenter);
+      jsonData.put("timeCreation", this.getCurrentDatev2());
+      
+      Map<String, Object> projectDescription = this.buildProjectDescriptionSection();
+      List<Map<String, Object>> partnersData = this.buildProjectPartnersData();
+      projectDescription.put("partners", partnersData);
+      jsonData.put("projectDescription", projectDescription);
+      jsonData.put("projectPartners", partnersData);
+      jsonData.put("projectLocations", this.buildProjectLocationsSection(project));
+      jsonData.put("performanceIndicatorContributions", this.buildPerformanceIndicatorContributions());
+      jsonData.put("oicrs", this.buildOICRsList());
+      jsonData.put("deliverables", this.buildDeliverablesList());
+      jsonData.put("activities", this.buildActivitiesList());
+      jsonData.put("innovations", this.buildInnovationsList());
+      
+      // Set crossCutting at root level for template access (section is outside projectDescription block)
+      String crossCuttingValue = this.buildCrossCuttingSummary();
+      jsonData.put("crossCutting", crossCuttingValue);
+    } catch (Exception e) {
+      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
+    }
+    
+    // Set PDF options
+    headerMap.put("height", "40mm");
+    footerMap.put("height", "30mm");
+    try {
+      jsonOptions.put("format", "A4");
+      jsonOptions.put("orientation", "portrait");
+      jsonOptions.put("border", "0");
+      jsonOptions.put("zoomFactor", 1);
+      jsonOptions.put("header", headerMap);
+      jsonOptions.put("footer", footerMap);
+      jsonOptions.put("timeout", "300000");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonOptions: " + e.getMessage());
+    }
+    
+    try {
+      jsonRoot.put("data", jsonData);
+      jsonRoot.put("options", jsonOptions);
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot info: " + e.getMessage());
+    }
+    
+    // Load microservice configuration and cluster template data
+    this.microserviceReportAction.loadData();
+    this.loadClusterTemplateData();
+    
+    String reportName = null;
+    String bucketName = null;
+    
+    try {
+      reportName = "AICCRA-Cluster-" + project.getId() + "-Summary-" + this.getCurrentDateTime() + ".pdf";
+      bucketName = this.config.getMicroserviceBucketname();
+      
+      jsonRoot.put("fileName", reportName);
+      jsonRoot.put("bucketName", bucketName);
+      jsonRoot.put("templateData", this.clusterReportTemplateData);
+    } catch (Exception e) {
+      System.out.println("Error setting report name and bucket: " + e.getMessage());
+    }
+    
+    String username = null, password = null;
+    try {
+      username = this.config.getMicroserviceUsername();
+      password = this.config.getMicroservicePassword();
+    } catch (final Exception e) {
+      System.out.println("Error getting microservice credentials: " + e);
+    }
+    
+    try {
+      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+      jsonRoot.put("credentials", credentialsJson);
+      
+      jsonMainRoot.put("data", jsonRoot);
+      jsonMainRoot.put("pattern", "pdf.generate");
+    } catch (Exception e) {
+      System.out.println("Error setting jsonRoot and jsonMainRoot information: " + e);
+    }
+    
+    try {
+      final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
+      // Only generate JSON file in non-production environments (local/test)
+      if (!this.config.isProduction()) {
+        this.persistPayload(objectMapper, jsonMainRoot);
+      }
+      
+      System.out.println("Sending cluster report to microservice: " + reportName);
+      // Using sendClusterReportQueueMessage for cluster/project summary reports
+      this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+      
+    } catch (final java.io.IOException e) {
+      System.out.println("Error generating JSON: " + e);
+    }
+    
+    return SUCCESS;
+  }
+
+  private Map<String, Object> buildProjectDescriptionSection() {
+    Map<String, Object> projectDescription = new HashMap<>();
+    if (project == null || projectInfo == null) {
+      return projectDescription;
+    }
+
+    SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+    String startDate =
+      projectInfo.getStartDate() != null ? formatter.format(projectInfo.getStartDate()) : null;
+    String endDate = projectInfo.getEndDate() != null ? formatter.format(projectInfo.getEndDate()) : null;
+    String liaisonInstitution =
+      projectInfo.getLiaisonInstitution() != null ? projectInfo.getLiaisonInstitution().getName() : null;
+    String type = projectInfo.getClusterType() != null && projectInfo.getClusterType().getName() != null
+      ? projectInfo.getClusterType().getName() : null;
+    String status = null;
+    if (projectInfo.getStatus() != null) {
+      status = ProjectStatusEnum.getValue(projectInfo.getStatus().intValue()).getStatus();
+    }
+
+    String orgLeader = null;
+    ProjectPartner projectLeader = null;
+    if (this.getSelectedPhase() != null) {
+      projectLeader = project.getLeader(this.getSelectedPhase());
+    }
+    if (projectLeader != null && projectLeader.getInstitution() != null) {
+      orgLeader = projectLeader.getInstitution().getComposedName();
+    }
+
+    String leader = null;
+    ProjectPartnerPerson leaderPerson = project.getLeaderPerson(this.getSelectedPhase());
+    if (leaderPerson != null && leaderPerson.getUser() != null) {
+      leader = leaderPerson.getUser().getComposedName();
+    }
+
+    String summary = this.getSanitizedText(projectInfo.getSummary());
+
+    projectDescription.put("title", projectInfo.getTitle());
+    projectDescription.put("startDate", startDate);
+    projectDescription.put("endDate", endDate);
+    projectDescription.put("liaisonInstitution", liaisonInstitution);
+    projectDescription.put("liaisonLabel", this.getText("project.liaisonInstitution"));
+    projectDescription.put("liaisonContactLabel", this.getText("project.liaisonUser"));
+    projectDescription.put("type", type);
+    projectDescription.put("status", status);
+    projectDescription.put("leadOrganization", orgLeader);
+    projectDescription.put("leader", leader);
+    projectDescription.put("summary", summary);
+    projectDescription.put("cycle", this.getSelectedCycle());
+    projectDescription.put("crossCutting", this.buildCrossCuttingSummary());
+    projectDescription.put("hasRegions", this.hasProgramnsRegions());
+    List<Map<String, Object>> flagships =
+      this.buildProgramFocusList(ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue());
+    projectDescription.put("flagships", flagships);
+    projectDescription.put("flagshipsSummary", this.buildProgramSummary(flagships));
+
+    List<Map<String, Object>> regions = this.hasProgramnsRegions()
+      ? this.buildProgramFocusList(ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) : new ArrayList<>();
+    projectDescription.put("regions", regions);
+    projectDescription.put("regionsSummary", this.buildProgramSummary(regions));
+
+    List<Map<String, Object>> clusterActivities = this.buildClusterActivitiesList();
+    projectDescription.put("clusterActivities", clusterActivities);
+    projectDescription.put("clusterActivitiesSummary", this.buildClusterActivitiesSummary(clusterActivities));
+    projectDescription.put("challengesSolutions", this.getSanitizedText(projectInfo.getChallengesSolutions()));
+    projectDescription.put("lessonsLearned", this.getSanitizedText(projectInfo.getLessonsLearned()));
+
+    return projectDescription;
+  }
+
+  private String buildFundingTypeSummary() {
+    if (project == null || project.getProjectBudgets() == null || project.getProjectBudgets().isEmpty()) {
+      return null;
+    }
+
+    List<String> typeList = project.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getBudgetType() != null
+        && pb.getFundingSource() != null && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase())
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType() != null
+        && pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName() != null)
+      .map(pb -> pb.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()).getBudgetType().getName())
+      .collect(Collectors.toList());
+
+    if (typeList.isEmpty()) {
+      return null;
+    }
+
+    Set<String> distinctTypes = new LinkedHashSet<>(typeList);
+    return String.join(", ", distinctTypes);
+  }
+
+  private String buildCrossCuttingSummary() {
+    if (projectInfo == null) {
+      return null;
+    }
+
+    List<String> crossCuttingItems = new ArrayList<>();
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingNa())) {
+      crossCuttingItems.add("● N/A");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingCapacity())) {
+      crossCuttingItems.add("● Capacity Development");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingGender())) {
+      crossCuttingItems.add("● Gender");
+    }
+    if (Boolean.TRUE.equals(projectInfo.getCrossCuttingYouth())) {
+      crossCuttingItems.add("● Youth");
+    }
+
+    if (crossCuttingItems.isEmpty()) {
+      return null;
+    }
+    return String.join(" <br>", crossCuttingItems);
+  }
+
+  private List<Map<String, Object>> buildProgramFocusList(int programType) {
+    List<Map<String, Object>> programsData = new ArrayList<>();
+    if (project == null || project.getProjectFocuses() == null) {
+      return programsData;
+    }
+
+    List<ProjectFocus> focuses = project.getProjectFocuses().stream()
+      .sorted((f1, f2) -> f1.getCrpProgram().getAcronym().compareTo(f2.getCrpProgram().getAcronym()))
+      .filter(c -> c.isActive() && c.getCrpProgram() != null
+        && c.getCrpProgram().getProgramType() == programType && c.getPhase() != null
+        && c.getPhase().equals(this.getSelectedPhase()) && c.getCrpProgram().getResearchArea() == null
+        && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().isCenterType() == false)
+      .collect(Collectors.toList());
+
+    for (ProjectFocus focus : focuses) {
+      CrpProgram program = programManager.getCrpProgramById(focus.getCrpProgram().getId());
+      if (program == null) {
+        continue;
+      }
+      Map<String, Object> programData = new HashMap<>();
+      programData.put("id", program.getId());
+      programData.put("name", program.getName());
+      programData.put("acronym", program.getAcronym());
+      programData.put("composedName", program.getComposedName());
+      programsData.add(programData);
+    }
+    return programsData;
+  }
+
+  private List<Map<String, Object>> buildClusterActivitiesList() {
+    List<Map<String, Object>> activities = new ArrayList<>();
+    if (project == null || project.getProjectClusterActivities() == null) {
+      return activities;
+    }
+
+    List<ProjectClusterActivity> clusterActivities = new ArrayList<>();
+    for (ProjectClusterActivity projectClusterActivity : project.getProjectClusterActivities().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList())) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      boolean duplicated = clusterActivities.stream()
+        .anyMatch(existing -> existing.getCrpClusterOfActivity().getId()
+          .equals(projectClusterActivity.getCrpClusterOfActivity().getId()));
+      if (!duplicated) {
+        clusterActivities.add(projectClusterActivity);
+      }
+    }
+
+    for (ProjectClusterActivity projectClusterActivity : clusterActivities) {
+      if (projectClusterActivity.getCrpClusterOfActivity() == null) {
+        continue;
+      }
+      Map<String, Object> activityData = new HashMap<>();
+      activityData.put("id", projectClusterActivity.getCrpClusterOfActivity().getId());
+      activityData.put("name", projectClusterActivity.getCrpClusterOfActivity().getComposedName());
+      activityData.put("identifier", projectClusterActivity.getCrpClusterOfActivity().getIdentifier());
+      activities.add(activityData);
+    }
+    return activities;
+  }
+
+  private String buildClusterActivitiesSummary(List<Map<String, Object>> activities) {
+    if (activities == null || activities.isEmpty()) {
+      return null;
+    }
+    List<String> names = activities.stream().map(activity -> {
+      Object name = activity.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object identifier = activity.get("identifier");
+      if (identifier != null && StringUtils.isNotBlank(identifier.toString())) {
+        return identifier.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private Map<String, Object> buildProjectLocationsSection(Project projectDb) {
+    Map<String, Object> locations = new HashMap<>();
+    locations.put("hasLocations", false);
+    locations.put("globalDimension", false);
+    locations.put("regionalDimension", false);
+    if (projectDb == null) {
+      return locations;
+    }
+
+    ProjectInfo projectInfoPhase = projectDb.getProjecInfoPhase(this.getSelectedPhase());
+    if (projectInfoPhase != null) {
+      locations.put("globalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationGlobal()));
+      locations.put("regionalDimension", Boolean.TRUE.equals(projectInfoPhase.getLocationRegional()));
+    }
+
+    List<Map<String, Object>> groups = this.collectProjectLocationGroups(projectDb);
+    locations.put("locationGroups", groups);
+    locations.put("hasLocations", !groups.isEmpty());
+    return locations;
+  }
+
+  private List<Map<String, Object>> collectProjectLocationGroups(Project projectDb) {
+    if (projectDb == null) {
+      return Collections.emptyList();
+    }
+    List<ProjectLocation> phaseLocations = this.loadProjectLocationsByPhase(projectDb.getId());
+    LinkedHashMap<Long, Map<String, Object>> grouped = new LinkedHashMap<>();
+    for (ProjectLocation location : phaseLocations) {
+      LocElementType type = null;
+      LocElement locElement = location.getLocElement();
+      if (locElement != null && locElement.getLocElementType() != null) {
+        type = locElement.getLocElementType();
+      } else if (location.getLocElementType() != null) {
+        type = location.getLocElementType();
+      }
+      if (type == null) {
+        continue;
+      }
+      final LocElementType groupType = type;
+      Map<String, Object> group = grouped.computeIfAbsent(type.getId(), id -> {
+        Map<String, Object> data = new HashMap<>();
+        data.put("typeId", id);
+        data.put("typeName", groupType.getName());
+        data.put("locations", new ArrayList<Map<String, Object>>());
+        return data;
+      });
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      Map<String, Object> entry = new HashMap<>();
+      if (locElement != null) {
+        entry.put("name", locElement.getName());
+        entry.put("parentName",
+          locElement.getLocElement() != null ? locElement.getLocElement().getName() : null);
+        if (locElement.getLocGeoposition() != null) {
+          entry.put("latitude", this.formatCoordinate(locElement.getLocGeoposition().getLatitude()));
+          entry.put("longitude", this.formatCoordinate(locElement.getLocGeoposition().getLongitude()));
+        }
+      } else {
+        entry.put("name", type.getName());
+      }
+      entries.add(entry);
+    }
+
+    return grouped.values().stream().peek(group -> {
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> entries = (List<Map<String, Object>>) group.get("locations");
+      entries.sort(Comparator.comparing(
+        e -> StringUtils.defaultString((String) e.get("name")).toLowerCase(Locale.ENGLISH)));
+    }).collect(Collectors.toList());
+  }
+
+  private List<ProjectLocation> loadProjectLocationsByPhase(long projectId) {
+    return projectLocationManager.findAll().stream()
+      .filter(pl -> pl != null && pl.isActive() && pl.getProject() != null && pl.getProject().getId() != null
+        && pl.getProject().getId().longValue() == projectId && pl.getPhase() != null
+        && pl.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+  }
+
+  private String formatCoordinate(Double value) {
+    if (value == null) {
+      return null;
+    }
+    return String.format(Locale.ENGLISH, "%.4f", value);
+  }
+
+  private List<Map<String, Object>> buildProjectPartnersData() {
+    List<Map<String, Object>> partnersData = new ArrayList<>();
+    if (project == null || project.getProjectPartners() == null) {
+      return partnersData;
+    }
+
+    List<ProjectPartner> partners = project.getProjectPartners().stream().filter(Objects::nonNull)
+      .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(p -> this.getPartnerDisplayName(p).toLowerCase(Locale.ENGLISH)))
+      .collect(Collectors.toList());
+
+    for (ProjectPartner partner : partners) {
+      Map<String, Object> partnerData = new HashMap<>();
+      partnerData.put("id", partner.getId());
+      partnerData.put("institutionName", this.getPartnerDisplayName(partner));
+      partnerData.put("institutionAcronym",
+        partner.getInstitution() != null ? partner.getInstitution().getAcronym() : null);
+      partnerData.put("responsibilities", this.getSanitizedText(partner.getResponsibilities()));
+      List<Map<String, Object>> locations = this.buildPartnerLocations(partner);
+      partnerData.put("locations", locations);
+      partnerData.put("locationsSummary", this.buildLocationsSummary(locations));
+      partnerData.put("persons", this.buildPartnerPersons(partner));
+      partnersData.add(partnerData);
+    }
+    return partnersData;
+  }
+
+  private List<Map<String, Object>> buildPartnerLocations(ProjectPartner partner) {
+    List<Map<String, Object>> locations = new ArrayList<>();
+    if (partner.getProjectPartnerLocations() == null) {
+      return locations;
+    }
+    partner.getProjectPartnerLocations().stream().filter(Objects::nonNull).filter(ProjectPartnerLocation::isActive)
+      .sorted(Comparator.comparing(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        if (institutionLocation != null && institutionLocation.getLocElement() != null
+          && institutionLocation.getLocElement().getName() != null) {
+          return institutionLocation.getLocElement().getName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(location -> {
+        InstitutionLocation institutionLocation = location.getInstitutionLocation();
+        LocElement locElement = institutionLocation != null ? institutionLocation.getLocElement() : null;
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("name",
+          institutionLocation != null ? institutionLocation.getComposedName() : null);
+        locationData.put("country", locElement != null ? locElement.getName() : null);
+        if (locElement != null && locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
+          String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
+          locationData.put("isoAlpha2", isoAlpha2);
+          String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+        } else {
+          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement != null && locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+        }
+        locationData.put("city",
+          institutionLocation != null ? institutionLocation.getCity() : null);
+        locationData.put("headquarter",
+          institutionLocation != null ? institutionLocation.isHeadquater() : null);
+        locations.add(locationData);
+      });
+    return locations;
+  }
+
+  private String buildLocationsSummary(List<Map<String, Object>> locations) {
+    if (locations == null || locations.isEmpty()) {
+      return null;
+    }
+    List<String> names = locations.stream().map(location -> {
+      Object name = location.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString();
+      }
+      Object country = location.get("country");
+      if (country != null && StringUtils.isNotBlank(country.toString())) {
+        return country.toString();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(3).collect(Collectors.joining(", "));
+    if (names.size() > 3) {
+      summary = summary + " +" + (names.size() - 3) + " more";
+    }
+    return summary;
+  }
+
+  private List<Map<String, Object>> buildPartnerPersons(ProjectPartner partner) {
+    List<Map<String, Object>> persons = new ArrayList<>();
+    if (partner.getProjectPartnerPersons() == null) {
+      return persons;
+    }
+    partner.getProjectPartnerPersons().stream().filter(Objects::nonNull).filter(ProjectPartnerPerson::isActive)
+      .sorted(Comparator.comparing(person -> {
+        if (person.getUser() != null && person.getUser().getComposedCompleteName() != null) {
+          return person.getUser().getComposedCompleteName().toLowerCase(Locale.ENGLISH);
+        }
+        return "";
+      })).forEach(person -> {
+        Map<String, Object> personData = new HashMap<>();
+        personData.put("id", person.getId());
+        if (person.getUser() != null) {
+          personData.put("name", person.getUser().getComposedCompleteName());
+          personData.put("email", person.getUser().getEmail());
+        }
+        String role = this.getSanitizedText(person.getContactType());
+        if (this.isAiccra() && role != null) {
+          String normalizedRole = role.toUpperCase(Locale.ENGLISH);
+          if ("PL".equals(normalizedRole)) {
+            role = "Cluster leader";
+          } else if ("PC".equals(normalizedRole)) {
+            role = "Cluster Coordinator";
+          } else if ("CP".equals(normalizedRole)) {
+            role = "Cluster Collaborator";
+          }
+        }
+        personData.put("role", role);
+        if (person.getPartnerDivision() != null) {
+          personData.put("division", person.getPartnerDivision().getComposedName());
+        }
+        persons.add(personData);
+      });
+    return persons;
+  }
+
+  private List<Map<String, Object>> buildPerformanceIndicatorContributions() {
+    List<Map<String, Object>> contributions = new ArrayList<>();
+    if (project == null || project.getProjectOutcomes() == null) {
+      return contributions;
+    }
+
+    List<ProjectOutcomeIndicator> indicatorsList = new ArrayList<>();
+    try {
+      List<ProjectOutcomeIndicator> allIndicators = projectOutcomeIndicatorManager.findAll();
+      if (allIndicators != null) {
+        indicatorsList.addAll(allIndicators);
+      }
+    } catch (Exception e) {
+      LOG.warn("Unable to load project outcome indicators", e);
+    }
+
+    Map<Long, List<ProjectOutcomeIndicator>> indicatorsByOutcome = indicatorsList.stream().filter(Objects::nonNull)
+      .filter(ProjectOutcomeIndicator::isActive)
+      .filter(indicator -> indicator.getProjectOutcome() != null && indicator.getProjectOutcome().getId() != null)
+      .collect(Collectors.groupingBy(indicator -> indicator.getProjectOutcome().getId()));
+
+    List<ProjectOutcome> outcomes = project.getProjectOutcomes().stream().filter(Objects::nonNull)
+      .filter(outcome -> outcome.isActive() && outcome.getPhase() != null
+        && outcome.getPhase().equals(this.getSelectedPhase()))
+      .sorted(Comparator.comparing(ProjectOutcome::getOrder, Comparator.nullsLast(Double::compareTo)))
+      .collect(Collectors.toList());
+
+    int order = 1;
+    for (ProjectOutcome summaryOutcome : outcomes) {
+      ProjectOutcome detailedOutcome = summaryOutcome;
+      try {
+        if (projectOutcomeManager != null) {
+          ProjectOutcome dbOutcome = projectOutcomeManager.getProjectOutcomeById(summaryOutcome.getId());
+          if (dbOutcome != null) {
+            detailedOutcome = dbOutcome;
+          }
+        }
+      } catch (Exception e) {
+        LOG.warn("Unable to reload project outcome {}", summaryOutcome.getId(), e);
+      }
+      if (detailedOutcome == null) {
+        continue;
+      }
+      List<ProjectOutcomeIndicator> outcomeIndicators =
+        indicatorsByOutcome.getOrDefault(detailedOutcome.getId(), Collections.emptyList());
+      contributions.add(this.buildPerformanceIndicatorContribution(detailedOutcome, outcomeIndicators, order++));
+    }
+    return contributions;
+  }
+
+  private Map<String, Object> buildPerformanceIndicatorContribution(ProjectOutcome outcome,
+    List<ProjectOutcomeIndicator> indicators, int order) {
+    Map<String, Object> data = new HashMap<>();
+    data.put("order", order);
+    if (outcome == null) {
+      return data;
+    }
+    data.put("outcomeId", outcome.getId());
+    CrpProgramOutcome crpOutcome = outcome.getCrpProgramOutcome();
+    if (crpOutcome != null) {
+      data.put("programOutcome", this.getSanitizedText(crpOutcome.getDescription()));
+      data.put("indicator", this.getSanitizedText(crpOutcome.getIndicator()));
+      data.put("programOutcomeYear", crpOutcome.getYear());
+      data.put("programOutcomeValue", this.formatNumericValue(crpOutcome.getValue()));
+      if (crpOutcome.getSrfTargetUnit() != null) {
+        data.put("programOutcomeUnit", this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName()));
+      }
+      if (crpOutcome.getCrpProgram() != null) {
+        String flagshipName = this.getSanitizedText(crpOutcome.getCrpProgram().getComposedName());
+        if (flagshipName != null) {
+          data.put("flagship", flagshipName);
+        }
+        String flagshipAcronym = this.getSanitizedText(crpOutcome.getCrpProgram().getAcronym());
+        String badge = flagshipAcronym != null ? flagshipAcronym : flagshipName;
+        if (badge != null) {
+          data.put("flagshipBadge", badge);
+        }
+      }
+    }
+    String targetNarrative = this.getSanitizedText(outcome.getNarrativeTarget());
+    if (targetNarrative != null && !targetNarrative.trim().isEmpty()) {
+      data.put("targetNarrative", targetNarrative);
+    }
+    String achievementNarrative = this.getSanitizedText(outcome.getNarrativeAchieved());
+    if (achievementNarrative != null && !achievementNarrative.trim().isEmpty()) {
+      data.put("achievementNarrative", achievementNarrative);
+    }
+    String targetValue = this.formatNumericValue(outcome.getExpectedValue());
+    if (targetValue != null && !targetValue.trim().isEmpty()) {
+      data.put("targetValue", targetValue);
+    }
+    String targetUnit = this.resolveUnitName(outcome.getExpectedUnit(), crpOutcome);
+    if (targetUnit != null && !targetUnit.trim().isEmpty()) {
+      data.put("targetUnit", targetUnit);
+    }
+    String achievementValue = this.formatNumericValue(outcome.getAchievedValue());
+    if (achievementValue != null && !achievementValue.trim().isEmpty()) {
+      data.put("achievementValue", achievementValue);
+    }
+    String achievementUnit = this.resolveUnitName(outcome.getAchievedUnit(), crpOutcome);
+    if (achievementUnit != null && !achievementUnit.trim().isEmpty()) {
+      data.put("achievementUnit", achievementUnit);
+    }
+    String communications = this.buildOutcomeCommunications(outcome);
+    if (communications != null && !communications.isEmpty()) {
+      data.put("communications", communications);
+    }
+    String lessonsLearned = this.extractLessons(outcome);
+    if (lessonsLearned != null && !lessonsLearned.isEmpty()) {
+      data.put("lessonsLearned", lessonsLearned);
+    }
+
+    List<Map<String, Object>> milestoneData = this.buildOutcomeMilestones(outcome);
+    data.put("milestones", milestoneData);
+    data.put("hasMilestones", !milestoneData.isEmpty());
+
+    List<Map<String, Object>> indicatorResponses = this.buildOutcomeIndicatorResponses(indicators);
+    data.put("indicatorResponses", indicatorResponses);
+    data.put("hasIndicatorResponses", !indicatorResponses.isEmpty());
+
+    List<Map<String, Object>> nextUsers = this.buildOutcomeNextUsers(outcome);
+    data.put("nextUsers", nextUsers);
+    data.put("hasNextUsers", !nextUsers.isEmpty());
+    return data;
+  }
+
+  private List<Map<String, Object>> buildOutcomeMilestones(ProjectOutcome outcome) {
+    if (outcome.getProjectMilestones() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectMilestones().stream().filter(Objects::nonNull).filter(ProjectMilestone::isActive)
+      .filter(milestone -> {
+        int milestoneYear = milestone.getYear();
+        return milestoneYear <= 0 || milestoneYear == this.getSelectedYear();
+      })
+      .map(milestone -> {
+        Map<String, Object> milestoneData = new HashMap<>();
+        if (milestone.getCrpMilestone() != null) {
+          String title = this.getSanitizedText(milestone.getCrpMilestone().getComposedName());
+          if (title != null && !title.trim().isEmpty()) {
+            milestoneData.put("title", title);
+          }
+        }
+        int year = milestone.getYear();
+        if (year > 0) {
+          milestoneData.put("year", year);
+        }
+        String narrative = this.getSanitizedText(milestone.getNarrativeTarget());
+        if (narrative != null && !narrative.trim().isEmpty()) {
+          milestoneData.put("narrative", narrative);
+        }
+        String expectedValue = this.formatNumericValue(milestone.getExpectedValue());
+        if (expectedValue != null && !expectedValue.trim().isEmpty()) {
+          milestoneData.put("expectedValue", expectedValue);
+        }
+        String achievedValue = this.formatNumericValue(milestone.getAchievedValue());
+        if (achievedValue != null && !achievedValue.trim().isEmpty()) {
+          milestoneData.put("achievedValue", achievedValue);
+        }
+        return milestoneData;
+      }).filter(entry -> !entry.isEmpty()).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeIndicatorResponses(List<ProjectOutcomeIndicator> indicators) {
+    if (indicators == null || indicators.isEmpty()) {
+      return Collections.emptyList();
+    }
+    return indicators.stream().filter(Objects::nonNull)
+      .filter(indicator -> indicator.getPhase() == null || indicator.getPhase().equals(this.getSelectedPhase()))
+      .map(indicator -> {
+        Map<String, Object> response = new HashMap<>();
+        if (indicator.getCrpProgramOutcomeIndicator() != null) {
+          String rawQuestion = indicator.getCrpProgramOutcomeIndicator().getIndicator();
+          String question = this.cleanHtmlText(rawQuestion);
+          if (question != null && !question.trim().isEmpty()) {
+            response.put("question", question);
+          }
+        }
+        String narrative = this.getSanitizedText(indicator.getNarrative());
+        if (narrative != null && !narrative.trim().isEmpty()) {
+          response.put("narrative", narrative);
+        }
+        String achievedNarrative = this.getSanitizedText(indicator.getAchievedNarrative());
+        if (achievedNarrative != null && !achievedNarrative.trim().isEmpty()) {
+          response.put("achievedNarrative", achievedNarrative);
+        }
+        return response;
+      }).filter(entry -> !entry.isEmpty()).collect(Collectors.toList());
+  }
+
+  private List<Map<String, Object>> buildOutcomeNextUsers(ProjectOutcome outcome) {
+    if (outcome.getProjectNextusers() == null) {
+      return Collections.emptyList();
+    }
+    return outcome.getProjectNextusers().stream().filter(Objects::nonNull).filter(ProjectNextuser::isActive)
+      .map(nextUser -> {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("name", this.getSanitizedText(nextUser.getNextUser()));
+        entry.put("knowledge", this.getSanitizedText(nextUser.getKnowledge()));
+        entry.put("strategies", this.getSanitizedText(nextUser.getStrategies()));
+        entry.put("knowledgeReport", this.getSanitizedText(nextUser.getKnowledgeReport()));
+        entry.put("strategiesReport", this.getSanitizedText(nextUser.getStrategiesReport()));
+        return entry;
+      }).filter(entry -> entry.values().stream().anyMatch(Objects::nonNull)).collect(Collectors.toList());
+  }
+
+  private String buildOutcomeCommunications(ProjectOutcome outcome) {
+    if (outcome.getProjectCommunications() == null) {
+      return null;
+    }
+    List<String> communications = outcome.getProjectCommunications().stream().filter(Objects::nonNull)
+      .filter(ProjectCommunication::isActive).filter(communication -> communication.getYear() == this.getSelectedYear())
+      .map(ProjectCommunication::getCommunication).map(this::getSanitizedText).filter(Objects::nonNull)
+      .collect(Collectors.toList());
+    if (communications.isEmpty()) {
+      return null;
+    }
+    return String.join("\n\n", communications);
+  }
+
+  private String extractLessons(ProjectOutcome outcome) {
+    if (outcome.getProjectComponentLesson() != null && outcome.getProjectComponentLesson().getLessons() != null) {
+      return this.getSanitizedText(outcome.getProjectComponentLesson().getLessons());
+    }
+    return null;
+  }
+
+  private List<Map<String, Object>> buildOICRsList() {
+    List<Map<String, Object>> oicrs = new ArrayList<>();
+    if (project == null) {
+      return oicrs;
+    }
+
+    Set<ProjectExpectedStudy> myStudies = new HashSet<>();
+
+    // Get direct project studies
+    List<ProjectExpectedStudy> projectExpectedStudies = project.getProjectExpectedStudies().stream()
+      .filter(p -> p.isActive() && p.getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+        && p.getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear().equals(this.getSelectedYear()))
+      .collect(Collectors.toList());
+    if (projectExpectedStudies != null && !projectExpectedStudies.isEmpty()) {
+      myStudies.addAll(projectExpectedStudies);
+    }
+
+    // Get shared studies
+    List<ExpectedStudyProject> sharedStudies = project.getExpectedStudyProjects().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()) != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear() != null
+        && c.getProjectExpectedStudy().getProjectExpectedStudyInfo(this.getSelectedPhase()).getYear()
+          .equals(this.getSelectedYear()))
+      .collect(Collectors.toList());
+
+    if (sharedStudies != null && !sharedStudies.isEmpty()) {
+      for (ExpectedStudyProject expectedStudyProject : sharedStudies) {
+        myStudies.add(expectedStudyProject.getProjectExpectedStudy());
+      }
+    }
+
+    if (myStudies != null && !myStudies.isEmpty()) {
+      for (ProjectExpectedStudy projectExpectedStudy : myStudies.stream()
+        .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList())) {
+        Map<String, Object> oicrData = this.buildOICRData(projectExpectedStudy);
+        if (oicrData != null && !oicrData.isEmpty()) {
+          oicrs.add(oicrData);
+        }
+      }
+    }
+
+    return oicrs;
+  }
+
+  private Map<String, Object> buildOICRData(ProjectExpectedStudy study) {
+    Map<String, Object> data = new HashMap<>();
+    if (study == null) {
+      return data;
+    }
+
+    ProjectExpectedStudyInfo studyInfo = study.getProjectExpectedStudyInfo(this.getSelectedPhase());
+    if (studyInfo == null) {
+      return data;
+    }
+
+    data.put("id", study.getId());
+
+    // Basic information
+    if (studyInfo.getTitle() != null) {
+      data.put("title", this.getSanitizedText(studyInfo.getTitle()));
+    }
+    if (studyInfo.getYear() != null) {
+      data.put("year", studyInfo.getYear());
+    }
+    if (studyInfo.getStatus() != null) {
+      data.put("status", this.getSanitizedText(studyInfo.getStatusName()));
+    }
+    if (studyInfo.getStudyType() != null) {
+      data.put("type", this.getSanitizedText(studyInfo.getStudyType().getName()));
+    }
+    if (studyInfo.getCommissioningStudy() != null) {
+      data.put("commissioningStudy", this.getSanitizedText(studyInfo.getCommissioningStudy()));
+    }
+
+    // Outcome/Impact statement
+    if (studyInfo.getOutcomeImpactStatement() != null) {
+      data.put("outcomeImpactStatement", this.getSanitizedText(studyInfo.getOutcomeImpactStatement()));
+    }
+
+    // Elaboration of Outcome/Impact Statement
+    if (studyInfo.getElaborationOutcomeImpactStatement() != null
+      && !studyInfo.getElaborationOutcomeImpactStatement().trim().isEmpty()) {
+      data.put("elaborationOutcomeImpactStatement",
+        this.getSanitizedText(studyInfo.getElaborationOutcomeImpactStatement()));
+    }
+
+    // Top Level Comments
+    if (studyInfo.getTopLevelComments() != null && !studyInfo.getTopLevelComments().trim().isEmpty()) {
+      data.put("topLevelComments", this.getSanitizedText(studyInfo.getTopLevelComments()));
+    }
+
+    // Scope Comments
+    if (studyInfo.getScopeComments() != null && !studyInfo.getScopeComments().trim().isEmpty()) {
+      data.put("scopeComments", this.getSanitizedText(studyInfo.getScopeComments()));
+    }
+
+    // Quantification
+    if (studyInfo.getQuantification() != null && !studyInfo.getQuantification().trim().isEmpty()) {
+      data.put("quantification", this.getSanitizedText(studyInfo.getQuantification()));
+    }
+
+    // Maturity of Change (Stage Study)
+    if (studyInfo.getRepIndStageStudy() != null) {
+      data.put("stageStudy", this.getSanitizedText(studyInfo.getRepIndStageStudy().getName()));
+    }
+
+    // Stage Process
+    if (studyInfo.getRepIndStageProcess() != null) {
+      data.put("stageProcess", this.getSanitizedText(studyInfo.getRepIndStageProcess().getName()));
+    }
+
+    // Organization Type
+    if (studyInfo.getRepIndOrganizationType() != null) {
+      data.put("organizationType", this.getSanitizedText(studyInfo.getRepIndOrganizationType().getName()));
+    }
+
+    // Policy Investment Type
+    if (studyInfo.getRepIndPolicyInvestimentType() != null) {
+      data.put("policyInvestimentType", this.getSanitizedText(studyInfo.getRepIndPolicyInvestimentType().getName()));
+    }
+
+    // Policy Amount
+    if (studyInfo.getPolicyAmount() != null) {
+      data.put("policyAmount", this.formatNumericValue(studyInfo.getPolicyAmount()));
+    }
+
+    // Is Contribution
+    if (studyInfo.getIsContribution() != null) {
+      data.put("isContribution", studyInfo.getIsContribution());
+      data.put("isContributionText", studyInfo.getIsContribution() ? "Yes" : "No");
+    }
+
+    // Is SRF Target
+    if (studyInfo.getIsSrfTarget() != null && !studyInfo.getIsSrfTarget().isEmpty()) {
+      data.put("isSrfTarget", studyInfo.getIsSrfTarget());
+      data.put("isSrfTargetText", studyInfo.getIsSrfTarget().equals("targetsOptionYes") ? "Yes" : "No");
+    }
+
+    // CGIAR Innovation
+    if (studyInfo.getCgiarInnovation() != null && !studyInfo.getCgiarInnovation().trim().isEmpty()) {
+      data.put("cgiarInnovation", this.getSanitizedText(studyInfo.getCgiarInnovation()));
+    }
+
+    // Other Innovations Narrative
+    if (studyInfo.getOtherInnovationsNarrative() != null
+      && !studyInfo.getOtherInnovationsNarrative().trim().isEmpty()) {
+      data.put("otherInnovationsNarrative", this.getSanitizedText(studyInfo.getOtherInnovationsNarrative()));
+    }
+
+    // Communications Material
+    if (studyInfo.getComunicationsMaterial() != null && !studyInfo.getComunicationsMaterial().trim().isEmpty()) {
+      data.put("comunicationsMaterial", this.getSanitizedText(studyInfo.getComunicationsMaterial()));
+    }
+
+    // Contacts - Extract from partnerships
+    List<String> contacts = new ArrayList<>();
+    if (study.getProjectExpectedStudyPartnerships() != null) {
+      contacts = study.getProjectExpectedStudyPartnerships().stream()
+        .filter(p -> p.isActive() 
+          && p.getPhase() != null 
+          && p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getProjectExpectedStudyPartnershipsPersons() != null
+          && p.getInstitution() != null)
+        .flatMap(p -> {
+          Institution institution = p.getInstitution();
+          String institutionName = institution.getComposedName() != null 
+            ? this.getSanitizedText(institution.getComposedName()) 
+            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+          return p.getProjectExpectedStudyPartnershipsPersons().stream()
+            .filter(pp -> pp.isActive() 
+              && pp.getUser() != null
+              && pp.getUser().getEmail() != null)
+            .map(pp -> {
+              User user = pp.getUser();
+              String userInfo = user.getComposedName(); // Returns "LastName, FirstName <email>"
+              String contactInfo = institutionName != null && !institutionName.trim().isEmpty()
+                ? institutionName + " - " + userInfo
+                : userInfo;
+              return this.getSanitizedText(contactInfo);
+            });
+        })
+        .filter(Objects::nonNull)
+        .distinct()
+        .sorted()
+        .collect(Collectors.toList());
+    }
+    if (!contacts.isEmpty()) {
+      data.put("contacts", String.join("; ", contacts));
+    }
+
+    // Outcome Story
+    if (studyInfo.getOutcomeStory() != null && !studyInfo.getOutcomeStory().trim().isEmpty()) {
+      data.put("outcomeStory", this.getSanitizedText(studyInfo.getOutcomeStory()));
+    }
+
+    // COVID Analysis
+    if (studyInfo.getHasCovidAnalysis() != null) {
+      data.put("hasCovidAnalysis", studyInfo.getHasCovidAnalysis());
+    }
+
+    // Tag
+    if (studyInfo.getTag() != null && studyInfo.getTag().getTagName() != null) {
+      data.put("tag", this.getSanitizedText(studyInfo.getTag().getTagName()));
+    }
+
+    // Gender Relevance
+    if (studyInfo.getGenderLevel() != null) {
+      String genderRelevance = studyInfo.getGenderLevel().getPowbName();
+      if (studyInfo.getDescribeGender() != null && !studyInfo.getDescribeGender().trim().isEmpty()) {
+        genderRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeGender());
+      }
+      data.put("genderRelevance", genderRelevance);
+    }
+
+    // Youth Relevance
+    if (studyInfo.getYouthLevel() != null) {
+      String youthRelevance = studyInfo.getYouthLevel().getPowbName();
+      if (studyInfo.getDescribeYouth() != null && !studyInfo.getDescribeYouth().trim().isEmpty()) {
+        youthRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeYouth());
+      }
+      data.put("youthRelevance", youthRelevance);
+    }
+
+    // Capacity Development Relevance
+    if (studyInfo.getCapdevLevel() != null) {
+      String capacityRelevance = studyInfo.getCapdevLevel().getPowbName();
+      if (studyInfo.getDescribeCapdev() != null && !studyInfo.getDescribeCapdev().trim().isEmpty()) {
+        capacityRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeCapdev());
+      }
+      data.put("capacityRelevance", capacityRelevance);
+    }
+
+    // Climate Change Relevance
+    if (studyInfo.getClimateChangeLevel() != null) {
+      String climateRelevance = studyInfo.getClimateChangeLevel().getPowbName();
+      if (studyInfo.getDescribeClimateChange() != null && !studyInfo.getDescribeClimateChange().trim().isEmpty()) {
+        climateRelevance += ": " + this.getSanitizedText(studyInfo.getDescribeClimateChange());
+      }
+      data.put("climateRelevance", climateRelevance);
+    }
+
+    // Other Cross-cutting Dimensions Selection
+    if (studyInfo.getOtherCrossCuttingSelection() != null
+      && !studyInfo.getOtherCrossCuttingSelection().trim().isEmpty()) {
+      data.put("otherCrossCuttingSelection", this.getSanitizedText(studyInfo.getOtherCrossCuttingSelection()));
+    }
+
+    // Other Cross-cutting Dimensions
+    if (studyInfo.getOtherCrossCuttingDimensions() != null
+      && !studyInfo.getOtherCrossCuttingDimensions().trim().isEmpty()) {
+      data.put("otherCrossCuttingDimensions", this.getSanitizedText(studyInfo.getOtherCrossCuttingDimensions()));
+    }
+
+    // Comments Relevance
+    if (studyInfo.getCommentsRelevance() != null && !studyInfo.getCommentsRelevance().trim().isEmpty()) {
+      data.put("commentsRelevance", this.getSanitizedText(studyInfo.getCommentsRelevance()));
+    }
+
+    // MELIA Publications
+    if (studyInfo.getMELIAPublications() != null && !studyInfo.getMELIAPublications().trim().isEmpty()) {
+      data.put("meliaPublications", this.getSanitizedText(studyInfo.getMELIAPublications()));
+    }
+
+    // Geographic scope
+    List<String> geographicScopes = new ArrayList<>();
+    if (study.getProjectExpectedStudyGeographicScopes() != null) {
+      geographicScopes = study.getProjectExpectedStudyGeographicScopes().stream()
+        .filter(gs -> gs.isActive() && gs.getPhase() != null && gs.getPhase().equals(this.getSelectedPhase())
+          && gs.getRepIndGeographicScope() != null)
+        .map(gs -> this.getSanitizedText(gs.getRepIndGeographicScope().getName()))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!geographicScopes.isEmpty()) {
+      data.put("geographicScopes", String.join(", ", geographicScopes));
+    }
+
+    // Regions
+    List<String> regions = new ArrayList<>();
+    if (study.getProjectExpectedStudyRegions() != null) {
+      regions = study.getProjectExpectedStudyRegions().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
+          && r.getLocElement() != null && r.getLocElement().getLocElementType() != null
+          && r.getLocElement().getLocElementType().getId() == 1)
+        .map(r -> this.getSanitizedText(r.getLocElement().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!regions.isEmpty()) {
+      data.put("regions", String.join(", ", regions));
+    }
+
+    // Countries - include ISO Alpha 2 for flag icons
+    List<Map<String, Object>> countries = new ArrayList<>();
+    if (study.getProjectExpectedStudyCountries() != null) {
+      countries = study.getProjectExpectedStudyCountries().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getLocElement() != null && c.getLocElement().getLocElementType() != null
+          && c.getLocElement().getLocElementType().getId() == 2)
+        .map(c -> {
+          Map<String, Object> countryData = new HashMap<>();
+          String countryName = this.getSanitizedText(c.getLocElement().getName());
+          countryData.put("name", countryName);
+          if (c.getLocElement().getIsoAlpha2() != null && !c.getLocElement().getIsoAlpha2().trim().isEmpty()) {
+            String isoAlpha2 = c.getLocElement().getIsoAlpha2().toLowerCase();
+            countryData.put("isoAlpha2", isoAlpha2);
+            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+          } else {
+            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+          }
+          return countryData;
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!countries.isEmpty()) {
+      data.put("countries", countries);
+    }
+
+    // Flagships
+    List<String> flagships = new ArrayList<>();
+    if (study.getProjectExpectedStudyFlagships() != null) {
+      flagships = study.getProjectExpectedStudyFlagships().stream()
+        .filter(f -> f.isActive() && f.getPhase() != null && f.getPhase().equals(this.getSelectedPhase())
+          && f.getCrpProgram() != null
+          && f.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        .map(f -> this.getSanitizedText(f.getCrpProgram().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!flagships.isEmpty()) {
+      data.put("flagships", String.join(", ", flagships));
+    }
+
+    // Regional Programs
+    List<String> regionalPrograms = new ArrayList<>();
+    if (study.getProjectExpectedStudyFlagships() != null) {
+      regionalPrograms = study.getProjectExpectedStudyFlagships().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
+          && r.getCrpProgram() != null
+          && r.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue())
+        .map(r -> this.getSanitizedText(r.getCrpProgram().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!regionalPrograms.isEmpty()) {
+      data.put("regionalPrograms", String.join(", ", regionalPrograms));
+    }
+
+    // Sub-IDOs
+    List<String> subIdos = new ArrayList<>();
+    if (study.getProjectExpectedStudySubIdos() != null) {
+      subIdos = study.getProjectExpectedStudySubIdos().stream()
+        .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase())
+          && s.getSrfSubIdo() != null && s.getSrfSubIdo().getDescription() != null)
+        .map(s -> this.getSanitizedText(s.getSrfSubIdo().getDescription())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!subIdos.isEmpty()) {
+      data.put("subIdos", String.join(", ", subIdos));
+    }
+
+    // SRF Targets
+    List<String> srfTargets = new ArrayList<>();
+    if (study.getProjectExpectedStudySrfTargets() != null) {
+      srfTargets = study.getProjectExpectedStudySrfTargets().stream()
+        .filter(t -> t.isActive() && t.getPhase() != null && t.getPhase().equals(this.getSelectedPhase())
+          && t.getSrfSloIndicator() != null && t.getSrfSloIndicator().getTitle() != null)
+        .map(t -> {
+          String title = this.getSanitizedText(t.getSrfSloIndicator().getTitle());
+          String description = this.getSanitizedText(t.getSrfSloIndicator().getDescription());
+          if (title != null && description != null) {
+            return title + ": " + description;
+          }
+          return title != null ? title : description;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!srfTargets.isEmpty()) {
+      data.put("srfTargets", String.join(", ", srfTargets));
+    }
+
+    // Links
+    List<String> links = new ArrayList<>();
+    if (study.getProjectExpectedStudyLinks() != null) {
+      links = study.getProjectExpectedStudyLinks().stream()
+        .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
+          && l.getLink() != null)
+        .map(l -> this.getSanitizedText(l.getLink())).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!links.isEmpty()) {
+      data.put("links", links);
+    }
+
+    // CRPs
+    List<String> crps = new ArrayList<>();
+    if (study.getProjectExpectedStudyCrps() != null) {
+      crps = study.getProjectExpectedStudyCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getGlobalUnit() != null)
+        .map(c -> this.getSanitizedText(c.getGlobalUnit().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crps.isEmpty()) {
+      data.put("crps", String.join(", ", crps));
+    }
+
+    // Institutions (External Partners)
+    List<String> institutions = new ArrayList<>();
+    if (study.getProjectExpectedStudyInstitutions() != null) {
+      institutions = study.getProjectExpectedStudyInstitutions().stream()
+        .filter(i -> i.isActive() && i.getPhase() != null && i.getPhase().equals(this.getSelectedPhase())
+          && i.getInstitution() != null)
+        .map(i -> this.getSanitizedText(i.getInstitution().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!institutions.isEmpty()) {
+      data.put("institutions", String.join(", ", institutions));
+    }
+
+    // Centers
+    List<String> centers = new ArrayList<>();
+    if (study.getProjectExpectedStudyCenters() != null) {
+      centers = study.getProjectExpectedStudyCenters().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getInstitution() != null)
+        .map(c -> this.getSanitizedText(c.getInstitution().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+
+    if (study.getProjectExpectedStudyPartnerships() != null) {
+      List<String> partnershipCenters = study.getProjectExpectedStudyPartnerships().stream()
+        .filter(dp -> dp.isActive()
+          && dp.getPhase() != null
+          && dp.getPhase().getId().equals(this.getActualPhase().getId())
+          && dp.getProjectExpectedStudyPartnerType() != null
+          && dp.getProjectExpectedStudyPartnerType().getId().equals(APConstants.EXPECTED_STUDIES_PARTNERSHIP_TYPE_CENTER)
+          && dp.getInstitution() != null
+          && dp.getInstitution().getComposedName() != null)
+        .sorted((p1, p2) -> p1.getInstitution().getId().compareTo(p2.getInstitution().getId()))
+        .map(dp -> this.getSanitizedText(dp.getInstitution().getComposedName()))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+
+      // Agregamos los centers de partnerships si aún no están en la lista final
+      for (String cName : partnershipCenters) {
+        if (!centers.contains(cName)) {
+          centers.add(cName);
+        }
+      }
+    }
+
+    if (!centers.isEmpty()) {
+      data.put("centers", String.join(", ", centers));
+    }
+
+    // Policies
+    List<String> policies = new ArrayList<>();
+    if (study.getProjectExpectedStudyPolicies() != null) {
+      policies = study.getProjectExpectedStudyPolicies().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase())
+          && p.getProjectPolicy() != null)
+        .map(p -> {
+          String composedName = p.getProjectPolicy().getComposedName();
+          return this.getSanitizedText(composedName);
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!policies.isEmpty()) {
+      data.put("policies", String.join(", ", policies));
+    }
+
+    // Innovations
+    List<String> innovations = new ArrayList<>();
+    if (study.getProjectExpectedStudyInnovations() != null) {
+      innovations = study.getProjectExpectedStudyInnovations().stream()
+        .filter(i -> i != null
+          && i.isActive()
+          && i.getPhase() != null
+          && i.getPhase().equals(this.getSelectedPhase())
+          && i.getProjectInnovation() != null
+          && i.getProjectInnovation().getProjectInnovationInfo(getSelectedPhase()) != null
+          && i.getProjectInnovation().getProjectInnovationInfo(getSelectedPhase()).getTitle() != null
+        )
+        .map(i -> {
+          String composedName = i.getProjectInnovation().getId() + " - " + i.getProjectInnovation()
+            .getProjectInnovationInfo(getSelectedPhase())
+            .getTitle();
+          return this.getSanitizedText(composedName);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!innovations.isEmpty()) {
+      data.put("innovations", String.join(", ", innovations));
+    }
+
+    // Quantifications
+    List<Map<String, Object>> quantifications = new ArrayList<>();
+    if (study.getProjectExpectedStudyQuantifications() != null) {
+      quantifications = study.getProjectExpectedStudyQuantifications().stream()
+        .filter(q -> q.isActive() && q.getPhase() != null && q.getPhase().equals(this.getSelectedPhase()))
+        .map(q -> {
+          Map<String, Object> quantData = new HashMap<>();
+          if (q.getQuantificationType() != null) {
+            quantData.put("type", this.getSanitizedText(q.getQuantificationType().getName()));
+          }
+          if (q.getNumber() != null) {
+            quantData.put("number", this.formatNumericValue(q.getNumber()));
+          }
+          if (q.getTargetUnit() != null) {
+            quantData.put("unit", this.getSanitizedText(q.getTargetUnit()));
+          }
+          if (q.getComments() != null && !q.getComments().trim().isEmpty()) {
+            quantData.put("comments", this.getSanitizedText(q.getComments()));
+          }
+          return quantData;
+        }).filter(q -> !q.isEmpty()).collect(Collectors.toList());
+    }
+    if (!quantifications.isEmpty()) {
+      data.put("quantifications", quantifications);
+      data.put("hasQuantifications", true);
+    }
+
+    // Publications
+    List<Map<String, Object>> publications = new ArrayList<>();
+    if (study.getProjectExpectedStudyPublications() != null) {
+      publications = study.getProjectExpectedStudyPublications().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+        .map(p -> {
+          Map<String, Object> pubData = new HashMap<>();
+          if (p.getName() != null && !p.getName().trim().isEmpty()) {
+            pubData.put("name", this.getSanitizedText(p.getName()));
+          }
+          if (p.getPosition() != null) {
+            pubData.put("position", p.getPosition());
+          }
+          if (p.getAffiliation() != null && !p.getAffiliation().trim().isEmpty()) {
+            pubData.put("affiliation", this.getSanitizedText(p.getAffiliation()));
+          }
+          return pubData;
+        }).filter(p -> !p.isEmpty()).collect(Collectors.toList());
+    }
+    if (!publications.isEmpty()) {
+      data.put("publications", publications);
+      data.put("hasPublications", true);
+    }
+
+    // References (detailed)
+    List<Map<String, Object>> references = new ArrayList<>();
+    if (study.getProjectExpectedStudyReferences() != null) {
+      references = study.getProjectExpectedStudyReferences().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase()))
+        .map(r -> {
+          Map<String, Object> refData = new HashMap<>();
+          if (r.getReference() != null && !r.getReference().trim().isEmpty()) {
+            refData.put("reference", this.getSanitizedText(r.getReference()));
+          }
+          if (r.getLink() != null && !r.getLink().trim().isEmpty()) {
+            refData.put("link", this.getSanitizedText(r.getLink()));
+          }
+          if (r.getExternalAuthor() != null) {
+            refData.put("externalAuthor", r.getExternalAuthor());
+          }
+          return refData;
+        }).filter(r -> !r.isEmpty()).collect(Collectors.toList());
+    }
+    if (!references.isEmpty()) {
+      data.put("references", references);
+      data.put("hasReferences", true);
+    } else if (studyInfo.getReferencesText() != null && !studyInfo.getReferencesText().trim().isEmpty()) {
+      // Fallback to text references if detailed references are not available
+      data.put("referencesText", this.getSanitizedText(studyInfo.getReferencesText()));
+    }
+
+    // Project Outcomes
+    List<String> projectOutcomes = new ArrayList<>();
+    if (study.getProjectExpectedStudyProjectOutcomes() != null) {
+      projectOutcomes = study.getProjectExpectedStudyProjectOutcomes().stream()
+        .filter(po -> po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase())
+          && po.getProjectOutcome() != null)
+        .map(po -> {
+          if (po.getProjectOutcome().getCrpProgramOutcome() != null
+            && po.getProjectOutcome().getCrpProgramOutcome().getComposedName() != null) {
+            return this.getSanitizedText(po.getProjectOutcome().getCrpProgramOutcome().getComposedName());
+          }
+          return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!projectOutcomes.isEmpty()) {
+      data.put("projectOutcomes", String.join(", ", projectOutcomes));
+    }
+
+    // CRP Outcomes
+    List<String> crpOutcomes = new ArrayList<>();
+    if (study.getProjectExpectedStudyCrpOutcomes() != null) {
+      crpOutcomes = study.getProjectExpectedStudyCrpOutcomes().stream()
+        .filter(co -> co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
+          && co.getCrpOutcome() != null && co.getCrpOutcome().getComposedName() != null)
+        .map(co -> this.getSanitizedText(co.getCrpOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crpOutcomes.isEmpty()) {
+      data.put("crpOutcomes", String.join(", ", crpOutcomes));
+    }
+
+    // Alliance Levers
+    List<String> allianceLevers = new ArrayList<>();
+    if (study.getProjectExpectedStudySdgAllianceLevers() != null) {
+      allianceLevers = study.getProjectExpectedStudySdgAllianceLevers().stream()
+        .filter(al -> al.isActive() && al.getPhase() != null && al.getPhase().equals(this.getSelectedPhase())
+          && al.getAllianceLever() != null)
+        .map(al -> this.getSanitizedText(al.getAllianceLever().getName())).filter(Objects::nonNull)
+        .distinct().collect(Collectors.toList());
+    }
+    if (!allianceLevers.isEmpty()) {
+      data.put("allianceLevers", String.join(", ", allianceLevers));
+    }
+
+    // Impact Areas
+    List<String> impactAreas = new ArrayList<>();
+    if (study.getProjectExpectedStudyImpactAreas() != null) {
+      impactAreas = study.getProjectExpectedStudyImpactAreas().stream()
+        .filter(ia -> ia.isActive() && ia.getPhase() != null && ia.getPhase().equals(this.getSelectedPhase())
+          && ia.getImpactArea() != null)
+        .map(ia -> this.getSanitizedText(ia.getImpactArea().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!impactAreas.isEmpty()) {
+      data.put("impactAreas", String.join(", ", impactAreas));
+    }
+
+    // Global Targets
+    List<String> globalTargets = new ArrayList<>();
+    if (study.getProjectExpectedStudyGlobalTargets() != null) {
+      globalTargets = study.getProjectExpectedStudyGlobalTargets().stream()
+        .filter(gt -> gt.isActive() && gt.getPhase() != null && gt.getPhase().equals(this.getSelectedPhase())
+          && gt.getGlobalTarget() != null)
+        .map(gt -> this.getSanitizedText(gt.getGlobalTarget().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!globalTargets.isEmpty()) {
+      data.put("globalTargets", String.join(", ", globalTargets));
+    }
+
+    return data;
+  }
+
+  private List<Map<String, Object>> buildInnovationsList() {
+    List<Map<String, Object>> innovations = new ArrayList<>();
+    if (project == null) {
+      return innovations;
+    }
+
+    Set<ProjectInnovation> myInnovations = new HashSet<>();
+
+    // Get direct project innovations
+    List<ProjectInnovation> projectInnovations = project.getProjectInnovations().stream()
+      .filter(p -> p.isActive() && p.getProjectInnovationInfo(this.getSelectedPhase()) != null
+        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
+        && p.getProjectInnovationInfo(this.getSelectedPhase()).getYear()==(this.getSelectedPhase().getYear()))
+      .collect(Collectors.toList());
+    if (projectInnovations != null && !projectInnovations.isEmpty()) {
+      myInnovations.addAll(projectInnovations);
+    }
+
+    // Get shared innovations
+    List<ProjectInnovationShared> sharedInnovations = project.getProjectInnovationShareds().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+        && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()) != null
+        && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear() != null
+        && c.getProjectInnovation().getProjectInnovationInfo(this.getSelectedPhase()).getYear()
+          ==(this.getSelectedPhase().getYear()))
+      .collect(Collectors.toList());
+
+    if (sharedInnovations != null && !sharedInnovations.isEmpty()) {
+      for (ProjectInnovationShared innovationShared : sharedInnovations) {
+        myInnovations.add(innovationShared.getProjectInnovation());
+      }
+    }
+
+    if (myInnovations != null && !myInnovations.isEmpty()) {
+      for (ProjectInnovation projectInnovation : myInnovations.stream()
+        .sorted((s1, s2) -> s1.getId().compareTo(s2.getId())).collect(Collectors.toList())) {
+        Map<String, Object> innovationData = this.buildInnovationData(projectInnovation);
+        if (innovationData != null && !innovationData.isEmpty()) {
+          innovations.add(innovationData);
+        }
+      }
+    }
+
+    return innovations;
+  }
+
+  private Map<String, Object> buildInnovationData(ProjectInnovation innovation) {
+    Map<String, Object> data = new HashMap<>();
+    if (innovation == null) {
+      return data;
+    }
+
+    ProjectInnovationInfo innovationInfo = innovation.getProjectInnovationInfo(this.getSelectedPhase());
+    if (innovationInfo == null) {
+      return data;
+    }
+
+    // Basic info
+    data.put("id", innovation.getId());
+    if (innovationInfo.getTitle() != null && !innovationInfo.getTitle().trim().isEmpty()) {
+      data.put("title", this.getSanitizedText(innovationInfo.getTitle()));
+    }
+    if (innovationInfo.getShortTitle() != null && !innovationInfo.getShortTitle().trim().isEmpty()) {
+      data.put("shortTitle", this.getSanitizedText(innovationInfo.getShortTitle()));
+    }
+    if (innovationInfo.getYear() != null) {
+      data.put("year", innovationInfo.getYear());
+    }
+    if (innovationInfo.getInnovationNumber() != null) {
+      data.put("innovationNumber", innovationInfo.getInnovationNumber());
+    }
+
+    // Narrative
+    if (innovationInfo.getNarrative() != null && !innovationInfo.getNarrative().trim().isEmpty()) {
+      data.put("narrative", this.getSanitizedText(innovationInfo.getNarrative()));
+    }
+
+    // Innovation type
+    if (innovationInfo.getRepIndInnovationType() != null) {
+      data.put("innovationType", this.getSanitizedText(innovationInfo.getRepIndInnovationType().getName()));
+    }
+    if (innovationInfo.getOtherInnovationType() != null && !innovationInfo.getOtherInnovationType().trim().isEmpty()) {
+      data.put("otherInnovationType", this.getSanitizedText(innovationInfo.getOtherInnovationType()));
+    }
+
+    // Phase research partnership
+    if (innovationInfo.getRepIndPhaseResearchPartnership() != null) {
+      data.put("phaseResearchPartnership",
+        this.getSanitizedText(innovationInfo.getRepIndPhaseResearchPartnership().getName()));
+    }
+
+    // Stage innovation
+    if (innovationInfo.getRepIndStageInnovation() != null) {
+      data.put("stageInnovation", this.getSanitizedText(innovationInfo.getRepIndStageInnovation().getName()));
+    }
+    if (innovationInfo.getDescriptionStage() != null && !innovationInfo.getDescriptionStage().trim().isEmpty()) {
+      data.put("descriptionStage", this.getSanitizedText(innovationInfo.getDescriptionStage()));
+    }
+
+    // Degree innovation
+    if (innovationInfo.getRepIndDegreeInnovation() != null) {
+      data.put("degreeInnovation", this.getSanitizedText(innovationInfo.getRepIndDegreeInnovation().getName()));
+    }
+
+    // Region
+    if (innovationInfo.getRepIndRegion() != null) {
+      data.put("region", this.getSanitizedText(innovationInfo.getRepIndRegion().getName()));
+    }
+
+    // Evidence link
+    if (innovationInfo.getEvidenceLink() != null && !innovationInfo.getEvidenceLink().trim().isEmpty()) {
+      data.put("evidenceLink", this.getSanitizedText(innovationInfo.getEvidenceLink()));
+    }
+
+    // Adaptative research narrative
+    if (innovationInfo.getAdaptativeResearchNarrative() != null
+      && !innovationInfo.getAdaptativeResearchNarrative().trim().isEmpty()) {
+      data.put("adaptativeResearchNarrative", this.getSanitizedText(innovationInfo.getAdaptativeResearchNarrative()));
+    }
+
+    // Lead organization
+    if (innovationInfo.getLeadOrganization() != null) {
+      data.put("leadOrganization", this.getSanitizedText(innovationInfo.getLeadOrganization().getComposedName()));
+    }
+    if (innovationInfo.getClearLead() != null) {
+      data.put("clearLead", innovationInfo.getClearLead() ? "Yes" : "No");
+    }
+
+    // Innovation bundle
+    if (innovationInfo.getInnovationBundle() != null) {
+      data.put("innovationBundle", innovationInfo.getInnovationBundle() ? "Yes" : "No");
+    }
+
+    // Innovation nature
+    if (innovationInfo.getRepIndInnovationNature() != null) {
+      data.put("innovationNature", this.getSanitizedText(innovationInfo.getRepIndInnovationNature().getName()));
+    }
+
+    // Gender focus level
+    if (innovationInfo.getGenderFocusLevel() != null) {
+      data.put("genderFocusLevel", this.getSanitizedText(innovationInfo.getGenderFocusLevel().getName()));
+    }
+    if (innovationInfo.getGenderExplaniation() != null && !innovationInfo.getGenderExplaniation().trim().isEmpty()) {
+      data.put("genderExplanation", this.getSanitizedText(innovationInfo.getGenderExplaniation()));
+    }
+
+    // Youth focus level
+    if (innovationInfo.getYouthFocusLevel() != null) {
+      data.put("youthFocusLevel", this.getSanitizedText(innovationInfo.getYouthFocusLevel().getName()));
+    }
+    if (innovationInfo.getYouthExplaniation() != null && !innovationInfo.getYouthExplaniation().trim().isEmpty()) {
+      data.put("youthExplanation", this.getSanitizedText(innovationInfo.getYouthExplaniation()));
+    }
+
+    // Beneficiaries narrative
+    if (innovationInfo.getBeneficiariesNarrative() != null && !innovationInfo.getBeneficiariesNarrative().trim().isEmpty()) {
+      data.put("beneficiariesNarrative", this.getSanitizedText(innovationInfo.getBeneficiariesNarrative()));
+    }
+
+    // Scaling readiness
+    if (innovationInfo.getReadinessScale() != null) {
+      // Subtract 1 because frontend sends ID
+      Integer adjustedReadinessScale = innovationInfo.getReadinessScale();
+      // Get the name from scaling_readiness table
+      try {
+        ScalingReadiness scalingReadiness = this.scalingReadinessManager.getScalingReadinessById(adjustedReadinessScale.longValue());
+        if (scalingReadiness != null && scalingReadiness.getName() != null) {
+          data.put("readinessScale", this.getSanitizedText(scalingReadiness.getName()));
+        } else {
+          data.put("readinessScale", adjustedReadinessScale);
+        }
+      } catch (Exception e) {
+        // If error getting name, use the adjusted ID
+        data.put("readinessScale", adjustedReadinessScale);
+      }
+    }
+
+    if (innovationInfo.getCheaperAlternatives() != null) {
+      data.put("cheaperAlternatives", innovationInfo.getCheaperAlternatives());
+    }
+    if (innovationInfo.getSimplerUse() != null) {
+      data.put("simplerUse", innovationInfo.getSimplerUse());
+    }
+    if (innovationInfo.getPerformBetter() != null) {
+      data.put("performBetter", innovationInfo.getPerformBetter());
+    }
+    if (innovationInfo.getInnovationDesirable() != null) {
+      data.put("innovationDesirable", innovationInfo.getInnovationDesirable());
+    }
+    if (innovationInfo.getInnovationCommercially() != null) {
+      data.put("innovationCommercially", innovationInfo.getInnovationCommercially());
+    }
+    if (innovationInfo.getInnovationSupported() != null) {
+      data.put("innovationSupported", innovationInfo.getInnovationSupported());
+    }
+    if (innovationInfo.getEvidenceUptake() != null) {
+      data.put("evidenceUptake", innovationInfo.getEvidenceUptake());
+    }
+
+    // Knowledge potential
+    if (innovationInfo.getHasKnowledgePotential() != null) {
+      data.put("hasKnowledgePotential", innovationInfo.getHasKnowledgePotential().getId());
+      // Only add reasonKnowledgePotential if hasKnowledgePotential ID is 2
+      if (innovationInfo.getHasKnowledgePotential().getId() != null 
+          && innovationInfo.getHasKnowledgePotential().getId().equals(2L)
+          && innovationInfo.getReasonKnowledgePotential() != null 
+          && !innovationInfo.getReasonKnowledgePotential().trim().isEmpty()) {
+        data.put("reasonKnowledgePotential", this.getSanitizedText(innovationInfo.getReasonKnowledgePotential()));
+        data.put("showReasonKnowledgePotential", true);
+      }
+    }
+
+    // Knowledge methods and tools narrative
+    if (innovationInfo.getKnowledgeMethodsAndToolsNarrative() != null 
+        && !innovationInfo.getKnowledgeMethodsAndToolsNarrative().trim().isEmpty()) {
+      data.put("knowledgeMethodsAndToolsNarrative", this.getSanitizedText(innovationInfo.getKnowledgeMethodsAndToolsNarrative()));
+    }
+
+    // Are users determined and actors
+    if (innovationInfo.getAreUsersDetermined() != null) {
+      data.put("areUsersDetermined", innovationInfo.getAreUsersDetermined());
+      
+      if (innovationInfo.getAreUsersDetermined() && innovation.getProjectInnovationActors() != null) {
+        List<Map<String, Object>> actorsList = new ArrayList<>();
+        List<ProjectInnovationActor> innovationActors = innovation.getProjectInnovationActors().stream()
+          .filter(a -> a.isActive() && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase())
+            && a.getActor() != null)
+          .sorted((a1, a2) -> {
+            if (a1.getActor() != null && a2.getActor() != null && a1.getActor().getName() != null
+              && a2.getActor().getName() != null) {
+              return a1.getActor().getName().compareTo(a2.getActor().getName());
+            }
+            return 0;
+          })
+          .collect(Collectors.toList());
+        
+        for (ProjectInnovationActor actor : innovationActors) {
+          Map<String, Object> actorData = new HashMap<>();
+          if (actor.getActor().getName() != null && !actor.getActor().getName().trim().isEmpty()) {
+            actorData.put("type", this.getSanitizedText(actor.getActor().getName()));
+          }
+          if (actor.getTotal() != null) {
+            actorData.put("total", actor.getTotal());
+          }
+          if (actor.getOther() != null && !actor.getOther().trim().isEmpty()) {
+            actorData.put("other", this.getSanitizedText(actor.getOther()));
+          }
+          if (actor.getWomenYouthNumber() != null) {
+            actorData.put("womenYouthNumber", actor.getWomenYouthNumber());
+          }
+          if (actor.getWomenNonYouthNumber() != null) {
+            actorData.put("womenNonYouthNumber", actor.getWomenNonYouthNumber());
+          }
+          if (actor.getMenYouthNumber() != null) {
+            actorData.put("menYouthNumber", actor.getMenYouthNumber());
+          }
+          if (actor.getMenNonYouthNumber() != null) {
+            actorData.put("menNonYouthNumber", actor.getMenNonYouthNumber());
+          }
+          actorsList.add(actorData);
+        }
+        
+        if (!actorsList.isEmpty()) {
+          data.put("actors", actorsList);
+          data.put("hasActors", true);
+        }
+      }
+    }
+
+    // Has CGIAR contribution
+    if (innovationInfo.getHasCgiarContribution() != null) {
+      data.put("hasCgiarContribution", innovationInfo.getHasCgiarContribution() ? "Yes" : "No");
+    }
+    if (innovationInfo.getReasonNotCgiarContribution() != null
+      && !innovationInfo.getReasonNotCgiarContribution().trim().isEmpty()) {
+      data.put("reasonNotCgiarContribution", this.getSanitizedText(innovationInfo.getReasonNotCgiarContribution()));
+    }
+
+    // Intellectual property institution
+    if (innovationInfo.getIntellectualPropertyInstitution() != null) {
+      data.put("intellectualPropertyInstitution",
+        this.getSanitizedText(innovationInfo.getIntellectualPropertyInstitution().getComposedName()));
+    }
+    
+    // Legal restrictions
+    if (innovationInfo.getHasLegalRestrictions() != null) {
+      data.put("hasLegalRestrictions", innovationInfo.getHasLegalRestrictions() ? "Yes" : "No");
+    }
+    
+    // Asset potential
+    if (innovationInfo.getHasAssetPotential() != null) {
+      data.put("hasAssetPotential", innovationInfo.getHasAssetPotential() ? "Yes" : "No");
+    }
+    
+    // Further development
+    if (innovationInfo.getHasFurtherDevelopment() != null) {
+      data.put("hasFurtherDevelopment", innovationInfo.getHasFurtherDevelopment() ? "Yes" : "No");
+    }
+
+    // Geographic information (structured like OICRs)
+    // Determine if geographic scope is Regional or National
+    boolean isRegional = false;
+    boolean isNational = false;
+    
+    // Geographic scopes
+    List<String> geographicScopes = new ArrayList<>();
+    if (innovation.getProjectInnovationGeographicScopes() != null) {
+      List<ProjectInnovationGeographicScope> geographicScopeList = innovation.getProjectInnovationGeographicScopes().stream()
+        .filter(gs -> gs.isActive() && gs.getPhase() != null && gs.getPhase().equals(this.getSelectedPhase())
+          && gs.getRepIndGeographicScope() != null)
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationGeographicScope geographicScope : geographicScopeList) {
+        Long scopeId = geographicScope.getRepIndGeographicScope().getId();
+        // Check if Regional (ID == 2)
+        if (scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isRegional = true;
+        }
+        // Check if National/Multi-national/Sub-national (ID != Global && ID != Regional)
+        if (!scopeId.equals(this.getReportingIndGeographicScopeGlobal())
+            && !scopeId.equals(this.getReportingIndGeographicScopeRegional())) {
+          isNational = true;
+        }
+        String scopeName = this.getSanitizedText(geographicScope.getRepIndGeographicScope().getName());
+        if (scopeName != null && !scopeName.isEmpty()) {
+          geographicScopes.add(scopeName);
+        }
+      }
+    }
+    if (!geographicScopes.isEmpty()) {
+      data.put("geographicScopes", String.join(", ", geographicScopes));
+    }
+
+    // Regions - only show if geographic scope is Regional
+    // Read directly from project_innovation_regions table
+    if (isRegional) {
+      List<String> regions = new ArrayList<>();
+      List<ProjectInnovationRegion> innovationRegions = 
+        projectInnovationRegionManager.getInnovationRegionbyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationRegions != null && !innovationRegions.isEmpty()) {
+        // Load LocElement for each region to ensure relationships are loaded
+        for (ProjectInnovationRegion region : innovationRegions) {
+          if (region != null && region.isActive() && region.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(region.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 1) {
+              String regionName = this.getSanitizedText(locElement.getName());
+              if (regionName != null && !regionName.isEmpty()) {
+                regions.add(regionName);
+              }
+            }
+          }
+        }
+      }
+      if (!regions.isEmpty()) {
+        data.put("regions", String.join(", ", regions));
+      }
+    }
+
+    // Countries - only show if geographic scope is National/Multi-national/Sub-national
+    // Also check if hasSpecifiedOutputCountries is true
+    // Read directly from project_innovation_countries table
+    // Include ISO Alpha 2 for flag icons
+    if (isNational || (innovationInfo.getHasSpecifiedOutputCountries() != null 
+        && innovationInfo.getHasSpecifiedOutputCountries())) {
+      List<Map<String, Object>> countries = new ArrayList<>();
+      List<ProjectInnovationCountry> innovationCountries = 
+        projectInnovationCountryManager.getInnovationCountrybyPhase(innovation.getId(), this.getSelectedPhase().getId());
+      if (innovationCountries != null && !innovationCountries.isEmpty()) {
+        // Load LocElement for each country to ensure relationships are loaded
+        for (ProjectInnovationCountry country : innovationCountries) {
+          if (country != null && country.isActive() && country.getLocElement() != null) {
+            // Ensure LocElement and LocElementType are loaded
+            LocElement locElement = locElementManager.getLocElementById(country.getLocElement().getId());
+            if (locElement != null && locElement.getLocElementType() != null 
+                && locElement.getLocElementType().getId() == 2) {
+              String countryName = this.getSanitizedText(locElement.getName());
+              if (countryName != null && !countryName.isEmpty()) {
+                Map<String, Object> countryData = new HashMap<>();
+                countryData.put("name", countryName);
+                if (locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
+                  String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
+                  countryData.put("isoAlpha2", isoAlpha2);
+                  String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+                } else {
+                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+                }
+                countries.add(countryData);
+              }
+            }
+          }
+        }
+      }
+      if (!countries.isEmpty()) {
+        data.put("countries", countries);
+      }
+    }
+
+    // Organizations
+    List<String> organizations = new ArrayList<>();
+    if (innovation.getProjectInnovationOrganizations() != null) {
+      organizations = innovation.getProjectInnovationOrganizations().stream()
+        .filter(o -> o.isActive() && o.getPhase() != null && o.getPhase().equals(this.getSelectedPhase())
+          && o.getRepIndOrganizationType() != null)
+        .map(o -> this.getSanitizedText(o.getRepIndOrganizationType().getName())).filter(Objects::nonNull)
+        .distinct().collect(Collectors.toList());
+    }
+    if (!organizations.isEmpty()) {
+      data.put("organizations", String.join(", ", organizations));
+    }
+
+    // Contributing external partners (with roles)
+    List<Map<String, Object>> contributingPartners = new ArrayList<>();
+    if (innovation.getProjectInnovationContributingOrganization() != null) {
+      List<ProjectInnovationContributingOrganization> partnersList = innovation.getProjectInnovationContributingOrganization().stream()
+        .filter(co -> co.isActive() && co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
+          && co.getInstitution() != null)
+        .sorted((co1, co2) -> {
+          String name1 = co1.getInstitution() != null ? co1.getInstitution().getComposedName() : "";
+          String name2 = co2.getInstitution() != null ? co2.getInstitution().getComposedName() : "";
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationContributingOrganization partner : partnersList) {
+        Map<String, Object> partnerData = new HashMap<>();
+        String partnerName = this.getSanitizedText(partner.getInstitution().getComposedName());
+        if (partnerName != null && !partnerName.isEmpty()) {
+          partnerData.put("name", partnerName);
+          
+          // Determine role based on boolean flags
+          List<String> roles = new ArrayList<>();
+          if (Boolean.TRUE.equals(partner.getScaling())) {
+            roles.add("Scaling");
+          }
+          if (Boolean.TRUE.equals(partner.getDemand())) {
+            roles.add("Demand");
+          }
+          if (Boolean.TRUE.equals(partner.getInnovation())) {
+            roles.add("Innovation");
+          }
+          if (Boolean.TRUE.equals(partner.getOther())) {
+            roles.add("Other");
+          }
+          
+          if (!roles.isEmpty()) {
+            partnerData.put("role", String.join(", ", roles));
+          }
+          
+          contributingPartners.add(partnerData);
+        }
+      }
+    }
+    if (!contributingPartners.isEmpty()) {
+      data.put("contributingPartners", contributingPartners);
+      data.put("hasContributingPartners", true);
+    }
+
+    // Alliance Organizations
+    List<Map<String, Object>> allianceOrganizations = new ArrayList<>();
+    if (innovation.getProjectInnovationAllianceOrganizations() != null) {
+      List<ProjectInnovationAllianceOrganization> allianceOrgsList = innovation.getProjectInnovationAllianceOrganizations().stream()
+        .filter(ao -> ao.isActive() && ao.getPhase() != null && ao.getPhase().equals(this.getSelectedPhase()))
+        .sorted((ao1, ao2) -> {
+          String name1 = ao1.getOrganizationName() != null ? ao1.getOrganizationName() 
+            : (ao1.getInstitution() != null ? ao1.getInstitution().getComposedName() : "");
+          String name2 = ao2.getOrganizationName() != null ? ao2.getOrganizationName() 
+            : (ao2.getInstitution() != null ? ao2.getInstitution().getComposedName() : "");
+          return name1.compareTo(name2);
+        })
+        .collect(Collectors.toList());
+      
+      for (ProjectInnovationAllianceOrganization allianceOrg : allianceOrgsList) {
+        Map<String, Object> allianceOrgData = new HashMap<>();
+        
+        // Get organization name (prefer organizationName, fallback to institution name)
+        String orgName = null;
+        if (allianceOrg.getOrganizationName() != null && !allianceOrg.getOrganizationName().trim().isEmpty()) {
+          orgName = this.getSanitizedText(allianceOrg.getOrganizationName());
+        } else if (allianceOrg.getInstitution() != null && allianceOrg.getInstitution().getComposedName() != null) {
+          orgName = this.getSanitizedText(allianceOrg.getInstitution().getComposedName());
+        }
+        
+        if (orgName != null && !orgName.isEmpty()) {
+          allianceOrgData.put("name", orgName);
+          
+          // Add institution type if available
+          if (allianceOrg.getInstitutionType() != null && allianceOrg.getInstitutionType().getName() != null) {
+            allianceOrgData.put("institutionType", this.getSanitizedText(allianceOrg.getInstitutionType().getName()));
+          }
+          
+          // Add scaling partner flag
+          if (allianceOrg.getScalingPartner() != null) {
+            allianceOrgData.put("scalingPartner", allianceOrg.getScalingPartner());
+          }
+          
+          // Add number if available
+          if (allianceOrg.getNumber() != null) {
+            allianceOrgData.put("number", allianceOrg.getNumber());
+          }
+          
+          allianceOrganizations.add(allianceOrgData);
+        }
+      }
+    }
+    if (!allianceOrganizations.isEmpty()) {
+      data.put("allianceOrganizations", allianceOrganizations);
+      data.put("hasAllianceOrganizations", true);
+    }
+
+    // CRPs
+    List<String> crps = new ArrayList<>();
+    if (innovation.getProjectInnovationCrps() != null) {
+      crps = innovation.getProjectInnovationCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getGlobalUnit() != null)
+        .map(c -> this.getSanitizedText(c.getGlobalUnit().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crps.isEmpty()) {
+      data.put("crps", String.join(", ", crps));
+    }
+
+    // Centers
+    List<String> centers = new ArrayList<>();
+    if (innovation.getProjectInnovationCenters() != null) {
+      centers = innovation.getProjectInnovationCenters().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getInstitution() != null)
+        .map(c -> this.getSanitizedText(c.getInstitution().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!centers.isEmpty()) {
+      data.put("centers", String.join(", ", centers));
+    }
+
+    // Milestones
+    List<Map<String, Object>> milestones = new ArrayList<>();
+    if (innovation.getProjectInnovationMilestones() != null) {
+      List<ProjectInnovationMilestone> innovationMilestones = innovation.getProjectInnovationMilestones().stream()
+        .filter(m -> m.isActive() && m.getPhase() != null && m.getPhase().equals(this.getSelectedPhase())
+          && m.getCrpMilestone() != null)
+        .sorted((m1, m2) -> {
+          if (m1.getCrpMilestone() != null && m2.getCrpMilestone() != null) {
+            return m1.getCrpMilestone().getComposedName().compareTo(m2.getCrpMilestone().getComposedName());
+          }
+          return 0;
+        }).collect(Collectors.toList());
+
+      for (ProjectInnovationMilestone milestone : innovationMilestones) {
+        Map<String, Object> milestoneData = new HashMap<>();
+        if (milestone.getCrpMilestone() != null) {
+          milestoneData.put("name", this.getSanitizedText(milestone.getCrpMilestone().getComposedName()));
+        }
+        if (milestone.getPrimary() != null) {
+          milestoneData.put("primary", milestone.getPrimary());
+        }
+        milestones.add(milestoneData);
+      }
+    }
+    if (!milestones.isEmpty()) {
+      data.put("hasMilestones", true);
+      data.put("milestones", milestones);
+    }
+
+    // Sub-IDOs
+    List<String> subIdos = new ArrayList<>();
+    if (innovation.getProjectInnovationSubIdos() != null) {
+      subIdos = innovation.getProjectInnovationSubIdos().stream()
+        .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase())
+          && s.getSrfSubIdo() != null)
+        .map(s -> this.getSanitizedText(s.getSrfSubIdo().getDescription())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!subIdos.isEmpty()) {
+      data.put("subIdos", String.join(", ", subIdos));
+    }
+
+    // Project outcomes
+    List<String> projectOutcomes = new ArrayList<>();
+    if (innovation.getProjectInnovationProjectOutcomes() != null) {
+      projectOutcomes = innovation.getProjectInnovationProjectOutcomes().stream()
+        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase())
+          && po.getProjectOutcome() != null)
+        .map(po -> this.getSanitizedText(po.getProjectOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!projectOutcomes.isEmpty()) {
+      data.put("projectOutcomes", String.join(", ", projectOutcomes));
+    }
+
+    // CRP outcomes
+    List<String> crpOutcomes = new ArrayList<>();
+    if (innovation.getProjectInnovationCrpOutcomes() != null) {
+      crpOutcomes = innovation.getProjectInnovationCrpOutcomes().stream()
+        .filter(co -> co.isActive() && co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
+          && co.getCrpOutcome() != null)
+        .map(co -> this.getSanitizedText(co.getCrpOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crpOutcomes.isEmpty()) {
+      data.put("crpOutcomes", String.join(", ", crpOutcomes));
+    }
+
+    // Partnerships - Contacts
+    List<String> contacts = new ArrayList<>();
+    if (innovation.getProjectInnovationPartnerships() != null) {
+      contacts = innovation.getProjectInnovationPartnerships().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getActualPhase().getId())
+          && p.getInstitution() != null && p.getProjectInnovationPartnershipPersons() != null)
+        .flatMap(p -> {
+          Institution institution = p.getInstitution();
+          String institutionName = institution.getComposedName() != null
+            ? this.getSanitizedText(institution.getComposedName())
+            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+          return p.getProjectInnovationPartnershipPersons().stream().filter(pp -> pp.isActive() && pp.getUser() != null
+            && pp.getUser().getEmail() != null).map(pp -> {
+              User user = pp.getUser();
+              String userInfo = user.getComposedName();
+              String contactInfo = (institutionName != null && !institutionName.isEmpty())
+                ? institutionName + " - " + userInfo
+                : userInfo;
+              return this.getSanitizedText(contactInfo);
+            });
+        }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
+    }
+    if (!contacts.isEmpty()) {
+      data.put("contacts", String.join("; ", contacts));
+    }
+
+    // Deliverables
+    List<String> deliverables = new ArrayList<>();
+    if (innovation.getProjectInnovationDeliverables() != null) {
+      deliverables = innovation.getProjectInnovationDeliverables().stream()
+        .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase())
+          && d.getDeliverable() != null && d.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+        .map(d -> this.getSanitizedText(d.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).getTitle()))
+        .filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!deliverables.isEmpty()) {
+      data.put("deliverables", String.join(", ", deliverables));
+    }
+
+    // Alliance levers
+    List<String> allianceLevers = new ArrayList<>();
+    if (innovation.getProjectInnovationAllianceLevers() != null) {
+      allianceLevers = innovation.getProjectInnovationAllianceLevers().stream()
+        .filter(al -> al.isActive() && al.getPhase() != null && al.getPhase().equals(this.getSelectedPhase())
+          && al.getAllianceLever() != null)
+        .map(al -> this.getSanitizedText(al.getAllianceLever().getName())).filter(Objects::nonNull).distinct()
+        .collect(Collectors.toList());
+    }
+    if (!allianceLevers.isEmpty()) {
+      data.put("allianceLevers", String.join(", ", allianceLevers));
+    }
+
+    // SDGs
+    List<Map<String, Object>> sdgsList = new ArrayList<>();
+    if (innovation.getProjectInnovationSDGs() != null) {
+      sdgsList = innovation.getProjectInnovationSDGs().stream()
+        .filter(s -> s.isActive() && s.getPhase() != null && s.getPhase().equals(this.getSelectedPhase())
+          && s.getSdg() != null)
+        .map(s -> {
+          Sdg sdg = s.getSdg();
+          Map<String, Object> sdgData = new HashMap<>();
+          String sdgName = sdg.getShortName() != null ? sdg.getShortName() : sdg.getFullName();
+          if (sdgName != null) {
+            sdgData.put("name", this.getSanitizedText(sdgName));
+            
+            // Add icon URL - transform from DB format (E_SDG-goals_Goal-03.png) to S3 format (E-WEB-Goal-3.png)
+            // and construct full URL for debugging
+            if (sdg.getIcon() != null && !sdg.getIcon().trim().isEmpty()) {
+              String iconName = this.transformSdgIconName(sdg.getIcon());
+              String iconUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/sdg/" + iconName;
+              sdgData.put("iconUrl", iconUrl);
+            } 
+            
+            return sdgData;
+          }
+          return null;
+        }).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!sdgsList.isEmpty()) {
+      data.put("sdgs", sdgsList);
+      data.put("hasSdgs", true);
+    }
+
+    // Impact area scores
+    // Gender score
+    if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getDescription() != null) {
+      data.put("genderScore", this.getSanitizedText(innovationInfo.getGenderScore().getDescription()));
+    }
+    
+    // Climate change score
+    if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getDescription() != null) {
+      data.put("climateChangeScore", this.getSanitizedText(innovationInfo.getClimateChangeScore().getDescription()));
+    }
+    
+    // Food security score
+    if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getDescription() != null) {
+      data.put("foodSecurityScore", this.getSanitizedText(innovationInfo.getFoodSecurityScore().getDescription()));
+    }
+    
+    // Environmental score
+    if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getDescription() != null) {
+      data.put("environmentalScore", this.getSanitizedText(innovationInfo.getEnvironmentalScore().getDescription()));
+    }
+    
+    // Poverty score
+    if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getDescription() != null) {
+      data.put("povertyScore", this.getSanitizedText(innovationInfo.getPovertyScore().getDescription()));
+    }
+
+    // Impact areas
+    List<String> impactAreas = new ArrayList<>();
+    if (innovation.getProjectInnovationImpactAreas() != null) {
+      impactAreas = innovation.getProjectInnovationImpactAreas().stream()
+        .filter(ia -> ia.isActive() && ia.getPhase() != null && ia.getPhase().equals(this.getSelectedPhase())
+          && ia.getImpactArea() != null)
+        .map(ia -> this.getSanitizedText(ia.getImpactArea().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!impactAreas.isEmpty()) {
+      data.put("impactAreas", String.join(", ", impactAreas));
+    }
+
+    // References
+    List<Map<String, Object>> references = new ArrayList<>();
+    if (innovation.getProjectInnovationReferences() != null) {
+      List<ProjectInnovationReference> innovationReferences = innovation.getProjectInnovationReferences().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase()))
+        .sorted((r1, r2) -> r1.getId().compareTo(r2.getId())).collect(Collectors.toList());
+
+      for (ProjectInnovationReference reference : innovationReferences) {
+        Map<String, Object> referenceData = new HashMap<>();
+        
+        // Check if evidence by deliverable is false or null
+        Boolean evidenceByDeliverable = reference.getEvidenceByDeliverable();
+        if (evidenceByDeliverable == null || !evidenceByDeliverable) {
+          // Show reference, category and subCategory
+          if (reference.getReference() != null && !reference.getReference().trim().isEmpty()) {
+            referenceData.put("reference", this.getSanitizedText(reference.getReference()));
+          }
+          
+          // Add link/URL if available
+          if (reference.getLink() != null && !reference.getLink().trim().isEmpty()) {
+            referenceData.put("link", this.getSanitizedText(reference.getLink()));
+          }
+          
+          // Category and SubCategory from deliverableType
+          if (reference.getDeliverableType() != null) {
+            DeliverableType deliverableType = reference.getDeliverableType();
+            
+            // Category (parent)
+            if (deliverableType.getDeliverableCategory() != null 
+                && deliverableType.getDeliverableCategory().getName() != null 
+                && !deliverableType.getDeliverableCategory().getName().trim().isEmpty()) {
+              referenceData.put("category", this.getSanitizedText(deliverableType.getDeliverableCategory().getName()));
+            }
+            
+            // SubCategory (deliverableType name itself)
+            if (deliverableType.getName() != null && !deliverableType.getName().trim().isEmpty()) {
+              referenceData.put("subCategory", this.getSanitizedText(deliverableType.getName()));
+            }
+          }
+        } else {
+          // evidenceByDeliverable is true: show deliverable id and title
+          if (reference.getDeliverable() != null) {
+            referenceData.put("deliverableId", reference.getDeliverable().getId());
+            
+            // Get deliverable title from DeliverableInfo
+            Deliverable deliverable = reference.getDeliverable();
+            if (deliverable.getDeliverableInfo(this.getSelectedPhase()) != null) {
+              DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+              if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
+                referenceData.put("deliverableTitle", this.getSanitizedText(deliverableInfo.getTitle()));
+              }
+            }
+          }
+        }
+        
+        // Cross-cutting dimensions - show only if they are true
+        List<String> crossCuttingDimensions = new ArrayList<>();
+        if (reference.getGender() != null && reference.getGender()) {
+          crossCuttingDimensions.add("Gender");
+        }
+        if (reference.getClimateChange() != null && reference.getClimateChange()) {
+          crossCuttingDimensions.add("Climate Change");
+        }
+        if (reference.getNutrition() != null && reference.getNutrition()) {
+          crossCuttingDimensions.add("Nutrition");
+        }
+        if (reference.getEnvironmental() != null && reference.getEnvironmental()) {
+          crossCuttingDimensions.add("Environmental");
+        }
+        if (reference.getPoverty() != null && reference.getPoverty()) {
+          crossCuttingDimensions.add("Poverty");
+        }
+        if (reference.getInnovationReadiness() != null && reference.getInnovationReadiness()) {
+          crossCuttingDimensions.add("Innovation Readiness");
+        }
+        if (!crossCuttingDimensions.isEmpty()) {
+          referenceData.put("crossCuttingDimensions", crossCuttingDimensions);
+        }
+        
+        references.add(referenceData);
+      }
+    }
+    if (!references.isEmpty()) {
+      data.put("hasReferences", true);
+      data.put("references", references);
+    }
+
+    return data;
+  }
+
+  private List<Map<String, Object>> buildDeliverablesList() {
+    List<Map<String, Object>> deliverables = new ArrayList<>();
+    if (project == null) {
+      return deliverables;
+    }
+
+    Set<Deliverable> myDeliverables = new HashSet<>();
+    int selectedYear = this.getSelectedPhase().getYear();
+
+    // STEP 1: Get all deliverables from project
+    List<Deliverable> allProjectDeliverables = project.getDeliverables().stream()
+      .sorted((d1, d2) -> Long.compare(d1.getId(), d2.getId()))
+      .collect(Collectors.toList());
+
+    // STEP 2: Filter by isActive
+    List<Deliverable> activeDeliverables = allProjectDeliverables.stream()
+      .filter(d -> d.isActive())
+      .collect(Collectors.toList());
+
+    // STEP 3: Filter by deliverableInfo not null
+    List<Deliverable> withInfoDeliverables = activeDeliverables.stream()
+      .filter(d -> d.getDeliverableInfo(this.getSelectedPhase()) != null)
+      .collect(Collectors.toList());
+
+    // STEP 4: Apply year validation logic - check each condition separately
+    List<Deliverable> projectDeliverables = new ArrayList<>();
+    int extendedStatusId = Integer.parseInt(ProjectStatusEnum.Extended.getStatusId());
+    int ongoingStatusId = Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId());
+    int completeStatusId = Integer.parseInt(ProjectStatusEnum.Complete.getStatusId());
+
+    // Counters for each condition
+    int condition1Matches = 0; // Status null, year matches
+    int condition2Matches = 0; // Status Extended, newExpectedYear matches
+    int condition3Matches = 0; // Status Ongoing, year matches
+    int condition4Matches = 0; // Status Complete
+    int noMatches = 0;
+
+    for (Deliverable d : withInfoDeliverables) {
+      DeliverableInfo info = d.getDeliverableInfo(this.getSelectedPhase());
+      boolean matches = false;
+      
+      Integer status = info.getStatus();
+      int year = info.getYear();
+      Integer newExpectedYear = info.getNewExpectedYear();
+
+      // Condition 1: Status is null and year matches
+      if (status == null) {
+        if (year == selectedYear) {
+          matches = true;
+          condition1Matches++;
+        }
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches (or year if newExpectedYear is null/-1)
+      else if (status != null && status.intValue() == extendedStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            condition2Matches++;
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            condition2Matches++;
+          }
+        }
+      }
+      // Condition 3: Status is Ongoing and year matches
+      else if (status != null && status.intValue() == ongoingStatusId) {
+        if (year == selectedYear) {
+          matches = true;
+          condition3Matches++;
+        }
+      }
+      // Condition 4: Status is Complete
+      else if (status != null && status.intValue() == completeStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            condition4Matches++;
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            condition4Matches++;
+          }
+        }
+      }
+      // No condition matched
+      else {
+        noMatches++;
+      }
+
+      if (matches) {
+        projectDeliverables.add(d);
+      }
+    }
+
+    if (projectDeliverables != null && !projectDeliverables.isEmpty()) {
+      myDeliverables.addAll(projectDeliverables);
+    }
+
+    // STEP 5: Get shared deliverables
+    List<ProjectDeliverableShared> allSharedDeliverables = projectDeliverableSharedManager
+      .getByProjectAndPhase(project.getId(), this.getSelectedPhase().getId());
+
+    // STEP 6: Filter shared deliverables by isActive
+    List<ProjectDeliverableShared> activeShared = allSharedDeliverables.stream()
+      .filter(c -> c.isActive())
+      .collect(Collectors.toList());
+
+    // STEP 7: Filter shared deliverables by phase
+    List<ProjectDeliverableShared> phaseMatchedShared = activeShared.stream()
+      .filter(c -> c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase()))
+      .collect(Collectors.toList());
+
+    // STEP 8: Filter shared deliverables by deliverableInfo not null
+    List<ProjectDeliverableShared> withInfoShared = phaseMatchedShared.stream()
+      .filter(c -> c.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null)
+      .collect(Collectors.toList());
+
+    // STEP 9: Apply year validation logic for shared deliverables
+    // STEP 9: Apply year validation logic for shared deliverables
+    List<ProjectDeliverableShared> sharedDeliverables = new ArrayList<>();
+    
+    // Counters for each condition
+    int sharedCondition1Matches = 0; // Status null, year matches
+    int sharedCondition2Matches = 0; // Status Extended, newExpectedYear matches
+    int sharedCondition3Matches = 0; // Status Ongoing, year matches
+    int sharedCondition4Matches = 0; // Status Complete
+    int sharedNoMatches = 0;
+    
+    for (ProjectDeliverableShared c : withInfoShared) {
+      DeliverableInfo info = c.getDeliverable().getDeliverableInfo(this.getSelectedPhase());
+      boolean matches = false;
+      String matchReason = "";
+      Long deliverableId = c.getDeliverable().getId();
+      
+      // Get values for logging
+      Integer status = info.getStatus();
+      int year = info.getYear();
+      Integer newExpectedYear = info.getNewExpectedYear();
+
+      // Condition 1: Status is null and year matches
+      if (status == null) {
+        if (year == selectedYear) {
+          matches = true;
+          matchReason = "Condition 1: Status null, year=" + year + " matches selectedYear=" + selectedYear;
+          sharedCondition1Matches++;
+        } else {
+        }
+      }
+      // Condition 2: Status is Extended and newExpectedYear matches (or year if newExpectedYear is null/-1)
+      else if (status != null && status.intValue() == extendedStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            matchReason = "Condition 2a: Status Extended, newExpectedYear=" + newExpectedYear + " matches selectedYear=" + selectedYear;
+            sharedCondition2Matches++;
+          } else {
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            matchReason = "Condition 2b: Status Extended, newExpectedYear " + (newExpectedYear == null ? "null" : "-1") + ", year=" + year + " matches selectedYear=" + selectedYear;
+            sharedCondition2Matches++;
+          } else {
+          }
+        }
+      }
+      // Condition 3: Status is Ongoing and year matches
+      else if (status != null && status.intValue() == ongoingStatusId) {
+        if (year == selectedYear) {
+          matches = true;
+          matchReason = "Condition 3: Status Ongoing, year=" + year + " matches selectedYear=" + selectedYear;
+          sharedCondition3Matches++;
+        } else {
+        }
+      }
+      // Condition 4: Status is Complete
+      else if (status != null && status.intValue() == completeStatusId) {
+        // Check if newExpectedYear is null or -1 (treat -1 as null)
+        if (newExpectedYear != null && newExpectedYear != -1) {
+          if (newExpectedYear == selectedYear) {
+            matches = true;
+            matchReason = "Condition 4a: Status Complete, newExpectedYear=" + newExpectedYear + " matches selectedYear=" + selectedYear;
+            sharedCondition4Matches++;
+          } else {
+          }
+        } else {
+          // newExpectedYear is null or -1, check year as fallback
+          if (year == selectedYear) {
+            matches = true;
+            matchReason = "Condition 4b: Status Complete, newExpectedYear " + (newExpectedYear == null ? "null" : "-1") + ", year=" + year + " matches selectedYear=" + selectedYear;
+            sharedCondition4Matches++;
+          } else {
+          }
+        }
+      }
+      // No condition matched
+      else {
+        sharedNoMatches++;
+      }
+
+      if (matches) {
+        sharedDeliverables.add(c);
+      }
+    }
+
+
+    if (sharedDeliverables != null && !sharedDeliverables.isEmpty()) {
+      for (ProjectDeliverableShared deliverableShared : sharedDeliverables) {
+        myDeliverables.add(deliverableShared.getDeliverable());
+      }
+    }
+
+
+    // Validate all possible errors such as nulls, empty lists, inconsistent values, and unexpected exceptions
+    if (myDeliverables != null && !myDeliverables.isEmpty()) {
+      List<Deliverable> safeList;
+      try {
+        safeList = myDeliverables.stream()
+          .filter(Objects::nonNull)
+          .filter(d -> d.getId() != null)
+          .sorted((s1, s2) -> s1.getId().compareTo(s2.getId()))
+          .collect(Collectors.toList());
+      } catch (Exception e) {
+        e.printStackTrace();
+        safeList = new ArrayList<>();
+      }
+      for (Deliverable deliverable : safeList) {
+        try {
+          if (deliverable == null) {
+            continue;
+          }
+          Map<String, Object> deliverableData = null;
+          try {
+            deliverableData = this.buildDeliverableData(deliverable);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+            continue;
+          }
+          if (deliverableData == null) {
+            continue;
+          }
+          if (deliverableData.isEmpty()) {
+            continue;
+          }
+          if (!deliverableData.containsKey("id")) {
+            continue;
+          }
+          deliverables.add(deliverableData);
+        } catch (Exception exAll) {
+          exAll.printStackTrace();
+        }
+      }
+    }
+
+    return deliverables;
+  }
+
+  private List<Map<String, Object>> buildActivitiesList() {
+    List<Map<String, Object>> activities = new ArrayList<>();
+    
+    if (project == null) {
+      return activities;
+    }
+
+    if (this.getSelectedPhase() == null) {
+      return activities;
+    }
+
+    long projectID = project.getId();
+    long phaseID = this.getSelectedPhase().getId();
+    
+
+    try {
+      // Use the same logic as ProjectActivitiesAction: getActiveActivitiesByProject with Optional
+      // But use getSelectedPhase() to be consistent with OICRs and Innovations
+      List<Activity> projectActivities = new ArrayList<>(Optional
+        .ofNullable(this.activityManager.getActiveActivitiesByProject(projectID, phaseID))
+        .orElse(Collections.emptyList()));
+
+
+      if (projectActivities != null && !projectActivities.isEmpty()) {
+        // Sort activities by ID (same as ProjectActivitiesAction)
+        projectActivities.sort((a1, a2) -> Long.compare(a1.getId(), a2.getId()));
+
+        // Process all activities - manager already filters by phase and active status
+        for (Activity activity : projectActivities) {
+          if (activity == null) {
+            continue;
+          }
+
+          // Build activity data - manager already filtered by phase and active
+          Map<String, Object> activityData = this.buildActivityData(activity);
+          
+          if (activityData == null) {
+            continue;
+          }
+          
+          if (activityData.isEmpty()) {
+            continue;
+          }
+          
+          if (!activityData.containsKey("id")) {
+            continue;
+          }
+          
+          activities.add(activityData);
+        }
+
+      } else {
+      }
+    } catch (Exception e) {
+      System.err.println("[buildActivitiesList] ERROR building activities list: " + e.getMessage());
+      e.printStackTrace();
+    }
+
+    return activities;
+  }
+
+  private Map<String, Object> buildActivityData(Activity activity) {
+    Map<String, Object> data = new HashMap<>();
+    if (activity == null) {
+      return data;
+    }
+
+    // Basic info
+    data.put("id", activity.getId());
+    
+    if (activity.getTitle() != null && !activity.getTitle().trim().isEmpty()) {
+      data.put("title", this.getSanitizedText(activity.getTitle()));
+    }
+    
+    if (activity.getDescription() != null && !activity.getDescription().trim().isEmpty()) {
+      data.put("description", this.getSanitizedText(activity.getDescription()));
+    }
+
+    // Dates
+    if (activity.getStartDate() != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      data.put("startDate", formatter.format(activity.getStartDate()));
+    }
+    
+    if (activity.getEndDate() != null) {
+      SimpleDateFormat formatter = new SimpleDateFormat("MMM yyyy");
+      data.put("endDate", formatter.format(activity.getEndDate()));
+    }
+
+    // Status
+    if (activity.getActivityStatus() != null) {
+      ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(activity.getActivityStatus());
+      if (statusEnum != null) {
+        data.put("status", statusEnum.getStatus());
+      } else {
+        data.put("status", activity.getActivityStatus().toString());
+      }
+    }
+
+    // Activity Progress
+    if (activity.getActivityProgress() != null && !activity.getActivityProgress().trim().isEmpty()) {
+      data.put("activityProgress", this.getSanitizedText(activity.getActivityProgress()));
+    }
+
+    // Activity Leader (ProjectPartnerPerson)
+    if (activity.getProjectPartnerPerson() != null) {
+      ProjectPartnerPerson partnerPerson = activity.getProjectPartnerPerson();
+      if (partnerPerson.getUser() != null) {
+        String leaderName = partnerPerson.getUser().getComposedName();
+        if (leaderName != null && !leaderName.trim().isEmpty()) {
+          data.put("leader", this.getSanitizedText(leaderName));
+        }
+      }
+      // Institution
+      if (partnerPerson.getProjectPartner() != null 
+          && partnerPerson.getProjectPartner().getInstitution() != null) {
+        String institutionName = partnerPerson.getProjectPartner().getInstitution().getComposedName();
+        if (institutionName != null && !institutionName.trim().isEmpty()) {
+          data.put("institution", this.getSanitizedText(institutionName));
+        }
+      }
+    }
+
+    // Activity Title (for AICCRA)
+    if (activity.getActivityTitle() != null && activity.getActivityTitle().getTitle() != null) {
+      data.put("activityTitle", this.getSanitizedText(activity.getActivityTitle().getTitle()));
+    }
+
+    // Deliverables associated with this activity - using same logic as ProjectActivitiesAction
+    // But use getSelectedPhase() to be consistent with OICRs and Innovations
+    List<Map<String, Object>> deliverablesList = new ArrayList<>();
+    if (activity.getDeliverableActivities() != null) {
+      List<DeliverableActivity> deliverableActivities = activity.getDeliverableActivities().stream()
+        .filter(da -> da != null && da.isActive() 
+            && da.getPhase() != null 
+            && da.getPhase().equals(this.getSelectedPhase())
+            && da.getDeliverable() != null 
+            && da.getDeliverable().isActive()
+            && da.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null
+            && da.getDeliverable().getDeliverableInfo(this.getSelectedPhase()).isActive())
+        .sorted((da1, da2) -> Long.compare(da1.getDeliverable().getId(), da2.getDeliverable().getId()))
+        .collect(Collectors.toList());
+
+      for (DeliverableActivity deliverableActivity : deliverableActivities) {
+        Deliverable deliverable = deliverableActivity.getDeliverable();
+        DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+        if (deliverableInfo != null && deliverableInfo.isActive()) {
+          Map<String, Object> deliverableData = new HashMap<>();
+          deliverableData.put("id", deliverable.getId());
+          String deliverableTitle = deliverableInfo.getTitle();
+          if (deliverableTitle != null && !deliverableTitle.trim().isEmpty()) {
+            deliverableData.put("title", this.getSanitizedText(deliverableTitle));
+          }
+          deliverablesList.add(deliverableData);
+        }
+      }
+    }
+    
+    if (!deliverablesList.isEmpty()) {
+      data.put("deliverables", deliverablesList);
+      data.put("hasDeliverables", true);
+    }
+
+    return data;
+  }
+
+  private Map<String, Object> buildDeliverableData(Deliverable deliverable) {
+    Map<String, Object> data = new HashMap<>();
+    if (deliverable == null) {
+      return data;
+    }
+
+    DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(this.getSelectedPhase());
+    if (deliverableInfo == null) {
+      return data;
+    }
+
+    // Basic info
+    data.put("id", deliverable.getId());
+    if (deliverableInfo.getTitle() != null && !deliverableInfo.getTitle().trim().isEmpty()) {
+      data.put("title", this.getSanitizedText(deliverableInfo.getTitle()));
+    }
+    
+    // Store original year and newExpectedYear for reference
+    data.put("year", deliverableInfo.getYear());
+    Integer newExpectedYear = deliverableInfo.getNewExpectedYear();
+    // Only add newExpectedYear if it's valid (not null and not -1)
+    if (newExpectedYear != null && newExpectedYear != -1) {
+      data.put("newExpectedYear", newExpectedYear);
+    }
+    
+    // Calculate displayYear: use newExpectedYear if status is Extended/Ongoing/Complete and newExpectedYear is valid
+    Integer displayYear = deliverableInfo.getYear();
+    if (deliverableInfo.getStatus() != null) {
+      int status = deliverableInfo.getStatus().intValue();
+      boolean isExtended = status == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId()); // 4
+      boolean isOngoing = status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()); // 3
+      boolean isComplete = status == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()); // 5
+      
+      if ((isExtended || isOngoing || isComplete) && newExpectedYear != null && newExpectedYear != -1) {
+        displayYear = newExpectedYear;
+        data.put("isExtended", true); // Flag to show "Extended from" in template if needed
+      }
+    }
+    data.put("displayYear", displayYear);
+    
+    // Store status name instead of status number
+    if (deliverableInfo.getStatus() != null) {
+      ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(deliverableInfo.getStatus().intValue());
+      if (statusEnum != null) {
+        data.put("status", statusEnum.getStatus());
+      } else {
+        data.put("status", deliverableInfo.getStatus().toString()); // Fallback to number if enum not found
+      }
+    }
+    if (deliverableInfo.getStatusDescription() != null && !deliverableInfo.getStatusDescription().trim().isEmpty()) {
+      data.put("statusDescription", this.getSanitizedText(deliverableInfo.getStatusDescription()));
+    }
+
+    // Description
+    if (deliverableInfo.getDescription() != null && !deliverableInfo.getDescription().trim().isEmpty()) {
+      data.put("description", this.getSanitizedText(deliverableInfo.getDescription()));
+    }
+
+    // Type
+    if (deliverableInfo.getDeliverableType() != null) {
+      data.put("type", this.getSanitizedText(deliverableInfo.getDeliverableType().getName()));
+    }
+    if (deliverableInfo.getTypeOther() != null && !deliverableInfo.getTypeOther().trim().isEmpty()) {
+      data.put("typeOther", this.getSanitizedText(deliverableInfo.getTypeOther()));
+    }
+
+    // Geographic scope
+    if (deliverableInfo.getGeographicScope() != null) {
+      data.put("geographicScope", this.getSanitizedText(deliverableInfo.getGeographicScope().getName()));
+    }
+    if (deliverableInfo.getIsLocationGlobal() != null) {
+      data.put("isLocationGlobal", deliverableInfo.getIsLocationGlobal() ? "Yes" : "No");
+    }
+
+    // Region
+    if (deliverableInfo.getRegion() != null) {
+      data.put("region", this.getSanitizedText(deliverableInfo.getRegion().getName()));
+    }
+
+    // Countries - include ISO Alpha 2 for flag icons
+    List<Map<String, Object>> countries = new ArrayList<>();
+    if (deliverable.getDeliverableLocations() != null) {
+      countries = deliverable.getDeliverableLocations().stream()
+        .filter(l -> l.isActive() && l.getPhase() != null && l.getPhase().equals(this.getSelectedPhase())
+          && l.getLocElement() != null && l.getLocElement().getLocElementType() != null
+          && l.getLocElement().getLocElementType().getId() == 2)
+        .map(l -> {
+          Map<String, Object> countryData = new HashMap<>();
+          String countryName = this.getSanitizedText(l.getLocElement().getName());
+          countryData.put("name", countryName);
+          if (l.getLocElement().getIsoAlpha2() != null && !l.getLocElement().getIsoAlpha2().trim().isEmpty()) {
+            String isoAlpha2 = l.getLocElement().getIsoAlpha2().toLowerCase();
+            countryData.put("isoAlpha2", isoAlpha2);
+            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
+            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
+          } else {
+            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
+          }
+          return countryData;
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!countries.isEmpty()) {
+      data.put("countries", countries);
+    }
+
+    // Regions
+    List<String> regions = new ArrayList<>();
+    if (deliverable.getDeliverableGeographicRegions() != null) {
+      regions = deliverable.getDeliverableGeographicRegions().stream()
+        .filter(r -> r.isActive() && r.getPhase() != null && r.getPhase().equals(this.getSelectedPhase())
+          && r.getLocElement() != null && r.getLocElement().getLocElementType() != null
+          && r.getLocElement().getLocElementType().getId() == 1)
+        .map(r -> this.getSanitizedText(r.getLocElement().getName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!regions.isEmpty()) {
+      data.put("regions", String.join(", ", regions));
+    }
+
+    // CRP Program Outcome
+    if (deliverableInfo.getCrpProgramOutcome() != null) {
+      data.put("crpProgramOutcome", this.getSanitizedText(deliverableInfo.getCrpProgramOutcome().getComposedName()));
+    }
+
+    // CRP Cluster Key Output
+    if (deliverableInfo.getCrpClusterKeyOutput() != null) {
+      data.put("crpClusterKeyOutput",
+        this.getSanitizedText(deliverableInfo.getCrpClusterKeyOutput().getComposedName()));
+    }
+
+    // CRPs
+    List<String> crps = new ArrayList<>();
+    if (deliverable.getDeliverableCrps() != null) {
+      crps = deliverable.getDeliverableCrps().stream()
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getSelectedPhase())
+          && c.getGlobalUnit() != null)
+        .map(c -> this.getSanitizedText(c.getGlobalUnit().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crps.isEmpty()) {
+      data.put("crps", String.join(", ", crps));
+    }
+
+    // CRP Outcomes
+    List<String> crpOutcomes = new ArrayList<>();
+    if (deliverable.getDeliverableCrpOutcomes() != null) {
+      crpOutcomes = deliverable.getDeliverableCrpOutcomes().stream()
+        .filter(co -> co.isActive() && co.getPhase() != null && co.getPhase().equals(this.getSelectedPhase())
+          && co.getCrpProgramOutcome() != null)
+        .map(co -> this.getSanitizedText(co.getCrpProgramOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!crpOutcomes.isEmpty()) {
+      data.put("crpOutcomes", String.join(", ", crpOutcomes));
+    }
+
+    // Project Outcomes
+    List<String> projectOutcomes = new ArrayList<>();
+    if (deliverable.getDeliverableProjectOutcomes() != null) {
+      projectOutcomes = deliverable.getDeliverableProjectOutcomes().stream()
+        .filter(po -> po.isActive() && po.getPhase() != null && po.getPhase().equals(this.getSelectedPhase())
+          && po.getProjectOutcome() != null)
+        .map(po -> this.getSanitizedText(po.getProjectOutcome().getComposedName())).filter(Objects::nonNull)
+        .collect(Collectors.toList());
+    }
+    if (!projectOutcomes.isEmpty()) {
+      data.put("projectOutcomes", String.join(", ", projectOutcomes));
+    }
+
+    // Activities
+    List<String> activities = new ArrayList<>();
+    if (deliverable.getDeliverableActivities() != null) {
+      activities = deliverable.getDeliverableActivities().stream()
+        .filter(a -> a.isActive() && a.getPhase() != null && a.getPhase().equals(this.getSelectedPhase())
+          && a.getActivity() != null)
+        .map(a -> {
+          String activityTitle = a.getActivity().getTitle() != null ? a.getActivity().getTitle() : "";
+          return this.getSanitizedText(activityTitle);
+        }).filter(Objects::nonNull).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+    }
+    if (!activities.isEmpty()) {
+      data.put("activities", String.join(", ", activities));
+    }
+
+    // Funding Sources
+    List<Map<String, Object>> fundingSourcesList = new ArrayList<>();
+    StringBuilder fundingSourcesText = new StringBuilder();
+    if (deliverable.getDeliverableFundingSources() != null) {
+      List<DeliverableFundingSource> deliverableFundingSources = deliverable.getDeliverableFundingSources().stream()
+        .filter(dfs -> dfs.isActive() && dfs.getPhase() != null && dfs.getPhase().equals(this.getSelectedPhase())
+          && dfs.getFundingSource() != null
+          && dfs.getFundingSource().getFundingSourceInfo(this.getSelectedPhase()) != null)
+        .sorted((dfs1, dfs2) -> Long.compare(dfs1.getFundingSource().getId(), dfs2.getFundingSource().getId()))
+        .collect(Collectors.toList());
+
+      for (DeliverableFundingSource dfs : deliverableFundingSources) {
+        FundingSource fundingSource = dfs.getFundingSource();
+        FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(this.getSelectedPhase());
+
+        if (fundingSourceInfo != null) {
+          Map<String, Object> fsData = new HashMap<>();
+          // Add ID
+          if (fundingSource.getId() != null) {
+            fsData.put("id", fundingSource.getId());
+          }
+          // Add name/title
+          if (fundingSourceInfo.getTitle() != null && !fundingSourceInfo.getTitle().trim().isEmpty()) {
+            String title = this.getSanitizedText(fundingSourceInfo.getTitle());
+            fsData.put("name", title);
+            fsData.put("title", title);
+          } else if (fundingSource.getComposedName() != null && !fundingSource.getComposedName().trim().isEmpty()) {
+            String name = this.getSanitizedText(fundingSource.getComposedName());
+            fsData.put("name", name);
+            fsData.put("title", name);
+          }
+          // Add finance code
+          if (fundingSourceInfo.getFinanceCode() != null && !fundingSourceInfo.getFinanceCode().trim().isEmpty()) {
+            fsData.put("financeCode", this.getSanitizedText(fundingSourceInfo.getFinanceCode()));
+          }
+          // Add geographic scope
+          List<String> geographicScopeList = new ArrayList<>();
+          // Check if global
+          if (fundingSourceInfo.isGlobal()) {
+            geographicScopeList.add("Global");
+          }
+          // Add regions
+          if (fundingSource.getFundingSourceLocations() != null) {
+            List<String> fsRegions = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElement() != null && fl.getLocElementType() == null
+                && fl.getLocElement().getLocElementType() != null
+                && fl.getLocElement().getLocElementType().getId() == 1)
+              .map(fl -> this.getSanitizedText(fl.getLocElement().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            geographicScopeList.addAll(fsRegions);
+            // Add scope regions (when LocElementType is used instead of LocElement)
+            List<String> fsScopeRegions = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElementType() != null && fl.getLocElement() == null)
+              .map(fl -> this.getSanitizedText(fl.getLocElementType().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            geographicScopeList.addAll(fsScopeRegions);
+            // Add countries
+            List<String> fsCountries = fundingSource.getFundingSourceLocations().stream()
+              .filter(fl -> fl.isActive() && fl.getPhase() != null && fl.getPhase().equals(this.getSelectedPhase())
+                && fl.getLocElement() != null && fl.getLocElementType() == null
+                && fl.getLocElement().getLocElementType() != null
+                && fl.getLocElement().getLocElementType().getId() == 2)
+              .map(fl -> this.getSanitizedText(fl.getLocElement().getName())).filter(Objects::nonNull)
+              .distinct().sorted().collect(Collectors.toList());
+            if (!fsCountries.isEmpty()) {
+              geographicScopeList.addAll(fsCountries);
+            }
+          }
+          if (!geographicScopeList.isEmpty()) {
+            fsData.put("geographicScope", String.join(", ", geographicScopeList));
+          }
+          // Add description
+          if (fundingSourceInfo.getDescription() != null && !fundingSourceInfo.getDescription().trim().isEmpty()) {
+            fsData.put("description", this.getSanitizedText(fundingSourceInfo.getDescription()));
+          }
+
+          if (!fsData.isEmpty()) {
+            fundingSourcesList.add(fsData);
+
+            // Build text format for backward compatibility
+            String fsText = "● ";
+            if (fundingSource.getId() != null) {
+              fsText += "FS" + fundingSource.getId();
+            }
+            if (fundingSourceInfo.getFinanceCode() != null && !fundingSourceInfo.getFinanceCode().trim().isEmpty()) {
+              fsText += " (" + this.getSanitizedText(fundingSourceInfo.getFinanceCode()) + ")";
+            }
+            fsText += " - ";
+            if (fundingSourceInfo.getTitle() != null && !fundingSourceInfo.getTitle().trim().isEmpty()) {
+              fsText += this.getSanitizedText(fundingSourceInfo.getTitle());
+            } else if (fundingSource.getComposedName() != null && !fundingSource.getComposedName().trim().isEmpty()) {
+              fsText += this.getSanitizedText(fundingSource.getComposedName());
+            }
+            fsText += "<br>";
+            fundingSourcesText.append(fsText);
+          }
+        }
+      }
+    }
+
+    // Add funding sources: structured list preferred, fallback to text format
+    if (!fundingSourcesList.isEmpty()) {
+      data.put("hasFundingSources", true);
+      data.put("fundingSources", fundingSourcesList);
+    } else if (fundingSourcesText.length() > 0) {
+      // Text format for backward compatibility when no structured data
+      data.put("fundingSources", fundingSourcesText.toString());
+    }
+
+    // Partnerships - Contacts (Responsible)
+    List<String> contacts = new ArrayList<>();
+    if (deliverable.getDeliverableUserPartnerships() != null) {
+      contacts = deliverable.getDeliverableUserPartnerships().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().getId().equals(this.getSelectedPhase().getId())
+          && p.getInstitution() != null && p.getDeliverableUserPartnershipPersons() != null
+          && p.getDeliverablePartnerType() != null
+          && p.getDeliverablePartnerType().getId()
+            .equals(Long.valueOf(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE)))
+        .flatMap(p -> {
+          Institution institution = p.getInstitution();
+          String institutionName = institution.getComposedName() != null
+            ? this.getSanitizedText(institution.getComposedName())
+            : (institution.getName() != null ? this.getSanitizedText(institution.getName()) : "");
+          return p.getDeliverableUserPartnershipPersons().stream()
+            .filter(pp -> pp.isActive() && pp.getUser() != null && pp.getUser().getEmail() != null)
+            .map(pp -> {
+              User user = pp.getUser();
+              String userInfo = user.getComposedName();
+              String contactInfo = (institutionName != null && !institutionName.isEmpty())
+                ? institutionName + " - " + userInfo
+                : userInfo;
+              return this.getSanitizedText(contactInfo);
+            });
+        }).filter(Objects::nonNull).distinct().sorted().collect(Collectors.toList());
+    }
+    if (!contacts.isEmpty()) {
+      data.put("contacts", String.join("; ", contacts));
+    }
+
+
+
+    // Gender levels
+    List<String> genderLevels = new ArrayList<>();
+    if (deliverable.getDeliverableGenderLevels() != null) {
+      genderLevels = deliverable.getDeliverableGenderLevels().stream()
+        .filter(gl -> gl.isActive() && gl.getPhase() != null && gl.getPhase().equals(this.getSelectedPhase())
+          && gl.getGenderLevel() > 0)
+        .map(gl -> {
+          long genderLevelId = gl.getGenderLevel();
+          GenderType genderType = genderTypeManager.getGenderTypeById(genderLevelId);
+          return genderType != null ? this.getSanitizedText(genderType.getDescription()) : null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+    if (!genderLevels.isEmpty()) {
+      data.put("genderLevels", String.join(", ", genderLevels));
+    }
+
+    // Cross-cutting markers
+    List<Map<String, Object>> crossCuttingMarkers = new ArrayList<>();
+    if (deliverable.getDeliverableCrossCuttingMarkers() != null) {
+      List<DeliverableCrossCuttingMarker> markers = deliverable.getDeliverableCrossCuttingMarkers().stream()
+        .filter(m -> m.isActive() && m.getPhase() != null && m.getPhase().equals(this.getSelectedPhase())
+          && m.getCgiarCrossCuttingMarker() != null)
+        .sorted((m1, m2) -> m1.getId().compareTo(m2.getId())).collect(Collectors.toList());
+
+      for (DeliverableCrossCuttingMarker marker : markers) {
+        Map<String, Object> markerData = new HashMap<>();
+        if (marker.getCgiarCrossCuttingMarker() != null) {
+          markerData.put("name", this.getSanitizedText(marker.getCgiarCrossCuttingMarker().getName()));
+        }
+        if (marker.getRepIndGenderYouthFocusLevel() != null) {
+          markerData.put("focusLevel", this.getSanitizedText(marker.getRepIndGenderYouthFocusLevel().getName()));
+        }
+        crossCuttingMarkers.add(markerData);
+      }
+    }
+    if (!crossCuttingMarkers.isEmpty()) {
+      data.put("hasCrossCuttingMarkers", true);
+      data.put("crossCuttingMarkers", crossCuttingMarkers);
+    }
+
+    // Dissemination
+    if (deliverable.getDeliverableDisseminations() != null) {
+      DeliverableDissemination dissemination = deliverable.getDeliverableDisseminations().stream()
+        .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getSelectedPhase()))
+        .findFirst().orElse(null);
+      if (dissemination != null) {
+        if (dissemination.getDisseminationUrl() != null && !dissemination.getDisseminationUrl().trim().isEmpty()) {
+          data.put("disseminationUrl", this.getSanitizedText(dissemination.getDisseminationUrl()));
+        }
+        if (dissemination.getType() != null) {
+          data.put("disseminationType", this.getSanitizedText(dissemination.getType()));
+        }
+        // Dissemination channel
+        if (dissemination.getDisseminationChannel() != null
+          && !dissemination.getDisseminationChannel().trim().isEmpty()) {
+          try {
+            RepositoryChannel repositoryChannel = repositoryChannelManager
+              .getRepositoryChannelByShortName(dissemination.getDisseminationChannel());
+            if (repositoryChannel != null && repositoryChannel.getName() != null) {
+              data.put("disseminationChannel", this.getSanitizedText(repositoryChannel.getName()));
+            } else {
+              data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
+            }
+          } catch (Exception e) {
+            LOG.error("Error getting repository channel for deliverable " + deliverable.getId() + ": " + e);
+            data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
+          }
+        }
+        // Is open access
+        if (dissemination.getIsOpenAccess() != null) {
+          data.put("isOpenAccess", dissemination.getIsOpenAccess() ? "Yes" : "No");
+        }
+      }
+    }
+
+    // Quality check
+    if (deliverable.getDeliverableQualityChecks() != null) {
+      DeliverableQualityCheck qualityCheck = deliverable.getDeliverableQualityChecks().stream()
+        .filter(qc -> qc.isActive() && qc.getPhase() != null && qc.getPhase().equals(this.getSelectedPhase()))
+        .findFirst().orElse(null);
+      if (qualityCheck != null) {
+        Map<String, Object> qualityCheckData = new HashMap<>();
+        boolean hasQualityCheckInfo = false;
+
+        // Quality Assurance
+        if (qualityCheck.getQualityAssurance() != null) {
+          qualityCheckData.put("qualityAssurance", this.getSanitizedText(qualityCheck.getQualityAssurance().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getQualityAssurance().getId() != null
+            && qualityCheck.getQualityAssurance().getId().longValue() == 2L) {
+            if (qualityCheck.getFileAssurance() != null && qualityCheck.getFileAssurance().getFileName() != null) {
+              qualityCheckData.put("fileAssurance", this.getSanitizedText(qualityCheck.getFileAssurance().getFileName()));
+            }
+            if (qualityCheck.getLinkAssurance() != null && !qualityCheck.getLinkAssurance().trim().isEmpty()) {
+              qualityCheckData.put("linkAssurance", this.getSanitizedText(qualityCheck.getLinkAssurance()));
+            }
+          }
+        }
+
+        // Data Dictionary
+        if (qualityCheck.getDataDictionary() != null) {
+          qualityCheckData.put("dataDictionary", this.getSanitizedText(qualityCheck.getDataDictionary().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getDataDictionary().getId() != null
+            && qualityCheck.getDataDictionary().getId().longValue() == 2L) {
+            if (qualityCheck.getFileDictionary() != null && qualityCheck.getFileDictionary().getFileName() != null) {
+              qualityCheckData.put("fileDictionary", this.getSanitizedText(qualityCheck.getFileDictionary().getFileName()));
+            }
+            if (qualityCheck.getLinkDictionary() != null && !qualityCheck.getLinkDictionary().trim().isEmpty()) {
+              qualityCheckData.put("linkDictionary", this.getSanitizedText(qualityCheck.getLinkDictionary()));
+            }
+          }
+        }
+
+        // Data Tools
+        if (qualityCheck.getDataTools() != null) {
+          qualityCheckData.put("dataTools", this.getSanitizedText(qualityCheck.getDataTools().getName()));
+          hasQualityCheckInfo = true;
+          // If ID is 2 ("Yes, and documented"), show file and link
+          if (qualityCheck.getDataTools().getId() != null
+            && qualityCheck.getDataTools().getId().longValue() == 2L) {
+            if (qualityCheck.getFileTools() != null && qualityCheck.getFileTools().getFileName() != null) {
+              qualityCheckData.put("fileTools", this.getSanitizedText(qualityCheck.getFileTools().getFileName()));
+            }
+            if (qualityCheck.getLinkTools() != null && !qualityCheck.getLinkTools().trim().isEmpty()) {
+              qualityCheckData.put("linkTools", this.getSanitizedText(qualityCheck.getLinkTools()));
+            }
+          }
+        }
+
+        if (hasQualityCheckInfo) {
+          data.put("hasQualityCheck", true);
+          data.put("qualityCheck", qualityCheckData);
+        }
+      }
+    }
+
+    // Metadata elements - Handle and DOI
+    String handle = null;
+    String doi = null;
+    if (deliverable.getDeliverableMetadataElements() != null) {
+      List<DeliverableMetadataElement> metadataElementsList = deliverable.getDeliverableMetadataElements().stream()
+        .filter(e -> e.isActive() && e.getPhase() != null && e.getPhase().equals(this.getSelectedPhase())
+          && e.getMetadataElement() != null && e.getElementValue() != null
+          && !e.getElementValue().trim().isEmpty())
+        .collect(Collectors.toList());
+
+      // Get Handle (metadata element ID 35)
+      try {
+        DeliverableMetadataElement handleElement = metadataElementsList.stream()
+          .filter(e -> e.getMetadataElement() != null && e.getMetadataElement().getId() != null
+            && e.getMetadataElement().getId().longValue() == 35L)
+          .findFirst().orElse(null);
+        if (handleElement != null && handleElement.getElementValue() != null
+          && !handleElement.getElementValue().trim().isEmpty()) {
+          handle = this.getSanitizedText(handleElement.getElementValue());
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting Handle for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      // Get DOI (metadata element ID 36)
+      try {
+        DeliverableMetadataElement doiElement = metadataElementsList.stream()
+          .filter(e -> e.getMetadataElement() != null && e.getMetadataElement().getId() != null
+            && e.getMetadataElement().getId().longValue() == 36L)
+          .findFirst().orElse(null);
+        if (doiElement != null && doiElement.getElementValue() != null
+          && !doiElement.getElementValue().trim().isEmpty()) {
+          doi = this.getSanitizedText(doiElement.getElementValue());
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting DOI for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      // Build metadata elements list (excluding Handle and DOI as they are shown separately)
+      List<Map<String, Object>> metadataElements = new ArrayList<>();
+      List<DeliverableMetadataElement> elements = metadataElementsList.stream()
+        .filter(e -> e.getMetadataElement() != null
+          && (e.getMetadataElement().getId() == null
+            || (e.getMetadataElement().getId().longValue() != 35L && e.getMetadataElement().getId().longValue() != 36L)))
+        .sorted((e1, e2) -> {
+          if (e1.getMetadataElement() != null && e2.getMetadataElement() != null) {
+            String name1 = e1.getMetadataElement().getEcondedName() != null
+              ? e1.getMetadataElement().getEcondedName()
+              : (e1.getMetadataElement().getElement() != null ? e1.getMetadataElement().getElement() : "");
+            String name2 = e2.getMetadataElement().getEcondedName() != null
+              ? e2.getMetadataElement().getEcondedName()
+              : (e2.getMetadataElement().getElement() != null ? e2.getMetadataElement().getElement() : "");
+            return name1.compareTo(name2);
+          }
+          return 0;
+        }).collect(Collectors.toList());
+
+      for (DeliverableMetadataElement element : elements) {
+        Map<String, Object> elementData = new HashMap<>();
+        if (element.getMetadataElement() != null) {
+          String encodedName = element.getMetadataElement().getEcondedName() != null
+            ? element.getMetadataElement().getEcondedName()
+            : (element.getMetadataElement().getElement() != null ? element.getMetadataElement().getElement() : "");
+          if (!encodedName.isEmpty()) {
+            // Convert technical code to readable name using i18n
+            String readableName = this.getMetadataElementReadableName(encodedName);
+            elementData.put("name", this.getSanitizedText(readableName));
+          }
+        }
+        if (element.getElementValue() != null) {
+          elementData.put("value", this.getSanitizedText(element.getElementValue()));
+        }
+        if (!elementData.isEmpty()) {
+          metadataElements.add(elementData);
+        }
+      }
+      if (!metadataElements.isEmpty()) {
+        data.put("hasMetadataElements", true);
+        data.put("metadataElements", metadataElements);
+      }
+    }
+
+    // Add Handle and DOI separately
+    if (handle != null && !handle.trim().isEmpty()) {
+      data.put("handle", handle);
+    }
+    if (doi != null && !doi.trim().isEmpty()) {
+      data.put("doi", doi);
+    }
+
+    // Publication metadata
+    if (deliverable.getDeliverablePublicationMetadatas() != null) {
+      DeliverablePublicationMetadata publication = deliverable.getDeliverablePublicationMetadatas().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+        .findFirst().orElse(null);
+      if (publication != null) {
+        if (publication.getJournal() != null && !publication.getJournal().trim().isEmpty()) {
+          data.put("publicationJournal", this.getSanitizedText(publication.getJournal()));
+        }
+        if (publication.getVolume() != null && !publication.getVolume().trim().isEmpty()) {
+          data.put("publicationVolume", this.getSanitizedText(publication.getVolume()));
+        }
+        if (publication.getIssue() != null && !publication.getIssue().trim().isEmpty()) {
+          data.put("publicationIssue", this.getSanitizedText(publication.getIssue()));
+        }
+        if (publication.getPages() != null && !publication.getPages().trim().isEmpty()) {
+          data.put("publicationPages", this.getSanitizedText(publication.getPages()));
+        }
+        if (publication.getIsiPublication() != null) {
+          data.put("isiPublication", publication.getIsiPublication() ? "Yes" : "No");
+        }
+        if (publication.getCoAuthor() != null) {
+          data.put("coAuthor", publication.getCoAuthor() ? "Yes" : "No");
+        }
+      }
+    }
+
+    // SHFRM contribution
+    if (deliverableInfo.getContributingShfrm() != null) {
+      data.put("contributingShfrm", deliverableInfo.getContributingShfrm() ? "Yes" : "No");
+    }
+    if (deliverableInfo.getShfrmContributionNarrative() != null
+      && !deliverableInfo.getShfrmContributionNarrative().trim().isEmpty()) {
+      data.put("shfrmContributionNarrative", this.getSanitizedText(deliverableInfo.getShfrmContributionNarrative()));
+    }
+
+    // SHFRM Priority Actions and Sub Actions (only if contributingShfrm is Yes)
+    if (deliverableInfo.getContributingShfrm() != null && deliverableInfo.getContributingShfrm()) {
+      List<Map<String, Object>> shfrmPriorityActionsList = new ArrayList<>();
+      try {
+        List<DeliverableShfrmPriorityAction> actions = deliverableShfrmPriorityActionManager
+          .findByDeliverableAndPhase(deliverable.getId(), this.getSelectedPhase().getId());
+
+        if (actions != null && !actions.isEmpty()) {
+          for (DeliverableShfrmPriorityAction action : actions) {
+            if (action != null && action.getShfrmPriorityAction() != null
+              && action.getShfrmPriorityAction().getId() != null) {
+              Map<String, Object> actionData = new HashMap<>();
+              
+              // Add priority action info
+              if (action.getShfrmPriorityAction().getComposedName() != null) {
+                actionData.put("name", this.getSanitizedText(action.getShfrmPriorityAction().getComposedName()));
+              } else if (action.getShfrmPriorityAction().getName() != null) {
+                actionData.put("name", this.getSanitizedText(action.getShfrmPriorityAction().getName()));
+              }
+              if (action.getShfrmPriorityAction().getId() != null) {
+                actionData.put("id", action.getShfrmPriorityAction().getId());
+              }
+
+              // Add sub actions
+              List<DeliverableShfrmSubAction> subActions = deliverableShfrmSubActionManager
+                .findByPriorityActionAndPhase(action.getId(), this.getSelectedPhase().getId());
+
+              if (subActions != null && !subActions.isEmpty()) {
+                List<Map<String, Object>> subActionsList = new ArrayList<>();
+                for (DeliverableShfrmSubAction subAction : subActions) {
+                  if (subAction != null && subAction.getShfrmSubAction() != null) {
+                    Map<String, Object> subActionData = new HashMap<>();
+                    if (subAction.getShfrmSubAction().getComposedName() != null) {
+                      subActionData.put("name", this.getSanitizedText(subAction.getShfrmSubAction().getComposedName()));
+                    } else if (subAction.getShfrmSubAction().getName() != null) {
+                      subActionData.put("name", this.getSanitizedText(subAction.getShfrmSubAction().getName()));
+                    }
+                    if (subAction.getShfrmSubAction().getId() != null) {
+                      subActionData.put("id", subAction.getShfrmSubAction().getId());
+                    }
+                    if (!subActionData.isEmpty()) {
+                      subActionsList.add(subActionData);
+                    }
+                  }
+                }
+                if (!subActionsList.isEmpty()) {
+                  actionData.put("hasSubActions", true);
+                  actionData.put("subActions", subActionsList);
+                }
+              }
+
+              if (!actionData.isEmpty()) {
+                shfrmPriorityActionsList.add(actionData);
+              }
+            }
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Error getting shfrm actions and subactions for deliverable " + deliverable.getId() + ": " + e);
+      }
+
+      if (!shfrmPriorityActionsList.isEmpty()) {
+        data.put("hasShfrmPriorityActions", true);
+        data.put("shfrmPriorityActions", shfrmPriorityActionsList);
+      }
+    }
+
+    // Deliverable Participants
+    Boolean hasParticipants = false;
+    String hasParticipantsText = "No";
+    if (deliverable.getDeliverableParticipants() != null) {
+      List<DeliverableParticipant> deliverableParticipants = deliverable.getDeliverableParticipants().stream()
+        .filter(p -> p.isActive() && p.getPhase() != null && p.getPhase().equals(this.getSelectedPhase()))
+        .collect(Collectors.toList());
+
+      if (deliverableParticipants != null && !deliverableParticipants.isEmpty()) {
+        DeliverableParticipant participant = deliverableParticipants.get(0);
+        if (participant.getHasParticipants() != null) {
+          hasParticipants = participant.getHasParticipants();
+          hasParticipantsText = hasParticipants ? "Yes" : "No";
+        }
+
+        // Only show participant details if hasParticipants is true
+        if (hasParticipants) {
+          Map<String, Object> participantData = new HashMap<>();
+
+          if (participant.getEventActivityName() != null && !participant.getEventActivityName().trim().isEmpty()) {
+            participantData.put("eventActivityName", this.getSanitizedText(participant.getEventActivityName()));
+          }
+          if (participant.getRepIndTypeActivity() != null && participant.getRepIndTypeActivity().getId() != null
+            && participant.getRepIndTypeActivity().getId() != -1) {
+            participantData.put("activityType", this.getSanitizedText(participant.getRepIndTypeActivity().getName()));
+          }
+          if (participant.getAcademicDegree() != null && !participant.getAcademicDegree().trim().isEmpty()) {
+            participantData.put("academicDegree", this.getSanitizedText(participant.getAcademicDegree()));
+          }
+          if (participant.getParticipants() != null) {
+            participantData.put("totalParticipants", participant.getParticipants());
+          }
+          if (participant.getFemales() != null) {
+            participantData.put("females", participant.getFemales());
+          }
+          if (participant.getAfrican() != null) {
+            participantData.put("africans", participant.getAfrican());
+          }
+          if (participant.getYouth() != null) {
+            participantData.put("youth", participant.getYouth());
+          }
+          if (participant.getRepIndTypeParticipant() != null && participant.getRepIndTypeParticipant().getId() != null
+            && participant.getRepIndTypeParticipant().getId() != -1) {
+            participantData.put("participantType", this.getSanitizedText(participant.getRepIndTypeParticipant().getName()));
+          }
+          if (participant.getFocus() != null && !participant.getFocus().trim().isEmpty()) {
+            participantData.put("focus", this.getSanitizedText(participant.getFocus()));
+          }
+          if (participant.getLikelyOutcomes() != null && !participant.getLikelyOutcomes().trim().isEmpty()) {
+            participantData.put("likelyOutcomes", this.getSanitizedText(participant.getLikelyOutcomes()));
+          }
+
+          if (!participantData.isEmpty()) {
+            data.put("participant", participantData);
+          }
+        }
+      }
+    }
+    data.put("hasParticipants", hasParticipants);
+    data.put("hasParticipantsText", hasParticipantsText);
+
+    // MELIA study
+    if (deliverableInfo.getMeliaStudy() != null) {
+      data.put("meliaStudy", deliverableInfo.getMeliaStudy() ? "Yes" : "No");
+    }
+    if (deliverableInfo.getCommissioningStudy() != null && !deliverableInfo.getCommissioningStudy().trim().isEmpty()) {
+      data.put("commissioningStudy", this.getSanitizedText(deliverableInfo.getCommissioningStudy()));
+    }
+
+    // Activity description
+    if (deliverableInfo.getActivityDescription() != null && !deliverableInfo.getActivityDescription().trim().isEmpty()) {
+      data.put("activityDescription", this.getSanitizedText(deliverableInfo.getActivityDescription()));
+    }
+
+    // Study type
+    if (deliverableInfo.getStudyType() != null) {
+      data.put("studyType", this.getSanitizedText(deliverableInfo.getStudyType().getName()));
+    }
+
+    // Adopted license
+    if (deliverableInfo.getAdoptedLicense() != null) {
+      data.put("adoptedLicense", deliverableInfo.getAdoptedLicense() ? "Yes" : "No");
+    }
+
+    // Duplicated
+    if (deliverableInfo.getDuplicated() != null) {
+      data.put("duplicated", deliverableInfo.getDuplicated() ? "Yes" : "No");
+    }
+
+    // Remaining pending
+    if (deliverableInfo.getRemainingPending() != null) {
+      data.put("remainingPending", deliverableInfo.getRemainingPending() ? "Yes" : "No");
+    }
+
+    // Shared deliverables (projects that share this deliverable)
+    List<String> sharedProjects = new ArrayList<>();
+    try {
+      List<ProjectDeliverableShared> deliverablesShared = projectDeliverableSharedManager
+        .getByDeliverable(deliverable.getId(), this.getSelectedPhase().getId());
+
+      if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
+        deliverablesShared = deliverablesShared.stream()
+          .filter(ds -> ds.isActive() && ds.getProject() != null && ds.getPhase() != null
+            && ds.getPhase().equals(this.getSelectedPhase()))
+          .collect(Collectors.toList());
+
+        for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+          if (deliverableShared.getProject() != null) {
+            String projectInfo = null;
+            if (deliverableShared.getProject().getAcronym() != null
+              && !deliverableShared.getProject().getAcronym().trim().isEmpty()) {
+              projectInfo = this.getSanitizedText(deliverableShared.getProject().getAcronym());
+            } else if (deliverableShared.getProject().getComposedName() != null
+              && !deliverableShared.getProject().getComposedName().trim().isEmpty()) {
+              projectInfo = this.getSanitizedText(deliverableShared.getProject().getComposedName());
+            }
+            if (projectInfo != null && !projectInfo.trim().isEmpty()) {
+              sharedProjects.add(projectInfo);
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("Error getting shared deliverables for deliverable " + deliverable.getId() + ": " + e);
+    }
+
+    if (!sharedProjects.isEmpty()) {
+      data.put("sharedProjects", String.join(", ", sharedProjects));
+    }
+
+    return data;
+  }
+
+  private String resolveUnitName(SrfTargetUnit specificUnit, CrpProgramOutcome crpOutcome) {
+    if (specificUnit != null && specificUnit.getName() != null) {
+      return this.getSanitizedText(specificUnit.getName());
+    }
+    if (crpOutcome != null && crpOutcome.getSrfTargetUnit() != null
+      && crpOutcome.getSrfTargetUnit().getName() != null) {
+      return this.getSanitizedText(crpOutcome.getSrfTargetUnit().getName());
+    }
+    return null;
+  }
+
+  private String formatNumericValue(Number value) {
+    if (value == null) {
+      return null;
+    }
+    double numericValue = value.doubleValue();
+    if (Math.abs(numericValue - Math.rint(numericValue)) < 0.0000001d) {
+      return String.format(Locale.ENGLISH, "%.0f", numericValue);
+    }
+    DecimalFormat decimalFormat = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+    return decimalFormat.format(numericValue);
+  }
+
+  private String buildProgramSummary(List<Map<String, Object>> programs) {
+    if (programs == null || programs.isEmpty()) {
+      return null;
+    }
+    List<String> names = programs.stream().map(program -> {
+      Object composed = program.get("composedName");
+      if (composed != null && StringUtils.isNotBlank(composed.toString())) {
+        return composed.toString().trim();
+      }
+      Object name = program.get("name");
+      if (name != null && StringUtils.isNotBlank(name.toString())) {
+        return name.toString().trim();
+      }
+      Object acronym = program.get("acronym");
+      if (acronym != null && StringUtils.isNotBlank(acronym.toString())) {
+        return acronym.toString().trim();
+      }
+      return null;
+    }).filter(Objects::nonNull).collect(Collectors.toList());
+
+    if (names.isEmpty()) {
+      return null;
+    }
+
+    String summary = names.stream().limit(4).collect(Collectors.joining(", "));
+    if (names.size() > 4) {
+      summary = summary + " +" + (names.size() - 4) + " more";
+    }
+    return summary;
+  }
+
+  private String getSanitizedText(String value) {
+    if (value == null) {
+      return null;
+    }
+    String sanitized = value.replace("\r", "\n").trim();
+    return sanitized.isEmpty() ? null : sanitized;
+  }
+
+  /**
+   * Converts metadata element encoded name (technical code) to readable name using i18n.
+   * Maps codes like "dc.title", "dc.date" to i18n keys like "metadata.title", "metadata.date"
+   * 
+   * @param encodedName The technical code (e.g., "dc.title", "dc.description.abstract")
+   * @return Readable name from i18n properties, or the original code if no mapping found
+   */
+  private String getMetadataElementReadableName(String encodedName) {
+    if (encodedName == null || encodedName.isEmpty()) {
+      return encodedName;
+    }
+
+    // Map encoded names to i18n keys
+    String i18nKey = null;
+    if (encodedName.equals("dc.title")) {
+      i18nKey = "metadata.title";
+    } else if (encodedName.equals("dc.description.abstract")) {
+      i18nKey = "metadata.description";
+    } else if (encodedName.equals("dc.date")) {
+      i18nKey = "metadata.date";
+    } else if (encodedName.equals("dc.language")) {
+      i18nKey = "metadata.language";
+    } else if (encodedName.equals("cg:coverage.country") || encodedName.equals("dc.coverage.country")) {
+      i18nKey = "metadata.countries";
+    } else if (encodedName.equals("marlo.keywords") || encodedName.equals("dc.subject")) {
+      i18nKey = "metadata.keywords";
+    } else if (encodedName.equals("dc.identifier.citation")) {
+      i18nKey = "metadata.citation";
+    } else if (encodedName.equals("marlo.handle") || encodedName.equals("dc.identifier.uri")) {
+      i18nKey = "metadata.handle";
+    } else if (encodedName.equals("marlo.doi") || encodedName.equals("dc.identifier.doi")) {
+      i18nKey = "metadata.doi";
+    } else if (encodedName.equals("marlo.authors") || encodedName.equals("dc.creator")) {
+      i18nKey = "metadata.creator";
+    } else {
+      // Try to extract a key from the encoded name
+      // For example: "dc.title" -> "metadata.title", "marlo.something" -> "metadata.something"
+      if (encodedName.startsWith("dc.")) {
+        String suffix = encodedName.substring(3); // Remove "dc."
+        // Handle special cases
+        if (suffix.equals("identifier.citation")) {
+          i18nKey = "metadata.citation";
+        } else if (suffix.equals("identifier.uri")) {
+          i18nKey = "metadata.handle";
+        } else if (suffix.equals("identifier.doi")) {
+          i18nKey = "metadata.doi";
+        } else if (suffix.equals("coverage.country")) {
+          i18nKey = "metadata.countries";
+        } else {
+          i18nKey = "metadata." + suffix;
+        }
+      } else if (encodedName.startsWith("marlo.")) {
+        String suffix = encodedName.substring(6); // Remove "marlo."
+        i18nKey = "metadata." + suffix;
+      } else if (encodedName.startsWith("cg:")) {
+        String suffix = encodedName.substring(3); // Remove "cg:"
+        if (suffix.equals("coverage.country")) {
+          i18nKey = "metadata.countries";
+        } else {
+          i18nKey = "metadata." + suffix.replace(":", ".");
+        }
+      }
+    }
+
+    // Try to get the readable name from i18n
+    if (i18nKey != null) {
+      try {
+        String readableName = this.getText(i18nKey);
+        if (readableName != null && !readableName.isEmpty() && !readableName.equals(i18nKey)) {
+          return readableName;
+        }
+      } catch (Exception e) {
+        // If i18n key doesn't exist, fall through to return original
+      }
+    }
+
+    // Fallback: return the original encoded name if no mapping found
+    return encodedName;
+  }
+
+  /**
+   * Cleans HTML tags and special characters from text.
+   * Removes HTML tags, converts HTML entities, and cleans up whitespace.
+   * 
+   * @param htmlText The HTML text to clean
+   * @return Cleaned plain text
+   */
+  private String cleanHtmlText(String htmlText) {
+    if (htmlText == null || htmlText.isEmpty()) {
+      return null;
+    }
+    
+    String cleaned = htmlText;
+    
+    // Remove HTML tags
+    cleaned = cleaned.replaceAll("<[^>]+>", "");
+    
+    // Replace common HTML entities
+    cleaned = cleaned.replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&#39;", "'")
+        .replace("&apos;", "'");
+    
+    // Clean up whitespace
+    cleaned = cleaned.replaceAll("\\s+", " ").trim();
+    
+    return cleaned.isEmpty() ? null : cleaned;
+  }
+
+  private String getPartnerDisplayName(ProjectPartner partner) {
+    if (partner == null) {
+      return "";
+    }
+    try {
+      String composed = partner.getComposedName();
+      if (composed != null && !composed.trim().isEmpty()) {
+        return composed;
+      }
+    } catch (Exception e) {
+      // ignore
+    }
+    if (partner.getInstitution() != null) {
+      if (partner.getInstitution().getComposedName() != null
+        && !partner.getInstitution().getComposedName().trim().isEmpty()) {
+        return partner.getInstitution().getComposedName();
+      }
+      if (partner.getInstitution().getName() != null) {
+        return partner.getInstitution().getName();
+      }
+    }
+    return "";
+  }
+
+  private String resolveProjectTemplateData(ReportConfiguration reportConfiguration) {
+    if (reportConfiguration == null) {
+      return null;
+    }
+    try {
+      Method getter = reportConfiguration.getClass().getMethod("getProjectTemplateData");
+      Object value = getter.invoke(reportConfiguration);
+      if (value != null) {
+        return value.toString();
+      }
+    } catch (Exception e) {
+      try {
+        Map<String, Object> configurationMap = reportConfiguration.convertToMap();
+        if (configurationMap != null && configurationMap.get("projectTemplateData") != null) {
+          return configurationMap.get("projectTemplateData").toString();
+        }
+      } catch (Exception inner) {
+        LOG.warn("Unable to resolve project template data via reflection", inner);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get current date and time formatted as yyyyMMdd_HHmm
+   * 
+   * @return Formatted date-time string
+   */
+  private String getCurrentDateTime() {
+    java.time.LocalDateTime currentDateTime = java.time.LocalDateTime.now();
+    String formattedDateTime = currentDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmm"));
+    return formattedDateTime;
+  }
+
+  /**
+   * Get current date formatted as "Monday, March 17th, 2025, at 21:57"
+   * 
+   * @return Formatted date string with ordinal day suffix
+   */
+  private String getCurrentDatev2() {
+    // Define the date format: "Monday, March 17, 2025, at 21:57"
+    final SimpleDateFormat formatter = new SimpleDateFormat("EEEE, MMMM d, yyyy, 'at' HH:mm", Locale.US);
+    formatter.setTimeZone(java.util.TimeZone.getTimeZone("CET")); // Set timezone to CET
+
+    // Format the current date without ordinal suffix
+    String formattedDate = formatter.format(new Date());
+
+    // Extract the day of the month
+    Calendar calendar = Calendar.getInstance(java.util.TimeZone.getTimeZone("CET"), Locale.US);
+    int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    // Get the appropriate ordinal suffix (st, nd, rd, th)
+    String ordinal = this.getDayOrdinal(day);
+
+    // Replace the plain day number with the ordinal version (e.g., "17" → "17th")
+    return formattedDate.replaceFirst("\\b" + day + "\\b", day + ordinal);
+  }
+
+  /**
+   * Transform SDG icon filename from database format to S3 server format
+   * Database format: E_SDG-goals_Goal-03.png
+   * S3 format: E-WEB-Goal-3.png
+   * 
+   * @param dbIconName Icon filename from database
+   * @return Transformed icon filename for S3
+   */
+  private String transformSdgIconName(String dbIconName) {
+    if (dbIconName == null || dbIconName.trim().isEmpty()) {
+      return dbIconName;
+    }
+    
+    // Keep the file extension (.png)
+    String iconName = dbIconName;
+    boolean hasPngExtension = iconName.toLowerCase().endsWith(".png");
+    String baseName = hasPngExtension ? iconName.substring(0, iconName.length() - 4) : iconName;
+    
+    // Replace _SDG-goals_Goal- with -WEB-Goal-
+    baseName = baseName.replace("_SDG-goals_Goal-", "-WEB-Goal-");
+    
+    // Remove leading zero from goal number (e.g., Goal-03 -> Goal-3, but Goal-17 stays Goal-17)
+    baseName = baseName.replaceAll("-Goal-0(\\d)$", "-Goal-$1");
+    
+    // Add back the .png extension if it was present
+    return hasPngExtension ? baseName + ".png" : baseName;
+  }
+
+  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Object jsonRoot) {
+    FileWriter writer = null;
+    try {
+      File payloadFile = new File(System.getProperty("user.dir"),
+        "reporting-summary-payload-" + System.currentTimeMillis() + ".json");
+      writer = new FileWriter(payloadFile);
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, jsonRoot);
+    } catch (Exception e) {
+      LOG.warn("Unable to persist reporting summary payload", e);
+    } finally {
+      if (writer != null) {
+        try {
+          writer.close();
+        } catch (IOException ignored) {
+        }
+      }
+    }
+  }
+
+  /**
+   * Method to determine the ordinal suffix for a given day
+   * 
+   * @param day Day of the month
+   * @return Ordinal suffix (st, nd, rd, th)
+   */
+  private String getDayOrdinal(int day) {
+    // Special cases: 11th, 12th, 13th always use "th"
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+
+    // Determine suffix based on the last digit
+    switch (day % 10) {
+      case 1:
+        return "st"; // 1st, 21st, 31st
+      case 2:
+        return "nd"; // 2nd, 22nd
+      case 3:
+        return "rd"; // 3rd, 23rd
+      default:
+        return "th"; // 4th, 5th, ..., 24th, 25th, etc.
+    }
+  }
+
   /**
    * Prepare the parameters of the project.
    * Note: If you add a parameter here, you must add it in the ProjectSubmissionAction class

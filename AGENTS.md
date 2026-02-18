@@ -1,0 +1,114 @@
+# MARLO AI Agents
+
+## Language
+- All code, identifiers, comments, and technical content must be written in English.
+- Replies can be in the same language as the user prompt.
+
+## Project Overview
+MARLO (Managing Agricultural Research for Learning and Outcomes) is an online management platform for CGIAR Research Programs.
+
+## Project Structure
+- `marlo-core`: Core configuration and initialization.
+- `marlo-data`: Data layer (JPA entities and repositories).
+- `marlo-web`: Web app (actions, REST endpoints, JSPs, JavaScript).
+- `marlo-utils`: Utility classes.
+- `marlo-parent`: Parent POM and dependency management.
+
+## Technology Stack
+- Java (backend and web layer)
+- Maven (build and dependency management)
+- Struts 2 (web framework)
+- Hibernate/JPA (ORM)
+- JSP (server-side templating)
+- Tomcat 9 (local container via Cargo)
+- JavaScript (frontend)
+- SQL migrations
+
+## Web Layer: Struts 2 vs Spring MVC
+- **Struts 2**: Traditional web actions (`.do`, `.json`), JSPs, and interceptors. Main config: `marlo-web/src/main/resources/struts.xml` plus module-specific `struts-*.xml` files (e.g. `struts-projects.xml`, `struts-admin.xml`, `struts-api.xml`).
+- **Spring MVC**: REST API under `/api/*`. These paths are excluded from Struts via `struts.action.excludePattern`. Controllers use `@RestController` and `@RequestMapping`.
+
+## Configuration & Properties
+- Location: `marlo-web/src/main/resources/config/`
+- Files `marlo-dev.properties`, are in `.gitignore`; create them locally or use a template (e.g. `marlo-test.properties`).
+- Spring profile selects the file: `marlo-${spring.profiles.active}.properties`. Active profiles: `dev`, `api`, `pro`, `test`.
+
+## Required File Header (Java)
+Use the GPL header for new Java files (as specified in the project setup guide):
+
+```text
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning & 
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+```
+
+## Code Style & Formatting
+### Java
+- Formatter: `configuration/ccafs-java-style-config.xml`
+- Import order: `configuration/ccafs-java-style.importorder`
+- Indentation: 2 spaces
+- Line length: 120
+- Braces on the same line
+- Use blocks for `if/while/for/do` (always)
+
+### JavaScript
+- Formatter: `configuration/ccafs-javascript-style.xml`
+- Indentation: 2 spaces
+- Braces on the same line
+- Use blocks for `if/while/for/do` (always)
+
+## Linting & Validation (Checkstyle)
+- Config: `configuration/marlo-checkstyle.xml`
+- Runs via `mvn checkstyle:checkstyle` or `mvn checkstyle:check`
+- Key rules:
+  - Max line length: 120
+  - Max file length: 3500 lines
+  - Naming conventions for methods, local variables, and type params
+  - Package name regex: `^[a-z]+(\\.[a-z][a-z0-9]*)*$`
+  - Padding rules for empty `for` initializer/iterator and method parameter spacing
+
+## Database Migrations
+- All schema changes must be done via migration scripts.
+- Location: `marlo-web/src/main/resources/database/migrations/`
+- Follow the existing naming pattern in that directory.
+- Naming format (examples in repo): `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`
+
+## File Organization (Quick Reference)
+- Actions: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/`
+- Base Action: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/BaseAction.java`
+- REST APIs: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/`
+- Validators: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/`
+- Interceptors: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/interceptor/`
+- Struts config: `marlo-web/src/main/resources/struts.xml`, `struts-*.xml`
+- i18n: `marlo-web/src/main/resources/global.properties`, `custom/*.properties` (per CRP)
+- SQL scripts: `marlo-web/src/main/resources/database/`
+- Web resources: `marlo-web/src/main/webapp/`
+
+## Common Tasks
+- When adding new features, check similar implementations first.
+- When modifying DB schema, add a migration file in the migrations directory.
+- When adding actions, follow the existing action structure.
+- When adding REST endpoints, follow existing REST API patterns.
+
+## Domain Notes
+- MARLO content and workflows reference CGIAR Research Programs (CRPs) across multiple resources and actions.
+
+## Run Scripts by Branch Java Version (Local Development)
+Scripts in `scripts/` run MARLO locally (build, update properties, start server). Choose by Java version:
+- If the branch name contains `java17` or `java_17`, use the Java 17 run script in `scripts/`:
+  - macOS/Linux: `scripts/run-marlo-java17.sh`
+  - Windows: `scripts/run-marlo-java17.bat` (if provided; otherwise use `.sh` in Git Bash)
+- Otherwise, use the Java 8 run script in `scripts/`:
+  - macOS/Linux: `scripts/run-marlo-java8.sh`
+  - Windows: `scripts/run-marlo-java8.bat` (if provided; otherwise use `.sh` in Git Bash)

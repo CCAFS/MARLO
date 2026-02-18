@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20240723",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20251128",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20251211",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20251113",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
@@ -171,7 +171,7 @@
     </div>   
   </div>
 
-    <div class=" modal-deliverable ui-dialog modal-status" style="display: none;  background-color: #50505070 !important;">
+  <div class=" modal-deliverable ui-dialog modal-status" style="display: none;  background-color: #50505070 !important;">
     <div class="content-modal">
       <div class="ui-dialog-titlebar">
         <p class="title-modal-evidences title-modal-status">Change Status</p>

@@ -1,0 +1,1 @@
+ALTER TABLE report_configurations ADD project_template_data text NULL;
