@@ -111,6 +111,7 @@
             [#-- All Users Tab Content --]
             <div role="tabpanel" class="tab-pane active" id="all-users">
               <h4 class="sectionSubTitle">All Users</h4>
+              <p class="help-block">Complete list of users with their assigned roles in the system</p>
               <table class="display table table-striped table-hover usersTable" width="100%">
                 <thead>
                   <tr>
@@ -123,12 +124,22 @@
                 </thead>
                 <tbody>
                   [#list allUsersList as user]
+                  [#assign userRoles = (action.getUserRoles(user.id))! /]
                   <tr>
                     <td>${user.id}</td>
-                    <td>${(user.composedCompleteName)!}</td>
-                    <td>${(action.getUserRoles(user.id))!}</td>
-                    <td>${(user.email)!}</td>
-                    <td>${(user.lastLogin)!'<i> <span class="hide">aaa</span> Never logged in </i>'}</td>
+                    <td><strong>${(user.composedCompleteName)!}</strong></td>
+                    <td>
+                      [#if userRoles?has_content]
+                        [#assign rolesList = userRoles?split(", ") /]
+                        [#list rolesList as role]
+                          <span class="label label-info role-badge" style="margin-right: 4px; font-size: 0.85em;">${role}</span>
+                        [/#list]
+                      [#else]
+                        <span class="text-muted"><em>No roles</em></span>
+                      [/#if]
+                    </td>
+                    <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
+                    <td>${(user.lastLogin)!'<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>'}</td>
                   </tr>
                   [/#list]
                 </tbody>
@@ -145,6 +156,7 @@
                 [#else]
                   <h4 class="sectionSubTitle ">${role.description}</h4>
                 [/#if ]
+                  <p class="help-block">${usersList?size} user(s) with this role</p>
                   <table class="display table table-striped table-hover usersTable" width="100%">
                     <thead>
                       <tr>
@@ -162,13 +174,13 @@
                       [#list usersList as user]
                       <tr>
                         <td>${user.id}</td>
-                        <td>${(user.composedCompleteName)!}</td>
+                        <td><strong>${(user.composedCompleteName)!}</strong></td>
                         [#-- <td>${(user.username)!'<i>No Username</i>'}</td> --]
                         [#if (action.hasRelations(role.acronym))??]
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         [/#if]
-                        <td>${(user.email)!}</td>
-                        <td>${(user.lastLogin)!'<i> <span class="hide">aaa</span> Never logged in </i>'}</td>
+                        <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
+                        <td>${(user.lastLogin)!'<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>'}</td>
                       </tr>
                       [/#list]
                     </tbody>
