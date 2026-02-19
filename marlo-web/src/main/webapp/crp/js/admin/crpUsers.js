@@ -1,8 +1,19 @@
 $(document).ready(init);
 
 function init() {
+  // Initialize DataTables for all tables
+  initializeDataTables();
 
-  $('.usersTable').DataTable({
+  // Add guest user module
+  guestUsersModule.init();
+
+  // Attaching events
+  attachEvents();
+}
+
+function initializeDataTables() {
+  // DataTables configuration
+  var dataTablesConfig = {
       dom: 'Bfrtip',
       buttons: [
           {
@@ -93,19 +104,35 @@ function init() {
           { width: '22%', targets: 4 }   // Last Login column (reduced)
       ],
       autoWidth: false,
+      retrieve: true, // Allow reinitializing already initialized tables
+      deferRender: true, // Improve performance for large datasets
       language: {
           search: 'Search users:',
           lengthMenu: 'Show _MENU_ users per page',
           info: 'Showing _START_ to _END_ of _TOTAL_ users',
           infoFiltered: '(filtered from _MAX_ total users)'
       }
+  };
+
+  // Initialize DataTables for visible tables first
+  $('.tab-pane.active .usersTable').each(function() {
+      if (!$.fn.DataTable.isDataTable(this)) {
+          $(this).DataTable(dataTablesConfig);
+      }
   });
 
-  // Add guest user module
-  guestUsersModule.init();
-
-  // Attaching events
-  attachEvents();
+  // Initialize DataTables when a tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var targetPane = $(e.target).attr('href');
+      $(targetPane + ' .usersTable').each(function() {
+          if (!$.fn.DataTable.isDataTable(this)) {
+              $(this).DataTable(dataTablesConfig);
+          } else {
+              // Adjust column sizing if already initialized
+              $(this).DataTable().columns.adjust().draw();
+          }
+      });
+  });
 }
 
 function attachEvents() {

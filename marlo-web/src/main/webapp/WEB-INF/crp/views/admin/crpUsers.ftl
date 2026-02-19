@@ -7,7 +7,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js?20260219" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20260219v4" 
   ] 
 /]
 [#assign customCSS = [
@@ -223,7 +223,17 @@
                         <td><strong>${(user.composedCompleteName)!}</strong></td>
                         [#-- <td>${(user.username)!'<i>No Username</i>'}</td> --]
                         [#if (action.hasRelations(role.acronym))??]
-                        <td>${(action.getRelations(user.id, role.id))!}</td>
+                        <td>
+                          [#assign relationsStr = (action.getRelations(user.id, role.id))! /]
+                          [#if relationsStr?has_content]
+                            [#assign relationsList = relationsStr?replace("[", "")?replace("]", "")?split(", ") /]
+                            [#list relationsList as relation]
+                              [#if relation?trim?has_content]
+                                <span class="label label-default role-badge" style="margin-right: 4px; font-size: 0.85em;">${relation}</span>
+                              [/#if]
+                            [/#list]
+                          [/#if]
+                        </td>
                         [/#if]
                         <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
                         <td>[#if user.lastLogin??]${user.lastLogin}[#else]<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>[/#if]</td>
