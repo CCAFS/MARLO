@@ -198,7 +198,7 @@ td i {
     padding: 4px 10px;
     border-radius: 12px;
     font-weight: 500;
-    background: #0478a3;
+    background: #7f8c8d;
     border: none;
     color: #fff !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.15);
@@ -222,4 +222,61 @@ a[href^="mailto:"] {
 a[href^="mailto:"]:hover {
     color: #036080;
     text-decoration: underline;
+}
+
+/* DataTables Export Buttons */
+.dt-buttons {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dt-button {
+    background: #fff !important;
+    border: 1px solid #0478a3 !important;
+    color: #0478a3 !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.dt-button:hover {
+    background: #0478a3 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+    transform: translateY(-1px);
+}
+
+.dt-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+.dt-button .glyphicon {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+/* DataTables wrapper improvements */
+.dataTables_wrapper {
+    padding-top: 10px;
+}
+
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-top: 15px;
+    color: #7f8c8d;
+    font-size: 0.9em;
 }

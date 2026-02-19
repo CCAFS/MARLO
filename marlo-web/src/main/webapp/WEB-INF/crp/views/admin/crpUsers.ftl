@@ -2,14 +2,18 @@
 [#assign title = "Users" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
-[#assign customJS = [ 
+[#assign customJS = [
+  "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js?20190711" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20260219" 
   ] 
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpUsers.css" ] /]
+[#assign customCSS = [
+  "https://cdn.datatables.net/buttons/1.3.1/css/buttons.dataTables.min.css",
+  "${baseUrlMedia}/css/admin/crpUsers.css"
+] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "users" /]
 
@@ -91,6 +95,10 @@
             [#assign allUsersList = (action.getAllUsersWithRoles())![] /]
             <li role="" class="active"><a href="#all-users" aria-controls="all-users" role="tab" data-toggle="tab" title="All Users (${allUsersList?size})">All Users</a></li>
             
+            [#-- Active Users Tab (users with login) --]
+            [#assign activeUsersList = allUsersList?filter(u -> u.lastLogin??) /]
+            <li role=""><a href="#active-users" aria-controls="active-users" role="tab" data-toggle="tab" title="Users with Login (${activeUsersList?size})">Active Users</a></li>
+            
             [#-- Role-specific tabs --]
             [#list rolesCrp as role]
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
@@ -140,6 +148,44 @@
                     </td>
                     <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
                     <td>[#if user.lastLogin??]${user.lastLogin}[#else]<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>[/#if]</td>
+                  </tr>
+                  [/#list]
+                </tbody>
+              </table>
+            </div>
+            
+            [#-- Active Users Tab Content (users with login) --]
+            <div role="tabpanel" class="tab-pane" id="active-users">
+              <h4 class="sectionSubTitle">Active Users (with Login History)</h4>
+              <p class="help-block">${activeUsersList?size} user(s) have logged into the system at least once</p>
+              <table class="display table table-striped table-hover usersTable" width="100%">
+                <thead>
+                  <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Roles</th>
+                      <th>Email</th>
+                      <th>Last Login (${timeZone})</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list activeUsersList as user]
+                  [#assign userRoles = (action.getUserRoles(user.id))! /]
+                  <tr>
+                    <td>${user.id}</td>
+                    <td><strong>${(user.composedCompleteName)!}</strong></td>
+                    <td>
+                      [#if userRoles?has_content]
+                        [#assign rolesList = userRoles?split(", ") /]
+                        [#list rolesList as role]
+                          <span class="label label-default role-badge" style="margin-right: 4px; font-size: 0.85em;">${role}</span>
+                        [/#list]
+                      [#else]
+                        <span class="text-muted"><em>No roles</em></span>
+                      [/#if]
+                    </td>
+                    <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
+                    <td><strong>${user.lastLogin}</strong></td>
                   </tr>
                   [/#list]
                 </tbody>
