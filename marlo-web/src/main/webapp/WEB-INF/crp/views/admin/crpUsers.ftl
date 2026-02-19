@@ -127,7 +127,7 @@
                       <th>Name</th>
                       <th>Roles</th>
                       <th>Email</th>
-                      <th>Last Login (${timeZone})</th>
+                      <th>Last Login (UTC)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -165,7 +165,7 @@
                       <th>Name</th>
                       <th>Roles</th>
                       <th>Email</th>
-                      <th>Last Login (${timeZone})</th>
+                      <th>Last Login (UTC)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -213,7 +213,7 @@
                           <th>${action.hasRelations(role.acronym)}</th>
                           [/#if]
                           <th>Email</th>
-                          <th>Last Login (${timeZone})</th>
+                          <th>Last Login (UTC)</th>
                       </tr>
                     </thead>
                     <tbody>
