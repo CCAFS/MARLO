@@ -1,48 +1,286 @@
-/*Tabs*/
+/*========================================
+  CRP Users - Enhanced Visual Style
+==========================================*/
 
+/* Tabs Container */
 .tab-content {
     border: 1px solid #d1d1d1;
-    padding: 10px 2em;
+    padding: 20px 2em;
     border-radius: 0px 4px 4px 4px;
+    background-color: #fafafa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    min-height: 400px;
 }
 
 ul.nav.nav-tabs {
     border: 0;
+    margin-bottom: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
 }
 
-ul.nav.nav-tabs li a{
+ul.nav.nav-tabs li a {
     background-color: #f5f5f5;
     line-height: 1em;
-    padding: 10px 10px;
-    height: 34px;
+    padding: 12px 20px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    margin-right: 4px;
+    border-radius: 4px 4px 0 0;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 ul.nav.nav-tabs>li.active>a, 
 ul.nav.nav-tabs>li.active>a:focus, 
 ul.nav.nav-tabs>li.active>a:hover {
-    background-color: #fff;
+    background-color: #fafafa;
     line-height: 1em;
+    color: #333;
+    border-color: #d1d1d1 #d1d1d1 #fafafa;
+    font-weight: 600;
 }
 
 ul.nav.nav-tabs>li {
-    /* border-bottom: 1px solid #dddddd; */
-    margin-bottom: -1px;
+    margin-bottom: 0;
+    flex-shrink: 0;
 }
 
 ul.nav.nav-tabs>li.active {
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #fafafa;
     z-index: 10;
 }
 
 ul.nav.nav-tabs>li>a:hover {
-    border-color: #eee #eee #fff;
+    border-color: #ccc #ccc #fafafa;
+    background-color: #fff;
+    color: #333;
 }
 
+/* Section Title */
+.sectionSubTitle {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #0478a3;
+    padding-bottom: 8px;
+    display: inline-block;
+}
+
+/* Table Styling */
 .usersTable {
-    font-size: 0.95em;
+    font-size: 0.92em;
+    background-color: #fff !important;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
+.usersTable thead {
+    background: #0478a3;
+    color: #fff;
+}
+
+.usersTable thead th {
+    border-bottom: 2px solid #036080 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    padding: 14px 12px !important;
+    color: #fff !important;
+    vertical-align: middle;
+}
+
+.usersTable tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.usersTable tbody tr:hover {
+    background-color: #f8f9fc !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.usersTable tbody td {
+    padding: 12px !important;
+    vertical-align: middle;
+    color: #444;
+}
+
+/* ID Column */
+.usersTable tbody td:first-child {
+    font-weight: 600;
+    color: #0478a3;
+    font-family: 'Courier New', monospace;
+}
+
+/* Name Column */
+.usersTable tbody td:nth-child(2) {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+/* Roles Column Enhancement (for All Users tab) */
+.usersTable tbody td:nth-child(3) {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #555;
+}
+
+/* Email Column */
+.usersTable tbody td:nth-child(4) {
+    color: #0478a3;
+    font-size: 0.9em;
+}
+
+/* Last Login Column */
+.usersTable tbody td:last-child {
+    color: #7f8c8d;
+    font-size: 0.88em;
+}
 
 td i {
-    color: #ccc;
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* DataTables Enhancements */
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin-left: 8px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 3px;
+    padding: 4px 10px !important;
+    margin: 0 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0478a3 !important;
+    border-color: #0478a3 !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #f0f0f0 !important;
+    border-color: #ccc !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tab-content {
+        padding: 15px 1em;
+    }
+    
+    ul.nav.nav-tabs li a {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+    
+    .usersTable {
+        font-size: 0.85em;
+    }
+}
+
+/* Role Badges */
+.role-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+    background: #7f8c8d;
+    border: none;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    white-space: nowrap;
+}
+
+/* Help Block */
+.help-block {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+/* Email Links */
+a[href^="mailto:"] {
+    color: #0478a3;
+    transition: color 0.2s ease;
+}
+
+a[href^="mailto:"]:hover {
+    color: #036080;
+    text-decoration: underline;
+}
+
+/* DataTables Export Buttons */
+.dt-buttons {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dt-button {
+    background: #fff !important;
+    border: 1px solid #0478a3 !important;
+    color: #0478a3 !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.dt-button:hover {
+    background: #0478a3 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15) !important;
+    transform: translateY(-1px);
+}
+
+.dt-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+.dt-button .glyphicon {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+/* DataTables wrapper improvements */
+.dataTables_wrapper {
+    padding-top: 10px;
+}
+
+.dataTables_wrapper .dataTables_length {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 15px;
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-top: 15px;
+    color: #7f8c8d;
+    font-size: 0.9em;
 }
