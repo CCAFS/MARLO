@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -218,22 +217,17 @@ public class CrpUsersAction extends BaseAction {
             && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()).isActive())
           .collect(Collectors.toList())) {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-            .getEndDate() != null) {
-            Calendar cal = Calendar.getInstance();
-
-            cal.setTime(projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getEndDate());
-            Integer year = cal.get(Calendar.YEAR);
-
-            if (year != null && (year >= this.getActualPhase().getYear())) {
-
-              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                relations.add(projectPartnerPerson.getProjectPartner().getProject()
-                  .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-              }
+            .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            // Get project acronym for display, fallback to C+id if not available
+            Project project = projectPartnerPerson.getProjectPartner().getProject();
+            if (project.getAcronym() != null && !project.getAcronym().trim().isEmpty()) {
+              relations.add(project.getAcronym());
+            } else {
+              relations.add("C" + project.getId());
             }
           }
         }
@@ -249,9 +243,16 @@ public class CrpUsersAction extends BaseAction {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
             .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            relations.add(projectPartnerPerson.getProjectPartner().getProject()
-              .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            // Get project acronym for display, fallback to C+id if not available
+            Project project = projectPartnerPerson.getProjectPartner().getProject();
+            if (project.getAcronym() != null && !project.getAcronym().trim().isEmpty()) {
+              relations.add(project.getAcronym());
+            } else {
+              relations.add("C" + project.getId());
+            }
           }
 
         }
@@ -340,7 +341,7 @@ public class CrpUsersAction extends BaseAction {
         break;
       case "PL":
       case "PC":
-        ret = "Projects";
+        ret = "Clusters";
         break;
 
       case "ML":
@@ -461,28 +462,29 @@ public class CrpUsersAction extends BaseAction {
         for (UserRole userRole : role.getUserRoles()) {
           User user = userRole.getUser();
 
-
+          boolean hasValidProject = false;
           for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
             .filter(
               c -> c.getContactType().equals(role.getAcronym()) && c.getProjectPartner().isActive() && c.isActive())
             .collect(Collectors.toList())) {
             if (phasesProjects.contains(projectPartnerPerson.getProjectPartner().getProject())) {
-              if (projectPartnerPerson.getProjectPartner().getProject()
-                .getProjecInfoPhase(this.getActualPhase()) != null
-                && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject()
-                  .getProjecInfoPhase(this.getActualPhase()) != null
-                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject()
-                  .getProjecInfoPhase(this.getActualPhase()) != null
-                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
-                users.add(userRole);
+              ProjectInfo projectInfo = projectPartnerPerson.getProjectPartner().getProject()
+                .getProjecInfoPhase(this.getActualPhase());
+              
+              if (projectInfo != null) {
+                long status = projectInfo.getStatus();
+                if (status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                    || status == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || status == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+                  hasValidProject = true;
+                  break;
+                }
               }
-
             }
+          }
+          
+          if (hasValidProject) {
+            users.add(userRole);
           }
         }
       }
