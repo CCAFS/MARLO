@@ -1,25 +1,161 @@
 $(document).ready(init);
 
 function init() {
-
-  $('.usersTable').DataTable({
-      dom: 'Bfrtip',
-      buttons: [
-          {
-              extend: 'copy',
-              title: 'Data export'
-          }, {
-              extend: 'csv',
-              title: 'Data_export_' + getDateString()
-          }
-      ]
-  });
+  // Initialize DataTables for all tables
+  initializeDataTables();
 
   // Add guest user module
   guestUsersModule.init();
 
   // Attaching events
   attachEvents();
+}
+
+function initializeDataTables() {
+  // Base DataTables configuration (without columnDefs)
+  var getDataTablesConfig = function(columnCount) {
+    // Dynamic columnDefs based on column count
+    var columnDefs = [];
+    if (columnCount === 5) {
+      // Configuration for 5-column tables (All Users, Active Users, roles without relations)
+      columnDefs = [
+          { width: '5%', targets: 0 },   // ID column
+          { width: '20%', targets: 1 },  // Name column
+          { width: '35%', targets: 2 },  // Roles column
+          { width: '20%', targets: 3 },  // Email column
+          { width: '20%', targets: 4 }   // Last Login column
+      ];
+    } else if (columnCount === 6) {
+      // Configuration for 6-column tables (roles with relations like Cluster Leaders)
+      columnDefs = [
+          { width: '5%', targets: 0 },   // ID column
+          { width: '18%', targets: 1 },  // Name column
+          { width: '25%', targets: 2 },  // Relations/Clusters column
+          { width: '20%', targets: 3 },  // Email column
+          { width: '17%', targets: 4 },  // Last Login column
+          { width: '15%', targets: 5 }   // Additional column if any
+      ];
+    }
+    
+    return {
+      dom: 'Bfrtip',
+      buttons: [
+          {
+              extend: 'copy',
+              text: '<span class="glyphicon glyphicon-copy"></span> Copy',
+              title: 'MARLO Users Export',
+              exportOptions: {
+                  columns: ':visible'
+              }
+          },
+          {
+              extend: 'excel',
+              text: '<span class="glyphicon glyphicon-download-alt"></span> Excel',
+              title: 'MARLO_Users_Export_' + getDateString(),
+              filename: 'MARLO_Users_' + getDateString(),
+              exportOptions: {
+                  columns: ':visible',
+                  format: {
+                      body: function(data, row, column, node) {
+                          // Remove HTML tags but keep text content
+                          return data.replace(/<[^>]*>/g, '').trim();
+                      }
+                  }
+              },
+              customize: function(xlsx) {
+                  var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                  
+                  // Style header row - blue background, white text, bold
+                  $('row:first c', sheet).attr('s', '42');
+                  
+                  // Add custom styles to workbook
+                  var styles = xlsx.xl['styles.xml'];
+                  var lastXfIndex = $('cellXfs xf', styles).length - 1;
+                  
+                  // Header style
+                  var headerStyle = '<xf numFmtId="0" fontId="2" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1">' +
+                                   '<alignment horizontal="center" vertical="center"/>' +
+                                   '</xf>';
+                  
+                  $('cellXfs', styles).append(headerStyle);
+                  
+                  // Make ID column narrower, email wider (dynamic based on column count)
+                  $('col', sheet).each(function(index) {
+                      if (index === 0) $(this).attr('width', 8);  // ID column
+                      if (index === 1) $(this).attr('width', 25); // Name column
+                      if (index === 2) $(this).attr('width', 20); // Roles/Relations column
+                      if (index === 3) $(this).attr('width', 30); // Email column
+                      if (index === 4) $(this).attr('width', 20); // Last Login column
+                      if (index === 5) $(this).attr('width', 15); // Additional column
+                  });
+              }
+          },
+          {
+              extend: 'csv',
+              text: '<span class="glyphicon glyphicon-export"></span> CSV',
+              title: 'MARLO_Users_Export_' + getDateString(),
+              filename: 'MARLO_Users_' + getDateString(),
+              exportOptions: {
+                  columns: ':visible'
+              }
+          },
+          {
+              extend: 'print',
+              text: '<span class="glyphicon glyphicon-print"></span> Print',
+              title: 'MARLO Users',
+              exportOptions: {
+                  columns: ':visible'
+              },
+              customize: function(win) {
+                  $(win.document.body).prepend('<h2>MARLO Users - ' + getDateString('display') + '</h2>');
+                  $(win.document.body).find('table').addClass('display').css('font-size', '12px');
+                  $(win.document.body).find('tr:nth-child(odd)').css('background-color', '#f9f9f9');
+                  $(win.document.body).find('th').css({
+                      'background-color': '#0478a3',
+                      'color': '#fff',
+                      'padding': '10px'
+                  });
+              }
+          }
+      ],
+      pageLength: 25,
+      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
+      order: [[1, 'asc']], // Sort by name by default
+      columnDefs: columnDefs,
+      autoWidth: false,
+      destroy: true, // Allow reinitializing - replaces 'retrieve'
+      deferRender: true, // Improve performance for large datasets
+      language: {
+          search: 'Search users:',
+          lengthMenu: 'Show _MENU_ users per page',
+          info: 'Showing _START_ to _END_ of _TOTAL_ users',
+          infoFiltered: '(filtered from _MAX_ total users)'
+      }
+    };
+  };
+
+  // Initialize DataTables for visible tables first
+  $('.tab-pane.active .usersTable').each(function() {
+      var columnCount = $(this).find('thead th').length;
+      if (!$.fn.DataTable.isDataTable(this)) {
+          $(this).DataTable(getDataTablesConfig(columnCount));
+      }
+  });
+
+  // Initialize DataTables when a tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var targetPane = $(e.target).attr('href');
+      $(targetPane + ' .usersTable').each(function() {
+          var columnCount = $(this).find('thead th').length;
+          if (!$.fn.DataTable.isDataTable(this)) {
+              $(this).DataTable(getDataTablesConfig(columnCount));
+          } else {
+              // Destroy and reinitialize to avoid column mismatch
+              $(this).DataTable().destroy();
+              $(this).DataTable(getDataTablesConfig(columnCount));
+          }
+      });
+  });
 }
 
 function attachEvents() {

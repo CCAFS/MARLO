@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -150,7 +149,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
               && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get flagship identifier with fallback for null values
+          String flagshipIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            flagshipIdentifier = "Flagship-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(flagshipIdentifier);
         }
         break;
 
@@ -162,7 +172,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
               && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get flagship identifier with fallback for null values
+          String flagshipIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            flagshipIdentifier = "Flagship-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(flagshipIdentifier);
         }
         break;
 
@@ -173,7 +194,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
               && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get region identifier with fallback for null values
+          String regionIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            regionIdentifier = "Region-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(regionIdentifier);
         }
         break;
 
@@ -183,7 +215,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
               && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get region identifier with fallback for null values
+          String regionIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            regionIdentifier = "Region-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(regionIdentifier);
         }
         break;
 
@@ -192,7 +235,18 @@ public class CrpUsersAction extends BaseAction {
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
           && c.getLiaisonInstitution().isActive() && c.getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          // Get institution identifier with fallback for null values
+          String institutionIdentifier;
+          if (liaisonUser.getLiaisonInstitution().getAcronym() != null 
+              && !liaisonUser.getLiaisonInstitution().getAcronym().trim().isEmpty()) {
+            institutionIdentifier = liaisonUser.getLiaisonInstitution().getAcronym();
+          } else if (liaisonUser.getLiaisonInstitution().getName() != null 
+              && !liaisonUser.getLiaisonInstitution().getName().trim().isEmpty()) {
+            institutionIdentifier = liaisonUser.getLiaisonInstitution().getName();
+          } else {
+            institutionIdentifier = "Institution-" + liaisonUser.getLiaisonInstitution().getId();
+          }
+          relations.add(institutionIdentifier);
         }
         break;
       case "CP":
@@ -200,8 +254,20 @@ public class CrpUsersAction extends BaseAction {
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
           && c.getLiaisonInstitution().isActive() && c.getLiaisonInstitution().getCrpProgram() == null)
           .collect(Collectors.toList())) {
-          if (!relations.contains(liaisonUser.getLiaisonInstitution().getAcronym())) {
-            relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          // Get center identifier with fallback for null values
+          String centerIdentifier;
+          if (liaisonUser.getLiaisonInstitution().getAcronym() != null 
+              && !liaisonUser.getLiaisonInstitution().getAcronym().trim().isEmpty()) {
+            centerIdentifier = liaisonUser.getLiaisonInstitution().getAcronym();
+          } else if (liaisonUser.getLiaisonInstitution().getName() != null 
+              && !liaisonUser.getLiaisonInstitution().getName().trim().isEmpty()) {
+            centerIdentifier = liaisonUser.getLiaisonInstitution().getName();
+          } else {
+            centerIdentifier = "Center-" + liaisonUser.getLiaisonInstitution().getId();
+          }
+          
+          if (!relations.contains(centerIdentifier)) {
+            relations.add(centerIdentifier);
           }
 
         }
@@ -218,22 +284,17 @@ public class CrpUsersAction extends BaseAction {
             && c.getProjectPartners().getProject().getProjecInfoPhase(this.getActualPhase()).isActive())
           .collect(Collectors.toList())) {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-            .getEndDate() != null) {
-            Calendar cal = Calendar.getInstance();
-
-            cal.setTime(projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getEndDate());
-            Integer year = cal.get(Calendar.YEAR);
-
-            if (year != null && (year >= this.getActualPhase().getYear())) {
-
-              if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                relations.add(projectPartnerPerson.getProjectPartner().getProject()
-                  .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-              }
+            .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            // Get project acronym for display, fallback to C+id if not available
+            Project project = projectPartnerPerson.getProjectPartner().getProject();
+            if (project.getAcronym() != null && !project.getAcronym().trim().isEmpty()) {
+              relations.add(project.getAcronym());
+            } else {
+              relations.add("C" + project.getId());
             }
           }
         }
@@ -249,9 +310,16 @@ public class CrpUsersAction extends BaseAction {
           if (projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
             .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
             || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-            relations.add(projectPartnerPerson.getProjectPartner().getProject()
-              .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+            || projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
+              .getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+            // Get project acronym for display, fallback to C+id if not available
+            Project project = projectPartnerPerson.getProjectPartner().getProject();
+            if (project.getAcronym() != null && !project.getAcronym().trim().isEmpty()) {
+              relations.add(project.getAcronym());
+            } else {
+              relations.add("C" + project.getId());
+            }
           }
 
         }
@@ -340,7 +408,7 @@ public class CrpUsersAction extends BaseAction {
         break;
       case "PL":
       case "PC":
-        ret = "Projects";
+        ret = "Clusters";
         break;
 
       case "ML":
@@ -461,24 +529,29 @@ public class CrpUsersAction extends BaseAction {
         for (UserRole userRole : role.getUserRoles()) {
           User user = userRole.getUser();
 
-
+          boolean hasValidProject = false;
           for (ProjectPartnerPerson projectPartnerPerson : user.getProjectPartnerPersons().stream()
             .filter(
               c -> c.getContactType().equals(role.getAcronym()) && c.getProjectPartner().isActive() && c.isActive())
             .collect(Collectors.toList())) {
             if (phasesProjects.contains(projectPartnerPerson.getProjectPartner().getProject())) {
-              if (projectPartnerPerson.getProjectPartner().getProject()
-                .getProjecInfoPhase(this.getActualPhase()) != null
-                && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                  .getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                || projectPartnerPerson.getProjectPartner().getProject()
-                  .getProjecInfoPhase(this.getActualPhase()) != null
-                  && projectPartnerPerson.getProjectPartner().getProject().getProjecInfoPhase(this.getActualPhase())
-                    .getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                users.add(userRole);
+              ProjectInfo projectInfo = projectPartnerPerson.getProjectPartner().getProject()
+                .getProjecInfoPhase(this.getActualPhase());
+              
+              if (projectInfo != null) {
+                long status = projectInfo.getStatus();
+                if (status == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
+                    || status == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || status == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+                  hasValidProject = true;
+                  break;
+                }
               }
-
             }
+          }
+          
+          if (hasValidProject) {
+            users.add(userRole);
           }
         }
       }
@@ -498,7 +571,8 @@ public class CrpUsersAction extends BaseAction {
                 .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
                 if (phasesProjects.contains(project.getProject())) {
                   if (project.getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())) {
+                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
+                    || project.getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                     users.add(userRole);
                   }
 
@@ -824,6 +898,56 @@ public class CrpUsersAction extends BaseAction {
         sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
       }
     }
+  }
+
+  /**
+   * Get all unique users from all roles in the CRP
+   * 
+   * @return List of unique users
+   */
+  public List<User> getAllUsersWithRoles() {
+    Set<User> allUsersSet = new HashSet<>();
+    
+    for (UserRole userRole : this.users) {
+      if (userRole.getUser() != null && userRole.getUser().isActive()) {
+        allUsersSet.add(userRole.getUser());
+      }
+    }
+    
+    List<User> allUsers = new ArrayList<>(allUsersSet);
+    // Sort by user ID
+    allUsers.sort((u1, u2) -> u1.getId().compareTo(u2.getId()));
+    
+    return allUsers;
+  }
+
+  /**
+   * Get all roles for a specific user as comma-separated string
+   * 
+   * @param userID the user ID
+   * @return comma-separated list of role acronyms
+   */
+  public String getUserRoles(long userID) {
+    List<String> roleAcronyms = new ArrayList<>();
+    
+    for (UserRole userRole : this.users) {
+      if (userRole.getUser() != null && userRole.getUser().getId() == userID) {
+        Role role = userRole.getRole();
+        if (role != null && role.getAcronym() != null) {
+          if (this.isAiccra() && role.getAiccraAcronymDimanic() != null) {
+            if (!roleAcronyms.contains(role.getAiccraAcronymDimanic())) {
+              roleAcronyms.add(role.getAiccraAcronymDimanic());
+            }
+          } else if (role.getAcronymDimanic() != null) {
+            if (!roleAcronyms.contains(role.getAcronymDimanic())) {
+              roleAcronyms.add(role.getAcronymDimanic());
+            }
+          }
+        }
+      }
+    }
+    
+    return String.join(", ", roleAcronyms);
   }
 
   public void setCGIARUser(boolean isCGIARUser) {
