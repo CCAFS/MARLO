@@ -139,7 +139,7 @@
                       [/#if]
                     </td>
                     <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
-                    <td>${(user.lastLogin)!'<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>'}</td>
+                    <td>[#if user.lastLogin??]${user.lastLogin}[#else]<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>[/#if]</td>
                   </tr>
                   [/#list]
                 </tbody>
@@ -180,7 +180,7 @@
                         <td>${(action.getRelations(user.id, role.id))!}</td>
                         [/#if]
                         <td><a href="mailto:${(user.email)!}" style="text-decoration: none;">${(user.email)!}</a></td>
-                        <td>${(user.lastLogin)!'<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>'}</td>
+                        <td>[#if user.lastLogin??]${user.lastLogin}[#else]<i><span class="glyphicon glyphicon-time" style="font-size: 0.8em;"></span> Never logged in</i>[/#if]</td>
                       </tr>
                       [/#list]
                     </tbody>
