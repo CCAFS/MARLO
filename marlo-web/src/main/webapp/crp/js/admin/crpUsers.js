@@ -85,6 +85,14 @@ function init() {
       pageLength: 25,
       lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
       order: [[1, 'asc']], // Sort by name by default
+      columnDefs: [
+          { width: '5%', targets: 0 },   // ID column
+          { width: '18%', targets: 1 },  // Name column
+          { width: '40%', targets: 2 },  // Roles column (increased more)
+          { width: '15%', targets: 3 },  // Email column
+          { width: '22%', targets: 4 }   // Last Login column (reduced)
+      ],
+      autoWidth: false,
       language: {
           search: 'Search users:',
           lengthMenu: 'Show _MENU_ users per page',
