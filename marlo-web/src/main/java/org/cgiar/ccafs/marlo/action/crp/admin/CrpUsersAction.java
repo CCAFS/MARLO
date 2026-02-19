@@ -149,7 +149,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
               && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get flagship identifier with fallback for null values
+          String flagshipIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            flagshipIdentifier = "Flagship-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(flagshipIdentifier);
         }
         break;
 
@@ -161,7 +172,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
               && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get flagship identifier with fallback for null values
+          String flagshipIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            flagshipIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            flagshipIdentifier = "Flagship-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(flagshipIdentifier);
         }
         break;
 
@@ -172,7 +194,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
               && !c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get region identifier with fallback for null values
+          String regionIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            regionIdentifier = "Region-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(regionIdentifier);
         }
         break;
 
@@ -182,7 +215,18 @@ public class CrpUsersAction extends BaseAction {
             c -> c.isActive() && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
               && c.isManager() && c.getCrpProgram().getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(crpProgramsLeader.getCrpProgram().getAcronym());
+          // Get region identifier with fallback for null values
+          String regionIdentifier;
+          if (crpProgramsLeader.getCrpProgram().getAcronym() != null 
+              && !crpProgramsLeader.getCrpProgram().getAcronym().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getAcronym();
+          } else if (crpProgramsLeader.getCrpProgram().getName() != null 
+              && !crpProgramsLeader.getCrpProgram().getName().trim().isEmpty()) {
+            regionIdentifier = crpProgramsLeader.getCrpProgram().getName();
+          } else {
+            regionIdentifier = "Region-" + crpProgramsLeader.getCrpProgram().getId();
+          }
+          relations.add(regionIdentifier);
         }
         break;
 
@@ -191,7 +235,18 @@ public class CrpUsersAction extends BaseAction {
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
           && c.getLiaisonInstitution().isActive() && c.getCrp().getId().longValue() == this.getCrpID().longValue())
           .collect(Collectors.toList())) {
-          relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          // Get institution identifier with fallback for null values
+          String institutionIdentifier;
+          if (liaisonUser.getLiaisonInstitution().getAcronym() != null 
+              && !liaisonUser.getLiaisonInstitution().getAcronym().trim().isEmpty()) {
+            institutionIdentifier = liaisonUser.getLiaisonInstitution().getAcronym();
+          } else if (liaisonUser.getLiaisonInstitution().getName() != null 
+              && !liaisonUser.getLiaisonInstitution().getName().trim().isEmpty()) {
+            institutionIdentifier = liaisonUser.getLiaisonInstitution().getName();
+          } else {
+            institutionIdentifier = "Institution-" + liaisonUser.getLiaisonInstitution().getId();
+          }
+          relations.add(institutionIdentifier);
         }
         break;
       case "CP":
@@ -199,8 +254,20 @@ public class CrpUsersAction extends BaseAction {
         for (LiaisonUser liaisonUser : user.getLiasonsUsers().stream().filter(c -> c.isActive()
           && c.getLiaisonInstitution().isActive() && c.getLiaisonInstitution().getCrpProgram() == null)
           .collect(Collectors.toList())) {
-          if (!relations.contains(liaisonUser.getLiaisonInstitution().getAcronym())) {
-            relations.add(liaisonUser.getLiaisonInstitution().getAcronym());
+          // Get center identifier with fallback for null values
+          String centerIdentifier;
+          if (liaisonUser.getLiaisonInstitution().getAcronym() != null 
+              && !liaisonUser.getLiaisonInstitution().getAcronym().trim().isEmpty()) {
+            centerIdentifier = liaisonUser.getLiaisonInstitution().getAcronym();
+          } else if (liaisonUser.getLiaisonInstitution().getName() != null 
+              && !liaisonUser.getLiaisonInstitution().getName().trim().isEmpty()) {
+            centerIdentifier = liaisonUser.getLiaisonInstitution().getName();
+          } else {
+            centerIdentifier = "Center-" + liaisonUser.getLiaisonInstitution().getId();
+          }
+          
+          if (!relations.contains(centerIdentifier)) {
+            relations.add(centerIdentifier);
           }
 
         }

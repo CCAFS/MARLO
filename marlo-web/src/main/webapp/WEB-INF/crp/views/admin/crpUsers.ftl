@@ -7,7 +7,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js?20260219v4" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20260219v6" 
   ] 
 /]
 [#assign customCSS = [
