@@ -10,6 +10,46 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
+# ============================================================================
+# Stop running server and clean target directory
+# ============================================================================
+echo "Checking for running MARLO server..."
+if pgrep -f "tomcat7:run" > /dev/null; then
+  echo "Stopping existing MARLO server..."
+  pkill -f "tomcat7:run" || true
+  sleep 3
+  echo "✅ Server stopped"
+else
+  echo "No running server found"
+fi
+
+echo ""
+echo "Cleaning target directory..."
+# Function to clean target with retries if directory is locked
+clean_target() {
+  local max_attempts=5
+  local attempt=1
+  
+  while [ $attempt -le $max_attempts ]; do
+    if rm -rf marlo-web/target 2>/dev/null; then
+      echo "✅ Target directory cleaned"
+      return 0
+    else
+      echo "Target directory locked, waiting... (attempt $attempt/$max_attempts)"
+      sleep 2
+      attempt=$((attempt + 1))
+    fi
+  done
+  
+  echo "⚠️  Warning: Could not clean target directory after $max_attempts attempts"
+  echo "   Continuing anyway..."
+  return 0
+}
+
+clean_target
+echo ""
+# ============================================================================
+
 # Prefer Java 8 via JAVA_HOME; otherwise try to detect it
 if [ -z "$JAVA_HOME" ] || ! "$JAVA_HOME/bin/java" -version 2>&1 | grep -qE '"1\.8|"8\.'; then
   if [ -x "/usr/libexec/java_home" ]; then
