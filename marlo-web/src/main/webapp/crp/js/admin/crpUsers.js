@@ -7,12 +7,90 @@ function init() {
       buttons: [
           {
               extend: 'copy',
-              title: 'Data export'
-          }, {
+              text: '<span class="glyphicon glyphicon-copy"></span> Copy',
+              title: 'MARLO Users Export',
+              exportOptions: {
+                  columns: ':visible'
+              }
+          },
+          {
+              extend: 'excel',
+              text: '<span class="glyphicon glyphicon-download-alt"></span> Excel',
+              title: 'MARLO_Users_Export_' + getDateString(),
+              filename: 'MARLO_Users_' + getDateString(),
+              exportOptions: {
+                  columns: ':visible',
+                  format: {
+                      body: function(data, row, column, node) {
+                          // Remove HTML tags but keep text content
+                          return data.replace(/<[^>]*>/g, '').trim();
+                      }
+                  }
+              },
+              customize: function(xlsx) {
+                  var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                  
+                  // Style header row - blue background, white text, bold
+                  $('row:first c', sheet).attr('s', '42');
+                  
+                  // Add custom styles to workbook
+                  var styles = xlsx.xl['styles.xml'];
+                  var lastXfIndex = $('cellXfs xf', styles).length - 1;
+                  
+                  // Header style
+                  var headerStyle = '<xf numFmtId="0" fontId="2" fillId="5" borderId="1" applyFont="1" applyFill="1" applyBorder="1">' +
+                                   '<alignment horizontal="center" vertical="center"/>' +
+                                   '</xf>';
+                  
+                  $('cellXfs', styles).append(headerStyle);
+                  
+                  // Make ID column narrower, email wider
+                  $('col', sheet).each(function(index) {
+                      if (index === 0) $(this).attr('width', 8);  // ID column
+                      if (index === 1) $(this).attr('width', 25); // Name column
+                      if (index === 2) $(this).attr('width', 20); // Roles column
+                      if (index === 3) $(this).attr('width', 30); // Email column
+                      if (index === 4) $(this).attr('width', 20); // Last Login column
+                  });
+              }
+          },
+          {
               extend: 'csv',
-              title: 'Data_export_' + getDateString()
+              text: '<span class="glyphicon glyphicon-export"></span> CSV',
+              title: 'MARLO_Users_Export_' + getDateString(),
+              filename: 'MARLO_Users_' + getDateString(),
+              exportOptions: {
+                  columns: ':visible'
+              }
+          },
+          {
+              extend: 'print',
+              text: '<span class="glyphicon glyphicon-print"></span> Print',
+              title: 'MARLO Users',
+              exportOptions: {
+                  columns: ':visible'
+              },
+              customize: function(win) {
+                  $(win.document.body).prepend('<h2>MARLO Users - ' + getDateString('display') + '</h2>');
+                  $(win.document.body).find('table').addClass('display').css('font-size', '12px');
+                  $(win.document.body).find('tr:nth-child(odd)').css('background-color', '#f9f9f9');
+                  $(win.document.body).find('th').css({
+                      'background-color': '#0478a3',
+                      'color': '#fff',
+                      'padding': '10px'
+                  });
+              }
           }
-      ]
+      ],
+      pageLength: 25,
+      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
+      order: [[1, 'asc']], // Sort by name by default
+      language: {
+          search: 'Search users:',
+          lengthMenu: 'Show _MENU_ users per page',
+          info: 'Showing _START_ to _END_ of _TOTAL_ users',
+          infoFiltered: '(filtered from _MAX_ total users)'
+      }
   });
 
   // Add guest user module
