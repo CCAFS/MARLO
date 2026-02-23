@@ -56,7 +56,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("institutionsController")
+@RestController("InstitutionsRestCtrl")
 @Validated
 @Api(tags = "Institutions Lists")
 public class Institutions {

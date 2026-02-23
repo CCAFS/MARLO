@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 
-@RestController
+@RestController("projectsRestCtrl")
 @Named
 public class Projects {
 
