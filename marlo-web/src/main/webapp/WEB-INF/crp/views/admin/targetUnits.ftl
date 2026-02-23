@@ -53,7 +53,7 @@
           <hr />
              [#if editable]
           <div class="note center">
-            If you don’t find the target unit in the list, please <a class="requestPopUp" href=""> click here </a> to request it.
+            If you don’t find the target unit in the list, please&nbsp;<a class="requestPopUp" href="">click here</a>&nbsp;to request it.
           </div>
            [/#if]
           [#-- Request target unit --]
