@@ -2995,7 +2995,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * test the functionality)
    */
   public List<GlobalUnit> getCrpCategoryList(String category) {
-    System.out.println("*****FDIAZ - getCrpCategoryList");
     List<GlobalUnit> globalUnits = this.crpManager.findAll().stream()
       .filter(c -> c.isMarlo() && c.getGlobalUnitType().getId().intValue() == Integer.parseInt(category))
       .collect(Collectors.toList());

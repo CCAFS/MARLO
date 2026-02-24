@@ -94,12 +94,9 @@ public class LoginAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    System.out.println("*****FDIAZ - execute");
     crpList = getCrpCategoryList("1");
-    // centerList = new ArrayList<>();
-    // platformsList = new ArrayList<>();
-    platformsList = getCrpCategoryList("5");
-    centerList = getCrpCategoryList("3");
+    platformsList = getCrpCategoryList("3");
+    centerList = getCrpCategoryList("4");
     return SUCCESS;
   }
 
@@ -117,7 +114,6 @@ public class LoginAction extends BaseAction {
   }
 
   private void getLoginMessages() {
-    System.out.println("*****FDIAZ - getLoginMessages");
     Session session = SecurityUtils.getSubject().getSession();
     if (session.getAttribute(APConstants.LOGIN_MESSAGE) != null) {
       switch ((String) session.getAttribute(APConstants.LOGIN_MESSAGE)) {
@@ -173,7 +169,13 @@ public class LoginAction extends BaseAction {
   }
 
   public String login() {
-    System.out.println("*****FDIAZ - login - LoginAction");
+
+    // Load lists for login page display
+    if (platformsList == null) {
+      crpList = getCrpCategoryList("1");
+      platformsList = getCrpCategoryList("3");
+      centerList = getCrpCategoryList("4");
+    }
 
     if (user != null) {
 
@@ -228,7 +230,6 @@ public class LoginAction extends BaseAction {
   }
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
-    System.out.println("*****FDIAZ  - login2 - LoginAction");
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
