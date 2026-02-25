@@ -65,11 +65,72 @@ public class TimelineManagementAction extends BaseAction {
     }
 
     if (this.isHttpPost()) {
-      if (timelineActivities == null) {
-        timelineActivities = new ArrayList<>();
+      // For POST: Will bind timeline activities manually from request in save()
+      timelineActivities = new ArrayList<>();
+    }
+  }
+
+  /**
+   * Manually bind timeline activities from HTTP request parameters.
+   * This is necessary because Struts 6 cannot automatically populate lists when items are deleted.
+   */
+  private void bindTimelineActivitiesFromRequest() {
+    timelineActivities = new ArrayList<>();
+    int index = 0;
+    boolean hasMore = true;
+
+    while (hasMore) {
+      String idParam = this.getRequest().getParameter("timelineActivities[" + index + "].id");
+
+      if (idParam != null && !idParam.trim().isEmpty()) {
+        try {
+          Timeline timeline = new Timeline();
+
+          // ID
+          Long id = Long.parseLong(idParam);
+          timeline.setId(id);
+
+          // Description
+          String description = this.getRequest().getParameter("timelineActivities[" + index + "].description");
+          timeline.setDescription(description);
+
+          // Start Date
+          String startDate = this.getRequest().getParameter("timelineActivities[" + index + "].startDate");
+          if (startDate != null && !startDate.trim().isEmpty()) {
+            try {
+              timeline.setStartDate(java.sql.Date.valueOf(startDate));
+            } catch (Exception e) {
+              // Silent fail for invalid dates
+            }
+          }
+
+          // End Date
+          String endDate = this.getRequest().getParameter("timelineActivities[" + index + "].endDate");
+          if (endDate != null && !endDate.trim().isEmpty()) {
+            try {
+              timeline.setEndDate(java.sql.Date.valueOf(endDate));
+            } catch (Exception e) {
+              // Silent fail for invalid dates
+            }
+          }
+
+          // Order
+          String orderParam = this.getRequest().getParameter("timelineActivities[" + index + "].order");
+          if (orderParam != null && !orderParam.trim().isEmpty()) {
+            try {
+              timeline.setOrder(Double.parseDouble(orderParam));
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          timelineActivities.add(timeline);
+          index++;
+        } catch (Exception e) {
+          hasMore = false;
+        }
       } else {
-        // Clear the list to avoid duplicates
-        timelineActivities.clear();
+        hasMore = false;
       }
     }
   }
@@ -77,24 +138,13 @@ public class TimelineManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      // Manually bind timeline activities from request parameters
+      bindTimelineActivitiesFromRequest();
+
       if (timelineActivities != null && !timelineActivities.isEmpty()) {
 
-        final Set<Long> keepIds = (timelineActivities == null) ? Collections.emptySet()
-          : timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        // CRP null-safe
-        final GlobalUnit crp = getCurrentCrp();
-        if (crp != null && crp.getId() != null) {
-          final List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
-          if (existing != null && !existing.isEmpty()) {
-            existing.stream().filter(Objects::nonNull).map(Timeline::getId).filter(Objects::nonNull)
-              .filter(id -> !keepIds.contains(id)).forEach(timelineManager::deleteTimeline);
-          }
-        }
-
-
+        // Save/update all timeline activities from the form first
         for (Timeline activity : timelineActivities) {
-
           // New Activity
           Timeline timeLineSave = new Timeline();
 
@@ -119,14 +169,31 @@ public class TimelineManagementAction extends BaseAction {
             timeLineSave.setEndDate(activity.getEndDate());
           }
           if (activity.getGlobalUnit() != null) {
-            timeLineSave.setGlobalUnit(globalUnitManager.getGlobalUnitById(activity.getGlobalUnit().getId()));
+            timeLineSave.setGlobalUnit(
+              globalUnitManager.getGlobalUnitById(activity.getGlobalUnit().getId()));
           } else {
             timeLineSave.setGlobalUnit(this.getCurrentGlobalUnit());
           }
           timeLineSave.setOrder(activity.getOrder());
 
           timelineManager.saveTimeline(timeLineSave);
+        }
 
+        // Then delete timeline activities not present in the form
+        final Set<Long> keepIds = (timelineActivities == null) ? Collections.emptySet()
+          : timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+        final GlobalUnit crp = getCurrentCrp();
+        if (crp != null && crp.getId() != null) {
+          final List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
+          if (existing != null && !existing.isEmpty()) {
+            for (Timeline timeline : existing) {
+              if (timeline != null && timeline.getId() != null && !keepIds.contains(timeline.getId())) {
+                timelineManager.deleteTimeline(timeline.getId());
+              }
+            }
+          }
         }
       } else {
         try {
