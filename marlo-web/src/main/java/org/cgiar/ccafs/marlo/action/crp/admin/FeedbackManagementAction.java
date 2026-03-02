@@ -63,24 +63,84 @@ public class FeedbackManagementAction extends BaseAction {
         }
       }
     }
-    feedbackFields = fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
-    if (this.isHttpPost()) {
-      feedbackFields.clear();
+
+    if (!this.isHttpPost()) {
+      // For GET: Load feedback fields from DB
+      feedbackFields = fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
+    } else {
+      // For POST: Will bind feedback fields manually from request in save()
+      feedbackFields = new ArrayList<>();
+    }
+  }
+
+  /**
+   * Manually bind feedback fields from HTTP request parameters.
+   * This is necessary because Struts 6 cannot automatically populate lists when items are deleted.
+   */
+  private void bindFeedbackFieldsFromRequest() {
+    feedbackFields = new ArrayList<>();
+    int index = 0;
+    boolean hasMore = true;
+
+    while (hasMore) {
+      String idParam = this.getRequest().getParameter("feedbackFields[" + index + "].id");
+
+      if (idParam != null && !idParam.trim().isEmpty()) {
+        try {
+          FeedbackQACommentableFields field = new FeedbackQACommentableFields();
+
+          // ID
+          Long id = Long.parseLong(idParam);
+          field.setId(id);
+
+          // Field Name
+          String fieldName = this.getRequest().getParameter("feedbackFields[" + index + "].fieldName");
+          field.setFieldName(fieldName);
+
+          // Field Description
+          String fieldDescription =
+            this.getRequest().getParameter("feedbackFields[" + index + "].fieldDescription");
+          field.setFieldDescription(fieldDescription);
+
+          // Section Name
+          String sectionName = this.getRequest().getParameter("feedbackFields[" + index + "].sectionName");
+          field.setSectionName(sectionName);
+
+          // Section Description
+          String sectionDescription =
+            this.getRequest().getParameter("feedbackFields[" + index + "].sectionDescription");
+          field.setSectionDescription(sectionDescription);
+
+          // Parent Field Identifier
+          String parentFieldIdentifier =
+            this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldIdentifier");
+          field.setParentFieldIdentifier(parentFieldIdentifier);
+
+          // Parent Field Description
+          String parentFieldDescription =
+            this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldDescription");
+          field.setParentFieldDescription(parentFieldDescription);
+
+          feedbackFields.add(field);
+          index++;
+        } catch (Exception e) {
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
+      }
     }
   }
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      // Manually bind feedback fields from request parameters
+      bindFeedbackFieldsFromRequest();
+
       if (feedbackFields != null && !feedbackFields.isEmpty()) {
 
-        List<Long> IDs = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
-          .collect(Collectors.toList());
-
-        fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId()).stream()
-          .filter(activityDB -> activityDB.getId() != null && !IDs.contains(activityDB.getId()))
-          .map(FeedbackQACommentableFields::getId).forEach(fieldsManager::deleteInternalQaCommentableFields);
-
+        // FIRST: Save/update all feedback fields from the form
         for (FeedbackQACommentableFields fields : feedbackFields) {
 
           // New Activity
@@ -117,6 +177,20 @@ public class FeedbackManagementAction extends BaseAction {
           fieldsManager.saveInternalQaCommentableFields(fieldSave);
 
         }
+
+        // THEN: Delete feedback fields not present in the form
+        List<Long> IDs = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
+          .collect(Collectors.toList());
+
+        List<FeedbackQACommentableFields> existingFields =
+          fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
+        if (existingFields != null && !existingFields.isEmpty()) {
+          for (FeedbackQACommentableFields activityDB : existingFields) {
+            if (activityDB.getId() != null && !IDs.contains(activityDB.getId())) {
+              fieldsManager.deleteInternalQaCommentableFields(activityDB.getId());
+            }
+          }
+        }
       }
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
@@ -145,6 +219,8 @@ public class FeedbackManagementAction extends BaseAction {
   }
 
   public void setFeedbackFields(List<FeedbackQACommentableFields> feedbackFields) {
+    // Note: This setter is kept for JSP/FTL access but is not used for Struts binding
+    // We bind feedback fields manually in save() using bindFeedbackFieldsFromRequest()
     this.feedbackFields = feedbackFields;
   }
 
