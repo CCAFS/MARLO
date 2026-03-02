@@ -79,6 +79,49 @@ Use the sections below to identify why update/delete fails while add succeeds.
 6. Compare against a known working module:
    - Use the working expandable block section and diff the template and JS.
 
+## Required Save Pattern (New + Update + Delete)
+Use this exact server-side sequence when a single form handles add, edit, and delete.
+
+1. Manual binding from request (Struts 6-safe):
+   - Build the collection manually from request params (for example, `items[i].*`).
+   - Do not stop only on missing `id`.
+   - Accept rows when any meaningful field has content (`hasAnyContent`).
+   - Reason: new rows usually have null/empty ID before first persist.
+
+2. Prepare behavior:
+   - GET: load existing data from DB.
+   - POST: initialize empty collection and bind in `save()`.
+
+3. Delete candidate snapshot before save:
+   - Read posted IDs from bound list (`inputIds`, only non-null IDs).
+   - Load current DB list once before saving (`existingBeforeSave`).
+   - Keep this snapshot for delete comparison.
+
+4. Save phase first:
+   - For each bound row:
+     - If ID exists: load entity by ID and update fields.
+     - If ID is null: create new entity and set fields.
+   - Persist all valid rows.
+
+5. Delete phase second (against pre-save snapshot):
+   - Iterate `existingBeforeSave`.
+   - Delete only entities whose IDs are not in `inputIds`.
+   - Do not rebuild delete candidates after save; otherwise newly created rows can be removed in the same request.
+
+6. Transaction boundaries:
+   - Ensure manager methods that execute save/delete are transactional.
+   - Annotate manager save/delete methods with `@Transactional` when needed.
+
+7. Validation guardrails:
+   - Validators must allow new rows that contain required content.
+   - Avoid validation rules that implicitly require an existing ID.
+
+### Quick Failure Signatures
+- Symptom: edit/delete works, but add disappears after save.
+  - Likely cause: delete list calculated after save using only posted IDs.
+- Symptom: add button creates UI block, but nothing persists.
+  - Likely cause: binder ignores rows with empty ID.
+
 ## Logging Points (Temporary)
 Add temporary logs to confirm binding and delete decisions.
 - Action save method: log list size and each item ID on submit.

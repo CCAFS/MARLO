@@ -22,11 +22,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.superadmin.TimelineManagementValidator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -81,41 +79,53 @@ public class TimelineManagementAction extends BaseAction {
 
     while (hasMore) {
       String idParam = this.getRequest().getParameter("timelineActivities[" + index + "].id");
+      String descriptionParam = this.getRequest().getParameter("timelineActivities[" + index + "].description");
+      String startDateParam = this.getRequest().getParameter("timelineActivities[" + index + "].startDate");
+      String endDateParam = this.getRequest().getParameter("timelineActivities[" + index + "].endDate");
+      String orderParam = this.getRequest().getParameter("timelineActivities[" + index + "].order");
 
-      if (idParam != null && !idParam.trim().isEmpty()) {
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (descriptionParam != null && !descriptionParam.trim().isEmpty()) ||
+        (startDateParam != null && !startDateParam.trim().isEmpty()) ||
+        (endDateParam != null && !endDateParam.trim().isEmpty()) ||
+        (orderParam != null && !orderParam.trim().isEmpty());
+
+      if (hasAnyContent) {
         try {
           Timeline timeline = new Timeline();
 
-          // ID
-          Long id = Long.parseLong(idParam);
-          timeline.setId(id);
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              timeline.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
 
           // Description
-          String description = this.getRequest().getParameter("timelineActivities[" + index + "].description");
-          timeline.setDescription(description);
+          timeline.setDescription(descriptionParam);
 
           // Start Date
-          String startDate = this.getRequest().getParameter("timelineActivities[" + index + "].startDate");
-          if (startDate != null && !startDate.trim().isEmpty()) {
+          if (startDateParam != null && !startDateParam.trim().isEmpty()) {
             try {
-              timeline.setStartDate(java.sql.Date.valueOf(startDate));
+              timeline.setStartDate(java.sql.Date.valueOf(startDateParam));
             } catch (Exception e) {
               // Silent fail for invalid dates
             }
           }
 
           // End Date
-          String endDate = this.getRequest().getParameter("timelineActivities[" + index + "].endDate");
-          if (endDate != null && !endDate.trim().isEmpty()) {
+          if (endDateParam != null && !endDateParam.trim().isEmpty()) {
             try {
-              timeline.setEndDate(java.sql.Date.valueOf(endDate));
+              timeline.setEndDate(java.sql.Date.valueOf(endDateParam));
             } catch (Exception e) {
               // Silent fail for invalid dates
             }
           }
 
           // Order
-          String orderParam = this.getRequest().getParameter("timelineActivities[" + index + "].order");
           if (orderParam != null && !orderParam.trim().isEmpty()) {
             try {
               timeline.setOrder(Double.parseDouble(orderParam));
@@ -142,6 +152,13 @@ public class TimelineManagementAction extends BaseAction {
       bindTimelineActivitiesFromRequest();
 
       if (timelineActivities != null && !timelineActivities.isEmpty()) {
+
+        final List<Long> inputIds = timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull)
+          .collect(Collectors.toList());
+        final GlobalUnit crp = getCurrentCrp();
+        final List<Timeline> existing = (crp != null && crp.getId() != null)
+          ? timelineManager.findAllByGlobalUnit(crp.getId())
+          : Collections.emptyList();
 
         // Save/update all timeline activities from the form first
         for (Timeline activity : timelineActivities) {
@@ -180,18 +197,10 @@ public class TimelineManagementAction extends BaseAction {
         }
 
         // Then delete timeline activities not present in the form
-        final Set<Long> keepIds = (timelineActivities == null) ? Collections.emptySet()
-          : timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-
-        final GlobalUnit crp = getCurrentCrp();
-        if (crp != null && crp.getId() != null) {
-          final List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
-          if (existing != null && !existing.isEmpty()) {
-            for (Timeline timeline : existing) {
-              if (timeline != null && timeline.getId() != null && !keepIds.contains(timeline.getId())) {
-                timelineManager.deleteTimeline(timeline.getId());
-              }
+        if (existing != null && !existing.isEmpty()) {
+          for (Timeline timeline : existing) {
+            if (timeline != null && timeline.getId() != null && !inputIds.contains(timeline.getId())) {
+              timelineManager.deleteTimeline(timeline.getId());
             }
           }
         }
@@ -214,7 +223,6 @@ public class TimelineManagementAction extends BaseAction {
       }
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
