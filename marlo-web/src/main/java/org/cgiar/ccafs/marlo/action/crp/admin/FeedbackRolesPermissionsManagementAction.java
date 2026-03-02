@@ -98,20 +98,26 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
 
       long globalUnitId = this.getCurrentGlobalUnit().getId();
 
-      List<Long> newIds = (List<Long>) this.getRequest().getSession().getAttribute("recentlyCreatedFRP");
+      if (!this.isHttpPost()) {
+        // For GET: Load feedback roles permissions from DB
+        List<Long> newIds = (List<Long>) this.getRequest().getSession().getAttribute("recentlyCreatedFRP");
 
-      feedbackRolesPermissions =
-        feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId).stream()
-          .sorted(Comparator.comparing(
-            frp -> frp.getFeedbackPermission() != null ? frp.getFeedbackPermission().getId() : Long.MAX_VALUE))
-          .peek(frp -> {
-            if (newIds != null && newIds.contains(frp.getId())) {
-              frp.setRecentlyCreated(true);
-            }
-          }).collect(Collectors.toList());
+        feedbackRolesPermissions =
+          feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId).stream()
+            .sorted(Comparator.comparing(
+              frp -> frp.getFeedbackPermission() != null ? frp.getFeedbackPermission().getId() : Long.MAX_VALUE))
+            .peek(frp -> {
+              if (newIds != null && newIds.contains(frp.getId())) {
+                frp.setRecentlyCreated(true);
+              }
+            }).collect(Collectors.toList());
 
-      if (newIds != null) {
-        this.getRequest().getSession().removeAttribute("recentlyCreatedFRP");
+        if (newIds != null) {
+          this.getRequest().getSession().removeAttribute("recentlyCreatedFRP");
+        }
+      } else {
+        // For POST: Will bind feedback roles permissions manually from request in save()
+        feedbackRolesPermissions = new ArrayList<>();
       }
 
       feedbackPermissionsList = feedbackPermissionManager.findAll();
@@ -121,55 +127,121 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
         .sorted(Comparator.comparing(Role::getAcronym, Comparator.nullsLast(String::compareToIgnoreCase)))
         .collect(Collectors.toList());
 
-
       clusterTypeList = clusterTypeManager.findAll();
 
     } catch (Exception e) {
       roleList = new ArrayList<>();
     }
-
-    if (this.isHttpPost()) {
-      feedbackRolesPermissions.clear();
-      feedbackPermissionsList.clear();
-      clusterTypeList.clear();
-      roleList.clear();
-    }
   }
 
   /**
-   * Saves or updates FeedbackRolesPermission entities.
-   * - If an ID is present, it updates the existing record.
-   * - If no ID is present, it creates a new one.
-   * This method does not perform uniqueness validation, allowing overwriting existing entries.
-   * It's up to the user interface to prevent unintentional duplicates.
+   * Manually bind feedback roles permissions from HTTP request parameters.
+   * This is necessary because Struts 6 cannot automatically populate lists when items are deleted.
    */
+  private void bindFeedbackRolesPermissionsFromRequest() {
+    feedbackRolesPermissions = new ArrayList<>();
+    int index = 0;
+    boolean hasMore = true;
+
+    while (hasMore) {
+      String idParam = this.getRequest().getParameter("feedbackRolesPermissions[" + index + "].id");
+      String descriptionParam = this.getRequest().getParameter("feedbackRolesPermissions[" + index + "].description");
+      String feedbackPermissionIdParam =
+        this.getRequest().getParameter("feedbackRolesPermissions[" + index + "].feedbackPermission.id");
+      String roleIdParam = this.getRequest().getParameter("feedbackRolesPermissions[" + index + "].role.id");
+      String clusterTypeIdParam =
+        this.getRequest().getParameter("feedbackRolesPermissions[" + index + "].clusterType.id");
+
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (descriptionParam != null && !descriptionParam.trim().isEmpty()) ||
+        (feedbackPermissionIdParam != null && !feedbackPermissionIdParam.trim().isEmpty()) ||
+        (roleIdParam != null && !roleIdParam.trim().isEmpty()) ||
+        (clusterTypeIdParam != null && !clusterTypeIdParam.trim().isEmpty());
+
+      if (hasAnyContent) {
+        try {
+          FeedbackRolesPermission permission = new FeedbackRolesPermission();
+
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              permission.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          // Description
+          permission.setDescription(descriptionParam);
+
+          // Feedback Permission ID
+          if (feedbackPermissionIdParam != null && !feedbackPermissionIdParam.trim().isEmpty()) {
+            try {
+              Long feedbackPermissionId = Long.parseLong(feedbackPermissionIdParam);
+              FeedbackPermission feedbackPermission =
+                feedbackPermissionManager.getFeedbackPermissionById(feedbackPermissionId);
+              permission.setFeedbackPermission(feedbackPermission);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          // Role ID
+          if (roleIdParam != null && !roleIdParam.trim().isEmpty()) {
+            try {
+              Long roleId = Long.parseLong(roleIdParam);
+              Role role = roleManager.getRoleById(roleId);
+              permission.setRole(role);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          // Cluster Type ID
+          if (clusterTypeIdParam != null && !clusterTypeIdParam.trim().isEmpty()) {
+            try {
+              Long clusterTypeId = Long.parseLong(clusterTypeIdParam);
+              ClusterType clusterType = clusterTypeManager.getClusterTypeById(clusterTypeId);
+              permission.setClusterType(clusterType);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          feedbackRolesPermissions.add(permission);
+          index++;
+        } catch (Exception e) {
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+  }
+
   @Override
   public String save() {
     if (!this.hasPermission("*")) {
       return NOT_AUTHORIZED;
     }
 
-    if (feedbackRolesPermissions != null) {
+    // Manually bind feedback roles permissions from request parameters
+    bindFeedbackRolesPermissionsFromRequest();
 
-      List<Long> inputIds = feedbackRolesPermissions.stream().map(FeedbackRolesPermission::getId)
-        .filter(Objects::nonNull).collect(Collectors.toList());
+    // Collect inputIds and existingBeforeSave BEFORE save loop (to avoid deleting newly created items)
+    final List<Long> inputIds = (feedbackRolesPermissions != null)
+      ? feedbackRolesPermissions.stream().map(FeedbackRolesPermission::getId).filter(Objects::nonNull)
+        .collect(Collectors.toList())
+      : new ArrayList<>();
 
-      List<FeedbackRolesPermission> allExisting =
-        feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(this.getCurrentGlobalUnit().getId());
-
-      allExisting.stream().filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
-        .forEach(permissionToDelete -> {
-          try {
-            feedbackRolesPermissionManager.deleteFeedbackRolesPermission(permissionToDelete.getId());
-          } catch (Exception e) {
-            logger.error("Error deleting FeedbackRolesPermission with ID: {}", permissionToDelete.getId(), e);
-          }
-        });
-    }
+    final List<FeedbackRolesPermission> existingBeforeSave =
+      feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(this.getCurrentGlobalUnit().getId());
 
     if (feedbackRolesPermissions != null && !feedbackRolesPermissions.isEmpty()) {
       List<Long> newIds = new ArrayList<>();
 
+      // FIRST: Save/update all feedback roles permissions from the form
       for (FeedbackRolesPermission inputPermission : feedbackRolesPermissions) {
         try {
 
@@ -209,6 +281,19 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
       }
     }
 
+    // THEN: Delete feedback roles permissions not present in the form (using pre-save snapshot)
+    if (existingBeforeSave != null && !existingBeforeSave.isEmpty()) {
+      for (FeedbackRolesPermission permissionToDelete : existingBeforeSave) {
+        if (permissionToDelete.getId() != null && !inputIds.contains(permissionToDelete.getId())) {
+          try {
+            feedbackRolesPermissionManager.deleteFeedbackRolesPermission(permissionToDelete.getId());
+          } catch (Exception e) {
+            logger.error("Error deleting FeedbackRolesPermission with ID: {}", permissionToDelete.getId(), e);
+          }
+        }
+      }
+    }
+
     if (this.getUrl() == null || this.getUrl().isEmpty()) {
       if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
         this.setActionMessages(null);
@@ -238,6 +323,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
   }
 
   public void setFeedbackRolesPermissions(List<FeedbackRolesPermission> feedbackRolesPermissions) {
+    // Note: This setter is kept for JSP/FTL access but is not used for Struts binding
+    // We bind feedback roles permissions manually in save() using bindFeedbackRolesPermissionsFromRequest()
     this.feedbackRolesPermissions = feedbackRolesPermissions;
   }
 

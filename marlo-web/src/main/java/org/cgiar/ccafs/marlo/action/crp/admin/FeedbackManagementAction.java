@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionsEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -84,42 +83,52 @@ public class FeedbackManagementAction extends BaseAction {
 
     while (hasMore) {
       String idParam = this.getRequest().getParameter("feedbackFields[" + index + "].id");
+      String fieldNameParam = this.getRequest().getParameter("feedbackFields[" + index + "].fieldName");
+      String fieldDescriptionParam = this.getRequest().getParameter("feedbackFields[" + index + "].fieldDescription");
+      String sectionNameParam = this.getRequest().getParameter("feedbackFields[" + index + "].sectionName");
+      String sectionDescriptionParam = this.getRequest().getParameter("feedbackFields[" + index + "].sectionDescription");
+      String parentFieldIdentifierParam = this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldIdentifier");
+      String parentFieldDescriptionParam = this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldDescription");
 
-      if (idParam != null && !idParam.trim().isEmpty()) {
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (fieldNameParam != null && !fieldNameParam.trim().isEmpty()) ||
+        (fieldDescriptionParam != null && !fieldDescriptionParam.trim().isEmpty()) ||
+        (sectionNameParam != null && !sectionNameParam.trim().isEmpty()) ||
+        (sectionDescriptionParam != null && !sectionDescriptionParam.trim().isEmpty()) ||
+        (parentFieldIdentifierParam != null && !parentFieldIdentifierParam.trim().isEmpty()) ||
+        (parentFieldDescriptionParam != null && !parentFieldDescriptionParam.trim().isEmpty());
+
+      if (hasAnyContent) {
         try {
           FeedbackQACommentableFields field = new FeedbackQACommentableFields();
 
-          // ID
-          Long id = Long.parseLong(idParam);
-          field.setId(id);
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              field.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
 
           // Field Name
-          String fieldName = this.getRequest().getParameter("feedbackFields[" + index + "].fieldName");
-          field.setFieldName(fieldName);
+          field.setFieldName(fieldNameParam);
 
           // Field Description
-          String fieldDescription =
-            this.getRequest().getParameter("feedbackFields[" + index + "].fieldDescription");
-          field.setFieldDescription(fieldDescription);
+          field.setFieldDescription(fieldDescriptionParam);
 
           // Section Name
-          String sectionName = this.getRequest().getParameter("feedbackFields[" + index + "].sectionName");
-          field.setSectionName(sectionName);
+          field.setSectionName(sectionNameParam);
 
           // Section Description
-          String sectionDescription =
-            this.getRequest().getParameter("feedbackFields[" + index + "].sectionDescription");
-          field.setSectionDescription(sectionDescription);
+          field.setSectionDescription(sectionDescriptionParam);
 
           // Parent Field Identifier
-          String parentFieldIdentifier =
-            this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldIdentifier");
-          field.setParentFieldIdentifier(parentFieldIdentifier);
+          field.setParentFieldIdentifier(parentFieldIdentifierParam);
 
           // Parent Field Description
-          String parentFieldDescription =
-            this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldDescription");
-          field.setParentFieldDescription(parentFieldDescription);
+          field.setParentFieldDescription(parentFieldDescriptionParam);
 
           feedbackFields.add(field);
           index++;
@@ -139,6 +148,11 @@ public class FeedbackManagementAction extends BaseAction {
       bindFeedbackFieldsFromRequest();
 
       if (feedbackFields != null && !feedbackFields.isEmpty()) {
+
+        List<Long> inputIds = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
+          .collect(Collectors.toList());
+        List<FeedbackQACommentableFields> existingFieldsBeforeSave =
+          fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
 
         // FIRST: Save/update all feedback fields from the form
         for (FeedbackQACommentableFields fields : feedbackFields) {
@@ -179,14 +193,9 @@ public class FeedbackManagementAction extends BaseAction {
         }
 
         // THEN: Delete feedback fields not present in the form
-        List<Long> IDs = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
-          .collect(Collectors.toList());
-
-        List<FeedbackQACommentableFields> existingFields =
-          fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
-        if (existingFields != null && !existingFields.isEmpty()) {
-          for (FeedbackQACommentableFields activityDB : existingFields) {
-            if (activityDB.getId() != null && !IDs.contains(activityDB.getId())) {
+        if (existingFieldsBeforeSave != null && !existingFieldsBeforeSave.isEmpty()) {
+          for (FeedbackQACommentableFields activityDB : existingFieldsBeforeSave) {
+            if (activityDB.getId() != null && !inputIds.contains(activityDB.getId())) {
               fieldsManager.deleteInternalQaCommentableFields(activityDB.getId());
             }
           }
@@ -194,7 +203,6 @@ public class FeedbackManagementAction extends BaseAction {
       }
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
         if (this.getInvalidFields() != null && !this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
