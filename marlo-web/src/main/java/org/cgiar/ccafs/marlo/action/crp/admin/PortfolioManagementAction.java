@@ -116,41 +116,53 @@ public class PortfolioManagementAction extends BaseAction {
 
     while (hasMore) {
       String idParam = this.getRequest().getParameter("portfolios[" + index + "].id");
+      String nameParam = this.getRequest().getParameter("portfolios[" + index + "].name");
+      String startDateParam = this.getRequest().getParameter("portfolios[" + index + "].startDate");
+      String endDateParam = this.getRequest().getParameter("portfolios[" + index + "].endDate");
+      String[] selectedPhasesParam = this.getRequest().getParameterValues("portfolios[" + index + "].selectedPhases");
       
-      if (idParam != null && !idParam.trim().isEmpty()) {
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (nameParam != null && !nameParam.trim().isEmpty()) ||
+        (startDateParam != null && !startDateParam.trim().isEmpty()) ||
+        (endDateParam != null && !endDateParam.trim().isEmpty()) ||
+        (selectedPhasesParam != null && selectedPhasesParam.length > 0);
+      
+      if (hasAnyContent) {
         try {
           Portfolio portfolio = new Portfolio();
           
-          // ID
-          Long id = Long.parseLong(idParam);
-          portfolio.setId(id);
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              portfolio.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
           
           // Name
-          String name = this.getRequest().getParameter("portfolios[" + index + "].name");
-          portfolio.setName(name);
+          portfolio.setName(nameParam);
           
           // Start Date
-          String startDate = this.getRequest().getParameter("portfolios[" + index + "].startDate");
-          if (startDate != null && !startDate.trim().isEmpty()) {
+          if (startDateParam != null && !startDateParam.trim().isEmpty()) {
             try {
-              portfolio.setStartDate(java.sql.Date.valueOf(startDate));
+              portfolio.setStartDate(java.sql.Date.valueOf(startDateParam));
             } catch (Exception e) {
               logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
             }
           }
           
           // End Date
-          String endDate = this.getRequest().getParameter("portfolios[" + index + "].endDate");
-          if (endDate != null && !endDate.trim().isEmpty()) {
+          if (endDateParam != null && !endDateParam.trim().isEmpty()) {
             try {
-              portfolio.setEndDate(java.sql.Date.valueOf(endDate));
+              portfolio.setEndDate(java.sql.Date.valueOf(endDateParam));
             } catch (Exception e) {
               logger.warn("Error parsing endDate at index {}: {}", index, e.getMessage());
             }
           }
           
           // Selected Phases (multiple values)
-          String[] selectedPhasesParam = this.getRequest().getParameterValues("portfolios[" + index + "].selectedPhases");
           if (selectedPhasesParam != null && selectedPhasesParam.length > 0) {
             List<Long> selectedPhases = new ArrayList<>();
             for (String phaseId : selectedPhasesParam) {
