@@ -27,10 +27,11 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicatorTarget;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -72,6 +73,10 @@ public class SLOsAction extends BaseAction {
 
   private List<SrfCrossCuttingIssue> srfCrossCuttingIssues;
 
+  // Temporary storage for targets before save to avoid HashSet duplicate issue with null IDs
+  // Key format: "sloIndex_indicatorIndex"
+  private Map<String, List<SrfSloIndicatorTarget>> pendingTargets = new HashMap<>();
+
 
   @Inject
   public SLOsAction(APConfig config, SrfSloManager srfSloManager, SrfSloIndicatorManager srfSloIndicatorManager,
@@ -99,24 +104,6 @@ public class SLOsAction extends BaseAction {
   }
 
 
-  private int findMaxIndex(Map<String, String[]> parameterMap, String keyPattern) {
-    Pattern pattern = Pattern.compile(keyPattern);
-    int maxIndex = -1;
-
-    for (String key : parameterMap.keySet()) {
-      Matcher matcher = pattern.matcher(key);
-      if (matcher.matches()) {
-        int currentIndex = Integer.parseInt(matcher.group(1));
-        if (currentIndex > maxIndex) {
-          maxIndex = currentIndex;
-        }
-      }
-    }
-
-    return maxIndex;
-  }
-
-
   /**
    * Manual binding for SLOs from request parameters.
    * Accepts elements with any meaningful content (not just ID).
@@ -124,9 +111,9 @@ public class SLOsAction extends BaseAction {
   private void bindSlosFromRequest() {
     slosList = new ArrayList<>();
     Map<String, String[]> parameterMap = ServletActionContext.getRequest().getParameterMap();
-    int maxSloIndex = findMaxIndex(parameterMap, "^slosList\\[(\\d+)\\]\\..*$");
+    int MAX_INDEX = 100;
 
-    for (int index = 0; index <= maxSloIndex; index++) {
+    for (int index = 0; index < MAX_INDEX; index++) {
       String idParam = parameterMap.containsKey(SLOS_LIST_PREFIX + index + ID_SUFFIX)
         ? parameterMap.get(SLOS_LIST_PREFIX + index + ID_SUFFIX)[0] : null;
       String titleParam = parameterMap.containsKey(SLOS_LIST_PREFIX + index + TITLE_SUFFIX)
@@ -179,10 +166,9 @@ public class SLOsAction extends BaseAction {
    */
   private List<SrfSloIndicator> bindSloIndicatorsFromRequest(int sloIndex, Map<String, String[]> parameterMap) {
     List<SrfSloIndicator> indicators = new ArrayList<>();
-    int maxIndicatorIndex =
-      findMaxIndex(parameterMap, "^slosList\\[" + sloIndex + "\\]\\.srfSloIndicators\\[(\\d+)\\]\\..*$");
+    int MAX_INDEX = 100;
 
-    for (int indicatorIndex = 0; indicatorIndex <= maxIndicatorIndex; indicatorIndex++) {
+    for (int indicatorIndex = 0; indicatorIndex < MAX_INDEX; indicatorIndex++) {
       String prefix = SLOS_LIST_PREFIX + sloIndex + SRF_SLO_INDICATORS_PREFIX + indicatorIndex;
       String idSuffix = ID_SUFFIX;
       String idParam =
@@ -225,9 +211,12 @@ public class SLOsAction extends BaseAction {
         }
 
         // Bind nested targets
-        java.util.Set<SrfSloIndicatorTarget> targets = bindSloIndicatorTargetsFromRequest(sloIndex, indicatorIndex, parameterMap);
+        java.util.List<SrfSloIndicatorTarget> targets = bindSloIndicatorTargetsFromRequest(sloIndex, indicatorIndex, parameterMap);
         if (targets != null && !targets.isEmpty()) {
-          indicator.setSrfSloIndicatorTargets(targets);
+          // Store targets in temporary map to avoid HashSet issue with null IDs
+          // Will be processed and assigned after save when targets have IDs
+          String key = sloIndex + "_" + indicatorIndex;
+          pendingTargets.put(key, targets);
         }
 
         indicators.add(indicator);
@@ -241,14 +230,13 @@ public class SLOsAction extends BaseAction {
   /**
    * Manual binding for SLO Indicator Targets (nested) from request parameters.
    */
-  private java.util.Set<SrfSloIndicatorTarget> bindSloIndicatorTargetsFromRequest(int sloIndex, int indicatorIndex,
+  private java.util.List<SrfSloIndicatorTarget> bindSloIndicatorTargetsFromRequest(int sloIndex, int indicatorIndex,
     Map<String, String[]> parameterMap) {
-    java.util.Set<SrfSloIndicatorTarget> targets = new java.util.HashSet<>();
-    int maxTargetIndex = findMaxIndex(parameterMap,
-      "^slosList\\[" + sloIndex + "\\]\\.srfSloIndicators\\[" + indicatorIndex
-        + "\\]\\.srfSloIndicatorTargets\\[(\\d+)\\]\\..*$");
+    java.util.List<SrfSloIndicatorTarget> targets = new java.util.ArrayList<>();
+    // Use fixed MAX_INDEX instead of regex to handle gaps reliably
+    int MAX_INDEX = 100;
 
-    for (int targetIndex = 0; targetIndex <= maxTargetIndex; targetIndex++) {
+    for (int targetIndex = 0; targetIndex < MAX_INDEX; targetIndex++) {
       String prefix = SLOS_LIST_PREFIX + sloIndex + SRF_SLO_INDICATORS_PREFIX + indicatorIndex + SRF_SLO_INDICATOR_TARGETS_PREFIX + targetIndex;
       String idParam =
         parameterMap.containsKey(prefix + ID_SUFFIX) ? parameterMap.get(prefix + ID_SUFFIX)[0] : null;
@@ -319,9 +307,9 @@ public class SLOsAction extends BaseAction {
   private void bindCrossCuttingIssuesFromRequest() {
     srfCrossCuttingIssues = new ArrayList<>();
     Map<String, String[]> parameterMap = ServletActionContext.getRequest().getParameterMap();
-    int maxIssueIndex = findMaxIndex(parameterMap, "^srfCrossCuttingIssues\\[(\\d+)\\]\\..*$");
+    int MAX_INDEX = 100;
 
-    for (int index = 0; index <= maxIssueIndex; index++) {
+    for (int index = 0; index < MAX_INDEX; index++) {
       String idParam = parameterMap.containsKey(CROSS_CUTTING_ISSUES_PREFIX + index + ID_SUFFIX)
         ? parameterMap.get(CROSS_CUTTING_ISSUES_PREFIX + index + ID_SUFFIX)[0] : null;
       String nameParam = parameterMap.containsKey(CROSS_CUTTING_ISSUES_PREFIX + index + NAME_SUFFIX)
@@ -401,6 +389,7 @@ public class SLOsAction extends BaseAction {
 
     // Step 3 & 4: Save all SLOs (new and updates) and their nested indicators
     if (slosList != null) {
+      int sloIndex = 0;
       for (SrfSlo slo : slosList) {
         // Save the SLO first
         SrfSlo savedSlo = srfSloManager.saveSrfSlo(slo);
@@ -417,6 +406,7 @@ public class SLOsAction extends BaseAction {
       // Save all indicators for this SLO, then collect their IDs AFTER save
         List<Long> inputIndicatorIds = new ArrayList<>();
         if (slo.getSrfSloIndicators() != null) {
+          int indicatorIndex = 0;
           for (SrfSloIndicator indicator : slo.getSrfSloIndicators()) {
             indicator.setSrfSlo(savedSlo);
             SrfSloIndicator savedIndicator = srfSloIndicatorManager.saveSrfSloIndicator(indicator);
@@ -434,18 +424,27 @@ public class SLOsAction extends BaseAction {
               }
             }
 
+            // Get targets from pending map (stored during binding to avoid HashSet duplicate issue)
+            String key = sloIndex + "_" + indicatorIndex;
+            List<SrfSloIndicatorTarget> targetsFromRequest = pendingTargets.get(key);
+            
             // Save all targets for this indicator, then collect their IDs AFTER save
             List<Long> inputTargetIds = new ArrayList<>();
-            if (indicator.getSrfSloIndicatorTargets() != null) {
-              for (SrfSloIndicatorTarget target : indicator.getSrfSloIndicatorTargets()) {
+            Set<SrfSloIndicatorTarget> savedTargetsSet = new HashSet<>();
+            if (targetsFromRequest != null) {
+              for (SrfSloIndicatorTarget target : targetsFromRequest) {
                 target.setSrfSloIndicator(savedIndicator);
                 SrfSloIndicatorTarget savedTarget = srfSloIndicatorTargetManager.saveSrfSloIndicatorTarget(target);
                 // Add ID AFTER save (new targets now have ID)
                 if (savedTarget.getId() != null) {
                   inputTargetIds.add(savedTarget.getId());
+                  savedTargetsSet.add(savedTarget); // Add to set now that it has an ID
                 }
               }
             }
+
+            // Assign saved targets to the indicator (now they have IDs, Set won't drop duplicates)
+            savedIndicator.setSrfSloIndicatorTargets(savedTargetsSet);
 
             // Delete targets not in input (from snapshot, not fresh query)
             for (SrfSloIndicatorTarget existingTarget : existingTargetsBeforeSave) {
@@ -453,6 +452,8 @@ public class SLOsAction extends BaseAction {
                 srfSloIndicatorTargetManager.deleteSrfSloIndicatorTarget(existingTarget.getId());
               }
             }
+            
+            indicatorIndex++; // Increment for next indicator
           }
         }
 
@@ -462,6 +463,8 @@ public class SLOsAction extends BaseAction {
             srfSloIndicatorManager.deleteSrfSloIndicator(existingIndicator.getId());
           }
         }
+        
+        sloIndex++; // Increment for next SLO
       }
     }
 
@@ -471,6 +474,9 @@ public class SLOsAction extends BaseAction {
         srfSloManager.deleteSrfSlo(existingSlo.getId());
       }
     }
+
+    // Clear pending targets map after processing
+    pendingTargets.clear();
 
 
     // ================== Save Cross-Cutting Issues Pattern ==================
