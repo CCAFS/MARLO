@@ -92,6 +92,10 @@ function updateIndexes() {
     $(slo).find('.srfSloIndicator').each(function(subIdoIndex,subIdo) {
       // Updating indexes
       $(subIdo).setNameIndexes(2, subIdoIndex);
+      $(subIdo).find('.targetsIndicator').each(function(targetIndex, target) {
+        // Updating indexes for targets
+        $(target).setNameIndexes(3, targetIndex);
+      });
     });
   });
 

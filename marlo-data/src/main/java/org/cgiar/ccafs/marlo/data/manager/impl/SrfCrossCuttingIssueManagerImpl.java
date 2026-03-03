@@ -21,8 +21,10 @@ import org.cgiar.ccafs.marlo.data.model.SrfCrossCuttingIssue;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +45,7 @@ public class SrfCrossCuttingIssueManagerImpl implements SrfCrossCuttingIssueMana
   }
 
   @Override
+  @Transactional
   public void deleteSrfCrossCuttingIssue(long srfCrossCuttingIssueId) {
 
     srfCrossCuttingIssueDAO.deleteSrfCrossCuttingIssue(srfCrossCuttingIssueId);
@@ -68,6 +71,7 @@ public class SrfCrossCuttingIssueManagerImpl implements SrfCrossCuttingIssueMana
   }
 
   @Override
+  @Transactional
   public SrfCrossCuttingIssue saveSrfCrossCuttingIssue(SrfCrossCuttingIssue srfCrossCuttingIssue) {
 
     return srfCrossCuttingIssueDAO.save(srfCrossCuttingIssue);
