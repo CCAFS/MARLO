@@ -45,6 +45,7 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   }
 
   @Override
+  @Transactional
   public void deleteSrfIdo(long srfIdoId) {
 
     this.srfIdoDAO.deleteSrfIdo(srfIdoId);

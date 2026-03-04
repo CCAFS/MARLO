@@ -41,6 +41,7 @@ public class SrfSubIdoManagerImpl implements SrfSubIdoManager {
 	}
 
 	@Override
+	@Transactional
 	public void deleteSrfSubIdo(long srfSubIdoId) {
 
 		this.srfSubIdoDAO.deleteSrfSubIdo(srfSubIdoId);
