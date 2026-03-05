@@ -2,8 +2,8 @@
 [#assign srfItems= [
   { 'slug': 'slos',   'name': 'menu.superadmin.slos', 'action': 'marloSLOs',   'active': true, 'visible': (action.specificityValue('slos')?has_content)?then(action.hasSpecificities('slos'), true) },
   { 'slug': 'crossCutting',   'name': 'menu.superadmin.crossCutting', 'action': 'marloCrossCutting',   'active': true, 'visible': (action.specificityValue('crossCutting')?has_content)?then(action.hasSpecificities('crossCutting'), true) },
-  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'marloIDOs',   'active': true, 'visible': (action.specificityValue('idos')?has_content)?then(action.hasSpecificities('idos'), true) },
-  { 'slug': 'siteIntegration',   'name': 'menu.superadmin.siteIntegration', 'action': 'marloSiteIntegration',   'active': true, 'visible': (action.specificityValue('siteIntegration')?has_content)?then(action.hasSpecificities('siteIntegration'), true) }
+  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'marloIDOs',   'active': true, 'visible': (action.specificityValue('idos')?has_content)?then(action.hasSpecificities('idos'), true) }
+  [#-- { 'slug': 'siteIntegration',   'name': 'menu.superadmin.siteIntegration', 'action': 'marloSiteIntegration',   'active': true, 'visible': (action.specificityValue('siteIntegration')?has_content)?then(action.hasSpecificities('siteIntegration'), true) } --]
 ]/]
 
 [#assign standards= [
