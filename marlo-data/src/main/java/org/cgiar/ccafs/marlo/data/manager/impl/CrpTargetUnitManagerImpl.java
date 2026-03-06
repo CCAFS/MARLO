@@ -17,8 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.CrpTargetUnitDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;
-
+import org.cgiar.ccafs.marlo.data.model.CrpTargetUnit;import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import javax.inject.Named;
@@ -43,6 +42,7 @@ public class CrpTargetUnitManagerImpl implements CrpTargetUnitManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpTargetUnit(long crpTargetUnitId) {
 
     crpTargetUnitDAO.deleteCrpTargetUnit(crpTargetUnitId);
@@ -73,6 +73,7 @@ public class CrpTargetUnitManagerImpl implements CrpTargetUnitManager {
   }
 
   @Override
+  @Transactional
   public CrpTargetUnit saveCrpTargetUnit(CrpTargetUnit crpTargetUnit) {
 
     return crpTargetUnitDAO.save(crpTargetUnit);
