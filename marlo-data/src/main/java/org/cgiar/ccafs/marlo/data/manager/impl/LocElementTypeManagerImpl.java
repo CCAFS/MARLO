@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.LocElementTypeDAO;
 import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.model.LocElementType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class LocElementTypeManagerImpl implements LocElementTypeManager {
   }
 
   @Override
+  @Transactional
   public void deleteLocElementType(long locElementTypeId) {
 
     locElementTypeDAO.deleteLocElementType(locElementTypeId);
@@ -68,6 +70,7 @@ public class LocElementTypeManagerImpl implements LocElementTypeManager {
   }
 
   @Override
+  @Transactional
   public LocElementType saveLocElementType(LocElementType locElementType) {
 
     return locElementTypeDAO.save(locElementType);
