@@ -207,3 +207,49 @@ When the list has parent-child relations (for example `SrfTargetUnit` -> `CrpTar
 - Manager example: `marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/manager/impl/PortfolioManagerImpl.java`
 - DAO example: `marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/PortfolioMySQLDAO.java`
 - Frontend list index update example: `marlo-web/src/main/webapp/crp/js/admin/portfolioManagement.js`
+
+---
+
+## Appendix A (Specific Case): Superadmin MARLO Messages Delete
+
+> This appendix is intentionally **case-specific**.
+> Apply it only to the MARLO Messages feature in superadmin.
+> Do **not** use this section as the default pattern for list-form delete issues.
+
+### When this appendix applies
+
+- Action class is `MarloMessagesAction`.
+- Struts action is `deleteMarloMessage` in `struts-superadmin.xml`.
+- Delete flow calls `marloMessageManager.deleteMarloMessage(id)`.
+- Entity uses logical delete via `is_active` (soft delete).
+
+### Root cause pattern observed in this case
+
+- Delete service executed correctly and updated `is_active=false`.
+- UI still looked inconsistent because reads could include inactive records.
+- Struts `input` result for `deleteMarloMessage` pointed to an incorrect view path.
+
+### Fixes used in this case
+
+1. Keep delete as soft delete in DAO (`setActive(false)` + update).
+2. Ensure transaction boundary is in manager/service methods (not in Action):
+  - `MarloMessageManagerImpl.deleteMarloMessage(...)` with `@Transactional`
+  - `MarloMessageManagerImpl.saveMarloMessage(...)` with `@Transactional`
+3. Ensure reads for “latest message” are aligned with soft delete:
+  - `getLastMessage()` must filter `is_active=1`.
+4. Ensure Struts mapping returns the correct superadmin page on input:
+  - `deleteMarloMessage` input result -> `/WEB-INF/global/views/superadmin/marloMessages.ftl`
+
+### Files touched for this specific scenario
+
+- `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/superadmin/MarloMessagesAction.java`
+- `marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/manager/impl/MarloMessageManagerImpl.java`
+- `marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/MarloMessageMySQLDAO.java`
+- `marlo-web/src/main/resources/struts-superadmin.xml`
+
+### Quick verification checklist (this case only)
+
+- Deleting a message flips `is_active` from `1` to `0`.
+- After reload, deleted message is not selected as “current/last active” message.
+- `deleteMarloMessage` redirects/returns to superadmin messages screen correctly.
+- No `@Transactional` added on Struts Action methods.

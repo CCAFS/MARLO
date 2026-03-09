@@ -25,9 +25,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class MarloMessageMySQLDAO extends AbstractMarloDAO<MarloMessage, Long> implements MarloMessageDAO {
+
+  private static final Logger LOG = LoggerFactory.getLogger(MarloMessageMySQLDAO.class);
 
 
   @Inject
@@ -38,6 +42,10 @@ public class MarloMessageMySQLDAO extends AbstractMarloDAO<MarloMessage, Long> i
   @Override
   public void deleteMarloMessage(long marloMessageId) {
     MarloMessage marloMessage = this.find(marloMessageId);
+    if (marloMessage == null) {
+      LOG.warn("MarloMessage not found for id: {}", marloMessageId);
+      return;
+    }
     marloMessage.setActive(false);
     this.update(marloMessage);
   }
@@ -82,8 +90,8 @@ public class MarloMessageMySQLDAO extends AbstractMarloDAO<MarloMessage, Long> i
 
   @Override
   public MarloMessage getLastMessage() {
-    String query = "from " + MarloMessage.class.getName() + "  where id = (SELECT MAX(id) FROM "
-      + MarloMessage.class.getName() + ")";
+    String query = "from " + MarloMessage.class.getName() + " where is_active=1 and id = (SELECT MAX(id) FROM "
+      + MarloMessage.class.getName() + " where is_active=1)";
     List<MarloMessage> list = super.findAll(query);
 
     if (!list.isEmpty() && list.get(0) != null) {
