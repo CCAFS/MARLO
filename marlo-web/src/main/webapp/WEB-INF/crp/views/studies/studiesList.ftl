@@ -56,11 +56,11 @@
 
 [#-- MACRO --]
 [#macro studiesList elements=[] owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="study"]
-  <table class="projectsList" id="projects">
+  <table class="projectsList oicrStudiesTable" id="projects">
     <thead>
       <tr class="subHeader">
         [#-- ID --]
-        <th>[@s.text name="studiesList.column.id" /]</th>
+        <th class="oicr-id-col">[@s.text name="studiesList.column.id" /]</th>
         [#-- Title / Name --]
         <th>[@s.text name="studiesList.column.title" /]</th>
         [#-- Added by --]
@@ -70,12 +70,12 @@
         [#-- Flagship / Region --]
         <th>[@s.text name="studiesList.column.flagshipRegion" /]</th>
         [#-- Delivery year --]
-        <th>[@s.text name="studiesList.column.year" /]</th>
+        <th class="oicr-year-col">[@s.text name="studiesList.column.year" /]</th>
         [#-- Status --]
-        <th>[@s.text name="studiesList.column.status" /]</th>
+        <th class="oicr-status-col">[@s.text name="studiesList.column.status" /]</th>
         [#if canEdit]
           [#-- Fields check --]
-          <th>[@s.text name="studiesList.column.fieldsCheck" /]</th>
+          <th class="oicr-check-col">[@s.text name="studiesList.column.fieldsCheck" /]</th>
           [#-- Delete --]
           <th></th>
         [/#if]
@@ -88,7 +88,7 @@
         [#local elementUrl][@s.url namespace=namespace action=defaultAction][@s.param name='expectedID']${element.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
           [#-- ID --]
-          <td class="">
+          <td class="text-center oicr-id-cell">
             <a href="${elementUrl}">${(element.id)!}</a>
           </td>
           [#-- Title / Name --]
@@ -98,15 +98,15 @@
             </a>
           </td>
           [#-- Added by --]
-          <td >
+          <td class="text-center">
             [#if element.createdBy?has_content]${(element.createdBy.composedName)!}[#else]Not defined[/#if]
           </td>
           [#-- Type--]
-          <td class="">
+          <td class="text-center">
             ${(element.projectExpectedStudyInfo.studyType.name)!'Not defined'}
           </td>
           [#-- Flagship / Region --]
-          <td class=""> 
+          <td class="text-center"> 
             [#if element.flagships?has_content || element.regions?has_content]
               [#if element.flagships?has_content][#list element.flagships as element]
               <span class="programTag" style="border-color:${(element.crpProgram.color)!'#fff'}">${(element.crpProgram.acronym)!}</span>[/#list]
@@ -117,16 +117,16 @@
             [/#if]
           </td>
           [#-- Delivery year --]
-          <td class=""> 
+          <td class="text-center oicr-year-cell"> 
            ${(element.projectExpectedStudyInfo.year)!'Not defined'}
           </td>
           [#--Status --]
-          <td class=""> 
+          <td class="text-center oicr-status-cell"> 
            ${(element.projectExpectedStudyInfo.statusName)!'Not defined'}
           </td>
           [#if canEdit]
             [#-- Fields check --]
-            <td class=""> 
+            <td class="text-center oicr-check-cell"> 
               [#if (action.getStudyStatus(element.id)??)!false]
                 [#if !((action.getStudyStatus(element.id)).missingFields)?has_content]
                   <span class="icon-20 icon-check" title="Complete"></span>
@@ -138,7 +138,7 @@
               [/#if]
             </td>
             [#-- Delete --]
-            <td class="">
+            <td class="text-center">
               [#if canEdit]
                 <a id="removeRow-${element.id}" class="removeRow" href="${baseUrl}/studies/${crpSession}/deleteStudy.do?expectedID=${element.id}" title="">
                   <img src="${baseUrlCdn}/global/images/trash.png" title="Remove" /> 

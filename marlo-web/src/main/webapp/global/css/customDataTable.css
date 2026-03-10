@@ -288,6 +288,25 @@ table.dataTable a {
     margin-left: 0;
 }
 
+/* Specific to OICRs (studies) table */
+.oicrStudiesTable tbody td:nth-child(1),
+.oicrStudiesTable tbody td:nth-child(6),
+.oicrStudiesTable tbody td:nth-child(7),
+.oicrStudiesTable tbody td:nth-child(8) {
+  text-align: center !important;
+}
+
+table.oicrStudiesTable.dataTable th.oicr-id-col,
+table.oicrStudiesTable.dataTable th.oicr-year-col,
+table.oicrStudiesTable.dataTable th.oicr-status-col,
+table.oicrStudiesTable.dataTable th.oicr-check-col,
+table.oicrStudiesTable.dataTable td.oicr-id-cell,
+table.oicrStudiesTable.dataTable td.oicr-year-cell,
+table.oicrStudiesTable.dataTable td.oicr-status-cell,
+table.oicrStudiesTable.dataTable td.oicr-check-cell {
+  text-align: center !important;
+}
+
 #table-prms-innovations_filter.dataTables_filter label{
   margin-bottom: 0;
 }
