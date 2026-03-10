@@ -102,7 +102,18 @@ echo "Starting MARLO..."
 echo "  HTTP: http://localhost:8080/marlo-web/"
 echo ""
 
-# Open browser after server has had time to start (macOS: open, Linux: xdg-open)
-( sleep 20; if command -v open &>/dev/null; then open "http://localhost:8080/marlo-web/"; elif command -v xdg-open &>/dev/null; then xdg-open "http://localhost:8080/marlo-web/"; fi ) &
+# Open browser once the server is actually responding (macOS: open, Linux: xdg-open)
+(
+  echo "Waiting for MARLO to be ready..."
+  until curl -s -o /dev/null -w "%{http_code}" "http://localhost:8080/marlo-web/" 2>/dev/null | grep -qE "^[23]"; do
+    sleep 3
+  done
+  echo "✅ MARLO is ready — opening browser"
+  if command -v open &>/dev/null; then
+    open "http://localhost:8080/marlo-web/"
+  elif command -v xdg-open &>/dev/null; then
+    xdg-open "http://localhost:8080/marlo-web/"
+  fi
+) &
 
 mvn -pl marlo-web cargo:run
