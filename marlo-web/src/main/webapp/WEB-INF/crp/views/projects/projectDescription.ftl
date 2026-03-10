@@ -14,6 +14,7 @@
 /]
 
 [#assign currentStage = "description" /]
+[#assign currentSection = "projects" /]
 [#assign hideJustification = true /]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
@@ -21,18 +22,16 @@
 [#assign isManagementCluster = (action.isManagementCluster(project.id))!false ]
 
 [#if !action.isAiccra()]
-  [#assign currentSection = "projects" /]
   [#assign breadCrumb = [
     {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
     {"text":"P${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
     {"label":"projectDescription", "nameSpace":"${currentSection}", "action":""}
   ] /]
 [#else]
-  [#assign currentSection = "clusters" /]
   [#assign breadCrumb = [
-    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
-    {"text":"C${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-    {"label":"projectDescription", "nameSpace":"${currentSection}", "action":""}
+    {"label":"projectsList", "nameSpace":"clusters", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"clusters", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectDescription", "nameSpace":"clusters", "action":""}
   ] /]
 [/#if]
 

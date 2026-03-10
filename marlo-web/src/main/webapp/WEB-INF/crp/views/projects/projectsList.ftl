@@ -14,18 +14,18 @@
   "${baseUrlMedia}/css/projects/projectsList.css?20240226"]
 /]
 
-[#if !action.isAiccra()]
-  [#assign currentSection = "projects" /]
-[#else]
-  [#assign currentSection = "clusters" /]
-[/#if]
-
+[#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 
-
-[#assign breadCrumb = [
-  {"label":"projectsList", "nameSpace":"${currentSection}", "action":""}
-]/]
+[#if !action.isAiccra()]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"projects", "action":""}
+  ]/]
+[#else]
+  [#assign breadCrumb = [
+    {"label":"projectsList", "nameSpace":"clusters", "action":""}
+  ]/]
+[/#if]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
