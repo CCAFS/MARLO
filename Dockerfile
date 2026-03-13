@@ -37,8 +37,15 @@ COPY Docker/memcached-session-manager-tc8-2.3.2.jar /usr/local/tomcat/lib/
 ADD Docker/tomcat-users.xml /usr/local/tomcat/conf/
 ADD Docker/web.xml /usr/local/tomcat/conf/
 ADD Docker/logging.properties /usr/local/tomcat/conf/
-# Glowroot disabled - incompatible with Java 17
-# ADD Docker/glowroot/ /usr/local/tomcat/bin/glowroot/
+
+# Download and install Glowroot (latest version - may need Java 17 compatible fork)
+RUN mkdir -p /usr/local/tomcat/bin/glowroot && \
+    cd /tmp && \
+    curl -L -o glowroot.zip https://github.com/glowroot/glowroot/releases/download/v0.13.6/glowroot-0.13.6-dist.zip && \
+    unzip -q glowroot.zip && \
+    cp -r glowroot-0.13.6/* /usr/local/tomcat/bin/glowroot/ && \
+    rm -rf glowroot-0.13.6 glowroot.zip
+
 ADD Docker/setenv.sh /usr/local/tomcat/bin/
 
 # Expose port 8080
