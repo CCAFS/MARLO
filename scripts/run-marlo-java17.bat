@@ -85,8 +85,14 @@ echo Starting MARLO...
 echo   HTTP: http://localhost:8080/marlo-web/
 echo.
 
-REM Open browser after ~20 seconds (run in background)
-start /min cmd /c "timeout /t 20 /nobreak >nul && start http://localhost:8080/marlo-web/"
+REM Open browser once the server is actually responding
+start /min cmd /c ^
+  "echo Waiting for MARLO to be ready... & ^
+   :wait_loop & ^
+   curl -s -o nul -w \"%%{http_code}\" http://localhost:8080/marlo-web/ 2>nul | findstr /R \"^[23]\" >nul ^
+   || (timeout /t 3 /nobreak >nul && goto wait_loop) & ^
+   echo MARLO is ready - opening browser & ^
+   start http://localhost:8080/marlo-web/"
 
 call mvn -pl marlo-web cargo:run
 exit /b 0

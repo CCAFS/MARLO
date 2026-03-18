@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationGeographicScopeDAO;
@@ -34,15 +33,13 @@ import javax.inject.Named;
 @Named
 public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnovationGeographicScopeManager {
 
-
   private ProjectInnovationGeographicScopeDAO projectInnovationGeographicScopeDAO;
   // Managers
   private PhaseDAO phaseDAO;
 
-
   @Inject
   public ProjectInnovationGeographicScopeManagerImpl(
-    ProjectInnovationGeographicScopeDAO projectInnovationGeographicScopeDAO, PhaseDAO phaseDAO) {
+      ProjectInnovationGeographicScopeDAO projectInnovationGeographicScopeDAO, PhaseDAO phaseDAO) {
     this.projectInnovationGeographicScopeDAO = projectInnovationGeographicScopeDAO;
     this.phaseDAO = phaseDAO;
 
@@ -51,24 +48,23 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
   @Override
   public void deleteProjectInnovationGeographicScope(long projectInnovationGeographicScopeId) {
 
-    ProjectInnovationGeographicScope projectInnovationGeographicScope =
-      this.getProjectInnovationGeographicScopeById(projectInnovationGeographicScopeId);
-
+    ProjectInnovationGeographicScope projectInnovationGeographicScope = this
+        .getProjectInnovationGeographicScopeById(projectInnovationGeographicScopeId);
 
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (projectInnovationGeographicScope.getPhase().getDescription().equals(APConstants.PLANNING)
-      && projectInnovationGeographicScope.getPhase().getNext() != null) {
+        && projectInnovationGeographicScope.getPhase().getNext() != null) {
       this.deleteProjectInnovationGeographicScopePhase(projectInnovationGeographicScope.getPhase().getNext(),
-        projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
+          projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
     }
 
     if (projectInnovationGeographicScope.getPhase().getDescription().equals(APConstants.REPORTING)) {
       if (projectInnovationGeographicScope.getPhase().getNext() != null
-        && projectInnovationGeographicScope.getPhase().getNext().getNext() != null) {
+          && projectInnovationGeographicScope.getPhase().getNext().getNext() != null) {
         Phase upkeepPhase = projectInnovationGeographicScope.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
           this.deleteProjectInnovationGeographicScopePhase(upkeepPhase,
-            projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
+              projectInnovationGeographicScope.getProjectInnovation().getId(), projectInnovationGeographicScope);
         }
       }
     }
@@ -81,17 +77,18 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
   }
 
   public void deleteProjectInnovationGeographicScopePhase(Phase next, long innovationID,
-    ProjectInnovationGeographicScope projectInnovationGeographicScope) {
+      ProjectInnovationGeographicScope projectInnovationGeographicScope) {
     Phase phase = phaseDAO.find(next.getId());
 
     List<ProjectInnovationGeographicScope> projectInnovationGeographicScopes = phase
-      .getProjectInnovationGeographicScopes().stream()
-      .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovationID && c
-        .getRepIndGeographicScope().getId().equals(projectInnovationGeographicScope.getRepIndGeographicScope().getId()))
-      .collect(Collectors.toList());
+        .getProjectInnovationGeographicScopes().stream()
+        .filter(c -> c.isActive() && c.getProjectInnovation().getId().longValue() == innovationID && c
+            .getRepIndGeographicScope().getId()
+            .equals(projectInnovationGeographicScope.getRepIndGeographicScope().getId()))
+        .collect(Collectors.toList());
     for (ProjectInnovationGeographicScope projectInnovationGeographicScopeDB : projectInnovationGeographicScopes) {
       projectInnovationGeographicScopeDAO
-        .deleteProjectInnovationGeographicScope(projectInnovationGeographicScopeDB.getId());
+          .deleteProjectInnovationGeographicScope(projectInnovationGeographicScopeDB.getId());
     }
 
     if (phase.getNext() != null) {
@@ -103,7 +100,7 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
   public boolean existProjectInnovationGeographicScope(long projectInnovationGeographicScopeID) {
 
     return projectInnovationGeographicScopeDAO
-      .existProjectInnovationGeographicScope(projectInnovationGeographicScopeID);
+        .existProjectInnovationGeographicScope(projectInnovationGeographicScopeID);
   }
 
   @Override
@@ -115,37 +112,39 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
 
   @Override
   public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
-    long rep_ind_geographic_scope_id, long id_phase) {
+      long rep_ind_geographic_scope_id, long id_phase) {
     return projectInnovationGeographicScopeDAO.getProjectInnovationGeographicScope(project_innovation_id,
-      rep_ind_geographic_scope_id, id_phase);
+        rep_ind_geographic_scope_id, id_phase);
   }
 
   @Override
-  public ProjectInnovationGeographicScope
-    getProjectInnovationGeographicScopeById(long projectInnovationGeographicScopeID) {
+  public ProjectInnovationGeographicScope getProjectInnovationGeographicScopeById(
+      long projectInnovationGeographicScopeID) {
 
     return projectInnovationGeographicScopeDAO.find(projectInnovationGeographicScopeID);
   }
 
   public void saveInnovationGeographicScopePhase(Phase next, long innovationid,
-    ProjectInnovationGeographicScope projectInnovationGeographicScope) {
+      ProjectInnovationGeographicScope projectInnovationGeographicScope) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopes =
-      phase.getProjectInnovationGeographicScopes().stream()
+    List<ProjectInnovationGeographicScope> projectInnovationGeographicScopes = phase
+        .getProjectInnovationGeographicScopes().stream()
         .filter(c -> c.getProjectInnovation().getId().longValue() == innovationid && c.getRepIndGeographicScope()
-          .getId().equals(projectInnovationGeographicScope.getRepIndGeographicScope().getId()))
+            .getId().equals(projectInnovationGeographicScope.getRepIndGeographicScope().getId()))
         .collect(Collectors.toList());
 
-    if (projectInnovationGeographicScopes.isEmpty()) {
-      ProjectInnovationGeographicScope projectInnovationGeographicScopeAdd = new ProjectInnovationGeographicScope();
-      projectInnovationGeographicScopeAdd.setProjectInnovation(projectInnovationGeographicScope.getProjectInnovation());
-      projectInnovationGeographicScopeAdd.setPhase(phase);
-      projectInnovationGeographicScopeAdd
+    int projectInnovationGeographicScopesDB = projectInnovationGeographicScopeDAO
+        .getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(innovationid, phase.getId(),
+            projectInnovationGeographicScope.getRepIndGeographicScope().getId());
+    // if (projectInnovationGeographicScopes.isEmpty()) {
+    ProjectInnovationGeographicScope projectInnovationGeographicScopeAdd = new ProjectInnovationGeographicScope();
+    projectInnovationGeographicScopeAdd.setProjectInnovation(projectInnovationGeographicScope.getProjectInnovation());
+    projectInnovationGeographicScopeAdd.setPhase(phase);
+    projectInnovationGeographicScopeAdd
         .setRepIndGeographicScope(projectInnovationGeographicScope.getRepIndGeographicScope());
-      projectInnovationGeographicScopeDAO.save(projectInnovationGeographicScopeAdd);
-    }
-
+    projectInnovationGeographicScopeDAO.save(projectInnovationGeographicScopeAdd);
+    // }
 
     if (phase.getNext() != null) {
       this.saveInnovationGeographicScopePhase(phase.getNext(), innovationid, projectInnovationGeographicScope);
@@ -153,17 +152,22 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
   }
 
   @Override
-  public ProjectInnovationGeographicScope
-    saveProjectInnovationGeographicScope(ProjectInnovationGeographicScope projectInnovationGeographicScope) {
+  public ProjectInnovationGeographicScope saveProjectInnovationGeographicScope(
+      ProjectInnovationGeographicScope projectInnovationGeographicScope) {
+
+    int projectInnovationGeographicScopesDB = projectInnovationGeographicScopeDAO
+        .getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(
+            projectInnovationGeographicScope.getProjectInnovation().getId(),
+            projectInnovationGeographicScope.getPhase().getId(),
+            projectInnovationGeographicScope.getRepIndGeographicScope().getId());
 
     ProjectInnovationGeographicScope scope = projectInnovationGeographicScopeDAO.save(projectInnovationGeographicScope);
     Phase phase = phaseDAO.find(scope.getPhase().getId());
 
-
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
       this.saveInnovationGeographicScopePhase(scope.getPhase().getNext(), scope.getProjectInnovation().getId(),
-        projectInnovationGeographicScope);
+          projectInnovationGeographicScope);
     }
 
     if (phase.getDescription().equals(APConstants.REPORTING)) {
@@ -171,7 +175,7 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
         Phase upkeepPhase = phase.getNext().getNext();
         if (upkeepPhase != null) {
           this.saveInnovationGeographicScopePhase(upkeepPhase, scope.getProjectInnovation().getId(),
-            projectInnovationGeographicScope);
+              projectInnovationGeographicScope);
         }
       }
     }
@@ -179,5 +183,12 @@ public class ProjectInnovationGeographicScopeManagerImpl implements ProjectInnov
     return scope;
   }
 
+  @Override
+  public int getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(long innovationId, long phaseId,
+      long geographicScopeId) {
+    return projectInnovationGeographicScopeDAO
+        .getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(innovationId, phaseId,
+            geographicScopeId);
+  }
 
 }
