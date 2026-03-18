@@ -13,14 +13,13 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationContributingOrganizationDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 
 import java.util.List;
-
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -28,9 +27,8 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class ProjectInnovationContributingOrganizationMySQLDAO
-  extends AbstractMarloDAO<ProjectInnovationContributingOrganization, Long>
-  implements ProjectInnovationContributingOrganizationDAO {
-
+    extends AbstractMarloDAO<ProjectInnovationContributingOrganization, Long>
+    implements ProjectInnovationContributingOrganizationDAO {
 
   @Inject
   public ProjectInnovationContributingOrganizationMySQLDAO(SessionFactory sessionFactory) {
@@ -39,15 +37,15 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
 
   @Override
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
-    ProjectInnovationContributingOrganization projectInnovationContributingOrganization =
-      this.find(projectInnovationContributingOrganizationId);
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization = this
+        .find(projectInnovationContributingOrganizationId);
     this.delete(projectInnovationContributingOrganization);
   }
 
   @Override
   public boolean existProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationID) {
-    ProjectInnovationContributingOrganization projectInnovationContributingOrganization =
-      this.find(projectInnovationContributingOrganizationID);
+    ProjectInnovationContributingOrganization projectInnovationContributingOrganization = this
+        .find(projectInnovationContributingOrganizationID);
     if (projectInnovationContributingOrganization == null) {
       return false;
     }
@@ -73,10 +71,10 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
 
   @Override
   public ProjectInnovationContributingOrganization getProjectInnovationContributingOrganization(long idInnovation,
-    long idInstitution, long idPhase) {
+      long idInstitution, long idPhase) {
     String query = "from " + ProjectInnovationContributingOrganization.class.getName()
-      + " WHERE is_active=1 and project_innovation_id='" + idInnovation + "' AND institution_id='" + idInstitution
-      + "' AND id_phase='" + idPhase + "'";
+        + " WHERE is_active=1 and project_innovation_id='" + idInnovation + "' AND institution_id='" + idInstitution
+        + "' AND id_phase='" + idPhase + "'";
     List<ProjectInnovationContributingOrganization> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -86,8 +84,8 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
   }
 
   @Override
-  public ProjectInnovationContributingOrganization
-    save(ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
+  public ProjectInnovationContributingOrganization save(
+      ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     if (projectInnovationContributingOrganization.getId() == null) {
       super.saveEntity(projectInnovationContributingOrganization);
     } else {
@@ -96,5 +94,27 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     return projectInnovationContributingOrganization;
   }
 
+  @Override
+  public int getProjectInnovationContributingOrganizationByInnovationAndInstitution(long innovationId,
+      long institutionId, long phaseId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from project_innovation_contributing_organizations pico  ");
+    query.append(" where project_innovation_id= " + innovationId);
+    query.append(" and institution_id= " + institutionId);
+    query.append(" and id_phase= " + phaseId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int projectInnovationContributingOrganization = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        projectInnovationContributingOrganization = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return projectInnovationContributingOrganization;
+
+  }
 
 }
