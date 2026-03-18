@@ -13,36 +13,44 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 
 import java.util.List;
 
-
 public interface ProjectInnovationGeographicScopeDAO {
 
   /**
-   * This method removes a specific projectInnovationGeographicScope value from the database.
+   * This method removes a specific projectInnovationGeographicScope value from
+   * the database.
    * 
-   * @param projectInnovationGeographicScopeId is the projectInnovationGeographicScope identifier.
-   * @return true if the projectInnovationGeographicScope was successfully deleted, false otherwise.
+   * @param projectInnovationGeographicScopeId is the
+   *                                           projectInnovationGeographicScope
+   *                                           identifier.
+   * @return true if the projectInnovationGeographicScope was successfully
+   *         deleted, false otherwise.
    */
   public void deleteProjectInnovationGeographicScope(long projectInnovationGeographicScopeId);
 
   /**
-   * This method validate if the projectInnovationGeographicScope identify with the given id exists in the system.
+   * This method validate if the projectInnovationGeographicScope identify with
+   * the given id exists in the system.
    * 
-   * @param projectInnovationGeographicScopeID is a projectInnovationGeographicScope identifier.
+   * @param projectInnovationGeographicScopeID is a
+   *                                           projectInnovationGeographicScope
+   *                                           identifier.
    * @return true if the projectInnovationGeographicScope exists, false otherwise.
    */
   public boolean existProjectInnovationGeographicScope(long projectInnovationGeographicScopeID);
 
   /**
-   * This method gets a projectInnovationGeographicScope object by a given projectInnovationGeographicScope identifier.
+   * This method gets a projectInnovationGeographicScope object by a given
+   * projectInnovationGeographicScope identifier.
    * 
-   * @param projectInnovationGeographicScopeID is the projectInnovationGeographicScope identifier.
+   * @param projectInnovationGeographicScopeID is the
+   *                                           projectInnovationGeographicScope
+   *                                           identifier.
    * @return a ProjectInnovationGeographicScope object.
    */
   public ProjectInnovationGeographicScope find(long id);
@@ -54,19 +62,25 @@ public interface ProjectInnovationGeographicScopeDAO {
    */
   public List<ProjectInnovationGeographicScope> findAll();
 
-
   public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
-    long rep_ind_geographic_scope_id, long id_phase);
+      long rep_ind_geographic_scope_id, long id_phase);
 
   /**
-   * This method saves the information of the given projectInnovationGeographicScope
+   * This method saves the information of the given
+   * projectInnovationGeographicScope
    * 
-   * @param projectInnovationGeographicScope - is the projectInnovationGeographicScope object with the new information
-   *        to be added/updated.
-   * @return a number greater than 0 representing the new ID assigned by the database, 0 if the
+   * @param projectInnovationGeographicScope - is the
+   *                                         projectInnovationGeographicScope
+   *                                         object with the new information
+   *                                         to be added/updated.
+   * @return a number greater than 0 representing the new ID assigned by the
+   *         database, 0 if the
    *         projectInnovationGeographicScope was
    *         updated
    *         or -1 is some error occurred.
    */
   public ProjectInnovationGeographicScope save(ProjectInnovationGeographicScope projectInnovationGeographicScope);
+
+  public int getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(long innovationId,
+      long phaseId, long geographicScopeId);
 }
