@@ -2719,12 +2719,14 @@ public class ProjectInnovationAction extends BaseAction {
         try {
           for (ProjectInnovationActor actor : actorPrev) {
 
-            if ((actor.getId() != null)
-                && (innovation.getActors() == null || !innovation.getActors().contains(actor))) {
-              if (projectInnovationActorManager.existProjectInnovationActor(actor.getId())) {
-                projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
-              }
-            }
+            // if ((actor.getId() != null)
+            // && (innovation.getActors() == null ||
+            // !innovation.getActors().contains(actor))) {
+            // if (projectInnovationActorManager.existProjectInnovationActor(actor.getId()))
+            // {
+            projectInnovationActorManager.deleteProjectInnovationActor(actor.getId());
+            // }
+            // }
           }
         } catch (Exception e) {
           Log.error("error deleting actor " + e);
@@ -2738,22 +2740,32 @@ public class ProjectInnovationAction extends BaseAction {
             innovationActor.setId(null);
           }
           boolean saveActorProcess = true;
+          System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
           if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null
               && innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
             saveActorProcess = false;
+            System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
           }
 
+          System.out.println("IMPR saveActorProcess: " + saveActorProcess);
+          System.out.println("IMPR innovationActor ID: " + innovationActor.getId());
+          System.out.println("IMPR innovationActor Actor ID: " + innovationActor.getActor().getId());
+          System.out.println("IMPR innovationActor Actor Description: " + innovationActor.getActor().getDescription());
           ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
           if (saveActorProcess) {
-            try {
-              if (innovationActor.getId() != null) {
-                innovationActorSave = projectInnovationActorManager
-                    .getProjectInnovationActorById(innovationActor.getId());
-              }
-            } catch (Exception e) {
-              logger.error("unable to get old actors", e);
-            }
+            /*
+             * *try {
+             * if (innovationActor.getId() != null) {
+             * innovationActorSave = projectInnovationActorManager
+             * .getProjectInnovationActorById(innovationActor.getId());
+             * }
+             * } catch (Exception e) {
+             * logger.error("unable to get old actors", e);
+             * }
+             */
+
+            System.out.println("IMPR innovationActorSave ID: " + innovationActorSave.getId());
 
             innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
             innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());
@@ -3304,12 +3316,14 @@ public class ProjectInnovationAction extends BaseAction {
 
       if (organizationPrev != null) {
         for (ProjectInnovationContributingOrganization innovationOrganization : organizationPrev) {
-          if (innovationOrganization != null && innovation.getContributingOrganizations() != null
-              && !innovation.getContributingOrganizations().contains(innovationOrganization)
-              && innovationOrganization.getId() != -1) {
-            projectInnovationContributingOrganizationManager
-                .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
-          }
+          // if (innovationOrganization != null &&
+          // innovation.getContributingOrganizations() != null
+          // &&
+          // !innovation.getContributingOrganizations().contains(innovationOrganization)
+          // && innovationOrganization.getId() != -1) {
+          projectInnovationContributingOrganizationManager
+              .deleteProjectInnovationContributingOrganization(innovationOrganization.getId());
+          // }
         }
       }
     }
