@@ -14,7 +14,6 @@
  *****************************************************************/
 package org.cgiar.ccafs.marlo.data.manager.impl;
 
-
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationActorDAO;
@@ -52,18 +51,18 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
 
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (projectInnovationActor.getPhase().getDescription().equals(APConstants.PLANNING)
-      && projectInnovationActor.getPhase().getNext() != null) {
+        && projectInnovationActor.getPhase().getNext() != null) {
       this.deleteProjectInnovationActorPhase(projectInnovationActor.getPhase().getNext(),
-        projectInnovationActor.getProjectInnovation().getId(), projectInnovationActor);
+          projectInnovationActor.getProjectInnovation().getId(), projectInnovationActor);
     }
 
     if (projectInnovationActor.getPhase().getDescription().equals(APConstants.REPORTING)) {
       if (projectInnovationActor.getPhase().getNext() != null
-        && projectInnovationActor.getPhase().getNext().getNext() != null) {
+          && projectInnovationActor.getPhase().getNext().getNext() != null) {
         Phase upkeepPhase = projectInnovationActor.getPhase().getNext().getNext();
         if (upkeepPhase != null) {
           this.deleteProjectInnovationActorPhase(upkeepPhase, projectInnovationActor.getProjectInnovation().getId(),
-            projectInnovationActor);
+              projectInnovationActor);
         }
       }
     }
@@ -71,15 +70,15 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
   }
 
   public void deleteProjectInnovationActorPhase(Phase next, long innovationID,
-    ProjectInnovationActor projectInnovationActors) {
+      ProjectInnovationActor projectInnovationActors) {
     Phase phase = phaseDAO.find(next.getId());
     List<ProjectInnovationActor> innovationActors = new ArrayList<>();
     try {
-      innovationActors =
-        projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
+      innovationActors = projectInnovationActorDAO
+          .getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
           .filter(c -> c.getActor() != null && c.getActor().getId() != null
-            && projectInnovationActors.getActor() != null && projectInnovationActors.getActor().getId() != null
-            && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
+              && projectInnovationActors.getActor() != null && projectInnovationActors.getActor().getId() != null
+              && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
           .collect(Collectors.toList());
     } catch (Exception e) {
       System.out.println("Error in ActorByInnovationAndPhase method" + e);
@@ -128,15 +127,15 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
     // Conditions to Project Innovation Works In AR phase and Upkeep Phase
     if (phase.getDescription().equals(APConstants.PLANNING) && phase.getNext() != null) {
       this.saveProjectInnovationActorPhase(innovationActor.getPhase().getNext(),
-        innovationActor.getProjectInnovation().getId(), projectInnovationActors);
+          innovationActor.getProjectInnovation().getId(), projectInnovationActors);
     }
 
     if (phase.getDescription().equals(APConstants.REPORTING) && phase.getNext() != null
-      && phase.getNext().getNext() != null) {
+        && phase.getNext().getNext() != null) {
       Phase upkeepPhase = phase.getNext().getNext();
       if (upkeepPhase != null) {
         this.saveProjectInnovationActorPhase(upkeepPhase, innovationActor.getProjectInnovation().getId(),
-          projectInnovationActors);
+            projectInnovationActors);
       }
     }
 
@@ -144,40 +143,40 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
   }
 
   private void saveProjectInnovationActorPhase(Phase next, Long innovationID,
-    ProjectInnovationActor projectInnovationActor) {
+      ProjectInnovationActor projectInnovationActor) {
     Phase phase = phaseDAO.find(next.getId());
     List<ProjectInnovationActor> innovationActors = new ArrayList<>();
     try {
       innovationActors =
 
-        projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
-          .filter(c -> c.getActor() != null && projectInnovationActor.getActor() != null
-            && projectInnovationActor.getActor().getId() != null && c.getActor().getId() != null
-            && c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
-          .collect(Collectors.toList());
+          projectInnovationActorDAO.getProjectInnovationActorByInnovationAndPhase(innovationID, phase.getId()).stream()
+              .filter(c -> c.getActor() != null && projectInnovationActor.getActor() != null
+                  && projectInnovationActor.getActor().getId() != null && c.getActor().getId() != null
+                  && c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
+              .collect(Collectors.toList());
     } catch (Exception e) {
       System.out.println("Error in ActorByInnovationAndPhase save method" + e);
     }
-    if (innovationActors == null || innovationActors.isEmpty()) {
-      ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
-      projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
-      projectInnovationActorAdd.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
-      projectInnovationActorAdd.setMenYouth(projectInnovationActor.getMenYouth());
-      projectInnovationActorAdd.setMenNotYouth(projectInnovationActor.getMenNotYouth());
-      projectInnovationActorAdd.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
-      projectInnovationActorAdd.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
-      projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
-      projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
-      projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
-      projectInnovationActorAdd.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
-      projectInnovationActorAdd.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
-      projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
-      projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
-      projectInnovationActorAdd.setPhase(phase);
-      projectInnovationActorAdd.setOther(projectInnovationActor.getOther());
-      projectInnovationActorAdd.setTotal(projectInnovationActor.getTotal());
-      projectInnovationActorDAO.save(projectInnovationActorAdd);
-    }
+    // if (innovationActors == null || innovationActors.isEmpty()) {
+    ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();
+    projectInnovationActorAdd.setWomenYouth(projectInnovationActor.getWomenYouth());
+    projectInnovationActorAdd.setWomenNotYouth(projectInnovationActor.getWomenNotYouth());
+    projectInnovationActorAdd.setMenYouth(projectInnovationActor.getMenYouth());
+    projectInnovationActorAdd.setMenNotYouth(projectInnovationActor.getMenNotYouth());
+    projectInnovationActorAdd.setNonbinaryYouth(projectInnovationActor.getNonbinaryYouth());
+    projectInnovationActorAdd.setNonbinaryNotYouth(projectInnovationActor.getNonbinaryNotYouth());
+    projectInnovationActorAdd.setActor(projectInnovationActor.getActor());
+    projectInnovationActorAdd.setProjectInnovation(projectInnovationActor.getProjectInnovation());
+    projectInnovationActorAdd.setSexAgeNotApply(projectInnovationActor.getSexAgeNotApply());
+    projectInnovationActorAdd.setMenYouthNumber(projectInnovationActor.getMenYouthNumber());
+    projectInnovationActorAdd.setMenNonYouthNumber(projectInnovationActor.getMenNonYouthNumber());
+    projectInnovationActorAdd.setWomenYouthNumber(projectInnovationActor.getWomenYouthNumber());
+    projectInnovationActorAdd.setWomenNonYouthNumber(projectInnovationActor.getWomenNonYouthNumber());
+    projectInnovationActorAdd.setPhase(phase);
+    projectInnovationActorAdd.setOther(projectInnovationActor.getOther());
+    projectInnovationActorAdd.setTotal(projectInnovationActor.getTotal());
+    projectInnovationActorDAO.save(projectInnovationActorAdd);
+    // }
     if (phase.getNext() != null) {
       this.saveProjectInnovationActorPhase(phase.getNext(), innovationID, projectInnovationActor);
     }

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
-
+import java.util.ArrayList;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -110,6 +110,29 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
     if (rList != null) {
       for (Map<String, Object> map : rList) {
         projectInnovationContributingOrganization = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return projectInnovationContributingOrganization;
+
+  }
+
+  @Override
+  public List<Long> getProjectInnovationContributingOrganizationByInnovationAndInstitutionAndPhase(long innovationId,
+      long institutionId, long phaseId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT id as id from project_innovation_contributing_organizations pico  ");
+    query.append(" where project_innovation_id= " + innovationId);
+    query.append(" and institution_id= " + institutionId);
+    query.append(" and id_phase= " + phaseId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    List<Long> projectInnovationContributingOrganization = new ArrayList<>();
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        projectInnovationContributingOrganization.add(Long.parseLong(map.get("id").toString()));
       }
     }
 
