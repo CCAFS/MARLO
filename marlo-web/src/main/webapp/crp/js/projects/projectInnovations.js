@@ -1874,6 +1874,20 @@ function ajaxAllClusters(selectElement, table) {
   });
 }
 
+function sanitizeNumericValue(value) {
+  return value.replace(/[^0-9]/g, '');
+}
+
+function applyNumericSanitization($inputs) {
+  $inputs.on('input change', function () {
+    const raw = $(this).val();
+    const sanitized = sanitizeNumericValue(raw);
+    if (raw !== sanitized) {
+      $(this).val(sanitized);
+    }
+  });
+}
+
 function limitedValueFillInput(reference, input) {
 
   if (!$(reference).length || !$(input).length) {
@@ -1881,7 +1895,9 @@ function limitedValueFillInput(reference, input) {
     return;
   }
 
-  // Set initial max value based on the reference input
+  applyNumericSanitization($(reference));
+  applyNumericSanitization($(input));
+
   const initialMaxValue = parseInt($(reference).val(), 10) || 0;
   const $input = $(input);
   $input.attr('max', initialMaxValue);
