@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "select2", "flag-icon-css" ] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/admin/locations.js",
+  "${baseUrlMedia}/js/admin/locations.js?20260326",
   "${baseUrlCdn}/global/js/fieldsValidation.js" ] 
 /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/locations.css" ] /]

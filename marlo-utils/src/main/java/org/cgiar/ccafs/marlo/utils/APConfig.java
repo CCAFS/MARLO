@@ -70,8 +70,6 @@ public class APConfig {
   private String EMAIL_AUTH_BACKUP;
   @Value("${email.pmu}")
   private String EMAIL_PMU;
-  @Value("${google.api.key}")
-  private String GOOGLE_API_KEY;
   @Value("${pusher.api.key}")
   private String PUSH_API_KEY;
   @Value("${pusher.api.appid}")
@@ -567,16 +565,6 @@ public class APConfig {
 
     return crp.concat(File.separator).concat(FUNDING_SOURCE_FOLDER);
 
-  }
-
-  public String getGoogleApiKey() {
-
-    if (GOOGLE_API_KEY == null) {
-      LOG.error("there is not an google api key configured.");
-      return "";
-    }
-
-    return GOOGLE_API_KEY;
   }
 
   public String getMicroserviceBucketname() {

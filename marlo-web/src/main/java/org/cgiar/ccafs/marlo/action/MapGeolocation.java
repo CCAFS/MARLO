@@ -71,13 +71,14 @@ public class MapGeolocation extends BaseAction {
       String lat = String.valueOf(geoposition.getLatitude());
       String lon = String.valueOf(geoposition.getLongitude());
 
-      String sUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lon + "&key="
-        + config.getGoogleApiKey();
+      String sUrl = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=3&addressdetails=1&lat=" + lat
+        + "&lon=" + lon;
       try {
         URL url = new URL(sUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("User-Agent", "MARLO/1.0 (+https://marlo.cgiar.org)");
 
         if (conn.getResponseCode() != 200) {
           System.out.println("Failed : HTTP error code : " + conn.getResponseCode());
@@ -97,18 +98,14 @@ public class MapGeolocation extends BaseAction {
 
 
         Map<String, Object> firstMap = g.fromJson(jsonNew.toString(), mapType);
-        if (firstMap.get("status").toString().equals("OK")) {
-          List<Map<String, Object>> resssss = (List<Map<String, Object>>) firstMap.get("results");
-          Map<String, Object> res = resssss.get(0);
-          List<Map<String, Object>> adress = (List<Map<String, Object>>) res.get("address_components");;
-          for (Map<String, Object> map : adress) {
-            if (map.get("types").toString().contains("country")) {
-              String iso2 = map.get("short_name").toString();
-              LocElement element = locElementManager.getLocElementByISOCode(iso2);
-              if (element != null) {
-                locElement.setLocElement(element);
-                locElementManager.saveLocElement(locElement);
-              }
+        if (firstMap.get("address") != null) {
+          Map<String, Object> address = (Map<String, Object>) firstMap.get("address");
+          if (address.get("country_code") != null) {
+            String iso2 = address.get("country_code").toString().toUpperCase();
+            LocElement element = locElementManager.getLocElementByISOCode(iso2);
+            if (element != null) {
+              locElement.setLocElement(element);
+              locElementManager.saveLocElement(locElement);
             }
           }
         }
