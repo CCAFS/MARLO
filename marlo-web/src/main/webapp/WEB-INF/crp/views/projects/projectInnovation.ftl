@@ -5,7 +5,7 @@
 [#assign pageLibs = ["select2","font-awesome", "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250129",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20250828",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20251113"
 ] /]
