@@ -5,18 +5,291 @@ var infoWindow = null;
 var markers = [];
 var countID = 0;
 var countries = [];
-var layer;
+var layer = {
+  setMap: function() {}
+};
 var arSelectedLocations = [];
 var arInfoWindows = [];
+var reverseGeocodeCache = {};
+var geocoderSearchCache = {};
+
+function reverseGeocode(lat, lng, onSuccess, onComplete) {
+  var cacheKey = Number.parseFloat(lat).toFixed(4) + ',' + Number.parseFloat(lng).toFixed(4);
+  if(reverseGeocodeCache[cacheKey]) {
+    if(onSuccess) {
+      onSuccess(reverseGeocodeCache[cacheKey]);
+    }
+    if(onComplete) {
+      onComplete();
+    }
+    return;
+  }
+
+  $.ajax({
+      'url': 'https://nominatim.openstreetmap.org/reverse',
+      'dataType': 'json',
+      'data': {
+          format: 'jsonv2',
+          lat: lat,
+          lon: lng,
+          zoom: 3,
+          addressdetails: 1
+      },
+      success: function(data) {
+        reverseGeocodeCache[cacheKey] = data;
+        if(onSuccess) {
+          onSuccess(data);
+        }
+      },
+      complete: function() {
+        if(onComplete) {
+          onComplete();
+        }
+      }
+  });
+}
+
+function ensureLeafletAndGoogleCompat(callback) {
+  var onReady = function() {
+    if(!window.google) {
+      window.google = {};
+    }
+    if(!window.google.maps) {
+      window.google.maps = {};
+    }
+    if(window.google.maps.__leafletCompatReady) {
+      callback();
+      return;
+    }
+
+    var maps = window.google.maps;
+
+    maps.Animation = {
+      DROP: 'DROP'
+    };
+    maps.GeocoderStatus = {
+      OK: 'OK'
+    };
+    maps.ControlPosition = {
+      TOP_CENTER: 'TOP_CENTER',
+      TOP_LEFT: 'TOP_LEFT'
+    };
+
+    maps.LatLng = function(lat, lng) {
+      this._lat = parseFloat(lat);
+      this._lng = parseFloat(lng);
+      this.lat = function() {
+        return this._lat;
+      };
+      this.lng = function() {
+        return this._lng;
+      };
+    };
+
+    maps.LatLngBounds = function(sw, ne) {
+      this._sw = sw;
+      this._ne = ne;
+      this.contains = function(latLng) {
+        var lng = latLng.lng();
+        // Leaflet can report wrapped longitudes outside [-180, 180].
+        while(lng > 180) {
+          lng -= 360;
+        }
+        while(lng < -180) {
+          lng += 360;
+        }
+        return latLng.lat() >= this._sw.lat() && latLng.lat() <= this._ne.lat() && lng >= this._sw.lng()
+          && lng <= this._ne.lng();
+      };
+    };
+
+    maps.Map = function(mapDiv, options) {
+      var centerLat = options.center.lat();
+      var centerLng = options.center.lng();
+      this._map = L.map(mapDiv, {
+        zoomControl: true
+      }).setView([centerLat, centerLng], options.zoom || 3);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(this._map);
+
+      var self = this;
+      this.controls = {
+        TOP_CENTER: {
+          push: function() {}
+        },
+        TOP_LEFT: {
+          push: function() {}
+        }
+      };
+      this.setCenter = function(latLng) {
+        self._map.panTo([latLng.lat(), latLng.lng()]);
+      };
+      this.setZoom = function(zoom) {
+        self._map.setZoom(zoom);
+      };
+      this.fitBounds = function(bounds) {
+        if(bounds && bounds._southWest && bounds._northEast) {
+          self._map.fitBounds([
+            [bounds._southWest.lat, bounds._southWest.lng],
+            [bounds._northEast.lat, bounds._northEast.lng]
+          ]);
+        }
+      };
+      this.panTo = function(latLng) {
+        self._map.panTo([latLng.lat(), latLng.lng()]);
+      };
+      this.getCenter = function() {
+        var c = self._map.getCenter();
+        return new maps.LatLng(c.lat, c.lng);
+      };
+      this.addListener = function(eventName, handler) {
+        if(eventName === 'center_changed') {
+          self._map.on('move', handler);
+        }
+      };
+      this.getDiv = function() {
+        return self._map.getContainer();
+      };
+    };
+
+    maps.Marker = function(options) {
+      this._position = new maps.LatLng(options.position.lat, options.position.lng);
+      this._name = options.name;
+      this._marker = L.marker([options.position.lat, options.position.lng], {
+        draggable: !!options.draggable
+      });
+      this.setMap = function(mapObj) {
+        if(mapObj && mapObj._map) {
+          this._mapObj = mapObj;
+          this._marker.addTo(mapObj._map);
+        } else if(this._mapObj) {
+          this._mapObj._map.removeLayer(this._marker);
+        }
+      };
+      this.getPosition = function() {
+        var p = this._marker.getLatLng();
+        return new maps.LatLng(p.lat, p.lng);
+      };
+      this.addListener = function(eventName, handler) {
+        if(eventName === 'click') {
+          this._marker.on('click', handler);
+        }
+      };
+    };
+
+    maps.InfoWindow = function() {
+      this._content = '';
+      this._position = null;
+      this.setOptions = function(options) {
+        this._content = options.content || '';
+        this._position = options.position || null;
+      };
+      this.open = function(mapObj) {
+        if(mapObj && mapObj._map && this._position) {
+          this._popup = L.popup().setLatLng([this._position.lat(), this._position.lng()]).setContent(this._content)
+            .openOn(mapObj._map);
+        }
+      };
+      this.close = function() {
+        if(this._popup) {
+          this._popup.remove();
+        }
+      };
+    };
+
+    maps.Geocoder = function() {
+      this.geocode = function(request, callback) {
+        var query = request && request.address ? request.address : '';
+        if(query && geocoderSearchCache[query]) {
+          callback(geocoderSearchCache[query].results, geocoderSearchCache[query].status);
+          return;
+        }
+
+        $.ajax({
+            'url': 'https://nominatim.openstreetmap.org/search',
+            'dataType': 'json',
+            'data': {
+                format: 'jsonv2',
+                q: query,
+                limit: 1
+            },
+            success: function(data) {
+              if(data && data.length > 0) {
+                var item = data[0];
+                var lat = parseFloat(item.lat);
+                var lon = parseFloat(item.lon);
+                var geocodeResult = [
+                    {
+                      geometry: {
+                        location: new maps.LatLng(lat, lon),
+                        viewport: {
+                          _southWest: {
+                            lat: parseFloat(item.boundingbox[0]),
+                            lng: parseFloat(item.boundingbox[2])
+                          },
+                          _northEast: {
+                            lat: parseFloat(item.boundingbox[1]),
+                            lng: parseFloat(item.boundingbox[3])
+                          }
+                        }
+                      }
+                    }
+                ];
+                geocoderSearchCache[query] = {
+                  results: geocodeResult,
+                  status: maps.GeocoderStatus.OK
+                };
+                callback(geocodeResult, maps.GeocoderStatus.OK);
+              }
+            }
+        });
+      };
+    };
+
+    maps.FusionTablesLayer = function() {
+      this.setMap = function() {};
+    };
+
+    maps.__leafletCompatReady = true;
+    callback();
+  };
+
+  if(window.L) {
+    onReady();
+    return;
+  }
+
+  if(document.getElementById('leaflet-css') == null) {
+    var css = document.createElement('link');
+    css.id = 'leaflet-css';
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(css);
+  }
+
+  var script = document.getElementById('leaflet-js');
+  if(script == null) {
+    script = document.createElement('script');
+    script.id = 'leaflet-js';
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = onReady;
+    document.body.appendChild(script);
+  } else if(window.L) {
+    onReady();
+  } else {
+    script.addEventListener('load', onReady);
+  }
+}
 
 function init() {
-  console.log('GOOGLE KEY: '+GOOGLE_API_KEY)
 // Init select2
   $('form select').select2({
     width: "100%"
   });
 
-  // Google Maps
+  // Leaflet map and google.maps compatibility shim
   loadScript();
 
   /* Declaring Events */
@@ -320,6 +593,9 @@ function attachEvents() {
   $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").blur(function() {
     var latitude = $("#inputFormWrapper input.latitude").val();
     var longitude = $("#inputFormWrapper input.longitude").val();
+    if(!map) {
+      return;
+    }
     var latLng = new google.maps.LatLng(latitude, longitude);
     map.setCenter(latLng)
   });
@@ -339,6 +615,15 @@ function attachEvents() {
 
   // Add the modal buttons listeners
   modalButtonsListeners();
+
+  // Leaflet map needs size invalidation after Bootstrap modal finishes opening.
+  $('#addLocationModal, #allLocationsModal').on('shown.bs.modal', function() {
+    if(map && map._map && map._map.invalidateSize) {
+      setTimeout(function() {
+        map._map.invalidateSize();
+      }, 50);
+    }
+  });
 
 
   // CSA Question
@@ -506,14 +791,12 @@ function checkRegionList(block) {
 
 // Load script of google services
 function loadScript() {
-  var script = document.createElement("script");
-  script.src =
-      "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_API_KEY
-          + "&libraries=places&sensor=false&callback=initMap&v=quarterly";
-  // function after load script
-  script.onload = script.onreadystatechange = function() {
+  ensureLeafletAndGoogleCompat(function() {
+    initMap();
 
+    var pendingMarkers = [];
     $(".locationsDataTable").find(".locationLevel").each(function(index,item) {
+      var locationTypeId = $(item).find("input.locationLevelId").val();
       $(item).find(".locElement").each(function(i,locItem) {
         var latitude = $(locItem).find(".geoLatitude").val();
         var longitude = $(locItem).find(".geoLongitude").val();
@@ -521,16 +804,36 @@ function loadScript() {
         var site = $(locItem).find(".locElementName").val();
         var idMarker = $(locItem).attr("id").split("-")[1];
         if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          if($(item).find("input.locationLevelId").val() == "10") {
-            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 2);
-          } else {
-            addMarker(map, (idMarker), parseFloat(latitude), parseFloat(longitude), site, isList, 1);
-          }
+          pendingMarkers.push({
+            idMarker: idMarker,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+            site: site,
+            isList: isList,
+            locType: locationTypeId == "10" ? 2 : 1
+          });
         }
       });
     });
-  }
-  document.body.appendChild(script);
+
+    var markerBatchSize = 40;
+    var markerIndex = 0;
+    function renderMarkerBatch() {
+      var end = Math.min(markerIndex + markerBatchSize, pendingMarkers.length);
+      for(var i = markerIndex; i < end; i++) {
+        var m = pendingMarkers[i];
+        addMarker(map, m.idMarker, m.latitude, m.longitude, m.site, m.isList, m.locType);
+      }
+      markerIndex = end;
+      if(markerIndex < pendingMarkers.length) {
+        setTimeout(renderMarkerBatch, 0);
+      }
+    }
+
+    if(pendingMarkers.length > 0) {
+      renderMarkerBatch();
+    }
+  });
 
 }
 
@@ -678,6 +981,11 @@ function initMap() {
     // marker.
     $("#inputFormWrapper").find(".latitude").val(map.getCenter().lat());
     $("#inputFormWrapper").find(".longitude").val(map.getCenter().lng());
+
+    // In Leaflet mode, keep free pan behavior and avoid lockups due to wrapped world coordinates.
+    if(map && map._map) {
+      return;
+    }
 
     if(allowedBounds.contains(map.getCenter())) {
       // still within valid bounds, so save the last valid position
@@ -860,63 +1168,58 @@ function addLocByCoordinates(locationId,$locationSelect,locationName) {
   var locLevelList = $(".list-container").find("ul[name='" + locationName + "']");
   countID++;
 
-  // Ajax for country name
-  $.ajax({
-      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-      'data': {
-          key: GOOGLE_API_KEY,
-          latlng: (latitude + "," + longitude)
-      },
-      success: function(data) {
-        if(data.status == 'OK') {
-          $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
-        } else {
-          console.log(data.status);
-        }
-      },
-      complete: function(data) {
-        // Add item into locations table
-        $item.attr("id", "location-" + (countID));
-        $item.attr("data-locId", (countID));
-        $item.find('.locationName').html(
-            '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
-                + parseFloat(longitude).toFixed(4) + ' )</span> ');
-        $item.find('.geoLatitude').val(latitude);
-        $item.find('.geoLongitude').val(longitude);
-        $item.find('.locElementName').val(name);
-        $item.find('.locElementId').val(-1);
-        $list.append($item);
-        $item.show('slow');
+  var finalizeLocationAdd = function() {
+    // Add item into locations table
+    $item.attr("id", "location-" + (countID));
+    $item.attr("data-locId", (countID));
+    $item.find('.locationName').html(
+        '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
+            + parseFloat(longitude).toFixed(4) + ' )</span> ');
+    $item.find('.geoLatitude').val(latitude);
+    $item.find('.geoLongitude').val(longitude);
+    $item.find('.locElementName').val(name);
+    $item.find('.locElementId').val(-1);
+    $list.append($item);
+    $item.show('slow');
 
-        // add marker in map
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
+    // add marker in map only when map is available
+    if(map) {
+      addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
+    }
 
-        // Add location in all locations list (Modal)
-        var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-        $listItem.attr('id', countID);
-        $listItem.attr('name', name);
-        $listItem.find(".item-name").text(name);
+    // Add location in all locations list (Modal)
+    var $listItem = $('#itemList-template').clone(true).removeAttr("id");
+    $listItem.attr('id', countID);
+    $listItem.attr('name', name);
+    $listItem.find(".item-name").text(name);
 
-        // Round value to max 4 decimals
-        latitude = parseFloat(latitude).toFixed(4);
-        longitude = parseFloat(longitude).toFixed(4);
+    // Round value to max 4 decimals
+    latitude = parseFloat(latitude).toFixed(4);
+    longitude = parseFloat(longitude).toFixed(4);
 
-        $listItem.find(".coordinates").attr('data-lat', latitude);
-        $listItem.find(".coordinates").attr('data-lon', longitude);
-        $listItem.find(".coordinates").text("(" + latitude + ", " + longitude + ")").show();
-        locLevelList.append($listItem);
+    $listItem.find(".coordinates").attr('data-lat', latitude);
+    $listItem.find(".coordinates").attr('data-lon', longitude);
+    $listItem.find(".coordinates").text("(" + latitude + ", " + longitude + ")").show();
+    locLevelList.append($listItem);
 
-        // Show and hide Successfully added message
-        $('#alert-succesfully-added').slideDown();
-        setTimeout(function() {
-          $('#alert-succesfully-added').slideUp();
-          $('#addLocationModal').modal('hide');
-        }, 2000);
+    // Show and hide Successfully added message
+    $('#alert-succesfully-added').slideDown();
+    setTimeout(function() {
+      $('#alert-succesfully-added').slideUp();
+      $('#addLocationModal').modal('hide');
+    }, 2000);
 
-        // update indexes
-        updateIndex();
-        checkItems($list.parents("#selectsContent"));
-      }
+    // update indexes
+    updateIndex();
+    checkItems($list.parents("#selectsContent"));
+  };
+
+  reverseGeocode(latitude, longitude, function(data) {
+    if(data && data.address && data.address.country_code) {
+      $item.find('input.locElementCountry').val(data.address.country_code.toUpperCase());
+    }
+  }, function() {
+    finalizeLocationAdd();
   });
   $('#inputFormWrapper .nameWrapper input').val('');
 }
@@ -951,16 +1254,18 @@ function setMapCenterPosition($item,locId,locName,countID) {
       longitude = m.geopositions[0].longitude;
       $item.find('.geoLatitude').val(latitude);
       $item.find('.geoLongitude').val(longitude);
-      addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
-      var latLng = new google.maps.LatLng(latitude, longitude);
-      map.setCenter(latLng);
+      if(map) {
+        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
+        var latLng = new google.maps.LatLng(latitude, longitude);
+        map.setCenter(latLng);
+      }
     } else {
       var geocoder = new google.maps.Geocoder();
 
       geocoder.geocode({
         'address': locName
       }, function(results,status) {
-        if(status == google.maps.GeocoderStatus.OK) {
+        if(status == google.maps.GeocoderStatus.OK && map) {
           map.setCenter(results[0].geometry.location);
         }
       });
@@ -1151,6 +1456,11 @@ function showMarkers() {
 // This function is for change the map's div
 // for the "add locations modal" and the "all locations modal"
 function changeMapDiv(selectedButton) {
+  if(!map || !map.getDiv) {
+    notify('Map is still loading. Please try again in a moment.');
+    return;
+  }
+
   // Show search box in map after 2 seconds, to prevent bad visual behavior
   setTimeout(function() {
     $("#pac-input").show();
@@ -1214,24 +1524,19 @@ function removeSuggestedCountry(locIso,locId,countryRow,countryList) {
 
 // Set default country to countries select
 function addLocationFromMap() {
-// Ajax for country name
-  $.ajax({
-      'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-      'data': {
-          key: GOOGLE_API_KEY,
-          latlng: (map.getCenter().lat() + "," + map.getCenter().lng())
-      },
-      success: function(data) {
-        if(data.status == 'OK') {
-          var country = getResultByType(data.results[0], 'country').short_name;
-          var $countrySelect = $("#countriesCmvs");
-          arSelectedLocations.push($countrySelect.find("option." + country).val());
-          $countrySelect.val(arSelectedLocations);
-          $countrySelect.select2().trigger("change");
-        } else {
-          console.log(data.status);
-        }
-      },
+  if(!map) {
+    notify('Map is not available.');
+    return;
+  }
+
+  reverseGeocode(map.getCenter().lat(), map.getCenter().lng(), function(data) {
+    if(data && data.address && data.address.country_code) {
+      var country = data.address.country_code.toUpperCase();
+      var $countrySelect = $("#countriesCmvs");
+      arSelectedLocations.push($countrySelect.find("option." + country).val());
+      $countrySelect.val(arSelectedLocations);
+      $countrySelect.select2().trigger("change");
+    }
   });
 }
 

@@ -1,5 +1,31 @@
 $(document).ready(init);
 
+function reverseGeocode(lat, lng, onSuccess, onComplete) {
+  $.ajax({
+      'url': 'https://nominatim.openstreetmap.org/reverse',
+      'dataType': 'json',
+      'data': {
+          format: 'jsonv2',
+          lat: lat,
+          lon: lng,
+          zoom: 3,
+          addressdetails: 1
+      },
+      success: function(data) {
+        if(data && data.address) {
+          if(onSuccess) {
+            onSuccess(data.address);
+          }
+        }
+      },
+      complete: function() {
+        if(onComplete) {
+          onComplete();
+        }
+      }
+  });
+}
+
 function init() {
 
   /* Declaring Events */
@@ -152,41 +178,35 @@ function addLocElement() {
     notyOptions.text = 'You must fill all fields for adding a new location.';
     noty(notyOptions);
   } else {
-    // Getting country name by Google GeoCoding REST API
-    $.ajax({
-        'url': 'https://maps.googleapis.com/maps/api/geocode/json',
-        'data': {
-            key: GOOGLE_API_KEY,
-            latlng: itemObject.latlng()
-        },
-        success: function(data) {
-          if(data.status == 'OK') {
-            $item.find('input.locElementCountry').val(getResultByType(data.results[0], 'country').short_name);
-            itemObject.countryName = getResultByType(data.results[0], 'country').long_name;
-          } else {
-            console.log(data.status);
-          }
-        },
-        complete: function(data) {
-          // Fill item values
-          $item.find('span.name').text(itemObject.name);
-          $item.find('span.coordinates').text(itemObject.countryName + " " + itemObject.composedLatLng());
-          $item.find('input.locElementName').val(itemObject.name);
-          $item.find('input.geoLat').val(itemObject.lat);
-          $item.find('input.geoLng').val(itemObject.lng);
-          // Adding item to the list
-          $list.append($item);
-          // Update Locations Indexes
-          updateLocationsIndexes();
-          // Show item
-          $item.show('slow');
-          // Remove message
-          $list.parent().find('p.message').hide();
-          // Reset Inputs
-          $inputs.find('input:text').val('');
-        }
-    });
+    var appendLocElement = function() {
+      // Fill item values
+      $item.find('span.name').text(itemObject.name);
+      $item.find('span.coordinates').text(itemObject.countryName + " " + itemObject.composedLatLng());
+      $item.find('input.locElementName').val(itemObject.name);
+      $item.find('input.geoLat').val(itemObject.lat);
+      $item.find('input.geoLng').val(itemObject.lng);
+      // Adding item to the list
+      $list.append($item);
+      // Update Locations Indexes
+      updateLocationsIndexes();
+      // Show item
+      $item.show('slow');
+      // Remove message
+      $list.parent().find('p.message').hide();
+      // Reset Inputs
+      $inputs.find('input:text').val('');
+    };
 
+    reverseGeocode(itemObject.lat, itemObject.lng, function(address) {
+      if(address.country_code) {
+        $item.find('input.locElementCountry').val(address.country_code.toUpperCase());
+      }
+      if(address.country) {
+        itemObject.countryName = address.country;
+      }
+    }, function() {
+      appendLocElement();
+    });
   }
 
 }
