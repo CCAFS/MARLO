@@ -49,6 +49,8 @@
     [#-- What do you want to do --]
 
   <section class="marlo-content">
+  [#-- Hide map section only when this specificity is active --]
+  [#if !action.hasSpecificities('homepage_hide_section_map')]
   <section class="sectionMap">	
   <div class="containerMapsection">
     <div class="containerTextMap">
@@ -101,6 +103,7 @@
     </div>
   </section>
   <div class="borderMap"></div>
+  [/#if]
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
   <section class="timelineRefresh">	
