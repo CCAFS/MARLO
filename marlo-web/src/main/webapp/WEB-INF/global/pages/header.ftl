@@ -190,8 +190,8 @@
             [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
-               <div id="title" >AICCRA</div>    
-                <div id="subTitle" class="visible-md-block visible-lg-block visible-xl-block">Accelerating Innovation and Catalyzing Capacity for Resilience in Africa</div>
+               <div id="title" >MARLO</div>    
+                <div id="subTitle" class="visible-md-block visible-lg-block visible-xl-block">Managing Agricultural Research for Learning & Outcomes</div>
                 <div class="clearfix"></div>            
               </a>
             </div>
