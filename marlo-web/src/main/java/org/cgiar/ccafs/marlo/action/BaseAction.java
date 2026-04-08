@@ -4637,7 +4637,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     for (GlobalUnitType globalUnitType : globalUnitTypes) {
       globalUnitType.setGlobalUnitsList(globalUnitType.getGlobalUnits().stream()
-        .filter(c -> c.isActive() && c.getAcronym().contains("AICCRA")).collect(Collectors.toList()));
+        .filter(c -> c.isActive() && c.getAcronym() != null).collect(Collectors.toList()));
     }
 
     return globalUnitTypes;
