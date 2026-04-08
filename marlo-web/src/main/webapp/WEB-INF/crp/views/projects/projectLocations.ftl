@@ -3,12 +3,15 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectLocations.js?20181029", 
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", 
+  "${baseUrlMedia}/js/projects/projectLocations.js?20260326", 
   [#--  "${baseUrlCdn}/global/js/autoSave.js?20210616",  --]
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
 /] 
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectLocations.css?20230106" ] /]
+[#assign customCSS = [
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+  "${baseUrlMedia}/css/projects/projectLocations.css?20230106" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
 [#assign hideJustification = true /]

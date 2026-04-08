@@ -10734,13 +10734,19 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
-    // Add funding sources: structured list preferred, fallback to text format
+    String fundingSourcesRendered = fundingSourcesText.toString();
+    if (fundingSourcesRendered.endsWith("<br>")) {
+      fundingSourcesRendered = fundingSourcesRendered.substring(0, fundingSourcesRendered.length() - 4);
+    }
+
+    // Keep backward compatibility with templates that render fundingSources as scalar text.
+    // Also expose the structured list for templates that use #each.
     if (!fundingSourcesList.isEmpty()) {
       data.put("hasFundingSources", true);
-      data.put("fundingSources", fundingSourcesList);
+      data.put("fundingSources", fundingSourcesRendered);
+      data.put("fundingSourcesList", fundingSourcesList);
     } else if (fundingSourcesText.length() > 0) {
-      // Text format for backward compatibility when no structured data
-      data.put("fundingSources", fundingSourcesText.toString());
+      data.put("fundingSources", fundingSourcesRendered);
     }
 
     // Partnerships - Contacts (Responsible)

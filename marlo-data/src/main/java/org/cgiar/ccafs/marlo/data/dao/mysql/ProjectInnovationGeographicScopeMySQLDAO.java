@@ -13,14 +13,13 @@
  * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
  *****************************************************************/
 
-
 package org.cgiar.ccafs.marlo.data.dao.mysql;
 
 import org.cgiar.ccafs.marlo.data.dao.ProjectInnovationGeographicScopeDAO;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 
 import java.util.List;
-
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -28,8 +27,7 @@ import org.hibernate.SessionFactory;
 
 @Named
 public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<ProjectInnovationGeographicScope, Long>
-  implements ProjectInnovationGeographicScopeDAO {
-
+    implements ProjectInnovationGeographicScopeDAO {
 
   @Inject
   public ProjectInnovationGeographicScopeMySQLDAO(SessionFactory sessionFactory) {
@@ -73,10 +71,11 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
 
   @Override
   public ProjectInnovationGeographicScope getProjectInnovationGeographicScope(long project_innovation_id,
-    long rep_ind_geographic_scope_id, long id_phase) {
+      long rep_ind_geographic_scope_id, long id_phase) {
     String query = "from " + ProjectInnovationGeographicScope.class.getName() + " where project_innovation_id ='"
-      + project_innovation_id + "' AND rep_ind_geographic_scope_id='" + rep_ind_geographic_scope_id + "' AND id_phase='"
-      + id_phase + "'";
+        + project_innovation_id + "' AND rep_ind_geographic_scope_id='" + rep_ind_geographic_scope_id
+        + "' AND id_phase='"
+        + id_phase + "'";
     List<ProjectInnovationGeographicScope> list = super.findAll(query);
     if (list.size() > 0) {
       return list.get(0);
@@ -92,8 +91,30 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
       projectInnovationGeographicScope = super.update(projectInnovationGeographicScope);
     }
 
-
     return projectInnovationGeographicScope;
+  }
+
+  @Override
+  public int getProjectInnovationGeographicScopesbyinnovationandphaseandgeographicscope(long innovationId,
+      long phaseId, long geographicScopeId) {
+
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT count(*) as count from project_innovation_geographic_scopes pig  ");
+    query.append(" where project_innovation_id= " + innovationId);
+    query.append(" and rep_ind_geographic_scope_id= " + geographicScopeId);
+    query.append(" and id_phase= " + phaseId);
+
+    List<Map<String, Object>> rList = super.findCustomQuery(query.toString());
+    int projectInnovationGeographicScopes = 0;
+
+    if (rList != null) {
+      for (Map<String, Object> map : rList) {
+        projectInnovationGeographicScopes = Integer.parseInt(map.get("count").toString());
+      }
+    }
+
+    return projectInnovationGeographicScopes;
+
   }
 
 }
