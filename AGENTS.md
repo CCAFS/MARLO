@@ -209,3 +209,24 @@ Scripts in `scripts/` run MARLO locally (build, update properties, start server)
 - Otherwise, use the Java 8 run script in `scripts/`:
   - macOS/Linux: `scripts/run-marlo-java8.sh`
   - Windows: `scripts/run-marlo-java8.bat` (if provided; otherwise use `.sh` in Git Bash)
+
+## Operational Context Documentation
+Use these documents as the primary operational context for semi-autonomous work in critical modules:
+
+### Frontend & Composition
+- `reports/ai-context/frontend-composition-map.md`
+
+### Save & Validation
+- `reports/ai-context/save-validation-matrix.md`
+
+### Persistence & Replication
+- `reports/ai-context/persistence-replication-managerimpl.md`
+
+### Routing & Interceptors
+- `reports/ai-context/struts-critical-routing-catalog.md`
+- `reports/ai-context/interceptor-validator-playbook.md`
+
+### Scope Guardrails
+- Internal MARLO flows should prioritize Struts `.do` actions and existing FTL composition.
+- `struts-json` usage is punctual and should only be extended when there is an existing JSON pattern in the same module.
+- `/api/*` (Spring MVC) is out of scope for internal flow implementation and remains reference-only in this context pack.
