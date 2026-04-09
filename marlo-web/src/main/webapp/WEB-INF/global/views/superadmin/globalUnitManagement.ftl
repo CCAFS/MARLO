@@ -123,13 +123,13 @@
       <div class="row">
         <div class="col-md-6 form-group">
           <label>
-            <input type="checkbox" name="globalUnits[${index}].marlo" value="true" [#if (element.marlo)!false]checked[/#if] />
+            <input type="checkbox" name="globalUnits[${index}].marlo" value="true" [#if isTemplate || (element.marlo)!false]checked[/#if] />
             Is MARLO
           </label>
         </div>
         <div class="col-md-6 form-group">
           <label>
-            <input type="checkbox" name="globalUnits[${index}].login" value="true" [#if (element.login)!false]checked[/#if] />
+            <input type="checkbox" name="globalUnits[${index}].login" value="true" [#if isTemplate || (element.login)!false]checked[/#if] />
             Login enabled
           </label>
         </div>

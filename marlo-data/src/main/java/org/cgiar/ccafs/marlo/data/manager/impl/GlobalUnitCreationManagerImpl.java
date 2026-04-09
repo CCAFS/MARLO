@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
+import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpLocElementType;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
@@ -38,8 +39,10 @@ import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +54,10 @@ import org.apache.commons.lang3.StringUtils;
 @Named
 public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager {
 
+  private static final long PREFERRED_SUPER_ADMIN_USER_ID = 1082L;
+  private static final List<String> REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS =
+    Arrays.asList("*", "superadmin:canEdit");
+
   private final GlobalUnitManager globalUnitManager;
   private final GlobalUnitTypeManager globalUnitTypeManager;
   private final InstitutionManager institutionManager;
@@ -58,6 +65,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
   private final CrpUserManager crpUserManager;
   private final UserManager userManager;
   private final RoleManager roleManager;
+  private final UserRoleManager userRoleManager;
   private final CrpLocElementTypeManager crpLocElementTypeManager;
   private final LiaisonInstitutionManager liaisonInstitutionManager;
   private final ParameterManager parameterManager;
@@ -66,7 +74,8 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
   @Inject
   public GlobalUnitCreationManagerImpl(GlobalUnitManager globalUnitManager, GlobalUnitTypeManager globalUnitTypeManager,
     InstitutionManager institutionManager, PhaseManager phaseManager, CrpUserManager crpUserManager,
-    UserManager userManager, RoleManager roleManager, CrpLocElementTypeManager crpLocElementTypeManager,
+    UserManager userManager, RoleManager roleManager, UserRoleManager userRoleManager,
+    CrpLocElementTypeManager crpLocElementTypeManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ParameterManager parameterManager,
     CustomParameterManager customParameterManager) {
     this.globalUnitManager = globalUnitManager;
@@ -76,6 +85,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     this.crpUserManager = crpUserManager;
     this.userManager = userManager;
     this.roleManager = roleManager;
+    this.userRoleManager = userRoleManager;
     this.crpLocElementTypeManager = crpLocElementTypeManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.parameterManager = parameterManager;
@@ -87,16 +97,24 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     this.validateRequest(request);
 
     GlobalUnitType globalUnitType = this.getGlobalUnitTypeOrFail(request.getGlobalUnitTypeId());
-    this.getTemplateGlobalUnitOrFail(request.getTemplateGlobalUnitId());
+    GlobalUnit templateGlobalUnit = this.resolveTemplateGlobalUnit(request.getTemplateGlobalUnitId());
+    this.validateEnvironmentOrFail(request, globalUnitType, templateGlobalUnit);
 
     Institution institution = this.resolveInstitution(request.getInstitutionId());
     GlobalUnit globalUnit = this.createBaseGlobalUnit(request, globalUnitType, institution);
     List<Phase> createdPhases = this.createPhases(globalUnit, request.getPhasesInput());
 
-    this.createSuperAdminAccess(globalUnit, request.getSuperAdminUserId());
-    this.cloneRoles(globalUnit, request.getTemplateGlobalUnitId());
-    roleManager.cloneRolePermissionsByAcronym(request.getTemplateGlobalUnitId(), globalUnit.getId());
-    this.cloneLocTypes(globalUnit, request.getTemplateGlobalUnitId());
+    User superAdminUser = this.resolveConfiguredSuperAdminUser(request.getSuperAdminUserId());
+    if (templateGlobalUnit != null && templateGlobalUnit.getId() != null) {
+      long templateGlobalUnitId = templateGlobalUnit.getId().longValue();
+      this.cloneRoles(globalUnit, templateGlobalUnitId);
+      roleManager.cloneRolePermissionsByAcronym(templateGlobalUnitId, globalUnit.getId());
+      this.cloneLocTypes(globalUnit, templateGlobalUnitId);
+    } else {
+      roleManager.ensureSuperAdminRoleAndPermissions(globalUnit.getId(), 45L);
+    }
+    this.createSuperAdminAccess(globalUnit, superAdminUser);
+    this.assignSuperAdminRole(globalUnit, superAdminUser);
     this.createLiaisonInstitution(globalUnit, request.getLiaisonName(), request.getLiaisonAcronym());
     this.saveCriticalParameters(globalUnit, createdPhases, request.getCurrentPhaseIndex(), request.getCustomFileName());
 
@@ -126,13 +144,41 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
   }
 
-  private void createSuperAdminAccess(GlobalUnit globalUnit, long superAdminUserId) {
-    if (superAdminUserId <= 0L) {
+  private void assignSuperAdminRole(GlobalUnit globalUnit, User superAdminUser) {
+    if (globalUnit == null || globalUnit.getId() == null || superAdminUser == null || superAdminUser.getId() == null) {
       return;
     }
 
-    User superAdminUser = userManager.getUser(superAdminUserId);
-    if (superAdminUser == null || superAdminUser.getId() == null
+    List<Role> globalUnitRoles = roleManager.findAll();
+    if (globalUnitRoles == null || globalUnitRoles.isEmpty()) {
+      return;
+    }
+
+    Role superAdminRole = globalUnitRoles.stream()
+      .filter(role -> role != null && role.getId() != null && role.getCrp() != null && role.getCrp().getId() != null
+        && role.getCrp().getId().equals(globalUnit.getId()) && role.getAcronym() != null
+        && "superadmin".equalsIgnoreCase(role.getAcronym()))
+      .findFirst().orElse(null);
+
+    if (superAdminRole == null || superAdminRole.getId() == null) {
+      return;
+    }
+
+    List<UserRole> existingUserRoles = userRoleManager.getUserRolesByUserId(superAdminUser.getId());
+    if (existingUserRoles != null && existingUserRoles.stream().anyMatch(userRole -> userRole != null
+      && userRole.getRole() != null && userRole.getRole().getId() != null
+      && userRole.getRole().getId().equals(superAdminRole.getId()))) {
+      return;
+    }
+
+    UserRole userRole = new UserRole();
+    userRole.setUser(superAdminUser);
+    userRole.setRole(superAdminRole);
+    userRoleManager.saveUserRole(userRole);
+  }
+
+  private void createSuperAdminAccess(GlobalUnit globalUnit, User superAdminUser) {
+    if (globalUnit == null || globalUnit.getId() == null || superAdminUser == null || superAdminUser.getId() == null
       || crpUserManager.existCrpUser(superAdminUser.getId(), globalUnit.getId())) {
       return;
     }
@@ -141,6 +187,34 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     crpUser.setCrp(globalUnit);
     crpUser.setUser(superAdminUser);
     crpUserManager.saveCrpUser(crpUser);
+  }
+
+  private User resolveConfiguredSuperAdminUser(long superAdminUserId) {
+    User superAdminUser = null;
+
+    superAdminUser = userManager.getUser(PREFERRED_SUPER_ADMIN_USER_ID);
+
+    if (superAdminUser == null || superAdminUser.getId() == null) {
+      superAdminUser = null;
+    }
+
+    if ((superAdminUser == null || superAdminUser.getId() == null) && superAdminUserId > 0L) {
+      superAdminUser = userManager.getUser(superAdminUserId);
+    }
+
+    if (superAdminUser != null && superAdminUser.getId() != null) {
+      return superAdminUser;
+    }
+
+    if (superAdminUser == null || superAdminUser.getId() == null) {
+      superAdminUser = userManager.getActiveSuperAdminUserByUsernameOccurrence();
+    }
+
+    if (superAdminUser == null || superAdminUser.getId() == null) {
+      return null;
+    }
+
+    return superAdminUser;
   }
 
   private List<Phase> createPhases(GlobalUnit globalUnit, List<PhaseInput> phasesInput) {
@@ -208,12 +282,21 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     return globalUnitType;
   }
 
-  private GlobalUnit getTemplateGlobalUnitOrFail(long templateGlobalUnitId) {
-    GlobalUnit templateGlobalUnit = globalUnitManager.getGlobalUnitById(templateGlobalUnitId);
-    if (templateGlobalUnit == null || templateGlobalUnit.getId() == null) {
-      throw new IllegalArgumentException("Invalid template global unit");
+  private GlobalUnit resolveTemplateGlobalUnit(long templateGlobalUnitId) {
+    if (templateGlobalUnitId > 0L) {
+      GlobalUnit templateGlobalUnit = globalUnitManager.getGlobalUnitById(templateGlobalUnitId);
+      if (templateGlobalUnit != null && templateGlobalUnit.getId() != null) {
+        return templateGlobalUnit;
+      }
     }
-    return templateGlobalUnit;
+
+    List<GlobalUnit> availableGlobalUnits = globalUnitManager.findAll();
+    if (availableGlobalUnits == null) {
+      return null;
+    }
+
+    return availableGlobalUnits.stream().filter(globalUnit -> globalUnit != null && globalUnit.getId() != null)
+      .findFirst().orElse(null);
   }
 
   private Institution resolveInstitution(Long institutionId) {
@@ -221,6 +304,48 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       return null;
     }
     return institutionManager.getInstitutionById(institutionId.longValue());
+  }
+
+  private void validateEnvironmentOrFail(CreateRequest request, GlobalUnitType globalUnitType,
+    GlobalUnit templateGlobalUnit) {
+    List<String> errors = new ArrayList<>();
+
+    List<GlobalUnitType> availableGlobalUnitTypes = globalUnitTypeManager.findAll();
+    if (availableGlobalUnitTypes == null || availableGlobalUnitTypes.isEmpty()) {
+      errors.add("No Global Unit Types available to create new records");
+    }
+
+    if (!this.existsParameterForType(globalUnitType, APConstants.CURRENT_PHASE_PARAM)) {
+      errors.add("Missing parameter key for current phase: " + APConstants.CURRENT_PHASE_PARAM);
+    }
+
+    if (StringUtils.isNotBlank(request.getCustomFileName())
+      && !this.existsParameterForType(globalUnitType, APConstants.CRP_CUSTOM_FILE)) {
+      errors.add("Missing parameter key for custom file: " + APConstants.CRP_CUSTOM_FILE);
+    }
+
+    if (templateGlobalUnit == null && !roleManager.existsPermissionsByNames(REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS)) {
+      errors.add("Missing required fallback permissions: " + String.join(", ", REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS));
+    }
+
+    if (!errors.isEmpty()) {
+      throw new IllegalStateException("Creation precheck failed: " + String.join("; ", errors));
+    }
+  }
+
+  private boolean existsParameterForType(GlobalUnitType globalUnitType, String parameterKey) {
+    if (globalUnitType == null || globalUnitType.getId() == null || StringUtils.isBlank(parameterKey)) {
+      return false;
+    }
+
+    List<Parameter> parameters = parameterManager.findAll();
+    if (parameters == null || parameters.isEmpty()) {
+      return false;
+    }
+
+    return parameters.stream().anyMatch(parameter -> parameter != null && parameter.getKey() != null
+      && parameter.getGlobalUnitType() != null && parameter.getGlobalUnitType().getId() != null
+      && parameterKey.equals(parameter.getKey()) && globalUnitType.getId().equals(parameter.getGlobalUnitType().getId()));
   }
 
   private void saveCriticalParameters(GlobalUnit globalUnit, List<Phase> createdPhases, int currentPhaseIndex,

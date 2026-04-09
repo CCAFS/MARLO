@@ -53,7 +53,8 @@ public class GlobalUnitCreateAction extends BaseAction {
 
   private static final long serialVersionUID = 6280478669923657397L;
   private static final String LOGO_FOLDER = "marlo-web/src/main/webapp/global/images/crps";
-  private static final long DEFAULT_SUPER_ADMIN_USER_ID = 1082L;
+  private static final String GLOBAL_PROPERTIES_SOURCE = "marlo-web/src/main/resources/global.properties";
+  private static final String CUSTOM_PROPERTIES_FOLDER = "marlo-web/src/main/resources/custom";
 
   private final GlobalUnitManager globalUnitManager;
   private final GlobalUnitTypeManager globalUnitTypeManager;
@@ -183,7 +184,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       .filter(institution -> institution != null && institution.getId() != null).collect(Collectors.toList());
 
     if (templateGlobalUnitId == null || templateGlobalUnitId.longValue() <= 0L) {
-      templateGlobalUnitId = 45L;
+      templateGlobalUnitId = Long.valueOf(this.resolveTemplateGlobalUnitId());
     }
 
     if (currentPhaseIndex == null) {
@@ -225,17 +226,18 @@ public class GlobalUnitCreateAction extends BaseAction {
       request.setInstitutionId(institutionId);
       request.setMarlo(marlo);
       request.setLogin(login);
-      request.setTemplateGlobalUnitId(templateGlobalUnitId != null ? templateGlobalUnitId.longValue() : 45L);
+      request.setTemplateGlobalUnitId(this.resolveTemplateGlobalUnitId());
       request.setPhasesInput(phaseInputs);
       request.setCurrentPhaseIndex(currentPhaseIndex != null ? currentPhaseIndex.intValue() : 0);
-      request.setCustomFileName(customFileName);
+      request.setCustomFileName(this.resolveCustomFileName(acronym));
       request.setLiaisonName(liaisonName);
       request.setLiaisonAcronym(liaisonAcronym);
-      request.setSuperAdminUserId(DEFAULT_SUPER_ADMIN_USER_ID);
+      request.setSuperAdminUserId(0L);
 
       GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
 
       this.copyLogoIfPresent(createdGlobalUnit);
+      this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
       this.addActionMessage("message:Global Unit created successfully");
       return SUCCESS;
     } catch (Exception e) {
@@ -331,6 +333,31 @@ public class GlobalUnitCreateAction extends BaseAction {
     String finalFileName = createdGlobalUnit.getAcronym().toUpperCase(Locale.ROOT) + ".png";
     String targetPath = new File(targetDir, finalFileName).getAbsolutePath();
     FileManager.copyFile(logoFile, targetPath);
+  }
+
+  private void copyInternationalizationFileIfNeeded(GlobalUnit createdGlobalUnit) {
+    if (createdGlobalUnit == null || StringUtils.isBlank(createdGlobalUnit.getAcronym())) {
+      return;
+    }
+
+    String workspaceRoot = System.getProperty("user.dir");
+    File sourceFile = new File(workspaceRoot, GLOBAL_PROPERTIES_SOURCE);
+    if (!sourceFile.exists()) {
+      return;
+    }
+
+    File targetDir = new File(workspaceRoot, CUSTOM_PROPERTIES_FOLDER);
+    if (!targetDir.exists()) {
+      targetDir.mkdirs();
+    }
+
+    String customPropertiesFileName = this.resolveCustomFileName(createdGlobalUnit.getAcronym()) + ".properties";
+    File targetFile = new File(targetDir, customPropertiesFileName);
+    if (targetFile.exists()) {
+      return;
+    }
+
+    FileManager.copyFile(sourceFile, targetFile.getAbsolutePath());
   }
 
   private List<GlobalUnitCreationManager.PhaseInput> parsePhasesDefinition(String definition) {
@@ -500,12 +527,21 @@ public class GlobalUnitCreateAction extends BaseAction {
     request.setTemplateGlobalUnitId(this.resolveTemplateGlobalUnitId());
     request.setPhasesInput(this.buildDefaultPhasesForManagement());
     request.setCurrentPhaseIndex(0);
-    request.setCustomFileName("");
+    request.setCustomFileName(this.resolveCustomFileName(itemAcronym));
     request.setLiaisonName("");
     request.setLiaisonAcronym("");
-    request.setSuperAdminUserId(DEFAULT_SUPER_ADMIN_USER_ID);
+    request.setSuperAdminUserId(0L);
 
-    globalUnitCreationManager.createGlobalUnit(request);
+    GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
+    this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
+  }
+
+  private String resolveCustomFileName(String sourceAcronym) {
+    String normalizedAcronym = StringUtils.trimToEmpty(sourceAcronym).toLowerCase(Locale.ROOT);
+    if (StringUtils.isBlank(normalizedAcronym)) {
+      return StringUtils.trimToEmpty(customFileName);
+    }
+    return normalizedAcronym;
   }
 
   private List<GlobalUnitCreationManager.PhaseInput> buildDefaultPhasesForManagement() {
@@ -576,7 +612,18 @@ public class GlobalUnitCreateAction extends BaseAction {
       && globalUnitManager.existGlobalUnit(templateGlobalUnitId.longValue())) {
       return templateGlobalUnitId.longValue();
     }
-    return 45L;
+
+    if (globalUnitManager.existGlobalUnit(45L)) {
+      return 45L;
+    }
+
+    List<GlobalUnit> availableGlobalUnits = globalUnitManager.findAll();
+    if (availableGlobalUnits == null) {
+      return 0L;
+    }
+
+    return availableGlobalUnits.stream().filter(globalUnit -> globalUnit != null && globalUnit.getId() != null)
+      .map(GlobalUnit::getId).findFirst().orElse(0L);
   }
 
   private void assignGlobalUnitType(GlobalUnit toSave, GlobalUnit item, boolean isNew) {
