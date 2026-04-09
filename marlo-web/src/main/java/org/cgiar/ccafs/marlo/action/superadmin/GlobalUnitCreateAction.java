@@ -23,6 +23,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.superadmin.GlobalUnitCreateValidator;
@@ -31,7 +32,9 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -420,14 +423,19 @@ public class GlobalUnitCreateAction extends BaseAction {
     final List<GlobalUnit> existingGlobalUnits = globalUnitManager.findAll().stream()
       .filter(item -> item != null && item.getId() != null && item.isActive()).collect(Collectors.toList());
 
+    try {
+      for (GlobalUnit item : unitsToSave) {
+        this.saveManagementItem(item);
+      }
+    } catch (Exception e) {
+      this.addActionError("Unable to save Global Units: " + e.getMessage());
+      return INPUT;
+    }
+
     for (GlobalUnit existing : existingGlobalUnits) {
       if (!keepIds.contains(existing.getId())) {
         globalUnitManager.deleteGlobalUnit(existing.getId());
       }
-    }
-
-    for (GlobalUnit item : unitsToSave) {
-      this.saveManagementItem(item);
     }
 
     this.addActionMessage("message:" + this.getText("saving.saved"));
@@ -455,6 +463,11 @@ public class GlobalUnitCreateAction extends BaseAction {
       return;
     }
 
+    if (isNew) {
+      this.createManagementGlobalUnit(item, itemName, itemAcronym);
+      return;
+    }
+
     toSave.setName(itemName);
     toSave.setAcronym(itemAcronym);
     toSave.setMarlo(item.isMarlo());
@@ -469,6 +482,101 @@ public class GlobalUnitCreateAction extends BaseAction {
     }
 
     globalUnitManager.saveGlobalUnit(toSave);
+  }
+
+  private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym) {
+    long typeId = this.resolveTypeId(item);
+    if (typeId <= 0L) {
+      return;
+    }
+
+    GlobalUnitCreationManager.CreateRequest request = new GlobalUnitCreationManager.CreateRequest();
+    request.setName(itemName);
+    request.setAcronym(itemAcronym);
+    request.setGlobalUnitTypeId(typeId);
+    request.setInstitutionId(this.resolveInstitutionId(item));
+    request.setMarlo(item.isMarlo());
+    request.setLogin(item.isLogin());
+    request.setTemplateGlobalUnitId(this.resolveTemplateGlobalUnitId());
+    request.setPhasesInput(this.buildDefaultPhasesForManagement());
+    request.setCurrentPhaseIndex(0);
+    request.setCustomFileName("");
+    request.setLiaisonName("");
+    request.setLiaisonAcronym("");
+    request.setSuperAdminUserId(DEFAULT_SUPER_ADMIN_USER_ID);
+
+    globalUnitCreationManager.createGlobalUnit(request);
+  }
+
+  private List<GlobalUnitCreationManager.PhaseInput> buildDefaultPhasesForManagement() {
+    List<GlobalUnitCreationManager.PhaseInput> phases = new ArrayList<>();
+    GlobalUnit template = globalUnitManager.getGlobalUnitById(this.resolveTemplateGlobalUnitId());
+
+    if (template != null && template.getPhases() != null) {
+      template.getPhases().stream().filter(Objects::nonNull)
+        .sorted(Comparator.comparingInt(Phase::getYear).thenComparing(phase -> phase.getId() != null ? phase.getId() : 0L))
+        .forEach(phase -> phases.add(this.createPhaseInputFromTemplate(phase)));
+    }
+
+    if (phases.isEmpty()) {
+      GlobalUnitCreationManager.PhaseInput defaultPhase = new GlobalUnitCreationManager.PhaseInput();
+      defaultPhase.setName("Planning");
+      defaultPhase.setDescription("Planning");
+      defaultPhase.setYear(this.getDefaultPhaseYear());
+      defaultPhase.setEditable(Boolean.TRUE);
+      defaultPhase.setVisible(Boolean.TRUE);
+      defaultPhase.setUpkeep(Boolean.FALSE);
+      phases.add(defaultPhase);
+    }
+
+    return phases;
+  }
+
+  private GlobalUnitCreationManager.PhaseInput createPhaseInputFromTemplate(Phase templatePhase) {
+    GlobalUnitCreationManager.PhaseInput phaseInput = new GlobalUnitCreationManager.PhaseInput();
+    phaseInput.setName(StringUtils.defaultIfBlank(templatePhase.getName(), "Phase " + templatePhase.getYear()));
+    phaseInput.setDescription(StringUtils.defaultIfBlank(templatePhase.getDescription(), phaseInput.getName()));
+    phaseInput.setYear(templatePhase.getYear());
+    phaseInput.setStartDate(templatePhase.getStartDate());
+    phaseInput.setEndDate(templatePhase.getEndDate());
+    phaseInput.setEditable(templatePhase.getEditable() != null ? templatePhase.getEditable() : Boolean.TRUE);
+    phaseInput.setVisible(templatePhase.getVisible() != null ? templatePhase.getVisible() : Boolean.TRUE);
+    phaseInput.setUpkeep(templatePhase.getUpkeep() != null ? templatePhase.getUpkeep() : Boolean.FALSE);
+    return phaseInput;
+  }
+
+  private int getDefaultPhaseYear() {
+    if (this.getActualPhase() != null) {
+      return this.getActualPhase().getYear();
+    }
+    return Calendar.getInstance().get(Calendar.YEAR);
+  }
+
+  private long resolveTypeId(GlobalUnit item) {
+    if (item != null && item.getGlobalUnitType() != null && item.getGlobalUnitType().getId() != null) {
+      return item.getGlobalUnitType().getId().longValue();
+    }
+
+    if (globalUnitTypes != null && !globalUnitTypes.isEmpty() && globalUnitTypes.get(0).getId() != null) {
+      return globalUnitTypes.get(0).getId().longValue();
+    }
+
+    return 0L;
+  }
+
+  private Long resolveInstitutionId(GlobalUnit item) {
+    if (item != null && item.getInstitution() != null && item.getInstitution().getId() != null) {
+      return item.getInstitution().getId();
+    }
+    return null;
+  }
+
+  private long resolveTemplateGlobalUnitId() {
+    if (templateGlobalUnitId != null && templateGlobalUnitId.longValue() > 0L
+      && globalUnitManager.existGlobalUnit(templateGlobalUnitId.longValue())) {
+      return templateGlobalUnitId.longValue();
+    }
+    return 45L;
   }
 
   private void assignGlobalUnitType(GlobalUnit toSave, GlobalUnit item, boolean isNew) {

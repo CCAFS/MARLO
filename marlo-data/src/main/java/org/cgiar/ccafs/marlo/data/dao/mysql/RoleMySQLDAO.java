@@ -82,6 +82,26 @@ public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDA
   }
 
   @Override
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
+    String sql = "INSERT INTO role_permissions (role_id, permission_id) "
+      + "SELECT target_role.id, source_rp.permission_id "
+      + "FROM roles source_role "
+      + "INNER JOIN role_permissions source_rp ON source_rp.role_id = source_role.id "
+      + "INNER JOIN roles target_role ON target_role.acronym = source_role.acronym "
+      + "AND target_role.global_unit_id = :targetGlobalUnitId "
+      + "WHERE source_role.global_unit_id = :templateGlobalUnitId "
+      + "AND NOT EXISTS ( "
+      + "  SELECT 1 FROM role_permissions existing_rp "
+      + "  WHERE existing_rp.role_id = target_role.id "
+      + "  AND existing_rp.permission_id = source_rp.permission_id "
+      + ")";
+
+    return this.getSessionFactory().getCurrentSession().createSQLQuery(sql)
+      .setParameter("templateGlobalUnitId", templateGlobalUnitId)
+      .setParameter("targetGlobalUnitId", targetGlobalUnitId).executeUpdate();
+  }
+
+  @Override
   public Role save(Role role) {
     if (role.getId() == null) {
       super.saveEntity(role);

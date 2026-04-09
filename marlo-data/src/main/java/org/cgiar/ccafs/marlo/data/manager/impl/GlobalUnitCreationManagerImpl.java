@@ -95,6 +95,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
 
     this.createSuperAdminAccess(globalUnit, request.getSuperAdminUserId());
     this.cloneRoles(globalUnit, request.getTemplateGlobalUnitId());
+    roleManager.cloneRolePermissionsByAcronym(request.getTemplateGlobalUnitId(), globalUnit.getId());
     this.cloneLocTypes(globalUnit, request.getTemplateGlobalUnitId());
     this.createLiaisonInstitution(globalUnit, request.getLiaisonName(), request.getLiaisonAcronym());
     this.saveCriticalParameters(globalUnit, createdPhases, request.getCurrentPhaseIndex(), request.getCustomFileName());
@@ -144,7 +145,6 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
 
   private List<Phase> createPhases(GlobalUnit globalUnit, List<PhaseInput> phasesInput) {
     List<Phase> createdPhases = new ArrayList<>();
-    Phase previousPhase = null;
 
     for (PhaseInput phaseInput : phasesInput) {
       Phase phase = new Phase();
@@ -157,9 +157,14 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       phase.setUpkeep(phaseInput.isUpkeep() != null ? phaseInput.isUpkeep() : Boolean.FALSE);
       phase.setEditable(phaseInput.isEditable() != null ? phaseInput.isEditable() : Boolean.TRUE);
       phase.setVisible(phaseInput.isVisible() != null ? phaseInput.isVisible() : Boolean.TRUE);
-      phase.setNext(previousPhase);
-      previousPhase = phaseManager.savePhase(phase);
-      createdPhases.add(previousPhase);
+      createdPhases.add(phaseManager.savePhase(phase));
+    }
+
+    for (int index = 0; index < createdPhases.size(); index++) {
+      Phase currentPhase = createdPhases.get(index);
+      Phase nextPhase = (index + 1) < createdPhases.size() ? createdPhases.get(index + 1) : null;
+      currentPhase.setNext(nextPhase);
+      createdPhases.set(index, phaseManager.savePhase(currentPhase));
     }
 
     return createdPhases;

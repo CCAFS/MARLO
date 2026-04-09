@@ -51,6 +51,15 @@ public interface RoleManager {
    */
   public List<Role> findAll();
 
+  /**
+   * Clone role_permissions from template global unit roles to target global unit roles by matching acronym.
+   *
+   * @param templateGlobalUnitId template global unit id
+   * @param targetGlobalUnitId target global unit id
+   * @return number of inserted rows
+   */
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId);
+
 
   /**
    * This method gets a role object by a given role identifier.

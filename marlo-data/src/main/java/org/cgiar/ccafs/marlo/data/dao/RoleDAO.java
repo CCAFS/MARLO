@@ -64,6 +64,15 @@ public interface RoleDAO {
    */
   public List<Role> findByGloablUnitAndAcronym(long globalUnitId, String acronym);
 
+  /**
+   * Clone role_permissions from template global unit roles to target global unit roles by matching acronym.
+   *
+   * @param templateGlobalUnitId template global unit id
+   * @param targetGlobalUnitId target global unit id
+   * @return number of inserted rows
+   */
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId);
+
 
   /**
    * This method saves the information of the given role

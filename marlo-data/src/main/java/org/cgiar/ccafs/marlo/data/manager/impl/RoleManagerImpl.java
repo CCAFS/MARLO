@@ -62,6 +62,11 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
+    return roleDAO.cloneRolePermissionsByAcronym(templateGlobalUnitId, targetGlobalUnitId);
+  }
+
+  @Override
   public Role getRoleById(long roleID) {
 
     return roleDAO.find(roleID);

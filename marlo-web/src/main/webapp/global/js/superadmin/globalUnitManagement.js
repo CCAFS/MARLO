@@ -2,7 +2,7 @@ $(document).ready(function() {
   attachAccordionEvents();
   attachAddGlobalUnitEvent();
   attachRemoveElementEvent();
-  initInstitutionSelect2();
+  initInstitutionSelect2($(".globalUnits-list"));
 });
 
 function attachAccordionEvents() {
@@ -53,10 +53,19 @@ function updateIndexes() {
 }
 
 function initInstitutionSelect2($container) {
-  const $select = $container ? $container.find(".institution-select") : $(".institution-select");
-  $select.select2({
-    placeholder: "Search or select institution...",
-    allowClear: true,
-    width: "100%"
+  const $scope = $container || $(".globalUnits-list");
+  const $selects = $scope.find(".institution-select");
+
+  $selects.each(function() {
+    const $select = $(this);
+    if ($select.hasClass("select2-hidden-accessible")) {
+      return;
+    }
+
+    $select.select2({
+      placeholder: "Search or select institution...",
+      allowClear: true,
+      width: "100%"
+    });
   });
 }
