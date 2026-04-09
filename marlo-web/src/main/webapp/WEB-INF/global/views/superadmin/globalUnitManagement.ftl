@@ -87,7 +87,26 @@
         </div>
         <div class="col-md-6 form-group">
           <label>Acronym</label>
-          <input class="form-control" type="text" name="globalUnits[${index}].acronym" value="${(element.acronym)!}" />
+          <input class="form-control acronym-input" type="text" name="globalUnits[${index}].acronym"
+            value="${(element.acronym)!}" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 form-group">
+          <label>Logo</label>
+          <input class="form-control logo-file-input" type="file" name="logoFiles" accept="image/png,image/*" />
+          <input type="hidden" class="logo-files-acronym-slot" name="logoFilesAcronym" value="" disabled="disabled" />
+          [#if !isTemplate && element.acronym?has_content]
+            [#if action.hasExistingLogo(element.acronym)]
+              <small class="help-block">Detected logo for acronym <strong>${element.acronym?upper_case}</strong>.</small>
+              <img src="${baseUrlCdn}/global/images/crps/${element.acronym?upper_case}.png" alt="${element.acronym} logo"
+                style="max-height:48px; margin-top:4px;" />
+            [#else]
+              <small class="help-block">No logo detected for acronym <strong>${element.acronym?upper_case}</strong>. Using default logo.</small>
+              <img src="${baseUrlCdn}/global/images/crps/default.png" alt="default logo" style="max-height:48px; margin-top:4px;" />
+            [/#if]
+          [/#if]
         </div>
       </div>
 

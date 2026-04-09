@@ -2,6 +2,7 @@ $(document).ready(function() {
   attachAccordionEvents();
   attachAddGlobalUnitEvent();
   attachRemoveElementEvent();
+  attachLogoUploadMappingEvents();
   initInstitutionSelect2($(".globalUnits-list"));
 });
 
@@ -39,6 +40,44 @@ function attachRemoveElementEvent() {
       updateIndexes();
     });
   });
+}
+
+function attachLogoUploadMappingEvents() {
+  $(document).on("change", ".logo-file-input", function() {
+    const $fileInput = $(this);
+    syncLogoAcronymSlot($fileInput.closest(".globalUnit"));
+  });
+
+  $(document).on("input change", ".acronym-input", function() {
+    const $acronymInput = $(this);
+    syncLogoAcronymSlot($acronymInput.closest(".globalUnit"));
+  });
+}
+
+function syncLogoAcronymSlot($globalUnit) {
+  if (!$globalUnit?.length) {
+    return;
+  }
+
+  const $fileInput = $globalUnit.find(".logo-file-input").first();
+  const $slotInput = $globalUnit.find(".logo-files-acronym-slot").first();
+  const $acronymInput = $globalUnit.find(".acronym-input").first();
+
+  if (!$fileInput.length || !$slotInput.length || !$acronymInput.length) {
+    return;
+  }
+
+  const hasSelectedFile = ($fileInput[0].files && $fileInput[0].files.length > 0)
+    || ($fileInput.val() && $fileInput.val().length > 0);
+  const acronymValue = (($acronymInput.val() || "").trim()).toUpperCase();
+
+  if (hasSelectedFile && acronymValue.length > 0) {
+    $slotInput.val(acronymValue);
+    $slotInput.prop("disabled", false);
+  } else {
+    $slotInput.val("");
+    $slotInput.prop("disabled", true);
+  }
 }
 
 function updateIndexes() {

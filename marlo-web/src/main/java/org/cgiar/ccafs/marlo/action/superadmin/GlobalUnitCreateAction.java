@@ -36,6 +36,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -52,6 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 public class GlobalUnitCreateAction extends BaseAction {
 
   private static final long serialVersionUID = 6280478669923657397L;
+  private static final String USER_DIR_PROPERTY = "user.dir";
   private static final String LOGO_FOLDER = "marlo-web/src/main/webapp/global/images/crps";
   private static final String GLOBAL_PROPERTIES_SOURCE = "marlo-web/src/main/resources/global.properties";
   private static final String CUSTOM_PROPERTIES_FOLDER = "marlo-web/src/main/resources/custom";
@@ -83,6 +85,11 @@ public class GlobalUnitCreateAction extends BaseAction {
   private File logoFile;
   private String logoFileFileName;
   private String logoFileContentType;
+  private File[] logoFiles;
+  private String[] logoFilesFileName;
+  private String[] logoFilesContentType;
+  private String[] logoFilesAcronym;
+  private Set<String> existingLogoAcronyms;
 
   @Inject
   public GlobalUnitCreateAction(APConfig config, GlobalUnitManager globalUnitManager,
@@ -182,6 +189,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       .collect(Collectors.toList());
     institutions = institutionManager.findAll().stream()
       .filter(institution -> institution != null && institution.getId() != null).collect(Collectors.toList());
+    this.loadExistingLogoAcronyms();
 
     if (templateGlobalUnitId == null || templateGlobalUnitId.longValue() <= 0L) {
       templateGlobalUnitId = Long.valueOf(this.resolveTemplateGlobalUnitId());
@@ -298,6 +306,45 @@ public class GlobalUnitCreateAction extends BaseAction {
     this.logoFileFileName = logoFileFileName;
   }
 
+  public File[] getLogoFiles() {
+    return logoFiles;
+  }
+
+  public void setLogoFiles(File[] logoFiles) {
+    this.logoFiles = logoFiles;
+  }
+
+  public String[] getLogoFilesFileName() {
+    return logoFilesFileName;
+  }
+
+  public void setLogoFilesFileName(String[] logoFilesFileName) {
+    this.logoFilesFileName = logoFilesFileName;
+  }
+
+  public String[] getLogoFilesContentType() {
+    return logoFilesContentType;
+  }
+
+  public void setLogoFilesContentType(String[] logoFilesContentType) {
+    this.logoFilesContentType = logoFilesContentType;
+  }
+
+  public String[] getLogoFilesAcronym() {
+    return logoFilesAcronym;
+  }
+
+  public void setLogoFilesAcronym(String[] logoFilesAcronym) {
+    this.logoFilesAcronym = logoFilesAcronym;
+  }
+
+  public boolean hasExistingLogo(String acronym) {
+    if (StringUtils.isBlank(acronym) || existingLogoAcronyms == null || existingLogoAcronyms.isEmpty()) {
+      return false;
+    }
+    return existingLogoAcronyms.contains(StringUtils.upperCase(StringUtils.trim(acronym), Locale.ROOT));
+  }
+
   public void setMarlo(boolean marlo) {
     this.marlo = marlo;
   }
@@ -322,17 +369,210 @@ public class GlobalUnitCreateAction extends BaseAction {
   }
 
   private void copyLogoIfPresent(GlobalUnit createdGlobalUnit) {
-    if (createdGlobalUnit == null || createdGlobalUnit.getAcronym() == null || logoFile == null || !logoFile.exists()) {
+    if (createdGlobalUnit == null || StringUtils.isBlank(createdGlobalUnit.getAcronym())) {
       return;
     }
-    String workspaceRoot = System.getProperty("user.dir");
+
+    if (logoFile == null || !logoFile.exists()) {
+      return;
+    }
+
+    this.copyLogoToGlobalUnitFile(logoFile, createdGlobalUnit.getAcronym());
+  }
+
+  private void copyManagementLogoIfPresent(GlobalUnit globalUnit, int index, Set<Integer> usedUploadedLogoIndexes) {
+    if (globalUnit == null || StringUtils.isBlank(globalUnit.getAcronym())) {
+      return;
+    }
+
+    File uploadedLogo = this.resolveUploadedLogoForItem(index, globalUnit.getAcronym(), usedUploadedLogoIndexes);
+
+    if (uploadedLogo == null || !uploadedLogo.exists()) {
+      return;
+    }
+
+    this.copyLogoToGlobalUnitFile(uploadedLogo, globalUnit.getAcronym());
+  }
+
+  private File resolveUploadedLogoForItem(int index, String acronymValue, Set<Integer> usedUploadedLogoIndexes) {
+    int selectedIndex = this.resolveUploadedLogoIndexForItem(index, acronymValue, usedUploadedLogoIndexes);
+    if (selectedIndex < 0) {
+      return null;
+    }
+    usedUploadedLogoIndexes.add(Integer.valueOf(selectedIndex));
+    return logoFiles[selectedIndex];
+  }
+
+  private int resolveUploadedLogoIndexForItem(int index, String acronymValue, Set<Integer> usedUploadedLogoIndexes) {
+    if (logoFiles == null || logoFiles.length == 0) {
+      return -1;
+    }
+
+    boolean hasSubmittedAcronymMapping = this.hasSubmittedLogoAcronymMapping();
+
+    int acronymSlotMatchedIndex = this.resolveUploadedLogoIndexBySubmittedAcronym(acronymValue, usedUploadedLogoIndexes);
+    if (acronymSlotMatchedIndex >= 0) {
+      return acronymSlotMatchedIndex;
+    }
+
+    // When the request includes explicit acronym slots, avoid positional fallback.
+    // This prevents assigning the first uploaded file to the first row by accident.
+    if (hasSubmittedAcronymMapping) {
+      return -1;
+    }
+
+    if (this.isUploadedLogoIndexAvailable(index, usedUploadedLogoIndexes)) {
+      return index;
+    }
+
+    int acronymMatchedIndex = this.resolveUploadedLogoIndexByAcronym(acronymValue, usedUploadedLogoIndexes);
+    if (acronymMatchedIndex >= 0) {
+      return acronymMatchedIndex;
+    }
+
+    for (int currentIndex = 0; currentIndex < logoFiles.length; currentIndex++) {
+      if (this.isUploadedLogoIndexAvailable(currentIndex, usedUploadedLogoIndexes)) {
+        return currentIndex;
+      }
+    }
+
+    return -1;
+  }
+
+  private boolean hasSubmittedLogoAcronymMapping() {
+    if (logoFilesAcronym == null || logoFilesAcronym.length == 0) {
+      return false;
+    }
+
+    for (String submittedAcronym : logoFilesAcronym) {
+      if (StringUtils.isNotBlank(submittedAcronym)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isUploadedLogoIndexAvailable(int index, Set<Integer> usedUploadedLogoIndexes) {
+    if (index < 0 || logoFiles == null || index >= logoFiles.length) {
+      return false;
+    }
+    if (usedUploadedLogoIndexes != null && usedUploadedLogoIndexes.contains(Integer.valueOf(index))) {
+      return false;
+    }
+    return logoFiles[index] != null && logoFiles[index].exists();
+  }
+
+  private int resolveUploadedLogoIndexByAcronym(String acronymValue, Set<Integer> usedUploadedLogoIndexes) {
+    if (StringUtils.isBlank(acronymValue) || logoFiles == null || logoFiles.length == 0 || logoFilesFileName == null
+      || logoFilesFileName.length == 0) {
+      return -1;
+    }
+
+    String expectedAcronym = StringUtils.upperCase(StringUtils.trim(acronymValue), Locale.ROOT);
+    for (int index = 0; index < logoFiles.length && index < logoFilesFileName.length; index++) {
+      if (this.isLogoFileMatchForAcronym(index, expectedAcronym, usedUploadedLogoIndexes)) {
+        return index;
+      }
+    }
+
+    return -1;
+  }
+
+  private int resolveUploadedLogoIndexBySubmittedAcronym(String acronymValue, Set<Integer> usedUploadedLogoIndexes) {
+    if (StringUtils.isBlank(acronymValue) || logoFilesAcronym == null || logoFilesAcronym.length == 0) {
+      return -1;
+    }
+
+    String expectedAcronym = StringUtils.upperCase(StringUtils.trim(acronymValue), Locale.ROOT);
+    for (int index = 0; index < logoFilesAcronym.length; index++) {
+      if (this.isSubmittedAcronymMatch(index, expectedAcronym, usedUploadedLogoIndexes)) {
+        return index;
+      }
+    }
+
+    return -1;
+  }
+
+  private boolean isSubmittedAcronymMatch(int index, String expectedAcronym, Set<Integer> usedUploadedLogoIndexes) {
+    if (!this.isUploadedLogoIndexAvailable(index, usedUploadedLogoIndexes)) {
+      return false;
+    }
+
+    String submittedAcronym = logoFilesAcronym[index];
+    if (StringUtils.isBlank(submittedAcronym)) {
+      return false;
+    }
+
+    return expectedAcronym.equals(StringUtils.upperCase(StringUtils.trim(submittedAcronym), Locale.ROOT));
+  }
+
+  private boolean isLogoFileMatchForAcronym(int index, String expectedAcronym,
+    Set<Integer> usedUploadedLogoIndexes) {
+    if (!this.isUploadedLogoIndexAvailable(index, usedUploadedLogoIndexes)) {
+      return false;
+    }
+
+    String uploadedFileName = logoFilesFileName[index];
+    if (StringUtils.isBlank(uploadedFileName)) {
+      return false;
+    }
+
+    String baseName = uploadedFileName;
+    int extensionSeparator = uploadedFileName.lastIndexOf('.');
+    if (extensionSeparator > 0) {
+      baseName = uploadedFileName.substring(0, extensionSeparator);
+    }
+
+    return expectedAcronym.equals(StringUtils.upperCase(StringUtils.trim(baseName), Locale.ROOT));
+  }
+
+  private void copyLogoToGlobalUnitFile(File sourceLogo, String acronymValue) {
+    if (sourceLogo == null || !sourceLogo.exists() || StringUtils.isBlank(acronymValue)) {
+      return;
+    }
+
+    File targetDir = this.resolveLogoDirectory();
+    String finalFileName = StringUtils.upperCase(StringUtils.trim(acronymValue), Locale.ROOT) + ".png";
+    String targetPath = new File(targetDir, finalFileName).getAbsolutePath();
+    FileManager.copyFile(sourceLogo, targetPath);
+  }
+
+  private File resolveLogoDirectory() {
+    String workspaceRoot = System.getProperty(USER_DIR_PROPERTY);
     File targetDir = new File(workspaceRoot, LOGO_FOLDER);
     if (!targetDir.exists()) {
       targetDir.mkdirs();
     }
-    String finalFileName = createdGlobalUnit.getAcronym().toUpperCase(Locale.ROOT) + ".png";
-    String targetPath = new File(targetDir, finalFileName).getAbsolutePath();
-    FileManager.copyFile(logoFile, targetPath);
+    return targetDir;
+  }
+
+  private void loadExistingLogoAcronyms() {
+    existingLogoAcronyms = new HashSet<>();
+    String workspaceRoot = System.getProperty(USER_DIR_PROPERTY);
+    File logoDirectory = new File(workspaceRoot, LOGO_FOLDER);
+    if (!logoDirectory.exists() || !logoDirectory.isDirectory()) {
+      return;
+    }
+
+    File[] logoFilesOnDisk = logoDirectory.listFiles();
+    if (logoFilesOnDisk == null) {
+      return;
+    }
+
+    for (File logoOnDisk : logoFilesOnDisk) {
+      if (logoOnDisk != null && logoOnDisk.isFile()) {
+        String fileName = logoOnDisk.getName();
+        int extensionSeparator = fileName.lastIndexOf('.');
+        if (extensionSeparator > 0) {
+          String extension = fileName.substring(extensionSeparator + 1);
+          String baseName = fileName.substring(0, extensionSeparator);
+          if (StringUtils.isNotBlank(baseName) && "png".equalsIgnoreCase(StringUtils.trim(extension))) {
+            existingLogoAcronyms.add(StringUtils.upperCase(baseName, Locale.ROOT));
+          }
+        }
+      }
+    }
   }
 
   private void copyInternationalizationFileIfNeeded(GlobalUnit createdGlobalUnit) {
@@ -340,7 +580,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       return;
     }
 
-    String workspaceRoot = System.getProperty("user.dir");
+    String workspaceRoot = System.getProperty(USER_DIR_PROPERTY);
     File sourceFile = new File(workspaceRoot, GLOBAL_PROPERTIES_SOURCE);
     if (!sourceFile.exists()) {
       return;
@@ -446,13 +686,14 @@ public class GlobalUnitCreateAction extends BaseAction {
     final List<GlobalUnit> unitsToSave = (globalUnits == null) ? Collections.emptyList() : globalUnits;
     final Set<Long> keepIds = unitsToSave.stream().map(GlobalUnit::getId).filter(Objects::nonNull)
       .collect(Collectors.toSet());
+    final Set<Integer> usedUploadedLogoIndexes = new HashSet<>();
 
     final List<GlobalUnit> existingGlobalUnits = globalUnitManager.findAll().stream()
       .filter(item -> item != null && item.getId() != null && item.isActive()).collect(Collectors.toList());
 
     try {
-      for (GlobalUnit item : unitsToSave) {
-        this.saveManagementItem(item);
+      for (int index = 0; index < unitsToSave.size(); index++) {
+        this.saveManagementItem(unitsToSave.get(index), index, usedUploadedLogoIndexes);
       }
     } catch (Exception e) {
       this.addActionError("Unable to save Global Units: " + e.getMessage());
@@ -469,7 +710,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     return SUCCESS;
   }
 
-  private void saveManagementItem(GlobalUnit item) {
+  private void saveManagementItem(GlobalUnit item, int index, Set<Integer> usedUploadedLogoIndexes) {
     if (item == null) {
       return;
     }
@@ -491,7 +732,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     }
 
     if (isNew) {
-      this.createManagementGlobalUnit(item, itemName, itemAcronym);
+      this.createManagementGlobalUnit(item, itemName, itemAcronym, index, usedUploadedLogoIndexes);
       return;
     }
 
@@ -509,9 +750,11 @@ public class GlobalUnitCreateAction extends BaseAction {
     }
 
     globalUnitManager.saveGlobalUnit(toSave);
+    this.copyManagementLogoIfPresent(toSave, index, usedUploadedLogoIndexes);
   }
 
-  private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym) {
+  private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym, int index,
+    Set<Integer> usedUploadedLogoIndexes) {
     long typeId = this.resolveTypeId(item);
     if (typeId <= 0L) {
       return;
@@ -533,6 +776,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     request.setSuperAdminUserId(0L);
 
     GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
+    this.copyManagementLogoIfPresent(createdGlobalUnit, index, usedUploadedLogoIndexes);
     this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
   }
 
