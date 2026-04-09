@@ -110,6 +110,16 @@
 			</result>
 		</action>
 
+		<action name="globalUnitManagement"
+			class="org.cgiar.ccafs.marlo.action.superadmin.GlobalUnitCreateAction">
+			<interceptor-ref name="superAdminStack" />
+			<result name="input">/WEB-INF/global/views/superadmin/globalUnitManagement.ftl
+			</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">globalUnitManagement</param>
+			</result>
+		</action>
+
 		<action name="customLocations"
 			class="org.cgiar.ccafs.marlo.action.superadmin.CustomLocationsAdminAction">
 			<interceptor-ref name="superAdminStack" />
