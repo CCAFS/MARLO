@@ -48,6 +48,19 @@ function attachLogoUploadEvents() {
   $(".logo-file-input").each(function() {
     initLogoFileUpload($(this));
   });
+
+  $(document).on("click", ".logo-file-browse-btn", function() {
+    const $dropZone = $(this).closest(".logo-drop-zone");
+    $dropZone.find(".logo-file-input").trigger("click");
+  });
+
+  $(document).on("click", ".logo-drop-zone", function(event) {
+    const clickedBrowseButton = $(event.target).closest(".logo-file-browse-btn").length > 0;
+    const clickedInput = $(event.target).closest(".logo-file-input").length > 0;
+    if (!clickedBrowseButton && !clickedInput) {
+      $(this).find(".logo-file-input").trigger("click");
+    }
+  });
 }
 
 function initLogoFileUpload($fileInput) {
@@ -58,6 +71,7 @@ function initLogoFileUpload($fileInput) {
   }
 
   const $dropZone = $fileInput.closest(".logo-drop-zone");
+  const $selectedFileLabel = $dropZone.find(".logo-selected-file");
 
   $fileInput.fileupload({
     dataType: "json",
@@ -72,15 +86,37 @@ function initLogoFileUpload($fileInput) {
 
       if (!selectedFile || (!isPngByMime && !isPngByExt)) {
         $gu.find(".logo-upload-status").html("<span style='color:orange'>Only PNG files are allowed.</span>");
+        $selectedFileLabel.text("No file selected.");
         $dropZone.removeClass("is-dragover");
         return;
       }
+
+      $selectedFileLabel.text("Selected file: " + fileName);
+
+      // Show a local preview immediately and keep it while upload completes.
+      const $previewBlock = $gu.find(".logo-preview-block");
+      const reader = new FileReader();
+      reader.onload = function(loadEvent) {
+        const previewSrc = loadEvent?.target?.result;
+        if (!previewSrc) {
+          return;
+        }
+        $dropZone.data("localPreviewSrc", previewSrc);
+        $previewBlock.find(".logo-preview-img").attr("src", previewSrc);
+        if (!$previewBlock.find(".help-block").length) {
+          $previewBlock.prepend("<small class='help-block'></small>");
+        }
+        $previewBlock.find(".help-block").html("Preview: <strong>" + fileName + "</strong>.");
+        $previewBlock.show();
+      };
+      reader.readAsDataURL(selectedFile);
 
       data.submit();
     },
     start: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("<em>Uploading...</em>");
+      $selectedFileLabel.text("Uploading...");
     },
     stop: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
@@ -94,18 +130,29 @@ function initLogoFileUpload($fileInput) {
       $dropZone.removeClass("is-dragover");
       if (r?.saved) {
         const logoSrc = r.logoUrl + "?t=" + Date.now();
+        const uploadedName = (r.acronym || "logo") + ".png";
         const $previewBlock = $gu.find(".logo-preview-block");
-        $previewBlock.find(".logo-preview-img").attr("src", logoSrc).attr("alt", r.acronym + " logo");
+        const localPreviewSrc = $dropZone.data("localPreviewSrc");
+        if (localPreviewSrc) {
+          $previewBlock.find(".logo-preview-img").attr("src", localPreviewSrc).attr("alt", r.acronym + " logo");
+        } else {
+          $previewBlock.find(".logo-preview-img").attr("src", logoSrc).attr("alt", r.acronym + " logo");
+        }
         $previewBlock.find(".help-block").html("Logo: <strong>" + r.acronym + "</strong>.");
         $previewBlock.show();
+        $selectedFileLabel.text("Uploaded: " + uploadedName);
+        $dropZone.removeData("localPreviewSrc");
       } else {
         const errorMessage = r?.message || "Upload failed. Check the acronym is set and the file is a valid image.";
         $gu.find(".logo-upload-status").html("<span style='color:red'>" + errorMessage + "</span>");
+        $selectedFileLabel.text("No file selected.");
+        $dropZone.removeData("localPreviewSrc");
       }
     },
     fail: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("<span style='color:red'>Upload error.</span>");
+      $selectedFileLabel.text("No file selected.");
       $dropZone.removeClass("is-dragover");
     }
   });

@@ -103,6 +103,27 @@ li.targetUnit {
   margin-bottom: 8px;
 }
 
+.logo-drop-zone .logo-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.logo-drop-zone .logo-file-browse-btn {
+  align-self: flex-start;
+}
+
+.logo-drop-zone .logo-selected-file {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
 .targetsContent h6 {
   display: inline-block;
   margin-top: 11px;

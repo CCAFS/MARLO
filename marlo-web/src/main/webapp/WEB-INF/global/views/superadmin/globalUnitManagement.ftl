@@ -97,8 +97,10 @@
           <label>Logo</label>
           <div class="logo-drop-zone">
             <div class="logo-drop-zone-text">Drag and drop an image here, or click to choose a file.</div>
+            <button type="button" class="btn btn-default btn-sm logo-file-browse-btn">Choose PNG file</button>
             <input class="form-control logo-file-input" type="file" name="file"
               data-url="${baseUrl}/globalUnitLogoUpload.do" accept="image/png" />
+            <small class="logo-selected-file text-muted">No file selected.</small>
           </div>
           <div class="logo-upload-status" style="margin-top:4px;"></div>
           [#if !isTemplate && element.acronym?has_content]
