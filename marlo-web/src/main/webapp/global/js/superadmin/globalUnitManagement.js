@@ -36,10 +36,30 @@ function attachAddGlobalUnitEvent() {
 function attachRemoveElementEvent() {
   $(document).on("click", ".remove-element", function() {
     const $item = $(this).closest(".globalUnit");
-    $item.hide("slow", function() {
-      $item.remove();
-      updateIndexes();
-    });
+    const unitLabel = ($item.find(".blockTitle").text() || "").trim();
+
+    // Store the item to be removed so we can access it in the modal button handler
+    $("#confirm-delete-modal").data("itemToRemove", $item).data("unitLabel", unitLabel);
+
+    // Update modal with unit label
+    $("#delete-unit-label").text(unitLabel || "This Global Unit");
+
+    // Show the modal
+    $("#confirm-delete-modal").modal("show");
+  });
+
+  // Handle the confirm delete button in the modal
+  $("#confirm-delete-btn").on("click", function() {
+    const $modal = $("#confirm-delete-modal");
+    const $item = $modal.data("itemToRemove");
+
+    if ($item?.length) {
+      $modal.modal("hide");
+      $item.hide("slow", function() {
+        $item.remove();
+        updateIndexes();
+      });
+    }
   });
 }
 

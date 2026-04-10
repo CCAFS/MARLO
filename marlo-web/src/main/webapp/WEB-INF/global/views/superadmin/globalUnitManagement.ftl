@@ -2,7 +2,7 @@
 [#assign title = "Global Unit Management" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20261109" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260410" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "globalUnitManagement" /]
@@ -57,6 +57,31 @@
 </section>
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
+
+<!-- Delete Confirmation Modal -->
+<div id="confirm-delete-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true" data-backdrop="false" data-keyboard="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="confirmDeleteLabel">Confirm Deletion</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove this Global Unit?</p>
+        <p><strong id="delete-unit-label"></strong></p>
+        <div class="alert alert-info" style="margin-top: 15px; margin-bottom: 0;">
+          <small><strong>Note:</strong> Remember to click the <strong>Save</strong> button to apply the changes.</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 [@globalUnitMacro element={} index=-1 isTemplate=true /]
 
