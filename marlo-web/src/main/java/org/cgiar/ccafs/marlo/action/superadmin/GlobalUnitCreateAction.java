@@ -58,6 +58,7 @@ public class GlobalUnitCreateAction extends BaseAction {
   private static final String LOGOS_RELATIVE_PATH = "globalUnits" + File.separator + "logos" + File.separator;
   private static final String GLOBAL_PROPERTIES_SOURCE = "marlo-web/src/main/resources/global.properties";
   private static final String CUSTOM_PROPERTIES_FOLDER = "marlo-web/src/main/resources/custom";
+  private static final boolean ENABLE_CUSTOM_PROPERTIES_FILE_CREATION = false;
 
   private final GlobalUnitManager globalUnitManager;
   private final GlobalUnitTypeManager globalUnitTypeManager;
@@ -420,6 +421,10 @@ public class GlobalUnitCreateAction extends BaseAction {
   }
 
   private void copyInternationalizationFileIfNeeded(GlobalUnit createdGlobalUnit) {
+    if (!ENABLE_CUSTOM_PROPERTIES_FILE_CREATION) {
+      return;
+    }
+
     if (createdGlobalUnit == null || StringUtils.isBlank(createdGlobalUnit.getAcronym())) {
       return;
     }
