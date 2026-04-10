@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.util.Locale;
 
@@ -81,9 +82,19 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
       message = "Unable to create the target upload directory.";
       return SUCCESS;
     }
+    if (!targetDir.canWrite()) {
+      LOG.error("globalUnitLogoUpload: target directory is not writable {}", targetDir.getAbsolutePath());
+      message = "The server has no write permission for the upload directory.";
+      return SUCCESS;
+    }
 
     String finalFileName = normalizedAcronym + ".png";
     File targetFile = new File(targetDir, finalFileName);
+    if (targetFile.exists() && !targetFile.canWrite()) {
+      LOG.error("globalUnitLogoUpload: target file is not writable {}", targetFile.getAbsolutePath());
+      message = "The server has no write permission for the target logo file.";
+      return SUCCESS;
+    }
 
     BufferedImage sourceImage = ImageIO.read(file);
     if (sourceImage == null) {
@@ -92,7 +103,14 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
       return SUCCESS;
     }
 
-    boolean written = ImageIO.write(sourceImage, "png", targetFile);
+    boolean written;
+    try {
+      written = ImageIO.write(sourceImage, "png", targetFile);
+    } catch (IOException e) {
+      LOG.error("globalUnitLogoUpload: failed to write image to {}", targetFile.getAbsolutePath(), e);
+      message = "The server could not write the uploaded logo file. Please contact an administrator.";
+      return SUCCESS;
+    }
     if (!written || !targetFile.exists() || targetFile.length() == 0) {
       LOG.error("globalUnitLogoUpload: image write failed for source {} and target {}", file.getAbsolutePath(),
         targetFile.getAbsolutePath());
