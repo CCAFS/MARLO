@@ -57,8 +57,27 @@ function initLogoFileUpload($fileInput) {
     return;
   }
 
+  const $dropZone = $fileInput.closest(".logo-drop-zone");
+
   $fileInput.fileupload({
     dataType: "json",
+    dropZone: $dropZone,
+    add: function(e, data) {
+      const $gu = $(e.target).closest(".globalUnit");
+      const selectedFile = data.files?.length ? data.files[0] : null;
+      const fileName = selectedFile?.name || "";
+      const mimeType = (selectedFile?.type || "").toLowerCase();
+      const isPngByMime = mimeType === "image/png";
+      const isPngByExt = /\.png$/i.test(fileName);
+
+      if (!selectedFile || (!isPngByMime && !isPngByExt)) {
+        $gu.find(".logo-upload-status").html("<span style='color:orange'>Only PNG files are allowed.</span>");
+        $dropZone.removeClass("is-dragover");
+        return;
+      }
+
+      data.submit();
+    },
     start: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("<em>Uploading...</em>");
@@ -66,11 +85,13 @@ function initLogoFileUpload($fileInput) {
     stop: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("");
+      $dropZone.removeClass("is-dragover");
     },
     done: function(e, data) {
       const r = data.result;
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("");
+      $dropZone.removeClass("is-dragover");
       if (r?.saved) {
         const logoSrc = r.logoUrl + "?t=" + Date.now();
         const $previewBlock = $gu.find(".logo-preview-block");
@@ -85,7 +106,16 @@ function initLogoFileUpload($fileInput) {
     fail: function(e) {
       const $gu = $(e.target).closest(".globalUnit");
       $gu.find(".logo-upload-status").html("<span style='color:red'>Upload error.</span>");
+      $dropZone.removeClass("is-dragover");
     }
+  });
+
+  $dropZone.on("dragenter dragover", function() {
+    $dropZone.addClass("is-dragover");
+  });
+
+  $dropZone.on("dragleave drop", function() {
+    $dropZone.removeClass("is-dragover");
   });
 
   $fileInput.bind("fileuploadsubmit", function(e, data) {

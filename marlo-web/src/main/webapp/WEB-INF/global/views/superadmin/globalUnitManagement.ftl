@@ -9,7 +9,7 @@
 
 [#assign breadCrumb = [
   {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
-  {"label":"globalUnit", "nameSpace":"", "action":""}
+  {"label":"globalUnitManagement", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -95,8 +95,11 @@
       <div class="row">
         <div class="col-md-12 form-group">
           <label>Logo</label>
-          <input class="form-control logo-file-input" type="file" name="file"
-            data-url="${baseUrl}/globalUnitLogoUpload.do" accept="image/png,image/*" />
+          <div class="logo-drop-zone">
+            <div class="logo-drop-zone-text">Drag and drop an image here, or click to choose a file.</div>
+            <input class="form-control logo-file-input" type="file" name="file"
+              data-url="${baseUrl}/globalUnitLogoUpload.do" accept="image/png" />
+          </div>
           <div class="logo-upload-status" style="margin-top:4px;"></div>
           [#if !isTemplate && element.acronym?has_content]
             [#assign currentLogoUrl = action.getLogoUrl(element.acronym) /]

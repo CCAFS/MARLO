@@ -77,6 +77,32 @@ li.targetUnit {
   padding: 0 15px 20px 15px;
 }
 
+.globalUnit .blockTitle {
+  cursor: pointer;
+}
+
+.logo-drop-zone {
+  border: 2px dashed #c7d4e2;
+  border-radius: 4px;
+  background-color: #f9fbfd;
+  min-height: 120px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.logo-drop-zone.is-dragover {
+  border-color: #5b9bd5;
+  background-color: #eef5fc;
+}
+
+.logo-drop-zone .logo-drop-zone-text {
+  color: #5f6b7a;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
 .targetsContent h6 {
   display: inline-block;
   margin-top: 11px;
