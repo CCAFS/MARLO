@@ -199,7 +199,7 @@
             [#if namespace?contains('superadmin')]
               <img id="crp-image" src="${baseUrlCdn}/global/images/cgiar.png" alt="" />
             [#else]
-              [#if crpSession??]<img id="crp-image" src="${baseUrlCdn}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+              [#if crpSession??]<img id="crp-image" src="${baseUrl}/data/globalUnitLogo.do?acronym=${crpSession}" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
             [#-- Testing Environment --]

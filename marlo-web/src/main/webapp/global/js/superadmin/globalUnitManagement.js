@@ -2,7 +2,7 @@ $(document).ready(function() {
   attachAccordionEvents();
   attachAddGlobalUnitEvent();
   attachRemoveElementEvent();
-  attachLogoUploadMappingEvents();
+  attachLogoUploadEvents();
   initInstitutionSelect2($(".globalUnits-list"));
 });
 
@@ -28,6 +28,7 @@ function attachAddGlobalUnitEvent() {
     $item.slideDown("slow");
     updateIndexes();
     initInstitutionSelect2($item);
+    initLogoFileUpload($item.find(".logo-file-input"));
     $item.find(".blockTitle").trigger("click");
   });
 }
@@ -42,42 +43,60 @@ function attachRemoveElementEvent() {
   });
 }
 
-function attachLogoUploadMappingEvents() {
-  $(document).on("change", ".logo-file-input", function() {
-    const $fileInput = $(this);
-    syncLogoAcronymSlot($fileInput.closest(".globalUnit"));
-  });
-
-  $(document).on("input change", ".acronym-input", function() {
-    const $acronymInput = $(this);
-    syncLogoAcronymSlot($acronymInput.closest(".globalUnit"));
+function attachLogoUploadEvents() {
+  // Initialize fileupload on any existing .logo-file-input elements on page load
+  $(".logo-file-input").each(function() {
+    initLogoFileUpload($(this));
   });
 }
 
-function syncLogoAcronymSlot($globalUnit) {
-  if (!$globalUnit?.length) {
+function initLogoFileUpload($fileInput) {
+  if (typeof $fileInput.fileupload !== "function") {
+    const $gu = $fileInput.closest(".globalUnit");
+    $gu.find(".logo-upload-status").html("<span style='color:red'>Upload library is not loaded on this page.</span>");
     return;
   }
 
-  const $fileInput = $globalUnit.find(".logo-file-input").first();
-  const $slotInput = $globalUnit.find(".logo-files-acronym-slot").first();
-  const $acronymInput = $globalUnit.find(".acronym-input").first();
+  $fileInput.fileupload({
+    dataType: "json",
+    start: function(e) {
+      const $gu = $(e.target).closest(".globalUnit");
+      $gu.find(".logo-upload-status").html("<em>Uploading...</em>");
+    },
+    stop: function(e) {
+      const $gu = $(e.target).closest(".globalUnit");
+      $gu.find(".logo-upload-status").html("");
+    },
+    done: function(e, data) {
+      const r = data.result;
+      const $gu = $(e.target).closest(".globalUnit");
+      $gu.find(".logo-upload-status").html("");
+      if (r?.saved) {
+        const logoSrc = r.logoUrl + "?t=" + Date.now();
+        const $previewBlock = $gu.find(".logo-preview-block");
+        $previewBlock.find(".logo-preview-img").attr("src", logoSrc).attr("alt", r.acronym + " logo");
+        $previewBlock.find(".help-block").html("Logo: <strong>" + r.acronym + "</strong>.");
+        $previewBlock.show();
+      } else {
+        const errorMessage = r?.message || "Upload failed. Check the acronym is set and the file is a valid image.";
+        $gu.find(".logo-upload-status").html("<span style='color:red'>" + errorMessage + "</span>");
+      }
+    },
+    fail: function(e) {
+      const $gu = $(e.target).closest(".globalUnit");
+      $gu.find(".logo-upload-status").html("<span style='color:red'>Upload error.</span>");
+    }
+  });
 
-  if (!$fileInput.length || !$slotInput.length || !$acronymInput.length) {
-    return;
-  }
-
-  const hasSelectedFile = ($fileInput[0].files && $fileInput[0].files.length > 0)
-    || ($fileInput.val() && $fileInput.val().length > 0);
-  const acronymValue = (($acronymInput.val() || "").trim()).toUpperCase();
-
-  if (hasSelectedFile && acronymValue.length > 0) {
-    $slotInput.val(acronymValue);
-    $slotInput.prop("disabled", false);
-  } else {
-    $slotInput.val("");
-    $slotInput.prop("disabled", true);
-  }
+  $fileInput.bind("fileuploadsubmit", function(e, data) {
+    const $gu = $(e.target).closest(".globalUnit");
+    const acronymValue = ($gu.find(".acronym-input").val() || "").trim().toUpperCase();
+    if (!acronymValue) {
+      $gu.find(".logo-upload-status").html("<span style='color:orange'>Set the acronym before uploading a logo.</span>");
+      return false;
+    }
+    data.formData = { acronym: acronymValue };
+  });
 }
 
 function updateIndexes() {

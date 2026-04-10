@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title = "Global Unit Management" /]
-[#assign pageLibs = ["select2"] /]
+[#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20261109" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
@@ -9,7 +9,7 @@
 
 [#assign breadCrumb = [
   {"label":"superadmin", "nameSpace":"", "action":"marloBoard"},
-  {"label":"Global Unit Management", "nameSpace":"", "action":""}
+  {"label":"globalUnit", "nameSpace":"", "action":""}
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -95,17 +95,28 @@
       <div class="row">
         <div class="col-md-12 form-group">
           <label>Logo</label>
-          <input class="form-control logo-file-input" type="file" name="logoFiles" accept="image/png,image/*" />
-          <input type="hidden" class="logo-files-acronym-slot" name="logoFilesAcronym" value="" disabled="disabled" />
+          <input class="form-control logo-file-input" type="file" name="file"
+            data-url="${baseUrl}/globalUnitLogoUpload.do" accept="image/png,image/*" />
+          <div class="logo-upload-status" style="margin-top:4px;"></div>
           [#if !isTemplate && element.acronym?has_content]
-            [#if action.hasExistingLogo(element.acronym)]
-              <small class="help-block">Detected logo for acronym <strong>${element.acronym?upper_case}</strong>.</small>
-              <img src="${baseUrlCdn}/global/images/crps/${element.acronym?upper_case}.png" alt="${element.acronym} logo"
-                style="max-height:48px; margin-top:4px;" />
-            [#else]
-              <small class="help-block">No logo detected for acronym <strong>${element.acronym?upper_case}</strong>. Using default logo.</small>
-              <img src="${baseUrlCdn}/global/images/crps/default.png" alt="default logo" style="max-height:48px; margin-top:4px;" />
-            [/#if]
+            [#assign currentLogoUrl = action.getLogoUrl(element.acronym) /]
+            <div class="logo-preview-block">
+              [#if action.hasExistingLogo(element.acronym)]
+                <small class="help-block">Logo: <strong>${element.acronym?upper_case}</strong>.</small>
+                <img class="logo-preview-img"
+                  src="${currentLogoUrl}"
+                  alt="${element.acronym} logo" style="max-height:48px; margin-top:4px; display:block;" />
+              [#else]
+                <small class="help-block">No logo for <strong>${element.acronym?upper_case}</strong>. Using default.</small>
+                <img class="logo-preview-img"
+                  src="${baseUrlCdn}/global/images/crps/default.png"
+                  alt="default logo" style="max-height:48px; margin-top:4px; display:block;" />
+              [/#if]
+            </div>
+          [#else]
+            <div class="logo-preview-block" style="display:none;">
+              <img class="logo-preview-img" src="" alt="" style="max-height:48px; margin-top:4px; display:block;" />
+            </div>
           [/#if]
         </div>
       </div>

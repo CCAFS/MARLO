@@ -29,6 +29,20 @@
             </result>
         </action>
 
+        <action name="globalUnitLogo" class="org.cgiar.ccafs.marlo.action.downloads.DownloadGlobalUnitLogoAction">
+            <result name="success" type="stream">
+                <param name="contentType">image/png</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="redirectAction">
+                /WEB-INF/global/pages/error/404.ftl
+                <param name="edit">${edit}</param>
+                <param name="phaseID">${phaseID}</param>
+                <param name="projectID">${projectID}</param>
+            </result>
+        </action>
+
 
     </package>
 
