@@ -484,6 +484,10 @@ public class GlobalUnitCreateAction extends BaseAction {
       return null;
     }
 
+    if (phaseYear.intValue() < Calendar.getInstance().get(Calendar.YEAR) - 1) {
+      return null;
+    }
+
     GlobalUnitCreationManager.PhaseInput input = new GlobalUnitCreationManager.PhaseInput();
     input.setName(phaseName);
     input.setDescription(parts.length > 2 ? StringUtils.trim(parts[2]) : phaseName);
@@ -637,8 +641,10 @@ public class GlobalUnitCreateAction extends BaseAction {
     List<GlobalUnitCreationManager.PhaseInput> phases = new ArrayList<>();
     GlobalUnit template = globalUnitManager.getGlobalUnitById(this.resolveTemplateGlobalUnitId());
 
+    int minimumYear = Calendar.getInstance().get(Calendar.YEAR) - 1;
     if (template != null && template.getPhases() != null) {
       template.getPhases().stream().filter(Objects::nonNull)
+        .filter(phase -> phase.getYear() >= minimumYear)
         .sorted(Comparator.comparingInt(Phase::getYear).thenComparing(phase -> phase.getId() != null ? phase.getId() : 0L))
         .forEach(phase -> phases.add(this.createPhaseInputFromTemplate(phase)));
     }
