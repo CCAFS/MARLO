@@ -35,12 +35,13 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
   }
 
   @Override
-  public List<GlobalUnit> crpUsers(String emai) {
+  public List<GlobalUnit> crpUsers(String email) {
 
     String query = "select distinct cp from GlobalUnit cp inner join fetch cp.crpUsers cpUser   "
-      + "where (cpUser.user.email = :emai  or cpUser.user.username =:emai ) and cpUser.active=1 ";
+      + "where (cpUser.user.email = :email  or cpUser.user.username =:email ) "
+      + "and cpUser.active=1 and cp.active=1 and cp.login=1 ";
     Query<GlobalUnit> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("emai", emai);
+    createQuery.setParameter("email", email);
     List<GlobalUnit> crps = super.findAll(createQuery);
     return crps;
   }

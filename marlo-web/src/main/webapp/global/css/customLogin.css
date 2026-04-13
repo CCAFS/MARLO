@@ -307,38 +307,24 @@
   padding: 0;
 }
 
-.login-logos-container ul{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px 12px;
-  align-items: flex-start;
-}
-
 .login-logos-container ul li, .selection-bar-options ul li{
   display: inline;
 }
 
 .login-logos-container ul li{
-  display: block;
-}
-
-.selection-bar-options ul{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
-  row-gap: 22px;
-  column-gap: 8px;
-  justify-content: start;
-}
-
-.selection-bar-options ul li{
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 50px;
 }
 
 .login-logos-container ul li img{
-  width: 130px;
-  height: 50px;
+  width: auto;
+  height: auto;
+  max-width: 130px;
+  max-height: 50px;
   object-fit: contain;
-  object-position: center;
 }
 
 .selection-bar-options ul li .selection-bar-acronym{
@@ -351,16 +337,10 @@
 .selection-bar-options ul li img, .selection-bar-options ul li .selection-bar-acronym{
   border: 1px dashed #d3d3d3;
   background-color: rgba(255, 255, 255, 0.1);
-  width: 120px;
+  width: 130px;
   height: 100%;
-  margin: 0;
+  margin: 3px 8px;
   cursor: pointer;
-}
-
-.selection-bar-options ul li img{
-  height: 40px;
-  object-fit: contain;
-  object-position: center;
 }
 
 .selection-bar-options ul li img:hover, .selection-bar-options ul li .selection-bar-acronym:hover{
@@ -434,29 +414,7 @@ span.login-input-container.username:hover i{
     left: -o-calc(100% - 20px);
     /* Standard */
     left: calc(100% - 20px);
-  }
-
-  .login-logos-container ul li img,
-  .selection-bar-options ul li img,
-  .selection-bar-options ul li .selection-bar-acronym{
-    width: 100px;
-    height: 34px;
-  }
-
-  .login-logos-container ul{
-    gap: 16px 8px;
-  }
-
-  .selection-bar-options ul li img,
-  .selection-bar-options ul li .selection-bar-acronym{
-    margin: 0;
-  }
-
-  .selection-bar-options ul{
-    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
-    row-gap: 18px;
-    column-gap: 4px;
-  }
+  }  
 }
 
 p.login-description{
