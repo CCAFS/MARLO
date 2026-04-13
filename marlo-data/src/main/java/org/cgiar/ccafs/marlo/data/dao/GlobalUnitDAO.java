@@ -24,10 +24,10 @@ public interface GlobalUnitDAO {
 	/**
 	 * Gets a Global Units that the user have access
 	 * 
-	 * @param emai - The user Email
+	 * @param email - The user Email
 	 * @return A List of Global Units
 	 */
-	public List<GlobalUnit> crpUsers(String emai);
+	public List<GlobalUnit> crpUsers(String email);
 
 	/**
 	 * This method removes a specific globalUnit value from the database.

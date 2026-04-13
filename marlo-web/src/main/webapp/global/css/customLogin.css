@@ -311,9 +311,20 @@
   display: inline;
 }
 
-.login-logos-container ul li img{
+.login-logos-container ul li{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 130px;
   height: 50px;
+}
+
+.login-logos-container ul li img{
+  width: auto;
+  height: auto;
+  max-width: 130px;
+  max-height: 50px;
+  object-fit: contain;
 }
 
 .selection-bar-options ul li .selection-bar-acronym{
@@ -388,7 +399,9 @@ span.login-input-container.username:hover i{
 
 .crps-select.show-select-bar{
   left: -135px;
+  /* Show navigation CRP bar
   display: none;
+  */
 }
 
 @media(max-width:767px){
