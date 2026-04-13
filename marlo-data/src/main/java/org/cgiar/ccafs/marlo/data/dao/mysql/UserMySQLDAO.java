@@ -101,6 +101,22 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  public User getActiveSuperAdminUserByUsernameOccurrence() {
+    String query = "select id from users where is_active = 1 and username is not null "
+      + "and LOWER(username) like '%super%' and LOWER(username) like '%admin%' order by id asc limit 1";
+    List<Map<String, Object>> users = super.findCustomQuery(query);
+    if (users.isEmpty()) {
+      String fallbackQuery = "select id from users where is_active = 1 and username is not null "
+        + "and (LOWER(username) like '%super%' or LOWER(username) like '%admin%') order by id asc limit 1";
+      users = super.findCustomQuery(fallbackQuery);
+    }
+    if (!users.isEmpty()) {
+      return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
+    }
+    return null;
+  }
+
+  @Override
   public boolean saveLastLogin(User user) {
     if (user.getId() == null) {
       super.saveEntity(user);

@@ -21,6 +21,10 @@
     { 'slug': 'institutions',    'name': 'menu.superadmin.institutions', 'action': 'marloInstitutions',   'active': true, 'visible': (action.specificityValue('institutions')?has_content)?then(action.hasSpecificities('institutions'), true) },
     { 'slug': 'bulkReplication',    'name': 'menu.superadmin.bulkReplication', 'action': 'deliverablesReplication',   'active': true, 'visible': (action.specificityValue('bulkReplication')?has_content)?then(action.hasSpecificities('bulkReplication'), true) }
   ]/]
+
+  [#assign managers= [
+    { 'slug': 'globalUnitManagement',    'name': 'menu.superadmin.globalUnitManagement', 'action': 'globalUnitManagement',   'active': true, 'visible': true }
+  ]/]
 [#else]
   [#assign toolItems= [
     { 'slug': 'notifications',    'name': 'menu.superadmin.notifications', 'action': 'notifications',   'active': true, 'visible': (action.specificityValue('notifications')?has_content)?then(action.hasSpecificities('notifications'), true) },
@@ -32,6 +36,7 @@
   ]/]
   
   [#assign managers= [
+    { 'slug': 'globalUnitManagement',    'name': 'menu.superadmin.globalUnitManagement', 'action': 'globalUnitManagement',   'active': true, 'visible': true },
     { 'slug': 'marloMessages',    'name': 'menu.superadmin.marloMessages', 'action': 'marloMessages',   'active': true, 'visible': (action.specificityValue('marloMessages')?has_content)?then(action.hasSpecificities('marloMessages'), true) },
     { 'slug': 'tipManagement',    'name': 'menu.superadmin.tipManagement', 'action': 'tipManagement',   'active': true, 'visible': (action.specificityValue('tip_section_active')?has_content)?then(action.hasSpecificities('tip_section_active'), true) },
     [#-- { 'slug': 'reportsManagement',    'name': 'menu.superadmin.reportsManagement', 'action': 'reportsManagement',   'active': true, 'visible': (action.specificityValue('reportsManagement')?has_content)?then(action.hasSpecificities('reportsManagement'), true) }, --]
