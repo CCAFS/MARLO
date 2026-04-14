@@ -2206,9 +2206,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       Map<Long, Phase> allPhases = null;
       if (this.getSession() != null && !this.getSession().isEmpty()) {
         if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
-          List<Phase> phases = this.phaseManager.findAll().stream()
-            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+          List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
           Map<Long, Phase> allPhasesMap = new HashMap<>();
           for (Phase phase : phases) {
             allPhasesMap.put(phase.getId(), phase);
@@ -2291,9 +2289,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       Map<Long, Phase> allPhases = null;
       if (session != null) {
         if (session.containsKey(APConstants.ALL_PHASES)) {
-          List<Phase> phases = this.phaseManager.findAll().stream()
-            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+          List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
           Map<Long, Phase> allPhasesMap = new HashMap<>();
           for (Phase phase : phases) {
             allPhasesMap.put(phase.getId(), phase);
@@ -2369,9 +2365,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public List<Phase> getAllCreatedPhases() {
 
-    List<Phase> phases = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-    phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+    List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
     this.getSession().put(APConstants.PHASES, phases);
     return phases;
 
@@ -2385,9 +2379,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Map<Long, Phase> getAllPhases() {
     if (this.getSession() != null) {
       if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
-        List<Phase> phases = this.phaseManager.findAll().stream()
-          .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-        phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+        List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
         Map<Long, Phase> allPhasesMap = new HashMap<>();
         for (Phase phase : phases) {
           allPhasesMap.put(phase.getId(), phase);
@@ -4845,10 +4837,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.PHASES)) {
       return (List<Phase>) this.getSession().get(APConstants.PHASES);
     } else {
-      List<Phase> phases = this.phaseManager.findAll().stream().filter(
-        c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
-        .collect(Collectors.toList());
-      phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+      List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
+      phases = phases.stream().filter(c -> c != null && c.getVisible() != null && c.getVisible()).collect(Collectors.toList());
       this.getSession().put(APConstants.PHASES, phases);
       return phases;
     }
@@ -4859,10 +4849,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public List<Phase> getPhasesByCycles(List<String> reportCycles) {
     List<Phase> phasesFilter = new ArrayList<>();
-    List<Phase> phases = this.phaseManager.findAll().stream()
-      .filter(
-        c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
-      .collect(Collectors.toList());
+    List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
+    phases = phases.stream().filter(c -> c != null && c.getVisible() != null && c.getVisible()).collect(Collectors.toList());
     for (int i = 0; i < phases.size(); i++) {
       for (int j = 0; j < reportCycles.size(); j++) {
         if (phases.get(i).getDescription().equalsIgnoreCase(reportCycles.get(j))) {
@@ -4878,11 +4866,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
       return (List<Phase>) this.getSession().get(APConstants.PHASES_IMPACT);
     } else {
-      List<Phase> phases = this.phaseManager
-        .findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()
-          && c.getVisible() != null && c.getVisible() && c.getDescription().equals(APConstants.PLANNING))
-        .collect(Collectors.toList());
-      phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
+      List<Phase> phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
+      phases = phases.stream().filter(c -> c != null && c.getVisible() != null && c.getVisible()).collect(Collectors.toList());
+      phases = phases.stream().filter(c -> c.getDescription().equals(APConstants.PLANNING)).collect(Collectors.toList());
       this.getSession().put(APConstants.PHASES_IMPACT, phases);
       return phases;
     }
@@ -4893,11 +4879,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.PHASES_IMPACT)) {
       phases = (List<Phase>) this.getSession().get(APConstants.PHASES_IMPACT);
     } else {
-      phases = this.phaseManager
-        .findAll().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()
-          && c.getVisible() != null && c.getVisible() && c.getDescription().equals(APConstants.PLANNING))
-        .collect(Collectors.toList());
-      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
+      phases = phases.stream().filter(c -> c != null && c.getVisible() != null && c.getVisible()).collect(Collectors.toList());
+      phases = phases.stream().filter(c -> c.getDescription().equals(APConstants.PLANNING)).collect(Collectors.toList());
       this.getSession().put(APConstants.PHASES_IMPACT, phases);
     }
 
@@ -4917,10 +4901,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.PHASES)) {
       phases = (List<Phase>) this.getSession().get(APConstants.PHASES);
     } else {
-      phases = this.phaseManager.findAll().stream().filter(
-        c -> c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getVisible() != null && c.getVisible())
-        .collect(Collectors.toList());
-      phases.sort((p1, p2) -> new Integer(p1.getYear()).compareTo(new Integer(p2.getYear())));
+      phases = this.phaseManager.getPhasesByGlobalUnitId(this.getCrpID());
+      phases = phases.stream().filter(c -> c != null && c.getVisible() != null && c.getVisible()).collect(Collectors.toList());
       this.getSession().put(APConstants.PHASES, phases);
     }
     GsonBuilder builder = new GsonBuilder();
