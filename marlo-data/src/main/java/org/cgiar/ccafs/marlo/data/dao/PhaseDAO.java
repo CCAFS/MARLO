@@ -73,6 +73,14 @@ public interface PhaseDAO {
   public Phase getActivePhase(long globalUnitId);
 
   /**
+   * This method gets a list of phases filtered by global unit ID
+   * 
+   * @param globalUnitId the global unit identifier
+   * @return a list of phases for the given global unit
+   */
+  public List<Phase> getPhasesByGlobalUnitId(long globalUnitId);
+
+  /**
    * This method saves the information of the given phase
    * 
    * @param phase - is the phase object with the new information to be added/updated.

@@ -112,6 +112,13 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
     return phases.get(0);
   }
 
+  @Override
+  public List<Phase> getPhasesByGlobalUnitId(long globalUnitId) {
+    String query = "from " + Phase.class.getName() + " where global_unit_id = " + globalUnitId
+      + " order by startDate asc, id asc";
+    List<Phase> list = super.findAll(query);
+    return (list != null && list.size() > 0) ? list : null;
+  }
 
   @Override
   public Phase save(Phase phase) {
