@@ -84,6 +84,103 @@ Use the GPL header for new Java files (as specified in the project setup guide):
 - Follow the existing naming pattern in that directory.
 - Naming format (examples in repo): `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`
 
+## Specificity Implementation Guide
+Use this workflow when creating a new specificity (feature flag based on `parameters` + `custom_parameters`).
+
+### 1. Create migration for `parameters`
+- Create one migration in `marlo-web/src/main/resources/database/migrations/`.
+- Follow the same style used by existing specificity migrations (direct `INSERT ... VALUES`).
+- Add one row per `global_unit_type_id` used by CRP/Platform/Center (`1`, `3`, `4`).
+- Use `category = '2'` (Specificities) and `format = '1'` (boolean-like).
+
+Template:
+
+```sql
+INSERT INTO parameters (global_unit_type_id, `key`, `description`, `format`, default_value, category)
+VALUES ( '1', '<specificity_key>', '<Specificity description>', '1', 'false', '2');
+
+INSERT INTO parameters (global_unit_type_id, `key`, `description`, `format`, default_value, category)
+VALUES ( '3', '<specificity_key>', '<Specificity description>', '1', 'false', '2');
+
+INSERT INTO parameters (global_unit_type_id, `key`, `description`, `format`, default_value, category)
+VALUES ( '4', '<specificity_key>', '<Specificity description>', '1', 'false', '2');
+```
+
+### 2. Create/Update migration for `custom_parameters` values
+- If the specificity must be enabled for a specific Global Unit, add inserts/updates in `custom_parameters`.
+- Use `value = 'true'` or `value = 'false'` depending on rollout.
+- Link using `parameter_id` from `parameters.key`.
+
+Template:
+
+```sql
+INSERT INTO custom_parameters (`parameter_id`, `global_unit_id`, `value`, `created_by`, `is_active`, `active_since`, `modified_by`, `modification_justification`)
+VALUES (
+  (SELECT id FROM parameters WHERE `key` = '<specificity_key>' AND global_unit_type_id = 1),
+  <global_unit_id>,
+  'true',
+  '3',
+  '1',
+  CURRENT_TIMESTAMP,
+  '3',
+  'Enable <specificity_key>'
+);
+```
+
+### 3. Add constants in APConstants
+- Add the new key in both constants files:
+  - `marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java`
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java`
+- Constant name should be uppercase snake case and value must match `parameters.key` exactly.
+
+Template:
+
+```java
+public static final String <SPECIFICITY_CONSTANT_NAME> = "<specificity_key>";
+```
+
+### 4. Backend usage (Java)
+- Prefer using APConstants constant instead of hardcoded strings.
+- Typical usage is through `BaseAction.hasSpecificities(...)`.
+
+Example:
+
+```java
+if (this.hasSpecificities(APConstants.<SPECIFICITY_CONSTANT_NAME>)) {
+  // feature enabled behavior
+} else {
+  // fallback behavior
+}
+```
+
+### 5. Frontend usage (FTL/JSP/JS)
+- In FTL views, use `action.hasSpecificities('<specificity_key>')` to toggle sections.
+- Keep behavior explicit with `[#if] ... [/#if]` blocks.
+
+Example:
+
+```ftl
+[#if action.hasSpecificities('<specificity_key>')]
+  [#-- enabled content --]
+[/#if]
+```
+
+or for hide-on-true behavior:
+
+```ftl
+[#if !action.hasSpecificities('<specificity_key>')]
+  [#-- default visible content --]
+[/#if]
+```
+
+### 6. Validation checklist
+- Migration file name follows `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`.
+- `parameters.key` and APConstants value are identical.
+- Constant added in both APConstants files.
+- Backend uses APConstants (no hardcoded key literals in Java).
+- Frontend condition matches expected behavior (`show when true` or `hide when true`).
+- If rollout is required, corresponding `custom_parameters` values are created.
+
 ## File Organization (Quick Reference)
 - Actions: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/`
 - Base Action: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/BaseAction.java`
@@ -112,3 +209,24 @@ Scripts in `scripts/` run MARLO locally (build, update properties, start server)
 - Otherwise, use the Java 8 run script in `scripts/`:
   - macOS/Linux: `scripts/run-marlo-java8.sh`
   - Windows: `scripts/run-marlo-java8.bat` (if provided; otherwise use `.sh` in Git Bash)
+
+## Operational Context Documentation
+Use these documents as the primary operational context for semi-autonomous work in critical modules:
+
+### Frontend & Composition
+- `reports/ai-context/frontend-composition-map.md`
+
+### Save & Validation
+- `reports/ai-context/save-validation-matrix.md`
+
+### Persistence & Replication
+- `reports/ai-context/persistence-replication-managerimpl.md`
+
+### Routing & Interceptors
+- `reports/ai-context/struts-critical-routing-catalog.md`
+- `reports/ai-context/interceptor-validator-playbook.md`
+
+### Scope Guardrails
+- Internal MARLO flows should prioritize Struts `.do` actions and existing FTL composition.
+- `struts-json` usage is punctual and should only be extended when there is an existing JSON pattern in the same module.
+- `/api/*` (Spring MVC) is out of scope for internal flow implementation and remains reference-only in this context pack.

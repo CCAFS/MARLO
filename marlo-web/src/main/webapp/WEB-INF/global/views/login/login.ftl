@@ -1,7 +1,7 @@
 [#ftl]
-[#assign title = "Welcome to AICCRA" /]
+[#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20230714"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260410"] /]
 [#assign currentSection = "home" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -36,6 +36,11 @@
         <label>[@s.text name="login.participating.platforms"/]:</label>    
         <div class="login-logos-container">
           <ul>
+          [#attempt] 
+            [#assign crpList = action.getCrpCategoryList("1") /]
+          [#recover]
+            [#assign crpList = [] /]
+          [/#attempt]
           [#if crpList?has_content]
             [#list crpList as crp]
               [@crpItem element=crp /]
@@ -54,6 +59,11 @@
         <label>[@s.text name="login.participating.centers"/]:</label>
         <div class="login-logos-container">
           <ul>
+          [#attempt] 
+            [#assign centerList = action.getCrpCategoryList("5") /]
+          [#recover]
+            [#assign centerList = [] /]
+          [/#attempt]
           [#if centerList?has_content]
             [#list centerList as center]
               [@crpItem element=center /]
@@ -70,6 +80,11 @@
         <label>[@s.text name="login.platforms"/]:</label>
         <div class="login-logos-container">
           <ul>
+            [#attempt] 
+              [#assign platformsList = action.getCrpCategoryList("3") /]
+            [#recover]
+              [#assign platformsList = [] /]
+            [/#attempt]
             [#if platformsList?has_content]
               [#list platformsList as platform]
                 [@crpItem element=platform /]
@@ -88,8 +103,8 @@
 [#macro crpItem element] 
   [#if element.marlo && element.login]
     [#if element.id != 17 && element.id != 27]
-      <li id="crp-${element.acronym}" title="${element.name}">
-        <img class="animated bounceIn" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+      <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
+        <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/data/globalUnitLogo.do?acronym=${element.acronym}" alt="${element.name}" />
       </li>
     [/#if]
   [/#if]

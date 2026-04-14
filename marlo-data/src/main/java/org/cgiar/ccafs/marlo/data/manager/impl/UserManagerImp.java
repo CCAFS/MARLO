@@ -120,6 +120,11 @@ public class UserManagerImp implements UserManager {
   }
 
   @Override
+  public User getActiveSuperAdminUserByUsernameOccurrence() {
+    return userDAO.getActiveSuperAdminUserByUsernameOccurrence();
+  }
+
+  @Override
   public User login(String email, String password) {
     User userFound = null;
 

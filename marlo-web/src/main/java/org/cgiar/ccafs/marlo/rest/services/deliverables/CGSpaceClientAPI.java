@@ -48,6 +48,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   private final String BASE_URL = "https://cgspace.cgiar.org/";
   private final String CGSPACE_URL = BASE_URL + "handle/";
   private final String CGSPACE_HANDLE = BASE_URL + "rest/handle/{0}";
+  private final String CGSPACE_HANDLE_API = BASE_URL + "server/api/core/handles/{0}";
   private final String REST_URL = BASE_URL + "rest/items/{0}/metadata";
   private final String HANDLE_URL = "http://hdl.handle.net/";
   private final String HANDLE_HTTPS_URL = "https://hdl.handle.net/";
@@ -81,28 +82,54 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
       String metadataJson = xmlReaderConnectionUtil.getJsonRestClient(requestUrl);
 
-      // Detect whether response is DSpace 7 (JSON Object) or DSpace 6 (JSON Array)
-      boolean isDSpace7 = metadataJson.trim().startsWith("{");
+      // Detect DSpace API generation from the response format:
+      // - DSpace 6: returns a JSON Array [ {"key":"dc.title","value":"..."}, ... ]
+      // - DSpace 7 / DSpace 8: returns a JSON Object { "metadata": { "dc.title": [...] } }
+      // DSpace 7 and DSpace 8 share the same HAL+JSON REST API structure; DSpace 8 is
+      // backward compatible with DSpace 7 endpoints.
+      boolean isModernDSpaceApi = metadataJson.trim().startsWith("{");
 
       List<Author> authors = new ArrayList<>();
       StringJoiner countries = new StringJoiner(", ");
       StringJoiner keywords = new StringJoiner(", ");
 
-      if (isDSpace7) {
+      if (isModernDSpaceApi) {
         // ============================================================
-        // 🔸 DSPACE 7 STRUCTURE
+        // 🔸 DSPACE 7 / DSPACE 8 STRUCTURE
         // ============================================================
         /*
-         * In DSpace 7, the API endpoint /server/api/core/items/{uuid}
-         * returns a JSON object containing all metadata under the field "metadata".
-         * Each metadata key has an array of value objects with structure:
+         * DSpace 7 and DSpace 8 both use the HAL+JSON REST API.
+         * The endpoint /server/api/core/items/{uuid} returns a JSON object
+         * containing all metadata under the field "metadata".
+         * Each metadata key has an array of value objects:
          * "metadata": {
          * "dc.title": [ { "value": "Some title" } ],
          * "dcterms.abstract": [ { "value": "Abstract text" } ],
          * ...
          * }
+         * DSpace 8 extends DSpace 7's REST API but maintains full backward
+         * compatibility, so the same parsing logic applies to both versions.
          */
         JSONObject jsonItem = new JSONObject(metadataJson);
+
+        // Secondary version detection: DSpace 8 includes a top-level "entityType"
+        // field that is non-null for entity items (Person, OrgUnit, etc.).
+        // For regular publications it may still be null, so we fall back to
+        // checking whether the response contains the legacy "UUID" field
+        // (present only in DSpace 6 XML/JSON legacy responses).
+        boolean isDSpace8 = !jsonItem.has("UUID") && jsonItem.has("_links")
+          && jsonItem.optString("dspaceVersion", "").contains("8");
+        boolean isDSpace7 = !isDSpace8 && !jsonItem.has("UUID") && jsonItem.has("_links");
+        String detectedVersion;
+        if (isDSpace8) {
+          detectedVersion = "8";
+        } else if (isDSpace7) {
+          detectedVersion = "7";
+        } else {
+          detectedVersion = "7/8-compatible";
+        }
+        LOG.debug("Detected DSpace version for URL {}: {}", requestUrl, detectedVersion);
+
         JSONObject metadataNode = jsonItem.optJSONObject("metadata");
 
         if (metadataNode != null) {
@@ -361,11 +388,12 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     String in = StringUtils.trim(link);
 
     // ==========================================================
-    // 1. SUPPORT FOR DSPACE 7: URL pattern with /items/{uuid}
+    // 1. SUPPORT FOR DSPACE 7 / DSPACE 8: URL pattern with /items/{uuid}
     // Example: https://cgspace.cgiar.org/items/d55ee33d-848c-464a-9587-b227aa79c8c5
-    // This pattern directly provides the UUID of the item.
-    // The corresponding REST endpoint is:
+    // Both DSpace 7 and DSpace 8 use this URL pattern for public item pages.
+    // The UUID is extracted and mapped to the shared REST endpoint:
     // https://cgspace.cgiar.org/server/api/core/items/{uuid}/metadata
+    // (DSpace 8 is backward compatible with DSpace 7 REST API endpoints)
     // ==========================================================
     Pattern pUuidInItems = Pattern.compile("(?i)/items/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
     Matcher mItems = pUuidInItems.matcher(in);
@@ -373,9 +401,9 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       String uuid = mItems.group(1);
       this.setId(uuid);
 
-      // Build the DSpace 7 metadata REST URL
-      String DSPACE7_ITEMS_METADATA = BASE_URL + "server/api/core/items/{0}/metadata";
-      return DSPACE7_ITEMS_METADATA.replace("{0}", uuid);
+      // Build the DSpace 7 / DSpace 8 metadata REST URL
+      String MODERN_DSPACE_ITEMS_METADATA = BASE_URL + "server/api/core/items/{0}/metadata";
+      return MODERN_DSPACE_ITEMS_METADATA.replace("{0}", uuid);
     }
 
     // ==========================================================
@@ -397,16 +425,43 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
     // If a handle ID was found, resolve it into a UUID and build the REST URL
     if (this.getId() != null) {
-      String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
-      RestConnectionUtil connection = new RestConnectionUtil();
-      Element elementHandle = connection.getXmlRestClient(handleUrl);
-
-      if (elementHandle != null && elementHandle.element("UUID") != null) {
-        this.setId(elementHandle.element("UUID").getStringValue());
-        if (this.getId() != null) {
-          // Build the legacy DSpace 6 REST URL using the resolved UUID
-          return REST_URL.replace("{0}", this.getId());
+      // 1. Try DSpace 7/8 handle API: /server/api/core/handles/{prefix}/{suffix}
+      // Response contains _links.resource.href pointing to /server/api/core/items/{uuid}.
+      try {
+        String handleApiUrl = CGSPACE_HANDLE_API.replace("{0}", this.getId());
+        String handleJson = xmlReaderConnectionUtil.getJsonRestClient(handleApiUrl);
+        if (StringUtils.isNotBlank(handleJson)) {
+          JSONObject handleResponse = new JSONObject(handleJson);
+          JSONObject links = handleResponse.optJSONObject("_links");
+          if (links != null) {
+            JSONObject resource = links.optJSONObject("resource");
+            if (resource != null) {
+              String resourceHref = resource.optString("href", "");
+              Matcher uuidMatcher = pUuidInItems.matcher(resourceHref);
+              if (uuidMatcher.find()) {
+                this.setId(uuidMatcher.group(1));
+                return BASE_URL + "server/api/core/items/" + this.getId();
+              }
+            }
+          }
         }
+      } catch (RuntimeException e) {
+        LOG.warn("DSpace 7/8 handle API failed for handle '{}': {}", this.getId(), e.getMessage());
+      }
+
+      // 2. Fallback: legacy DSpace 6 /rest/handle endpoint (backward compatibility)
+      try {
+        String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
+        RestConnectionUtil connection = new RestConnectionUtil();
+        Element elementHandle = connection.getXmlRestClient(handleUrl);
+        if (elementHandle != null && elementHandle.element("UUID") != null) {
+          this.setId(elementHandle.element("UUID").getStringValue());
+          if (this.getId() != null) {
+            return REST_URL.replace("{0}", this.getId());
+          }
+        }
+      } catch (RuntimeException e) {
+        LOG.warn("Legacy DSpace 6 handle resolution also failed for handle '{}': {}", this.getId(), e.getMessage());
       }
     }
 
@@ -415,9 +470,17 @@ public class CGSpaceClientAPI extends MetadataClientApi {
     // If the provided link is already in the REST API format,
     // simply return it as-is without any transformation.
     // ==========================================================
-    if (in.matches("(?i)^https?://[^\\s]+/server/api/core/items/[0-9a-f-]{36}/metadata.*$")
-      || in.matches("(?i)^https?://[^\\s]+/rest/items/[0-9a-f-]{36}/metadata.*$")) {
+    // Direct /server/api/core/items/{uuid} or /server/api/core/items/{uuid}/metadata — pass through
+    if (in.matches("(?i)^https?://[^\\s]+/server/api/core/items/[0-9a-f-]{36}(/metadata)?.*$")) {
       return in;
+    }
+
+    // Legacy /rest/items/{uuid}/metadata (DSpace 4/5/6) — convert to modern DSpace 7/8 URL
+    Matcher mRestItems =
+      Pattern.compile("(?i)/rest/items/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})").matcher(in);
+    if (mRestItems.find()) {
+      this.setId(mRestItems.group(1));
+      return BASE_URL + "server/api/core/items/" + this.getId();
     }
 
     // ==========================================================

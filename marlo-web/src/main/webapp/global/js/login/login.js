@@ -487,7 +487,7 @@ function showTermsCheckbox() {
 
 // Show the image of the selected crp (big image)
 function loadSelectedImage(selectedImageAcronym) {
-  $("#crpSelectedImage").attr("src", baseUrl + "/global/images/crps/" + selectedImageAcronym + ".png");
+  $("#crpSelectedImage").attr("src", baseUrl + "/data/globalUnitLogo.do?acronym=" + encodeURIComponent(selectedImageAcronym));
 }
 
 function setCookie(cname,cvalue,mins) {

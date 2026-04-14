@@ -190,8 +190,8 @@
             [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
-               <div id="title" >AICCRA</div>    
-                <div id="subTitle" class="visible-md-block visible-lg-block visible-xl-block">Accelerating Impacts of CGIAR Climate Research for Africa project</div>
+               <div id="title" >MARLO</div>    
+                <div id="subTitle" class="visible-md-block visible-lg-block visible-xl-block">Managing Agricultural Research for Learning & Outcomes</div>
                 <div class="clearfix"></div>            
               </a>
             </div>
@@ -199,7 +199,7 @@
             [#if namespace?contains('superadmin')]
               <img id="crp-image" src="${baseUrlCdn}/global/images/cgiar.png" alt="" />
             [#else]
-              [#if crpSession??]<img id="crp-image" src="${baseUrlCdn}/global/images/crps/${crpSession}.png" alt="${crpSession}" />[/#if]
+              [#if crpSession??]<img id="crp-image" src="${baseUrl}/data/globalUnitLogo.do?acronym=${crpSession}" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>
             [#-- Testing Environment --]

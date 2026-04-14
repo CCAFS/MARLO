@@ -129,8 +129,8 @@ $(document).ready(function () {
     }
   }
 
-  // Main Menu always visible
-  if ($('#mainMenu').exists()) {
+  // Main Menu always visible (skip on login page where it is not functional)
+  if ($('#mainMenu').exists() && !$('.loginPage').exists()) {
     var mainMenuPosition = $('#mainMenu').position().top + 20;
     $(window).scroll(function () {
       if ($(window).scrollTop() >= mainMenuPosition) {

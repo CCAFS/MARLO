@@ -75,6 +75,13 @@ public interface UserManager {
    */
   public User getUserByUsername(String username);
 
+  /**
+   * Find one active user whose username contains both words 'super' and 'admin' (case-insensitive).
+   *
+   * @return matching user or null
+   */
+  public User getActiveSuperAdminUserByUsernameOccurrence();
+
 
   /**
    * Authenticate a user.
