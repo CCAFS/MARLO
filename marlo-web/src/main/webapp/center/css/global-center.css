@@ -842,6 +842,18 @@ ul.horizontalSubMenu li.canEdit a:after{
 }
 
 /* Impact Pathway flagship switcher: inactive items — light blue (see global.css) */
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li {
+  padding: 0;
+}
+
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li a {
+  display: block;
+  padding: 7px 11px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
 ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) {
   border-color: #c5e3f2;
   background-color: #f0f8fc;
