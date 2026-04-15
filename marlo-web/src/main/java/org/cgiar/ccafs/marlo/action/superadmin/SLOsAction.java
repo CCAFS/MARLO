@@ -57,6 +57,11 @@ public class SLOsAction extends BaseAction {
   private static final String VALUE_SUFFIX = "].value";
   private static final String TARGETS_INDICATOR_SUFFIX = "].targetsIndicator";
 
+  /** Struts action names using this class (see struts-superadmin.xml). */
+  private static final String ACTION_MARLO_SLOs = "marloSLOs";
+
+  private static final String ACTION_MARLO_CROSS_CUTTING = "marloCrossCutting";
+
 
   private Map<Long, String> idoList;
 
@@ -354,6 +359,25 @@ public class SLOsAction extends BaseAction {
       srfCrossCuttingIssues = new ArrayList<>();
       bindSlosFromRequest();
       bindCrossCuttingIssuesFromRequest();
+
+      /*
+       * marloSLOs.ftl and marloCrossCutting.ftl each post only one side of the data. The other
+       * list would stay empty after binding, and save() would delete every DB row not listed in
+       * the POST. Reload the collection that this request is not meant to edit.
+       */
+      String currentAction = this.getActionName();
+      if (!ACTION_MARLO_SLOs.equals(currentAction)) {
+        slosList = srfSloManager.findAll();
+        if (slosList == null) {
+          slosList = new ArrayList<>();
+        }
+      }
+      if (!ACTION_MARLO_CROSS_CUTTING.equals(currentAction)) {
+        srfCrossCuttingIssues = srfCrossCuttingIssueManager.findAll();
+        if (srfCrossCuttingIssues == null) {
+          srfCrossCuttingIssues = new ArrayList<>();
+        }
+      }
     } else {
       // GET: Load from database
       slosList = srfSloManager.findAll();

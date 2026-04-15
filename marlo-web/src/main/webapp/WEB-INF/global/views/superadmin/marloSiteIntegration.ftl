@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js",
-  "${baseUrlCdn}/global/js/superadmin/marloSLOs.js",
+  "${baseUrlCdn}/global/js/superadmin/marloSiteIntegration.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]

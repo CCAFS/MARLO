@@ -1,114 +1,100 @@
 $(document).ready(init);
-var select;
-var countriesContent = $(".countriesContent");
 
 function init() {
   attachEvents();
-  select = $(".countriesList");
-  $('.removeCountry').on('click', removeCountry);
-
-  $('select').select2({
-    templateResult: formatState
-  });
-
-  addUser = addUserItem;
-}
-
-function formatState(state) {
-  if(!state.id) {
-    return state.text;
-  }
-  var $state =
-      $('<span><i class="flag-icon flag-icon-' + state.element.value.toLowerCase() + '"></i> ' + state.text + '</span>');
-  return $state;
 }
 
 function attachEvents() {
-  select = $(".countriesList ");
-  select.on('change', function() {
-    countrySelected = select.find("option:selected");
-    if(countrySelected.val() != -1 && countrySelected.val() != null) {
-      differences();
+
+  $('.addSlo').on('click', addSlo);
+
+  $('.addIndicator').on('click', addIndicator);
+
+  $('.addTargets').on('click', addTarget);
+
+  $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
+
+  $('.remove-element').on('click', removeElement);
+
+  $('.blockTitle.closed').on('click', function() {
+    if($(this).hasClass('closed')) {
+      $('.blockContent').slideUp();
+      $('.blockTitle').removeClass('opened').addClass('closed');
+      $(this).removeClass('closed').addClass('opened');
+    } else {
+      $(this).removeClass('opened').addClass('closed');
     }
+    $(this).next().slideToggle();
   });
 
-  $('.glyphicon-remove').on('click', function() {
-    var $parent = $(this).parent();
-    var $block = $parent.parent().parent();
-    $parent.hide(function() {
-      $parent.remove();
-      checkItems($block);
-      updateCountriesIndex();
+}
+
+function addSlo() {
+  var $itemsList = $(this).parent().find('.slos-list');
+  var $item = $("#srfSlo-template").clone(true).removeAttr("id");
+  $item.find('.blockTitle').trigger('click');
+  $itemsList.append($item);
+  $item.slideDown('slow');
+  updateIndexes();
+  $item.trigger('addComponent');
+}
+
+function addIndicator() {
+  var $itemsList = $(this).parent().parent().find('.srfIndicators-list');
+  var $item = $("#srfSloIndicator-template").clone(true).removeAttr("id");
+
+  $itemsList.append($item);
+  $item.slideDown('slow');
+  updateIndexes();
+  $item.trigger('addComponent');
+}
+
+function addTarget() {
+  var $itemsList = $(this).parent().parent().find('.targetsList');
+  var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
+
+  $itemsList.append($item);
+  $item.slideDown('slow');
+  updateIndexes();
+  $item.trigger('addComponent');
+}
+
+function addCrossCuttingIssue() {
+  var $itemsList = $(this).parent().find('.issues-list');
+  var $item = $("#srfCCIssue-template").clone(true).removeAttr("id");
+
+  $itemsList.append($item);
+  $item.slideDown('slow');
+  updateIndexes();
+  $item.trigger('addComponent');
+}
+
+function removeElement() {
+  var $item;
+  if ($(this).hasClass('targetRemove')) {
+    $item = $(this).closest('.targetsIndicator');
+  } else {
+    $item = $(this).parent();
+  }
+  $item.hide('slow', function() {
+    $item.remove();
+    updateIndexes();
+    $(document).trigger('removeComponent');
+  });
+}
+
+function updateIndexes() {
+  $('.slos-list .srfSlo').each(function(i, slo) {
+    $(slo).setNameIndexes(1, i);
+    $(slo).find('.srfSloIndicator').each(function(indicatorIndex, indicator) {
+      $(indicator).setNameIndexes(2, indicatorIndex);
+      $(indicator).find('.targetsIndicator').each(function(targetIndex, target) {
+        $(target).setNameIndexes(3, targetIndex);
+      });
     });
   });
-}
 
-function addCountry(countrySelected) {
-  var $item = $('#country-template').clone(true).removeAttr('id');
-  $item.find('input.isoAlpha2').val(countrySelected.val());
-  $item.find('.country-title').html("<i></i> " + countrySelected.text());
-  $item.find('i').attr('class', 'flag-icon flag-icon-' + countrySelected.val().toLowerCase());
-  countriesContent.append($item);
-  $item.show("slow");
-  updateCountriesIndex();
-}
-
-function removeCountry() {
-  var $item = $(this).parents('.country');
-  $item.hide(1000, function() {
-    $item.remove();
-    updateCountriesIndex();
-  });
-}
-
-function differences() {
-  countrySelected = select.find("option:selected");
-  if(countriesContent.find('input[value=' + countrySelected.val() + ']').exists()) {
-    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-    notyOptions.text = 'This country has been added';
-    notyOptions.type = 'alert';
-    noty(notyOptions);
-  } else {
-    addCountry(countrySelected);
-  }
-}
-
-function updateCountriesIndex() {
-  var name = "loggedCrp.siteIntegrations";
-  $(".countriesContent").find('.country').each(function(i,item) {
-    var customName = name + '[' + i + ']';
-    $(item).attr('id', 'country-' + i);
-    $(item).find('input.id').attr('name', customName + '.id');
-    $(item).find('input.isoAlpha2').attr('name', customName + '.locElement.isoAlpha2');
-    updateUsersIndex(item, customName);
-  });
-}
-
-function addUserItem(composedName,userId) {
-  $usersList = $elementSelected.parent().parent().find(".items-list");
-  var $li = $("#user-template").clone(true).removeAttr("id");
-  $li.find('.name').html(escapeHtml(composedName));
-  $li.find('.user').val(userId);
-  $usersList.find("ul").append($li);
-  $li.show('slow');
-  checkItems($usersList);
-  updateCountriesIndex();
-  dialog.dialog("close");
-}
-
-function checkItems(block) {
-  var items = $(block).find('li').length;
-  if(items == 0) {
-    $(block).find('p').fadeIn();
-  } else {
-    $(block).find('p').fadeOut();
-  }
-}
-
-function updateUsersIndex(item,name) {
-  $(item).find('li').each(function(indexUser,userItem) {
-    var customName = name + '.siteLeaders[' + indexUser + ']';
-    $(userItem).find('.user').attr('name', customName + '.user.id');
-    $(userItem).find('.id').attr('name', customName + '.id');
+  $('.issues-list .srfCCIssue').each(function(issueIndex, issue) {
+    $(issue).setNameIndexes(1, issueIndex);
   });
 }
