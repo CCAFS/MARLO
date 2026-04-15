@@ -1194,11 +1194,6 @@ public class OutcomesAction extends BaseAction {
         }
       }
 
-      if (crpProgramOutcomeTemp != null && crpProgramOutcomeTemp.getAcronym() != null) {
-        crpProgramOutcome.setAcronym(crpProgramOutcomeTemp.getAcronym());
-        programOutcomeIncoming.setAcronym(crpProgramOutcomeTemp.getAcronym());
-      }
-
       if (programOutcomeIncoming.getFile() != null && programOutcomeIncoming.getFile().getId() == null) {
         programOutcomeIncoming.setFile(null);
       }

@@ -70,6 +70,14 @@ public interface PhaseManager {
   public Phase getActivePhase(long globalUnitId);
 
   /**
+   * This method gets a list of phases filtered by global unit ID
+   * 
+   * @param globalUnitId the global unit identifier
+   * @return a list of phases for the given global unit
+   */
+  public List<Phase> getPhasesByGlobalUnitId(long globalUnitId);
+
+  /**
    * This method gets a phase object by a given phase identifier.
    * 
    * @param phaseID is the phase identifier.
