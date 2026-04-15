@@ -144,7 +144,7 @@ public class ProjectActivitiesAction extends BaseAction {
           // TODO: delete deliverables associated before to delete the activity
 
           activityManager.deleteActivity(activity.getId());
-          logger.info("Deleted activity with ID {}", activity.getId());
+          logger.debug("Deleted activity with ID {}", activity.getId());
         }
       }
 
@@ -436,7 +436,11 @@ public class ProjectActivitiesAction extends BaseAction {
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
 
-      List<Deliverable> filteredDeliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
+      Project projectForDeliverableFilter = project;
+      if (this.isDraft() || StringUtils.isNotEmpty(this.getRequest().getParameter(APConstants.TRANSACTION_ID))) {
+        projectForDeliverableFilter = projectManager.getProjectById(projectID);
+      }
+      List<Deliverable> filteredDeliverables = projectForDeliverableFilter.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
         .peek(d -> d.setTagTitle(d.getComposedName())).collect(Collectors.toList());
 
@@ -566,7 +570,7 @@ public class ProjectActivitiesAction extends BaseAction {
       int index = 0;
       boolean hasMore = true;
       
-      logger.info("bindActivitiesFromRequest: Starting manual binding");
+      logger.debug("bindActivitiesFromRequest: Starting manual binding");
       
       while (hasMore) {
         String titleParam = this.getRequest().getParameter("project.projectActivities[" + index + "].activityTitle.id");
@@ -654,18 +658,18 @@ public class ProjectActivitiesAction extends BaseAction {
           List<DeliverableActivity> deliverables = bindDeliverablesForActivity(index);
           if (deliverables != null && !deliverables.isEmpty()) {
             activity.setDeliverables(deliverables);
-            logger.info("bindActivitiesFromRequest: Bound {} deliverables to activity at index {}", deliverables.size(), index);
+            logger.debug("bindActivitiesFromRequest: Bound {} deliverables to activity at index {}", deliverables.size(), index);
           }
           
           activities.add(activity);
-          logger.info("bindActivitiesFromRequest: Bound activity at index {} with title ID: {}", index, titleParam);
+          logger.debug("bindActivitiesFromRequest: Bound activity at index {} with title ID: {}", index, titleParam);
           index++;
         } else {
           hasMore = false;
         }
       }
       
-      logger.info("bindActivitiesFromRequest: Successfully bound {} activities", activities.size());
+      logger.debug("bindActivitiesFromRequest: Successfully bound {} activities", activities.size());
       project.setProjectActivities(activities);
       
     } catch (Exception e) {
@@ -698,7 +702,7 @@ public class ProjectActivitiesAction extends BaseAction {
           delActivity.setPhase(this.getActualPhase());
           
           deliverables.add(delActivity);
-          logger.info("bindActivitiesFromRequest: Bound deliverable {} to activity {} at deliverable index {}", 
+          logger.debug("bindActivitiesFromRequest: Bound deliverable {} to activity {} at deliverable index {}",
             deliverableId, activityIndex, deliverableIndex);
           
           deliverableIndex++;
@@ -722,42 +726,25 @@ public class ProjectActivitiesAction extends BaseAction {
       // Manual binding de actividades desde request parameters
       this.bindActivitiesFromRequest();
 
-      // Log para diagnóstico
-      logger.info("SAVE: project.getProjectActivities() size = {}", 
+      logger.debug("SAVE: project.getProjectActivities() size = {}",
         project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
       // improve performance
-      List<Activity> activitiesDB = new ArrayList<Activity>();
+      List<Activity> existingActivities = new ArrayList<>();
       try {
-        activitiesDB = this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
-      } catch (Exception e) {
-        logger.info(" unable to get activities from the BD in save function ");
-      }
-
-      List<Activity> projectActivitiesDB = new ArrayList<Activity>();
-      try {
-        projectActivitiesDB =
+        existingActivities =
           this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
       } catch (Exception e) {
-        logger.info(" unable to get activities in save function ");
+        logger.warn("Unable to get activities from the database in save()", e);
       }
 
-
-      // Check activities from UI
-      if (projectActivitiesDB != null && !projectActivitiesDB.isEmpty()) {
-        this.deleteActivities(projectActivitiesDB);
-      } else {
-        // Delete activities
-        if (activitiesDB != null && !activitiesDB.isEmpty()) {
-          for (Activity activity : activitiesDB) {
-            activityManager.deleteActivity(activity.getId());
-          }
-        }
+      // Sync deletions with UI: remove DB rows not present in the submitted list (same snapshot as the old dual-query path when both calls succeeded).
+      if (existingActivities != null && !existingActivities.isEmpty()) {
+        this.deleteActivities(existingActivities);
       }
 
-      // Log después del delete para verificar el estado
-      logger.info("SAVE after delete: project.getProjectActivities() size = {}", 
+      logger.debug("SAVE after delete: project.getProjectActivities() size = {}",
         project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
       try {
@@ -815,14 +802,14 @@ public class ProjectActivitiesAction extends BaseAction {
       logger.warn("saveActivitiesNewData: project.getProjectActivities() is NULL");
       return;
     }
-    logger.info("saveActivitiesNewData: Found {} activities to save", project.getProjectActivities().size());
+    logger.debug("saveActivitiesNewData: Found {} activities to save", project.getProjectActivities().size());
 
     for (Activity activityUI : project.getProjectActivities()) {
       if (activityUI == null) {
         logger.warn("saveActivitiesNewData: Found null activity in list, skipping");
         continue;
       }
-      logger.info("saveActivitiesNewData: Processing activity ID={}, title={}", activityUI.getId(), activityUI.getTitle());
+      logger.debug("saveActivitiesNewData: Processing activity ID={}, title={}", activityUI.getId(), activityUI.getTitle());
 
       boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
       Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
@@ -852,7 +839,7 @@ public class ProjectActivitiesAction extends BaseAction {
       // Deliverables - guardar tanto para actividades nuevas como existentes
       if (activityUI.getDeliverables() != null && !activityUI.getDeliverables().isEmpty()) {
         activityEntity.setDeliverables(activityUI.getDeliverables());
-        logger.info("saveActivitiesNewData: Activity {} has {} deliverables to save", 
+        logger.debug("saveActivitiesNewData: Activity {} has {} deliverables to save",
           activityUI.getId(), activityUI.getDeliverables().size());
       }
 

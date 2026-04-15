@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20251009"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20260416"
   ] 
 /]
 [#-- ,  
@@ -238,9 +238,14 @@
       </div>
 
       [#if reportingActive]
+      [#-- Progress label matches activity status; default On-going (2) for new/template (same as saveActivitiesNewData / select default) --]
+      [#assign apProgressKey = (element.activityStatus)!2 /]
+      [#if (element.activityStatus)?? && element.activityStatus == -1]
+        [#assign apProgressKey = 2 /]
+      [/#if]
       [#-- Progress in reporting cycle --]
       <div class="statusDescriptionBlock col-md-12">
-        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${(element.activityStatus)!'NotSelected'}" value="${(element.activityProgress)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
+        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${apProgressKey}" value="${(element.activityProgress)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
         <div id="statusesLabels" style="display:none">
           <div id="status-2">[@s.text name="project.activities.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
           <div id="status-3">[@s.text name="project.activities.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]

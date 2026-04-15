@@ -100,6 +100,10 @@ public class ProjectListAction extends BaseAction {
   private List<Project> closedProjects;
   private String filterBy;
 
+  /** Precomputed in {@link #populateProjectsListCaches()} for projects list FTL (avoids N queries per row). */
+  private final Set<Long> projectIdsCrpOrPlatform = new HashSet<>();
+  private final Set<Long> projectIdsCenter = new HashSet<>();
+
   @Inject
   public ProjectListAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
@@ -582,7 +586,7 @@ public class ProjectListAction extends BaseAction {
         allProjects = new ArrayList<>();
         for (ProjectPhase projectPhase : phase.getProjectPhases()) {
           if (projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()) != null && projectPhase.getProject().isActive() && projectPhase.getProject().getProjecInfoPhase(this.getActualPhase()).isActive()) {
-            allProjects.add(projectManager.getProjectById(projectPhase.getProject().getId()));
+            allProjects.add(projectPhase.getProject());
           }
         }
 
@@ -708,9 +712,68 @@ public class ProjectListAction extends BaseAction {
     }
 
     // closedProjects.sort((p1, p2) -> p1.getStatus().compareTo(p2.getStatus()));
+    this.populateProjectsListCaches();
+
     String params[] = {loggedCrp.getAcronym() + ""};
     this.setBasePermission(this.getText(Permission.PROJECT_LIST_BASE_PERMISSION, params));
 
+  }
+
+  private void collectProjectIdsForListCaches(Set<Long> ids, List<Project> projects) {
+    if (projects == null) {
+      return;
+    }
+    for (Project p : projects) {
+      if (p != null && p.getId() != null) {
+        ids.add(p.getId());
+      }
+    }
+  }
+
+  /**
+   * One evaluation per project id for Crp/Platform and Center flags (same rules as BaseAction), for list rendering.
+   */
+  private void populateProjectsListCaches() {
+    projectIdsCrpOrPlatform.clear();
+    projectIdsCenter.clear();
+    Set<Long> ids = new HashSet<>();
+    this.collectProjectIdsForListCaches(ids, myProjects);
+    this.collectProjectIdsForListCaches(ids, allProjects);
+    this.collectProjectIdsForListCaches(ids, closedProjects);
+    if (this.isAiccra()) {
+      projectIdsCrpOrPlatform.addAll(ids);
+      return;
+    }
+    for (Long id : ids) {
+      try {
+        if (globalUnitProjectManager.isProjectCreatedByCrpOrPlatform(id)) {
+          projectIdsCrpOrPlatform.add(id);
+        }
+        GlobalUnitProject gup = globalUnitProjectManager.findByProjectId(id);
+        if (gup != null && gup.getGlobalUnit() != null && gup.getGlobalUnit().getGlobalUnitType() != null
+          && gup.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
+          projectIdsCenter.add(id);
+        }
+      } catch (Exception e) {
+        logger.warn("populateProjectsListCaches: skip projectId {}", id, e);
+      }
+    }
+  }
+
+  @Override
+  public boolean isProjectCrpOrPlatformForList(long projectId) {
+    if (this.isAiccra()) {
+      return true;
+    }
+    return projectIdsCrpOrPlatform.contains(projectId);
+  }
+
+  @Override
+  public boolean isProjectCenterForList(long projectId) {
+    if (this.isAiccra()) {
+      return false;
+    }
+    return projectIdsCenter.contains(projectId);
   }
 
   @Override
