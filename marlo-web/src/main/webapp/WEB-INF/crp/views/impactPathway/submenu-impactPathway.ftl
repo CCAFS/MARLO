@@ -1,6 +1,6 @@
 [#ftl]
 [#-- Program (Flagships) --]
-<ul id="liaisonInstitutions" class="horizontalSubMenu">
+<ul id="liaisonInstitutions" class="horizontalSubMenu horizontalSubMenu--impactPathway">
   [#list programs?sort_by("orderIndex") as program]
     [#assign programURL][@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#assign]
     [#assign isActive = (program.id == crpProgramID)/]

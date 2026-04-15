@@ -841,6 +841,32 @@ ul.horizontalSubMenu li.canEdit a:after{
   content: "*";
 }
 
+/* Impact Pathway flagship switcher: inactive items — light blue (see global.css) */
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) {
+  border-color: #c5e3f2;
+  background-color: #f0f8fc;
+}
+
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) a {
+  color: #1e8cba;
+}
+
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active):hover {
+  border-color: #8ecae6;
+  background-color: #e3f4fb;
+}
+
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) a:hover,
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) a:focus {
+  color: #157aa3;
+  text-decoration: none;
+}
+
+ul.horizontalSubMenu.horizontalSubMenu--impactPathway li:not(.active) a:focus-visible {
+  outline: 2px solid #1da5ce;
+  outline-offset: 2px;
+}
+
 p.synthesisCompleted {
   position: absolute;
   right: 1px;
