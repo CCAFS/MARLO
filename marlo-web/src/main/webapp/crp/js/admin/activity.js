@@ -10,6 +10,11 @@ function init() {
 
   /* Color picker widget */
   $('form .color-picker').colorPicker();
+
+  var $activityList = $('.program-block .items-list');
+  if ($activityList.length) {
+    updateProgramIndexes($activityList);
+  }
 }
 
 function attachEvents() {
@@ -175,12 +180,14 @@ function updateProgramManagementTeamIndexes(list) {
 
 function updateProgramIndexes(list) {
   $(list).find('.program').each(function(index,item) {
-    var programName = 'activities' + '[' + index + '].';
+    var programName = 'activities[' + index + '].';
+    var titleField = programName + 'title';
+    var idField = programName + 'id';
 
     $(item).find('.index').text(index + 1);
 
-    $(item).find('.title').attr('title', programName + 'title');
-    $(item).find('.id').attr('title', programName + 'id');
+    $(item).find('input.title').attr('name', titleField).attr('id', titleField);
+    $(item).find('input.id').attr('name', idField).attr('id', idField);
 
   });
 }
