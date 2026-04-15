@@ -56,15 +56,14 @@ function init() {
     verifyMissingFields(e);
   });
 
-  // Change status
+  // Change status — clear progress text when user changes status
   $('select.activityStatus').on("change", function() {
-    var statusId = $(this).val();
-    $statusDescription = $(this).parents('.activityStatusBlock').find('.statusDescriptionBlock');
+    syncActivityProgressLabelFromStatus($(this), true);
+  });
 
-    $statusDescription.hide().show(400);
-    $statusDescription.find('label').html($('#status-' + statusId).html());
-
-    $statusDescription.find('textarea').val('');
+  // Initial load: label must match current select (default On-going) without clearing textarea
+  $('select.activityStatus').each(function() {
+    syncActivityProgressLabelFromStatus($(this), false);
   });
 
   // Open Current Activity from url
@@ -75,6 +74,30 @@ function init() {
 }
 
 /** FUNCTIONS * */
+/**
+ * Keeps activityProgress label in sync with activityStatus (default On-going = 2).
+ * @param $select activity status &lt;select&gt;
+ * @param clearProgress if true (user changed status), clear progress textarea and animate block
+ */
+function syncActivityProgressLabelFromStatus($select, clearProgress) {
+  var statusId = $select.val();
+  if (!statusId || statusId === '-1') {
+    statusId = '2';
+  }
+  var $statusDescription = $select.parents('.activityStatusBlock').find('.statusDescriptionBlock');
+  if (!$statusDescription.length) {
+    return;
+  }
+  var $src = $('#status-' + statusId);
+  if ($src.length) {
+    $statusDescription.find('label').first().html($src.html());
+  }
+  if (clearProgress) {
+    $statusDescription.hide().show(400);
+    $statusDescription.find('textarea.progressDescription').val('');
+  }
+}
+
 // Detect activity title change
 // function updateActivityList() {
 //   console.log("acti");
@@ -126,6 +149,9 @@ function addActivity() {
         width: "100%"
     });
     date("#startDate-" + countID, "#endDate-" + countID);
+    $item.find("select.activityStatus").each(function() {
+      syncActivityProgressLabelFromStatus($(this), false);
+    });
   });
   checkItems($list);
 
