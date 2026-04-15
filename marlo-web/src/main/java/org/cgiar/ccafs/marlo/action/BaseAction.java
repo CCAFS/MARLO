@@ -6240,13 +6240,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public Boolean hasClusterType(long projectID) {
     Project project = this.projectManager.getProjectById(projectID);
+    return this.hasClusterType(project);
+  }
+
+  /**
+   * Uses the project already loaded for the current request (e.g. projects list) to avoid a redundant getProjectById.
+   */
+  public Boolean hasClusterType(Project project) {
+    if (project == null) {
+      return false;
+    }
     if (project.getProjecInfoPhase(this.getActualPhase()) != null
       && project.getProjecInfoPhase(this.getActualPhase()).getClusterType() != null
       && project.getProjecInfoPhase(this.getActualPhase()).getClusterType().getId() != null) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   public Boolean hasDeliverableRule(DeliverableInfo deliverableInfo, String rule) {
@@ -8371,6 +8380,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Boolean isProjectNew(long projectID) {
 
     Project project = this.projectManager.getProjectById(projectID);
+    return this.isProjectNew(project);
+  }
+
+  /**
+   * Uses the project already loaded for the current request (e.g. projects list) to avoid a redundant getProjectById.
+   */
+  public Boolean isProjectNew(Project project) {
+
+    if (project == null) {
+      return false;
+    }
 
     if (this.isReportingActive()) {
 
@@ -8411,6 +8431,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
         && !this.getActualPhase().getUpkeep()) {
         Project project = this.projectManager.getProjectById(projectID);
+        return this.isProjectSubmitted(project);
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
+   * Same rules as {@link #isProjectSubmitted(long)} but uses the list row project to avoid an extra getProjectById.
+   */
+  public boolean isProjectSubmitted(Project project) {
+    try {
+      if (this.getActualPhase() != null && this.getActualPhase().getUpkeep() != null
+        && !this.getActualPhase().getUpkeep()) {
+        if (project == null) {
+          return false;
+        }
         List<Submission> submissions = project.getSubmissions().stream()
           .filter(c -> c.getCycle() != null && this.getCurrentCycle() != null
             && c.getCycle().equals(this.getCurrentCycle()) && c.getYear() != null
@@ -8426,6 +8465,22 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } catch (Exception e) {
       return false;
     }
+  }
+
+  /**
+   * Default: delegates to {@link #isProjectCrpOrPlatform(long)}.
+   * {@link org.cgiar.ccafs.marlo.action.projects.ProjectListAction} overrides with a per-request cache.
+   */
+  public boolean isProjectCrpOrPlatformForList(long projectId) {
+    return this.isProjectCrpOrPlatform(projectId);
+  }
+
+  /**
+   * Default: delegates to {@link #isProjectCenter(long)}.
+   * {@link org.cgiar.ccafs.marlo.action.projects.ProjectListAction} overrides with a per-request cache.
+   */
+  public boolean isProjectCenterForList(long projectId) {
+    return this.isProjectCenter(projectId);
   }
 
   /**
