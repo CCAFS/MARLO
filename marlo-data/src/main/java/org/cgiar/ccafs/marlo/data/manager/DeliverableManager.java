@@ -112,6 +112,8 @@ public interface DeliverableManager {
    */
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId);
 
+  public List<DeliverableHomeDTO> getDeliverablesByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds);
+
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
 
