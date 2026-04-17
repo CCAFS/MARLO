@@ -3,7 +3,7 @@ name: Trigger Jenkins Job Java 17 New Server
 on:
   push:
     branches:
-      - "feature_migracion_java_17_act_struts6_spring5-review"
+      - "AICCRA-V2"
   workflow_dispatch:
 
 jobs:
