@@ -378,6 +378,11 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
+  public List<StudyHomeDTO> getStudiesByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds) {
+    return this.projectExpectedStudyDAO.getStudiesByProjectsAndPhaseHome(phaseId.longValue(), projectIds);
+  }
+
+  @Override
   public List<ProjectExpectedStudy> getUserStudies(long userId, String crp) {
 
     List<ProjectExpectedStudy> projects = new ArrayList<>();

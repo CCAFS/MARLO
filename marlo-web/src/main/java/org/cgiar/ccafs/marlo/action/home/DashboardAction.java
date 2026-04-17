@@ -265,21 +265,14 @@ public class DashboardAction extends BaseAction {
     }
 
 
-    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+    Long dashboardPhaseId = this.getActualPhase().getId();
+    List<Long> dashboardProjectIds = myProjects.stream().filter(p -> p != null && p.getId() != null).map(Project::getId)
       .collect(Collectors.toList());
 
-
-    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectExpectedStudyManager
-        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
-
-    myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectInnovationManager
-        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+    myDeliverables = deliverableManager.getDeliverablesByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
+    myStudies = projectExpectedStudyManager.getStudiesByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
+    myInnovations =
+      projectInnovationManager.getInnovationsByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
 
     this.getDeliverableListByPhaseFunction();
     this.getCompleteDeliverableListByPhaseFunction();

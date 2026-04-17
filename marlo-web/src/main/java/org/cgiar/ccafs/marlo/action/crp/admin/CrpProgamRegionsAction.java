@@ -58,6 +58,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -638,10 +639,12 @@ public class CrpProgamRegionsAction extends BaseAction {
       locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
     Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
     countriesList = locs;
-    // Get the Flagship list of this crp
+    // Get regional programs (HashSet iteration order is undefined — sort for stable UI order)
     regionsPrograms = loggedCrp.getCrpPrograms().stream()
       .filter(c -> c.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue() && c.isActive())
       .collect(Collectors.toList());
+    regionsPrograms.sort(Comparator.comparing(CrpProgram::getAcronym, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+      .thenComparing(CrpProgram::getId, Comparator.nullsLast(Long::compareTo)));
 
     for (CrpProgram crpProgram : regionsPrograms) {
       crpProgram.setLeaders(crpProgram.getCrpProgramLeaders().stream().filter(c -> c.isActive() && !c.isManager())

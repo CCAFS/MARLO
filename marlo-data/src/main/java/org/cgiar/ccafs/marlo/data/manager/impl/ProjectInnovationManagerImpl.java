@@ -209,6 +209,11 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  public List<InnovationHomeDTO> getInnovationsByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds) {
+    return this.projectInnovationDAO.getInnovationsByProjectsAndPhaseHome(phaseId.longValue(), projectIds);
+  }
+
+  @Override
   public ProjectInnovation getProjectInnovationById(long projectInnovationID) {
 
     return projectInnovationDAO.find(projectInnovationID);

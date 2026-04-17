@@ -92,6 +92,14 @@ public interface ProjectExpectedStudyDAO {
   public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(long phaseId, long projectId);
 
   /**
+   * Same as {@link #getStudiesByProjectAndPhaseHome(long, long)} for many projects in one query.
+   *
+   * @param phaseId the Phase identifier
+   * @param projectIds Project identifiers (empty returns empty list)
+   */
+  public List<StudyHomeDTO> getStudiesByProjectsAndPhaseHome(long phaseId, List<Long> projectIds);
+
+  /**
    * This method search the expected Studies that the user can be edit.
    * 
    * @param userId the user id
