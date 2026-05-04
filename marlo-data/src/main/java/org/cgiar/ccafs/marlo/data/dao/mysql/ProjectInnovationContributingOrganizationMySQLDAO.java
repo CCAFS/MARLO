@@ -39,7 +39,9 @@ public class ProjectInnovationContributingOrganizationMySQLDAO
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization = this
         .find(projectInnovationContributingOrganizationId);
-    this.delete(projectInnovationContributingOrganization);
+    if (projectInnovationContributingOrganization != null) {
+      this.delete(projectInnovationContributingOrganization);
+    }
   }
 
   @Override
