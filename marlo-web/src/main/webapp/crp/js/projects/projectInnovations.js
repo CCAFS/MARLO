@@ -1696,7 +1696,7 @@ function initDropdownOrganization() {
       if (initialValue) {
         const json = JSON.parse(initialValue);
 
-        const values = json.map(item => options[item.value].value);
+        const values = json.map(item => Number(item.value));
 
         dropdown.value = values;
 
