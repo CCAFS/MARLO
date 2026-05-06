@@ -25,14 +25,18 @@ fi
 
 echo ""
 echo "Cleaning target directory..."
-# Function to clean target with retries if directory is locked
+# Function to clean all module target directories with retries if locked
+# Cleaning all modules here lets us use 'mvn install' (no clean phase)
+# and avoids the race condition where the IDE auto-build recreates
+# marlo-web/target/classes while Maven is compiling marlo-data.
 clean_target() {
   local max_attempts=5
   local attempt=1
-  
+  local dirs="marlo-utils/target marlo-data/target marlo-web/target"
+
   while [ $attempt -le $max_attempts ]; do
-    if rm -rf marlo-web/target 2>/dev/null; then
-      echo "✅ Target directory cleaned"
+    if rm -rf $dirs 2>/dev/null; then
+      echo "✅ Target directories cleaned"
       return 0
     else
       echo "Target directory locked, waiting... (attempt $attempt/$max_attempts)"
@@ -40,8 +44,8 @@ clean_target() {
       attempt=$((attempt + 1))
     fi
   done
-  
-  echo "⚠️  Warning: Could not clean target directory after $max_attempts attempts"
+
+  echo "⚠️  Warning: Could not clean target directories after $max_attempts attempts"
   echo "   Continuing anyway..."
   return 0
 }
@@ -91,10 +95,13 @@ if ! java -version 2>&1 | grep -qE '"1\.8|"8\.'; then
 fi
 
 echo "Using Java: $(java -version 2>&1 | head -1)"
-echo "Running: mvn clean install -DskipTests -pl marlo-web -am"
+echo "Running: mvn install -DskipTests -pl marlo-web -am"
 echo ""
 
-mvn clean install -DskipTests -pl marlo-web -am
+# Use 'install' (no clean phase) because the script already cleaned all targets above.
+# This avoids the IDE auto-build race condition where target/classes gets recreated
+# in the seconds Maven spends compiling marlo-data before reaching marlo-web's clean.
+mvn install -DskipTests -pl marlo-web -am
 
 # Update marlo-dev.properties to HTTPS on port 8443 (Java 8 convention)
 if [ -x "$SCRIPT_DIR/update-marlo-dev-java8.sh" ]; then
