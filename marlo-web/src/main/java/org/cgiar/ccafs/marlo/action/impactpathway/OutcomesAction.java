@@ -712,13 +712,17 @@ public class OutcomesAction extends BaseAction {
       LOG.info("id current crp: " + this.getCurrentCrp().getId());
       LOG.info("portfolios loaded: " + portfolios.size());
 
-      idoList = new HashMap<>();
-      srfIdos = new ArrayList<>();
-      for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-          idoList.put(srfIdo.getId(), srfIdo.getDescription());
-          srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-          srfIdos.add(srfIdo);
+    idoList = new HashMap<>();
+    srfIdos = new ArrayList<>();
+    List<SrfIdo> allSrfIdos = srfIdoManager.findAll();
+    if (allSrfIdos != null && !allSrfIdos.isEmpty()) {
+      for (SrfIdo srfIdo : allSrfIdos.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+        idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+        srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        srfIdos.add(srfIdo);
       }
+    }
   }
 
   // @Override
