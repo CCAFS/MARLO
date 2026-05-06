@@ -49,6 +49,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   private final String CGSPACE_URL = BASE_URL + "handle/";
   private final String CGSPACE_HANDLE = BASE_URL + "rest/handle/{0}";
   private final String CGSPACE_HANDLE_API = BASE_URL + "server/api/core/handles/{0}";
+  private final String CGSPACE_PID_FIND = BASE_URL + "server/api/pid/find?id={0}";
   private final String REST_URL = BASE_URL + "rest/items/{0}/metadata";
   private final String HANDLE_URL = "http://hdl.handle.net/";
   private final String HANDLE_HTTPS_URL = "https://hdl.handle.net/";
@@ -425,8 +426,25 @@ public class CGSpaceClientAPI extends MetadataClientApi {
 
     // If a handle ID was found, resolve it into a UUID and build the REST URL
     if (this.getId() != null) {
-      // 1. Try DSpace 7/8 handle API: /server/api/core/handles/{prefix}/{suffix}
-      // Response contains _links.resource.href pointing to /server/api/core/items/{uuid}.
+      // 1. DSpace 8 (primary): pid/find returns HTTP 302 redirect to the item endpoint.
+      // Apache HttpClient follows redirects by default, so the response body is the full
+      // item JSON with a top-level "uuid" field.
+      try {
+        String pidFindUrl = CGSPACE_PID_FIND.replace("{0}", this.getId());
+        String pidJson = xmlReaderConnectionUtil.getJsonRestClient(pidFindUrl);
+        if (StringUtils.isNotBlank(pidJson)) {
+          JSONObject pidResponse = new JSONObject(pidJson);
+          String uuid = pidResponse.optString("uuid", "");
+          if (StringUtils.isNotBlank(uuid)) {
+            this.setId(uuid);
+            return BASE_URL + "server/api/core/items/" + uuid;
+          }
+        }
+      } catch (RuntimeException e) {
+        LOG.warn("DSpace 8 pid/find API failed for handle '{}': {}", this.getId(), e.getMessage());
+      }
+
+      // 2. DSpace 7 fallback: /server/api/core/handles/{handle} → _links.resource.href
       try {
         String handleApiUrl = CGSPACE_HANDLE_API.replace("{0}", this.getId());
         String handleJson = xmlReaderConnectionUtil.getJsonRestClient(handleApiUrl);
@@ -449,7 +467,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
         LOG.warn("DSpace 7/8 handle API failed for handle '{}': {}", this.getId(), e.getMessage());
       }
 
-      // 2. Fallback: legacy DSpace 6 /rest/handle endpoint (backward compatibility)
+      // 3. DSpace 6 legacy fallback: /rest/handle/{handle} → XML UUID
       try {
         String handleUrl = CGSPACE_HANDLE.replace("{0}", this.getId());
         RestConnectionUtil connection = new RestConnectionUtil();
