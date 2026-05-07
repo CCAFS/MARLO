@@ -635,8 +635,10 @@ public class CrpProgamRegionsAction extends BaseAction {
 
     }
 
-    List<LocElement> locs =
-      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
+    List<LocElement> locs = locElementManger.findAllToCountries();
+    if (locs == null) {
+      locs = new ArrayList<>();
+    }
     Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
     countriesList = locs;
     // Get regional programs (HashSet iteration order is undefined — sort for stable UI order)

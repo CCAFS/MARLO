@@ -347,10 +347,11 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
     this.loadData();
 
-    countriesList = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
-      .collect(Collectors.toList());
+    countriesList = locElementManager.findAllToCountries();
+    if (countriesList == null) {
+      countriesList = new ArrayList<>();
+    }
     Collections.sort(countriesList, (lc1, lc2) -> lc1.getName().compareTo(lc2.getName()));
-
 
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
