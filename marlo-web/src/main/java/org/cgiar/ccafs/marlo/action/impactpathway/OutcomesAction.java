@@ -709,8 +709,6 @@ public class OutcomesAction extends BaseAction {
       milestoneRisks = powbIndMilestoneRiskManager.findAll();
       followingMilestones = powbIndFollowingMilestoneManager.findAll();
       portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
-      LOG.info("id current crp: " + this.getCurrentCrp().getId());
-      LOG.info("portfolios loaded: " + portfolios.size());
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
