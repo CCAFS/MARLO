@@ -188,8 +188,13 @@ public class CrpTargetUnitsAction extends BaseAction {
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     String params[] = {loggedCrp.getAcronym()};
 
-    targetUnitsList =
-      new ArrayList<>(targetUnitManager.findAll().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+    List<SrfTargetUnit> allTargetUnits = targetUnitManager.findAll();
+    if (allTargetUnits != null && !allTargetUnits.isEmpty()) {
+      targetUnitsList =
+        new ArrayList<>(allTargetUnits.stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+    } else {
+      targetUnitsList = new ArrayList<>();
+    }
 
     Collections.sort(targetUnitsList, (tu1, tu2) -> tu1.getName().compareTo(tu2.getName()));
 

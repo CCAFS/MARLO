@@ -639,7 +639,7 @@ public class ProjectListAction extends BaseAction {
         }
       }
 
-      if (closedProjects != null) {
+      if (closedProjects != null && !closedProjects.isEmpty()) {
         myProjects.removeAll(closedProjects);
         if (allProjects != null) {
           allProjects.removeAll(closedProjects);
