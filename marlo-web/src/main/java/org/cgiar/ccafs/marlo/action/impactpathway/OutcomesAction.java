@@ -716,11 +716,14 @@ public class OutcomesAction extends BaseAction {
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
-    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      idoList.put(srfIdo.getId(), srfIdo.getDescription());
+    List<SrfIdo> allSrfIdos = srfIdoManager.findAll();
+    if (allSrfIdos != null && !allSrfIdos.isEmpty()) {
+      for (SrfIdo srfIdo : allSrfIdos.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+        idoList.put(srfIdo.getId(), srfIdo.getDescription());
 
-      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      srfIdos.add(srfIdo);
+        srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        srfIdos.add(srfIdo);
+      }
     }
   }
 
