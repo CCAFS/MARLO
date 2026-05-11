@@ -50,7 +50,7 @@
               [/#if]
               <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
               [#-- CRPs that allow this location --]
-              <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
+              <div class="crps" title="CRPs ">
                 [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
                   [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
                     [#if crpLocElementType.active][${crpLocElementType.crp.acronym}] [/#if]
