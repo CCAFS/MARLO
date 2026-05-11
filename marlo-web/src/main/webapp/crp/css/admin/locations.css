@@ -64,16 +64,50 @@ span.coordinates {
 }
 
 .defaultLocations label {
-font-weight: normal;
+  font-weight: normal;
 }
 
-.defaultLocation {
-    float: left;
-    width: 49%;
-    margin-left: 1%;
-    height: 51px;
+/* Default Location Levels — responsive grid (A2-2272), aligned with target-units-admin-list */
+.defaultLocations.items-list > ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.defaultLocation {
-    background: #fff !important;
+.defaultLocations.items-list > ul .defaultLocation {
+  float: none;
+  width: auto;
+  margin-left: 0;
+  margin-right: 0;
+  box-sizing: border-box;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 0;
+  max-width: 100%;
+  min-height: 51px;
+  height: auto;
+  background: #fff !important;
+  padding-right: 36px;
+}
+
+.defaultLocations .defaultLocation .crps {
+  display: block;
+  color: #9c9c9c;
+  margin-left: 0;
+  margin-top: 2px;
+  font-size: 0.75em;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+@media (max-width: 767px) {
+  .defaultLocations.items-list > ul .defaultLocation {
+    flex: 1 1 100%;
+  }
+
+  .defaultLocations .defaultLocation .crps {
+    margin-left: 0;
+    margin-top: 4px;
+  }
 }
