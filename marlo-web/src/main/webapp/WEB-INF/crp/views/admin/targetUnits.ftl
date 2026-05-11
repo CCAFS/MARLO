@@ -17,9 +17,11 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10"> [@s.text name="targetUnits.help" /] </p>
-  </div> 
+    <div class="row">
+      <img class="col-xs-12 col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" alt="" />
+      <p class="col-xs-12 col-md-10"> [@s.text name="targetUnits.help" /] </p>
+    </div>
+  </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
 
@@ -40,7 +42,7 @@
           [#-- Targets units list --]
           <div class="items-list">
             [#if loggedCrp.targetUnits?has_content]
-              <ul>
+              <ul class="target-units-admin-list">
               [#list loggedCrp.targetUnits as targetUnit]
                 [@targetUnitMacro element=targetUnit name="loggedCrp.targetUnits" index=targetUnit_index /]
               [/#list]
@@ -76,19 +78,21 @@
   <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
   <h4 style="text-align:center;">Request a new Target Unit</h4>
   <hr />
-  <div class="col-md-12">
-    <div class="col-md-12 note center form-group">
+  <div class="row">
+    <div class="col-xs-12 note center form-group">
       This request will be sent to MARLOSupport@cgiar.org
     </div>
   </div>
-    <div class="col-md-12 form-group">
+  <div class="row">
+    <div class="col-xs-12 form-group target-units-popup-input">
       [@customForm.input name="newTargetUnit" i18nkey="Write the new target unit" className="newTargetUnit" required=true editable=true /]
     </div>
-    <div class="row form-group">
-      <div class="col-md-5 form-group text-center pull-right">
-        [@s.submit type="button" name="sendRequest"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="Send" /][/@s.submit]
-      </div>
+  </div>
+  <div class="row form-group">
+    <div class="col-xs-12 col-sm-5 col-sm-offset-7 target-units-popup-submit">
+      [@s.submit type="button" name="sendRequest"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="Send" /][/@s.submit]
     </div>
+  </div>
 </div>
 
 [#-- Unit Target Template --]
@@ -97,7 +101,7 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro targetUnitMacro element name index isTemplate=false]
-  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="float:left; width:48%; margin-right:5px; display:${isTemplate?string('none','block')}">
+  <li id="targetUnit-${isTemplate?string('template',index)}" class="li-item targetUnitAdmin" style="display:${isTemplate?string('none','block')}">
     [#local customName = "${name}[${index}]"/]
     <input type="hidden" class="id" name="${customName}.targetUnit.id" value="${(element.targetUnit.id)!}" />
     <input type="hidden" class="name" name="${customName}.targetUnit.name" value="${(element.targetUnit.name)!}" />
@@ -113,7 +117,7 @@
     [#-- Name --]
     <span class="composedName"> ${(element.targetUnit.name)!}</span> <br />
     [#-- CRPs that allow this target --]
-    <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
+    <span class="crps" title="CRPs ">
       [#if element.targetUnit?? && element.targetUnit.crpTargetUnits?has_content]
         [#list element.targetUnit.crpTargetUnits as crpTargetUnit]
           [#if crpTargetUnit.active]
