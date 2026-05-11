@@ -6287,6 +6287,71 @@ table.evaluationRank thead th {
 	cursor: pointer;
 }
 
+/* Admin Custom Target Units — responsive layout (A2-2274) */
+.items-list ul.target-units-admin-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.items-list ul.target-units-admin-list .targetUnitAdmin {
+	float: none;
+	width: auto;
+	margin-right: 0;
+	box-sizing: border-box;
+	flex: 1 1 calc(50% - 8px);
+	min-width: 0;
+	max-width: 100%;
+	padding-right: 36px;
+}
+
+@media (max-width: 767px) {
+	.items-list ul.target-units-admin-list .targetUnitAdmin {
+		flex: 1 1 100%;
+	}
+}
+
+.items-list ul.target-units-admin-list .targetUnitAdmin .composedName {
+	display: inline-block;
+	max-width: 100%;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
+.items-list ul.target-units-admin-list .targetUnitAdmin .crps {
+	display: block;
+	color: #9c9c9c;
+	margin-left: 16px;
+	font-size: 0.75em;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	max-width: 100%;
+}
+
+@media (max-width: 767px) {
+	.items-list ul.target-units-admin-list .targetUnitAdmin .crps {
+		margin-left: 0;
+		margin-top: 4px;
+	}
+}
+
+.target-units-popup-input input,
+.target-units-popup-input .form-control {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.target-units-popup-submit {
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	.target-units-popup-submit {
+		text-align: right;
+	}
+}
+
 /********************** CRP ADMIN - Leaders  ***********************/
 .program-block li {
 	font-size: 0.95em;
