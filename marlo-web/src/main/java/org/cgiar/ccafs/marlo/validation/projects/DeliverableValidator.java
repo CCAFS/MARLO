@@ -501,12 +501,19 @@ public class DeliverableValidator extends BaseValidator {
          * }
          */
         if (!action.isPOWB()) {
-          if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
-            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
-          } else {
-            action.addMessage("hasParticipants");
-            action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-              InvalidFieldsMessages.EMPTYFIELD);
+          DeliverableInfo dInfoParticipant = deliverable.getDeliverableInfo(action.getActualPhase());
+          boolean isCapDevType = dInfoParticipant != null && dInfoParticipant.getDeliverableType() != null
+            && dInfoParticipant.getDeliverableType().getId() != null
+            && dInfoParticipant.getDeliverableType().getId() == 145L;
+          if (isCapDevType) {
+            if (deliverable.getDeliverableParticipant() != null) {
+              this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action,
+                resultProgessValidate);
+            } else {
+              action.addMessage("hasParticipants");
+              action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+                InvalidFieldsMessages.EMPTYFIELD);
+            }
           }
         }
       }
@@ -812,13 +819,25 @@ public class DeliverableValidator extends BaseValidator {
 
       // [start]2024/06/26 cgamboa changes to validate metadata
 
-      if (!action.isPOWB()) {
-        if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
-          this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
-        } else {
-          action.addMessage("hasParticipants");
-          action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
-            InvalidFieldsMessages.EMPTYFIELD);
+      boolean isCancelledStatus = deliverable.getDeliverableInfo(action.getActualPhase()) != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+        && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus()
+          .intValue() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId());
+
+      if (!action.isPOWB() && !isCancelledStatus) {
+        DeliverableInfo dInfoParticipantComplete = deliverable.getDeliverableInfo(action.getActualPhase());
+        boolean isCapDevTypeComplete = dInfoParticipantComplete != null
+          && dInfoParticipantComplete.getDeliverableType() != null
+          && dInfoParticipantComplete.getDeliverableType().getId() != null
+          && dInfoParticipantComplete.getDeliverableType().getId() == 145L;
+        if (isCapDevTypeComplete) {
+          if (deliverable.getDeliverableParticipant() != null) {
+            this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
+          } else {
+            action.addMessage("hasParticipants");
+            action.getInvalidFields().put("input-deliverable.deliverableParticipant.hasParticipants",
+              InvalidFieldsMessages.EMPTYFIELD);
+          }
         }
       }
       // [end]2024/06/26 cgamboa changes to validate metadata

@@ -803,7 +803,7 @@ function validateDeliverableStatus(canChangeStatus) {
        $statuses.find('option[value="5"]').prop("disabled", false); // Enable Cancelled
     }else{
        $statuses.find('option[value="4"]').prop("disabled", true); // Disable Extended
-       $statuses.find('option[value="5"]').prop("disabled", true); // Disable Cancelled
+       // Cancelled (5) remains available — shared trainee lock does not prevent cancellation
     }
   }
 
