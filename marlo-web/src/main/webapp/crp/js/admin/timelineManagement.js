@@ -4,32 +4,39 @@ function init() {
 
   /* Declaring Events */
   attachEvents();
-  
-	datePickerConfig({
-	  startDate: ".srfSlo:not(#srfSlo-template) .startDate",
-	  endDate:   ".srfSlo:not(#srfSlo-template) .endDate",
-	  defaultMinDateValue: $("#minDateValue").val(),
-	  defaultMaxDateValue: $("#maxDateValue").val()
-	});
 
-  var starVal = $('.srfSlo:not(#srfSlo-template) .startDate').val();
-  var endVal = $('.srfSlo:not(#srfSlo-template) .endDate').val();
+  var minDate = $("#minDateValue").val();
+  var maxDate = $("#maxDateValue").val();
 
-  if(starVal) {
-    var parsedStartDate = tryParseDate(starVal);
-    parsedStartDate = $.datepicker.formatDate("yy-mm-dd", parsedStartDate);
-    if(parsedStartDate) {
-      $('.srfSlo:not(#srfSlo-template) .startDate').val(parsedStartDate);
+  // Initialize datepicker and parse dates per row to avoid cross-row contamination
+  $('.srfSlo:not(#srfSlo-template)').each(function() {
+    var $slo = $(this);
+    var $startInput = $slo.find('.startDate');
+    var $endInput   = $slo.find('.endDate');
+
+    datePickerConfig({
+      startDate: $startInput,
+      endDate:   $endInput,
+      defaultMinDateValue: minDate,
+      defaultMaxDateValue: maxDate
+    });
+
+    var starVal = $startInput.val();
+    if(starVal) {
+      var parsedStart = tryParseDate(starVal);
+      if(parsedStart) {
+        $startInput.val($.datepicker.formatDate("yy-mm-dd", parsedStart));
+      }
     }
-  }
 
-  if(endVal) {
-    var parsedEndDate = tryParseDate(endVal);
-    parsedEndDate = $.datepicker.formatDate("yy-mm-dd", parsedEndDate);
-    if(parsedEndDate) {
-      $('.srfSlo:not(#srfSlo-template) .endDate').val(parsedEndDate);
+    var endVal = $endInput.val();
+    if(endVal) {
+      var parsedEnd = tryParseDate(endVal);
+      if(parsedEnd) {
+        $endInput.val($.datepicker.formatDate("yy-mm-dd", parsedEnd));
+      }
     }
-  }
+  });
 
 }
 
