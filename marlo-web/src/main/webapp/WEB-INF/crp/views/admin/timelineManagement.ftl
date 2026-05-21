@@ -2,7 +2,7 @@
 [#assign title = "Timeline Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/timelineManagement.js?20250910",  "${baseUrlCdn}/global/js/fieldsValidation.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/timelineManagement.js?20260521",  "${baseUrlCdn}/global/js/fieldsValidation.js"
  ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/timeline.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
