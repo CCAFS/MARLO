@@ -86,9 +86,7 @@ echo "Using Java: $(java -version 2>&1 | head -1)"
 echo "Running: mvn clean install -DskipTests -pl marlo-web -am"
 echo ""
 
-mvn clean install -DskipTests -pl marlo-web -am
-
-# Update marlo-dev.properties to HTTP on port 8080 (Java 17 convention)
+# Normalize marlo-dev.properties to HTTP on port 8080 before build/run
 if [ -x "$SCRIPT_DIR/update-marlo-dev-java17.sh" ]; then
   echo ""
   "$SCRIPT_DIR/update-marlo-dev-java17.sh"
@@ -96,6 +94,8 @@ elif [ -f "$SCRIPT_DIR/update-marlo-dev-java17.sh" ]; then
   echo ""
   bash "$SCRIPT_DIR/update-marlo-dev-java17.sh"
 fi
+
+mvn clean install -DskipTests -pl marlo-web -am
 
 echo ""
 echo "Starting MARLO..."
