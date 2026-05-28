@@ -513,68 +513,108 @@ $(document).ready(function () {
   $(".deliverableId a").on("click", openLoadPage);
   $("tbody .left a").on("click", openLoadPage);
 	
-	/* ===== User dropdown by click (avatar+caret) ===== */
-	(function initUserMenuToggle() {
-	  var $userInfo = $('#userInfo');
-	  if (!$userInfo.length) return; // Por si no existe en esta vista
+  /* ===== User dropdown by click (avatar + caret) ===== */
+  (function initUserMenuToggle() {
+    var $userInfo = $('#userInfo');
+    if (!$userInfo.length) {
+      return;
+    }
 
-	  var $toggle = $userInfo.find('.userToggle');
-	  var $menu   = $('#userInfo-drop');
+    var $toggle = $userInfo.find('.userToggle');
+    var $menu = $('#userInfo-drop');
+    var $focusableItems = $menu.find('a, button, [tabindex]:not([tabindex="-1"])');
 
-	  // Limpia handlers previos si este archivo se inyecta más de una vez
-	  $toggle.off('.userMenu');
-	  $(document).off('.userMenu');
+    if (!$toggle.length || !$menu.length) {
+      return;
+    }
 
-	  function openMenu() {
-	    $userInfo.addClass('open');
-	    $toggle.attr('aria-expanded', 'true');
-	    $menu.attr('aria-hidden', 'false').show();
-	  }
-	  function closeMenu() {
-	    $userInfo.removeClass('open');
-	    $toggle.attr('aria-expanded', 'false');
-	    $menu.attr('aria-hidden', 'true').hide();
-	  }
-	  function toggleMenu() {
-	    ($userInfo.hasClass('open')) ? closeMenu() : openMenu();
-	  }
+    $toggle.off('.userMenu');
+    $menu.off('.userMenu');
+    $(document).off('.userMenu');
+    $(window).off('.userMenu');
 
-	  // Click en avatar/caret
-	  $toggle.on('click.userMenu', function (e) {
-	    e.stopPropagation();
-	    toggleMenu();
-	  });
+    function openMenu() {
+      $userInfo.addClass('open');
+      $toggle.attr('aria-expanded', 'true');
+      $menu.attr('aria-hidden', 'false').show();
+    }
 
-	  // Accesibilidad: Enter/Espacio
-	  $toggle.on('keydown.userMenu', function (e) {
-	    if (e.key === 'Enter' || e.key === ' ') {
-	      e.preventDefault();
-	      toggleMenu();
-	    } else if (e.key === 'Escape') {
-	      closeMenu();
-	      $toggle.blur();
-	    }
-	  });
+    function closeMenu() {
+      $userInfo.removeClass('open');
+      $toggle.attr('aria-expanded', 'false');
+      $menu.attr('aria-hidden', 'true').hide();
+    }
 
-	  // Cerrar al click fuera
-	  $(document).on('click.userMenu', function (e) {
-	    if (!$userInfo.is(e.target) && $userInfo.has(e.target).length === 0) {
-	      closeMenu();
-	    }
-	  });
+    function toggleMenu() {
+      if ($userInfo.hasClass('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+        if ($focusableItems.length) {
+          $focusableItems.first().trigger('focus');
+        }
+      }
+    }
 
-	  // Cerrar con ESC global
-	  $(document).on('keydown.userMenu', function (e) {
-	    if (e.key === 'Escape') {
-	      closeMenu();
-	    }
-	  });
+    $toggle.attr('aria-expanded', 'false');
+    $menu.attr('aria-hidden', 'true');
 
-	  // Cerrar en resize o scroll para evitar posiciones raras
-	  $(window).on('resize.userMenu scroll.userMenu', function () {
-	    closeMenu();
-	  });
-	})();
+    $toggle.on('click.userMenu', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    $toggle.on('keydown.userMenu', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleMenu();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        closeMenu();
+        $toggle.trigger('focus');
+      }
+    });
+
+    $menu.on('click.userMenu', 'a', function () {
+      closeMenu();
+    });
+
+    $menu.on('keydown.userMenu', function (e) {
+      if (e.key === 'Escape') {
+        closeMenu();
+        $toggle.trigger('focus');
+      }
+    });
+
+    $(document).on('click.userMenu touchstart.userMenu', function (e) {
+      if (!$userInfo.is(e.target) && $userInfo.has(e.target).length === 0) {
+        closeMenu();
+      }
+    });
+
+    $(document).on('keydown.userMenu', function (e) {
+      if (e.key === 'Escape') {
+        closeMenu();
+        return;
+      }
+
+      if (e.key === 'Tab' && $userInfo.hasClass('open')) {
+        setTimeout(function () {
+          var activeElement = document.activeElement;
+          if (!$userInfo.is(activeElement) && $userInfo.has(activeElement).length === 0) {
+            closeMenu();
+          }
+        }, 0);
+      }
+    });
+
+    $(window).on('resize.userMenu scroll.userMenu', function () {
+      closeMenu();
+    });
+  })();
 
 	
 });

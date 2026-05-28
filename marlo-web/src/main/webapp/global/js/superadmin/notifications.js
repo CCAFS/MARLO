@@ -26,7 +26,7 @@ function attachEvents() {
         "attachments": [
           {
               "color": "#f1c40f",
-              "author_name": $('#userInfo.name').text(),
+              "author_name": $('#userInfo .name, #userInfoOld .name').first().text().trim(),
               "text": pushData.message,
               "fields": [
                 {
