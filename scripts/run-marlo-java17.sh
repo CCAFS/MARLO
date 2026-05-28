@@ -25,23 +25,31 @@ fi
 
 echo ""
 echo "Cleaning target directory..."
-# Function to clean target with retries if directory is locked
+# Function to clean module target directories with retries if directory is locked.
+# We clean first and then run Maven without the clean phase to avoid intermittent
+# race conditions when IDE/background processes recreate target folders.
 clean_target() {
   local max_attempts=5
   local attempt=1
+  local dirs="marlo-utils/target marlo-data/target marlo-web/target"
   
   while [ $attempt -le $max_attempts ]; do
-    if rm -rf marlo-web/target 2>/dev/null; then
-      echo "✅ Target directory cleaned"
+    if rm -rf $dirs 2>/dev/null; then
+      echo "✅ Target directories cleaned"
       return 0
     else
+      # macOS fallback: clear extended attributes/ACL that can block deletions.
+      if command -v xattr >/dev/null 2>&1; then
+        xattr -cr $dirs 2>/dev/null || true
+      fi
+      chmod -RN $dirs 2>/dev/null || true
       echo "Target directory locked, waiting... (attempt $attempt/$max_attempts)"
       sleep 2
       attempt=$((attempt + 1))
     fi
   done
   
-  echo "⚠️  Warning: Could not clean target directory after $max_attempts attempts"
+  echo "⚠️  Warning: Could not clean target directories after $max_attempts attempts"
   echo "   Continuing anyway..."
   return 0
 }
@@ -83,7 +91,7 @@ if [ -z "$JAVA_HOME" ] || ! "$JAVA_HOME/bin/java" -version 2>&1 | grep -q '"17';
 fi
 
 echo "Using Java: $(java -version 2>&1 | head -1)"
-echo "Running: mvn clean install -DskipTests -pl marlo-web -am"
+echo "Running: mvn install -DskipTests -pl marlo-web -am"
 echo ""
 
 # Normalize marlo-dev.properties to HTTP on port 8080 before build/run
@@ -95,7 +103,8 @@ elif [ -f "$SCRIPT_DIR/update-marlo-dev-java17.sh" ]; then
   bash "$SCRIPT_DIR/update-marlo-dev-java17.sh"
 fi
 
-mvn clean install -DskipTests -pl marlo-web -am
+# Use install (no clean phase) because the script already performed a robust clean above.
+mvn install -DskipTests -pl marlo-web -am
 
 echo ""
 echo "Starting MARLO..."
