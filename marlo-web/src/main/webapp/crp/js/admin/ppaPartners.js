@@ -8,7 +8,8 @@ function init() {
   /* Select2 */
   $partnerSelect.select2(searchInstitutionsOptionsData({
       includePPA: true,
-      projectPreSetting: 0
+      projectPreSetting: 0,
+      minimumInputLength: 2
   }));
   $partnerSelect.parent().find("span.select2-selection__placeholder").text(placeholderText);
 

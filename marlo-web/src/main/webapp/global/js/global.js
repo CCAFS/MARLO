@@ -813,6 +813,10 @@ var searchInstitutionsOptions = function (includePPA) {
 }
 
 var searchInstitutionsOptionsData = function (optionsData) {
+  var minimumInputLength = optionsData.minimumInputLength;
+  if(minimumInputLength === undefined || minimumInputLength === null) {
+    minimumInputLength = 0;
+  }
 
   var customLanguage = {
     noResults: function () {
@@ -844,7 +848,7 @@ var searchInstitutionsOptionsData = function (optionsData) {
       return markup;
     }, // let our custom formatter work
     language: customLanguage,
-    minimumInputLength: 0,
+    minimumInputLength: minimumInputLength,
     templateResult: formatRepo,
     templateSelection: formatRepoSelection,
     placeholder: placeholderText,
