@@ -661,6 +661,10 @@
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
 			</result>
+			<result name="404" type="httpheader">
+				<param name="status">404</param>
+				<param name="errorMessage">Not Found</param>
+			</result>
 		</action>
 		
 		<action name="metadataByWOS"

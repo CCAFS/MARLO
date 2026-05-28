@@ -326,7 +326,7 @@ public class OutcomesAction extends BaseAction {
 
   @KeyProperty(value = "composeID")
   @Element(value = org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome.class)
-  @CreateIfNull(value = true) // Fuerza la creación de la lista si es null
+  @CreateIfNull(value = true) // Forces list creation if null
   public List<CrpProgramOutcome> getOutcomesForm() {
     return outcomesForm;
   }
@@ -408,10 +408,8 @@ public class OutcomesAction extends BaseAction {
   }
 
   public void loadInfo() {
-    LOG.info("loadInfo inicio");
     Comparator<CrpMilestone> milestoneComparator = new ComparatorChain<>(new MilestoneComparators.YearComparator())
       .thenComparing(new MilestoneComparators.ComposedIdComparator());
-    LOG.info("outcomesForm en loadInfo: " + outcomesForm.size());
     try {
       if (outcomesForm != null && !outcomesForm.isEmpty()) {
         outcomesForm.sort(Comparator.comparing((CrpProgramOutcome o) -> {
@@ -470,77 +468,70 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-      LOG.info("=== INICIO PREPARE (LOGICA DE BORRADO FIX) ===");
 
-      // 1. Inicialización básica
+      // 1. Basic initialization
       loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
       
       this.outcomesForm = new ArrayList<>();
       this.targetUnitList = new HashMap<>();
 
-      // 2. Cargar el programa padre (SelectedProgram)
-      // NOTA: Mantenemos la lógica de carga de selectedProgram igual que antes...
+      // 2. Load the parent program (SelectedProgram)
+      // NOTE: Keep the selectedProgram loading logic unchanged...
       this.loadSelectedProgramData(); 
 
       // 3. ESTRATEGIA DUAL (GET vs POST)
       if (this.isHttpPost()) {
-          // [POST - GUARDAR]: 
-          // NO cargamos 'addAll' de la BD. 
-          // Solo reconstruimos lo que el usuario envió. Si el usuario borró uno, no aparecerá aquí.
+          // [POST - SAVE]:
+          // Do NOT load 'addAll' from DB.
+          // Only reconstruct what the user submitted. If the user deleted one, it will not appear here.
           this.manualBindingFix(); 
       } else {
-          // [GET - VER]: 
-          // Cargamos todo de la BD para mostrarlo en pantalla.
+          // [GET - VIEW]:
+          // Load everything from DB to display on screen.
           if (selectedProgram != null && selectedProgram.getCrpProgramOutcomes() != null) {
               this.outcomesForm.addAll(selectedProgram.getCrpProgramOutcomes().stream()
                   .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
                   .sorted(Comparator.comparing(CrpProgramOutcome::getId))
                   .collect(Collectors.toList()));
           }
-          // 2. ¡LÍNEA FALTANTE! 
-          // Hidratar los hijos (Milestones) para que se vean en el HTML
+          // Hydrate child entities (Milestones) so they render in the HTML
           this.loadInfo();
       }
 
       // 4. Listas auxiliares
       this.loadAuxiliaryLists();
-      
-      LOG.info("=== FIN PREPARE - outcomesForm size: " + this.outcomesForm.size() + " ===");
   }
 
   /**
-   * Reconstruye la lista basada SOLO en los parámetros que llegan.
+   * Rebuilds the list based ONLY on the incoming request parameters.
    */
   private void manualBindingFix() {
-      // Usamos LOG.debug en lugar de info para no saturar producción
-      LOG.debug("Ejecutando manualBindingFix con Inteligencia de IDs..."); 
-      
       javax.servlet.http.HttpServletRequest req = org.apache.struts2.ServletActionContext.getRequest();
       
       int i = 0;
       boolean hasMoreOutcomes = true;
 
-      // MEJORA: Usamos while para iterar indefinidamente hasta que no haya más datos
+      // Use while to iterate indefinitely until no more data is found
       while (hasMoreOutcomes) {
           String keyDesc = "outcomesForm[" + i + "].description";
           String keyId = "outcomesForm[" + i + "].id";
           String keyPort = "outcomesForm[" + i + "].portfolio.id";
 
-          // Verificamos si existe al menos un dato para este índice
+          // Check whether at least one field exists for this index
           boolean indexExists = req.getParameter(keyDesc) != null 
                             || req.getParameter(keyId) != null 
                             || req.getParameter(keyPort) != null;
 
           if (!indexExists) {
-              // MEJORA: Rompemos el bucle si no encontramos datos para el índice actual.
-              // NOTA: Esto asume que el frontend envía índices consecutivos (0, 1, 2...). 
-              // Si el frontend deja huecos (0, 2, 5), habría que usar un contador de "misses" antes de romper.
+              // Break the loop if no data found for the current index.
+              // NOTE: Assumes the frontend sends consecutive indexes (0, 1, 2...).
+              // If the frontend leaves gaps (0, 2, 5), a "miss" counter would be needed before breaking.
               hasMoreOutcomes = false;
               break; 
           }
 
-          // Rellenar la lista hasta el índice actual
+          // Fill the list up to the current index
           while (this.outcomesForm.size() <= i) {
               CrpProgramOutcome outcomeToAdd = new CrpProgramOutcome();
               outcomeToAdd.setSrfTargetUnit(new SrfTargetUnit());
@@ -548,7 +539,7 @@ public class OutcomesAction extends BaseAction {
               this.outcomesForm.add(outcomeToAdd);
           }
 
-          // === LÓGICA DE MILESTONES (ANIDADO) ===
+          // === NESTED MILESTONES LOGIC ===
           CrpProgramOutcome currentOutcome = this.outcomesForm.get(i);
           if (currentOutcome.getMilestones() == null) {
               currentOutcome.setMilestones(new ArrayList<>());
@@ -557,7 +548,7 @@ public class OutcomesAction extends BaseAction {
           int j = 0;
           boolean hasMoreMilestones = true;
 
-          // MEJORA: Bucle dinámico para milestones (sin límite de 50)
+          // Dynamic milestone loop (no fixed upper limit)
           while (hasMoreMilestones) {
               String keyMile = "outcomesForm[" + i + "].milestones[" + j + "].title";
               String keyMileYear = "outcomesForm[" + i + "].milestones[" + j + "].year";
@@ -575,32 +566,32 @@ public class OutcomesAction extends BaseAction {
                   mile.setMilestonesStatus(new GeneralStatus());
                   mile.setCrpProgramOutcome(currentOutcome);
 
-                  // --- INYECCIÓN MANUAL DEL AÑO DEL MILESTONE ---
+                  // --- MANUAL INJECTION OF MILESTONE YEAR ---
                   String yearRaw = req.getParameter("outcomesForm[" + i + "].milestones[" + j + "].year");
                   if (yearRaw != null && !yearRaw.isEmpty()) {
                       try {
                           Integer y = Integer.parseInt(yearRaw);
                           mile.setYear(y);
                       } catch (NumberFormatException e) {
-                          // MEJORA: Loguear advertencia si el formato es inválido en lugar de ignorarlo
+                          // Log a warning if the year format is invalid instead of silently ignoring it
                           LOG.warn("Formato de año inválido para milestone " + j + ": " + yearRaw);
                       }
                   }
                   currentOutcome.getMilestones().add(mile);
               }
-              j++; // Siguiente milestone
+              j++; // next milestone
           }
-          i++; // Siguiente outcome
+          i++; // next outcome
       }
   }
 
   private void loadSelectedProgramData() throws Exception {
-      // --- Lógica original de SrfTargetUnit ---
+      // --- SrfTargetUnit original logic ---
       int srfTargetUnitQuantity = 0;
       try {
           srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
       } catch (Exception e) {
-          LOG.info("unable to get srfTargetUnitQuantity");
+          LOG.warn("unable to get srfTargetUnitQuantity");
       }
       if (srfTargetUnitQuantity > 0) {
           List<SrfTargetUnit> targetUnits = new ArrayList<>();
@@ -616,9 +607,8 @@ public class OutcomesAction extends BaseAction {
           targetUnitList = this.sortByComparator(targetUnitList);
       }
 
-      // --- Lógica de Transacción (Historial) ---
+      // --- Transaction (Audit History) logic ---
       if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-          LOG.info("TRANSACTION_ID found");
           transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
           CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
           
@@ -629,7 +619,7 @@ public class OutcomesAction extends BaseAction {
               this.setEditable(false);
               this.setCanEdit(false);
               programs = new ArrayList<>();
-              this.loadInfo(); // Asegúrate de que loadInfo() ahora use outcomesForm internamente si es necesario, o déjalo como está si solo ordena.
+              this.loadInfo(); // ensure loadInfo uses outcomesForm internally if needed, or leave as-is if it only sorts
               programs.add(history);
           } else {
               programs = new ArrayList<>();
@@ -638,8 +628,6 @@ public class OutcomesAction extends BaseAction {
           Collections.sort(outcomesForm, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
 
       } else {
-          // --- Carga Normal ---
-          LOG.info("transaction not found (Carga Normal)");
           List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
               .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive() && c.getResearchArea() == null)
               .collect(Collectors.toList());
@@ -669,10 +657,9 @@ public class OutcomesAction extends BaseAction {
           if (crpProgramID != -1) {
               selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
               
-              // LÓGICA DE AUTOSAVE
+              // AUTOSAVE logic
               Path path = this.getAutoSaveFilePath();
               if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
-                    LOG.info("Cargando desde AutoSave...");
                     BufferedReader reader = new BufferedReader(new FileReader(path.toFile()));
                     Gson gson = new GsonBuilder().create();
                     JsonObject jReader = gson.fromJson(reader, JsonObject.class);
@@ -682,25 +669,23 @@ public class OutcomesAction extends BaseAction {
                     
                     this.setDraft(true);
               } else {
-                    // Carga normal de BD
-                    LOG.info("Cargando desde BD...");
-                    this.loadInfo(); // Revisa que loadInfo ordene outcomesForm
+                    this.loadInfo(); // ensure loadInfo sorts outcomesForm
                     this.setDraft(false);
               }
           }
           
           if (selectedProgram != null) {
               milestoneYears = this.getTargetYears();
-              // Lógica de permisos de edición...
+              // Edit permission logic...
               String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
               this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-              // ... (resto de lógica de permisos)
+              // ... (remaining permission logic)
           }
       }
   }
 
   /**
-   * Carga todas las listas auxiliares para los Dropdowns.
+   * Loads all auxiliary lists for dropdowns.
    */
   private void loadAuxiliaryLists() {
       generalStatuses = generalStatusManager.findAll();
@@ -709,16 +694,18 @@ public class OutcomesAction extends BaseAction {
       milestoneRisks = powbIndMilestoneRiskManager.findAll();
       followingMilestones = powbIndFollowingMilestoneManager.findAll();
       portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
-      LOG.info("id current crp: " + this.getCurrentCrp().getId());
-      LOG.info("portfolios loaded: " + portfolios.size());
 
-      idoList = new HashMap<>();
-      srfIdos = new ArrayList<>();
-      for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-          idoList.put(srfIdo.getId(), srfIdo.getDescription());
-          srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-          srfIdos.add(srfIdo);
+    idoList = new HashMap<>();
+    srfIdos = new ArrayList<>();
+    List<SrfIdo> allSrfIdos = srfIdoManager.findAll();
+    if (allSrfIdos != null && !allSrfIdos.isEmpty()) {
+      for (SrfIdo srfIdo : allSrfIdos.stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+        idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+        srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        srfIdos.add(srfIdo);
       }
+    }
   }
 
   // @Override
@@ -995,38 +982,15 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
-    LOG.info("=== AUDITORÍA DE ERRORES DE STRUTS ===");
-    if (this.hasFieldErrors()) {
-        for (String fieldName : this.getFieldErrors().keySet()) {
-            LOG.info("Error en campo [" + fieldName + "]: " + this.getFieldErrors().get(fieldName));
-        }
-    } else {
-        LOG.info("No hay FieldErrors detectados.");
-    }
-    LOG.info("========================================");
-    // --- INICIO CÓDIGO DE DEBUG ---
-    LOG.info("=== AUDITORÍA DE PARÁMETROS ENTRANTES ===");
-    java.util.Enumeration<String> params = this.getRequest().getParameterNames();
-    while(params.hasMoreElements()){
-        String paramName = params.nextElement();
-        // Solo imprimimos los que tengan que ver con 'outcomes' para no llenar el log
-        if(paramName.contains("outcomes")){
-            LOG.info("Param: " + paramName + " = " + this.getRequest().getParameter(paramName));
-        }
-    }
-    LOG.info("========================================");
-    // --- FIN CÓDIGO DE DEBUG ---
-    LOG.info("Entering save method in OutcomesAction");
     if (this.hasPermission("canEdit")) {
-      LOG.info("User has permission to save OutcomesAction: " + crpProgramID);
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      LOG.info("Antes de saveCrpProgramOutcome");
       this.saveCrpProgramOutcome();
-      LOG.info("Despues de saveCrpProgramOutcome");
       // why is this line twice in a row?
-      LOG.info("antes de getCrpProgramById: " + crpProgramID);
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-      LOG.info("despues de getCrpProgramById: " + crpProgramID);
+      if (selectedProgram == null) {
+        LOG.warn("selectedProgram is null after getCrpProgramById(" + crpProgramID + "), aborting save");
+        return ERROR;
+      }
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
@@ -1035,9 +999,7 @@ public class OutcomesAction extends BaseAction {
        * the auditlog table.
        */
       this.setModificationJustification(selectedProgram);
-      LOG.info("Antes saveCrpProgram: " + selectedProgram.getId());
       crpProgramManager.saveCrpProgram(selectedProgram, this.getActionName(), relationsName, this.getActualPhase());
-      LOG.info("Despues saveCrpProgram");
 
       Path path = this.getAutoSaveFilePath();
 
@@ -1122,17 +1084,11 @@ public class OutcomesAction extends BaseAction {
   }
 
   public void saveCrpProgramOutcome() {
-    LOG.info("saveCrpProgramOutcome");
     Phase nextPhase = this.getActualPhase().getNext();
-    LOG.info("CrpProgramOutcomes: " + selectedProgram.getCrpProgramOutcomes().size());
-    LOG.info("GetActualPhase: " + (this.getActualPhase() != null ? this.getActualPhase().getId() : "null"));
     List<CrpProgramOutcome> oldOutcomes = selectedProgram.getCrpProgramOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-    LOG.info("saveCrpProgramOutcome - oldOutcomes size: " + oldOutcomes.size());
     for (CrpProgramOutcome oldOutcome : oldOutcomes) {
-      LOG.info("dentro del for oldOutcomes");
       if (!outcomesForm.contains(oldOutcome)) {
-        LOG.info("outcomesForm no contiene el oldOutcomes");
         for (CrpMilestone crpMilestone : oldOutcome.getCrpMilestones()) {
           crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
           crpMilestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());
@@ -1157,12 +1113,10 @@ public class OutcomesAction extends BaseAction {
       }
     }
 
-    LOG.info("saveCrpProgramOutcome - antes del for programOutcomeIncoming: " + outcomesForm.size());
     /*
      * Save outcomes
      */
     for (CrpProgramOutcome programOutcomeIncoming : outcomesForm) {
-      LOG.info("programOutcomeIncoming - dentro del for");
       // update outcome
       // CrpProgramOutcome crpProgramOutcomeDB = crpProgramOutcomeManager.updateOutcome(crpProgramOutcomeDetached,
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
@@ -1223,40 +1177,35 @@ public class OutcomesAction extends BaseAction {
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
       if (incomingFileId != null) {
-          // Si viene un ID, buscamos ese archivo en la BD    
+          // If an ID is provided, look up the file record in the DB
           org.cgiar.ccafs.marlo.data.model.FileDB realFile = fileDBManager.getFileDBById(incomingFileId);    
           crpProgramOutcome.setFile(realFile); 
       } else {
-          // Si no viene ID, implica que el usuario no seleccionó archivo o lo borró.
-          // Aquí decides si mantienes el anterior o lo pones en null.
-          // Si quieres permitir borrar:
+          // No ID provided: the user either did not select a file or removed the existing one.
+          // To allow deletion, set to null:
           crpProgramOutcome.setFile(null); 
-          // Si quieres mantener el que ya tenía si no envían nada nuevo (lógica defensiva):
-          // No haces nada (el objeto ya tiene su file original cargado desde BD).
+          // To keep the previous file when nothing new is sent (defensive logic):
+          // do nothing (the object already holds its original file loaded from DB).
       }
 
       crpProgramOutcome.setModifiedBy(this.getCurrentUser());
       crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
 
-      // En tu bucle de guardado (dentro de saveCrpProgramOutcome o saveMilestones)
+      // 1. Get the ID coming from the form
+      Long targetUnitId = programOutcomeIncoming.getSrfTargetUnit().getId(); // or milestone.getSrfTargetUnit().getId()
 
-      // 1. Obtener el ID que viene del formulario
-      Long targetUnitId = programOutcomeIncoming.getSrfTargetUnit().getId(); // O milestone.getSrfTargetUnit().getId()
-
-      // 2. Si el ID es válido, buscar la entidad real
+      // 2. If the ID is valid, look up the real entity
       if (targetUnitId != null && targetUnitId > 0) {
-          // Usar tu manager para buscar el objeto completo
+          // Use the manager to fetch the full object
           SrfTargetUnit realTargetUnit = srfTargetUnitManager.getSrfTargetUnitById(targetUnitId);
           
-          // 3. Reemplazar el objeto en la entidad a guardar
+          // 3. Replace the object on the entity being saved
           crpProgramOutcome.setSrfTargetUnit(realTargetUnit);
       } else {
           crpProgramOutcome.setSrfTargetUnit(null);
       }
 
-      LOG.info("Antes de primer saveCrpProgramOutcome");
       crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
-      LOG.info("Despues de primer saveCrpProgramOutcome");
 
       String composedId = StringUtils.stripToNull(crpProgramOutcome.getComposeID());
       if (composedId == null) {
@@ -1265,18 +1214,10 @@ public class OutcomesAction extends BaseAction {
       }
 
       // @CrpProgramOutcomeIndicator has not been touched since 2018, we assume this is no longer needed
-      LOG.info("Antes de saveIndicators");
       this.saveIndicators(crpProgramOutcome, programOutcomeIncoming);
-      LOG.info("Despues de saveIndicators");
       crpProgramOutcomeManager.replicate(crpProgramOutcome, nextPhase);
-      // update milestones of outcome
-      LOG.info("Antes de saveMilestones");
       this.saveMilestones(crpProgramOutcome, programOutcomeIncoming);
-      LOG.info("Despues de saveMilestones");
-      // update subIdos of outcome
-      LOG.info("Antes de saveSubIdo");
       this.saveSubIdo(crpProgramOutcome, programOutcomeIncoming);
-      LOG.info("Despues de saveSubIdo");
     }
   }
 

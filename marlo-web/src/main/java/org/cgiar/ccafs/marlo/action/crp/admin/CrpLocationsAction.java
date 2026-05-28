@@ -402,14 +402,18 @@ public class CrpLocationsAction extends BaseAction {
     }
 
     // Countries list
-    List<LocElement> locs =
-      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 2).collect(Collectors.toList());
+    List<LocElement> locs = locElementManger.findAllToCountries();
+    if (locs == null) {
+      locs = new ArrayList<>();
+    }
     Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
     countriesList = locs;
 
-    regions =
-      locElementManger.findAll().stream().filter(c -> c.getLocElementType().getId() == 1).collect(Collectors.toList());
-    Collections.sort(locs, (l1, l2) -> l1.getName().compareTo(l2.getName()));
+    regions = locElementManger.findAllToRegions();
+    if (regions == null) {
+      regions = new ArrayList<>();
+    }
+    Collections.sort(regions, (l1, l2) -> l1.getName().compareTo(l2.getName()));
 
     if (loggedCrp.getLocElementTypes() != null) {
 

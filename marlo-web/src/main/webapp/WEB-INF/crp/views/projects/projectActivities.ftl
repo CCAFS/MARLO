@@ -85,8 +85,8 @@
           <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>
 
           [#if deliverablesMissingActivity?size > 0]
-            <div class="container helpText viewMore-block">
-              <div class="helpMessage infoText2 col-md-8">
+            <div class="container helpText viewMore-block" style="width: 100%;">
+              <div class="helpMessage infoText2 col-md-8" style="width: 100%;">
                 [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
                 <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
                 

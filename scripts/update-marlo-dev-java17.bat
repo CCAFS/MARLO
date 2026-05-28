@@ -20,13 +20,13 @@ if not exist "%PROPS_FILE%" (
   exit /b 1
 )
 
-REM Replace https://localhost:8443 with localhost:8080 (Java 17: HTTP on 8080)
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=$env:PROPS_FILE; $c=[System.IO.File]::ReadAllText($p); $c=$c.Replace('https://localhost:8443','localhost:8080'); [System.IO.File]::WriteAllText($p,$c)"
+REM Replace localhost variants with http://localhost:8080 (Java 17: HTTP on 8080)
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=$env:PROPS_FILE; $c=[System.IO.File]::ReadAllText($p); $c=$c.Replace('https://localhost:8443','localhost:8080').Replace('http://localhost:8080','localhost:8080'); [System.IO.File]::WriteAllText($p,$c)"
 
 if errorlevel 1 (
   echo ERROR: PowerShell replace failed.
   exit /b 1
 )
 
-echo Updated: %PROPS_FILE% (HTTPS/8443 -^> HTTP/8080 for localhost).
+echo Updated: %PROPS_FILE% (localhost URLs normalized to http://localhost:8080).
 exit /b 0
