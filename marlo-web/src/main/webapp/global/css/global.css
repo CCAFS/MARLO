@@ -2244,10 +2244,10 @@ a#userLogOut:hover {
 
 #userInfo-drop #userLogOut {
 	margin-top: 10px;
-	background: #2082d6;
+	background: rgb(0, 128, 255);
 	cursor: pointer;
-	border-bottom: 3px solid #15588f;
-	transition: background 0.18s ease, transform 0.08s ease, border-bottom-color 0.18s ease;
+	border-bottom: 3px solid #006fd9;
+	transition: background 0.18s ease, transform 0.08s ease, border-bottom-color 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 #userInfo-drop #userLogOut .glyphicon {
@@ -2256,9 +2256,11 @@ a#userLogOut:hover {
 
 #userInfo-drop #userLogOut:hover,
 #userInfo-drop #userLogOut:focus {
-	background: #125992;
-	border-bottom-color: #0b416a;
+	background: rgb(26, 143, 255);
+	border-bottom-color: #0a78e6;
 	transform: translateY(-1px);
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
+	filter: saturate(1.05);
 	outline: none;
 }
 
@@ -2268,7 +2270,7 @@ a#userLogOut:hover {
 }
 
 #userInfo-drop #userLogOut:active {
-	background: #155f9f;
+	background: #0076ea;
 	transform: translateY(0);
 }
 
