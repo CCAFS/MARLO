@@ -1749,11 +1749,11 @@ a#userLogOut:hover {
   left: auto;
 	border-radius: 10px;
   text-align: left;
-	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition: opacity 0.22s ease-out, transform 0.22s ease-out;
 	background: #57A7B5;
 	color: #ffffff;
 	z-index: 30;
-	min-width: 270px;
+	min-width: 292px;
   max-width: 300px;
   width: auto;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
@@ -2230,15 +2230,20 @@ a#userLogOut:hover {
 
 #userInfo.open .caret {
 	transform: rotate(180deg);
-	border-top-color: #d7eef9;
+	border-top-color: #ffffff;
 	filter: none;
-  transition: transform 0.2s ease, border-top-color 0.2s ease, filter 0.2s ease;
+  transition: transform 0.2s ease-out, border-top-color 0.2s ease-out, filter 0.2s ease-out;
 }
 
 #userInfo-drop .name,
 #userInfo-drop .email,
 #userInfo-drop .roles {
-	margin-bottom: 10px;
+	margin-bottom: 12px;
+}
+
+#userInfo-drop .name {
+	margin-right: 92px;
+	line-height: 1.25;
 }
 
 #userInfo-drop .email {
@@ -2254,6 +2259,8 @@ a#userLogOut:hover {
 
 #userInfo-drop .roles {
 	font-size: 0.85em;
+	padding-top: 10px;
+	border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #userInfo-drop .roles strong {
@@ -2261,11 +2268,31 @@ a#userLogOut:hover {
 }
 
 #userInfo-drop #userLogOut {
-	margin-top: 10px;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	margin-top: 0;
+	width: auto;
+	min-width: 70px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	padding: 4px 8px;
+	font-size: 0.72em;
+	line-height: 1.2;
+	border-radius: 14px;
 	background: #2f6f82;
+	color: #ffffff;
 	cursor: pointer;
 	border-bottom: 3px solid #214e5c;
-	transition: background 0.18s ease, transform 0.08s ease, border-bottom-color 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+	box-shadow: none;
+	transition: background 0.18s ease, transform 0.08s ease, border-bottom-color 0.18s ease, filter 0.18s ease;
+}
+
+#userInfo-drop .roles span:hover {
+	background-color: #e8f3f6;
+	color: #245968;
 }
 
 #userInfo-drop #userLogOut .glyphicon {
@@ -2277,7 +2304,7 @@ a#userLogOut:hover {
 	background: #245968;
 	border-bottom-color: #173943;
 	transform: translateY(-1px);
-	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.22);
+	box-shadow: none;
 	filter: none;
 	outline: none;
 }
