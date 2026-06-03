@@ -6403,6 +6403,7 @@ table.evaluationRank thead th {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
+	align-items: normal;
 }
 
 .items-list ul.target-units-admin-list .targetUnitAdmin {

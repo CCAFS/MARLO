@@ -65,6 +65,10 @@ span.coordinates {
 
 .defaultLocations label {
   font-weight: normal;
+  display: block;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Default Location Levels — responsive grid (A2-2272), aligned with target-units-admin-list */

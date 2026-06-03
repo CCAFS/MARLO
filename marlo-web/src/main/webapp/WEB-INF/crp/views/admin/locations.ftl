@@ -174,8 +174,6 @@
               [#list locLevel.locationElements as locElement]
                 [@locElementMacro element=(locElement)!{} name="${customName}.locationElements" index=locElement_index locationType=locationType /]
               [/#list]
-            [#else] 
-              <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
             [/#if]
           </ul>
           <div class="clearfix"></div> 

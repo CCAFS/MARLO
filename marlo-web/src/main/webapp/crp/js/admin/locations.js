@@ -36,6 +36,7 @@ function init() {
 
   /* Numeric Inputs */
   $('.locationLatitude-input, .locationLongitude-input').numericInput();
+  $('.locationLatitude-input, .locationLongitude-input').val('');
 
   /* Init Select2 plugin */
   $('form select').select2({
