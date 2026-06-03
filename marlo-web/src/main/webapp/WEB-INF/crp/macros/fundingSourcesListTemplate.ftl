@@ -292,7 +292,7 @@
      [/#if]
      </ul>
      <input type="hidden" id="institutionsID" name="institutionsID" value="" />
-     <button type="submit" class="filter-btn">Save</button>
+     <button type="submit" class="filter-btn">Apply</button>
     [/@s.form]
    </div>
   </div>
