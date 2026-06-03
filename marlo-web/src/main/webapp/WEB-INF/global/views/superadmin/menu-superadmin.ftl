@@ -1,9 +1,9 @@
 [#ftl]
 [#assign srfItems= [
-  { 'slug': 'slos',   'name': 'menu.superadmin.slos', 'action': 'marloSLOs',   'active': true, 'visible': (action.specificityValue('slos')?has_content)?then(action.hasSpecificities('slos'), true) },
-  { 'slug': 'crossCutting',   'name': 'menu.superadmin.crossCutting', 'action': 'marloCrossCutting',   'active': true, 'visible': (action.specificityValue('crossCutting')?has_content)?then(action.hasSpecificities('crossCutting'), true) },
-  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'marloIDOs',   'active': true, 'visible': (action.specificityValue('idos')?has_content)?then(action.hasSpecificities('idos'), true) },
-  { 'slug': 'siteIntegration',   'name': 'menu.superadmin.siteIntegration', 'action': 'marloSiteIntegration',   'active': true, 'visible': (action.specificityValue('siteIntegration')?has_content)?then(action.hasSpecificities('siteIntegration'), true) }
+  { 'slug': 'slos',   'name': 'menu.superadmin.slos', 'action': 'marloSLOs',   'active': true, 'visible': false },
+  { 'slug': 'crossCutting',   'name': 'menu.superadmin.crossCutting', 'action': 'marloCrossCutting',   'active': true, 'visible': false },
+  { 'slug': 'idos',   'name': 'menu.superadmin.idos', 'action': 'marloIDOs',   'active': true, 'visible': false },
+  { 'slug': 'siteIntegration',   'name': 'menu.superadmin.siteIntegration', 'action': 'marloSiteIntegration',   'active': true, 'visible': false }
 ]/]
 
 [#assign standards= [
@@ -39,23 +39,32 @@
   ]/]
 [/#if]
 
+[#assign srfHasVisibleItems = false /]
+[#list srfItems as item]
+  [#if (item.visible)!true]
+    [#assign srfHasVisibleItems = true /]
+  [/#if]
+[/#list]
+
 <nav id="secondaryMenu">
-  <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
-  <ul>
-    <li>
-      <ul>
-        [#list srfItems as item]
-          [#if (item.visible)!true]
-            <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
-              <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
-                [@s.text name=item.name/]
-              </a>
-            </li>
-          [/#if]
-        [/#list] 
-      </ul>
-    </li>
-  </ul>
+  [#if srfHasVisibleItems]
+    <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
+    <ul>
+      <li>
+        <ul>
+          [#list srfItems as item]
+            [#if (item.visible)!true]
+              <li id="${item.slug}" class="[#if item.slug == currentStage]currentSection[/#if] ${(item.active)?string('enabled','disabled')}">
+                <a href="[@s.url action=item.action ][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}">
+                  [@s.text name=item.name/]
+                </a>
+              </li>
+            [/#if]
+          [/#list] 
+        </ul>
+      </li>
+    </ul>
+  [/#if]
   
   <p>Standards</p>
   <ul>
