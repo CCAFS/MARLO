@@ -48,7 +48,7 @@
                   </div>
                 [#else]
                   <div id="BIreport-${report.id}" report-title="${report.reportTitle}"  has-filters="${report.hasFilters?c}" has-role-authorization="${report.hasRoleAuthorization?c}" class="button-bg reportSection [#if report?index == 0]current[/#if]">
-                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}-test" href="">[@s.text name=report.reportName /]</a>
+                  <a index="${report?index+1}" class="BIreport-${report.id}" id="BIreport-${report.embedReport}" href="">[@s.text name=report.reportName /]</a>
                   </div>
                 [/#if]
               [/#list]
@@ -77,7 +77,7 @@
                 <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value=${report.embedReport} />
                 [#else]
                 <input type="hidden" id="reportName-${report.id}" name="reportName" value="${report.reportName} Test" />
-                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value="${report.embedReport}-test" />
+                <input type="hidden" id="embeUrl-${report.id}" name="embedReport" value="${report.embedReport}" />
                 [/#if] 
               </div>
           [/#list] 

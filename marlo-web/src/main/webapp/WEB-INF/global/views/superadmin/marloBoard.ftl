@@ -32,7 +32,7 @@
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
-            <ul>
+            <ul class="target-units-list">
             [#list targetUnitList as targetUnit]
               [@targetUnitMacro element=targetUnit name="targetUnitList" index=targetUnit_index /]
             [/#list]
