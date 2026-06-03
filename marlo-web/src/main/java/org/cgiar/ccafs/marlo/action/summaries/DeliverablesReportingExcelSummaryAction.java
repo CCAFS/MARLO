@@ -2648,9 +2648,10 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
 
   private TypedTableModel getMasterTableModel(String center, String date, String year) {
     // Initialization of Model
-    TypedTableModel model = new TypedTableModel(new String[] {"center", "date", "year", "regionalAvalaible"},
-      new Class[] {String.class, String.class, String.class, Boolean.class});
-    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions()});
+    TypedTableModel model = new TypedTableModel(
+      new String[] {"center", "date", "year", "regionalAvalaible", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, String.class});
+    model.addRow(new Object[] {center, date, year, this.hasProgramnsRegions(), this.getBaseUrl()});
     return model;
   }
 
