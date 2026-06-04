@@ -456,6 +456,13 @@ public class ProjectInnovationListAction extends BaseAction {
             .collect(Collectors.toList())));
         }
 
+        if (projectInnovation.getProject() != null
+          && !projectInnovation.getProject().getId().equals(projectID)) {
+          projectInnovation.setOwner(
+            projectInnovation.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+        } else {
+          projectInnovation.setOwner("This Cluster");
+        }
         projectInnovations.add(projectInnovation);
       } else {
         projectOldInnovations.add(projectInnovation);
@@ -487,6 +494,9 @@ public class ProjectInnovationListAction extends BaseAction {
                   .collect(Collectors.toList())));
             }
 
+            innovationShared.getProjectInnovation().setOwner(
+              innovationShared.getProjectInnovation().getProject()
+                .getProjecInfoPhase(this.getActualPhase()).getAcronym());
             projectInnovations.add(innovationShared.getProjectInnovation());
           } else {
             projectOldInnovations.add(innovationShared.getProjectInnovation());

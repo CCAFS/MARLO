@@ -119,7 +119,8 @@
           [#-- Feedback Status --]
           <th id="feedbackStatus" width="10%" rowspan="1">Feedback Status</th>
         [/#if]
-        [#--  <th class="owner" width="10%">Owner</th>  --]
+        [#-- Owner --]
+        <th class="owner" width="10%">[@s.text name="project.innovationList.owner" /]</th>
         [#-- Action --]
         [#if currentTable]
           <th class="no-sort" colspan="3" width="11.5%">Action</th>
@@ -200,9 +201,11 @@
                 [@utils.tableText value=(innovation.commentStatus)!"" /]
               </td>
           [/#if]
-          [#--      <td class="owner text-center">
-                      [#if isOwner] <small><nobr>This Cluster</nobr></small>  [#else][#if innovation.project?has_content]${(innovation.project.acronym)!''}[#else]Not defined[/#if][/#if]
-                    </td>  --]
+          [#-- Owner --]
+          <td class="owner text-center">
+            [#if isOwner] <small><nobr>This Cluster</nobr></small>
+            [#else][#if (innovation.owner)?has_content]${innovation.owner}[#else]Not defined[/#if][/#if]
+          </td>
           [#-- Missing fields --]
           [#if currentTable]
           <td class="text-center">
