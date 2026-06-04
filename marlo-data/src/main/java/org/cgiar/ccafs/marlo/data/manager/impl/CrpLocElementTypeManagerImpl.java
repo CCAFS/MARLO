@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class CrpLocElementTypeManagerImpl implements CrpLocElementTypeManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpLocElementType(long crpLocElementTypeId) {
 
     crpLocElementTypeDAO.deleteCrpLocElementType(crpLocElementTypeId);
@@ -73,6 +75,7 @@ public class CrpLocElementTypeManagerImpl implements CrpLocElementTypeManager {
   }
 
   @Override
+  @Transactional
   public CrpLocElementType saveCrpLocElementType(CrpLocElementType crpLocElementType) {
 
     return crpLocElementTypeDAO.save(crpLocElementType);
