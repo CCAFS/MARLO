@@ -90,6 +90,7 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationSubIdo> subIdos;
 
   private String commentStatus;
+  private String owner;
 
   // clarisa field
   private String pdfLink;
@@ -144,6 +145,14 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
 
   public String getCommentStatus() {
     return commentStatus;
+  }
+
+  public String getOwner() {
+    return owner;
+  }
+
+  public void setOwner(String owner) {
+    this.owner = owner;
   }
 
   public List<ProjectInnovationComplementarySolution> getComplementarySolutions() {
