@@ -17,10 +17,28 @@
   float: right;
 }
 
-li.targetUnit {
-  float: left;
-  width: 49%;
-  margin-left: 1%;
+.items-list ul.target-units-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: normal;
+}
+
+.items-list ul.target-units-list .targetUnit {
+  float: none;
+  width: auto;
+  margin-left: 0;
+  box-sizing: border-box;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 0;
+  max-width: 100%;
+  padding-right: 28px;
+}
+
+@media (max-width: 767px) {
+  .items-list ul.target-units-list .targetUnit {
+    flex: 1 1 100%;
+  }
 }
 
 .srfIdo {
@@ -244,10 +262,28 @@ table#marloUsersTable tr {
   cursor: pointer;
 }
 
-.locElementType {
-  width: 49%;
-  margin-left: 1%;
-  float: left;
+.items-list ul.loc-element-types-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: normal;
+}
+
+.items-list ul.loc-element-types-list .locElementType {
+  float: none;
+  width: auto;
+  margin-left: 0;
+  box-sizing: border-box;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 0;
+  max-width: 100%;
+  padding-right: 28px;
+}
+
+@media (max-width: 767px) {
+  .items-list ul.loc-element-types-list .locElementType {
+    flex: 1 1 100%;
+  }
 }
 
 table.ui-datepicker-calendar {

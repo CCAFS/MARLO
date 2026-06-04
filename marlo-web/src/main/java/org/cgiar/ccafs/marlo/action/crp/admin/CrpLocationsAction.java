@@ -491,6 +491,9 @@ public class CrpLocationsAction extends BaseAction {
           // Manual binding for nested location lists (handles cases where client JS didn't set names)
           this.manualBindingLocationElements();
 
+      LOG.info("After manualBinding: customLevels size={}",
+        loggedCrp.getCustomLevels() != null ? loggedCrp.getCustomLevels().size() : -1);
+
       this.locationPreviousData();
       this.locationNewData();
 
@@ -584,6 +587,10 @@ public class CrpLocationsAction extends BaseAction {
       loggedCrp.setCustomLevels(new ArrayList<CustomLevelSelect>());
     }
 
+    int customLevelsParamCount = (int) params.keySet().stream()
+      .filter(k -> k.startsWith("loggedCrp.customLevels[")).count();
+    LOG.debug("manualBinding: total params={}, customLevels params={}", params.size(), customLevelsParamCount);
+
     for (String key : params.keySet()) {
       try {
         // Handle custom location types binding (Scope/Region Name)
@@ -670,22 +677,44 @@ public class CrpLocationsAction extends BaseAction {
           }
         }
 
-        // Handle customLevels binding: loggedCrp.customLevels[i].locElementType.id and .check
+        // Handle customLevels: loggedCrp.customLevels[i].locElementType.id and .check
         if (key.startsWith("loggedCrp.customLevels[")) {
           try {
             int idx = extractIndex(key);
-            
-            // Use existing customLevels from prepare() if available
-            if (loggedCrp.getCustomLevels() != null && idx < loggedCrp.getCustomLevels().size()) {
-              CustomLevelSelect cls = loggedCrp.getCustomLevels().get(idx);
-              String[] values = params.get(key);
-              
-              if (key.endsWith(".check")) {
-                if (values != null && values.length > 0) {
-                  String v = values[0].trim();
-                  cls.setCheck("true".equalsIgnoreCase(v) || "on".equalsIgnoreCase(v) || "1".equals(v));
+            if (idx < 0) {
+              continue;
+            }
+
+            // Auto-grow the list so the item exists at this index.
+            // prepare() clears customLevels on POST, so we must recreate items here.
+            while (loggedCrp.getCustomLevels().size() <= idx) {
+              CustomLevelSelect placeholder = new CustomLevelSelect();
+              placeholder.setLocElementType(new LocElementType());
+              loggedCrp.getCustomLevels().add(placeholder);
+            }
+
+            CustomLevelSelect cls = loggedCrp.getCustomLevels().get(idx);
+            if (cls.getLocElementType() == null) {
+              cls.setLocElementType(new LocElementType());
+            }
+
+            String[] values = params.get(key);
+
+            if (key.endsWith(".locElementType.id")) {
+              if (values != null && values.length > 0 && !values[0].trim().isEmpty()) {
+                try {
+                  cls.getLocElementType().setId(Long.parseLong(values[0].trim()));
+                } catch (NumberFormatException e) {
+                  LOG.warn("Invalid locElementType id in customLevels binding: {}", values[0]);
                 }
               }
+            } else if (key.endsWith(".check")) {
+              if (values != null && values.length > 0) {
+                String v = values[0].trim();
+                cls.setCheck("true".equalsIgnoreCase(v) || "on".equalsIgnoreCase(v) || "1".equals(v));
+              }
+              // If no .check param is submitted (unchecked checkbox), check stays null.
+              // saveCustomLocations() treats null as false and deletes the DB record.
             }
           } catch (Exception e) {
             LOG.error("Error binding customLevels key: {}", key, e);

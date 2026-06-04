@@ -33,7 +33,7 @@
         [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data"]
+        [@s.form action=actionName]
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
         [#-- Default locations --]
@@ -174,8 +174,6 @@
               [#list locLevel.locationElements as locElement]
                 [@locElementMacro element=(locElement)!{} name="${customName}.locationElements" index=locElement_index locationType=locationType /]
               [/#list]
-            [#else] 
-              <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
             [/#if]
           </ul>
           <div class="clearfix"></div> 
