@@ -26,6 +26,9 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.cgiar.ccafs.marlo.utils.AuditLogContext;
+import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
+
 /**
  * This interceptor is responsible for validating if the user is actually logged or not, in order to be able to access
  * the contents of the specified page.
@@ -46,22 +49,30 @@ public class RequireUserInterceptor extends AbstractInterceptor {
     Map<String, Object> session = invocation.getInvocationContext().getSession();
     User user = (User) session.get(APConstants.SESSION_USER);
     if (user != null && user.getId() != null) {
-      BaseAction action = (BaseAction) invocation.getAction();
-      // set the session to the BaseAction.
-      action.setSession(session);
-      if (action.getActualPhase() != null) {
-        return invocation.invoke();
+
+        AuditLogContext auditContext = new AuditLogContext(); 
+        auditContext.setCurrentUserId(user.getId());
+        AuditLogContextProvider.push(auditContext); 
+
+        try {
+            BaseAction action = (BaseAction) invocation.getAction();
+
+            action.setSession(session);
+              
+            if (action.getActualPhase() != null) {
+                String result = invocation.invoke();
+                LOG.debug("=> RequireUserInterceptor");
+                  return result;
+            } else {
+                return this.sendUserToLoginScreen(session);
+              }
+          } finally {
+              AuditLogContextProvider.pop();
+              LOG.debug("<= RequireUserInterceptor");
+          }
       } else {
-        /**
-         * This is problematic as any exceptions caught in the action.getActualPhase method, return
-         * a default phase.
-         */
         return this.sendUserToLoginScreen(session);
       }
-    } else {
-      return this.sendUserToLoginScreen(session);
-    }
-
   }
 
   private String sendUserToLoginScreen(Map<String, Object> session) {

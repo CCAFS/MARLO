@@ -22,6 +22,8 @@ import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectBudgetManager;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectBudget;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
+@Service("projectBudgetManager")
 public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
 
 
@@ -243,6 +246,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
+  @Transactional
   public ProjectBudget saveProjectBudget(ProjectBudget projectBudget) {
 
     ProjectBudget resultBudget = projectBudgetDAO.save(projectBudget);

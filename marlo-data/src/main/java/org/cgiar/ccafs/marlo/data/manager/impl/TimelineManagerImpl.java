@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.TimelineDAO;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
 import org.cgiar.ccafs.marlo.data.model.Timeline;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class TimelineManagerImpl implements TimelineManager {
   }
 
   @Override
+  @Transactional
   public void deleteTimeline(long timelineId) {
 
     timelineDAO.deleteTimeline(timelineId);
@@ -74,6 +76,7 @@ public class TimelineManagerImpl implements TimelineManager {
   }
 
   @Override
+  @Transactional
   public Timeline saveTimeline(Timeline timeline) {
 
     return timelineDAO.save(timeline);

@@ -788,7 +788,7 @@
                     <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
                       <tr>
                         <th> [@s.text name="study.general.dialogMessage.part1" /]</th>
-                        <th > [@s.text name="study.general.dialogMessage.part2" /] </th>
+                        <th> [@s.text name="study.general.dialogMessage.part2" /] </th>
                         <th> [@s.text name="study.general.dialogMessage.part3" /] / [@s.text name="study.general.dialogMessage.part4" /] </th>
                       </tr>
                     </thead>

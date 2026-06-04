@@ -71,7 +71,7 @@
             </div>
             <div class="modal-body">
               [#-- Projects table --]
-              <table class="deliverableList">
+              <table class="table table-striped table-hover deliverableList" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -151,7 +151,7 @@
             </div>
             <div class="modal-body">
               [#-- Deliverables table --]
-              <table class="deliverableList" id="deliverables">
+              <table class="table table-striped table-hover deliverableList" id="deliverables" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -249,7 +249,7 @@
             </div>
             <div class="modal-body">
               [#-- Policies table --]
-              <table class="table">
+              <table class="table table-striped table-hover" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -306,7 +306,7 @@
             </div>
             <div class="modal-body">
               [#-- innovations table --]
-              <table class="innovationList" id="innovation">
+              <table class="table table-striped table-hover innovationList" id="innovation" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -365,7 +365,7 @@
             </div>
             <div class="modal-body">
               [#-- Evidencies table --]
-              <table class="evidencieList" id="evidencies">
+              <table class="table table-striped table-hover evidencieList" id="evidencies" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>
@@ -423,7 +423,7 @@
           </div>
             <div class="modal-body">
               [#-- Evidencies table --]
-              <table class="table">
+              <table class="table table-striped table-hover" width="100%">
                 <thead>
                   <tr>
                     <th id="ids">[@s.text name="projectsList.projectids" /]</th>

@@ -53,12 +53,12 @@
 				          <div class="simpleBox ai-card">
 				            [#if report.reportTitle?has_content]
 				              <p class="ai-lead" style="margin-top: 6px;">
-				                <strong>${report.reportTitle?html}</strong>
+				                <strong>${report.reportTitle}</strong>
 				              </p>
 				            [/#if]
 				            [#if report.reportDescription?has_content]
 				              <p class="ai-lead" style="margin: 6px 0 0;">
-				                ${report.reportDescription?html}
+				                ${report.reportDescription}
 				              </p>
 				            [/#if]
 				            [#if report.buttonLink?has_content]
@@ -85,8 +85,8 @@
 				                [/#if]
 				              [/#if]
 				              <div class="text-start" style="margin-top: 20px;">
-				                <a href="${finalUrl?html}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
-				                  <span></span> ${(report.buttonLabel!report.reportTitle)?html}
+				                <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
+				                  <span></span> ${(report.buttonLabel!report.reportTitle)}
 				                </a>
 				              </div>
 				            [/#if]

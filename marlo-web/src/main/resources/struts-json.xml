@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC 
 "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
-  "http://struts.apache.org/dtds/struts-2.5.dtd">
+  "http://struts.apache.org/dtds/struts-6.0.dtd">
 <struts>
 	<package name="json" namespace="/" extends="json-default">
 
@@ -9,8 +9,18 @@
 			<!-- Json interceptors -->
 			<interceptor name="SecurityControl"
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
+			
+			<interceptor name="requireUser"
+				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
 
 			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="SecurityControl" />
+				<interceptor-ref name="prepare" />
+			</interceptor-stack>
+			
+			<interceptor-stack name="jsonStackWithAudit">
+				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="prepare" />
@@ -46,9 +56,6 @@
 		<action name="uploadFundingSource"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -58,9 +65,7 @@
 		<action name="uploadFundingSourceResearch"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileResearchAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -70,9 +75,7 @@
 		<action name="uploadPowbSynthesis"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadPowbSynthesisGeneral">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -82,9 +85,7 @@
 		<action name="uploadStudies"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadStudiesFileAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -94,9 +95,7 @@
 		<action name="uploadProjectLocationActivitiesCSV"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadProjectLocationActivitiesCSVAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -106,9 +105,7 @@
 		<action name="uploadPartnership"
 			class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.UploadPartnershipFileAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -118,9 +115,7 @@
 		<action name="uploadBaseLine"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -565,9 +560,7 @@
 		<action name="uploadDeliverable"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -609,6 +602,7 @@
 
 		<action name="unsubmitProject"
 			class="org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction">
+			<interceptor-ref name="jsonStackWithAudit" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
@@ -630,6 +624,18 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 		</action>
+
+		<action name="globalUnitLogoUpload"
+			class="org.cgiar.ccafs.marlo.action.json.superadmin.UploadGlobalUnitLogoAction">
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">314572900</param>
+			</interceptor-ref>
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
 		
 		<action name="canDeleteDeliverableWithSharedTrainees"
 			class="org.cgiar.ccafs.marlo.action.json.project.CanDeleteDeliverableWithSharedTrainees">
@@ -642,9 +648,7 @@
 		<action name="unsubmitImpactpathway"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
 			<interceptor-ref name="defaultStack" />
-			<interceptor-ref name="fileUpload">
-				<param name="maximumSize">314572900</param>
-			</interceptor-ref>
+			
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>

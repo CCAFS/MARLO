@@ -10,7 +10,7 @@
       <p>[@s.text name="project.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="project.message.historyVersion" ]  
-          [@s.param]<span>${innovation.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${innovation.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${innovation.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="innovationID" value=innovationID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]
@@ -77,5 +77,6 @@
   [#include "/WEB-INF/global/macros/draftMessage.ftl" /]
 
 [/#if]
+
 
 

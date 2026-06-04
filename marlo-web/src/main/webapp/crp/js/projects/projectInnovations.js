@@ -1849,7 +1849,7 @@ function ajaxAllClusters(selectElement, table) {
 
       $(selectElement).append('<option value="">All Clusters</option>');
 
-      data.projects.forEach(function (cluster) {
+      data.projectList.forEach(function (cluster) {
         $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
       });
 

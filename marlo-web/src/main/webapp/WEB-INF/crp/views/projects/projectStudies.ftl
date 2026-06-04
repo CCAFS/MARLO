@@ -164,7 +164,7 @@
             [/#if]  
           [/#local]
           <tr>
-            <td class="id" >
+            <td class="id text-center" >
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
                 ${item.id}
               [#if !oldFormat]</a>[/#if]
@@ -188,7 +188,7 @@
                 [#else]Not defined[/#if]
               [/#if]
             </td>
-            <td class="year">
+            <td class="year text-center">
               [@utils.tableText value=(item.projectExpectedStudyInfo.year)!"" /]
             </td>
             [#if action.hasSpecificities('feedback_active') ]
@@ -196,7 +196,7 @@
                 [@utils.tableText value=(item.commentStatus)!"" /]
               </td>
             [/#if]
-            <td class="status">
+            <td class="status text-center">
               [@utils.tableText value=(item.projectExpectedStudyInfo.statusName)!"" /]
             </td>
             [#-- Summary PDF download --]
@@ -211,7 +211,7 @@
             </td>
             [#-- Actions only available for active OICRs --]
             [#if !previousTable]
-            <td>
+            <td class="text-center">
               [#if isThisComplete || ((item.projectExpectedStudyInfo.year lt  currentCycleYear)!false)]
                 <span class="icon-20 icon-check" title="Complete"><p style="display: none;">Complete</p></span> 
               [#else]

@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("DeliverablesRestCtrl")
 @Api(tags = "Table 6 - Peer-reviewed publications")
 public class Deliverables {
 

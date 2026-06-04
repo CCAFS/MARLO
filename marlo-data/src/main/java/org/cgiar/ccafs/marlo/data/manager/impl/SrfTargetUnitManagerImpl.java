@@ -17,8 +17,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 
 import org.cgiar.ccafs.marlo.data.dao.SrfTargetUnitDAO;
 import org.cgiar.ccafs.marlo.data.manager.SrfTargetUnitManager;
-import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;
-
+import org.cgiar.ccafs.marlo.data.model.SrfTargetUnit;import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,6 +42,7 @@ public class SrfTargetUnitManagerImpl implements SrfTargetUnitManager {
   }
 
   @Override
+  @Transactional
   public void deleteSrfTargetUnit(long srfTargetUnitId) {
 
     srfTargetUnitDAO.deleteSrfTargetUnit(srfTargetUnitId);
@@ -76,6 +76,7 @@ public class SrfTargetUnitManagerImpl implements SrfTargetUnitManager {
   }
 
   @Override
+  @Transactional
   public SrfTargetUnit saveSrfTargetUnit(SrfTargetUnit srfTargetUnit) {
 
     return srfTargetUnitDAO.save(srfTargetUnit);

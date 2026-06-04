@@ -74,6 +74,14 @@ public interface ProjectInnovationDAO {
    */
   public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(long phaseId, long projectId);
 
+  /**
+   * Same as {@link #getInnovationsByProjectAndPhaseHome(long, long)} for many projects in one query.
+   *
+   * @param phaseId the Phase identifier
+   * @param projectIds Project identifiers (empty returns empty list)
+   */
+  public List<InnovationHomeDTO> getInnovationsByProjectsAndPhaseHome(long phaseId, List<Long> projectIds);
+
   public Boolean isInnovationExcluded(Long innovationId, Long phaseId);
 
   /**

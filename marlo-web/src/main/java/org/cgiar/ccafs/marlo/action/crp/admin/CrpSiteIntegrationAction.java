@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.manager.UserRoleManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramCountry;
 import org.cgiar.ccafs.marlo.data.model.CrpSitesLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
@@ -59,7 +61,7 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class CrpSiteIntegrationAction extends BaseAction {
 
-
+  private static final Logger LOG = LoggerFactory.getLogger(CrpSiteIntegrationAction.class);
   private static final long serialVersionUID = 1323996683605051647L;
 
 
@@ -106,6 +108,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
     RoleManager roleManager, UserRoleManager userRoleManager, UserManager userManager, SendMailS sendMail,
     CrpUserManager crpUserManager) {
     super(config);
+    LOG.info("=== CRP SITE INTEGRATION ACTION CONSTRUCTOR CALLED ===");
     this.crpManager = crpManager;
     this.locElementManager = locElementManager;
     this.crpsSiteIntegrationManager = crpsSiteIntegrationManager;
@@ -163,9 +166,20 @@ public class CrpSiteIntegrationAction extends BaseAction {
   }
 
   private void loadData() {
-    if (loggedCrp.getCrpsSitesIntegrations() != null) {
-      loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations().stream()
-        .filter(si -> si.isActive() && si.getCrp().equals(loggedCrp)).collect(Collectors.toList())));
+    LOG.info("=== LOAD DATA CALLED - HTTP POST: {} ===", this.isHttpPost());
+    
+    if (this.isHttpPost()) {
+      // Initialize empty list for Struts data binding
+      if (loggedCrp.getSiteIntegrations() == null) {
+        loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>());
+      }
+      LOG.info("=== LOAD DATA - INITIALIZED EMPTY LIST FOR BINDING ===");
+    } else {
+      // Load from database for GET requests
+      if (loggedCrp.getCrpsSitesIntegrations() != null) {
+        loggedCrp.setSiteIntegrations(new ArrayList<CrpsSiteIntegration>(loggedCrp.getCrpsSitesIntegrations().stream()
+          .filter(si -> si.isActive() && si.getCrp().equals(loggedCrp)).collect(Collectors.toList())));
+        LOG.info("=== LOAD DATA - LOADED {} INTEGRATIONS FROM DB ===", loggedCrp.getSiteIntegrations().size());
 
 
       for (int i = 0; i < loggedCrp.getSiteIntegrations().size(); i++) {
@@ -184,6 +198,7 @@ public class CrpSiteIntegrationAction extends BaseAction {
         loggedCrp.getSiteIntegrations().get(i)
           .setSiteLeaders(new ArrayList<CrpSitesLeader>(loggedCrp.getSiteIntegrations().get(i).getCrpSitesLeaders()
             .stream().filter(sl -> sl.isActive()).collect(Collectors.toList())));
+      }
       }
     }
   }
@@ -332,24 +347,103 @@ public class CrpSiteIntegrationAction extends BaseAction {
 
     this.loadData();
 
-    countriesList = locElementManager.findAll().stream().filter(le -> le.getLocElementType().getId() == 2)
-      .collect(Collectors.toList());
+    countriesList = locElementManager.findAllToCountries();
+    if (countriesList == null) {
+      countriesList = new ArrayList<>();
+    }
     Collections.sort(countriesList, (lc1, lc2) -> lc1.getName().compareTo(lc2.getName()));
-
 
     String params[] = {loggedCrp.getAcronym()};
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
 
-    if (this.isHttpPost()) {
-      loggedCrp.getSiteIntegrations().clear();
-    }
+  }
 
+  @Override
+  public String execute() throws Exception {
+    LOG.info("=== EXECUTE METHOD CALLED ===");
+    return super.execute();
+  }
+
+  @Override
+  public void validate() {
+    LOG.info("=== VALIDATE METHOD CALLED ===");
+    
+    // Log all request parameters
+    if (this.getRequest() != null) {
+      LOG.info("=== REQUEST PARAMETERS ===");
+      this.getRequest().getParameterMap().forEach((key, values) -> {
+        LOG.info("=== PARAM: {} = {} ===", key, String.join(", ", values));
+      });
+    }
+    
+    // Pre-create objects for Struts data binding
+    if (this.isHttpPost() && loggedCrp.getSiteIntegrations() != null) {
+      LOG.info("=== PREPARING DATA BINDING ===");
+      
+      // Find the maximum index from request parameters
+      final int[] maxIndexHolder = {-1};
+      this.getRequest().getParameterMap().keySet().forEach(key -> {
+        if (key.startsWith("loggedCrp.siteIntegrations[")) {
+          try {
+            int index = Integer.parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']')));
+            if (index > maxIndexHolder[0]) {
+              maxIndexHolder[0] = index;
+            }
+          } catch (NumberFormatException e) {
+            // Ignore
+          }
+        }
+      });
+      
+      int maxIndex = maxIndexHolder[0];
+      
+      LOG.info("=== MAX INDEX FROM REQUEST: {} ===", maxIndex);
+      
+      // Ensure list has enough elements
+      while (loggedCrp.getSiteIntegrations().size() <= maxIndex) {
+        CrpsSiteIntegration integration = new CrpsSiteIntegration();
+        integration.setSiteLeaders(new ArrayList<>());
+        // Pre-create LocElement for nested property binding
+        integration.setLocElement(new LocElement());
+        loggedCrp.getSiteIntegrations().add(integration);
+        LOG.info("=== CREATED INTEGRATION OBJECT AT INDEX {} ===", loggedCrp.getSiteIntegrations().size() - 1);
+      }
+      
+      LOG.info("=== LIST SIZE AFTER PREPARATION: {} ===", loggedCrp.getSiteIntegrations().size());
+    }
+    
+    if (this.hasFieldErrors()) {
+      LOG.info("=== FIELD ERRORS: {} ===", this.getFieldErrors());
+    }
+    if (this.hasActionErrors()) {
+      LOG.info("=== ACTION ERRORS: {} ===", this.getActionErrors());
+    }
+    super.validate();
   }
 
   @Override
   public String save() {
 
     if (this.hasPermission("*")) {
+      
+      if (loggedCrp.getSiteIntegrations() != null) {
+        for (int i = 0; i < loggedCrp.getSiteIntegrations().size(); i++) {
+          CrpsSiteIntegration si = loggedCrp.getSiteIntegrations().get(i);
+          if (si != null && si.getId() == null && si.getLocElement() != null 
+              && si.getLocElement().getIsoAlpha2() != null) {
+            // Check if LocElement exists in database
+            LocElement locElement = locElementManager.getLocElementByISOCode(si.getLocElement().getIsoAlpha2());
+            if (locElement == null) {
+              this.addFieldError("loggedCrp.siteIntegrations[" + i + "].locElement.isoAlpha2", 
+                "Country with ISO code '" + si.getLocElement().getIsoAlpha2() + "' not found in the database. Please select a valid country from the list.");
+            }
+          }
+        }
+      }
+      
+      // Manual binding for nested objects
+      this.manualBindingSiteIntegrations();
+      
       this.setUsersToActive(new ArrayList<>());
       this.siteIntegrationPreviusData();
       this.siteIntegrationNewData();
@@ -389,36 +483,53 @@ public class CrpSiteIntegrationAction extends BaseAction {
   }
 
   private void siteIntegrationNewData() {
+    LOG.info("=== SITE INTEGRATION NEW DATA CALLED ===");
+    LOG.info("=== LOGGED CRP SITE INTEGRATIONS SIZE: {} ===", 
+      loggedCrp.getSiteIntegrations() != null ? loggedCrp.getSiteIntegrations().size() : "NULL");
 
     for (CrpsSiteIntegration siteIntegration : loggedCrp.getSiteIntegrations()) {
       if (siteIntegration.getId() == null) {
-        LocElement locElement =
-          locElementManager.getLocElementByISOCode(siteIntegration.getLocElement().getIsoAlpha2());
+        LocElement locElement = null;
+        if (siteIntegration.getLocElement() != null && siteIntegration.getLocElement().getIsoAlpha2() != null) {
+          String isoCode = siteIntegration.getLocElement().getIsoAlpha2();
+          locElement = locElementManager.getLocElementByISOCode(isoCode);
+          
+          if (locElement == null) {
+            LOG.warn("=== LOC ELEMENT NOT FOUND FOR ISO CODE: {} ===", isoCode);
+            this.addFieldError("loggedCrp.siteIntegrations[" + loggedCrp.getSiteIntegrations().indexOf(siteIntegration) + "].locElement.isoAlpha2", 
+              "Country with ISO code '" + isoCode + "' not found in the database. Please select a valid country from the list.");
+          }
+        }
 
-        siteIntegration.setLocElement(locElement);
-        siteIntegration.setCrp(loggedCrp);
+        // Only save if we have a valid LocElement
+        if (locElement != null) {
+          siteIntegration.setLocElement(locElement);
+          siteIntegration.setCrp(loggedCrp);
 
-        locElement.setIsSiteIntegration(true);
-        locElementManager.saveLocElement(locElement);
+          locElement.setIsSiteIntegration(true);
+          locElementManager.saveLocElement(locElement);
 
-        siteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
+          siteIntegration = crpsSiteIntegrationManager.saveCrpsSiteIntegration(siteIntegration);
 
-        if (siteIntegration.getSiteLeaders() != null) {
-          for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
-            User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
+          if (siteIntegration.getSiteLeaders() != null) {
+            for (CrpSitesLeader sitesLeader : siteIntegration.getSiteLeaders()) {
+              User userSiteLeader = userManager.getUser(sitesLeader.getUser().getId());
 
-            sitesLeader.setCrpsSiteIntegration(siteIntegration);
-            sitesLeader.setUser(userSiteLeader);
-            crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
+              sitesLeader.setCrpsSiteIntegration(siteIntegration);
+              sitesLeader.setUser(userSiteLeader);
+              crpSitesLeaderManager.saveCrpSitesLeader(sitesLeader);
 
-            UserRole userRole = new UserRole(slRole, userSiteLeader);
-            if (!userSiteLeader.getUserRoles().contains(userRole)) {
-              userRoleManager.saveUserRole(userRole);
-              this.addCrpUser(userRole.getUser());
-              this.notifyNewUserCreated(userRole.getUser());
-              // this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
+              UserRole userRole = new UserRole(slRole, userSiteLeader);
+              if (!userSiteLeader.getUserRoles().contains(userRole)) {
+                userRoleManager.saveUserRole(userRole);
+                this.addCrpUser(userRole.getUser());
+                this.notifyNewUserCreated(userRole.getUser());
+                // this.notifyRoleAssigned(userSiteLeader, userRole.getRole(), sitesLeader.getCrpsSiteIntegration());
+              }
             }
           }
+        } else {
+          LOG.warn("=== SKIPPING SITE INTEGRATION - NO VALID LOC ELEMENT FOUND ===");
         }
       } else {
         if (siteIntegration.getSiteLeaders() != null) {
@@ -540,6 +651,106 @@ public class CrpSiteIntegrationAction extends BaseAction {
         }
       }
     }
+  }
+  
+  /**
+   * Manual binding for siteIntegrations from request parameters
+   * Based on pattern from commit 5f576ac2e1819e73886230c20a59d75e57a43902
+   */
+  private void manualBindingSiteIntegrations() {
+    if (this.getRequest() != null && loggedCrp.getSiteIntegrations() != null) {
+      Map<String, String[]> params = this.getRequest().getParameterMap();
+      
+      for (String key : params.keySet()) {
+        try {
+          // Bind for locElement.isoAlpha2
+          if (key.matches("loggedCrp\\.siteIntegrations\\[\\d+\\]\\.locElement\\.isoAlpha2")) {
+            int index = extractIndex(key);
+            String[] values = params.get(key);
+            
+            if (values != null && values.length > 0 && index < loggedCrp.getSiteIntegrations().size()) {
+              String isoAlpha2 = values[0];
+              if (isoAlpha2 != null && !isoAlpha2.trim().isEmpty()) {
+                CrpsSiteIntegration integration = loggedCrp.getSiteIntegrations().get(index);
+                
+                // If integration is null, create new one
+                if (integration == null) {
+                  integration = new CrpsSiteIntegration();
+                  integration.setSiteLeaders(new ArrayList<>());
+                  loggedCrp.getSiteIntegrations().set(index, integration);
+                }
+                
+                if (integration.getLocElement() == null) {
+                  integration.setLocElement(new LocElement());
+                }
+                integration.getLocElement().setIsoAlpha2(isoAlpha2.trim());
+              }
+            }
+          }
+          
+          // Bind for siteLeaders
+          if (key.matches("loggedCrp\\.siteIntegrations\\[\\d+\\]\\.siteLeaders\\[\\d+\\]\\.user\\.id")) {
+            int integrationIndex = extractIndex(key);
+            int leaderIndex = extractSecondIndex(key);
+            String[] values = params.get(key);
+            
+            if (values != null && values.length > 0 && integrationIndex < loggedCrp.getSiteIntegrations().size()) {
+              CrpsSiteIntegration integration = loggedCrp.getSiteIntegrations().get(integrationIndex);
+              
+              // If integration is null, create new one
+              if (integration == null) {
+                integration = new CrpsSiteIntegration();
+                integration.setSiteLeaders(new ArrayList<>());
+                loggedCrp.getSiteIntegrations().set(integrationIndex, integration);
+              }
+              
+              if (integration.getSiteLeaders() == null) {
+                integration.setSiteLeaders(new ArrayList<>());
+              }
+              
+              // Ensure list has enough elements
+              while (integration.getSiteLeaders().size() <= leaderIndex) {
+                CrpSitesLeader leader = new CrpSitesLeader();
+                leader.setUser(new User());
+                integration.getSiteLeaders().add(leader);
+              }
+              
+              String userId = values[0];
+              if (userId != null && !userId.trim().isEmpty()) {
+                try {
+                  Long id = Long.parseLong(userId.trim());
+                  integration.getSiteLeaders().get(leaderIndex).getUser().setId(id);
+                } catch (NumberFormatException e) {
+                  LOG.warn("Error parsing user id: {}", userId);
+                }
+              }
+            }
+          }
+          
+        } catch (Exception e) {
+          LOG.error("Error in manual binding for key: {}", key, e);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Extracts the first index from a parameter with format "object[index].property"
+   */
+  private int extractIndex(String key) {
+    int startIdx = key.indexOf('[') + 1;
+    int endIdx = key.indexOf(']');
+    return Integer.parseInt(key.substring(startIdx, endIdx));
+  }
+  
+  /**
+   * Extracts the second index from a parameter with format "object[index1].object2[index2].property"
+   */
+  private int extractSecondIndex(String key) {
+    int firstClose = key.indexOf(']');
+    int secondStart = key.indexOf('[', firstClose) + 1;
+    int secondEnd = key.indexOf(']', firstClose + 1);
+    return Integer.parseInt(key.substring(secondStart, secondEnd));
   }
 
 }

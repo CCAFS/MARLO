@@ -18,9 +18,19 @@ package org.cgiar.ccafs.marlo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.mgt.WebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.authentication.DBAuthenticator;
+import org.cgiar.ccafs.marlo.security.authentication.LDAPAuthenticator;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,19 +40,63 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MarloShiroConfiguration {
 
+  @Bean
+  public APCustomRealm apCustomRealm(DBAuthenticator dbAuthenticator,
+                                      LDAPAuthenticator ldapAuthenticator,
+                                      UserManager userManager,
+                                      APConfig apConfig) {
+      return new APCustomRealm(dbAuthenticator, ldapAuthenticator, userManager, apConfig);
+  }
 
   /**
    * The realm @APCustomRealm is discovered and initialized by Spring classpath scanning and is injected with other
    * dependencies which is why it is not configured here. The @ShiroSpringStartupListener will then set the realm on the
    * securityManager when notified by an @ApplicationEvent.
    */
-  @Bean(name = "securityManager")
-  public DefaultWebSecurityManager securityManager() {
-    DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-    return securityManager;
+  // @Bean(name = "securityManager")
+  // public DefaultWebSecurityManager securityManager(APCustomRealm apCustomRealm) {
+  //   DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+  //   securityManager.setRealm(apCustomRealm);
+  //   SecurityUtils.setSecurityManager(securityManager);
+  //   return securityManager;
+  // }
+
+  @Bean
+  public SimpleCookie sessionIdCookie() {
+      SimpleCookie cookie = new SimpleCookie("JSESSIONID");
+      cookie.setHttpOnly(true);
+      cookie.setPath("/");
+      return cookie;
   }
 
-  @Bean(name = "shiroFilter")
+  @Bean
+  public DefaultWebSessionManager sessionManager() {
+      DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+      sessionManager.setGlobalSessionTimeout(30 * 60 * 1000L); // 30 min
+      sessionManager.setSessionIdCookieEnabled(true);
+      sessionManager.setSessionIdCookie(sessionIdCookie());
+      sessionManager.setSessionValidationSchedulerEnabled(true);
+      // sessionManager.setDeleteInvalidSessions(true);
+      return sessionManager;
+  }
+
+  @Bean(name = "securityManager")
+  public WebSecurityManager securityManager(APCustomRealm apCustomRealm) {
+      DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
+      manager.setRealm(apCustomRealm);
+      manager.setSessionManager(sessionManager());
+      return manager;
+  }
+
+  @Bean
+  public static MethodInvokingFactoryBean methodInvokingFactoryBean(org.apache.shiro.mgt.SecurityManager securityManager) {
+      MethodInvokingFactoryBean bean = new MethodInvokingFactoryBean();
+      bean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
+      bean.setArguments(new Object[]{securityManager});
+      return bean;
+  }
+
+  @Bean(name = "shiroFilterFactoryBean")
   public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager) throws Exception {
     ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
     shiroFilterFactoryBean.setSecurityManager(securityManager);

@@ -1,5 +1,10 @@
 [#ftl]
-[#macro text name="" readText=false param=""][#assign customName][#if readText]${name}.readText[#else]${name}[/#if][/#assign][@s.text name="${customName}"][@s.param]${param}[/@s.param][/@s.text][/#macro]
+[#macro text name="" readText=false param=""]
+  [#assign customName = (readText)?then(name + ".readText", name)]
+  [@s.text name=customName]
+    [@s.param]${param}[/@s.param]
+  [/@s.text]
+[/#macro]
 
 [#macro input name value="-NULL" type="text" i18nkey="" disabled=false required=false errorField="" help="" helpIcon=true display=true className="" paramText="" readOnly=false showTitle=true editable=true placeholder="" inputGroupText="" maxlength="" id="" isMainTitle=false isWidthFull=false]
   <div class="feedback-flex-items" [#if isWidthFull] style="width:100%;" [/#if]></div>
@@ -30,10 +35,10 @@
       <p>
       [#if (customValue?has_content)!false] 
         [#if isCurrencyInput]
-          <nobr>US$ ${((customValue)!'0')?number?string(",##0.00")}</nobr>
+          <nobr>US$ ${((customValue?markup_string)!'0')?number?string(",##0.00")}</nobr>
         [#else]
           [#if isTargetValueNumber]
-            ${((customValue)!'0')?number?string(",##0")}
+            ${((customValue?markup_string)!'0')?number?string(",##0")}
           [#else]
             ${customValue}
           [/#if]
@@ -61,13 +66,31 @@
     [#-- Get Custom Value --]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
   	[#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} ${isMainTitle?string('label--2','')} [#if powbInclude]powb-label[/#if]"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
-        [#--  Help Text --]
+      [#assign markupKey = "markupOutput("]
+      <label for="${name}" 
+            class="${editable?string('editable', 'readOnly')} ${labelClass} ${isMainTitle?string('label--2','')} [#if powbInclude]powb-label[/#if]">
+        
+        [#assign labelAsString = (customLabel?is_markup_output)?then(customLabel?markup_string, customLabel!"")]
+        [#if labelAsString?has_content && labelAsString?starts_with(markupKey)]
+          ${(customLabel?is_markup_output)?then(customLabel?markup_string, customLabel)?no_esc}
+        [#else]
+          [@s.text name=labelAsString][@s.param]${paramText}[/@s.param][/@s.text]
+        [/#if]
+        
+        :[@req required=required && editable /]
+        
+        [#-- Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
+        
         [#if powbInclude]
-          <span class="powb-doc badge pull-right" title="[@s.text name="powb.includedField.title" /]">[@s.text name="powb.includedField" /] <span class="glyphicon glyphicon-save-file"></span></span>
+          <span class="powb-doc badge pull-right" 
+                title="[@s.text name='powb.includedField.title' /]">
+            [@s.text name='powb.includedField' /] 
+            <span class="glyphicon glyphicon-save-file"></span>
+          </span>
         [/#if]
       </label>
+
     [/#if]
     [#if errorfield==""][@s.fielderror cssClass="fieldError" fieldName="${name}"/][#else][@s.fielderror cssClass="fieldError" fieldName="${errorfield}"/][/#if]
     [#if editable]
@@ -78,7 +101,7 @@
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#-- Show custom value --]
       <p class="${allowTextEditor?string('decodeHTML trumbowyg-editor', '')}">
-        [#if (customValue?has_content)!false]${customValue?replace('\n', '<br>')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
+        [#if (customValue?has_content)!false]${customValue?markup_string?replace('\n', '\\lbr\\g')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
       </p>
     [/#if] 
   </div>
@@ -165,7 +188,9 @@
     [#assign placeholderText][@s.text name="${(placeholder?has_content)?string(placeholder,'form.select.placeholder')}" /][/#assign]
     [#if showTitle]
     <label for="${name}" class="${isMainTitle?string('label--2','')}">
-      [#if labelTitle != ""]${labelTitle}:[/#if][@req required=required && editable /]
+      [#-- Normaliza labelTitle si es markup_output antes de comparar --]
+      [#local labelText = (labelTitle?is_markup_output)?then(labelTitle?no_esc, labelTitle)]
+      [#if labelText?markup_string?trim != ""]${labelText}:[/#if][@req required=required && editable /]
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon isNote=isNote editable=editable/]
     </label>
@@ -180,27 +205,84 @@
       [#-- Help text --]
       [#if help!=""][#assign helpText][@s.text name="${help}" /][/#assign][#else][#assign helpText][/#assign][/#if]
       [#if editable]
+        [#assign currentValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue)]
+        [#assign cleanPlaceholder = (placeholderText?is_markup_output)?then(placeholderText?markup_string, placeholderText)]
+
         [#if keyFieldName == ""]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}"   /]
+            [@s.select 
+              name="${name}" 
+              list="${listName}" 
+              value="${currentValue}" 
+              disabled="${disabled?string}" 
+              cssClass="${className} form-control input-sm" 
+              multiple="true" 
+              tooltip="${helpText}" 
+            /]
           [#else]
             [#if header]
-              [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+                headerKey="-1" 
+                headerValue=cleanPlaceholder 
+              /]
             [#else]
-              [@s.select name="${name}" list="${listName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+              /]
             [/#if]
           [/#if]
         [#else]
           [#if multiple]
-            [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" multiple="true" tooltip="${helpText}" /]
+            [@s.select 
+              name="${name}" 
+              list="${listName}" 
+              listKey="${keyFieldName}" 
+              listValue="${displayFieldName}" 
+              value="${currentValue}" 
+              disabled="${disabled?string}" 
+              cssClass="${className} form-control input-sm" 
+              multiple="true" 
+              tooltip="${helpText}" 
+            /]
           [#else]
             [#if header]
-              [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" headerKey="-1" headerValue=placeholderText /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                listKey="${keyFieldName}" 
+                listValue="${displayFieldName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+                headerKey="-1" 
+                headerValue=cleanPlaceholder 
+              /]
             [#else]
-              [@s.select name="${name}" list="${listName}" listKey="${keyFieldName}" listValue="${displayFieldName}" value="${customValue}" disabled="${disabled?string}" cssClass="${className} form-control input-sm" tooltip="${helpText}" /]
+              [@s.select 
+                name="${name}" 
+                list="${listName}" 
+                listKey="${keyFieldName}" 
+                listValue="${displayFieldName}" 
+                value="${currentValue}" 
+                disabled="${disabled?string}" 
+                cssClass="${className} form-control input-sm" 
+                tooltip="${helpText}" 
+              /]
             [/#if]
           [/#if]
-        [/#if] 
+        [/#if]
       [#else]
         <input type="hidden" name="${name}" value="${customValue}" class="${className}"/>
         [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign]  
@@ -209,7 +291,7 @@
             
             [#assign key][@s.property value="${name}"/][/#assign]
             [#assign customValue][#if !stringKey][@s.property value="${listName}[${key}]"/][#else][@s.property value="${listName}['${key}']"/][/#if][/#assign]
-            [#if (key == "-1") || (customValue == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
+            [#if (key?markup_string == "-1") || (customValue?markup_string == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
             [#if customValue?has_content]
               ${customValue}
             [#else]
@@ -217,7 +299,7 @@
                 ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
               [#else]
                 
-               [#if key!="-1"]
+               [#if key?markup_string!="-1"]
                   ${key}  
                [/#if]
 
@@ -443,27 +525,40 @@
 [/#macro]
 
 [#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+  [#-- Determinar valor actual --]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#-- Corrige markup_output si se genera por accidente --]
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="onoffswitch ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
+
     [#if editable]
       <div class="button-wrap">
-        [#-- Yes Button --]
         <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
-        [#-- No Button --]
         <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
-        [#-- Hidden Input --]
-        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio"  value="${(customValue)!-1}" />
+        <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio" value="${(customValue)!-1}" />
       </div>
-      [#if disabled] <input type="hidden" name="${name}" value="true" />[/#if] 
+      [#if disabled]
+        <input type="hidden" name="${name}" value="true" />
+      [/#if]
     [#else]
-      <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+      <p style="text-align:center; display:inline-block">
+        [#if customValue == "true"]
+          Yes
+        [#elseif customValue == "false"]
+          No
+        [#else]
+          Not selected
+        [/#if]
+      </p>
     [/#if]
   </div>
 [/#macro]
@@ -472,72 +567,106 @@
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="feedback-flex-items"></div>
   <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
     <div class="button-wrap radio-inline">  
       [#if editable]
-        [#-- Yes Button --]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
-        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
-        [#-- No Button --]
-        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue == "false")!false]checked[/#if] />
-        <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]"> ${noLabel} </label>
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+               [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+
+        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+               [#if (customValue == "false")!false]checked[/#if] />
+        <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
       [#else]
-        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+        <p style="text-align:center; display:inline-block">
+          [#if customValue == "true"]
+            Yes
+          [#elseif customValue == "false"]
+            No
+          [#else]
+            Not selected
+          [/#if]
+        </p>
       [/#if]
     </div>
   </div>
+
   <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
-    </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    <div class="numberOfCommentsBubble"><p></p></div>
+    <img src="${baseUrlCdn}/global/images/comment.png"
+         class="qaComment"
+         name="${name}"
+         fieldID=""
+         description="">
   </div>
 [/#macro]
 
 [#macro yesNoInputDeliverableParticipants name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
-  [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
+  [#local capacityEventType = ((deliverable.deliverableInfo?has_content) 
+      && (deliverable.deliverableInfo.deliverableType?has_content) 
+      && (deliverable.deliverableInfo.deliverableType.id?has_content) 
+      && deliverable.deliverableInfo.deliverableType.id == 145)!false]
+
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
   [#else]
-    [#assign customValue=value /]
+    [#assign customValue = value /]
   [/#if]
+
+  [#assign customValue = (customValue?is_markup_output)?then(customValue?markup_string, customValue) /]
+
   <div class="feedback-flex-items"></div>
   <div class="onoffswitch fieldReference ${changedField(name)} ${cssClass}">
     [#if label?has_content]
-      <label for="${name}">[@s.text name=label/]</label>
+      <label for="${name}">[@s.text name=label /]</label>
     [/#if]
     <div class="button-wrap radio-inline">  
       [#if editable]
-        [#-- Yes Button --]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if (customValue == "true")!false]checked[/#if] />
-        <label for="${name}-yes" class="${neutral?string('neutral', '')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]"> ${yesLabel} </label>
-        [#-- No Button --]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+               [#if (customValue == "true")!false]checked[/#if] />
+        <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+
         [#if capacityEventType]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
-          <label class="button-label no-button-label-disabled "> ${noLabel} </label>
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+                 [#if (customValue != "true")!false]checked[/#if] />
+          <label class="button-label no-button-label-disabled">${noLabel}</label>
         [#else]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if (customValue != "true")!false]checked[/#if] />
-          <label for="${name}-no" class="${neutral?string('neutral', '')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]"> ${noLabel} </label>      
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+                 [#if (customValue != "true")!false]checked[/#if] />
+          <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]">${noLabel}</label>
         [/#if]
       [#else]
-        <p style="text-align:center; display: inline-block"> [#if customValue=="true"]Yes[#elseif customValue == "false"]No[#else]Not selected[/#if]</p>
+        <p style="text-align:center; display:inline-block">
+          [#if customValue == "true"]
+            Yes
+          [#elseif customValue == "false"]
+            No
+          [#else]
+            Not selected
+          [/#if]
+        </p>
       [/#if]
     </div>
   </div>
+
   <div class="commentNumberContainer">
-    <div class="numberOfCommentsBubble">
-      <p></p>
-    </div>
-    <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${name}" fieldID="" description="">
+    <div class="numberOfCommentsBubble"><p></p></div>
+    <img src="${baseUrlCdn}/global/images/comment.png"
+         class="qaComment"
+         name="${name}"
+         fieldID=""
+         description="">
   </div>
 [/#macro]
-
 
 [#macro radioFlat id name i18nkey="" label="" disabled=false editable=true value="" checked=true cssClass="" cssClassContainer="" cssClassLabel="" canComment=true inline=true columns=0]
   [#if editable]
@@ -546,11 +675,13 @@
     <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
     [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
     <label for="${id}" class="radio-label ${cssClassLabel}">
-      [#if labelValue?contains(":")]
-        [#local labelArray = labelValue?split(":") /]
+      [#-- Si labelValue es markup_output, convertirlo a texto plano --]
+      [#local labelString = (labelValue?is_markup_output)?then(labelValue?markup_string, labelValue)]
+      [#if labelString?contains(":")]
+        [#local labelArray = labelString?split(":") /]
         <b>${labelArray[0]}</b>:${labelArray[1]}
       [#else]
-        ${labelValue}
+        ${labelString}
       [/#if]
     </label>
   </div>
@@ -615,16 +746,20 @@
     [#if editable]
     <input id="${id}" class="checkbox-input ${cssClass}" type="checkbox" name="${name}" value="${value}" [#if checked]checked=true[/#if] [#if disabled]readonly onclick="this.checked=!this.checked;"[/#if] />
     <label for="${id}" class="checkbox-label ${cssClassLabel}"> 
-      [#if label?contains(":")]
-        [#local labelArray = label?split(":") /]
+      [#-- Convertir markup_output a texto antes de usar ?contains --]
+      [#local labelString = (label?is_markup_output)?then(label?markup_string, label)]
+
+      [#if labelString?contains(":")]
+        [#local labelArray = labelString?split(":") /]
         <b>[@s.text name=labelArray[0] /]</b>:[@s.text name=labelArray[1] /]
       [#else]
         [#if isLabelDB]
-          ${label}
+          ${labelString}
         [#else]
-          [@s.text name=label /]
+          [@s.text name=labelString /]
         [/#if]
       [/#if] 
+
       [#--  Help Text --]
       [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable/]
     </label>

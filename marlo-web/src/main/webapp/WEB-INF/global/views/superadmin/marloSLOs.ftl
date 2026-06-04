@@ -61,8 +61,8 @@
 [#-- SLO Indicator Template --]
 [@srfSloIndicator element={} name="slosList[-1].srfSloIndicators[-1]" index=-1 isTemplate=true /]
 
-[#-- SLO targetsIndicator Template --]
-[@targetIndicator element={} name="slosList[-1].srfSloIndicators[-1].targetsIndicator[-1]" index=-1 isTemplate=true /]
+[#-- SLO Target Indicator Template --]
+[@targetIndicator element={} name="slosList[-1].srfSloIndicators[-1].srfSloIndicatorTargets[-1]" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
@@ -122,45 +122,10 @@
     [#-- Sub-IDO Description --]
     [@customForm.textArea name="${name}.title" i18nkey="Indicator Statement" value="${(element.title)!}"  className="title" required=true /]
     
-    
-    [#assign targetsindicators = [
-      {"id": "1",  "unit": "Mio. Farm households",  "value":"100", "year":"2022"},
-      {"id": "1",  "unit": "Mio. Farm households",  "value":"350", "year":"2030"},
-      
-      {"id": "2",  "unit": "Mio. People",  "value":"30", "year":"2022"},
-      {"id": "2",  "unit": "Mio. People",  "value":"100", "year":"2030"},
-      
-      {"id": "3",  "unit": "Rate of yield %/yr",  "value":"1.2-1.5", "year":"2022"},
-      {"id": "3",  "unit": "Rate of yield %/yr",  "value":"2.0-2.5", "year":"2030"},
-      
-      {"id": "4",  "unit": "Mio. People",  "value":"30", "year":"2022"},
-      {"id": "4",  "unit": "Mio. People",  "value":"150", "year":"2030"},
-      
-      {"id": "5",  "unit": "Mio. People",  "value":"150", "year":"2022"},
-      {"id": "5",  "unit": "Mio. People",  "value":"500", "year":"2030"},
-      
-      {"id": "6",  "unit": "%",  "value":"10", "year":"2022"},
-      {"id": "6",  "unit": "%",  "value":"33", "year":"2030"},
-      
-      {"id": "7",  "unit": "%",  "value":"5", "year":"2022"},
-      {"id": "7",  "unit": "%",  "value":"20", "year":"2030"},
-      
-      {"id": "8",  "unit": "Gt CO2-e yr -1 (%)",  "value":"0.2 (5)", "year":"2022"},
-      {"id": "8",  "unit": "Gt CO2-e yr -1 (%)",  "value":"0.8 (15)", "year":"2030"},
-      
-      {"id": "9",  "unit": "Mio. Hectares (ha)",  "value":"55", "year":"2022"},
-      {"id": "9",  "unit": "Mio. Hectares (ha)",  "value":"190", "year":"2030"},
-      
-      {"id": "10",  "unit": "Mio. Hectares (ha)",  "value":"2.5", "year":"2022"},
-      {"id": "10",  "unit": "Mio. Hectares (ha)",  "value":"7.5", "year":"2030"}
-    ]/]
-    
     <div class="targetsList">
-    [#if element.id??]
-      [#list targetsindicators as target]
-        [#if (target.id?number== element.id?number)]
-          [@targetIndicator element=target name="" index=target_index /]
-        [/#if]
+    [#if element.srfSloIndicatorTargets?has_content]
+      [#list element.srfSloIndicatorTargets as target]
+        [@targetIndicator element=target name="${name}.srfSloIndicatorTargets[${target_index}]" index=target_index /]
       [/#list]
     [/#if]    
     </div>
@@ -176,12 +141,13 @@
 [#macro targetIndicator element name index isTemplate=false]
   <div id="targetIndicator-${isTemplate?string('template',index)}" class="targetsIndicator" style="position:relative;display:${isTemplate?string('none','block')}">
       <div class="targetsContent">
+        <input type="hidden" name="${name}.id" value="${(element.id)!}"/>
         <h6>Target year: </h6>
-        <input type="text" class="targetYear form-control  input-sm" value="${(element.year)!}"/>
+        <input type="text" class="targetYear form-control input-sm" name="${name}.year" value="${(element.year)!}"/>
         <h6>Target unit: </h6>
-        <input type="text" class="targetUnit form-control  input-sm" value="${(element.unit)!}"/>
+        <input type="text" class="targetUnit form-control input-sm" name="${name}.targetsIndicator" value="${(element.targetsIndicator)!}"/>
         <h6>Target value: </h6>
-        <input type="text" class="targetValue form-control  input-sm" value="${(element.value)!}"/>
+        <input type="text" class="targetValue form-control input-sm" name="${name}.value" value="${(element.value)!}"/>
         <span class="targetRemove remove-element glyphicon glyphicon-remove red"></span>
       </div>      
     <div class="clearfix"></div>

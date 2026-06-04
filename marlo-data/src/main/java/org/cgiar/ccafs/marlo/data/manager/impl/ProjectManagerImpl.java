@@ -26,6 +26,10 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+//import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +42,7 @@ import javax.inject.Named;
 /**
  * @author Christian Garcia
  */
-@Named
+@Service
 public class ProjectManagerImpl implements ProjectManager {
 
 
@@ -49,7 +53,7 @@ public class ProjectManagerImpl implements ProjectManager {
   // Managers
 
 
-  @Inject
+  @Autowired
   public ProjectManagerImpl(ProjectDAO projectDAO, UserRoleDAO userRoleDAO, RoleDAO roleDAO,
     GlobalUnitDAO globalUnitDAO) {
     this.projectDAO = projectDAO;
@@ -178,6 +182,7 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  //@Transactional
   public Project saveProject(Project project) {
 
     return projectDAO.save(project);
@@ -190,6 +195,7 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  @Transactional
   public Project saveProject(Project project, String sectionName, List<String> relationsName, Phase phase) {
 
     return projectDAO.save(project, sectionName, relationsName, phase);

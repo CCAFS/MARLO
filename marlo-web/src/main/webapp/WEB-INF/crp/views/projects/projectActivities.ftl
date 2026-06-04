@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20251009"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20260416"
   ] 
 /]
 [#-- ,  
@@ -85,8 +85,8 @@
           <h3 class="headTitle">[@s.text name="project.activities.title" /]</h3>
 
           [#if deliverablesMissingActivity?size > 0]
-            <div class="container helpText viewMore-block">
-              <div class="helpMessage infoText2 col-md-8">
+            <div class="container helpText viewMore-block" style="width: 100%;">
+              <div class="helpMessage infoText2 col-md-8" style="width: 100%;">
                 [#-- <div  class="removeHelp"><span class="glyphicon glyphicon-remove"></span></div> --]
                 <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-transparent-warning.png" />
                 
@@ -238,9 +238,14 @@
       </div>
 
       [#if reportingActive]
+      [#-- Progress label matches activity status; default On-going (2) for new/template (same as saveActivitiesNewData / select default) --]
+      [#assign apProgressKey = (element.activityStatus)!2 /]
+      [#if (element.activityStatus)?? && element.activityStatus == -1]
+        [#assign apProgressKey = 2 /]
+      [/#if]
       [#-- Progress in reporting cycle --]
       <div class="statusDescriptionBlock col-md-12">
-        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${(element.activityStatus)!'NotSelected'}" value="${(element.activityProgress)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
+        [@customForm.textArea  name="${customName}.activityProgress" i18nkey="project.activities.statusJustification.status${apProgressKey}" value="${(element.activityProgress)!}" required=true className="limitWords-150 progressDescription" editable=editable /]
         <div id="statusesLabels" style="display:none">
           <div id="status-2">[@s.text name="project.activities.statusJustification.status2" /]:<span class="red">*</span></div>[#-- Ongoing("2", "On-going") --]
           <div id="status-3">[@s.text name="project.activities.statusJustification.status3" /]:<span class="red">*</span></div>[#-- Complete("3", "Complete") --]
@@ -278,7 +283,7 @@
     <input class="id" type="hidden" name="${deliverableCustomName}.deliverable.id" value="${(element.deliverable.id)!-1}" />
     <input class="idTable" type="hidden" name="${deliverableCustomName}.id" value="${(element.id)!-1}" />
     <input class="title" type="hidden" name="${deliverableCustomName}.deliverable.devliverableInfo.title" value="${(element.deliverable.devliverableInfo.title)!'null'}" />
-    <span class="name">${(element.deliverable.composedName)!'null'}</span>
+    <span class="name">[#if element.deliverable??]${element.deliverable.composedName?no_esc}[#else]null[/#if]</span>
     <div class="clearfix"></div>
   </div>
 [/#macro]

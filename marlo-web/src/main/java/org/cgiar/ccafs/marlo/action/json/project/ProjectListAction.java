@@ -36,7 +36,7 @@ public class ProjectListAction extends BaseSummariesAction {
    * 
    */
   private static final long serialVersionUID = -4335064142194555431L;
-  private List<Map<String, String>> projects;
+  private List<Map<String, String>> projectList;
 
 
   private List<Project> allProjects;
@@ -60,7 +60,7 @@ public class ProjectListAction extends BaseSummariesAction {
 
   @Override
   public String execute() throws Exception {
-    projects = new ArrayList<Map<String, String>>();
+    projectList = new ArrayList<Map<String, String>>();
 
 
     if (this.getSelectedPhase() != null && this.getSelectedPhase().getProjectPhases().size() > 0) {
@@ -85,7 +85,7 @@ public class ProjectListAction extends BaseSummariesAction {
         } else {
           projectInfo.put("acronym", "");
         }
-        projects.add(projectInfo);
+        projectList.add(projectInfo);
       }
     }
     return SUCCESS;
@@ -93,8 +93,8 @@ public class ProjectListAction extends BaseSummariesAction {
   }
 
 
-  public List<Map<String, String>> getProjects() {
-    return projects;
+  public List<Map<String, String>> getProjectList() {
+    return projectList;
   }
 
 
@@ -104,8 +104,8 @@ public class ProjectListAction extends BaseSummariesAction {
   }
 
 
-  public void setProjects(List<Map<String, String>> projects) {
-    this.projects = projects;
+  public void setProjectList(List<Map<String, String>> projectList) {
+    this.projectList = projectList;
   }
 
 

@@ -56,10 +56,17 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
 @Named
+@Service("projectInfoManager")
 public class ProjectInfoManagerImpl implements ProjectInfoManager {
 
 
@@ -79,6 +86,8 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   private ActivityManager activityManager;
   private ProjectBudgetManager projectBudgetManager;
 
+  @Autowired 
+  private SessionFactory sessionFactory;
 
   @Inject
   public ProjectInfoManagerImpl(ProjectInfoDAO projectInfoDAO, PhaseDAO phaseMySQLDAO, ProjectPhaseDAO projectPhaseDAO,
@@ -316,9 +325,11 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   }
 
   @Override
+  @Transactional
   public ProjectInfo saveProjectInfo(ProjectInfo projectInfo) {
 
     ProjectInfo resultProjectInfo = projectInfoDAO.save(projectInfo);
+    this.sessionFactory.getCurrentSession().flush();
     if (projectInfo.getPhase().getDescription().equals(APConstants.PLANNING)) {
       if (projectInfo.getPhase().getNext() != null) {
         this.saveInfoPhase(projectInfo.getPhase().getNext(), projectInfo.getProject().getId(), projectInfo);

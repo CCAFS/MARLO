@@ -32,6 +32,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Objects;
 
 import javax.inject.Named;
 
@@ -66,7 +68,12 @@ public class OutcomeValidator extends BaseValidator
         action.addMissingField("program.outcomes.draft");
       }
     }
-
+    // ==========================================================
+    // FILTER NULL OUTCOMES BEFORE VALIDATION
+    // ==========================================================
+    outcomes = outcomes.stream()
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
     if (outcomes.size() == 0) {
       action.addMissingField("program.outcomes");
@@ -74,6 +81,7 @@ public class OutcomeValidator extends BaseValidator
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Outcomes"}));
 
     }
+
     for (int i = 0; i < outcomes.size(); i++) {
       CrpProgramOutcome outcome = outcomes.get(i);
       this.validateOuctome(action, outcome, i);
@@ -95,7 +103,7 @@ public class OutcomeValidator extends BaseValidator
 
     if (!(this.isValidString(assuption.getDescription()) && this.wordCount(assuption.getDescription()) <= 100)) {
       action.addMessage(action.getText("outcome.action.subido.assumption.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "].description",
+      action.getInvalidFields().put("input-outcomesForm[" + i + "].subIdos[" + j + "].assumptions[" + k + "].description",
         InvalidFieldsMessages.EMPTYFIELD);
     }
   }
@@ -105,7 +113,7 @@ public class OutcomeValidator extends BaseValidator
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
     params.add(String.valueOf(j + 1));
-    String customName = "outcomes[" + i + "].milestones[" + j + "]";
+    String customName = "outcomesForm[" + i + "].milestones[" + j + "]";
 
     if (!(this.isValidString(milestone.getTitle()) && this.wordCount(milestone.getTitle()) <= 100)) {
       action.getInvalidFields().put("input-" + customName + ".title", InvalidFieldsMessages.EMPTYFIELD);
@@ -247,107 +255,237 @@ public class OutcomeValidator extends BaseValidator
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
+    if (outcome == null) {
+        return;
+    }
 
+    // DEFINIMOS UN PREFIJO PARA NO EQUIVOCARNOS Y HACER EL CÓDIGO MÁS LIMPIO
+    // Nota: Mantenemos el "input-" porque parece ser requerido por tu frontend (CSS/JS)
+    String prefix = "input-outcomesForm[" + i + "]"; 
+    String listPrefix = "list-outcomesForm[" + i + "]";
+
+    // 1. Validación Description
     if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
-      action.addMessage(action.getText("outcome.action.statement.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
-
-
+        action.addMessage(action.getText("outcome.action.statement.required", params));
+        // CAMBIO: Usamos outcomesForm
+        action.getInvalidFields().put(prefix + ".description", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-
+    // 2. Validación Value
     if (outcome.getSrfTargetUnit() != null && outcome.getSrfTargetUnit().getId() != null
-      && outcome.getSrfTargetUnit().getId().longValue() != -1) {
-      if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
-        action.addMessage(action.getText("outcome.action.value.required", params));
-        action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
-      }
+            && outcome.getSrfTargetUnit().getId().longValue() != -1) {
+        if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
+            action.addMessage(action.getText("outcome.action.value.required", params));
+            // CAMBIO: Usamos outcomesForm
+            action.getInvalidFields().put(prefix + ".value", InvalidFieldsMessages.EMPTYFIELD);
+        }
     }
 
+    // 3. Validación Portfolio
     if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
-      || outcome.getPortfolio().getId() == -1) {
-      action.addMessage(action.getText("outcome.action.portfolio.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].portfolio", InvalidFieldsMessages.EMPTYFIELD);
+            || outcome.getPortfolio().getId() == -1) {
+        action.addMessage(action.getText("outcome.action.portfolio.required", params));
+        // CAMBIO: Usamos outcomesForm
+        action.getInvalidFields().put(prefix + ".portfolio.id", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // 4. Validación StartYear
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
-      action.addMessage(action.getText("outcome.action.startYear.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].startYear", InvalidFieldsMessages.EMPTYFIELD);
+        action.addMessage(action.getText("outcome.action.startYear.required", params));
+        // CAMBIO: Usamos outcomesForm
+        action.getInvalidFields().put(prefix + ".startYear", InvalidFieldsMessages.EMPTYFIELD);
     }
 
+    // 5. Validación Year (Target Year)
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
-      action.addMessage(action.getText("outcome.action.year.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
+        action.addMessage(action.getText("outcome.action.year.required", params));
+        // CAMBIO: Usamos outcomesForm
+        action.getInvalidFields().put(prefix + ".year", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     /*
      * if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
      * outcome.setSrfTargetUnit(null);
      * action.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
-     * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+     * action.getInvalidFields().put(prefix + ".srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
      * }
      */
+
     int year = action.getCurrentCycleYear();
+    
+    // 6. Validación Milestones
     if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
-      for (int j = 0; j < outcome.getMilestones().size(); j++) {
-        outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
-
-        this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
-
-      }
+        for (int j = 0; j < outcome.getMilestones().size(); j++) {
+            outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
+            
+            // ¡OJO AQUÍ! Debes entrar a este método y asegurarte de que use outcomesForm también
+            this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+        }
     } else {
-      action.addMessage("outcome.action.milestones.requeried");
-
-      action.getInvalidFields().put("list-outcomes[" + i + "].milestones",
-        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
+        action.addMessage("outcome.action.milestones.requeried");
+        // CAMBIO: Usamos outcomesForm
+        action.getInvalidFields().put(listPrefix + ".milestones",
+                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Milestones" }));
     }
 
+    // 7. Validación SubIDOs
     if (!action.isAiccra()) {
-      if (outcome.getSubIdos() != null) {
-        if (outcome.getSubIdos().isEmpty()) {
-          action.addMessage(action.getText("outcome.action.subido.requeried", params));
-          action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
+        if (outcome.getSubIdos() != null) {
+            if (outcome.getSubIdos().isEmpty()) {
+                action.addMessage(action.getText("outcome.action.subido.requeried", params));
+                // CAMBIO: Usamos outcomesForm
+                action.getInvalidFields().put(listPrefix + ".subIdos",
+                        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Sub Idos" }));
+            }
+            double contributions = 0;
+            boolean hasPrimarySubIDO = false;
+            for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+                outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
+                
+                // ¡OJO AQUÍ! Debes entrar a este método también
+                this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
+                
+                if (outcome.getSubIdos().get(j).getContribution() != null) {
+                    contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
+                }
+                if (outcome.getSubIdos().get(j).getPrimary() != null && outcome.getSubIdos().get(j).getPrimary() == true) {
+                    hasPrimarySubIDO = true;
+                }
+            }
+            if (hasPrimarySubIDO == false) {
+                action.addMessage(action.getText("outcome.action.primary.required"));
+                // CAMBIO: Usamos outcomesForm
+                action.getInvalidFields().put(listPrefix + ".subIdos",
+                        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Primary sub IDO" }));
+            }
+
+            if (contributions != 100) {
+                action.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+
+                for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+                    // CAMBIO: Usamos outcomesForm
+                    action.getInvalidFields().put(prefix + ".subIdos[" + j + "].contribution",
+                            InvalidFieldsMessages.EMPTYFIELD);
+                }
+            }
+        } else {
+            action.addMessage(action.getText("outcome.action.subido.requeried", params));
+            // CAMBIO: Usamos outcomesForm
+            action.getInvalidFields().put(listPrefix + ".subIdos",
+                    action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Sub Idos" }));
         }
-        double contributions = 0;
-        boolean hasPrimarySubIDO = false;
-        for (int j = 0; j < outcome.getSubIdos().size(); j++) {
-          outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
-          this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
-          if (outcome.getSubIdos().get(j).getContribution() != null) {
-            contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
-          }
-          if (outcome.getSubIdos().get(j).getPrimary() != null && outcome.getSubIdos().get(j).getPrimary() == true) {
-            hasPrimarySubIDO = true;
-          }
-        }
-        if (hasPrimarySubIDO == false) {
-          action.addMessage(action.getText("outcome.action.primary.required"));
-          action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Primary sub IDO"}));
-        }
-
-        if (contributions != 100) {
-          action.addMessage(action.getText("outcome.action.subido.contribution.required", params));
-
-
-          for (int j = 0; j < outcome.getSubIdos().size(); j++) {
-            action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-
-
-        }
-      } else {
-        action.addMessage(action.getText("outcome.action.subido.requeried", params));
-
-        action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
-          action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
-      }
     }
-
-
   }
+
+  // metodo original
+  // public void validateOuctome(BaseAction action, CrpProgramOutcome outcome, int i) {
+  //   List<String> params = new ArrayList<String>();
+  //   params.add(String.valueOf(i + 1));
+
+  //   if (outcome == null) {
+  //       return;
+  //   }
+
+  //   if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
+  //     action.addMessage(action.getText("outcome.action.statement.required", params));
+  //     action.getInvalidFields().put("input-outcomes[" + i + "].description", InvalidFieldsMessages.EMPTYFIELD);
+
+
+  //   }
+
+
+  //   if (outcome.getSrfTargetUnit() != null && outcome.getSrfTargetUnit().getId() != null
+  //     && outcome.getSrfTargetUnit().getId().longValue() != -1) {
+  //     if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
+  //       action.addMessage(action.getText("outcome.action.value.required", params));
+  //       action.getInvalidFields().put("input-outcomes[" + i + "].value", InvalidFieldsMessages.EMPTYFIELD);
+  //     }
+  //   }
+
+  //   if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
+  //     || outcome.getPortfolio().getId() == -1) {
+  //     action.addMessage(action.getText("outcome.action.portfolio.required", params));
+  //     action.getInvalidFields().put("input-outcomes[" + i + "].portfolio", InvalidFieldsMessages.EMPTYFIELD);
+  //   }
+
+  //   if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
+  //     action.addMessage(action.getText("outcome.action.startYear.required", params));
+  //     action.getInvalidFields().put("input-outcomes[" + i + "].startYear", InvalidFieldsMessages.EMPTYFIELD);
+  //   }
+
+  //   if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
+  //     action.addMessage(action.getText("outcome.action.year.required", params));
+  //     action.getInvalidFields().put("input-outcomes[" + i + "].year", InvalidFieldsMessages.EMPTYFIELD);
+  //   }
+
+  //   /*
+  //    * if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
+  //    * outcome.setSrfTargetUnit(null);
+  //    * action.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
+  //    * action.getInvalidFields().put("input-outcomes[" + i + "].srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+  //    * }
+  //    */
+  //   int year = action.getCurrentCycleYear();
+  //   if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
+  //     for (int j = 0; j < outcome.getMilestones().size(); j++) {
+  //       outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
+
+  //       this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
+
+  //     }
+  //   } else {
+  //     action.addMessage("outcome.action.milestones.requeried");
+
+  //     action.getInvalidFields().put("list-outcomes[" + i + "].milestones",
+  //       action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Milestones"}));
+  //   }
+
+  //   if (!action.isAiccra()) {
+  //     if (outcome.getSubIdos() != null) {
+  //       if (outcome.getSubIdos().isEmpty()) {
+  //         action.addMessage(action.getText("outcome.action.subido.requeried", params));
+  //         action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+  //           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
+  //       }
+  //       double contributions = 0;
+  //       boolean hasPrimarySubIDO = false;
+  //       for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+  //         outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
+  //         this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
+  //         if (outcome.getSubIdos().get(j).getContribution() != null) {
+  //           contributions = contributions + outcome.getSubIdos().get(j).getContribution().doubleValue();
+  //         }
+  //         if (outcome.getSubIdos().get(j).getPrimary() != null && outcome.getSubIdos().get(j).getPrimary() == true) {
+  //           hasPrimarySubIDO = true;
+  //         }
+  //       }
+  //       if (hasPrimarySubIDO == false) {
+  //         action.addMessage(action.getText("outcome.action.primary.required"));
+  //         action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+  //           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Primary sub IDO"}));
+  //       }
+
+  //       if (contributions != 100) {
+  //         action.addMessage(action.getText("outcome.action.subido.contribution.required", params));
+
+
+  //         for (int j = 0; j < outcome.getSubIdos().size(); j++) {
+  //           action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
+  //             InvalidFieldsMessages.EMPTYFIELD);
+  //         }
+
+
+  //       }
+  //     } else {
+  //       action.addMessage(action.getText("outcome.action.subido.requeried", params));
+
+  //       action.getInvalidFields().put("list-outcomes[" + i + "].subIdos",
+  //         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Sub Idos"}));
+  //     }
+  //   }
+
+
+  // }
 
   public void validateSubIDO(BaseAction action, CrpOutcomeSubIdo subIdo, int i, int j) {
 
@@ -357,13 +495,13 @@ public class OutcomeValidator extends BaseValidator
     if (subIdo.getSrfSubIdo() == null || subIdo.getSrfSubIdo().getId() == null || subIdo.getSrfSubIdo().getId() == -1) {
       subIdo.setSrfSubIdo(null);
       action.addMessage(action.getText("outcome.action.subido.subido.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].srfSubIdo.id",
+      action.getInvalidFields().put("input-outcomesForm[" + i + "].subIdos[" + j + "].srfSubIdo.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     if (subIdo.getContribution() == null || !this.isValidNumber(subIdo.getContribution().toString())
       || subIdo.getContribution().doubleValue() > 100) {
       action.addMessage(action.getText("outcome.action.subido.contribution.required", params));
-      action.getInvalidFields().put("input-outcomes[" + i + "].subIdos[" + j + "].contribution",
+      action.getInvalidFields().put("input-outcomesForm[" + i + "].subIdos[" + j + "].contribution",
         InvalidFieldsMessages.EMPTYFIELD);
     }
     /*

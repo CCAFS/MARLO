@@ -86,9 +86,17 @@
       [#-- Is Cross-cutting IDO?  --]
       [@customForm.yesNoInput name="${name}.isCrossCutting" label="srfIdo.isCrossCutting"  value="${((element.isCrossCutting)!false)?string}" cssClass="text-left" /]
       
-      [#-- SLOs List --]
+      [#-- SLOs List: Extract only IDs to send as form values --]
+      [#assign selectedSloIds = [] /]
+      [#if element.srfSloIdos?has_content]
+        [#list element.srfSloIdos as sloIdo]
+          [#if sloIdo.srfSlo?? && sloIdo.srfSlo.id??]
+            [#assign selectedSloIds = selectedSloIds + [sloIdo.srfSlo.id?string] /]
+          [/#if]
+        [/#list]
+      [/#if]
       <div class="aditional-slos grayBlock" style="display:${((element.isCrossCutting)!false)?string('none','block')}">
-       [@s.checkboxlist name="${name}.srfSloIdos" list="slosList" listKey="id" listValue="title" cssClass="checkboxInput"  value="${(element.srfSloIdos)!}" /]
+       [@s.checkboxlist name="${name}.srfSloIdos" list="slosList" listKey="id" listValue="title" cssClass="checkboxInput"  value=selectedSloIds /]
       </div>
       
       [#-- Cross-cutting Issues --]

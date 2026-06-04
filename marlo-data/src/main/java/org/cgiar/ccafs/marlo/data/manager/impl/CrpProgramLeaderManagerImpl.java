@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CrpProgramLeaderDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramLeaderManager;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class CrpProgramLeaderManagerImpl implements CrpProgramLeaderManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpProgramLeader(long crpProgramLeaderId) {
 
     crpProgramLeaderDAO.deleteCrpProgramLeader(crpProgramLeaderId);
@@ -68,6 +70,7 @@ public class CrpProgramLeaderManagerImpl implements CrpProgramLeaderManager {
   }
 
   @Override
+  @Transactional
   public CrpProgramLeader saveCrpProgramLeader(CrpProgramLeader crpProgramLeader) {
 
     return crpProgramLeaderDAO.save(crpProgramLeader);

@@ -55,6 +55,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CrpPpaPartnersAction:
@@ -66,9 +69,8 @@ import org.apache.commons.lang3.RandomStringUtils;
  */
 public class CrpPpaPartnersAction extends BaseAction {
 
-
   private static final long serialVersionUID = -8561096521514225205L;
-
+  private static final Logger LOG = LoggerFactory.getLogger(CrpPpaPartnersAction.class);
 
   /**
    * Helper method to read a stream into memory.
@@ -545,7 +547,8 @@ public class CrpPpaPartnersAction extends BaseAction {
       cpRole = roleManager.getRoleById(Long.parseLong((String) this.getSession().get(APConstants.CRP_CP_ROLE)));
     }
 
-    if (loggedCrp.getCrpPpaPartners() != null) {
+    // IMPORTANTE: Solo cargar partners desde BD en GET, no en POST
+    if (loggedCrp.getCrpPpaPartners() != null && !this.isHttpPost()) {
       loggedCrp.setCrpInstitutionsPartners(new ArrayList<CrpPpaPartner>(loggedCrp.getCrpPpaPartners().stream()
         .filter(ppa -> ppa.isActive() && ppa.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
       loggedCrp.getCrpInstitutionsPartners()
@@ -559,33 +562,58 @@ public class CrpPpaPartnersAction extends BaseAction {
         }
         loggedCrp.setCrpPpaPartners(crpPpaPartners);
       }
+    } else if (this.isHttpPost()) {
+      // En POST, inicializar lista vacía para que Struts pueda usar auto-growth
+      // Struts necesita que la lista exista (no sea null) para agregar elementos indexados
+      loggedCrp.setCrpInstitutionsPartners(new ArrayList<>());
     }
     institutions = institutionManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
     institutions.sort((i1, i2) -> i1.getName().compareTo(i2.getName()));
 
-
     this.setBasePermission(this.getText(Permission.CRP_ADMIN_BASE_PERMISSION, params));
-    if (this.isHttpPost()) {
-      if (loggedCrp.getCrpInstitutionsPartners() != null) {
-        loggedCrp.getCrpInstitutionsPartners().clear();
-      }
-    }
   }
-
 
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      // DIAGNÓSTICO: Imprimir parámetros HTTP recibidos
+      LOG.info("=== DIAGNÓSTICO: PARÁMETROS HTTP RECIBIDOS ===");
+      java.util.Map<String, String[]> params = ServletActionContext.getRequest().getParameterMap();
+      for (String key : params.keySet()) {
+        if (key.contains("crpInstitutionsPartners")) {
+          LOG.info("  Parámetro: " + key + " = " + java.util.Arrays.toString(params.get(key)));
+        }
+      }
+      LOG.info("=== FIN DIAGNÓSTICO ===");
+      
+      // BINDING MANUAL: Extraer contactPoints de parámetros HTTP
+      // Struts 6.4.0 no hace auto-growth de listas anidadas
+      this.manualBindContactPoints();
+      
+      // DIAGNÓSTICO: Ver qué partners están llegando
+      LOG.info("=== PARTNERS RECIBIDOS ===");
+      if (loggedCrp.getCrpInstitutionsPartners() != null) {
+        LOG.info("Total partners: " + loggedCrp.getCrpInstitutionsPartners().size());
+        for (int i = 0; i < loggedCrp.getCrpInstitutionsPartners().size(); i++) {
+          CrpPpaPartner p = loggedCrp.getCrpInstitutionsPartners().get(i);
+          LOG.info("  Partner[" + i + "]: id=" + p.getId() + 
+                   ", institution.id=" + (p.getInstitution() != null ? p.getInstitution().getId() : "null") +
+                   ", contactPoints=" + (p.getContactPoints() != null ? p.getContactPoints().size() : "null"));
+        }
+      } else {
+        LOG.info("crpInstitutionsPartners es NULL");
+      }
+      LOG.info("=== FIN PARTNERS ===");
+      
       this.setUsersToActive(new ArrayList<>());
       List<CrpPpaPartner> ppaPartnerReview =
         new ArrayList<>(crpPpaPartnerManager.findAll().stream().filter(ppa -> ppa.isActive()
-          && ppa.getCrp().getId() == loggedCrp.getId() && ppa.getPhase().equals(this.getActualPhase()))
+          && ppa.getCrp() != null && ppa.getCrp().getId() == loggedCrp.getId() && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList()));
       if (ppaPartnerReview != null) {
 
-
         for (CrpPpaPartner partner : ppaPartnerReview.stream()
-          .filter(ppa -> ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
+          .filter(ppa -> ppa.getCrp() != null && ppa.getCrp().equals(loggedCrp) && ppa.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList())) {
           if (!loggedCrp.getCrpInstitutionsPartners().contains(partner)) {
             crpPpaPartnerManager.deleteCrpPpaPartner(partner.getId());
@@ -617,6 +645,29 @@ public class CrpPpaPartnersAction extends BaseAction {
             liaisonInstitution.setAcronym(partner.getInstitution().getAcronym());
             liaisonInstitution = liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
           }
+          
+          // Guardar contactPoints para partner nuevo
+          if (partner.getContactPoints() != null && partner.getContactPoints().size() > 0 && liaisonInstitution != null) {
+            for (LiaisonUser liaisonUser : partner.getContactPoints()) {
+              if (liaisonUser != null && liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null) {
+                LiaisonUser liaisonUserSave =
+                  new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
+                liaisonUserSave.setCrp(loggedCrp);
+                liaisonUserSave.setActive(true);
+                liaisonUserSave.setLiaisonInstitution(liaisonInstitution);
+                liaisonUserManager.saveLiaisonUser(liaisonUserSave);
+                
+                this.notifyNewUserCreated(liaisonUser.getUser());
+                this.addCrpUserIfNotExist(liaisonUser.getUser());
+                
+                if (cpRole != null) {
+                  UserRole userRole = new UserRole(cpRole, liaisonUserSave.getUser());
+                  userRoleManager.saveUserRole(userRole);
+                  this.notifyRoleContactPointAssigned(userRole, partner);
+                }
+              }
+            }
+          }
 
         } else {
           LiaisonInstitution liaisonInstitution = liaisonInstitutionManager
@@ -639,29 +690,73 @@ public class CrpPpaPartnersAction extends BaseAction {
             if (partner.getContactPoints() == null) {
               partner.setContactPoints(new ArrayList<>());
             }
-            for (LiaisonUser liaisonUser : usersDB) {
+            
+            LOG.info("=== DEPURACIÓN ELIMINACIÓN - Partner[{}] (id={}) ===", 
+                     loggedCrp.getCrpInstitutionsPartners().indexOf(partner), partner.getId());
+            LOG.info("  LiaisonInstitution: {} (id={})", 
+                     liaisonInstitution.getName(), liaisonInstitution.getId());
+            LOG.info("  UsersDB activos: {}", usersDB.size());
+            LOG.info("  ContactPoints en formulario: {}", partner.getContactPoints().size());
+            
+            // Agrupar usersDB por usuario para manejar duplicados
+            Map<Long, List<LiaisonUser>> usersDBByUserId = usersDB.stream()
+              .collect(Collectors.groupingBy(lu -> lu.getUser().getId()));
+            
+            for (Map.Entry<Long, List<LiaisonUser>> entry : usersDBByUserId.entrySet()) {
+              Long userId = entry.getKey();
+              List<LiaisonUser> userLiaisonUsers = entry.getValue();
+              
+              LOG.info("    Verificando Usuario: id={}, name={}, LiaisonUsers duplicados: {}", 
+                       userId, userLiaisonUsers.get(0).getUser().getFirstName(), userLiaisonUsers.size());
+              
+              // Verificar si este usuario está en el formulario
               List<LiaisonUser> liaisonUsersResult = partner.getContactPoints().stream()
-                .filter(c -> c.getUser().getId().longValue() == liaisonUser.getUser().getId().longValue())
+                .filter(c -> c.getUser().getId().longValue() == userId.longValue())
                 .collect(Collectors.toList());
+              LOG.info("    Encontrado en formulario: {}", liaisonUsersResult.size());
+              
               if (liaisonUsersResult.isEmpty()) {
-                liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
-                // Disable LiaisonUsers
-                if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
-                  List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId())
-                    .stream().filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
-                  for (UserRole userRole : userRoles) {
-                    userRoleManager.deleteUserRole(userRole.getId());
-                    this.notifyRoleContactPointUnassigned(userRole, partner);
+                // Usuario NO está en formulario: eliminar TODOS sus LiaisonUser
+                LOG.info("    >>> ELIMINANDO TODOS los LiaisonUser del usuario {} (cantidad: {})", userId, userLiaisonUsers.size());
+                for (LiaisonUser liaisonUser : userLiaisonUsers) {
+                  liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+                  // Disable LiaisonUsers
+                  if (liaisonUser.getUser() != null && liaisonUser.getUser().getId() != null && cpRole != null) {
+                    List<UserRole> userRoles = userRoleManager.getUserRolesByUserId(liaisonUser.getUser().getId())
+                      .stream().filter(ur -> ur.getRole().equals(cpRole)).collect(Collectors.toList());
+                    for (UserRole userRole : userRoles) {
+                      userRoleManager.deleteUserRole(userRole.getId());
+                      this.notifyRoleContactPointUnassigned(userRole, partner);
+                    }
                   }
+                }
+              } else {
+                // Usuario SÍ está en formulario: mantener solo UNO, eliminar los duplicados
+                if (userLiaisonUsers.size() > 1) {
+                  LOG.info("    >>> ELIMINANDO {} LiaisonUser duplicados del usuario {}, manteniendo 1", 
+                           userLiaisonUsers.size() - 1, userId);
+                  // Eliminar todos excepto el primero
+                  for (int i = 1; i < userLiaisonUsers.size(); i++) {
+                    LiaisonUser liaisonUser = userLiaisonUsers.get(i);
+                    liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+                  }
+                } else {
+                  LOG.info("    >>> Manteniendo LiaisonUser del usuario {} (sin duplicados)", userId);
                 }
               }
             }
+            LOG.info("=== FIN DEPURACIÓN ELIMINACIÓN ===");
+            
             if (partner.getContactPoints() != null && partner.getContactPoints().size() > 0) {
 
-
               for (LiaisonUser liaisonUser : partner.getContactPoints()) {
-                // new User?
-                if (liaisonUser.getId() == null || !partner.getContactPoints().contains(liaisonUser)) {
+                // Verificar si ya existe un LiaisonUser activo para este usuario en esta institución
+                boolean alreadyExists = usersDB.stream()
+                  .anyMatch(lu -> lu.getUser() != null && liaisonUser.getUser() != null 
+                    && lu.getUser().getId().longValue() == liaisonUser.getUser().getId().longValue());
+                
+                // Solo crear si no existe ya
+                if (!alreadyExists) {
                   // Add liaisonUser
                   LiaisonUser liaisonUserSave =
                     new LiaisonUser(liaisonInstitution, userManager.getUser(liaisonUser.getUser().getId()));
@@ -727,5 +822,96 @@ public class CrpPpaPartnersAction extends BaseAction {
     this.loggedCrp = loggedCrp;
   }
 
+  /**
+   * Binding manual para extraer contactPoints de los parámetros HTTP.
+   * Struts 6.4.0 no hace auto-growth de listas anidadas, por lo que debemos
+   * parsear manualmente los parámetros del formulario.
+   */
+  private void manualBindContactPoints() {
+    java.util.Map<String, String[]> params = ServletActionContext.getRequest().getParameterMap();
+    
+    // Mapa para almacenar: partnerIndex -> Map<contactPointIndex, userId>
+    java.util.Map<Integer, java.util.Map<Integer, Long>> contactPointsMap = new java.util.HashMap<>();
+    
+    // Buscar parámetros con el patrón: loggedCrp.crpInstitutionsPartners[X].contactPoints[Y].user.id
+    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(
+      "loggedCrp\\.crpInstitutionsPartners\\[(\\d+)\\]\\.contactPoints\\[(\\d+)\\]\\.user\\.id"
+    );
+    
+    for (String key : params.keySet()) {
+      java.util.regex.Matcher matcher = pattern.matcher(key);
+      if (matcher.matches()) {
+        int partnerIndex = Integer.parseInt(matcher.group(1));
+        int contactIndex = Integer.parseInt(matcher.group(2));
+        String[] values = params.get(key);
+        
+        if (values != null && values.length > 0 && values[0] != null && !values[0].trim().isEmpty()) {
+          try {
+            Long userId = Long.parseLong(values[0].trim());
+            
+            contactPointsMap.computeIfAbsent(partnerIndex, k -> new java.util.HashMap<>())
+              .put(contactIndex, userId);
+            
+            LOG.info("Manual binding: Partner[{}].contactPoints[{}].user.id = {}", 
+                     partnerIndex, contactIndex, userId);
+          } catch (NumberFormatException e) {
+            LOG.warn("No se pudo parsear user.id: {} para partner[{}].contactPoints[{}]", 
+                     values[0], partnerIndex, contactIndex);
+          }
+        }
+      }
+    }
+    
+    // Asignar los contactPoints a los partners correspondientes
+    if (loggedCrp.getCrpInstitutionsPartners() != null) {
+      // Primero inicializar todos los partners con lista vacía
+      for (int i = 0; i < loggedCrp.getCrpInstitutionsPartners().size(); i++) {
+        CrpPpaPartner partner = loggedCrp.getCrpInstitutionsPartners().get(i);
+        if (partner != null) {
+          partner.setContactPoints(new ArrayList<>());
+        }
+      }
+      
+      // Luego asignar los contactPoints de los parámetros HTTP
+      for (java.util.Map.Entry<Integer, java.util.Map<Integer, Long>> entry : contactPointsMap.entrySet()) {
+        int partnerIndex = entry.getKey();
+        java.util.Map<Integer, Long> contacts = entry.getValue();
+        
+        if (partnerIndex < loggedCrp.getCrpInstitutionsPartners().size()) {
+          CrpPpaPartner partner = loggedCrp.getCrpInstitutionsPartners().get(partnerIndex);
+          
+          if (partner != null) {
+            List<LiaisonUser> contactPoints = new ArrayList<>();
+            
+            // Ordenar por índice y crear los LiaisonUser
+            List<Integer> sortedIndices = new ArrayList<>(contacts.keySet());
+            java.util.Collections.sort(sortedIndices);
+            
+            for (Integer contactIndex : sortedIndices) {
+              Long userId = contacts.get(contactIndex);
+              if (userId != null) {
+                LiaisonUser liaisonUser = new LiaisonUser();
+                User user = new User();
+                user.setId(userId);
+                liaisonUser.setUser(user);
+                contactPoints.add(liaisonUser);
+                
+                LOG.info("Asignado contactPoint a Partner[{}] (id={}): user.id={}", 
+                         partnerIndex, partner.getId(), userId);
+              }
+            }
+            
+            partner.setContactPoints(contactPoints);
+          }
+        } else {
+          LOG.warn("Partner index {} fuera de rango (size={})", 
+                   partnerIndex, loggedCrp.getCrpInstitutionsPartners().size());
+        }
+      }
+    }
+    
+    LOG.info("=== FIN BINDING MANUAL - Total partners con contactPoints asignados: {} ===", 
+             contactPointsMap.size());
+  }
 
 }

@@ -1264,7 +1264,10 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
 
 
     try {
-      ServletActionContext.getContext().setLocale(locale);
+      //ServletActionContext.getContext().setLocale(locale);
+      if (this.request != null) {
+        this.request.getSession().setAttribute("locale", locale);
+      }
     } catch (Exception e) {
 
     }

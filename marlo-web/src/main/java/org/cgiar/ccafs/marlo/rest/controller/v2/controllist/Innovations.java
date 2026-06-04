@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("InnovationsRestCtrl")
 @Api(tags = "Table 4 - CRP Innovations")
 public class Innovations {
 

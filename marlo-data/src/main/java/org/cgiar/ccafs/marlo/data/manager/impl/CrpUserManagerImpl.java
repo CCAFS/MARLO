@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.CrpUserDAO;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class CrpUserManagerImpl implements CrpUserManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpUser(long crpUserId) {
 
     crpUserDAO.deleteCrpUser(crpUserId);

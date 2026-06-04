@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
+
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -105,7 +105,7 @@ public class SrfLists {
    * @param id
    * @return a SrfSloDTO with the SRL-SLO data.
    */
-  @ApiIgnore
+  
   @ApiOperation(value = "${SrfList.srf-slo.code.value}", response = SrfSloDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srf-slos/{code}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -147,7 +147,7 @@ public class SrfLists {
    * @param id
    * @return a SrfCrossCuttingIssueDTO with the SRF Cross Cutting Issue data.
    */
-  @ApiIgnore
+  
   @ApiOperation(value = "${SrfList.srf-cross-cutting-issue.code.value}", response = SrfCrossCuttingIssueDTO.class)
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srf-cross-cutting-issues/{code}", method = RequestMethod.GET,
@@ -202,7 +202,7 @@ public class SrfLists {
    * 
    * @return a List of SrfSloDTO with all SRF-SLO Items.
    */
-  @ApiIgnore
+  
   @ApiOperation(value = "${SrfList.srf-slos.all.value}", response = SrfSloDTO.class, responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)
   @RequestMapping(value = "/srf-slos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -237,7 +237,7 @@ public class SrfLists {
    * @return a List of SrfCrossCuttingIssueDTO with all SRF Cross Cutting
    *         Issue Items.
    */
-  @ApiIgnore
+  
   @ApiOperation(value = "${SrfList.srf-cross-cutting-issues.all.value}", response = SrfCrossCuttingIssueDTO.class,
     responseContainer = "List")
   @RequiresPermissions(Permission.FULL_READ_REST_API_PERMISSION)

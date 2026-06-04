@@ -117,6 +117,8 @@ public interface ProjectExpectedStudyManager {
    */
   public List<StudyHomeDTO> getStudiesByProjectAndPhaseHome(Long phaseId, Long projectId);
 
+  public List<StudyHomeDTO> getStudiesByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds);
+
   /**
    * This method search the expected Studies that the user can be edit.
    * 

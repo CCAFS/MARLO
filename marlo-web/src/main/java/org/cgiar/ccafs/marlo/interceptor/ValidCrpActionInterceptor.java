@@ -47,7 +47,7 @@ public class ValidCrpActionInterceptor extends AbstractInterceptor {
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    String[] actionMap = ActionContext.getContext().getName().split("/");
+    String[] actionMap = ActionContext.getContext().getActionName().split("/");
     Map<String, Object> session = invocation.getInvocationContext().getSession();
     session.remove(APConstants.TEMP_CYCLE);
     if (actionMap.length > 1) {

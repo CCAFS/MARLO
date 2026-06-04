@@ -22,7 +22,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -57,64 +57,66 @@ public class CustomLocationsAdminAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-
-
-    locElementTypeList = new ArrayList<>();
-    if (locElementTypeManager.findAll() != null) {
-      List<LocElementType> locElementTypes = locElementTypeManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getCrp() == null).collect(Collectors.toList());
-      locElementTypeList.addAll(locElementTypes);
+    if (!this.isHttpPost()) {
+      locElementTypeList = new ArrayList<>();
+      if (locElementTypeManager.findAll() != null) {
+        List<LocElementType> locElementTypes = locElementTypeManager.findAll().stream()
+          .filter(c -> c.isActive() && c.getCrp() == null).toList();
+        locElementTypeList.addAll(locElementTypes);
+      }
+    } else {
+      if (locElementTypeList == null) {
+        locElementTypeList = new ArrayList<>();
+      }
     }
-    if (this.isHttpPost()) {
-      locElementTypeList.clear();
-    }
-
   }
 
 
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-
-      List<LocElementType> locElementsPreview = locElementTypeManager.findAll().stream()
-        .filter(c -> c.isActive() && c.getCrp() == null).collect(Collectors.toList());
-
-      if (locElementsPreview != null) {
-        for (LocElementType locElementType : locElementsPreview) {
-          if (!locElementTypeList.contains(locElementType)) {
-            locElementTypeManager.deleteLocElementType(locElementType.getId());
-
-          }
-        }
-      }
-
-      for (LocElementType locElementType : locElementTypeList) {
-        if (locElementType != null) {
-          if (locElementType.getId() == null) {
-
-            locElementType.setCrp(null);
-
-            locElementType.setScope(false);
-
-            locElementType = locElementTypeManager.saveLocElementType(locElementType);
-          } else {
-            LocElementType locElementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
-
-
-            locElementTypeDB.setHasCoordinates(locElementType.getHasCoordinates());
-            locElementTypeDB.setLocElementType(locElementType.getLocElementType());
-            locElementTypeDB.setName(locElementType.getName());
-            locElementTypeDB = locElementTypeManager.saveLocElementType(locElementTypeDB);
-          }
-        }
-      }
-
-
+      this.deleteRemovedLocElementTypes();
+      this.saveLocElementTypes();
       this.addActionMessage("message:" + this.getText("saving.saved"));
-
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
+    }
+  }
+
+  private void deleteRemovedLocElementTypes() {
+    List<LocElementType> existing = locElementTypeManager.findAll().stream()
+      .filter(c -> c.isActive() && c.getCrp() == null).toList();
+
+    List<Long> incomingIds = locElementTypeList.stream()
+      .map(LocElementType::getId)
+      .filter(Objects::nonNull)
+      .toList();
+
+    if (existing != null) {
+      for (LocElementType locElementType : existing) {
+        if (!incomingIds.contains(locElementType.getId())) {
+          locElementTypeManager.deleteLocElementType(locElementType.getId());
+        }
+      }
+    }
+  }
+
+  private void saveLocElementTypes() {
+    for (LocElementType locElementType : locElementTypeList) {
+      if (locElementType != null) {
+        if (locElementType.getId() == null) {
+          locElementType.setCrp(null);
+          locElementType.setScope(false);
+          locElementTypeManager.saveLocElementType(locElementType);
+        } else {
+          LocElementType locElementTypeDB = locElementTypeManager.getLocElementTypeById(locElementType.getId());
+          locElementTypeDB.setHasCoordinates(locElementType.getHasCoordinates());
+          locElementTypeDB.setLocElementType(locElementType.getLocElementType());
+          locElementTypeDB.setName(locElementType.getName());
+          locElementTypeManager.saveLocElementType(locElementTypeDB);
+        }
+      }
     }
   }
 

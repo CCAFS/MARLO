@@ -21,17 +21,18 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * This configuration file is now for properties but can contain other base level beans as well. Note that these
@@ -45,7 +46,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
   "org.cgiar.ccafs.marlo.security", "org.cgiar.ccafs.marlo.web", "org.cgiar.ccafs.marlo.data.dao",
   "org.cgiar.ccafs.marlo.data.manager", "org.cgiar.ccafs.marlo.data.mapper", "org.cgiar.ccafs.marlo.validation",
   "org.cgiar.ccafs.marlo.action"})
-public class ApplicationContextConfig {
+public class ApplicationContextConfig implements EnvironmentAware {
+
+  private ConfigurableEnvironment environment;
+
+  @Override
+  public void setEnvironment(Environment env) {
+    this.environment = (ConfigurableEnvironment) env;
+  }
 
   public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
   public static final String SPRING_PROFILE_USERTEST = "test";
@@ -57,9 +65,6 @@ public class ApplicationContextConfig {
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
     return new PropertySourcesPlaceholderConfigurer();
   }
-
-  @Inject
-  private ConfigurableEnvironment environment;
 
   private final Logger log = LoggerFactory.getLogger(ApplicationContextConfig.class);
 

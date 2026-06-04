@@ -19,7 +19,9 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 
 import javax.inject.Named;
 
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,7 +46,14 @@ public class ShiroSpringStartupListener implements ApplicationListener<ContextRe
       // Initialize realms
       final APCustomRealm mainRealm = (APCustomRealm) ctx.getBean("realm");
       final DefaultWebSecurityManager sm = (DefaultWebSecurityManager) ctx.getBean("securityManager");
+      
+      // Configurar el SessionManager para HTTP
+      SessionManager sessionManager = new DefaultWebSessionManager();
+      sm.setSessionManager(sessionManager);
+      
+      // Configurar el realm
       sm.setRealm(mainRealm);
+      
     } catch (Exception e) {
       throw new Error("Critical system error", e);
     }

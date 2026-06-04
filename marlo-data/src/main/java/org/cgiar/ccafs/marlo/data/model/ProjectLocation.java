@@ -44,6 +44,12 @@ public class ProjectLocation extends MarloAuditableEntity implements java.io.Ser
   @Expose
   private Phase phase;
 
+  @Expose
+  private Long locElementId;
+
+  @Expose
+  private Long locElementTypeId;
+
 
   public ProjectLocation() {
   }
@@ -72,6 +78,14 @@ public class ProjectLocation extends MarloAuditableEntity implements java.io.Ser
 
   public LocElement getLocElement() {
     return locElement;
+  }
+
+  public Long getLocElementId() {
+    return locElementId;
+  }
+
+  public Long getLocElementTypeId() {
+    return locElementTypeId;
   }
 
   public LocElementType getLocElementType() {
@@ -106,9 +120,16 @@ public class ProjectLocation extends MarloAuditableEntity implements java.io.Ser
     this.locElement = locElement;
   }
 
+  public void setLocElementId(Long locElementId) {
+    this.locElementId = locElementId;
+  }
 
   public void setLocElementType(LocElementType locElementType) {
     this.locElementType = locElementType;
+  }
+
+  public void setLocElementTypeId(Long locElementTypeId) {
+    this.locElementTypeId = locElementTypeId;
   }
 
 

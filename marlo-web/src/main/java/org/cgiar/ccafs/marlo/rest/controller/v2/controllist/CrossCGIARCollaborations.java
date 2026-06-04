@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
-@RestController
+@RestController("CrossCGIARCollaborationsRestCtrl")
 @Api(tags = "Table 9 - Internal Cross-CGIAR Collaborations")
 public class CrossCGIARCollaborations {
 

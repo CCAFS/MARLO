@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -133,20 +133,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-models</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.swagger</groupId>
-					<artifactId>swagger-annotations</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -157,15 +144,8 @@
 			<artifactId>swagger-models</artifactId>
 			<version>1.5.21</version>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-bean-validators</artifactId>
-			<version>2.9.2</version>
-		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
@@ -376,12 +356,110 @@
         <groupId>com.rabbitmq</groupId>
         <artifactId>amqp-client</artifactId>
     </dependency>
-	</dependencies>
+	<!-- ============================================ -->
+	<!-- Dependencias JAVAX para Java 17 -->
+	<!-- ============================================ -->
+	<dependency>
+		<groupId>javax.xml.bind</groupId>
+		<artifactId>jaxb-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.glassfish.jaxb</groupId>
+		<artifactId>jaxb-runtime</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>javax.xml.ws</groupId>
+		<artifactId>jaxws-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>javax.activation</groupId>
+		<artifactId>activation</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>javax.annotation</groupId>
+		<artifactId>javax.annotation-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>com.sun.xml.ws</groupId>
+		<artifactId>jaxws-rt</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>javax.xml.soap</groupId>
+		<artifactId>javax.xml.soap-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>com.sun.xml.messaging.saaj</groupId>
+		<artifactId>saaj-impl</artifactId>
+	</dependency>
+
+	<!-- Nuevas Dependencias o actualizaciones -->
+	<dependency>
+		<groupId>org.apache.struts</groupId>
+		<artifactId>struts2-core</artifactId>
+		<version>6.4.0</version>
+		<exclusions>
+			<!-- Ensure the Hibernate version of javassist is used -->
+			<exclusion>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>javassist</groupId>
+				<artifactId>javassist</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.freemarker</groupId>
+		<artifactId>freemarker</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-jul</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-slf4j2-impl</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>ognl</groupId>
+		<artifactId>ognl</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-text</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>commons-fileupload</groupId>
+		<artifactId>commons-fileupload</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>com.github.ben-manes.caffeine</groupId>
+		<artifactId>caffeine</artifactId>
+	</dependency>
+        <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-ui</artifactId>
+        <version>1.7.0</version>
+    </dependency>
+</dependencies>
 
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
-		<defaultGoal>tomcat7:run</defaultGoal>
+		<defaultGoal>cargo:run</defaultGoal>
 
 		<plugins>
 			<plugin>
@@ -391,20 +469,38 @@
 			</plugin>
 			<!-- Tomcat plugin just to test compatibilities with Tomcat. -->
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
 				<configuration>
-					<port>8080</port>
-					<useTestClasspath>true</useTestClasspath>
-					<httpsPort>8443</httpsPort>
-					<keystoreFile>${project.basedir}/.keystore</keystoreFile>
-					<keystorePass>d5jtY68oBqWj</keystorePass>
-					<contextFile>tomcat/context.xml</contextFile>
-					<!-- tomcat 7 plugin should only be run on local desktop -->
-					<systemProperties>
-						<spring.profiles.active>dev</spring.profiles.active>
-					</systemProperties>
-					<update>true</update>
+					<container>
+						<containerId>tomcat9x</containerId>
+						<type>embedded</type>
+						<systemProperties>
+							<spring.profiles.active>dev</spring.profiles.active>
+						</systemProperties>
+					</container>
+					<configuration>
+						<type>standalone</type>
+						<properties>
+							<cargo.servlet.port>8080</cargo.servlet.port>
+							<cargo.protocol>https</cargo.protocol>
+							<cargo.tomcat.connector.clientAuth>false</cargo.tomcat.connector.clientAuth>
+							<cargo.tomcat.connector.sslProtocol>TLS</cargo.tomcat.connector.sslProtocol>
+							<cargo.tomcat.connector.keystoreFile>${project.basedir}/.keystore</cargo.tomcat.connector.keystoreFile>
+							<cargo.tomcat.connector.keystorePass>d5jtY68oBqWj</cargo.tomcat.connector.keystorePass>
+							<cargo.tomcat.connector.keyAlias>tomcat</cargo.tomcat.connector.keyAlias>
+							<cargo.tomcat.httpSecure>true</cargo.tomcat.httpSecure>
+							<cargo.servlet.https.port>8443</cargo.servlet.https.port>
+							<cargo.jvmargs>
+								--add-opens=java.base/java.lang=ALL-UNNAMED
+								--add-opens=java.base/java.io=ALL-UNNAMED
+								--add-opens=java.base/java.util=ALL-UNNAMED
+								--add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+								--add-opens=java.base/java.text=ALL-UNNAMED
+								--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED
+							</cargo.jvmargs>
+						</properties>
+					</configuration>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -427,6 +523,8 @@
 			</plugin>
 
 			<!-- MINIFYING CSS AND JS - TEST -->
+			
+			<!--
 			<plugin>
 				<groupId>com.samaxes.maven</groupId>
 				<artifactId>minify-maven-plugin</artifactId>
@@ -444,17 +542,12 @@
 							<cssSourceIncludes>
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
-<!--  
-							<jsSourceDir>global</jsSourceDir>
-							<jsSourceIncludes>
-								<jsSourceInclude>js/**/*.js</jsSourceInclude>
-							</jsSourceIncludes>
--->
 						</configuration>
 						<goals>
 							<goal>minify</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>crp-minify</id>
 						<phase>package</phase>
@@ -468,12 +561,6 @@
 							<cssSourceIncludes>
 								<cssSourceInclude>css/**/*.css</cssSourceInclude>
 							</cssSourceIncludes>
-<!--  
-							<jsSourceDir>global</jsSourceDir>
-							<jsSourceIncludes>
-								<jsSourceInclude>js/**/*.js</jsSourceInclude>
-							</jsSourceIncludes>
--->
 						</configuration>
 						<goals>
 							<goal>minify</goal>
@@ -481,6 +568,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<!-- END -->
 
             <plugin>
@@ -576,3 +664,6 @@
 		</license>
 	</licenses>
 </project>
+
+
+

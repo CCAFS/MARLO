@@ -55,10 +55,25 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  public boolean existsPermissionsByNames(List<String> permissionNames) {
+    return roleDAO.existsPermissionsByNames(permissionNames);
+  }
+
+  @Override
   public List<Role> findAll() {
 
     return roleDAO.findAll();
 
+  }
+
+  @Override
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
+    return roleDAO.cloneRolePermissionsByAcronym(templateGlobalUnitId, targetGlobalUnitId);
+  }
+
+  @Override
+  public int ensureSuperAdminRoleAndPermissions(long targetGlobalUnitId, long templateGlobalUnitId) {
+    return roleDAO.ensureSuperAdminRoleAndPermissions(targetGlobalUnitId, templateGlobalUnitId);
   }
 
   @Override

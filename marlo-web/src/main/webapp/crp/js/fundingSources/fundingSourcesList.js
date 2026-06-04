@@ -14,6 +14,9 @@ $(document).ready(function() {
       "bSort": true, // this option enable the sort of contents by columns
       "bAutoWidth": false, // This option enables the auto adjust columns width
       "iDisplayLength": 50, // Number of rows to show on the table
+      language: {
+        searchPlaceholder: "Search..."
+      },
       "fnDrawCallback": function() {
         // This function locates the add activity button at left to the filter box
         var table = $(this).parent().find("table");
@@ -36,8 +39,39 @@ $(document).ready(function() {
       ]
   });
 
+  function applyFundingSourcesDataTableStyles() {
+    $('table.projectsList').each(function() {
+      var $table = $(this);
+      var $wrapper = $table.closest('.dataTables_wrapper');
+      if(!$wrapper.length) {
+        return;
+      }
+
+      // Match Projects list search visual style in Funding Sources list.
+      var $filterParent = $wrapper.find('.dataTables_filter').parent();
+      if($filterParent.length && !$filterParent.find('.iconSearch').length) {
+        var iconSearch = $('<div></div>').addClass('iconSearch');
+        iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Search icon" style="width: 24px; margin: auto;" >');
+        iconSearch.prependTo($filterParent);
+      }
+
+      var $lengthParent = $wrapper.find('.dataTables_length').parent();
+      $lengthParent.css('position', 'absolute');
+      $lengthParent.css('bottom', '8px');
+      $lengthParent.css('margin-left', '43%');
+      $lengthParent.css('z-index', '1');
+    });
+  }
+
+  applyFundingSourcesDataTableStyles();
+
   $projectList.on('draw.dt', function() {
     $("a.removeProject").on("click", removeProject);
+    applyFundingSourcesDataTableStyles();
+  });
+
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function() {
+    applyFundingSourcesDataTableStyles();
   });
 
   // Add Button click (Adding state)

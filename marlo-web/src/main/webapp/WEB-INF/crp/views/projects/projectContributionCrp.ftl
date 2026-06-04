@@ -1226,7 +1226,7 @@
       <span class="index">${index+1}</span>
     </div>
     <div class="form-group grayBox">
-      ${(element.indicator)!}
+      ${(element.indicator?no_esc)!}
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
@@ -1269,7 +1269,7 @@
       <span class="index">${index+1}</span>
     </div>
     <div class="form-group grayBox">
-      <strong>${element.indicator}</strong>
+      <strong>${(element.indicator?no_esc)!}</strong>
     </div>
     <input type="hidden" name="${customName}.id" value="${(projectOutcomePrevIndicator.id)!}" >
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomePrevIndicator.crpProgramOutcomeIndicator.id)!}" >

@@ -21,8 +21,10 @@ import org.cgiar.ccafs.marlo.data.model.SrfSlo;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +45,7 @@ public class SrfSloManagerImpl implements SrfSloManager {
   }
 
   @Override
+  @Transactional
   public void deleteSrfSlo(long srfSloId) {
 
     srfSloDAO.deleteSrfSlo(srfSloId);
@@ -73,6 +76,7 @@ public class SrfSloManagerImpl implements SrfSloManager {
   }
 
   @Override
+  @Transactional
   public SrfSlo saveSrfSlo(SrfSlo srfSlo) {
 
     return srfSloDAO.save(srfSlo);

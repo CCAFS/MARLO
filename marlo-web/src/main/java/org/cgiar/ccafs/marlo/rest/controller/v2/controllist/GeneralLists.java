@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
-@RestController
+@RestController("GeneralListsRestCtrl")
 @Api(tags = "General Control Lists")
 @Named
 public class GeneralLists {

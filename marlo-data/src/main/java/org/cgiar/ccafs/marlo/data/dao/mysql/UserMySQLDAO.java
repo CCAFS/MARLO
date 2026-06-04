@@ -30,18 +30,21 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  * @author Christian Garcia - CIAT/CCAFS
  */
-@Named
+@Repository
 public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDAO {
 
   public static Logger LOG = LoggerFactory.getLogger(UserMySQLDAO.class);
 
-  @Inject
+  @Autowired
   public UserMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
@@ -69,7 +72,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     if (super.getTemTableUserId() == userId) {
       list = super.findCustomQuery(builder.toString());
     } else {
-      list = super.excuteStoreProcedure(" call getPermissions(" + userId + ")", builder.toString());
+      list = super.excuteStoreProcedure("getPermissions", builder.toString(), userId);
     }
     if (crpId == null) {
       list = list.stream().filter(c -> c.get("permission").toString().contains("api:")).collect(Collectors.toList());
@@ -92,6 +95,22 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
     List<Map<String, Object>> users = super.findCustomQuery(query);
     if (users.size() > 0) {
+      return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
+    }
+    return null;
+  }
+
+  @Override
+  public User getActiveSuperAdminUserByUsernameOccurrence() {
+    String query = "select id from users where is_active = 1 and username is not null "
+      + "and LOWER(username) like '%super%' and LOWER(username) like '%admin%' order by id asc limit 1";
+    List<Map<String, Object>> users = super.findCustomQuery(query);
+    if (users.isEmpty()) {
+      String fallbackQuery = "select id from users where is_active = 1 and username is not null "
+        + "and (LOWER(username) like '%super%' or LOWER(username) like '%admin%') order by id asc limit 1";
+      users = super.findCustomQuery(fallbackQuery);
+    }
+    if (!users.isEmpty()) {
       return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
     }
     return null;

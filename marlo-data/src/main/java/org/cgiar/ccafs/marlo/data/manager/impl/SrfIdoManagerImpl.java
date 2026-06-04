@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
@@ -43,6 +45,7 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   }
 
   @Override
+  @Transactional
   public void deleteSrfIdo(long srfIdoId) {
 
     this.srfIdoDAO.deleteSrfIdo(srfIdoId);
@@ -73,6 +76,7 @@ public class SrfIdoManagerImpl implements SrfIdoManager {
   }
 
   @Override
+  @Transactional
   public SrfIdo saveSrfIdo(SrfIdo srfIdo) {
 
     return this.srfIdoDAO.save(srfIdo);

@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author CCAFS
  */
@@ -73,6 +75,7 @@ public class ActivityTitleManagerImpl implements ActivityTitleManager {
   }
 
   @Override
+  @Transactional
   public ActivityTitle saveActivityTitle(ActivityTitle activityTitle) {
 
     return activityTitleDAO.save(activityTitle);

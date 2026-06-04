@@ -2,7 +2,7 @@
 [#if phases??]
   [#if phases?size > 1]
     <div class="container hidden-print"> 
-      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/timeline-phases.css?20220317a" />
+      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/timeline-phases.css?20260413" />
         
         [#-- Timeline Scroll --]
         <div id="timelineScroll" class="example pagespan">
@@ -13,7 +13,7 @@
             <ul>
               [#list phases as phase]
                 <li id="phase-${(phase.id)!}" class="phaseBox text-left ${(phase.isReporting())?string('reporting','planning')} [#if (actualPhase.id == phase.id)][#assign currenPhaseIndex = phase_index  /]active phaseSelected[#else]phaseNoSelected[/#if] ${phase.editable?string('', '')}">
-                  <h4> [#if centerGlobalUnit] ${(phase.year)!} [#else] ${(phase.composedName)!} [/#if] <small class="pull-right">${phase.editable?string('', '<span class="label label-danger closedLabel">Closed</span>')}</small></h4>
+                  <h4><span class="phaseTitleText">[#if centerGlobalUnit] ${(phase.year)!} [#else] ${(phase.composedName)!} [/#if]</span>${phase.editable?string('', '<small class="closedLabelContainer"><span class="label label-danger closedLabel">Closed</span></small>')?no_esc}</h4>
                   [#-- <small><strong>From: </strong>${phase.startDate} | <strong>Until: </strong>${phase.endDate}</small> --]
                 </li>
               [/#list] 
@@ -41,9 +41,9 @@
         [#assign pageLibs = ["sly", "jsUri"] /]
       [/#if]
       [#if customJS??]
-        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js"  ] + customJS  /]
+        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js?20260413"  ] + customJS  /]
       [#else]
-        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js"  ] /]
+        [#assign customJS = [ "${baseUrlCdn}/global/js/timeline-phases.js?20260413"  ] /]
       [/#if]
     
     </div>

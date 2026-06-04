@@ -191,7 +191,24 @@ div#tl-adnyds {
 }
 
 .example .frame ul li h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   margin: 9px 0 1px 0px;
+}
+
+.example .frame ul li h4 .phaseTitleText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.example .frame ul li h4 .closedLabelContainer {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .example .scrollbar {
@@ -307,6 +324,14 @@ div#tl-adnyds {
  	 	width: 100%;
  	 	overflow: hidden;
 	}
+
+  .example .frame ul li h4 {
+    gap: 4px;
+  }
+
+  .example .frame ul li h4 .phaseTitleText {
+    font-size: 0.95em;
+  }
 }
 
 @media only screen and (max-width:440px){

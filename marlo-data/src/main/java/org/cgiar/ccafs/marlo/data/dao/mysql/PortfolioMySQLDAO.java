@@ -37,9 +37,9 @@ public class PortfolioMySQLDAO extends AbstractMarloDAO<Portfolio, Long> impleme
 
   @Override
   public void deletePortfolio(long portfolioId) {
-    Portfolio portfolio = this.find(portfolioId);
-    portfolio.setActive(false);
-    this.update(portfolio);
+    // Use bulk update to ensure SQL executes even if session state is read-only
+    String hql = "update Portfolio set active = false where id = :id";
+    this.getSessionFactory().getCurrentSession().createQuery(hql).setParameter("id", portfolioId).executeUpdate();
   }
 
   @Override

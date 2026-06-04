@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressStudyDTO;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisStudiesByCrpProgramDTO;
 import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -76,6 +77,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
+  @Transactional
   public void deleteProjectExpectedStudy(long projectExpectedStudyId) {
     projectExpectedStudyDAO.deleteProjectExpectedStudy(projectExpectedStudyId);
 
@@ -376,6 +378,11 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
+  public List<StudyHomeDTO> getStudiesByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds) {
+    return this.projectExpectedStudyDAO.getStudiesByProjectsAndPhaseHome(phaseId.longValue(), projectIds);
+  }
+
+  @Override
   public List<ProjectExpectedStudy> getUserStudies(long userId, String crp) {
 
     List<ProjectExpectedStudy> projects = new ArrayList<>();
@@ -399,6 +406,7 @@ public class ProjectExpectedStudyManagerImpl implements ProjectExpectedStudyMana
   }
 
   @Override
+  @Transactional
   public ProjectExpectedStudy save(ProjectExpectedStudy projectExpectedStudy, String section,
     List<String> relationsName, Phase phase) {
     return projectExpectedStudyDAO.save(projectExpectedStudy, section, relationsName, phase);

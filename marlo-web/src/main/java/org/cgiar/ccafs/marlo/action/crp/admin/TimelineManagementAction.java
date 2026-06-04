@@ -22,11 +22,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.superadmin.TimelineManagementValidator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -65,11 +63,84 @@ public class TimelineManagementAction extends BaseAction {
     }
 
     if (this.isHttpPost()) {
-      if (timelineActivities == null) {
-        timelineActivities = new ArrayList<>();
+      // For POST: Will bind timeline activities manually from request in save()
+      timelineActivities = new ArrayList<>();
+    }
+  }
+
+  /**
+   * Manually bind timeline activities from HTTP request parameters.
+   * This is necessary because Struts 6 cannot automatically populate lists when items are deleted.
+   */
+  private void bindTimelineActivitiesFromRequest() {
+    timelineActivities = new ArrayList<>();
+    int index = 0;
+    boolean hasMore = true;
+
+    while (hasMore) {
+      String idParam = this.getRequest().getParameter("timelineActivities[" + index + "].id");
+      String descriptionParam = this.getRequest().getParameter("timelineActivities[" + index + "].description");
+      String startDateParam = this.getRequest().getParameter("timelineActivities[" + index + "].startDate");
+      String endDateParam = this.getRequest().getParameter("timelineActivities[" + index + "].endDate");
+      String orderParam = this.getRequest().getParameter("timelineActivities[" + index + "].order");
+
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (descriptionParam != null && !descriptionParam.trim().isEmpty()) ||
+        (startDateParam != null && !startDateParam.trim().isEmpty()) ||
+        (endDateParam != null && !endDateParam.trim().isEmpty()) ||
+        (orderParam != null && !orderParam.trim().isEmpty());
+
+      if (hasAnyContent) {
+        try {
+          Timeline timeline = new Timeline();
+
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              timeline.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          // Description
+          timeline.setDescription(descriptionParam);
+
+          // Start Date
+          if (startDateParam != null && !startDateParam.trim().isEmpty()) {
+            try {
+              timeline.setStartDate(java.sql.Date.valueOf(startDateParam));
+            } catch (Exception e) {
+              // Silent fail for invalid dates
+            }
+          }
+
+          // End Date
+          if (endDateParam != null && !endDateParam.trim().isEmpty()) {
+            try {
+              timeline.setEndDate(java.sql.Date.valueOf(endDateParam));
+            } catch (Exception e) {
+              // Silent fail for invalid dates
+            }
+          }
+
+          // Order
+          if (orderParam != null && !orderParam.trim().isEmpty()) {
+            try {
+              timeline.setOrder(Double.parseDouble(orderParam));
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+
+          timelineActivities.add(timeline);
+          index++;
+        } catch (Exception e) {
+          hasMore = false;
+        }
       } else {
-        // Clear the list to avoid duplicates
-        timelineActivities.clear();
+        hasMore = false;
       }
     }
   }
@@ -77,24 +148,20 @@ public class TimelineManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      // Manually bind timeline activities from request parameters
+      bindTimelineActivitiesFromRequest();
+
       if (timelineActivities != null && !timelineActivities.isEmpty()) {
 
-        final Set<Long> keepIds = (timelineActivities == null) ? Collections.emptySet()
-          : timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        // CRP null-safe
+        final List<Long> inputIds = timelineActivities.stream().map(Timeline::getId).filter(Objects::nonNull)
+          .collect(Collectors.toList());
         final GlobalUnit crp = getCurrentCrp();
-        if (crp != null && crp.getId() != null) {
-          final List<Timeline> existing = timelineManager.findAllByGlobalUnit(crp.getId());
-          if (existing != null && !existing.isEmpty()) {
-            existing.stream().filter(Objects::nonNull).map(Timeline::getId).filter(Objects::nonNull)
-              .filter(id -> !keepIds.contains(id)).forEach(timelineManager::deleteTimeline);
-          }
-        }
+        final List<Timeline> existing = (crp != null && crp.getId() != null)
+          ? timelineManager.findAllByGlobalUnit(crp.getId())
+          : Collections.emptyList();
 
-
+        // Save/update all timeline activities from the form first
         for (Timeline activity : timelineActivities) {
-
           // New Activity
           Timeline timeLineSave = new Timeline();
 
@@ -119,14 +186,23 @@ public class TimelineManagementAction extends BaseAction {
             timeLineSave.setEndDate(activity.getEndDate());
           }
           if (activity.getGlobalUnit() != null) {
-            timeLineSave.setGlobalUnit(globalUnitManager.getGlobalUnitById(activity.getGlobalUnit().getId()));
+            timeLineSave.setGlobalUnit(
+              globalUnitManager.getGlobalUnitById(activity.getGlobalUnit().getId()));
           } else {
             timeLineSave.setGlobalUnit(this.getCurrentGlobalUnit());
           }
           timeLineSave.setOrder(activity.getOrder());
 
           timelineManager.saveTimeline(timeLineSave);
+        }
 
+        // Then delete timeline activities not present in the form
+        if (existing != null && !existing.isEmpty()) {
+          for (Timeline timeline : existing) {
+            if (timeline != null && timeline.getId() != null && !inputIds.contains(timeline.getId())) {
+              timelineManager.deleteTimeline(timeline.getId());
+            }
+          }
         }
       } else {
         try {
@@ -147,7 +223,6 @@ public class TimelineManagementAction extends BaseAction {
       }
 
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));

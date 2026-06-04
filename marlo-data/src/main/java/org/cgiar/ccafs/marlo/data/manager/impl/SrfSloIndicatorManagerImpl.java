@@ -21,8 +21,10 @@ import org.cgiar.ccafs.marlo.data.model.SrfSloIndicator;
 
 import java.util.List;
 
-import javax.inject.Named;
 import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +45,7 @@ public class SrfSloIndicatorManagerImpl implements SrfSloIndicatorManager {
   }
 
   @Override
+  @Transactional
   public void deleteSrfSloIndicator(long srfSloIndicatorId) {
 
     srfSloIndicatorDAO.deleteSrfSloIndicator(srfSloIndicatorId);
@@ -68,6 +71,7 @@ public class SrfSloIndicatorManagerImpl implements SrfSloIndicatorManager {
   }
 
   @Override
+  @Transactional
   public SrfSloIndicator saveSrfSloIndicator(SrfSloIndicator srfSloIndicator) {
 
     return srfSloIndicatorDAO.save(srfSloIndicator);

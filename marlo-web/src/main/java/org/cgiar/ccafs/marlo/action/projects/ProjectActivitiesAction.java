@@ -144,7 +144,7 @@ public class ProjectActivitiesAction extends BaseAction {
           // TODO: delete deliverables associated before to delete the activity
 
           activityManager.deleteActivity(activity.getId());
-          logger.info("Deleted activity with ID {}", activity.getId());
+          logger.debug("Deleted activity with ID {}", activity.getId());
         }
       }
 
@@ -383,6 +383,8 @@ public class ProjectActivitiesAction extends BaseAction {
         project = (Project) autoSaveReader.readFromJson(jReader);
         Project projectDb = projectManager.getProjectById(project.getId());
         project.setProjectInfo(projectDb.getProjecInfoPhase(this.getActualPhase()));
+        logger.info("PREPARE (draft): Loaded draft with {} activities", 
+          project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
         for (Activity activity : project.getProjectActivities()) {
           if (activity.getDeliverables() != null) {
@@ -408,19 +410,21 @@ public class ProjectActivitiesAction extends BaseAction {
         List<Activity> activities = new ArrayList<>(Optional
           .ofNullable(this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId()))
           .orElse(Collections.emptyList()));
-        if (activities != null && !activities.isEmpty()) {
-          project.setProjectActivities(new ArrayList<Activity>(activities));
-          project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-          if (project.getProjectActivities() != null) {
-            for (Activity openActivity : project.getProjectActivities()) {
-              openActivity
-                .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
-                  .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
-                    && da.getDeliverable().isActive()
-                    && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                    && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
-                  .collect(Collectors.toList())));
-            }
+        
+        // Siempre inicializar projectActivities para que Struts2 pueda poblarla en HTTP POST
+        project.setProjectActivities(new ArrayList<Activity>(activities));
+        logger.info("PREPARE (not draft): Initialized projectActivities with {} existing activities", activities.size());
+        project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
+        
+        if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
+          for (Activity openActivity : project.getProjectActivities()) {
+            openActivity
+              .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
+                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
+                  && da.getDeliverable().isActive()
+                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+                .collect(Collectors.toList())));
           }
         }
       }
@@ -432,7 +436,11 @@ public class ProjectActivitiesAction extends BaseAction {
       }
       status.remove(ProjectStatusEnum.Extended.getStatusId());
 
-      List<Deliverable> filteredDeliverables = projectManager.getProjectById(projectID).getDeliverables().stream()
+      Project projectForDeliverableFilter = project;
+      if (this.isDraft() || StringUtils.isNotEmpty(this.getRequest().getParameter(APConstants.TRANSACTION_ID))) {
+        projectForDeliverableFilter = projectManager.getProjectById(projectID);
+      }
+      List<Deliverable> filteredDeliverables = projectForDeliverableFilter.getDeliverables().stream()
         .filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null)
         .peek(d -> d.setTagTitle(d.getComposedName())).collect(Collectors.toList());
 
@@ -519,9 +527,10 @@ public class ProjectActivitiesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_ACTIVITIES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      if (project.getProjectActivities() != null) {
-        project.getProjectActivities().clear();
-      }
+      // NO usar clear() - Struts2 necesita una lista nueva para popular correctamente
+      // Si usamos clear(), Struts2 agrega elementos null en lugar de crear objetos Activity
+      logger.info("PREPARE (HTTP POST): Replacing projectActivities list for Struts2 population");
+      project.setProjectActivities(new ArrayList<Activity>());
 
       /*
        * if (project.getClosedProjectActivities() != null) {
@@ -529,17 +538,10 @@ public class ProjectActivitiesAction extends BaseAction {
        * }
        */
 
-      if (partnerPersons != null) {
-        partnerPersons.clear();
-      }
-
-      if (activityTitles != null) {
-        activityTitles.clear();
-      }
-
-      if (project.getProjectDeliverables() != null) {
-        project.getProjectDeliverables().clear();
-      }
+      // Reemplazar las otras listas también
+      partnerPersons = new ArrayList<>();
+      activityTitles = new ArrayList<>();
+      project.setProjectDeliverables(new ArrayList<>());
     }
     /*
      * if (this.isHttpPost()) {
@@ -558,40 +560,192 @@ public class ProjectActivitiesAction extends BaseAction {
      */
   }
 
+  /**
+   * Manual binding de actividades desde request parameters.
+   * Struts2 tiene problemas para auto-poblar listas complejas, especialmente cuando hay índices no consecutivos.
+   */
+  private void bindActivitiesFromRequest() {
+    try {
+      List<Activity> activities = new ArrayList<>();
+      int index = 0;
+      boolean hasMore = true;
+      
+      logger.debug("bindActivitiesFromRequest: Starting manual binding");
+      
+      while (hasMore) {
+        String titleParam = this.getRequest().getParameter("project.projectActivities[" + index + "].activityTitle.id");
+        
+        if (titleParam != null) {
+          Activity activity = new Activity();
+          activity.setId(-1L); // Nueva actividad por defecto
+          
+          // ID de la actividad (puede ser -1 para nuevas)
+          String idParam = this.getRequest().getParameter("project.projectActivities[" + index + "].id");
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              activity.setId(Long.parseLong(idParam));
+            } catch (NumberFormatException e) {
+              logger.warn("Error parsing activity id at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // Activity Title
+          try {
+            long activityTitleId = Long.parseLong(titleParam);
+            ActivityTitle activityTitle = activityTitleManager.getActivityTitleById(activityTitleId);
+            activity.setActivityTitle(activityTitle);
+          } catch (NumberFormatException e) {
+            logger.warn("Error parsing activityTitle.id at index {}: {}", index, e.getMessage());
+          }
+          
+          // Description
+          String description = this.getRequest().getParameter("project.projectActivities[" + index + "].description");
+          activity.setDescription(description);
+          
+          // Start Date
+          String startDate = this.getRequest().getParameter("project.projectActivities[" + index + "].startDate");
+          if (startDate != null && !startDate.trim().isEmpty()) {
+            try {
+              // Asumiendo formato yyyy-MM-dd o similar
+              activity.setStartDate(java.sql.Date.valueOf(startDate));
+            } catch (Exception e) {
+              logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // End Date
+          String endDate = this.getRequest().getParameter("project.projectActivities[" + index + "].endDate");
+          if (endDate != null && !endDate.trim().isEmpty()) {
+            try {
+              activity.setEndDate(java.sql.Date.valueOf(endDate));
+            } catch (Exception e) {
+              logger.warn("Error parsing endDate at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // Activity Progress
+          String progress = this.getRequest().getParameter("project.projectActivities[" + index + "].activityProgress");
+          activity.setActivityProgress(progress);
+          
+          // Activity Status
+          String status = this.getRequest().getParameter("project.projectActivities[" + index + "].activityStatus");
+          if (status != null && !status.trim().isEmpty()) {
+            try {
+              activity.setActivityStatus(Integer.parseInt(status));
+            } catch (NumberFormatException e) {
+              logger.warn("Error parsing activityStatus at index {}: {}", index, e.getMessage());
+              activity.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+            }
+          } else {
+            activity.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
+          }
+          
+          // Partner Person
+          String partnerPersonId = this.getRequest().getParameter("project.projectActivities[" + index + "].projectPartnerPerson.id");
+          if (partnerPersonId != null && !partnerPersonId.trim().isEmpty()) {
+            try {
+              long ppId = Long.parseLong(partnerPersonId);
+              if (ppId > 0) {
+                ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(ppId);
+                activity.setProjectPartnerPerson(partnerPerson);
+              }
+            } catch (NumberFormatException e) {
+              logger.warn("Error parsing projectPartnerPerson.id at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // Binding de deliverables para esta actividad
+          List<DeliverableActivity> deliverables = bindDeliverablesForActivity(index);
+          if (deliverables != null && !deliverables.isEmpty()) {
+            activity.setDeliverables(deliverables);
+            logger.debug("bindActivitiesFromRequest: Bound {} deliverables to activity at index {}", deliverables.size(), index);
+          }
+          
+          activities.add(activity);
+          logger.debug("bindActivitiesFromRequest: Bound activity at index {} with title ID: {}", index, titleParam);
+          index++;
+        } else {
+          hasMore = false;
+        }
+      }
+      
+      logger.debug("bindActivitiesFromRequest: Successfully bound {} activities", activities.size());
+      project.setProjectActivities(activities);
+      
+    } catch (Exception e) {
+      logger.error("Error in bindActivitiesFromRequest", e);
+    }
+  }
+
+  /**
+   * Binding de deliverables para una actividad específica
+   */
+  private List<DeliverableActivity> bindDeliverablesForActivity(int activityIndex) {
+    List<DeliverableActivity> deliverables = new ArrayList<>();
+    int deliverableIndex = 0;
+    boolean hasMore = true;
+    
+    while (hasMore) {
+      String deliverableIdParam = this.getRequest().getParameter(
+        "project.projectActivities[" + activityIndex + "].deliverables[" + deliverableIndex + "].deliverable.id");
+      
+      if (deliverableIdParam != null && !deliverableIdParam.trim().isEmpty()) {
+        try {
+          DeliverableActivity delActivity = new DeliverableActivity();
+          
+          // ID del deliverable
+          long deliverableId = Long.parseLong(deliverableIdParam);
+          Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
+          delActivity.setDeliverable(deliverable);
+          
+          // Phase
+          delActivity.setPhase(this.getActualPhase());
+          
+          deliverables.add(delActivity);
+          logger.debug("bindActivitiesFromRequest: Bound deliverable {} to activity {} at deliverable index {}",
+            deliverableId, activityIndex, deliverableIndex);
+          
+          deliverableIndex++;
+        } catch (NumberFormatException e) {
+          logger.warn("Error parsing deliverable.id at activity index {}, deliverable index {}: {}", 
+            activityIndex, deliverableIndex, e.getMessage());
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+    
+    return deliverables;
+  }
+
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
+      
+      // Manual binding de actividades desde request parameters
+      this.bindActivitiesFromRequest();
 
+      logger.debug("SAVE: project.getProjectActivities() size = {}",
+        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
       // improve performance
-      List<Activity> activitiesDB = new ArrayList<Activity>();
+      List<Activity> existingActivities = new ArrayList<>();
       try {
-        activitiesDB = this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
-      } catch (Exception e) {
-        logger.info(" unable to get activities from the BD in save function ");
-      }
-
-      List<Activity> projectActivitiesDB = new ArrayList<Activity>();
-      try {
-        projectActivitiesDB =
+        existingActivities =
           this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId());
       } catch (Exception e) {
-        logger.info(" unable to get activities in save function ");
+        logger.warn("Unable to get activities from the database in save()", e);
       }
 
-
-      // Check activities from UI
-      if (projectActivitiesDB != null && !projectActivitiesDB.isEmpty()) {
-        this.deleteActivities(projectActivitiesDB);
-      } else {
-        // Delete activities
-        if (activitiesDB != null && !activitiesDB.isEmpty()) {
-          for (Activity activity : activitiesDB) {
-            activityManager.deleteActivity(activity.getId());
-          }
-        }
+      // Sync deletions with UI: remove DB rows not present in the submitted list (same snapshot as the old dual-query path when both calls succeeded).
+      if (existingActivities != null && !existingActivities.isEmpty()) {
+        this.deleteActivities(existingActivities);
       }
+
+      logger.debug("SAVE after delete: project.getProjectActivities() size = {}",
+        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
       try {
         this.saveActivitiesNewData();
@@ -643,11 +797,19 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
   public void saveActivitiesNewData() {
+    // Log para diagnóstico - verificar si hay actividades para guardar
+    if (project.getProjectActivities() == null) {
+      logger.warn("saveActivitiesNewData: project.getProjectActivities() is NULL");
+      return;
+    }
+    logger.debug("saveActivitiesNewData: Found {} activities to save", project.getProjectActivities().size());
 
     for (Activity activityUI : project.getProjectActivities()) {
       if (activityUI == null) {
+        logger.warn("saveActivitiesNewData: Found null activity in list, skipping");
         continue;
       }
+      logger.debug("saveActivitiesNewData: Processing activity ID={}, title={}", activityUI.getId(), activityUI.getTitle());
 
       boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
       Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
@@ -674,8 +836,11 @@ public class ProjectActivitiesAction extends BaseAction {
       // Activity title (just for AICCRA)
       handleActivityTitle(activityEntity);
 
-      if (!isNew) {
+      // Deliverables - guardar tanto para actividades nuevas como existentes
+      if (activityUI.getDeliverables() != null && !activityUI.getDeliverables().isEmpty()) {
         activityEntity.setDeliverables(activityUI.getDeliverables());
+        logger.debug("saveActivitiesNewData: Activity {} has {} deliverables to save",
+          activityUI.getId(), activityUI.getDeliverables().size());
       }
 
       Activity saved = activityManager.saveActivity(activityEntity);

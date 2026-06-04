@@ -10,11 +10,9 @@
   <property name="connection.autoReconnect">true</property>
   <property name="connection.autoReconnectForPools">true</property>
   <property name="connection.is-connection-validation-required">true</property>
-  <property name="show_sql">false</property>
+  <property name="show_sql">true</property>
   <property name="use_sql_comments">false</property>
   <property name="generate_statistics">false</property>
-  <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
-  <property name="hibernate.current_session_context_class">thread</property>
   <!-- The following property will validate the hibernate hbm.xml files against 
       the schema. This is a recommended setting, but we have an issue where some 
       of our entities are using mysql INT primary keys instead of BIGINT so validation 

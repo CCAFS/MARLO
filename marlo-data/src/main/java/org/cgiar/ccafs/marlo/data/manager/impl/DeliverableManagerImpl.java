@@ -41,6 +41,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverable;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressDeliverableDTO;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,6 +56,7 @@ import javax.inject.Named;
  * @author Christian Garcia
  */
 @Named
+@Service("deliverableManager")
 public class DeliverableManagerImpl implements DeliverableManager {
 
   private PhaseDAO phaseDAO;
@@ -116,6 +119,7 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  @Transactional
   public void deleteDeliverable(long deliverableId) {
 
     deliverableDAO.deleteDeliverable(deliverableId);
@@ -196,6 +200,11 @@ public class DeliverableManagerImpl implements DeliverableManager {
   @Override
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(Long phaseId, Long projectId) {
     return deliverableDAO.getDeliverablesByProjectAndPhaseHome(phaseId.longValue(), projectId.longValue());
+  }
+
+  @Override
+  public List<DeliverableHomeDTO> getDeliverablesByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds) {
+    return deliverableDAO.getDeliverablesByProjectsAndPhaseHome(phaseId.longValue(), projectIds);
   }
 
   @Override
@@ -690,12 +699,14 @@ public class DeliverableManagerImpl implements DeliverableManager {
   }
 
   @Override
+  @Transactional
   public Deliverable saveDeliverable(Deliverable deliverable) {
 
     return deliverableDAO.save(deliverable);
   }
 
   @Override
+  @Transactional
   public Deliverable saveDeliverable(Deliverable deliverable, String section, List<String> relationsName, Phase phase) {
     Deliverable resultDeliverable = deliverableDAO.save(deliverable, section, relationsName, phase);
     return resultDeliverable;

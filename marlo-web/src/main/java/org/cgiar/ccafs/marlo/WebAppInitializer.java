@@ -47,6 +47,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
+    try {
     AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
     appContext.register(ApplicationContextConfig.class, MarloDatabaseConfiguration.class, MarloShiroConfiguration.class,
       MarloBusinessIntelligenceConfiguration.class, MarloFlywayConfiguration.class);
@@ -55,11 +56,19 @@ public class WebAppInitializer implements WebApplicationInitializer {
     servletContext.addListener(contextLoaderListener);
 
     // Get the Actual Spring environment
-    String activeEnv = appContext.getEnvironment().getActiveProfiles()[0];
+    String activeEnv = "";
+    if(appContext.getEnvironment().getActiveProfiles().length > 0){
+      activeEnv = appContext.getEnvironment().getActiveProfiles()[0];
+    }
 
     FilterRegistration.Dynamic removeSessionFromUrlFilter =
       servletContext.addFilter("RemoveSessionFromUrlFilter", new DelegatingFilterProxy("RemoveSessionFromUrlFilter"));
     removeSessionFromUrlFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
+
+    FilterRegistration.Dynamic CORSFilter =
+      servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
+    CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
+    
     /**
      * Need to use the DelegatingFilterProxy to allow the SessionFactory to be injected.
      */
@@ -76,7 +85,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
      * Need to use the DelegatingFilterProxy to allow the shiroFilter to be instantiated properly.
      */
     FilterRegistration.Dynamic shiroFilter =
-      servletContext.addFilter("shiroFilter", new DelegatingFilterProxy("shiroFilter"));
+      servletContext.addFilter("shiroFilterFactoryBean", new DelegatingFilterProxy("shiroFilterFactoryBean"));
     shiroFilter.setInitParameter("targetFilterLifecycle", "true");
     shiroFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
 
@@ -88,11 +97,16 @@ public class WebAppInitializer implements WebApplicationInitializer {
     if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_API)) {
 
       /** This should ignore the /api/* mapping **/
-      FilterRegistration.Dynamic struts2Filter =
-        servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
-      struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
-      struts2Filter.setInitParameter("targetFilterLifecycle", "true");
-      struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+      // FilterRegistration.Dynamic struts2Filter =
+      //   servletContext.addFilter("StrutsDispatcher", new StrutsPrepareAndExecuteFilter());
+      // struts2Filter.setInitParameter("actionPackages", "com.concretepage.action");
+      // struts2Filter.setInitParameter("targetFilterLifecycle", "true");
+      // struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
+      FilterRegistration.Dynamic strutsFilter = 
+        servletContext.addFilter("StrutsFilter", new StrutsPrepareAndExecuteFilter());
+      // En Struts 6, se recomienda usar scanning de anotaciones en struts.xml
+      strutsFilter.setInitParameter("targetFilterLifecycle", "true");
+      strutsFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
     }
 
     if (!activeEnv.equals(ApplicationContextConfig.SPRING_PROFILE_PRODUCTION)) {
@@ -115,21 +129,26 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
       /** Now add the Spring MVC dispatacher servlet config for our REST api **/
       AnnotationConfigWebApplicationContext dispatcherContext = new AnnotationConfigWebApplicationContext();
-      dispatcherContext.register(MarloRestApiConfig.class, MarloSwaggerConfiguration.class);
+      dispatcherContext.register(
+      MarloRestApiConfig.class,
+      MarloOpenApiConfig.class,
+      org.cgiar.ccafs.marlo.config.SpringDocWebConfig.class
+);
       dispatcherContext.setParent(appContext);
 
       ServletRegistration.Dynamic dispatcher =
-        servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+      servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
-      dispatcher.addMapping(REST_API_REQUESTS);
       dispatcher.addMapping(REST_SWAGGER_REQUESTS);
 
     }
     // End Check Spring Profile filters
-    FilterRegistration.Dynamic CORSFilter =
-      servletContext.addFilter("CORSFilter", new DelegatingFilterProxy("CORSFilter"));
-    CORSFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, ALL_REQUESTS);
-
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new ServletException("Error en WebAppInitializer", e);
+    }
 
   }
 }
+
+

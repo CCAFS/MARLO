@@ -1,0 +1,54 @@
+/**
+ * DataTables + search row inside Bootstrap modals (relationsPopupMacro only).
+ * Mirrors projectContributionsCrpList.css modal/table rules without global
+ * selectors that would affect Save/Edit or other page buttons.
+ */
+.modal .modal-dialog {
+  max-width: 1250px;
+  width: 99%;
+}
+
+.modal .dataTables_wrapper {
+  position: relative;
+}
+
+.modal .dataTables_length {
+  position: absolute;
+  bottom: 0;
+  margin-left: 43%;
+}
+
+.modal .dataTables_filter {
+  float: left !important;
+  margin-bottom: 4px;
+}
+
+.modal .dataTables_filter label {
+  color: white;
+}
+
+.modal .dataTables_filter label input {
+  height: 30px !important;
+  width: 295px !important;
+  margin-left: -44px !important;
+  color: #5f5e5e;
+}
+
+.modal .iconSearch {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  margin-left: 285px;
+  border-radius: 0px 4px 4px 0px;
+  display: flex;
+}
+
+.modal .modal-body table thead th {
+  background: #f5f5f5;
+  color: #a9a8a8;
+}
+
+.modal .modal-body table tbody td {
+  vertical-align: middle !important;
+}

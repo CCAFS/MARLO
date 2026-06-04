@@ -18,6 +18,8 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.ProjectMilestoneDAO;
 import org.cgiar.ccafs.marlo.data.manager.ProjectMilestoneManager;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import javax.inject.Inject;
  * @author Christian Garcia
  */
 @Named
+@Service("projectMilestoneManager")
 public class ProjectMilestoneManagerImpl implements ProjectMilestoneManager {
 
 
@@ -68,6 +71,7 @@ public class ProjectMilestoneManagerImpl implements ProjectMilestoneManager {
   }
 
   @Override
+  @Transactional
   public ProjectMilestone saveProjectMilestone(ProjectMilestone projectMilestone) {
 
     return projectMilestoneDAO.save(projectMilestone);

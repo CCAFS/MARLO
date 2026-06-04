@@ -96,7 +96,7 @@ public class InternationalitazionFileInterceptor extends AbstractInterceptor {
     this.localizedTextProvider.addDefaultResourceBundle(APConstants.CUSTOM_FILE);
 
 
-    ServletActionContext.getContext().setLocale(locale);
+    // ServletActionContext.getContext().setLocale(locale);
 
     if (session.containsKey(APConstants.SESSION_CRP)) {
 

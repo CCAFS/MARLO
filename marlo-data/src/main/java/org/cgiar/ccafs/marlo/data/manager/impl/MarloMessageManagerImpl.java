@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author CCAFS
  */
@@ -43,8 +45,8 @@ public class MarloMessageManagerImpl implements MarloMessageManager {
   }
 
   @Override
+  @Transactional
   public void deleteMarloMessage(long marloMessageId) {
-
     marloMessageDAO.deleteMarloMessage(marloMessageId);
   }
 
@@ -81,6 +83,7 @@ public class MarloMessageManagerImpl implements MarloMessageManager {
   }
 
   @Override
+  @Transactional
   public MarloMessage saveMarloMessage(MarloMessage marloMessage) {
 
     return marloMessageDAO.save(marloMessage);

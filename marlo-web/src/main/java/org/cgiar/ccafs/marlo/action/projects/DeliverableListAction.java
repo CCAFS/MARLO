@@ -115,6 +115,7 @@ public class DeliverableListAction extends BaseAction {
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.feedbackQACommentableFieldsManager = feedbackQACommentableFieldsManager;
     this.commentManager = commentManager;
+    this.deliverables = new ArrayList<>();
   }
 
   @Override
@@ -178,6 +179,17 @@ public class DeliverableListAction extends BaseAction {
     Map<String, Parameter> parameters = this.getParameters();
     deliverableID = Long
       .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
+
+    // Si deliverableID no se cargó en prepare(), intentar obtenerlo aquí
+    if (deliverableID <= 0) {
+        Parameter param = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
+        
+        if (param == null || !param.isDefined()) {
+            logger.error("deliverableID parameter not found");
+            return ERROR;
+        }
+        deliverableID = Long.parseLong(StringUtils.trim(param.getValue()));
+    }
 
     Deliverable deliverable = deliverableManager.getDeliverableById(deliverableID);
     if (deliverable != null) {
@@ -1174,8 +1186,15 @@ public class DeliverableListAction extends BaseAction {
     phase = phaseManager.getPhaseById(phase.getId());
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
-      project = projectManager.getProjectById(projectID);
 
+      // AÑADIR: Extraer deliverableID si viene en el request
+      String deliverableParam = this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
+      if (StringUtils.isNotBlank(deliverableParam)) {
+          deliverableID = Long.parseLong(StringUtils.trim(deliverableParam));
+          logger.debug("prepare() - deliverableID loaded: {}", deliverableID);
+      }
+
+      project = projectManager.getProjectById(projectID);
       if (project != null) {
 
         allYears = project.getProjecInfoPhase(this.getActualPhase()).getAllYears();
@@ -1264,9 +1283,11 @@ public class DeliverableListAction extends BaseAction {
     this.deliverableID = deliverableID;
   }
 
-  public void setDeliverables(List<Deliverable> deliverables) {
-    this.deliverables = deliverables;
-  }
+  // Removed setter for 'deliverables' to avoid Spring autowiring a bean named 'deliverables'
+  // into this action (caused a type conversion error when a Spring bean named
+  // 'deliverables' of a different type was present in the context). If a setter
+  // is required later for incoming parameters, add a differently named setter
+  // (e.g. setDeliverableList) to avoid name collision with Spring beans.
 
   public void setDeliverablesType(List<DeliverableType> deliverablesType) {
     this.deliverablesType = deliverablesType;
