@@ -33,7 +33,7 @@
         [#include "/WEB-INF/crp/views/admin/menu-admin.ftl" /]
       </div>
       <div class="col-md-9">
-        [@s.form action=actionName enctype="multipart/form-data"]
+        [@s.form action=actionName]
         
         <h4 class="sectionTitle">[@s.text name="crpLocations.title" /]</h4>
         [#-- Default locations --]

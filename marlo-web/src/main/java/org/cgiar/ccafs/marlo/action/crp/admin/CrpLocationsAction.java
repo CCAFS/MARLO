@@ -491,6 +491,9 @@ public class CrpLocationsAction extends BaseAction {
           // Manual binding for nested location lists (handles cases where client JS didn't set names)
           this.manualBindingLocationElements();
 
+      LOG.info("After manualBinding: customLevels size={}",
+        loggedCrp.getCustomLevels() != null ? loggedCrp.getCustomLevels().size() : -1);
+
       this.locationPreviousData();
       this.locationNewData();
 
@@ -583,6 +586,10 @@ public class CrpLocationsAction extends BaseAction {
     if (loggedCrp.getCustomLevels() == null) {
       loggedCrp.setCustomLevels(new ArrayList<CustomLevelSelect>());
     }
+
+    int customLevelsParamCount = (int) params.keySet().stream()
+      .filter(k -> k.startsWith("loggedCrp.customLevels[")).count();
+    LOG.debug("manualBinding: total params={}, customLevels params={}", params.size(), customLevelsParamCount);
 
     for (String key : params.keySet()) {
       try {
