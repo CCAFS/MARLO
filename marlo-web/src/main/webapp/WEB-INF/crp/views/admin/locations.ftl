@@ -209,7 +209,7 @@
     [#-- Location Name --]
     [#if locationType]
       <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
-      <span class="coordinates" title="${(element.locElement.name)!'Undefined'}"> [@utilities.wordCutter string=(element.locElement.name)!'Undefined' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
+      <span class="coordinates" title="${(element.locElement.name)!''}"> [@utilities.wordCutter string=(element.locElement.name)!'' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
     [#else]
       <span class="flag-icon"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
     [/#if]
