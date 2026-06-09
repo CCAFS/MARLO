@@ -31,12 +31,12 @@
         <h4 class="sectionTitle">System Reset</h4>
         <div id="systemReset" class="borderBox ">
          <div class="form-group">
-          [@customForm.textArea name="" i18nkey="notifications.systemReset.message" placeholder="notifications.systemReset.message.placeholder" required=true className="systemReset-message" /]
+          [@customForm.textArea name="" value="System reset scheduled" i18nkey="notifications.systemReset.message" placeholder="notifications.systemReset.message.placeholder" required=true className="systemReset-message" editable=true /]
          </div>
          <div class="form-group">
            <div class="row">
            	<div class="col-md-4">
-              [@customForm.input name="" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
+              [@customForm.input name="" value="120" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
            	</div>
            </div>
          </div>
