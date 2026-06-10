@@ -50,7 +50,7 @@
               [/#if]
               <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
               [#-- CRPs that allow this location --]
-              <div class="crps" style="color: #9c9c9c; margin-left: 0px; font-size: 0.75em;" title="CRPs ">
+              <div class="crps" title="CRPs ">
                 [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
                   [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
                     [#if crpLocElementType.active][${crpLocElementType.crp.acronym}] [/#if]
@@ -174,8 +174,6 @@
               [#list locLevel.locationElements as locElement]
                 [@locElementMacro element=(locElement)!{} name="${customName}.locationElements" index=locElement_index locationType=locationType /]
               [/#list]
-            [#else] 
-              <p class="message text-center">[@s.text name="location.notSpecificCoordinates${locationType?string('','Scope')}"/]</p>
             [/#if]
           </ul>
           <div class="clearfix"></div> 
@@ -211,7 +209,7 @@
     [#-- Location Name --]
     [#if locationType]
       <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> <span class="name">${(element.name)!'{name}'}</span><br />
-      <span class="coordinates" title="${(element.locElement.name)!'Undefined'}"> [@utilities.wordCutter string=(element.locElement.name)!'Undefined' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
+      <span class="coordinates" title="${(element.locElement.name)!''}"> [@utilities.wordCutter string=(element.locElement.name)!'' maxPos=15 /] (${(element.locGeoposition.latitude)!}, ${(element.locGeoposition.longitude)!})</span>
     [#else]
       <span class="flag-icon"><i class="flag-icon flag-icon-${(element.locElement.isoAlpha2?lower_case)!}"></i></span> <span class="name">${(element.name)!'{name}'}</span><br />
     [/#if]
