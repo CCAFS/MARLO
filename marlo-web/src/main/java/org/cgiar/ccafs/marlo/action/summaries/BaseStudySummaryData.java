@@ -1533,17 +1533,15 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           System.out.println("Error setting other json root information");
         }
 
-        String username = null, password = null;
+        String apiKey = null;
         try {
-          username = this.config.getMicroserviceUsername();
-          password = this.config.getMicroservicePassword();
+          apiKey = this.config.getMicroserviceApiKey();
         } catch (final Exception e) {
-          System.out.println("error getting conf credentials " + e);
+          System.out.println("error getting conf apiKey " + e);
         }
 
         try {
-          final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-          jsonRoot.put("credentials", credentialsJson);
+          jsonRoot.put("apiKey", apiKey);
 
           jsonMainRoot.put("data", jsonRoot);
           jsonMainRoot.put("pattern", "pdf.generate");

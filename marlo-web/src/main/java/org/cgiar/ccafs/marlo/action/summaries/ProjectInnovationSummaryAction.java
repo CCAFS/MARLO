@@ -1660,18 +1660,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       System.out.println("Error setting other json root information");
     }
 
-    String username = null, password = null;
     try {
-      username = this.config.getMicroserviceUsername();
-      password = this.config.getMicroservicePassword();
-    } catch (final Exception e) {
-      System.out.println("error getting conf credentials " + e);
-    }
-
-    try {
-      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-      jsonRoot.put("credentials", credentialsJson);
-
       jsonMainRoot.put("data", jsonRoot);
       jsonMainRoot.put("pattern", "pdf.generate");
     } catch (Exception e) {

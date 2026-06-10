@@ -169,6 +169,8 @@ public class APConfig {
   private String MICROSERVICE_REPORTING_URL;
   @Value("${microservice.s3.url}")
   private String MICROSERVICE_S3_URL;
+  @Value("${microservice.apiKey}")
+  private String MICROSERVICE_API_KEY;
   @Value("${summary.microservice.url}")
   private String SUMMARY_MICROSERVICE_URL;
 
@@ -621,6 +623,14 @@ public class APConfig {
       return null;
     }
     return MICROSERVICE_USERNAME;
+  }
+
+  public String getMicroserviceApiKey() {
+    if (MICROSERVICE_API_KEY == null) {
+      LOG.error("there is not microservice apiKey configured.");
+      return null;
+    }
+    return MICROSERVICE_API_KEY;
   }
 
   /**
