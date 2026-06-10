@@ -32,7 +32,7 @@
         <div class="borderBox ">
           [#-- Targets units list --]
           <div class="items-list">
-            <ul>
+            <ul class="loc-element-types-list">
             [#list locElementTypeList as element]
               [@locElementTypeMacro element=element name="locElementTypeList" index=element_index /]
             [/#list]
