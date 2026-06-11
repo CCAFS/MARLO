@@ -12,6 +12,7 @@ function attachEvents() {
     var pushData = {
         message: $('textarea.systemReset-message').val(),
         diffTime: $('input.systemReset-diffTime').val() || 120,
+        notificationType: 'systemReset'
     }
     // globalChannel.trigger("client-system-reset", pushData);
     $.ajax({
@@ -45,10 +46,16 @@ function attachEvents() {
 
   $('#simpleNotification button').on('click', function() {
     var pushData = {
-      message: $('textarea.simpleNotification-message').val()
+      message: $('textarea.simpleNotification-message').val(),
+      notificationType: 'simple'
     }
-    globalChannel.trigger("client-simple-notification", pushData);
-    $('#simpleNotification').find('textarea, input').val('');
+    $.ajax({
+      url: baseURL + '/sendNotification.do',
+      data: pushData,
+      success: function() {
+        $('#simpleNotification').find('textarea, input').val('');
+      }
+    });
   });
 }
 function resetSuccess() {
