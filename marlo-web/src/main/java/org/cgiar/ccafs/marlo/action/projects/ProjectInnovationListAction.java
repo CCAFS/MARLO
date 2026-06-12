@@ -63,6 +63,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -457,7 +458,7 @@ public class ProjectInnovationListAction extends BaseAction {
         }
 
         if (projectInnovation.getProject() != null
-          && !projectInnovation.getProject().getId().equals(projectID)) {
+          && !Objects.equals(projectInnovation.getProject().getId(), projectID)) {
           projectInnovation.setOwner(
             projectInnovation.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
         } else {
@@ -473,12 +474,13 @@ public class ProjectInnovationListAction extends BaseAction {
      * Update 4/25/2019 Adding Shared Project Innovation in the lists.
      */
     List<ProjectInnovationShared> innovationShareds = projectInnovationSharedManager.findAll().stream()
-      .filter(px -> px.getProject() != null && px.getProject().getId().equals(this.getProjectID()) && px.isActive()
+      .filter(px -> px.getProject() != null && Objects.equals(px.getProject().getId(), this.getProjectID())
+        && px.isActive()
         && px.getPhase().getId().equals(this.getActualPhase().getId()) && px.getProjectInnovation().isActive()
         && px.getProjectInnovation().getProjectInnovationInfo(this.getActualPhase()) != null)
       .collect(Collectors.toList());
 
-    if (innovationShareds != null && innovationShareds.size() > 0) {
+    if (innovationShareds != null && !innovationShareds.isEmpty()) {
       for (ProjectInnovationShared innovationShared : innovationShareds) {
         if (!projectInnovations.contains(innovationShared.getProjectInnovation())
           && !projectOldInnovations.contains(innovationShared.getProjectInnovation())) {
