@@ -7866,17 +7866,15 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       System.out.println("Error setting report name and bucket: " + e.getMessage());
     }
     
-    String username = null, password = null;
+    String apiKey = null;
     try {
-      username = this.config.getMicroserviceUsername();
-      password = this.config.getMicroservicePassword();
+      apiKey = this.config.getMicroserviceApiKey();
     } catch (final Exception e) {
-      System.out.println("Error getting microservice credentials: " + e);
+      System.out.println("Error getting microservice apiKey: " + e);
     }
-    
+
     try {
-      final String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-      jsonRoot.put("credentials", credentialsJson);
+      jsonRoot.put("apiKey", apiKey);
       
       jsonMainRoot.put("data", jsonRoot);
       jsonMainRoot.put("pattern", "pdf.generate");
