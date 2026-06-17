@@ -8,7 +8,7 @@ Standalone AWS Lambda service to replace MARLO as the report generation orchestr
 
 ## Status
 
-OICR report MVP — local Express server + Lambda handler scaffold.
+OICR report — full JSON field parity with MARLO (local Express + Lambda handler scaffold).
 
 ## Quick start (local)
 
@@ -73,7 +73,7 @@ Use **Lambda Function URL** (no API Gateway cost). VPC + S3 Gateway Endpoint req
 
 ## Out of scope (for now)
 
-- Full OICR field parity (100+ fields) — MVP core fields only
+- Full OICR field parity with MARLO `BaseStudySummaryData.generateAndSendJson()` (geography, contributors, innovations, quantification, alliance/SDG, cross-cutting markers, etc.)
 - Innovation and cluster reports
 - AWS deployment / SAM / Serverless config
 - Replacing the external PDF rendering microservice

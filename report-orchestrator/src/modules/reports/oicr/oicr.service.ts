@@ -8,7 +8,7 @@ import { OicrReportRequest, OicrReportResponse } from '../../../shared/pdf-paylo
 import {
   buildOicrFileName,
   buildOicrPdfPayload,
-  mapStudyRowToJsonData,
+  mapStudyContextToJsonData,
 } from './oicr.builder';
 import { OicrRepository } from './oicr.repository';
 
@@ -37,15 +37,15 @@ export class OicrReportService {
     const dryRun = request.dryRun ?? this.config.reportDryRun;
     const skipS3Poll = request.skipS3Poll ?? this.config.reportSkipS3Poll;
 
-    const studyRow = await this.repository.findStudyByIdAndPhase(request.studyId, request.phaseId);
-    if (!studyRow) {
+    const studyContext = await this.repository.loadStudyContext(request.studyId, request.phaseId);
+    if (!studyContext) {
       throw new Error(
         `OICR study ${request.studyId} not found for phase ${request.phaseId}`,
       );
     }
 
     const templateData = await this.templateService.getOicrTemplate();
-    const studyData = mapStudyRowToJsonData(studyRow);
+    const studyData = mapStudyContextToJsonData(studyContext);
     const fileName = buildOicrFileName(this.config.reportNamePrefix, request.studyId);
     const payload = buildOicrPdfPayload(this.config, templateData, studyData, fileName);
 

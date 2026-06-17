@@ -5,7 +5,8 @@ import {
   formatReportTimestamp,
   PdfGeneratePayload,
 } from '../../../shared/pdf-payload.types';
-import { OicrStudyData, OicrStudyRow } from './oicr.types';
+import { assembleOicrStudyData } from './oicr-assembler';
+import { OicrStudyContext, OicrStudyData } from './oicr.types';
 
 function formatTimeCreation(): string {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -21,21 +22,8 @@ function formatTimeCreation(): string {
   return `${formatter.format(new Date())} (CET)`;
 }
 
-export function mapStudyRowToJsonData(row: OicrStudyRow): OicrStudyData {
-  return {
-    id: row.id,
-    year: row.year,
-    title: row.title,
-    commissioningStudy: row.commissioningStudy,
-    status: row.status,
-    type: row.type,
-    outcomeImpactStatement: row.outcomeImpactStatement,
-    topLevelComments: row.topLevelComments,
-    scopeComments: row.scopeComments,
-    allianceOICRID: row.allianceOicr,
-    stageStudy: row.stageStudy?.trim() ? row.stageStudy : null,
-    timeCreation: formatTimeCreation(),
-  };
+export function mapStudyContextToJsonData(context: OicrStudyContext): OicrStudyData {
+  return assembleOicrStudyData(context, formatTimeCreation());
 }
 
 export function buildOicrFileName(prefix: string, studyId: number): string {
