@@ -22,6 +22,10 @@ export class PhaseResolverService {
     return this.resolvePhaseFromQuery(params);
   }
 
+  async resolveClusterPhaseId(params: PhaseQueryParams): Promise<number> {
+    return this.resolvePhaseFromQuery(params);
+  }
+
   /**
    * Resolves phase id from MARLO-style query params (phaseID or cycle+year+crp).
    * Mirrors BaseSummariesAction.setPublicAccessParameters().

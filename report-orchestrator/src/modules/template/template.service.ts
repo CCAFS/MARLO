@@ -24,4 +24,14 @@ export class TemplateService {
     }
     return template;
   }
+
+  async getClusterTemplate(): Promise<string> {
+    const repo = this.dataSource.getRepository(ReportConfiguration);
+    const rows = await repo.find({ take: 1, order: { id: 'ASC' } });
+    const template = rows[0]?.projectTemplateData;
+    if (!template) {
+      throw new Error('Cluster template not found in report_configurations.project_template_data');
+    }
+    return template;
+  }
 }

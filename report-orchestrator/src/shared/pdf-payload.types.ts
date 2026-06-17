@@ -53,6 +53,21 @@ export interface InnovationReportResponse {
   message?: string;
 }
 
+export interface ClusterReportRequest {
+  projectId: number;
+  phaseId: number;
+  dryRun?: boolean;
+  skipS3Poll?: boolean;
+}
+
+export interface ClusterReportResponse {
+  status: 'dry_run' | 'processing' | 'ready' | 'queued';
+  fileName: string;
+  payload?: PdfGeneratePayload;
+  downloadUrl?: string;
+  message?: string;
+}
+
 export function defaultPdfOptions(): PdfGenerateOptions {
   return {
     format: 'A4',

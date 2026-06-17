@@ -4,6 +4,7 @@ import { AppConfig } from '../../config/env';
 import { getDataSource } from '../../config/data-source';
 import { parseOptionalPositiveInt, parsePositiveInt } from '../../shared/parse-query';
 import { InnovationReportService } from './innovation/innovation.service';
+import { ClusterReportService } from './cluster/cluster.service';
 import { OicrReportService } from './oicr/oicr.service';
 
 export function createReportsRouter(config: AppConfig): Router {
@@ -43,6 +44,23 @@ export function createReportsRouter(config: AppConfig): Router {
         dryRun,
         skipS3Poll,
       });
+
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  router.post('/cluster', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const projectId = parsePositiveInt(req.body.projectId, 'projectId');
+      const phaseId = parsePositiveInt(req.body.phaseId, 'phaseId');
+      const dryRun = req.body.dryRun as boolean | undefined;
+      const skipS3Poll = req.body.skipS3Poll as boolean | undefined;
+
+      const dataSource = await getDataSource(config);
+      const service = new ClusterReportService(config, dataSource);
+      const result = await service.generate({ projectId, phaseId, dryRun, skipS3Poll });
 
       res.status(200).json(result);
     } catch (error) {
