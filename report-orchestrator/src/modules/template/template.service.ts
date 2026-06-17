@@ -14,4 +14,14 @@ export class TemplateService {
     }
     return template;
   }
+
+  async getInnovationTemplate(): Promise<string> {
+    const repo = this.dataSource.getRepository(ReportConfiguration);
+    const rows = await repo.find({ take: 1, order: { id: 'ASC' } });
+    const template = rows[0]?.innovationTemplateData;
+    if (!template) {
+      throw new Error('Innovation template not found in report_configurations.innovation_template_data');
+    }
+    return template;
+  }
 }

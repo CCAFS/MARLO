@@ -1,21 +1,32 @@
 import { DataSource } from 'typeorm';
 
-export interface StudySummaryQueryParams {
+export interface PhaseQueryParams {
   crp: string;
-  studyId: number;
   phaseId?: number;
   cycle?: string;
   year?: number;
 }
 
+export interface StudySummaryQueryParams extends PhaseQueryParams {
+  studyId: number;
+}
+
 export class PhaseResolverService {
   constructor(private readonly dataSource: DataSource) {}
+
+  async resolvePhaseId(params: StudySummaryQueryParams): Promise<number> {
+    return this.resolvePhaseFromQuery(params);
+  }
+
+  async resolveInnovationPhaseId(params: PhaseQueryParams): Promise<number> {
+    return this.resolvePhaseFromQuery(params);
+  }
 
   /**
    * Resolves phase id from MARLO-style query params (phaseID or cycle+year+crp).
    * Mirrors BaseSummariesAction.setPublicAccessParameters().
    */
-  async resolvePhaseId(params: StudySummaryQueryParams): Promise<number> {
+  private async resolvePhaseFromQuery(params: PhaseQueryParams): Promise<number> {
     if (params.phaseId != null) {
       return params.phaseId;
     }

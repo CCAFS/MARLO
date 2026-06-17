@@ -37,6 +37,22 @@ export interface OicrReportResponse {
   message?: string;
 }
 
+export interface InnovationReportRequest {
+  innovationId: number;
+  phaseId: number;
+  crpAcronym?: string;
+  dryRun?: boolean;
+  skipS3Poll?: boolean;
+}
+
+export interface InnovationReportResponse {
+  status: 'dry_run' | 'processing' | 'ready' | 'queued';
+  fileName: string;
+  payload?: PdfGeneratePayload;
+  downloadUrl?: string;
+  message?: string;
+}
+
 export function defaultPdfOptions(): PdfGenerateOptions {
   return {
     format: 'A4',
