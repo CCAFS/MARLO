@@ -1,14 +1,15 @@
 import { formatInnovationTimeCreation } from '../../../shared/report-json.utils';
+import { InnovationContext } from '../innovation/innovation.types';
 import { OicrStudyContext } from '../oicr/oicr.types';
 import {
   CLUSTER_PARTNER_ROLE_LABELS,
-  DELIVERABLE_STATUS,
   FLAG_ASSET_BASE_URL,
   LIAISON_CONTACT_LABEL,
   LIAISON_INSTITUTION_LABEL,
   PROJECT_STATUS_LABELS,
 } from './cluster.constants';
-import { resolveDisplayYear } from './cluster-deliverable-filter';
+import { mapDeliverableForCluster } from './cluster-deliverable.mapper';
+import { mapInnovationContextForClusterEmbed } from './cluster-innovation.mapper';
 import { mapOicrContextForClusterEmbed } from './cluster-oicr.mapper';
 import {
   buildClusterActivitiesSummary,
@@ -22,7 +23,7 @@ import {
 import {
   ClusterActivitySummaryRow,
   ClusterContext,
-  ClusterDeliverableSummaryRow,
+  ClusterDeliverableExtendedContext,
   ClusterInnovationSummaryRow,
   ClusterLocationGroupRow,
   ClusterOutcomeCommunicationRow,
@@ -39,6 +40,8 @@ import {
 export function assembleClusterData(
   context: ClusterContext,
   oicrContexts: OicrStudyContext[],
+  innovationContexts: Map<number, InnovationContext>,
+  deliverableContexts: Map<number, ClusterDeliverableExtendedContext>,
 ): ClusterReportData {
   const { core } = context;
   const partners = buildPartners(context);
@@ -58,9 +61,11 @@ export function assembleClusterData(
     projectLocations: buildProjectLocations(context),
     performanceIndicatorContributions: buildPerformanceContributions(context),
     oicrs: oicrContexts.map(mapOicrContextForClusterEmbed),
-    deliverables: context.deliverables.map(mapDeliverable),
+    deliverables: context.deliverables.map((row) =>
+      mapDeliverableForCluster(row, deliverableContexts.get(row.id)),
+    ),
     activities: context.activities.map(mapActivity),
-    innovations: context.innovations.map(mapInnovation),
+    innovations: context.innovations.map((row) => mapInnovation(row, innovationContexts.get(row.id))),
     crossCutting: buildCrossCuttingSummary(context),
   };
 }
@@ -346,36 +351,6 @@ function buildPerformanceContribution(
   return data;
 }
 
-function mapDeliverable(row: ClusterDeliverableSummaryRow): Record<string, unknown> {
-  const data: Record<string, unknown> = {
-    id: row.id,
-    year: row.year,
-    displayYear: resolveDisplayYear(row),
-  };
-
-  putIfPresent(data, 'title', sanitizeText(row.title));
-  if (row.newExpectedYear != null && row.newExpectedYear !== -1) {
-    data.newExpectedYear = row.newExpectedYear;
-  }
-  if (row.status != null) {
-    data.status = PROJECT_STATUS_LABELS[row.status] ?? String(row.status);
-    if (
-      row.newExpectedYear != null
-      && row.newExpectedYear !== -1
-      && row.status != null
-      && (row.status === DELIVERABLE_STATUS.EXTENDED
-        || row.status === DELIVERABLE_STATUS.ONGOING
-        || row.status === DELIVERABLE_STATUS.COMPLETE)
-    ) {
-      data.isExtended = true;
-    }
-  }
-  putIfPresent(data, 'statusDescription', sanitizeText(row.statusDescription));
-  putIfPresent(data, 'description', sanitizeText(row.description));
-  putIfPresent(data, 'type', sanitizeText(row.typeName));
-  return data;
-}
-
 function mapActivity(row: ClusterActivitySummaryRow): Record<string, unknown> {
   const data: Record<string, unknown> = { id: row.id };
   putIfPresent(data, 'title', sanitizeText(row.title));
@@ -392,7 +367,14 @@ function mapActivity(row: ClusterActivitySummaryRow): Record<string, unknown> {
   return data;
 }
 
-function mapInnovation(row: ClusterInnovationSummaryRow): Record<string, unknown> {
+function mapInnovation(
+  row: ClusterInnovationSummaryRow,
+  innovationContext: InnovationContext | undefined,
+): Record<string, unknown> {
+  if (innovationContext) {
+    return mapInnovationContextForClusterEmbed(innovationContext);
+  }
+
   const data: Record<string, unknown> = { id: row.id };
   putIfPresent(data, 'title', sanitizeText(row.title));
   putIfPresent(data, 'shortTitle', sanitizeText(row.shortTitle));

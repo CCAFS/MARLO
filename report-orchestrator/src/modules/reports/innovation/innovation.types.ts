@@ -5,6 +5,8 @@ export interface InnovationCoreRow {
   crpAcronym: string | null;
   phaseId: number;
   title: string | null;
+  shortTitle: string | null;
+  innovationNumber: number | null;
   narrative: string | null;
   innovationImportance: string | null;
   year: number | null;
@@ -12,13 +14,27 @@ export interface InnovationCoreRow {
   readinessScale: string | null;
   repIndPhaseResearchPartnership: string | null;
   repIndStageInnovation: string | null;
+  descriptionStage: string | null;
   repIndRegion: string | null;
   repIndInnovationType: string | null;
+  otherInnovationType: string | null;
   repIndInnovationTypePrms: string | null;
   repIndInnovationNature: string | null;
   repIndDegreeInnovation: string | null;
+  evidenceLink: string | null;
+  adaptativeResearchNarrative: string | null;
+  innovationBundle: number | null;
+  genderFocusLevel: string | null;
+  genderExplanation: string | null;
+  youthFocusLevel: string | null;
+  youthExplanation: string | null;
+  areUsersDetermined: number | null;
+  hasKnowledgePotentialId: number | null;
+  reasonKnowledgePotential: string | null;
+  hasSpecifiedOutputCountries: number | null;
   leadOrganization: string | null;
   intellectualProperty: string | null;
+  intellectualPropertyInstitution: string | null;
   hasLegalRestrictions: number | null;
   hasAssetPotential: number | null;
   hasFurtherDevelopment: number | null;
@@ -50,6 +66,12 @@ export interface InnovationGeographicScopeRow {
 
 export interface InnovationLocElementRow {
   name: string;
+  isoAlpha2: string | null;
+}
+
+export interface InnovationMilestoneRow {
+  name: string;
+  primary: number | null;
 }
 
 export interface InnovationInstitutionRow {
@@ -162,6 +184,13 @@ export interface InnovationContext {
   referenceUrls: InnovationReferenceUrlRow[];
   referenceComplementarySolutions: InnovationReferenceRow[];
   crpOutcomes: string[];
+  crps: string[];
+  projectOutcomes: string[];
+  milestones: InnovationMilestoneRow[];
+  subIdos: string[];
+  contacts: string[];
+  linkedDeliverables: string[];
+  organizations: string[];
   bundles: InnovationBundleRow[];
   complementarySolutions: InnovationComplementarySolutionRow[];
   hasAllianceInstitution: boolean;

@@ -20,6 +20,7 @@ import {
   InnovationGeographicScopeRow,
   InnovationInstitutionRow,
   InnovationLocElementRow,
+  InnovationMilestoneRow,
   InnovationReferenceRow,
   InnovationReferenceUrlRow,
   InnovationStudyRow,
@@ -47,6 +48,7 @@ export class InnovationRepository {
         scope.scopeId !== GEOGRAPHIC_SCOPE.GLOBAL && scope.scopeId !== GEOGRAPHIC_SCOPE.REGIONAL,
     );
     const isRegional = geographicScopes.some((scope) => scope.scopeId === GEOGRAPHIC_SCOPE.REGIONAL);
+    const shouldLoadCountries = isNational || core.hasSpecifiedOutputCountries === 1;
 
     const [
       countries,
@@ -65,11 +67,18 @@ export class InnovationRepository {
       referenceUrls,
       referenceComplementarySolutions,
       crpOutcomes,
+      crps,
+      projectOutcomes,
+      milestones,
+      subIdos,
+      contacts,
+      linkedDeliverables,
+      organizations,
       bundles,
       complementarySolutions,
       hasAllianceInstitution,
     ] = await Promise.all([
-      isNational ? this.loadCountries(innovationId, phaseId) : Promise.resolve([]),
+      shouldLoadCountries ? this.loadCountries(innovationId, phaseId) : Promise.resolve([]),
       isRegional ? this.loadRegions(innovationId, phaseId) : Promise.resolve([]),
       this.loadContributingOrganizations(innovationId, phaseId),
       this.loadCenters(innovationId, phaseId),
@@ -85,6 +94,13 @@ export class InnovationRepository {
       this.loadReferenceUrls(innovationId, phaseId),
       this.loadReferenceComplementarySolutions(innovationId, phaseId),
       this.loadCrpOutcomes(innovationId, phaseId),
+      this.loadCrps(innovationId, phaseId),
+      this.loadProjectOutcomes(innovationId, phaseId),
+      this.loadMilestones(innovationId, phaseId),
+      this.loadSubIdos(innovationId, phaseId),
+      this.loadContacts(innovationId, phaseId),
+      this.loadLinkedDeliverables(innovationId, phaseId),
+      this.loadOrganizations(innovationId, phaseId),
       this.loadBundles(innovationId, phaseId),
       this.loadComplementarySolutions(innovationId, phaseId),
       this.hasAllianceInstitution(innovationId, phaseId),
@@ -109,6 +125,13 @@ export class InnovationRepository {
       referenceUrls,
       referenceComplementarySolutions,
       crpOutcomes,
+      crps,
+      projectOutcomes,
+      milestones,
+      subIdos,
+      contacts,
+      linkedDeliverables,
+      organizations,
       bundles,
       complementarySolutions,
       hasAllianceInstitution,
@@ -133,6 +156,8 @@ export class InnovationRepository {
         ) AS crpAcronym,
         pii.id_phase AS phaseId,
         pii.title AS title,
+        pii.short_title AS shortTitle,
+        pii.number_of_innovations AS innovationNumber,
         pii.narrative AS narrative,
         pii.innovation_importance AS innovationImportance,
         pii.year AS year,
@@ -140,11 +165,24 @@ export class InnovationRepository {
         SUBSTRING_INDEX(sr.name, ' - ', 1) AS readinessScale,
         ripr.name AS repIndPhaseResearchPartnership,
         risi.name AS repIndStageInnovation,
+        pii.description_stage AS descriptionStage,
         rir.name AS repIndRegion,
         riit.name AS repIndInnovationType,
+        pii.other_innovation_type AS otherInnovationType,
         riit.prms_name_equivalent AS repIndInnovationTypePrms,
         riin.name AS repIndInnovationNature,
         ridi.name AS repIndDegreeInnovation,
+        pii.evidence_link AS evidenceLink,
+        pii.adaptative_research_narrative AS adaptativeResearchNarrative,
+        pii.is_innovation_bundle AS innovationBundle,
+        rigfl_g.name AS genderFocusLevel,
+        pii.gender_explaniation AS genderExplanation,
+        rigfl_y.name AS youthFocusLevel,
+        pii.youth_explaniation AS youthExplanation,
+        pii.are_users_determined AS areUsersDetermined,
+        pii.has_knowledge_potential_id AS hasKnowledgePotentialId,
+        pii.reason_knowledge_potential AS reasonKnowledgePotential,
+        pii.has_specified_output_countries AS hasSpecifiedOutputCountries,
         CASE
           WHEN i_lo.id IS NULL THEN NULL
           WHEN i_lo.acronym IS NOT NULL AND TRIM(i_lo.acronym) != ''
@@ -152,6 +190,12 @@ export class InnovationRepository {
           ELSE i_lo.name
         END AS leadOrganization,
         i_ip.acronym AS intellectualProperty,
+        CASE
+          WHEN i_ip.id IS NULL THEN NULL
+          WHEN i_ip.acronym IS NOT NULL AND TRIM(i_ip.acronym) != ''
+            THEN CONCAT(i_ip.acronym, ' - ', i_ip.name)
+          ELSE i_ip.name
+        END AS intellectualPropertyInstitution,
         pii.has_legal_restrictions AS hasLegalRestrictions,
         pii.has_asset_potential AS hasAssetPotential,
         pii.has_further_development AS hasFurtherDevelopment,
@@ -185,6 +229,8 @@ export class InnovationRepository {
       LEFT JOIN rep_ind_innovation_types riit ON riit.id = pii.innovation_type_id
       LEFT JOIN rep_ind_innovation_natures riin ON riin.id = pii.innovation_nature_id
       LEFT JOIN rep_ind_degree_innovation ridi ON ridi.id = pii.rep_ind_degree_innovation_id
+      LEFT JOIN rep_ind_gender_youth_focus_levels rigfl_g ON rigfl_g.id = pii.gender_focus_level_id
+      LEFT JOIN rep_ind_gender_youth_focus_levels rigfl_y ON rigfl_y.id = pii.youth_focus_level_id
       LEFT JOIN institutions i_lo ON i_lo.id = pii.lead_organization_id
       LEFT JOIN institutions i_ip ON i_ip.id = pii.intellectual_property_institution_id
       LEFT JOIN impact_area_scores ias_g ON ias_g.id = pii.gender_score_id
@@ -224,7 +270,7 @@ export class InnovationRepository {
   ): Promise<InnovationLocElementRow[]> {
     return this.dataSource.query<InnovationLocElementRow[]>(
       `
-      SELECT le.name AS name
+      SELECT le.name AS name, LOWER(le.iso_alpha_2) AS isoAlpha2
       FROM project_innovation_countries pic
       INNER JOIN loc_elements le ON le.id = pic.id_country
       WHERE pic.project_innovation_id = ?
@@ -562,6 +608,147 @@ export class InnovationRepository {
       [innovationId, phaseId],
     );
     return rows.map((row) => row.composedName ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadCrps(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ name: string | null }>>(
+      `
+      SELECT
+        CASE
+          WHEN gu.acronym IS NOT NULL AND TRIM(gu.acronym) != ''
+            THEN CONCAT(gu.acronym, ': ', gu.name)
+          ELSE gu.name
+        END AS name
+      FROM project_innovation_crps pic
+      INNER JOIN global_units gu ON gu.id = pic.global_unit_id
+      WHERE pic.project_innovation_id = ?
+        AND pic.id_phase = ?
+      ORDER BY gu.name
+      `,
+      [innovationId, phaseId],
+    );
+    return rows.map((row) => row.name ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadProjectOutcomes(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ name: string | null }>>(
+      `
+      SELECT
+        CASE
+          WHEN gu.acronym IS NOT NULL AND cpo.description IS NOT NULL
+            THEN CONCAT(gu.acronym, ' Outcome: ', cpo.description)
+          ELSE CONCAT('Outcome ', po.id)
+        END AS name
+      FROM project_innovation_project_outcomes pipo
+      INNER JOIN project_outcomes po ON po.id = pipo.project_outcome_id
+      INNER JOIN crp_program_outcomes cpo ON cpo.id = po.outcome_id
+      INNER JOIN crp_programs cp ON cp.id = cpo.crp_program_id
+      INNER JOIN global_units gu ON gu.id = cp.global_unit_id
+      WHERE pipo.project_innovation_id = ?
+        AND pipo.id_phase = ?
+        AND po.is_active = 1
+      ORDER BY name
+      `,
+      [innovationId, phaseId],
+    );
+    return rows.map((row) => row.name ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadMilestones(innovationId: number, phaseId: number): Promise<InnovationMilestoneRow[]> {
+    return this.dataSource.query<InnovationMilestoneRow[]>(
+      `
+      SELECT
+        CASE
+          WHEN cm.extended_year IS NOT NULL AND cm.extended_year != -1
+            THEN CONCAT(cm.year, ' extended to ', cm.extended_year, ' - ', cm.title)
+          ELSE CONCAT(cm.year, ' - ', cm.title)
+        END AS name,
+        pim.is_primary AS \`primary\`
+      FROM project_innovation_milestones pim
+      INNER JOIN crp_milestones cm ON cm.id = pim.crp_milestone_id
+      WHERE pim.project_innovation_id = ?
+        AND pim.id_phase = ?
+      ORDER BY name
+      `,
+      [innovationId, phaseId],
+    );
+  }
+
+  private async loadSubIdos(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ name: string | null }>>(
+      `
+      SELECT ssi.description AS name
+      FROM project_innovation_sub_idos pisi
+      INNER JOIN srf_sub_idos ssi ON ssi.id = pisi.sub_ido_id
+      WHERE pisi.project_innovation_id = ?
+        AND pisi.id_phase = ?
+      ORDER BY ssi.description
+      `,
+      [innovationId, phaseId],
+    );
+    return rows.map((row) => row.name ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadContacts(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ contact: string | null }>>(
+      `
+      SELECT DISTINCT
+        CASE
+          WHEN inst_name IS NOT NULL AND user_name IS NOT NULL
+            THEN CONCAT(inst_name, ' - ', user_name)
+          ELSE COALESCE(inst_name, user_name)
+        END AS contact
+      FROM (
+        SELECT
+          ${INSTITUTION_COMPOSED_NAME_SQL.replace(/\bi\./g, 'inst.')} AS inst_name,
+          CONCAT(u.last_name, ', ', u.first_name) AS user_name
+        FROM project_innovation_partnerships pip
+        INNER JOIN project_innovation_partnership_persons pipp
+          ON pipp.partnership_id = pip.id AND pipp.is_active = 1
+        INNER JOIN users u ON u.id = pipp.user_id
+        LEFT JOIN institutions inst ON inst.id = pip.institution_id
+        WHERE pip.project_innovation_id = ?
+          AND pip.id_phase = ?
+          AND pip.is_active = 1
+          AND u.email IS NOT NULL
+          AND TRIM(u.email) != ''
+      ) contacts
+      ORDER BY contact
+      `,
+      [innovationId, phaseId],
+    );
+    return rows.map((row) => row.contact ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadLinkedDeliverables(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ title: string | null }>>(
+      `
+      SELECT di.title AS title
+      FROM project_innovation_deliverables pid
+      INNER JOIN deliverables_info di
+        ON di.deliverable_id = pid.deliverable_id AND di.id_phase = ? AND di.is_active = 1
+      WHERE pid.project_innovation_id = ?
+        AND pid.id_phase = ?
+      ORDER BY di.title
+      `,
+      [phaseId, innovationId, phaseId],
+    );
+    return rows.map((row) => row.title ?? null).filter((value): value is string => value != null);
+  }
+
+  private async loadOrganizations(innovationId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ name: string | null }>>(
+      `
+      SELECT DISTINCT riot.name AS name
+      FROM project_innovation_organizations pio
+      INNER JOIN rep_ind_organization_types riot ON riot.id = pio.rep_ind_organization_type_id
+      WHERE pio.project_innovation_id = ?
+        AND pio.id_phase = ?
+      ORDER BY riot.name
+      `,
+      [innovationId, phaseId],
+    );
+    return rows.map((row) => row.name ?? null).filter((value): value is string => value != null);
   }
 
   private async loadBundles(innovationId: number, phaseId: number): Promise<InnovationBundleRow[]> {

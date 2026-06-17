@@ -7,13 +7,16 @@ import {
 } from '../../../shared/pdf-payload.types';
 import { assembleClusterData } from './cluster-assembler';
 import { OicrStudyContext } from '../oicr/oicr.types';
-import { ClusterContext, ClusterReportData } from './cluster.types';
+import { InnovationContext } from '../innovation/innovation.types';
+import { ClusterContext, ClusterDeliverableExtendedContext, ClusterReportData } from './cluster.types';
 
 export function mapClusterContextToJsonData(
   context: ClusterContext,
   oicrContexts: OicrStudyContext[],
+  innovationContexts: Map<number, InnovationContext>,
+  deliverableContexts: Map<number, ClusterDeliverableExtendedContext>,
 ): ClusterReportData {
-  return assembleClusterData(context, oicrContexts);
+  return assembleClusterData(context, oicrContexts, innovationContexts, deliverableContexts);
 }
 
 export function buildClusterFileName(prefix: string, projectId: number): string {

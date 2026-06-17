@@ -8,11 +8,14 @@ import { S3PollService } from '../../storage/s3-poll.service';
 import { TemplateService } from '../../template/template.service';
 import { OicrRepository } from '../oicr/oicr.repository';
 import { OicrStudyContext } from '../oicr/oicr.types';
+import { InnovationRepository } from '../innovation/innovation.repository';
+import { InnovationContext } from '../innovation/innovation.types';
 import {
   buildClusterFileName,
   buildClusterPdfPayload,
   mapClusterContextToJsonData,
 } from './cluster.builder';
+import { ClusterDeliverableRepository } from './cluster-deliverable.repository';
 import { ClusterRepository } from './cluster.repository';
 
 export interface ClusterPdfStreamResult {
@@ -24,6 +27,10 @@ export class ClusterReportService {
   private readonly repository: ClusterRepository;
 
   private readonly oicrRepository: OicrRepository;
+
+  private readonly innovationRepository: InnovationRepository;
+
+  private readonly deliverableRepository: ClusterDeliverableRepository;
 
   private readonly templateService: TemplateService;
 
@@ -37,6 +44,8 @@ export class ClusterReportService {
   ) {
     this.repository = new ClusterRepository(dataSource);
     this.oicrRepository = new OicrRepository(dataSource);
+    this.innovationRepository = new InnovationRepository(dataSource);
+    this.deliverableRepository = new ClusterDeliverableRepository(dataSource);
     this.templateService = new TemplateService(dataSource);
     this.queueService = new QueueService(config);
     this.s3PollService = new S3PollService(config);
@@ -101,8 +110,21 @@ export class ClusterReportService {
     }
 
     const oicrContexts = await this.loadOicrContexts(context.studyIds, phaseId);
+    const innovationContexts = await this.loadInnovationContexts(
+      context.innovations.map((innovation) => innovation.id),
+      phaseId,
+    );
+    const deliverableContexts = await this.deliverableRepository.loadExtendedByDeliverableIds(
+      context.deliverables.map((deliverable) => deliverable.id),
+      phaseId,
+    );
     const templateData = await this.templateService.getClusterTemplate();
-    const clusterData = mapClusterContextToJsonData(context, oicrContexts);
+    const clusterData = mapClusterContextToJsonData(
+      context,
+      oicrContexts,
+      innovationContexts,
+      deliverableContexts,
+    );
     const fileName = buildClusterFileName(this.config.reportNamePrefix, projectId);
     const payload = buildClusterPdfPayload(this.config, templateData, clusterData, fileName);
 
@@ -115,6 +137,23 @@ export class ClusterReportService {
       const studyContext = await this.oicrRepository.loadStudyContext(studyId, phaseId);
       if (studyContext) {
         contexts.push(studyContext);
+      }
+    }
+    return contexts;
+  }
+
+  private async loadInnovationContexts(
+    innovationIds: number[],
+    phaseId: number,
+  ): Promise<Map<number, InnovationContext>> {
+    const contexts = new Map<number, InnovationContext>();
+    for (const innovationId of innovationIds) {
+      const innovationContext = await this.innovationRepository.loadInnovationContext(
+        innovationId,
+        phaseId,
+      );
+      if (innovationContext) {
+        contexts.set(innovationId, innovationContext);
       }
     }
     return contexts;

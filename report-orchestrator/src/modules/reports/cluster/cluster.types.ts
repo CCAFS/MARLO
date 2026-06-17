@@ -149,6 +149,50 @@ export interface ClusterDeliverableSummaryRow {
   typeName: string | null;
 }
 
+export interface ClusterDeliverableExtendedCoreRow {
+  deliverableId: number;
+  typeOther: string | null;
+  geographicScope: string | null;
+  isLocationGlobal: number | null;
+  regionName: string | null;
+  crpProgramOutcome: string | null;
+  crpClusterKeyOutput: string | null;
+}
+
+export interface ClusterDeliverableCountryRow {
+  deliverableId: number;
+  name: string;
+  isoAlpha2: string | null;
+}
+
+export interface ClusterDeliverableFundingSourceRow {
+  deliverableId: number;
+  fundingSourceId: number;
+  title: string | null;
+  financeCode: string | null;
+  description: string | null;
+  composedName: string | null;
+  isGlobal: number | null;
+}
+
+export interface ClusterDeliverableFundingLocationRow {
+  fundingSourceId: number;
+  name: string;
+}
+
+export interface ClusterDeliverableExtendedContext {
+  core: ClusterDeliverableExtendedCoreRow;
+  countries: ClusterDeliverableCountryRow[];
+  regionNames: string[];
+  crps: string[];
+  crpOutcomes: string[];
+  projectOutcomes: string[];
+  activities: string[];
+  fundingSources: ClusterDeliverableFundingSourceRow[];
+  fundingLocations: ClusterDeliverableFundingLocationRow[];
+  contacts: string[];
+}
+
 export interface ClusterActivitySummaryRow {
   id: number;
   title: string | null;
