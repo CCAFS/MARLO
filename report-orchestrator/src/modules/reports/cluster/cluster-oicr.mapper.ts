@@ -1,6 +1,7 @@
+import { FLAG_ASSET_BASE_URL } from './cluster.constants';
 import { SRF_TARGET_OPTION_YES } from '../oicr/oicr.constants';
 import { OicrStudyContext } from '../oicr/oicr.types';
-import { sanitizeText, formatNumericValue } from './cluster-text.utils';
+import { formatNumericValue, sanitizeText } from './cluster-text.utils';
 
 /** Maps OicrStudyContext to cluster report oicrs[] item — mirrors ReportingSummaryAction.buildOICRData(). */
 export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record<string, unknown> {
@@ -20,15 +21,24 @@ export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record
   );
   putIfPresent(data, 'topLevelComments', sanitizeText(core.topLevelComments));
   putIfPresent(data, 'scopeComments', sanitizeText(core.scopeComments));
+  putIfPresent(data, 'quantification', sanitizeText(core.quantification));
   putIfPresent(data, 'stageStudy', sanitizeText(core.stageStudy));
+  putIfPresent(data, 'stageProcess', sanitizeText(core.stageProcess));
+  putIfPresent(data, 'organizationType', sanitizeText(core.organizationType));
+  putIfPresent(data, 'policyInvestimentType', sanitizeText(core.policyInvestimentType));
+  putIfPresent(data, 'policyAmount', formatNumericValue(core.policyAmount));
   putIfPresent(data, 'cgiarInnovation', sanitizeText(core.cgiarInnovation));
+  putIfPresent(data, 'otherInnovationsNarrative', sanitizeText(core.otherInnovationsNarrative));
   putIfPresent(data, 'comunicationsMaterial', sanitizeText(core.communicationsMaterial));
+  putIfPresent(data, 'outcomeStory', sanitizeText(core.outcomeStory));
   putIfPresent(data, 'meliaPublications', sanitizeText(core.meliaPublications));
   putIfPresent(data, 'contacts', sanitizeText(core.contacts));
+  putIfPresent(data, 'tag', sanitizeText(core.tag));
   putIfPresent(data, 'genderRelevance', sanitizeText(core.genderRelevance));
   putIfPresent(data, 'youthRelevance', sanitizeText(core.youthRelevance));
   putIfPresent(data, 'capacityRelevance', sanitizeText(core.capacityRelevance));
   putIfPresent(data, 'climateRelevance', sanitizeText(core.climateRelevance));
+  putIfPresent(data, 'commentsRelevance', sanitizeText(core.commentsRelevance));
   putIfPresent(
     data,
     'otherCrossCuttingSelection',
@@ -39,6 +49,11 @@ export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record
     'otherCrossCuttingDimensions',
     sanitizeText(core.otherCrossCuttingDimensions),
   );
+
+  if (core.isContribution != null) {
+    data.isContribution = core.isContribution;
+    data.isContributionText = core.isContribution ? 'Yes' : 'No';
+  }
 
   if (core.hasCovidAnalysis != null) {
     data.hasCovidAnalysis = core.hasCovidAnalysis;
@@ -58,15 +73,30 @@ export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record
     data.regions = context.regions.join(', ');
   }
 
-  if (context.countries.length > 0) {
-    data.countries = context.countries.map((name) => ({ name: sanitizeText(name) }));
+  if (context.countryDetails.length > 0) {
+    data.countries = context.countryDetails.map((country) => {
+      const entry: Record<string, unknown> = {
+        name: sanitizeText(country.name),
+      };
+      if (country.isoAlpha2) {
+        entry.isoAlpha2 = country.isoAlpha2;
+        entry.flagUrl = `${FLAG_ASSET_BASE_URL}/${country.isoAlpha2}.svg`;
+      }
+      return entry;
+    });
   }
 
   joinIfPresent(data, 'flagships', context.flagships);
   joinIfPresent(data, 'regionalPrograms', context.regionalPrograms);
   joinIfPresent(data, 'subIdos', context.subIdos);
   joinIfPresent(data, 'crps', context.crps);
-  joinIfPresent(data, 'links', context.links, ', ');
+  joinIfPresent(data, 'policies', context.policies);
+  joinIfPresent(data, 'projectOutcomes', context.projectOutcomes);
+  joinIfPresent(data, 'crpOutcomes', context.crpOutcomes);
+
+  if (context.links.length > 0) {
+    data.links = context.links.map((link) => sanitizeText(link)).filter(Boolean);
+  }
 
   if (core.isSrfTarget === SRF_TARGET_OPTION_YES && context.srfTargets.length > 0) {
     data.srfTargets = context.srfTargets.join(', ');
@@ -90,6 +120,22 @@ export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record
     .filter(Boolean);
   if (innovations.length > 0) {
     data.innovations = innovations.join(', ');
+  }
+
+  const allianceLeverNames = [
+    ...new Set(context.allianceLevers.map((row) => row.leverName).filter(Boolean)),
+  ];
+  if (allianceLeverNames.length > 0) {
+    data.allianceLevers = allianceLeverNames.join(', ');
+  }
+
+  const impactAreaNames = context.impactAreas.map((row) => row.name).filter(Boolean);
+  if (impactAreaNames.length > 0) {
+    data.impactAreas = impactAreaNames.join(', ');
+  }
+
+  if (context.globalTargets.length > 0) {
+    data.globalTargets = context.globalTargets.join(', ');
   }
 
   if (context.quantifications.length > 0) {
@@ -131,6 +177,9 @@ export function mapOicrContextForClusterEmbed(context: OicrStudyContext): Record
         const entry: Record<string, unknown> = {};
         putIfPresent(entry, 'reference', sanitizeText(row.reference));
         putIfPresent(entry, 'link', sanitizeText(row.link));
+        if (row.externalAuthor != null) {
+          entry.externalAuthor = row.externalAuthor;
+        }
         return Object.keys(entry).length > 0 ? entry : null;
       })
       .filter((entry): entry is Record<string, unknown> => entry != null);

@@ -28,6 +28,7 @@ import {
   ClusterOutcomeCommunicationRow,
   ClusterOutcomeIndicatorRow,
   ClusterOutcomeMilestoneRow,
+  ClusterOutcomeNextUserRow,
   ClusterOutcomeRow,
   ClusterPartnerLocationRow,
   ClusterPartnerPersonRow,
@@ -233,6 +234,7 @@ function buildPerformanceContributions(context: ClusterContext): Array<Record<st
   const milestonesByOutcome = groupBy(context.outcomeMilestones, (row) => row.outcomeId);
   const indicatorsByOutcome = groupBy(context.outcomeIndicators, (row) => row.outcomeId);
   const communicationsByOutcome = groupBy(context.outcomeCommunications, (row) => row.outcomeId);
+  const nextUsersByOutcome = groupBy(context.outcomeNextUsers, (row) => row.outcomeId);
 
   return context.outcomes.map((outcome, index) =>
     buildPerformanceContribution(
@@ -240,6 +242,7 @@ function buildPerformanceContributions(context: ClusterContext): Array<Record<st
       milestonesByOutcome.get(outcome.outcomeId) ?? [],
       indicatorsByOutcome.get(outcome.outcomeId) ?? [],
       communicationsByOutcome.get(outcome.outcomeId) ?? [],
+      nextUsersByOutcome.get(outcome.outcomeId) ?? [],
       index + 1,
     ),
   );
@@ -250,6 +253,7 @@ function buildPerformanceContribution(
   milestones: ClusterOutcomeMilestoneRow[],
   indicators: ClusterOutcomeIndicatorRow[],
   communications: ClusterOutcomeCommunicationRow[],
+  nextUsers: ClusterOutcomeNextUserRow[],
   order: number,
 ): Record<string, unknown> {
   const data: Record<string, unknown> = {
@@ -323,8 +327,21 @@ function buildPerformanceContribution(
 
   data.indicatorResponses = indicatorResponses;
   data.hasIndicatorResponses = indicatorResponses.length > 0;
-  data.nextUsers = [];
-  data.hasNextUsers = false;
+
+  const nextUserData = nextUsers
+    .map((nextUser) => {
+      const entry: Record<string, unknown> = {};
+      putIfPresent(entry, 'name', sanitizeText(nextUser.name));
+      putIfPresent(entry, 'knowledge', sanitizeText(nextUser.knowledge));
+      putIfPresent(entry, 'strategies', sanitizeText(nextUser.strategies));
+      putIfPresent(entry, 'knowledgeReport', sanitizeText(nextUser.knowledgeReport));
+      putIfPresent(entry, 'strategiesReport', sanitizeText(nextUser.strategiesReport));
+      return Object.values(entry).some((value) => value != null) ? entry : null;
+    })
+    .filter((entry): entry is Record<string, unknown> => entry != null);
+
+  data.nextUsers = nextUserData;
+  data.hasNextUsers = nextUserData.length > 0;
 
   return data;
 }

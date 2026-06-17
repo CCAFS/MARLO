@@ -20,6 +20,7 @@ import {
   ClusterOutcomeCommunicationRow,
   ClusterOutcomeIndicatorRow,
   ClusterOutcomeMilestoneRow,
+  ClusterOutcomeNextUserRow,
   ClusterOutcomeRow,
   ClusterPartnerLocationRow,
   ClusterPartnerPersonRow,
@@ -55,6 +56,7 @@ export class ClusterRepository {
       outcomeMilestones,
       outcomeIndicators,
       outcomeCommunications,
+      outcomeNextUsers,
       studyIds,
       innovations,
       deliverableRows,
@@ -71,6 +73,7 @@ export class ClusterRepository {
       this.loadOutcomeMilestones(projectId, phaseId, core.phaseYear),
       this.loadOutcomeIndicators(projectId, phaseId),
       this.loadOutcomeCommunications(projectId, phaseId, core.phaseYear),
+      this.loadOutcomeNextUsers(projectId, phaseId),
       this.loadStudyIds(projectId, phaseId, core.phaseYear),
       this.loadInnovationSummaries(projectId, phaseId, core.phaseYear),
       this.loadDeliverableSummaries(projectId, phaseId),
@@ -94,6 +97,7 @@ export class ClusterRepository {
       outcomeMilestones,
       outcomeIndicators,
       outcomeCommunications,
+      outcomeNextUsers,
       studyIds,
       innovations,
       deliverables,
@@ -437,6 +441,30 @@ export class ClusterRepository {
       ORDER BY pc.id
       `,
       [projectId, phaseId, selectedYear],
+    );
+  }
+
+  private async loadOutcomeNextUsers(
+    projectId: number,
+    phaseId: number,
+  ): Promise<ClusterOutcomeNextUserRow[]> {
+    return this.dataSource.query<ClusterOutcomeNextUserRow[]>(
+      `
+      SELECT
+        pn.project_outcome_id AS outcomeId,
+        pn.next_user AS name,
+        pn.knowledge AS knowledge,
+        pn.strategies AS strategies,
+        pn.knowledge_report AS knowledgeReport,
+        pn.strategies_report AS strategiesReport
+      FROM project_nextusers pn
+      INNER JOIN project_outcomes po ON po.id = pn.project_outcome_id
+      WHERE po.project_id = ?
+        AND po.id_phase = ?
+        AND pn.is_active = 1
+      ORDER BY pn.id
+      `,
+      [projectId, phaseId],
     );
   }
 

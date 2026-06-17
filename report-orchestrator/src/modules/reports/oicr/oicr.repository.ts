@@ -10,6 +10,7 @@ import {
 import {
   OicrAllianceLeverRow,
   OicrCoreRow,
+  OicrCountryRow,
   OicrGeographicScopeRow,
   OicrImpactAreaRow,
   OicrInstitutionRow,
@@ -58,7 +59,7 @@ export class OicrRepository {
 
     const [
       geographicScopes,
-      countries,
+      countryDetails,
       regions,
       centers,
       institutions,
@@ -78,10 +79,13 @@ export class OicrRepository {
       crps,
       flagships,
       regionalPrograms,
+      policies,
+      projectOutcomes,
+      crpOutcomes,
       hasAllianceInstitution,
     ] = await Promise.all([
       this.loadGeographicScopes(studyId, phaseId),
-      this.loadCountries(studyId, phaseId),
+      this.loadCountryDetails(studyId, phaseId),
       this.loadRegions(studyId, phaseId),
       this.loadCenterPartners(studyId, phaseId),
       this.loadExternalInstitutions(studyId, phaseId),
@@ -101,13 +105,19 @@ export class OicrRepository {
       this.loadCrps(studyId, phaseId),
       this.loadFlagships(studyId, phaseId),
       this.loadRegionalPrograms(studyId, phaseId),
+      this.loadPolicies(studyId, phaseId),
+      this.loadProjectOutcomes(studyId, phaseId),
+      this.loadCrpOutcomes(studyId, phaseId),
       this.hasAllianceInstitution(studyId, phaseId),
     ]);
+
+    const countries = countryDetails.map((row) => row.name);
 
     return {
       core,
       geographicScopes,
       countries,
+      countryDetails,
       regions,
       centers,
       institutions,
@@ -127,6 +137,9 @@ export class OicrRepository {
       crps,
       flagships,
       regionalPrograms,
+      policies,
+      projectOutcomes,
+      crpOutcomes,
       hasAllianceInstitution,
     };
   }
@@ -177,6 +190,16 @@ export class OicrRepository {
         climate.powb_name AS climateRelevance,
         p.acronym AS projectAcronym,
         pi.title AS projectTitle,
+        pesi.quantification AS quantification,
+        rsp.name AS stageProcess,
+        riot.name AS organizationType,
+        rpit.name AS policyInvestimentType,
+        pesi.policy_amount AS policyAmount,
+        pesi.is_contribution AS isContribution,
+        pesi.other_innovations_narrative AS otherInnovationsNarrative,
+        pesi.outcome_story AS outcomeStory,
+        pesi.comments_relevance AS commentsRelevance,
+        pet.tag_name AS tag,
         (
           SELECT CONCAT(u.last_name, ', ', u.first_name)
           FROM project_partners pp
@@ -204,6 +227,9 @@ export class OicrRepository {
       LEFT JOIN rep_ind_gender_youth_focus_levels youth ON youth.id = pesi.youth_focus_level_id
       LEFT JOIN rep_ind_gender_youth_focus_levels capdev ON capdev.id = pesi.capdev_focus_level_id
       LEFT JOIN rep_ind_gender_youth_focus_levels climate ON climate.id = pesi.climate_change_level_id
+      LEFT JOIN rep_ind_stage_process rsp ON rsp.id = pesi.rep_ind_stage_process_id
+      LEFT JOIN rep_ind_organization_types riot ON riot.id = pesi.rep_ind_organization_type_id
+      LEFT JOIN rep_ind_policy_investiment_types rpit ON rpit.id = pesi.rep_ind_policy_id
       WHERE pes.id = ?
         AND pes.is_active = 1
       LIMIT 1
@@ -233,10 +259,12 @@ export class OicrRepository {
     );
   }
 
-  private async loadCountries(studyId: number, phaseId: number): Promise<string[]> {
-    const rows = await this.dataSource.query<Array<{ name: string }>>(
+  private async loadCountryDetails(studyId: number, phaseId: number): Promise<OicrCountryRow[]> {
+    return this.dataSource.query<OicrCountryRow[]>(
       `
-      SELECT le.name AS name
+      SELECT
+        le.name AS name,
+        LOWER(le.iso_alpha_2) AS isoAlpha2
       FROM project_expected_study_countries pesc
       INNER JOIN loc_elements le ON le.id = pesc.loc_element_id
       WHERE pesc.expected_id = ?
@@ -246,6 +274,10 @@ export class OicrRepository {
       `,
       [studyId, phaseId, LOC_ELEMENT_TYPE_COUNTRY],
     );
+  }
+
+  private async loadCountries(studyId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.loadCountryDetails(studyId, phaseId);
     return rows.map((row) => row.name);
   }
 
@@ -347,7 +379,8 @@ export class OicrRepository {
       SELECT
         pesr.id AS id,
         pesr.reference AS reference,
-        pesr.link AS link
+        pesr.link AS link,
+        pesr.is_external_author AS externalAuthor
       FROM project_expected_study_references pesr
       WHERE pesr.project_expected_study_id = ?
         AND pesr.id_phase = ?
@@ -597,6 +630,69 @@ export class OicrRepository {
       ORDER BY cp.id
       `,
       [studyId, phaseId, programType],
+    );
+    return rows.map((row) => row.label);
+  }
+
+  private async loadPolicies(studyId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ label: string }>>(
+      `
+      SELECT
+        CONCAT(pp.id, ' - ', COALESCE(ppi.title, 'Untitled')) AS label
+      FROM project_expected_study_policies pesp
+      INNER JOIN project_policies pp ON pp.id = pesp.project_policy_id
+      INNER JOIN project_policy_info ppi
+        ON ppi.project_policy_id = pp.id AND ppi.id_phase = ?
+      WHERE pesp.expected_id = ?
+        AND pesp.id_phase = ?
+      ORDER BY pp.id
+      `,
+      [phaseId, studyId, phaseId],
+    );
+    return rows.map((row) => row.label);
+  }
+
+  private async loadProjectOutcomes(studyId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ label: string }>>(
+      `
+      SELECT
+        CASE
+          WHEN cp.acronym IS NOT NULL AND TRIM(cp.acronym) != '' AND cpo.description IS NOT NULL
+            THEN CONCAT(cp.acronym, ' Outcome: ', cpo.description)
+          WHEN cpo.description IS NOT NULL THEN cpo.description
+          ELSE '-'
+        END AS label
+      FROM project_expected_study_project_outcomes pespo
+      INNER JOIN project_outcomes po ON po.id = pespo.project_outcome_id
+      INNER JOIN crp_program_outcomes cpo ON cpo.id = po.outcome_id
+      LEFT JOIN crp_programs cp ON cp.id = cpo.crp_program_id
+      WHERE pespo.expected_id = ?
+        AND pespo.id_phase = ?
+      ORDER BY pespo.id
+      `,
+      [studyId, phaseId],
+    );
+    return rows.map((row) => row.label);
+  }
+
+  private async loadCrpOutcomes(studyId: number, phaseId: number): Promise<string[]> {
+    const rows = await this.dataSource.query<Array<{ label: string }>>(
+      `
+      SELECT
+        CASE
+          WHEN cp.acronym IS NOT NULL AND TRIM(cp.acronym) != '' AND cpo.description IS NOT NULL
+            THEN CONCAT(cp.acronym, ' Outcome: ', cpo.description)
+          WHEN cpo.description IS NOT NULL THEN cpo.description
+          ELSE '-'
+        END AS label
+      FROM project_expected_study_crp_outcomes pesco
+      INNER JOIN crp_program_outcomes cpo ON cpo.id = pesco.crp_outcome_id
+      LEFT JOIN crp_programs cp ON cp.id = cpo.crp_program_id
+      WHERE pesco.expected_id = ?
+        AND pesco.id_phase = ?
+      ORDER BY pesco.id
+      `,
+      [studyId, phaseId],
     );
     return rows.map((row) => row.label);
   }

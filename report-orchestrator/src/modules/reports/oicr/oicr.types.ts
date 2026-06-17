@@ -32,6 +32,21 @@ export interface OicrCoreRow {
   projectAcronym: string | null;
   projectTitle: string | null;
   leadPerson: string | null;
+  quantification: string | null;
+  stageProcess: string | null;
+  organizationType: string | null;
+  policyInvestimentType: string | null;
+  policyAmount: number | null;
+  isContribution: boolean | null;
+  otherInnovationsNarrative: string | null;
+  outcomeStory: string | null;
+  commentsRelevance: string | null;
+  tag: string | null;
+}
+
+export interface OicrCountryRow {
+  name: string;
+  isoAlpha2: string | null;
 }
 
 export interface OicrGeographicScopeRow {
@@ -54,6 +69,7 @@ export interface OicrReferenceRow {
   id: number;
   reference: string | null;
   link: string | null;
+  externalAuthor: boolean | null;
 }
 
 export interface OicrQuantificationRow {
@@ -98,6 +114,7 @@ export interface OicrStudyContext {
   core: OicrCoreRow;
   geographicScopes: OicrGeographicScopeRow[];
   countries: string[];
+  countryDetails: OicrCountryRow[];
   regions: string[];
   centers: OicrInstitutionRow[];
   institutions: OicrInstitutionRow[];
@@ -117,6 +134,9 @@ export interface OicrStudyContext {
   crps: string[];
   flagships: string[];
   regionalPrograms: string[];
+  policies: string[];
+  projectOutcomes: string[];
+  crpOutcomes: string[];
   hasAllianceInstitution: boolean;
 }
 

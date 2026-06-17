@@ -115,6 +115,15 @@ export interface ClusterOutcomeCommunicationRow {
   year: number | null;
 }
 
+export interface ClusterOutcomeNextUserRow {
+  outcomeId: number;
+  name: string | null;
+  knowledge: string | null;
+  strategies: string | null;
+  knowledgeReport: string | null;
+  strategiesReport: string | null;
+}
+
 export interface ClusterInnovationSummaryRow {
   id: number;
   title: string | null;
@@ -166,6 +175,7 @@ export interface ClusterContext {
   outcomeMilestones: ClusterOutcomeMilestoneRow[];
   outcomeIndicators: ClusterOutcomeIndicatorRow[];
   outcomeCommunications: ClusterOutcomeCommunicationRow[];
+  outcomeNextUsers: ClusterOutcomeNextUserRow[];
   studyIds: number[];
   innovations: ClusterInnovationSummaryRow[];
   deliverables: ClusterDeliverableSummaryRow[];
