@@ -2,15 +2,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 import { AppConfig } from '../../config/env';
 import { getDataSource } from '../../config/data-source';
+import { parseOptionalPositiveInt, parsePositiveInt } from '../../shared/parse-query';
 import { OicrReportService } from './oicr/oicr.service';
-
-function parsePositiveInt(value: unknown, field: string): number {
-  const parsed = Number.parseInt(String(value), 10);
-  if (Number.isNaN(parsed) || parsed <= 0) {
-    throw new Error(`Invalid ${field}: must be a positive integer`);
-  }
-  return parsed;
-}
 
 export function createReportsRouter(config: AppConfig): Router {
   const router = Router();

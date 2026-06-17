@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 
 import { AppConfig } from './config/env';
+import { createMarloCompatRouter } from './modules/reports/marlo-compat.router';
 import { createReportsRouter } from './modules/reports/reports.router';
 
 export function createApp(config: AppConfig): Express {
@@ -17,6 +18,7 @@ export function createApp(config: AppConfig): Express {
   });
 
   app.use('/reports', createReportsRouter(config));
+  app.use(createMarloCompatRouter(config));
 
   app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error('[report-orchestrator]', error.message);

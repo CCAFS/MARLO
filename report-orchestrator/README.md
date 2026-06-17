@@ -33,6 +33,23 @@ curl -X POST http://localhost:3000/reports/oicr \
   -d "{\"studyId\": 3517, \"phaseId\": 407}"
 ```
 
+### Browser PDF (MARLO-compatible URL)
+
+Open in the browser — same query shape as MARLO `studySummary.do`. Requires `REPORT_DRY_RUN=false` and valid MQ credentials.
+
+```
+http://localhost:3000/projects/AICCRA/studySummary.do?studyID=3589&cycle=Reporting&year=2025
+http://localhost:3000/projects/AICCRA/studySummary.do?studyID=3589&phaseID=407
+```
+
+The server publishes to the microservice queue, polls S3, and streams the PDF inline (`Content-Type: application/pdf`).
+
+On Lambda (Function URL), replace the host:
+
+```
+https://<lambda-function-url>/projects/AICCRA/studySummary.do?studyID=3589&phaseID=407
+```
+
 Full pipeline (set `REPORT_DRY_RUN=false` and valid MQ credentials):
 
 ```bash
