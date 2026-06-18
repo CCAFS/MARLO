@@ -74,23 +74,30 @@
 </section>
 
 [#-- POPUP TO REQUEST A NEW TARGET --]
-<div id="popUp"  style="display:none;" >
-  <span class="glyphicon glyphicon-remove-circle close-dialog"></span>
-  <h4 style="text-align:center;">Request a new Target Unit</h4>
-  <hr />
-  <div class="row">
-    <div class="col-xs-12 note center form-group">
-      This request will be sent to MARLOSupport@cgiar.org
+<div id="popUp" style="display:none;" >
+  <span class="glyphicon glyphicon-remove-circle close-dialog" style="cursor:pointer;"></span>
+  
+  <div style="padding:20px;">
+    <h4 style="text-align:center; margin-top:0; margin-bottom:20px;">Request a new Target Unit</h4>
+    
+    <hr style="margin:20px 0;" />
+    
+    <div class="row" style="margin-bottom:20px;">
+      <div class="col-xs-12 note center form-group" style="margin-bottom:0;">
+        This request will be sent to MARLOSupport@cgiar.org
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12 form-group target-units-popup-input">
-      [@customForm.input name="newTargetUnit" i18nkey="Write the new target unit" className="newTargetUnit" required=true editable=true /]
+    
+    <div class="row" style="margin-bottom:20px;">
+      <div class="col-xs-12 form-group target-units-popup-input" style="margin-bottom:0;">
+        [@customForm.input name="newTargetUnit" i18nkey="Write the new target unit" className="newTargetUnit" required=true editable=true /]
+      </div>
     </div>
-  </div>
-  <div class="row form-group">
-    <div class="col-xs-12 col-sm-5 col-sm-offset-7 target-units-popup-submit">
-      [@s.submit type="button" name="sendRequest"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="Send" /][/@s.submit]
+    
+    <div class="row" style="margin-bottom:0;">
+      <div class="col-xs-12 col-sm-5 col-sm-offset-7 target-units-popup-submit" style="padding-top:10px;">
+        [@s.submit type="button" name="sendRequest"] <span class="glyphicon glyphicon-send"></span>  [@s.text name="Send" /][/@s.submit]
+      </div>
     </div>
   </div>
 </div>
