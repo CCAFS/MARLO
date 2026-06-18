@@ -2,8 +2,8 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20251009" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260618" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260618" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "parameters" /]
 
@@ -76,7 +76,13 @@
         <div class="tab-content">
           [#list parametersTypes as type]
             <div role="tabpanel" class="tab-pane ${type?is_first?string('active','')}" id="type-${type_index}-${element.id}">
-              <table class="table table-striped table-condensed ">
+              <div class="parameter-search-wrap">
+                <input type="text" class="form-control parameter-search" placeholder="Search..." data-target="table-${type_index}-${element.id}" />
+                <div class="iconSearch parameter-search-icon">
+                  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </div>
+              </div>
+              <table class="table table-striped table-condensed" id="table-${type_index}-${element.id}">
                 <tbody>
                 [#list element.parameters as crpParameter]
                   [#if type.id ==crpParameter.parameter.category]
