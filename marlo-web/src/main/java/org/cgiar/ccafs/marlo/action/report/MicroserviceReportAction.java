@@ -58,6 +58,7 @@ public class MicroserviceReportAction extends BaseAction {
   // Managers
   private ReportConfigurationManager reportConfigurationManager;
 
+  private String apiKey;
   private String username = null;
   private String password = null;
   private String queueUrl = null;
@@ -75,8 +76,6 @@ public class MicroserviceReportAction extends BaseAction {
   private String s3URL = null;
 
   private String jsonData = null;
-  private String authHeaderMs4;
-
   @Inject
   public MicroserviceReportAction(APConfig config, ReportConfigurationManager reportConfigurationManager) {
     super(config);
@@ -218,14 +217,16 @@ public class MicroserviceReportAction extends BaseAction {
         }
 
       }
+      apiKey = config.getMicroserviceApiKey();
       username = config.getMicroserviceUsername();
       password = config.getMicroservicePassword();
       queueUrl = config.getMicroserviceQueueURL();
       queueName = config.getMicroserviceQueueName();
       bucketName = config.getMicroserviceBucketname();
-      OICRs_MS_FM_URL = config.getMicroserviceReportingUrl();
-      INNOVATION_MS_FM_URL = config.getMicroserviceReportingUrl();
-      CLUSTER_REPORT_MS_FM_URL = config.getMicroserviceReportingUrl();
+      String reportingUrl = config.getMicroserviceReportingUrl();
+      OICRs_MS_FM_URL = reportingUrl;
+      INNOVATION_MS_FM_URL = reportingUrl;
+      CLUSTER_REPORT_MS_FM_URL = reportingUrl;
       s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
       System.out.println("error getting report configuration data " + e);
@@ -258,7 +259,10 @@ public class MicroserviceReportAction extends BaseAction {
       if (jsonData != null && !jsonData.isEmpty()) {
         // If a pre-built JSON is provided, parse it directly
         data = objectMapper.readValue(jsonData, Map.class);
-
+        Object inner = data.get("data");
+        if (inner instanceof Map) {
+          ((Map<String, Object>) inner).put("apiKey", apiKey);
+        }
       } else {
         // Manually construct the data object if jsonData is not provided
         String link = "";
@@ -276,15 +280,7 @@ public class MicroserviceReportAction extends BaseAction {
         nestedData.put("clusterAcronym", false);
         nestedData.put("fileName", innovationsReportName);
         nestedData.put("bucketName", bucketName);
-
-        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-        nestedData.put("credentials", credentialsJson);
-        /*
-         * Map<String, String> credentials = new HashMap<>();
-         * credentials.put("username", username);
-         * credentials.put("password", password);
-         * nestedData.put("credentials", credentials);
-         */
+        nestedData.put("apiKey", apiKey);
         data.put("data", nestedData);
       }
 
@@ -340,7 +336,10 @@ public class MicroserviceReportAction extends BaseAction {
       if (jsonData != null && !jsonData.isEmpty()) {
         // If a pre-built JSON is provided, parse it directly
         data = objectMapper.readValue(jsonData, Map.class);
-
+        Object inner = data.get("data");
+        if (inner instanceof Map) {
+          ((Map<String, Object>) inner).put("apiKey", apiKey);
+        }
       } else {
         // Manually construct the data object if jsonData is not provided
         String link =
@@ -359,15 +358,7 @@ public class MicroserviceReportAction extends BaseAction {
         nestedData.put("clusterAcronym", false);
         nestedData.put("fileName", OICRsReportName);
         nestedData.put("bucketName", bucketName);
-
-        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-        nestedData.put("credentials", credentialsJson);
-        /*
-         * Map<String, String> credentials = new HashMap<>();
-         * credentials.put("username", username);
-         * credentials.put("password", password);
-         * nestedData.put("credentials", credentials);
-         */
+        nestedData.put("apiKey", apiKey);
         data.put("data", nestedData);
       }
 
@@ -440,7 +431,10 @@ public class MicroserviceReportAction extends BaseAction {
       if (jsonData != null && !jsonData.isEmpty()) {
         // If a pre-built JSON is provided, parse it directly
         data = objectMapper.readValue(jsonData, Map.class);
-
+        Object inner = data.get("data");
+        if (inner instanceof Map) {
+          ((Map<String, Object>) inner).put("apiKey", apiKey);
+        }
       } else {
         // Manually construct the data object if jsonData is not provided
         String link = "";
@@ -458,9 +452,7 @@ public class MicroserviceReportAction extends BaseAction {
         nestedData.put("clusterAcronym", false);
         nestedData.put("fileName", clusterReportName);
         nestedData.put("bucketName", bucketName);
-
-        String credentialsJson = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-        nestedData.put("credentials", credentialsJson);
+        nestedData.put("apiKey", apiKey);
         data.put("data", nestedData);
       }
 
