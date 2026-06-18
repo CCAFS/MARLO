@@ -325,3 +325,37 @@ table#marloEmailsTable {
 .selectList span.select2{
 width: 100% !important;
 }
+
+/* Marlo Parameters search style (aligned with dashboard icon search pattern) */
+.crpParameters .parameter-search-wrap {
+  position: relative;
+  margin: 10px 0 15px;
+  width: 295px;
+  margin-left: auto;
+}
+
+.crpParameters .parameter-search-wrap .parameter-search {
+  height: 30px;
+  width: 295px;
+  margin-left: 0;
+  padding-right: 42px;
+}
+
+.crpParameters .parameter-search-wrap .parameter-search-icon {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.crpParameters .parameter-search-wrap .parameter-search-icon .glyphicon {
+  color: #fff;
+  font-size: 14px;
+}
