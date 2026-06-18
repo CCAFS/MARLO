@@ -8,6 +8,7 @@ __pycache__/
 # Build / deploy
 dist/
 build/
+lambda-package/
 .aws-sam/
 .terraform/
 *.zip

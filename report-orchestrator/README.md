@@ -75,11 +75,60 @@ See [.env.example](./.env.example). Key flags for local testing:
 | `REPORT_DRY_RUN=true` | Build JSON only — skip MQ and S3 |
 | `REPORT_SKIP_S3_POLL=true` | Publish to queue but do not wait for PDF |
 
-## Lambda (deploy later)
+## Lambda deployment (Jenkins)
 
 Entry point: `src/lambda.ts` → bundled to `dist/lambda.js` via `npm run build`.
 
-Use **Lambda Function URL** (no API Gateway cost). VPC + S3 Gateway Endpoint required for production.
+| Artifact | Purpose |
+|---|---|
+| `Jenkinsfile` | CI/CD pipeline (ZIP or ECR deploy + Secrets Manager env sync) |
+| `scripts/package-lambda.mjs` | Copies `dist/lambda.js` into `lambda-package/` |
+| `scripts/sync-lambda-env-from-secret.sh` | Maps AWS secret JSON → Lambda environment variables |
+| `Dockerfile` | Container image path when package size triggers ECR mode |
+
+### Jenkins job configuration
+
+Set these **environment variables** on the Jenkins job (or folder):
+
+| Variable | Example | Notes |
+|---|---|---|
+| `LAMBDA_FUNCTION_NAME` | `marlo-report-orchestrator-dev` | Target Lambda |
+| `AWS_SECRET_NAME` | `marlo/report-orchestrator/dev` | JSON secret (see below) |
+| `AWS_REGION` | `us-east-1` | |
+| `AWS_CREDENTIALS_ID` | `prms-test-aws-creds` | Jenkins AWS credential id |
+| `ENVIRONMENT_LABEL` | `DEV` | Slack label only |
+| `ECR_REPO` | `marlo-report-orchestrator` | ECR path when `DEPLOY_MODE=ECR` |
+
+Build parameter `AWS_SECRET_NAME` can override the job default. When `SYNC_SECRETS=true`, the pipeline runs `sync-lambda-env-from-secret.sh` after code deploy.
+
+### AWS Secrets Manager JSON shape
+
+Keys must match `.env.example` / `loadConfig()`:
+
+```json
+{
+  "NODE_ENV": "production",
+  "DB_HOST": "your-rds-host",
+  "DB_PORT": "3306",
+  "DB_NAME": "aiccra",
+  "DB_USER": "app_user",
+  "DB_PASSWORD": "***",
+  "MQ_URL": "amqps://...",
+  "MQ_QUEUE_NAME": "cgiar_ms2_prod_reports_queue",
+  "MS_USERNAME": "***",
+  "MS_PASSWORD": "***",
+  "MS_BUCKET": "microservice-reports",
+  "MS_S3_URL": "https://microservice-reports.s3.us-east-1.amazonaws.com/",
+  "MS_REPORTING_URL": "https://reports.prms.cgiar.org/api/",
+  "REPORT_NAME_PREFIX": "AICCRA",
+  "PDF_POLL_MAX_RETRIES": "30",
+  "PDF_POLL_INTERVAL_MS": "2000",
+  "REPORT_DRY_RUN": "false",
+  "REPORT_SKIP_S3_POLL": "false"
+}
+```
+
+Lambda handler: `lambda.handler` (file `lambda.js` at package root). Use **Lambda Function URL** (no API Gateway cost). VPC + S3 Gateway Endpoint required for production.
 
 ## Scope
 

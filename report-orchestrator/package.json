@@ -11,6 +11,7 @@
     "start": "node dist/index.js",
     "build": "tsc && npm run build:lambda",
     "build:lambda": "esbuild src/lambda.ts --bundle --platform=node --target=node20 --outfile=dist/lambda.js --external:@aws-sdk/*",
+    "package:lambda": "node scripts/package-lambda.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.147",
     "@types/amqplib": "^0.10.6",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",
