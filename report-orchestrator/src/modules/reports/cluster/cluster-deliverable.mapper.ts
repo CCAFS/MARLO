@@ -1,9 +1,12 @@
-import { DELIVERABLE_STATUS, FLAG_ASSET_BASE_URL, PROJECT_STATUS_LABELS } from './cluster.constants';
+import { DELIVERABLE_STATUS, FLAG_ASSET_BASE_URL, METADATA_ELEMENT_ID_DOI, METADATA_ELEMENT_ID_HANDLE, PROJECT_STATUS_LABELS } from './cluster.constants';
 import { resolveDisplayYear } from './cluster-deliverable-filter';
+import { getMetadataElementReadableName } from './cluster-metadata.utils';
 import { sanitizeText } from './cluster-text.utils';
 import {
+  ClusterDeliverableCrossCuttingMarkerRow,
   ClusterDeliverableExtendedContext,
   ClusterDeliverableFundingSourceRow,
+  ClusterDeliverableMetadataElementRow,
   ClusterDeliverableSummaryRow,
 } from './cluster.types';
 
@@ -51,6 +54,25 @@ export function mapDeliverableForCluster(
   putIfPresent(data, 'region', sanitizeText(core.regionName));
   putIfPresent(data, 'crpProgramOutcome', sanitizeText(core.crpProgramOutcome));
   putIfPresent(data, 'crpClusterKeyOutput', sanitizeText(core.crpClusterKeyOutput));
+  putMysqlBoolAsYesNo(data, 'adoptedLicense', core.adoptedLicense);
+  putMysqlBoolAsYesNo(data, 'duplicated', core.duplicated);
+  putMysqlBoolAsYesNo(data, 'remainingPending', core.remainingPending);
+  putMysqlBoolAsYesNo(data, 'contributingShfrm', core.contributingShfrm);
+  putMysqlBoolAsYesNo(data, 'meliaStudy', core.meliaStudy);
+
+  if (extended.dissemination) {
+    putIfPresent(data, 'disseminationUrl', sanitizeText(extended.dissemination.disseminationUrl));
+    putIfPresent(data, 'disseminationChannel', sanitizeText(extended.dissemination.disseminationChannel));
+    putMysqlBoolAsYesNo(data, 'isOpenAccess', extended.dissemination.isOpenAccess);
+  }
+
+  const crossCuttingMarkers = mapCrossCuttingMarkers(extended.crossCuttingMarkers);
+  if (crossCuttingMarkers.length > 0) {
+    data.hasCrossCuttingMarkers = true;
+    data.crossCuttingMarkers = crossCuttingMarkers;
+  }
+
+  mapMetadataFields(data, extended.metadataElements);
 
   if (extended.countries.length > 0) {
     data.countries = extended.countries.map((country) => {
@@ -81,6 +103,67 @@ export function mapDeliverableForCluster(
   }
 
   return data;
+}
+
+function mapCrossCuttingMarkers(
+  markers: ClusterDeliverableCrossCuttingMarkerRow[],
+): Array<Record<string, unknown>> {
+  return markers.map((marker) => {
+    const entry: Record<string, unknown> = {};
+    putIfPresent(entry, 'name', sanitizeText(marker.name));
+    putIfPresent(entry, 'focusLevel', sanitizeText(marker.focusLevel));
+    return entry;
+  }).filter((entry) => Object.keys(entry).length > 0);
+}
+
+function mapMetadataFields(
+  data: Record<string, unknown>,
+  metadataElements: ClusterDeliverableMetadataElementRow[],
+): void {
+  if (metadataElements.length === 0) {
+    return;
+  }
+
+  let handle: string | undefined;
+  let doi: string | undefined;
+  const metadataList: Array<Record<string, unknown>> = [];
+
+  for (const element of metadataElements) {
+    if (element.metadataElementId === METADATA_ELEMENT_ID_HANDLE) {
+      handle = sanitizeText(element.elementValue) ?? undefined;
+      continue;
+    }
+    if (element.metadataElementId === METADATA_ELEMENT_ID_DOI) {
+      doi = sanitizeText(element.elementValue) ?? undefined;
+      continue;
+    }
+
+    const entry: Record<string, unknown> = {};
+    const readableName = getMetadataElementReadableName(element.encodedName);
+    putIfPresent(entry, 'name', sanitizeText(readableName));
+    putIfPresent(entry, 'value', sanitizeText(element.elementValue));
+    if (Object.keys(entry).length > 0) {
+      metadataList.push(entry);
+    }
+  }
+
+  if (metadataList.length > 0) {
+    data.hasMetadataElements = true;
+    data.metadataElements = metadataList;
+  }
+  putIfPresent(data, 'handle', handle);
+  putIfPresent(data, 'doi', doi);
+}
+
+function putMysqlBoolAsYesNo(
+  target: Record<string, unknown>,
+  key: string,
+  value: number | null | undefined,
+): void {
+  if (value == null) {
+    return;
+  }
+  target[key] = value === 1 ? 'Yes' : 'No';
 }
 
 function buildFundingSourcesList(

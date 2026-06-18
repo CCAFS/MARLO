@@ -58,6 +58,19 @@ function getDayOrdinal(day: number): string {
 }
 
 /** Mirrors ProjectInnovationSummaryAction.getCurrentDatev2(). */
+/** Mirrors ReportingSummaryAction.transformSdgIconName(). */
+export function transformSdgIconName(dbIconName: string | null | undefined): string | null {
+  if (dbIconName == null || dbIconName.trim() === '') {
+    return dbIconName ?? null;
+  }
+
+  const hasPngExtension = dbIconName.toLowerCase().endsWith('.png');
+  let baseName = hasPngExtension ? dbIconName.substring(0, dbIconName.length - 4) : dbIconName;
+  baseName = baseName.replace('_SDG-goals_Goal-', '-WEB-Goal-');
+  baseName = baseName.replace(/-Goal-0(\d)$/, '-Goal-$1');
+  return hasPngExtension ? `${baseName}.png` : baseName;
+}
+
 export function formatInnovationTimeCreation(): string {
   const formatter = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',

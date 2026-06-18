@@ -157,6 +157,37 @@ export interface ClusterDeliverableExtendedCoreRow {
   regionName: string | null;
   crpProgramOutcome: string | null;
   crpClusterKeyOutput: string | null;
+  adoptedLicense: number | null;
+  duplicated: number | null;
+  remainingPending: number | null;
+  contributingShfrm: number | null;
+  meliaStudy: number | null;
+}
+
+export interface ClusterDeliverableDisseminationRow {
+  deliverableId: number;
+  disseminationUrl: string | null;
+  disseminationChannel: string | null;
+  isOpenAccess: number | null;
+}
+
+export interface ClusterDeliverableCrossCuttingMarkerRow {
+  deliverableId: number;
+  name: string | null;
+  focusLevel: string | null;
+}
+
+export interface ClusterDeliverableMetadataElementRow {
+  deliverableId: number;
+  metadataElementId: number | null;
+  encodedName: string | null;
+  elementValue: string | null;
+}
+
+export interface ClusterActivityDeliverableRow {
+  activityId: number;
+  deliverableId: number;
+  title: string | null;
 }
 
 export interface ClusterDeliverableCountryRow {
@@ -191,6 +222,9 @@ export interface ClusterDeliverableExtendedContext {
   fundingSources: ClusterDeliverableFundingSourceRow[];
   fundingLocations: ClusterDeliverableFundingLocationRow[];
   contacts: string[];
+  dissemination: ClusterDeliverableDisseminationRow | undefined;
+  crossCuttingMarkers: ClusterDeliverableCrossCuttingMarkerRow[];
+  metadataElements: ClusterDeliverableMetadataElementRow[];
 }
 
 export interface ClusterActivitySummaryRow {
@@ -224,6 +258,7 @@ export interface ClusterContext {
   innovations: ClusterInnovationSummaryRow[];
   deliverables: ClusterDeliverableSummaryRow[];
   activities: ClusterActivitySummaryRow[];
+  activityDeliverables: ClusterActivityDeliverableRow[];
   hasRegions: boolean;
 }
 

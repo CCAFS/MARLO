@@ -23,6 +23,7 @@ import {
   InnovationMilestoneRow,
   InnovationReferenceRow,
   InnovationReferenceUrlRow,
+  InnovationSdgRow,
   InnovationStudyRow,
 } from './innovation.types';
 
@@ -163,6 +164,7 @@ export class InnovationRepository {
         pii.year AS year,
         pii.is_clear_lead AS clearLead,
         SUBSTRING_INDEX(sr.name, ' - ', 1) AS readinessScale,
+        sr.name AS readinessScaleFull,
         ripr.name AS repIndPhaseResearchPartnership,
         risi.name AS repIndStageInnovation,
         pii.description_stage AS descriptionStage,
@@ -387,10 +389,10 @@ export class InnovationRepository {
     return rows.map((row) => row.leverName ?? '');
   }
 
-  private async loadSdgs(innovationId: number, phaseId: number): Promise<string[]> {
-    const rows = await this.dataSource.query<Array<{ shortName: string | null }>>(
+  private async loadSdgs(innovationId: number, phaseId: number): Promise<InnovationSdgRow[]> {
+    const rows = await this.dataSource.query<Array<{ shortName: string | null; fullName: string | null; icon: string | null }>>(
       `
-      SELECT s.short_name AS shortName
+      SELECT s.short_name AS shortName, s.full_name AS fullName, s.icon AS icon
       FROM project_innovation_sdgs pis
       INNER JOIN sustainable_development_goals s ON s.id = pis.sdg_id
       WHERE pis.innovation_id = ?
@@ -399,7 +401,10 @@ export class InnovationRepository {
       `,
       [innovationId, phaseId],
     );
-    return rows.map((row) => row.shortName ?? '');
+    return rows.map((row) => ({
+      name: row.shortName ?? row.fullName ?? '',
+      icon: row.icon,
+    })).filter((row) => row.name !== '');
   }
 
   private async loadImpactAreas(innovationId: number, phaseId: number): Promise<string[]> {

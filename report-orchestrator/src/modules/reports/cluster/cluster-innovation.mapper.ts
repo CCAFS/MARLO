@@ -1,5 +1,6 @@
-import { FLAG_ASSET_BASE_URL } from './cluster.constants';
+import { FLAG_ASSET_BASE_URL, SDG_ASSET_BASE_URL } from './cluster.constants';
 import { InnovationContext, InnovationReferenceRow } from '../innovation/innovation.types';
+import { transformSdgIconName } from '../../../shared/report-json.utils';
 import { sanitizeText } from './cluster-text.utils';
 
 /** Maps InnovationContext to cluster report innovations[] item — mirrors ReportingSummaryAction.buildInnovationData(). */
@@ -34,7 +35,7 @@ export function mapInnovationContextForClusterEmbed(context: InnovationContext):
   putIfPresent(data, 'youthFocusLevel', sanitizeText(core.youthFocusLevel));
   putIfPresent(data, 'youthExplanation', sanitizeText(core.youthExplanation));
   putIfPresent(data, 'beneficiariesNarrative', sanitizeText(core.beneficiariesNarrative));
-  putIfPresent(data, 'readinessScale', sanitizeText(core.readinessScale));
+  putIfPresent(data, 'readinessScale', sanitizeText(core.readinessScaleFull ?? core.readinessScale));
 
   putIfPresent(data, 'cheaperAlternatives', core.cheaperAlternatives);
   putIfPresent(data, 'simplerUse', core.simplerUse);
@@ -186,7 +187,16 @@ export function mapInnovationContextForClusterEmbed(context: InnovationContext):
   joinIfPresent(data, 'allianceLevers', context.allianceLevers);
 
   if (context.sdgs.length > 0) {
-    data.sdgs = context.sdgs.map((sdg) => ({ name: sanitizeText(sdg) }));
+    data.sdgs = context.sdgs.map((sdg) => {
+      const entry: Record<string, unknown> = { name: sanitizeText(sdg.name) };
+      if (sdg.icon) {
+        const iconName = transformSdgIconName(sdg.icon);
+        if (iconName) {
+          entry.iconUrl = `${SDG_ASSET_BASE_URL}/${iconName}`;
+        }
+      }
+      return entry;
+    });
     data.hasSdgs = true;
   }
 

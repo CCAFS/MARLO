@@ -10,6 +10,7 @@ import {
   LOC_ELEMENT_TYPE_REGION,
 } from './cluster.constants';
 import {
+  ClusterActivityDeliverableRow,
   ClusterActivityMetaRow,
   ClusterActivitySummaryRow,
   ClusterContext,
@@ -61,6 +62,7 @@ export class ClusterRepository {
       innovations,
       deliverableRows,
       activities,
+      activityDeliverables,
     ] = await Promise.all([
       this.loadProgramFocus(projectId, phaseId, CRP_PROGRAM_TYPE_FLAGSHIP),
       hasRegions ? this.loadProgramFocus(projectId, phaseId, CRP_PROGRAM_TYPE_REGIONAL) : Promise.resolve([]),
@@ -78,6 +80,7 @@ export class ClusterRepository {
       this.loadInnovationSummaries(projectId, phaseId, core.phaseYear),
       this.loadDeliverableSummaries(projectId, phaseId),
       this.loadActivitySummaries(projectId, phaseId),
+      this.loadActivityDeliverables(projectId, phaseId),
     ]);
 
     const deliverables = deliverableRows.filter((row) =>
@@ -102,6 +105,7 @@ export class ClusterRepository {
       innovations,
       deliverables,
       activities,
+      activityDeliverables,
       hasRegions,
     };
   }
@@ -613,6 +617,31 @@ export class ClusterRepository {
       ORDER BY a.id
       `,
       [projectId, phaseId],
+    );
+  }
+
+  private async loadActivityDeliverables(
+    projectId: number,
+    phaseId: number,
+  ): Promise<ClusterActivityDeliverableRow[]> {
+    return this.dataSource.query<ClusterActivityDeliverableRow[]>(
+      `
+      SELECT
+        da.activity_id AS activityId,
+        d.id AS deliverableId,
+        di.title AS title
+      FROM deliverable_activities da
+      INNER JOIN activities a ON a.id = da.activity_id
+      INNER JOIN deliverables d ON d.id = da.deliverable_id AND d.is_active = 1
+      INNER JOIN deliverables_info di
+        ON di.deliverable_id = d.id AND di.id_phase = ? AND di.is_active = 1
+      WHERE a.project_id = ?
+        AND a.id_phase = ?
+        AND da.id_phase = ?
+        AND da.is_active = 1
+      ORDER BY da.activity_id, d.id
+      `,
+      [phaseId, projectId, phaseId, phaseId],
     );
   }
 }

@@ -4,10 +4,13 @@ import { INSTITUTION_COMPOSED_NAME_SQL } from '../innovation/innovation.constant
 import { LOC_ELEMENT_TYPE_COUNTRY, LOC_ELEMENT_TYPE_REGION } from './cluster.constants';
 import {
   ClusterDeliverableCountryRow,
+  ClusterDeliverableCrossCuttingMarkerRow,
+  ClusterDeliverableDisseminationRow,
   ClusterDeliverableExtendedContext,
   ClusterDeliverableExtendedCoreRow,
   ClusterDeliverableFundingLocationRow,
   ClusterDeliverableFundingSourceRow,
+  ClusterDeliverableMetadataElementRow,
 } from './cluster.types';
 
 const DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE = 1;
@@ -42,6 +45,16 @@ function groupByFundingSourceId<T extends { fundingSourceId: number }>(rows: T[]
   return map;
 }
 
+function pickFirstByDeliverableId<T extends { deliverableId: number }>(rows: T[]): Map<number, T> {
+  const map = new Map<number, T>();
+  for (const row of rows) {
+    if (!map.has(row.deliverableId)) {
+      map.set(row.deliverableId, row);
+    }
+  }
+  return map;
+}
+
 /** Batch loaders for deliverable fields used by ReportingSummaryAction.buildDeliverableData(). */
 export class ClusterDeliverableRepository {
   constructor(private readonly dataSource: DataSource) {}
@@ -67,6 +80,9 @@ export class ClusterDeliverableRepository {
       activityRows,
       fundingRows,
       contactRows,
+      disseminationRows,
+      crossCuttingMarkerRows,
+      metadataElementRows,
     ] = await Promise.all([
       this.loadCore(ids, phaseId, inClause),
       this.loadCountries(ids, phaseId, inClause),
@@ -77,6 +93,9 @@ export class ClusterDeliverableRepository {
       this.loadActivities(ids, phaseId, inClause),
       this.loadFundingSources(ids, phaseId, inClause),
       this.loadContacts(ids, phaseId, inClause),
+      this.loadDissemination(ids, phaseId, inClause),
+      this.loadCrossCuttingMarkers(ids, phaseId, inClause),
+      this.loadMetadataElements(ids, phaseId, inClause),
     ]);
 
     const fundingSourceIds = [...new Set(fundingRows.map((row) => row.fundingSourceId))];
@@ -93,6 +112,9 @@ export class ClusterDeliverableRepository {
     const fundingById = groupByDeliverableId(fundingRows);
     const contactsById = groupByDeliverableId(contactRows);
     const locationsByFundingId = groupByFundingSourceId(fundingLocations);
+    const disseminationById = pickFirstByDeliverableId(disseminationRows);
+    const crossCuttingMarkersById = groupByDeliverableId(crossCuttingMarkerRows);
+    const metadataElementsById = groupByDeliverableId(metadataElementRows);
 
     const result = new Map<number, ClusterDeliverableExtendedContext>();
     for (const core of coreRows) {
@@ -109,6 +131,9 @@ export class ClusterDeliverableRepository {
           (row) => locationsByFundingId.get(row.fundingSourceId) ?? [],
         ),
         contacts: (contactsById.get(core.deliverableId) ?? []).map((row) => row.name),
+        dissemination: disseminationById.get(core.deliverableId),
+        crossCuttingMarkers: crossCuttingMarkersById.get(core.deliverableId) ?? [],
+        metadataElements: metadataElementsById.get(core.deliverableId) ?? [],
       });
     }
 
@@ -139,7 +164,12 @@ export class ClusterDeliverableRepository {
           WHEN ccko.key_output IS NOT NULL AND TRIM(ccko.key_output) != ''
             THEN ccko.key_output
           ELSE NULL
-        END AS crpClusterKeyOutput
+        END AS crpClusterKeyOutput,
+        di.adopted_license AS adoptedLicense,
+        di.is_duplicated AS duplicated,
+        di.is_remaining_pending AS remainingPending,
+        di.is_contributing_shfrm AS contributingShfrm,
+        di.is_melia_study AS meliaStudy
       FROM deliverables_info di
       LEFT JOIN rep_ind_geographic_scopes rigs ON rigs.id = di.geographic_scope_id
       LEFT JOIN rep_ind_regions rir ON rir.id = di.region_id
@@ -385,6 +415,76 @@ export class ClusterDeliverableRepository {
       ORDER BY name
       `,
       [...deliverableIds, phaseId, DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE],
+    );
+  }
+
+  private async loadDissemination(
+    deliverableIds: number[],
+    phaseId: number,
+    inClause: string,
+  ): Promise<ClusterDeliverableDisseminationRow[]> {
+    return this.dataSource.query<ClusterDeliverableDisseminationRow[]>(
+      `
+      SELECT
+        dd.deliverable_id AS deliverableId,
+        dd.dissemination_URL AS disseminationUrl,
+        COALESCE(rc.name, dd.dissemination_channel) AS disseminationChannel,
+        dd.is_open_access AS isOpenAccess
+      FROM deliverable_dissemination dd
+      LEFT JOIN repository_channel rc
+        ON rc.short_name = dd.dissemination_channel AND rc.is_active = 1
+      WHERE dd.deliverable_id IN (${inClause})
+        AND dd.id_phase = ?
+      ORDER BY dd.deliverable_id, dd.id
+      `,
+      [...deliverableIds, phaseId],
+    );
+  }
+
+  private async loadCrossCuttingMarkers(
+    deliverableIds: number[],
+    phaseId: number,
+    inClause: string,
+  ): Promise<ClusterDeliverableCrossCuttingMarkerRow[]> {
+    return this.dataSource.query<ClusterDeliverableCrossCuttingMarkerRow[]>(
+      `
+      SELECT
+        dccm.deliverable_id AS deliverableId,
+        cccm.name AS name,
+        rigyfl.name AS focusLevel
+      FROM deliverable_cross_cutting_markers dccm
+      INNER JOIN cgiar_cross_cutting_markers cccm ON cccm.id = dccm.cgiar_cross_cutting_marker_id
+      LEFT JOIN rep_ind_gender_youth_focus_levels rigyfl
+        ON rigyfl.id = dccm.rep_ind_gender_youth_focus_level_id
+      WHERE dccm.deliverable_id IN (${inClause})
+        AND dccm.id_phase = ?
+      ORDER BY dccm.id
+      `,
+      [...deliverableIds, phaseId],
+    );
+  }
+
+  private async loadMetadataElements(
+    deliverableIds: number[],
+    phaseId: number,
+    inClause: string,
+  ): Promise<ClusterDeliverableMetadataElementRow[]> {
+    return this.dataSource.query<ClusterDeliverableMetadataElementRow[]>(
+      `
+      SELECT
+        dme.deliverable_id AS deliverableId,
+        me.id AS metadataElementId,
+        COALESCE(me.econded_name, me.element) AS encodedName,
+        dme.element_value AS elementValue
+      FROM deliverable_metadata_elements dme
+      INNER JOIN metadata_elements me ON me.id = dme.element_id
+      WHERE dme.deliverable_id IN (${inClause})
+        AND dme.id_phase = ?
+        AND dme.element_value IS NOT NULL
+        AND TRIM(dme.element_value) != ''
+      ORDER BY dme.deliverable_id, COALESCE(me.econded_name, me.element)
+      `,
+      [...deliverableIds, phaseId],
     );
   }
 }

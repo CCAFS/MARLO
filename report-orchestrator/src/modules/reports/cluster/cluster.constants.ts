@@ -27,6 +27,13 @@ export const CLUSTER_PARTNER_ROLE_LABELS: Record<string, string> = {
 export const FLAG_ASSET_BASE_URL =
   'https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags';
 
+export const SDG_ASSET_BASE_URL =
+  'https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/sdg';
+
+/** Metadata element ids shown separately from metadataElements[]. */
+export const METADATA_ELEMENT_ID_HANDLE = 35;
+export const METADATA_ELEMENT_ID_DOI = 36;
+
 export const LOC_ELEMENT_TYPE_REGION = 1;
 export const LOC_ELEMENT_TYPE_COUNTRY = 2;
 

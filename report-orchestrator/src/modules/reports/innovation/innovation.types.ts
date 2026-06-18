@@ -12,6 +12,7 @@ export interface InnovationCoreRow {
   year: number | null;
   clearLead: number | null;
   readinessScale: string | null;
+  readinessScaleFull: string | null;
   repIndPhaseResearchPartnership: string | null;
   repIndStageInnovation: string | null;
   descriptionStage: string | null;
@@ -165,6 +166,11 @@ export interface InnovationComplementarySolutionRow {
   functionTitles: string | null;
 }
 
+export interface InnovationSdgRow {
+  name: string;
+  icon: string | null;
+}
+
 export interface InnovationContext {
   core: InnovationCoreRow;
   geographicScopes: InnovationGeographicScopeRow[];
@@ -175,7 +181,7 @@ export interface InnovationContext {
   studies: InnovationStudyRow[];
   sharedProjects: string[];
   allianceLevers: string[];
-  sdgs: string[];
+  sdgs: InnovationSdgRow[];
   impactAreas: string[];
   allianceOrganizations: InnovationAllianceOrgRow[];
   actors: InnovationActorRow[];

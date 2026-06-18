@@ -21,6 +21,7 @@ import {
   sanitizeText,
 } from './cluster-text.utils';
 import {
+  ClusterActivityDeliverableRow,
   ClusterActivitySummaryRow,
   ClusterContext,
   ClusterDeliverableExtendedContext,
@@ -46,6 +47,7 @@ export function assembleClusterData(
   const { core } = context;
   const partners = buildPartners(context);
   const projectDescription = buildProjectDescription(context, partners);
+  const deliverablesByActivity = groupBy(context.activityDeliverables, (row) => row.activityId);
 
   return {
     projectID: String(core.projectId),
@@ -64,7 +66,9 @@ export function assembleClusterData(
     deliverables: context.deliverables.map((row) =>
       mapDeliverableForCluster(row, deliverableContexts.get(row.id)),
     ),
-    activities: context.activities.map(mapActivity),
+    activities: context.activities.map((row) =>
+      mapActivity(row, deliverablesByActivity.get(row.id) ?? []),
+    ),
     innovations: context.innovations.map((row) => mapInnovation(row, innovationContexts.get(row.id))),
     crossCutting: buildCrossCuttingSummary(context),
   };
@@ -351,7 +355,10 @@ function buildPerformanceContribution(
   return data;
 }
 
-function mapActivity(row: ClusterActivitySummaryRow): Record<string, unknown> {
+function mapActivity(
+  row: ClusterActivitySummaryRow,
+  deliverableRows: ClusterActivityDeliverableRow[],
+): Record<string, unknown> {
   const data: Record<string, unknown> = { id: row.id };
   putIfPresent(data, 'title', sanitizeText(row.title));
   putIfPresent(data, 'description', sanitizeText(row.description));
@@ -364,6 +371,20 @@ function mapActivity(row: ClusterActivitySummaryRow): Record<string, unknown> {
   putIfPresent(data, 'leader', sanitizeText(row.leaderName));
   putIfPresent(data, 'institution', sanitizeText(row.institutionName));
   putIfPresent(data, 'activityTitle', sanitizeText(row.activityTitle));
+
+  const deliverables = deliverableRows
+    .map((deliverable) => {
+      const entry: Record<string, unknown> = { id: deliverable.deliverableId };
+      putIfPresent(entry, 'title', sanitizeText(deliverable.title));
+      return entry;
+    })
+    .filter((entry) => entry.id != null);
+
+  if (deliverables.length > 0) {
+    data.deliverables = deliverables;
+    data.hasDeliverables = true;
+  }
+
   return data;
 }
 
