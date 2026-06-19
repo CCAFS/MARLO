@@ -2303,7 +2303,6 @@ a#userLogOut:hover {
 #userInfo-drop #userLogOut:focus {
 	background: #245968;
 	border-bottom-color: #173943;
-	transform: translateY(-1px);
 	box-shadow: none;
 	filter: none;
 	outline: none;
@@ -2311,7 +2310,6 @@ a#userLogOut:hover {
 
 #userInfo-drop #userLogOut:hover .glyphicon,
 #userInfo-drop #userLogOut:focus .glyphicon {
-	transform: translateX(2px);
 }
 
 #userInfo-drop #userLogOut:active {
