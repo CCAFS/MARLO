@@ -46,7 +46,7 @@
                 <br>
                 <hr> 
                 
-                <a class="addButton" href="[@s.url action='deleteMarloMessage'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="message.deleteMarloMessage" /]</a>
+                <a class="addButton confirmDelete" data-confirm="[@s.text name='message.deleteMarloMessage.confirm' /]" href="[@s.url action='deleteMarloMessage'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="message.deleteMarloMessage" /]</a>
                 <div class="clearfix"></div>        
                 <br>                                                                              
         </div>
