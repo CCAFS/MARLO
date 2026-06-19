@@ -17,10 +17,8 @@
 
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
-    <div class="row">
-      <img class="col-xs-12 col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" alt="" />
-      <p class="col-xs-12 col-md-10"> [@s.text name="targetUnits.help" /] </p>
-    </div>
+    <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
+    <p class="col-md-10"> [@s.text name="targetUnits.help" /] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
