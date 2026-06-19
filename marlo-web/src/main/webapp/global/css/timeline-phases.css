@@ -172,6 +172,18 @@ div#tl-adnyds {
   color: #949494;
   border-top: 0px solid;
   border: 1px dashed #d8d8d8;
+  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.example .frame ul li.phaseNoSelected:hover {
+  background: #eef4f8;
+  border-color: #bfd0dc;
+  color: #536574;
+  box-shadow: 0 1px 6px rgba(11, 123, 166, 0.14);
+}
+
+.example .frame ul li.phaseNoSelected:active {
+  box-shadow: 0 1px 3px rgba(11, 123, 166, 0.18);
 }
 
 .example .frame ul li.active {
