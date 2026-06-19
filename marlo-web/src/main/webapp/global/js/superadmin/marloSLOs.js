@@ -18,6 +18,12 @@ function attachEvents() {
 
   $('.remove-element').on('click', removeElement);
 
+  $('.confirmDelete').on('click', function(e) {
+    if (!confirm($(this).data('confirm'))) {
+      e.preventDefault();
+    }
+  });
+
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
