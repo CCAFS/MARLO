@@ -89,7 +89,7 @@
           [/#list]
         </div>
         <span class="note info col-md-12">
-          These default common regions follows the <b>World Bank</b> standard defined by the World Bank. Please <a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups" target="_blank">click here </a> for more information.
+          These default common regions follows the&nbsp;<b>World Bank standard</b>&nbsp;defined by the World Bank. Please&nbsp;<a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups" target="_blank">click here</a>&nbsp;for more information.
         </span>
         <div class="clearfix"></div>
         <div class="scopesBlock" listname="loggedCrp.locationElementTypes">
