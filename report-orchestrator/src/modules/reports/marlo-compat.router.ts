@@ -4,6 +4,7 @@ import { AppConfig } from '../../config/env';
 import { getDataSource } from '../../config/data-source';
 import { PhaseResolverService } from '../phase/phase-resolver.service';
 import { parseOptionalPositiveInt, parsePositiveInt } from '../../shared/parse-query';
+import { sendPdfInline } from '../../shared/pdf-response.utils';
 import { InnovationReportService } from './innovation/innovation.service';
 import { ClusterReportService } from './cluster/cluster.service';
 import { OicrReportService } from './oicr/oicr.service';
@@ -41,10 +42,7 @@ export function createMarloCompatRouter(config: AppConfig): Router {
         const service = new OicrReportService(config, dataSource);
         const { fileName, pdfBuffer } = await service.generatePdfForBrowser(studyId, resolvedPhaseId);
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-        res.setHeader('Content-Length', pdfBuffer.length);
-        res.status(200).send(pdfBuffer);
+        sendPdfInline(res, fileName, pdfBuffer);
       } catch (error) {
         next(error);
       }
@@ -77,10 +75,7 @@ export function createMarloCompatRouter(config: AppConfig): Router {
           crp,
         );
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-        res.setHeader('Content-Length', pdfBuffer.length);
-        res.status(200).send(pdfBuffer);
+        sendPdfInline(res, fileName, pdfBuffer);
       } catch (error) {
         next(error);
       }
@@ -109,10 +104,7 @@ export function createMarloCompatRouter(config: AppConfig): Router {
         const service = new ClusterReportService(config, dataSource);
         const { fileName, pdfBuffer } = await service.generatePdfForBrowser(projectId, resolvedPhaseId);
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-        res.setHeader('Content-Length', pdfBuffer.length);
-        res.status(200).send(pdfBuffer);
+        sendPdfInline(res, fileName, pdfBuffer);
       } catch (error) {
         next(error);
       }
