@@ -196,9 +196,7 @@
               </a>
             </div>
             [#-- GlobalUnit Image/Logo--]
-            [#if namespace?contains('superadmin')]
-              <img id="crp-image" src="${baseUrlCdn}/global/images/cgiar.png" alt="" />
-            [#else]
+            [#if !namespace?contains('superadmin')]
               [#if crpSession??]<img id="crp-image" src="${baseUrl}/data/globalUnitLogo.do?acronym=${crpSession}" alt="${crpSession}" />[/#if]
             [/#if]
             <div class="clearfix"></div>

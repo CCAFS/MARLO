@@ -1480,12 +1480,12 @@
 
 [#macro textAreaReferences name editable value="-NULL" i18nkey="" disabled=false required=false errorfield="" help="" helpIcon=true  fieldEmptyText="form.values.fieldEmpty" showTitle=true display=true className="-NULL" labelClass="" paramText="" readOnly=false editable=true placeholder="" allowTextEditor=false powbInclude=false oldReference=true isNote=false isMainTitle=false]
   <div class="textArea ${changedField(name)}" [#if !display]style="display: none;"[/#if]> 
-    [#assign customName]${(i18nkey?has_content)?string(i18nkey,name)}[/#assign]  
-    [#assign customLabel][#if !editable]${customName}.readText[#else]${customName}[/#if][/#assign]
+    [#assign customName = (i18nkey?has_content)?string(i18nkey, name)]
+    [#assign customLabel = (!editable)?string(customName + ".readText", customName)]
     [#-- Get Custom Value --]
     [#assign customValue][#if value=="-NULL"][@s.property value="${name?string}"/][#else]${value}[/#if][/#assign]
     [#if showTitle]
-      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if] ${isMainTitle?string('label--2','')}"> [@s.text name="${customLabel}"][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
+      <label for="${name}" class="${editable?string('editable', 'readOnly')} ${labelClass} [#if powbInclude]powb-label[/#if] ${isMainTitle?string('label--2','')}"> [@s.text name=customLabel][@s.param]${paramText}[/@s.param][/@s.text]:[@req required=required && editable /]
         [#--  Help Text --]
         [@helpLabel name="${help}" paramText="${paramText}" showIcon=helpIcon editable=editable isNote=isNote /]
         [#if powbInclude]

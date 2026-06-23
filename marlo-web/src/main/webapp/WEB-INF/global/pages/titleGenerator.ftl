@@ -20,10 +20,10 @@
 [#if (reportSynthesis??)!false]${(reportSynthesis.liaisonInstitution.acronym)!} - [/#if]
 
 [#-- Title --]
-${(title)!"AICCRA"}
+${(title)!"MARLO"}
 
-[#-- AICCRA Environment --]
-[#if !config.production][AICCRA Project][/#if]
+[#-- Testing Environment --]
+[#if !config.production][Testing Environment][/#if]
 
 [#-- Phase --]
 [#if (actualPhase.id??)!false](${(actualPhase.composedName)!})[/#if]

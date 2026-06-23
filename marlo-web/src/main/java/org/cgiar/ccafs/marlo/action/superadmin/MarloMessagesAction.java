@@ -182,4 +182,17 @@ public class MarloMessagesAction extends BaseAction {
   public void setMessageTypes(List<String> messageTypes) {
     this.messageTypes = messageTypes;
   }
+
+  @Override
+  public void validate() {
+    if (save) {
+      String messageValue = message != null ? message.getMessageValue() : null;
+      if (messageValue != null) {
+        messageValue = messageValue.replace("<p>", "").replace("</p>", "").trim();
+      }
+      if (messageValue == null || messageValue.isEmpty()) {
+        this.addFieldError("message.messageValue", this.getText("validation.field.required"));
+      }
+    }
+  }
 }
