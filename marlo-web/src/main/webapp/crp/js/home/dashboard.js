@@ -180,43 +180,50 @@ function locateContentDialog(id) {
 
 }
 
+function waitForScrollEnd(element, callback) {
+  let debounceTimer;
+
+  const onScroll = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      element.removeEventListener('scroll', onScroll);
+      element.removeEventListener('scrollend', onScrollEnd);
+      callback();
+    }, 150);
+  };
+
+  const onScrollEnd = () => {
+    clearTimeout(debounceTimer);
+    element.removeEventListener('scroll', onScroll);
+    element.removeEventListener('scrollend', onScrollEnd);
+    callback();
+  };
+
+  element.addEventListener('scroll', onScroll);
+  element.addEventListener('scrollend', onScrollEnd);
+
+  // Fallback: if scroll events never fire (already at target position), run callback anyway
+  debounceTimer = setTimeout(() => {
+    element.removeEventListener('scroll', onScroll);
+    element.removeEventListener('scrollend', onScrollEnd);
+    callback();
+  }, 600);
+}
+
 function moveScrollRight() {
   const element = document.getElementById("timelineContainer");
-
-  const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.95;
-
-  element.style.scrollBehavior = "smooth"
-  element.scrollLeft += (containerSize);
-
-  let onlyActive = true;
-  setTimeout(() => {
-    if(onlyActive){
-      getIntersectedActivities();
-      onlyActive = false;
-    }
-    
-  }, 500);
-  
+  const containerSize = element.clientWidth * 0.95;
+  element.style.scrollBehavior = "smooth";
+  element.scrollLeft += containerSize;
+  waitForScrollEnd(element, getIntersectedActivities);
 }
 
 function moveScrollLeft() {
   const element = document.getElementById("timelineContainer");
-
-  const widthContainer = $('.sectionMap').width();
-  const containerSize = widthContainer * 0.95;
-
-  element.style.scrollBehavior = "smooth"
-  element.scrollLeft -= (containerSize);
-
-  let onlyActive = true;
-  setTimeout(() => {
-    if(onlyActive){
-      getIntersectedActivities();
-      onlyActive = false;
-    }
-    
-  }, 500);
+  const containerSize = element.clientWidth * 0.95;
+  element.style.scrollBehavior = "smooth";
+  element.scrollLeft -= containerSize;
+  waitForScrollEnd(element, getIntersectedActivities);
 }
 
 function zoomIn() {
