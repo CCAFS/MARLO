@@ -144,13 +144,14 @@
 	
 	
 	
-		<div id="userInfo" class="userDropdown">
-		  <div class="userToggle">
+    <div id="userInfo" class="userDropdown">
+      <div id="user-menu-toggle" class="userToggle" role="button" tabindex="0" aria-haspopup="true"
+        aria-expanded="false" aria-controls="userInfo-drop" aria-label="Open user menu">
 		    <div class="avatar">${initials}</div>
 		    <span class="caret"></span>
 		  </div>
 		
-		  <div id="userInfo-drop">
+      <div id="userInfo-drop" role="menu" aria-hidden="true" aria-labelledby="user-menu-toggle">
 		    <p class="name"><strong>${(currentUser.composedCompleteName)!}</strong></p>
 		
 		    <p class="email">
@@ -171,7 +172,7 @@
 		    </div>
 		
 		    <!-- loguot button -->
-		    <a id="userLogOut" href="[@s.url action='logout' namespace='/' /]">
+        <a id="userLogOut" role="menuitem" href="[@s.url action='logout' namespace='/' /]">
 		      <span class="glyphicon glyphicon-log-out"></span> [@s.text name="header.logout" /]
 		    </a>
 		  </div>

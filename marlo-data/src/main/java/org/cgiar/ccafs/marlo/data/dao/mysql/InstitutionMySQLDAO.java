@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.model.Institution;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -123,43 +122,41 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
 
   @Override
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
-    String query = "select i from Institution i where i.name like concat('%', :institutionName, '%') "
-      + "or i.acronym like concat('%', :institutionName, '%') or i.websiteLink like concat('%', :institutionName, '%') "
-      + "group by i.name, i.acronym, i.websiteLink order by (case when i.name like concat(:institutionName, '%') then 0 "
-      + "when i.name like concat('% %', :institutionName, '% %') then 3 when i.name like concat('%', :institutionName) then 6 "
-      + "when i.acronym like concat(:institutionName, '%') then 1 when i.acronym like concat('% %', :institutionName, '% %') then 4 "
-      + "when i.acronym like concat('%', :institutionName) then 7 when i.websiteLink like concat(:institutionName, '%') then 2 "
-      + "when i.websiteLink like concat('% %', :institutionName, '% %') then 5 when i.websiteLink like concat('%', :institutionName) then 8 "
-      + "else 12 end), i.name, i.acronym, i.websiteLink";
-    Query<Institution> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-
-    createQuery.setParameter("institutionName", searchValue);
-
-    List<Institution> institutions = super.findAll(createQuery);
-    List<Institution> institutionsAux = new ArrayList<>(institutions);
+    StringBuilder query = new StringBuilder();
+    query.append("select distinct i from Institution i left join fetch i.institutionType it where ");
+    query.append("(i.name like concat('%', :institutionName, '%') ");
+    query.append("or i.acronym like concat('%', :institutionName, '%') ");
+    query.append("or i.websiteLink like concat('%', :institutionName, '%')) ");
 
     if (onlyPPA == 1) {
-
-      for (Institution institution : institutionsAux) {
-        if (institution.getCrpPpaPartners().stream()
-          .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
-          .isEmpty()) {
-          institutions.remove(institution);
-        }
-      }
-    } else {
-      if (ppaPartner == 0) {
-        for (Institution institution : institutionsAux) {
-          if (!institution.getCrpPpaPartners().stream()
-            .filter(c -> c.isActive() && c.getCrp().getId().longValue() == crpID).collect(Collectors.toList())
-            .isEmpty()) {
-            institutions.remove(institution);
-          }
-        }
-      }
+      query.append("and exists (select 1 from CrpPpaPartner cpp ");
+      query.append("where cpp.institution = i and cpp.active = true and cpp.crp.id = :crpID) ");
+    } else if (ppaPartner == 0) {
+      query.append("and not exists (select 1 from CrpPpaPartner cpp ");
+      query.append("where cpp.institution = i and cpp.active = true and cpp.crp.id = :crpID) ");
     }
 
-    return institutions;
+    query.append("order by (case when i.name like concat(:institutionName, '%') then 0 ");
+    query.append("when i.name like concat('% %', :institutionName, '% %') then 3 ");
+    query.append("when i.name like concat('%', :institutionName) then 6 ");
+    query.append("when i.acronym like concat(:institutionName, '%') then 1 ");
+    query.append("when i.acronym like concat('% %', :institutionName, '% %') then 4 ");
+    query.append("when i.acronym like concat('%', :institutionName) then 7 ");
+    query.append("when i.websiteLink like concat(:institutionName, '%') then 2 ");
+    query.append("when i.websiteLink like concat('% %', :institutionName, '% %') then 5 ");
+    query.append("when i.websiteLink like concat('%', :institutionName) then 8 ");
+    query.append("else 12 end), i.name, i.acronym, i.websiteLink");
+
+    Query<Institution> createQuery =
+      this.getSessionFactory().getCurrentSession().createQuery(query.toString(), Institution.class);
+    createQuery.setParameter("institutionName", searchValue);
+
+    if (onlyPPA == 1 || ppaPartner == 0) {
+      createQuery.setParameter("crpID", crpID);
+    }
+
+    createQuery.setMaxResults(100);
+    return super.findAll(createQuery);
   }
 
 }

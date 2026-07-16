@@ -1,18 +1,16 @@
 $(document).ready(init);
 
 function init() {
-
-  /* Declaring Events */
   attachEvents();
-
 }
 
 function attachEvents() {
-  $('.addSlo').on('click', addIdo);
+
+  $('.addSlo').on('click', addSlo);
 
   $('.addIndicator').on('click', addIndicator);
 
-  $('.addTargets').on('click', addTargets);
+  $('.addTargets').on('click', addTarget);
 
   $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
 
@@ -32,15 +30,12 @@ function attachEvents() {
     } else {
       $(this).removeClass('opened').addClass('closed');
     }
-    $(this).next().slideToggle('slow', function() {
-      $(this).find('textarea').autoGrow();
-    });
+    $(this).next().slideToggle();
   });
 
 }
 
-function addIdo() {
-  console.log("add ido");
+function addSlo() {
   var $itemsList = $(this).parent().find('.slos-list');
   var $item = $("#srfSlo-template").clone(true).removeAttr("id");
   $item.find('.blockTitle').trigger('click');
@@ -51,7 +46,6 @@ function addIdo() {
 }
 
 function addIndicator() {
-  console.log("addIndicator");
   var $itemsList = $(this).parent().parent().find('.srfIndicators-list');
   var $item = $("#srfSloIndicator-template").clone(true).removeAttr("id");
 
@@ -61,18 +55,17 @@ function addIndicator() {
   $item.trigger('addComponent');
 }
 
-function addTargets() {
-  console.log("addTargets");
+function addTarget() {
   var $itemsList = $(this).parent().parent().find('.targetsList');
   var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
+
   $itemsList.append($item);
-  $item.show('slow');
+  $item.slideDown('slow');
   updateIndexes();
   $item.trigger('addComponent');
 }
 
 function addCrossCuttingIssue() {
-  console.log("addCrossCuttingIssue");
   var $itemsList = $(this).parent().find('.issues-list');
   var $item = $("#srfCCIssue-template").clone(true).removeAttr("id");
 
@@ -83,7 +76,12 @@ function addCrossCuttingIssue() {
 }
 
 function removeElement() {
-  $item = $(this).parent();
+  var $item;
+  if ($(this).hasClass('targetRemove')) {
+    $item = $(this).closest('.targetsIndicator');
+  } else {
+    $item = $(this).parent();
+  }
   $item.hide('slow', function() {
     $item.remove();
     updateIndexes();
@@ -92,18 +90,17 @@ function removeElement() {
 }
 
 function updateIndexes() {
-  $('.slos-list .srfSlo').each(function(i,slo) {
-    // Updating indexes
+  $('.slos-list .srfSlo').each(function(i, slo) {
     $(slo).setNameIndexes(1, i);
-    $(slo).find('.srfSloIndicator').each(function(subIdoIndex,subIdo) {
-      // Updating indexes
-      $(subIdo).setNameIndexes(2, subIdoIndex);
+    $(slo).find('.srfSloIndicator').each(function(indicatorIndex, indicator) {
+      $(indicator).setNameIndexes(2, indicatorIndex);
+      $(indicator).find('.targetsIndicator').each(function(targetIndex, target) {
+        $(target).setNameIndexes(3, targetIndex);
+      });
     });
   });
 
-  $('.issues-list .srfCCIssue').each(function(i,crossCutting) {
-    // Updating indexes
-    $(crossCutting).setNameIndexes(1, i);
-
+  $('.issues-list .srfCCIssue').each(function(issueIndex, issue) {
+    $(issue).setNameIndexes(1, issueIndex);
   });
 }

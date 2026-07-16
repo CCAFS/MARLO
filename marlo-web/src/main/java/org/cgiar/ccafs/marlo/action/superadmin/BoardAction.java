@@ -24,9 +24,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -38,7 +37,7 @@ public class BoardAction extends BaseAction {
   private static final long serialVersionUID = -793652591843623397L;
 
 
-  private HashMap<Long, String> idoList;
+  private Map<Long, String> idoList;
 
 
   private final SrfTargetUnitManager srfTargetUnitManager;
@@ -58,7 +57,7 @@ public class BoardAction extends BaseAction {
   }
 
 
-  public HashMap<Long, String> getIdoList() {
+  public Map<Long, String> getIdoList() {
     return idoList;
   }
 
@@ -71,17 +70,17 @@ public class BoardAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-
-    targetUnitList = new ArrayList<>();
-    if (srfTargetUnitManager.findAll() != null) {
-      List<SrfTargetUnit> targetUnits =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.add(srfTargetUnit);
+    if (!this.isHttpPost()) {
+      targetUnitList = new ArrayList<>();
+      if (srfTargetUnitManager.findAll() != null) {
+        List<SrfTargetUnit> targetUnits =
+          srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).toList();
+        targetUnitList.addAll(targetUnits);
       }
-    }
-    if (this.isHttpPost()) {
-      targetUnitList.clear();
+    } else {
+      if (targetUnitList == null) {
+        targetUnitList = new ArrayList<>();
+      }
     }
 
   }
@@ -90,60 +89,72 @@ public class BoardAction extends BaseAction {
   @Override
   public String save() {
     if (this.canAccessSuperAdmin()) {
-
-      List<SrfTargetUnit> targetsPreview =
-        srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
-      // Removing crp flagship program type
-      if (targetsPreview != null) {
-        for (SrfTargetUnit srfTargetUnit : targetsPreview) {
-          if (!targetUnitList.contains(srfTargetUnit)) {
-
-            if (srfTargetUnit.getCrpTargetUnits() != null) {
-              List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-                srfTargetUnit.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
-
-              if (!crpTargetUnits.isEmpty()) {
-                for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
-                  crpTargetUnitManager.deleteCrpTargetUnit(crpTargetUnit.getId());
-                }
-              }
-            }
-
-            srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
-
-          }
-        }
-      }
-
-      for (SrfTargetUnit srfTargetUnit : targetUnitList) {
-        if (srfTargetUnit != null) {
-          if (srfTargetUnit.getId() == null || srfTargetUnit.getId() == -1L) {
-            srfTargetUnit = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
-          } else {
-            SrfTargetUnit srfTargetUnitDb = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
-
-            srfTargetUnitDb.setName(srfTargetUnit.getName());
-            srfTargetUnitDb = srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnitDb);
-          }
-
-        }
-      }
-      Collection<String> messages = this.getActionMessages();
-      if (!messages.isEmpty()) {
-        String validationMessage = messages.iterator().next();
-        this.setActionMessages(null);
-        this.addActionWarning(this.getText("saving.saved") + validationMessage);
-      } else {
-        this.addActionMessage("message:" + this.getText("saving.saved"));
-      }
-      messages = this.getActionMessages();
+      this.deleteRemovedTargetUnits();
+      this.saveTargetUnits();
+      this.addSuccessMessage();
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;
     }
   }
 
-  public void setIdoList(HashMap<Long, String> idoList) {
+  private void deleteRemovedTargetUnits() {
+    List<SrfTargetUnit> targetsPreview =
+      srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).toList();
+
+    List<Long> incomingIds = targetUnitList.stream()
+      .filter(tu -> tu != null && tu.getId() != null && tu.getId() != -1L)
+      .map(SrfTargetUnit::getId)
+      .toList();
+
+    if (targetsPreview != null) {
+      for (SrfTargetUnit srfTargetUnit : targetsPreview) {
+        if (!incomingIds.contains(srfTargetUnit.getId())) {
+          this.deleteCrpTargetUnitsForTarget(srfTargetUnit);
+          srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
+        }
+      }
+    }
+  }
+
+  private void deleteCrpTargetUnitsForTarget(SrfTargetUnit srfTargetUnit) {
+    if (srfTargetUnit.getCrpTargetUnits() != null) {
+      List<CrpTargetUnit> crpTargetUnits = srfTargetUnit.getCrpTargetUnits().stream()
+        .filter(tu -> tu.isActive())
+        .toList();
+
+      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+        crpTargetUnitManager.deleteCrpTargetUnit(crpTargetUnit.getId());
+      }
+    }
+  }
+
+  private void saveTargetUnits() {
+    for (SrfTargetUnit srfTargetUnit : targetUnitList) {
+      if (srfTargetUnit != null) {
+        if (srfTargetUnit.getId() == null || srfTargetUnit.getId() == -1L) {
+          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnit);
+        } else {
+          SrfTargetUnit srfTargetUnitDb = srfTargetUnitManager.getSrfTargetUnitById(srfTargetUnit.getId());
+          srfTargetUnitDb.setName(srfTargetUnit.getName());
+          srfTargetUnitManager.saveSrfTargetUnit(srfTargetUnitDb);
+        }
+      }
+    }
+  }
+
+  private void addSuccessMessage() {
+    Collection<String> messages = this.getActionMessages();
+    if (!messages.isEmpty()) {
+      String validationMessage = messages.iterator().next();
+      this.setActionMessages(null);
+      this.addActionWarning(this.getText("saving.saved") + validationMessage);
+    } else {
+      this.addActionMessage("message:" + this.getText("saving.saved"));
+    }
+  }
+
+  public void setIdoList(Map<Long, String> idoList) {
     this.idoList = idoList;
   }
 

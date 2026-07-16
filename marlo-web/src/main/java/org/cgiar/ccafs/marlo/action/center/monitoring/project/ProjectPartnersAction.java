@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
+import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -280,6 +281,10 @@ public class ProjectPartnersAction extends BaseAction {
                 person.setUser(user);
               }
             }
+            // Initialize selected locations from draft
+            if (partner.getSelectedLocations() == null) {
+              partner.setSelectedLocations(new ArrayList<>());
+            }
 
             partners.add(partner);
           }
@@ -299,6 +304,9 @@ public class ProjectPartnersAction extends BaseAction {
           for (CenterProjectPartner partner : project.getPartners()) {
             partner.setUsers(new ArrayList<>(
               partner.getProjectPartnerPersons().stream().filter(ppp -> ppp.isActive()).collect(Collectors.toList())));
+            
+            // Initialize empty selected locations for editing
+            partner.setSelectedLocations(new ArrayList<>());
           }
         }
       }

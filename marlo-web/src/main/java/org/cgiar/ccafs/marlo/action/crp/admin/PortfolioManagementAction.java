@@ -59,64 +59,134 @@ public class PortfolioManagementAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    portfolios = new ArrayList<>();
-    phases = new ArrayList<>();
-
     try {
-
       long globalUnitId = this.getCurrentGlobalUnit().getId();
-
-      portfolios = portfolioManager.getPortfoliosByGlobalUnitId(globalUnitId);
+      
+      // Always load phases for the dropdown
       phases = phaseManager.findAll().stream()
         .filter(phase -> phase.getCrp() != null && phase.getCrp().getId() == globalUnitId)
         .sorted((p1, p2) -> p1.getId().compareTo(p2.getId())).collect(Collectors.toList());
 
-      try {
-        if (portfolios == null || portfolios.isEmpty()) {
-          return;
+      if (!this.isHttpPost()) {
+        // For GET: Load portfolios from DB
+        portfolios = portfolioManager.getPortfoliosByGlobalUnitId(globalUnitId);
+
+        if (portfolios != null && !portfolios.isEmpty()) {
+          for (Portfolio p : portfolios) {
+            if (p == null) {
+              continue;
+            }
+
+            final Long id = p.getId();
+            if (id == null) {
+              p.setPortfolioPhases(Collections.emptyList());
+              continue;
+            }
+
+            try {
+              final List<PortfolioPhase> pPhases = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(id);
+              p.setPortfolioPhases((pPhases == null || pPhases.isEmpty()) ? Collections.emptyList() : pPhases);
+            } catch (Exception ex) {
+              logger.error("Error fetching phases for portfolioId={}", id, ex);
+              p.setPortfolioPhases(Collections.emptyList());
+            }
+
+            if (p.getSelectedPhases() == null || p.getSelectedPhases().isEmpty()) {
+              p.setSelectedPhases(extractPhaseIds(p.getPortfolioPhases()));
+            }
+          }
         }
-
-        for (Portfolio p : portfolios) {
-          if (p == null) {
-            continue;
-          }
-
-          final Long id = p.getId();
-          if (id == null) {
-            p.setPortfolioPhases(Collections.emptyList());
-            continue;
-
-          }
-
-          try {
-            final List<PortfolioPhase> phases = portfolioPhaseManager.getPortfolioPhasesByPortfolioID(id);
-            p.setPortfolioPhases((phases == null || phases.isEmpty()) ? Collections.emptyList() : phases);
-          } catch (Exception ex) {
-            logger.error("Error fetching phases for portfolioId={}", id, ex);
-            p.setPortfolioPhases(Collections.emptyList());
-          }
-
-          if (p.getSelectedPhases() == null || p.getSelectedPhases().isEmpty()) {
-            p.setSelectedPhases(extractPhaseIds(p.getPortfolioPhases()));
-          }
-        }
-
-      } catch (Exception e) {
-        logger.error("Error fetching portfolio phases: {}", e.getMessage(), e);
+      } else {
+        // For POST: Will bind portfolios manually from request in save()
+        portfolios = new ArrayList<>();
       }
-
-
-    } catch (
-
-    Exception e) {
+    } catch (Exception e) {
+      logger.error("Error in prepare(): {}", e.getMessage(), e);
     }
+  }
 
-    if (this.isHttpPost()) {
-      if (portfolios != null) {
-        portfolios.clear();
-      }
-      if (phases != null) {
-        phases.clear();
+  /**
+   * Manually bind portfolios from HTTP request parameters.
+   * This is necessary because Struts 6 cannot automatically populate lists when items are deleted.
+   */
+  private void bindPortfoliosFromRequest() {
+    portfolios = new ArrayList<>();
+    int index = 0;
+    boolean hasMore = true;
+
+    while (hasMore) {
+      String idParam = this.getRequest().getParameter("portfolios[" + index + "].id");
+      String nameParam = this.getRequest().getParameter("portfolios[" + index + "].name");
+      String startDateParam = this.getRequest().getParameter("portfolios[" + index + "].startDate");
+      String endDateParam = this.getRequest().getParameter("portfolios[" + index + "].endDate");
+      String[] selectedPhasesParam = this.getRequest().getParameterValues("portfolios[" + index + "].selectedPhases");
+      
+      boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
+        (nameParam != null && !nameParam.trim().isEmpty()) ||
+        (startDateParam != null && !startDateParam.trim().isEmpty()) ||
+        (endDateParam != null && !endDateParam.trim().isEmpty()) ||
+        (selectedPhasesParam != null && selectedPhasesParam.length > 0);
+      
+      if (hasAnyContent) {
+        try {
+          Portfolio portfolio = new Portfolio();
+          
+          // ID (can be null for new elements)
+          if (idParam != null && !idParam.trim().isEmpty()) {
+            try {
+              Long id = Long.parseLong(idParam);
+              portfolio.setId(id);
+            } catch (NumberFormatException e) {
+              // Silent fail
+            }
+          }
+          
+          // Name
+          portfolio.setName(nameParam);
+          
+          // Start Date
+          if (startDateParam != null && !startDateParam.trim().isEmpty()) {
+            try {
+              portfolio.setStartDate(java.sql.Date.valueOf(startDateParam));
+            } catch (Exception e) {
+              logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // End Date
+          if (endDateParam != null && !endDateParam.trim().isEmpty()) {
+            try {
+              portfolio.setEndDate(java.sql.Date.valueOf(endDateParam));
+            } catch (Exception e) {
+              logger.warn("Error parsing endDate at index {}: {}", index, e.getMessage());
+            }
+          }
+          
+          // Selected Phases (multiple values)
+          if (selectedPhasesParam != null && selectedPhasesParam.length > 0) {
+            List<Long> selectedPhases = new ArrayList<>();
+            for (String phaseId : selectedPhasesParam) {
+              if (phaseId != null && !phaseId.trim().isEmpty()) {
+                try {
+                  selectedPhases.add(Long.parseLong(phaseId));
+                } catch (NumberFormatException e) {
+                  logger.warn("Error parsing phaseId '{}' at index {}", phaseId, index);
+                }
+              }
+            }
+            portfolio.setSelectedPhases(selectedPhases);
+          } else {
+            portfolio.setSelectedPhases(new ArrayList<>());
+          }
+          
+          portfolios.add(portfolio);
+          index++;
+        } catch (Exception e) {
+          logger.error("Error binding portfolio at index {}: {}", index, e.getMessage(), e);
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
       }
     }
   }
@@ -124,6 +194,8 @@ public class PortfolioManagementAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      // Manually bind portfolios from request parameters
+      bindPortfoliosFromRequest();
 
       savePortfolios();
 
@@ -157,23 +229,12 @@ public class PortfolioManagementAction extends BaseAction {
    */
   public void savePortfolios() {
     if (portfolios != null) {
-
       List<Long> inputIds =
         portfolios.stream().map(Portfolio::getId).filter(Objects::nonNull).collect(Collectors.toList());
 
       List<Portfolio> allExisting = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentGlobalUnit().getId());
 
-      if (allExisting != null && !allExisting.isEmpty()) {
-        allExisting.stream().filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
-          .forEach(portfolioToDelete -> {
-            try {
-              portfolioManager.deletePortfolio(portfolioToDelete.getId());
-            } catch (Exception e) {
-              logger.error("Error deleting portfolio with ID: {}", portfolioToDelete.getId(), e);
-            }
-          });
-      }
-
+      // FIRST: Save/update all portfolios from the form
       if (portfolios != null && !portfolios.isEmpty()) {
         List<Long> newIds = new ArrayList<>();
 
@@ -205,6 +266,21 @@ public class PortfolioManagementAction extends BaseAction {
 
         if (!newIds.isEmpty()) {
           this.getRequest().getSession().setAttribute("recentlyCreatedFRP", newIds);
+        }
+      }
+
+      // THEN: Delete portfolios not present in the form
+      if (allExisting != null && !allExisting.isEmpty()) {
+        List<Portfolio> toDelete = allExisting.stream()
+          .filter(existing -> existing.getId() != null && !inputIds.contains(existing.getId()))
+          .collect(Collectors.toList());
+
+        for (Portfolio portfolioToDelete : toDelete) {
+          try {
+            portfolioManager.deletePortfolio(portfolioToDelete.getId());
+          } catch (Exception e) {
+            logger.error("Error deleting portfolio with ID: {}", portfolioToDelete.getId(), e);
+          }
         }
       }
     }
@@ -279,6 +355,8 @@ public class PortfolioManagementAction extends BaseAction {
   }
 
   public void setPortfolios(List<Portfolio> portfolios) {
+    // Note: This setter is kept for JSP/FTL access but is not used for Struts binding
+    // We bind portfolios manually in save() using bindPortfoliosFromRequest()
     this.portfolios = portfolios;
   }
 

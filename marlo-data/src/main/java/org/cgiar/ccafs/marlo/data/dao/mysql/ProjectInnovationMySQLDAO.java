@@ -127,6 +127,32 @@ public class ProjectInnovationMySQLDAO extends AbstractMarloDAO<ProjectInnovatio
   }
 
   @Override
+  public List<InnovationHomeDTO> getInnovationsByProjectsAndPhaseHome(long phaseId, List<Long> projectIds) {
+    if (projectIds == null || projectIds.isEmpty()) {
+      return new ArrayList<>();
+    }
+    String hql = "select pi.id as innovationId, pii.year as expectedYear, "
+      + "pr.id as projectId, coalesce(pii.repIndInnovationType.name, 'None') as innovationType, pii.title as innovationTitle, pr.acronym as projectAcronym "
+      + "from ProjectInnovation pi, ProjectInnovationInfo pii, Phase ph, Project pr "
+      + "where pii.projectInnovation = pi and pi.active = true and "
+      + "pi.project = pr and pr.id in (:projectIds) and pr.active = true and "
+      + "pii.phase = ph and ph.id = :phaseId and pii.year = ph.year";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(hql);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameterList("projectIds", projectIds);
+
+    createQuery.setResultTransformer(
+      (ListResultTransformer) (tuple, aliases) -> new InnovationHomeDTO(((Number) tuple[0]).longValue(),
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4],
+        (String) tuple[5]));
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    return createQuery.list();
+  }
+
+  @Override
   public Boolean isInnovationExcluded(Long innovationId, Long phaseId) {
     StringBuilder query = new StringBuilder();
     query.append("select is_innovation_excluded(" + innovationId.longValue() + "," + phaseId.longValue()

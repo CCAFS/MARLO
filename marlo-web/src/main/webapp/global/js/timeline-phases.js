@@ -44,7 +44,32 @@ $(document).ready(function() {
     console.log("itemIndex", itemIndex);
   });
 
+  fitPhaseTitles();
+
+  $(window).on('resize', function() {
+    fitPhaseTitles();
+  });
+
 });
+
+/**
+ * Reduce title font size until it fits in one line without displacing the Closed label.
+ */
+function fitPhaseTitles() {
+  $('.phaseTitleText').each(function() {
+    var $title = $(this);
+    var maxFontSize = 16;
+    var minFontSize = 10;
+    var currentSize = maxFontSize;
+
+    $title.css('font-size', currentSize + 'px');
+
+    while (this.scrollWidth > this.clientWidth && currentSize > minFontSize) {
+      currentSize -= 0.5;
+      $title.css('font-size', currentSize + 'px');
+    }
+  });
+}
 
 /**
  * Execute an AJAX that change the phase in the session

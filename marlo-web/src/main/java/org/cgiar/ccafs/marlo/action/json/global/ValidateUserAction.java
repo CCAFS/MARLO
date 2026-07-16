@@ -50,7 +50,7 @@ public class ValidateUserAction extends BaseAction {
   private Map<String, Object> userFound;
 
 
-  @Inject
+  // @Inject
   public ValidateUserAction(APConfig config, UserManager userManager) {
     super(config);
     this.userManager = userManager;

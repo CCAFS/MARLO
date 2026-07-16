@@ -22,6 +22,7 @@ function attachEvents() {
 
   $('.addParameter').on('click', addParameter);
   $('.removeParameter').on('click', removeParameter);
+  $('.parameter-search').on('input', filterParametersBySearch);
 
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -36,6 +37,28 @@ function attachEvents() {
     });
   });
 
+}
+
+function filterParametersBySearch() {
+  var searchTerm = ($(this).val() || '').toLowerCase();
+  var tableId = $(this).attr('data-target');
+  var $table = $('#' + tableId);
+
+  if(!$table.length) {
+    return;
+  }
+
+  $table.find('tbody tr.parameter').each(function() {
+    var keyText = ($(this).find('strong').text() || '').toLowerCase();
+    var descText = ($(this).find('small i').text() || '').toLowerCase();
+    var fullText = (keyText + ' ' + descText).trim();
+
+    if(fullText.indexOf(searchTerm) !== -1) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
 }
 
 function addParameter() {

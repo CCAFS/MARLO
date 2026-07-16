@@ -25,22 +25,27 @@ import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Named
+// @Named
+@Repository
 public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> implements GlobalUnitDAO {
 
-  @Inject
+  @Autowired
   public GlobalUnitMySQLDAO(SessionFactory sessionFactory) {
     super(sessionFactory);
   }
 
   @Override
-  public List<GlobalUnit> crpUsers(String emai) {
+  public List<GlobalUnit> crpUsers(String email) {
 
     String query = "select distinct cp from GlobalUnit cp inner join fetch cp.crpUsers cpUser   "
-      + "where (cpUser.user.email = :emai  or cpUser.user.username =:emai ) and cpUser.active=1 ";
+      + "where (cpUser.user.email = :email  or cpUser.user.username =:email ) "
+      + "and cpUser.active=1 and cp.active=1 and cp.login=1 ";
     Query<GlobalUnit> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
-    createQuery.setParameter("emai", emai);
+    createQuery.setParameter("email", email);
     List<GlobalUnit> crps = super.findAll(createQuery);
     return crps;
   }
@@ -63,6 +68,7 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
   }
 
   @Override
+  @Transactional
   public GlobalUnit find(long id) {
     return super.find(GlobalUnit.class, id);
 
@@ -70,6 +76,7 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
 
   @Override
   public List<GlobalUnit> findAll() {
+    System.out.println("*****FDIAZ - findAll - DAO");
     String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
     List<GlobalUnit> list = super.findAll(query);
     if (list.size() > 0) {

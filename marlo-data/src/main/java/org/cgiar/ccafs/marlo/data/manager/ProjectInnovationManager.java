@@ -71,6 +71,7 @@ public interface ProjectInnovationManager {
    */
   public List<InnovationHomeDTO> getInnovationsByProjectAndPhaseHome(Long phaseId, Long projectId);
 
+  public List<InnovationHomeDTO> getInnovationsByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds);
 
   /**
    * This method gets a projectInnovation object by a given projectInnovation identifier.

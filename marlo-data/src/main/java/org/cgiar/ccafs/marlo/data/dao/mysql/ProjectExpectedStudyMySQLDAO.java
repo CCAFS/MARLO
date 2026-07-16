@@ -187,6 +187,32 @@ public class ProjectExpectedStudyMySQLDAO extends AbstractMarloDAO<ProjectExpect
   }
 
   @Override
+  public List<StudyHomeDTO> getStudiesByProjectsAndPhaseHome(long phaseId, List<Long> projectIds) {
+    if (projectIds == null || projectIds.isEmpty()) {
+      return new ArrayList<>();
+    }
+    String hql = "select pes.id as studyId, pesi.year as expectedYear, "
+      + "pr.id as projectId, coalesce(pesi.studyType.name, 'None') as studyType, pesi.title as studyTitle, pi.acronym as projectAcronym "
+      + "from ProjectExpectedStudy pes, ProjectExpectedStudyInfo pesi, Phase ph, Project pr,ProjectInfo pi "
+      + "where pesi.projectExpectedStudy = pes and pes.active = true and "
+      + "pes.project = pr and pr.id in (:projectIds) and pr.active = true and pr=pi.project and pi.phase=ph and "
+      + "pesi.phase = ph and ph.id = :phaseId and pesi.year = ph.year";
+
+    Query createQuery = this.getSessionFactory().getCurrentSession().createQuery(hql);
+
+    createQuery.setParameter("phaseId", phaseId);
+    createQuery.setParameterList("projectIds", projectIds);
+
+    createQuery.setResultTransformer(
+      (ListResultTransformer) (tuple, aliases) -> new StudyHomeDTO(((Number) tuple[0]).longValue(),
+        ((Number) tuple[1]).longValue(), ((Number) tuple[2]).longValue(), (String) tuple[3], (String) tuple[4],
+        (String) tuple[5]));
+    createQuery.setFlushMode(FlushMode.COMMIT);
+
+    return createQuery.list();
+  }
+
+  @Override
   public List<Map<String, Object>> getUserStudies(long userId, String crp) {
     List<Map<String, Object>> list = new ArrayList<>();
     StringBuilder builder = new StringBuilder();

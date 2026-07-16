@@ -47,10 +47,12 @@ import javax.inject.Inject;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
+@Component
 public class DashboardAction extends BaseAction {
 
   private static final long serialVersionUID = 6686785556753962379L;
@@ -76,7 +78,7 @@ public class DashboardAction extends BaseAction {
   private List<StudyHomeDTO> myStudies = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
 
-  @Inject
+  // @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
@@ -209,11 +211,12 @@ public class DashboardAction extends BaseAction {
       AuthorizationInfo info = ((APCustomRealm) this.securityContext.getRealm())
         .getAuthorizationInfo(this.securityContext.getSubject().getPrincipals());
 
-
-      for (String permission : info.getStringPermissions()) {
-        if (permission.contains("project")) {
-          for (int i = 0; i > permission.split(":").length; i++) {
-            // System.out.println(permission.split(":")[i]);
+      if (info != null) {
+        for (String permission : info.getStringPermissions()) {
+          if (permission.contains("project")) {
+            for (int i = 0; i > permission.split(":").length; i++) {
+              // System.out.println(permission.split(":")[i]);
+            }
           }
         }
       }
@@ -262,21 +265,14 @@ public class DashboardAction extends BaseAction {
     }
 
 
-    myDeliverables = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(
-        p -> deliverableManager.getDeliverablesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
+    Long dashboardPhaseId = this.getActualPhase().getId();
+    List<Long> dashboardProjectIds = myProjects.stream().filter(p -> p != null && p.getId() != null).map(Project::getId)
       .collect(Collectors.toList());
 
-
-    myStudies = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectExpectedStudyManager
-        .getStudiesByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
-
-    myInnovations = myProjects.stream().filter(p -> p != null && p.getId() != null)
-      .flatMap(p -> projectInnovationManager
-        .getInnovationsByProjectAndPhaseHome(this.getActualPhase().getId(), p.getId()).stream())
-      .collect(Collectors.toList());
+    myDeliverables = deliverableManager.getDeliverablesByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
+    myStudies = projectExpectedStudyManager.getStudiesByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
+    myInnovations =
+      projectInnovationManager.getInnovationsByProjectsAndPhaseHome(dashboardPhaseId, dashboardProjectIds);
 
     this.getDeliverableListByPhaseFunction();
     this.getCompleteDeliverableListByPhaseFunction();

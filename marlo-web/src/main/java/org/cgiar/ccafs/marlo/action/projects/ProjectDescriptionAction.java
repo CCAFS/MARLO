@@ -267,11 +267,13 @@ public class ProjectDescriptionAction extends BaseAction {
    */
   private Path getAutoSaveFilePath() {
     // get the class simple name
-    String composedClassName = project.getClass().getSimpleName();
+    String composedClassName = (project != null) ? project.getClass().getSimpleName() : "Project";
     // get the action name and replace / for _
     String actionFile = this.getActionName().replace("/", "_");
+    // Use projectID if project is null, otherwise use project.getId()
+    Long id = (project != null && project.getId() != null) ? project.getId() : projectID;
     // concatane name and add the .json extension
-    String autoSaveFile = project.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
+    String autoSaveFile = id + "_" + composedClassName + "_" + this.getActualPhase().getName() + "_"
       + this.getActualPhase().getYear() + "_" + actionFile + ".json";
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
@@ -498,6 +500,19 @@ public class ProjectDescriptionAction extends BaseAction {
       project = projectManager.getProjectById(projectID);
     }
 
+    // Ensure project is initialized before proceeding
+    if (project == null) {
+      LOG.error("Cannot initialize project: projectID is {} and project is null", projectID);
+      // Try to load from projectID if available
+      if (projectID > 0) {
+        project = projectManager.getProjectById(projectID);
+      }
+      if (project == null) {
+        LOG.error("Cannot load project from database with projectID: {}. prepare() will exit early.", projectID);
+        return; // Exit early if we can't load the project
+      }
+    }
+
     if (project != null) {
 
       // We validate if there is a draft version
@@ -521,8 +536,25 @@ public class ProjectDescriptionAction extends BaseAction {
 
         // We read the JSON serialized by the front-end and cast it to the object
 
-        project = (Project) autoSaveReader.readFromJson(jReader);
+        Project projectFromAutosave = (Project) autoSaveReader.readFromJson(jReader);
         // We load some BD objects, since the draft only keeps IDs and some data is shown with a different labe
+        if (projectFromAutosave != null && projectFromAutosave.getId() != null) {
+          project = projectFromAutosave;
+        } else {
+          LOG.warn("Cannot load project from autosave: project is null or has no ID. Using project from database.");
+          // Keep the project loaded from database
+        }
+        
+        // Ensure project is still valid before proceeding
+        if (project == null || project.getId() == null) {
+          LOG.error("Project is null or has no ID after autosave load. Attempting to reload from database.");
+          project = projectManager.getProjectById(projectID);
+          if (project == null || project.getId() == null) {
+            LOG.error("Cannot load valid project from database with projectID: {}. prepare() will exit early.", projectID);
+            return;
+          }
+        }
+        
         Project projectDb = projectManager.getProjectById(project.getId());
         project.getProjectInfo()
           .setProjectEditLeader(projectDb.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader());
@@ -831,8 +863,19 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getCenterOutcomes().clear();
       }
 
-      project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      LiaisonInstitution liaisonFromForm = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution();
 
+      if (this.isAiccra() && liaisonFromForm != null && liaisonFromForm.getId() != null) {
+          
+          Long newId = liaisonFromForm.getId();
+          LiaisonInstitution safeLiaison = new LiaisonInstitution();
+          safeLiaison.setId(newId);
+          
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(safeLiaison);
+
+      } else {
+          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+      }
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
       project.getProjectInfo().setCrossCuttingClimate(null);

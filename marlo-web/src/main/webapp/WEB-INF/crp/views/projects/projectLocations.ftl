@@ -541,11 +541,11 @@
   <li id="regionTemplate" class="region clearfix col-md-3">
       <div class="removeRegion removeIcon" title="[@s.text name="projectLocations.removeRegion" /]"></div>
       <input class="id" type="hidden" name="project.projectRegions[-1].id" value="" />
-      <input class="rId" type="hidden" name="project.projectRegions[-1].locElement.id" value="" />
+      <input class="rId" type="hidden" name="project.projectRegions[-1].locElementId" value="" />
       <input class="regionScope" type="hidden" name="project.projectRegions[-1].scope" value="" />
       <span class="name"></span>
       <div class="clearfix"></div>
-    </li>
+  </li>
 </ul>
 
 [#-- location element template (table) --]

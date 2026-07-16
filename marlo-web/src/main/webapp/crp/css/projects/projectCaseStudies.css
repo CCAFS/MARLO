@@ -23,6 +23,13 @@ td {
     vertical-align: middle !important;
 }
 
+#projectHighlights td.id,
+#projectHighlights td.year,
+#projectHighlights td.status,
+#projectHighlights td.text-center {
+  text-align: center !important;
+}
+
 span.icon-20 {
     margin-top: 7px;
 }

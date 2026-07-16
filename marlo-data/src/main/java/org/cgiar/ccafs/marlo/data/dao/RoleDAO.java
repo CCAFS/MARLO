@@ -64,6 +64,32 @@ public interface RoleDAO {
    */
   public List<Role> findByGloablUnitAndAcronym(long globalUnitId, String acronym);
 
+  /**
+   * Clone role_permissions from template global unit roles to target global unit roles by matching acronym.
+   *
+   * @param templateGlobalUnitId template global unit id
+   * @param targetGlobalUnitId target global unit id
+   * @return number of inserted rows
+   */
+  public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId);
+
+  /**
+   * Ensure target Global Unit has a SuperAdmin role and seed its permissions from template Global Unit.
+   *
+   * @param targetGlobalUnitId target global unit id
+   * @param templateGlobalUnitId template global unit id used as permissions source
+   * @return number of inserted role_permissions rows
+   */
+  public int ensureSuperAdminRoleAndPermissions(long targetGlobalUnitId, long templateGlobalUnitId);
+
+  /**
+   * Validate that all permission names exist in permissions table.
+   *
+   * @param permissionNames permission literals to validate
+   * @return true when all permission names exist
+   */
+  public boolean existsPermissionsByNames(List<String> permissionNames);
+
 
   /**
    * This method saves the information of the given role

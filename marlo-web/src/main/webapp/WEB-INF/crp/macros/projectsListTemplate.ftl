@@ -44,10 +44,10 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project.id) /]
-        [#assign hasClusterType = action.hasClusterType(project.id) /]
-        [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
-        [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
+        [#assign isProjectNew = action.isProjectNew(project) /]
+        [#assign hasClusterType = action.hasClusterType(project) /]
+        [#assign isCrpProject = (action.isProjectCrpOrPlatformForList(project.id))!false ]
+        [#assign isCenterProject = (action.isProjectCenterForList(project.id))!false ]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
         [#-- ID --]
@@ -157,7 +157,7 @@
           [#-- Project Action Status --]
           <td>
             [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = action.isProjectSubmitted(project.id) /]
+            [#assign submission = action.isProjectSubmitted(project) /]
 
             [#-- CRP Project --]
             [#if isCrpProject]
@@ -231,7 +231,7 @@
     <tbody>
     [#if projects?has_content]
       [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project.id) /]
+        [#assign isProjectNew = action.isProjectNew(project) /]
         [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
         <tr>
         [#-- ID --]

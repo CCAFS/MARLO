@@ -146,7 +146,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
 
     boolean generatePentahoReport =
-      this.getCurrentUser() != null && this.hasSpecificities(APConstants.GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE);
+      this.getCurrentUser() != null && this.hasSpecificities(APConstants.GENERATE_PENTAHO_OICRS_REPORT_ACTIVE);
 
     if (generatePentahoReport) {
 
@@ -157,7 +157,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
 
         crp = this.getLoggedCrp().getAcronym();
         if (crp == null || crp.isEmpty()) {
-          String[] actionMap = ActionContext.getContext().getName().split("/");
+          String[] actionMap = ActionContext.getContext().getActionName().split("/");
           if (actionMap.length > 1) {
             String enteredCrp = actionMap[0];
             crp = crpManager.findGlobalUnitByAcronym(enteredCrp).getAcronym();

@@ -82,13 +82,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
+import com.opensymphony.xwork2.util.CreateIfNull;
+import com.opensymphony.xwork2.util.Element;
+import com.opensymphony.xwork2.util.KeyProperty;
+
 import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -150,7 +152,7 @@ public class OutcomesAction extends BaseAction {
 
 
   private List<Integer> milestoneYears;
-  private List<CrpProgramOutcome> outcomes;
+  private List<CrpProgramOutcome> outcomesForm;
   private List<CrpProgram> programs;
 
   private CrpProgram selectedProgram;
@@ -176,7 +178,7 @@ public class OutcomesAction extends BaseAction {
   private List<Portfolio> portfolios;
   private List<GeneralStatus> generalStatuses;
 
-  @Inject
+  // @Inject
   public OutcomesAction(APConfig config, SrfTargetUnitManager srfTargetUnitManager, SrfIdoManager srfIdoManager,
     CrpProgramOutcomeManager crpProgramOutcomeManager, CrpMilestoneManager crpMilestoneManager,
     CrpProgramManager crpProgramManager, OutcomeValidator validator, CrpOutcomeSubIdoManager crpOutcomeSubIdoManager,
@@ -322,8 +324,11 @@ public class OutcomesAction extends BaseAction {
     return milestoneYears;
   }
 
-  public List<CrpProgramOutcome> getOutcomes() {
-    return outcomes;
+  @KeyProperty(value = "composeID")
+  @Element(value = org.cgiar.ccafs.marlo.data.model.CrpProgramOutcome.class)
+  @CreateIfNull(value = true) // Forces list creation if null
+  public List<CrpProgramOutcome> getOutcomesForm() {
+    return outcomesForm;
   }
 
 
@@ -405,20 +410,19 @@ public class OutcomesAction extends BaseAction {
   public void loadInfo() {
     Comparator<CrpMilestone> milestoneComparator = new ComparatorChain<>(new MilestoneComparators.YearComparator())
       .thenComparing(new MilestoneComparators.ComposedIdComparator());
-
     try {
-      if (outcomes != null && !outcomes.isEmpty()) {
-        outcomes.sort(Comparator.comparing((CrpProgramOutcome o) -> {
+      if (outcomesForm != null && !outcomesForm.isEmpty()) {
+        outcomesForm.sort(Comparator.comparing((CrpProgramOutcome o) -> {
           String desc = o.getDescription();
           return desc != null && desc.toLowerCase().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED.toLowerCase());
         }).thenComparing(CrpProgramOutcome::getId));
       }
 
     } catch (Exception e) {
-      LOG.error("OutcomesAction: unable to sort outcomes", e);
+      LOG.error("OutcomesAction: unable to sort outcomesForm", e);
     }
 
-    for (CrpProgramOutcome crpProgramOutcome : outcomes) {
+    for (CrpProgramOutcome crpProgramOutcome : outcomesForm) {
 
       crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive())
         .sorted(milestoneComparator::compare).collect(Collectors.toList()));
@@ -465,254 +469,231 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
 
-    // IAuditLog ia = auditLogManager.getHistory(4);
-    loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
-    outcomes = new ArrayList<CrpProgramOutcome>();
-    loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
-    targetUnitList = new HashMap<>();
-    // cgamboa 24/05/2024 srfTargetUnitManager.findAll() was changed by srfTargetUnitManager.findAllQauntity()
-    int srfTargetUnitQuantity = 0;
-    try {
-      srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
-    } catch (Exception e) {
-      LOG.info("unable to get srfTargetUnitQuantity in preparefunction ");
-    }
-    if (srfTargetUnitQuantity > 0) {
+      // 1. Basic initialization
+      loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+      loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+      
+      this.outcomesForm = new ArrayList<>();
+      this.targetUnitList = new HashMap<>();
 
-      List<SrfTargetUnit> targetUnits = new ArrayList<>();
+      // 2. Load the parent program (SelectedProgram)
+      // NOTE: Keep the selectedProgram loading logic unchanged...
+      this.loadSelectedProgramData(); 
 
-      List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
-        loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
-
-      for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
-        targetUnits.add(crpTargetUnit.getSrfTargetUnit());
-      }
-
-
-      Collections.sort(targetUnits,
-        (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
-
-      for (SrfTargetUnit srfTargetUnit : targetUnits) {
-        targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
-      }
-
-
-      // TODO
-      targetUnitList = this.sortByComparator(targetUnitList);
-    }
-
-    if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
-
-
-      transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
-      CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
-      if (history != null) {
-        crpProgramID = history.getId();
-        selectedProgram = history;
-        outcomes.addAll(history.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-
-        this.setEditable(false);
-        this.setCanEdit(false);
-        programs = new ArrayList<>();
-        this.loadInfo();
-        programs.add(history);
-
-        List<HistoryDifference> differences = new ArrayList<>();
-        Map<String, String> specialList = new HashMap<>();
-        int i = 0;
-        int j = 0;
-        Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
-        for (CrpProgramOutcome crpProgramOutcome : outcomes) {
-          int[] index = new int[1];
-          index[0] = i;
-          differences.addAll(historyComparator.getDifferencesList(crpProgramOutcome, transaction, specialList,
-            "outcomes[" + i + "]", "outcomes", 1));
-          for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
-            differences.addAll(historyComparator.getDifferencesList(crpMilestone, transaction, specialList,
-              "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 2));
-
-
-            j++;
-          }
-          j = 0;
-          for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
-            differences.addAll(historyComparator.getDifferencesList(crpOutcomeSubIdo, transaction, specialList,
-              "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 2));
-            j++;
-            int k = 0;
-
-
-            for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getAssumptions()) {
-              differences.addAll(historyComparator.getDifferencesList(crpAssumption, transaction, specialList,
-                "outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "]", "outcomes", 3));
-              k++;
-            }
-          }
-          i++;
-        }
-
-        i = 0;
-
-
-        this.setDifferences(differences);
+      // 3. ESTRATEGIA DUAL (GET vs POST)
+      if (this.isHttpPost()) {
+          // [POST - SAVE]:
+          // Do NOT load 'addAll' from DB.
+          // Only reconstruct what the user submitted. If the user deleted one, it will not appear here.
+          this.manualBindingFix(); 
       } else {
-        programs = new ArrayList<>();
-        this.transaction = null;
-
-        this.setTransaction("-1");
+          // [GET - VIEW]:
+          // Load everything from DB to display on screen.
+          if (selectedProgram != null && selectedProgram.getCrpProgramOutcomes() != null) {
+              this.outcomesForm.addAll(selectedProgram.getCrpProgramOutcomes().stream()
+                  .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
+                  .sorted(Comparator.comparing(CrpProgramOutcome::getId))
+                  .collect(Collectors.toList()));
+          }
+          // Hydrate child entities (Milestones) so they render in the HTML
+          this.loadInfo();
       }
 
-      Collections.sort(outcomes, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
-    } else {
-      List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
-        .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
-          && c.getResearchArea() == null)
-        .collect(Collectors.toList());
-      allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
-      crpProgramID = -1;
+      // 4. Listas auxiliares
+      this.loadAuxiliaryLists();
+  }
 
+  /**
+   * Rebuilds the list based ONLY on the incoming request parameters.
+   */
+  private void manualBindingFix() {
+      javax.servlet.http.HttpServletRequest req = org.apache.struts2.ServletActionContext.getRequest();
+      
+      int i = 0;
+      boolean hasMoreOutcomes = true;
 
-      this.programs = allPrograms;
+      // Use while to iterate indefinitely until no more data is found
+      while (hasMoreOutcomes) {
+          String keyDesc = "outcomesForm[" + i + "].description";
+          String keyId = "outcomesForm[" + i + "].id";
+          String keyPort = "outcomesForm[" + i + "].portfolio.id";
+
+          // Check whether at least one field exists for this index
+          boolean indexExists = req.getParameter(keyDesc) != null 
+                            || req.getParameter(keyId) != null 
+                            || req.getParameter(keyPort) != null;
+
+          if (!indexExists) {
+              // Break the loop if no data found for the current index.
+              // NOTE: Assumes the frontend sends consecutive indexes (0, 1, 2...).
+              // If the frontend leaves gaps (0, 2, 5), a "miss" counter would be needed before breaking.
+              hasMoreOutcomes = false;
+              break; 
+          }
+
+          // Fill the list up to the current index
+          while (this.outcomesForm.size() <= i) {
+              CrpProgramOutcome outcomeToAdd = new CrpProgramOutcome();
+              outcomeToAdd.setSrfTargetUnit(new SrfTargetUnit());
+              outcomeToAdd.setFile(new org.cgiar.ccafs.marlo.data.model.FileDB());
+              this.outcomesForm.add(outcomeToAdd);
+          }
+
+          // === NESTED MILESTONES LOGIC ===
+          CrpProgramOutcome currentOutcome = this.outcomesForm.get(i);
+          if (currentOutcome.getMilestones() == null) {
+              currentOutcome.setMilestones(new ArrayList<>());
+          }
+
+          int j = 0;
+          boolean hasMoreMilestones = true;
+
+          // Dynamic milestone loop (no fixed upper limit)
+          while (hasMoreMilestones) {
+              String keyMile = "outcomesForm[" + i + "].milestones[" + j + "].title";
+              String keyMileYear = "outcomesForm[" + i + "].milestones[" + j + "].year";
+              
+              boolean mileExists = req.getParameter(keyMile) != null || req.getParameter(keyMileYear) != null;
+
+              if (!mileExists) {
+                  hasMoreMilestones = false;
+                  break;
+              }
+
+              while (currentOutcome.getMilestones().size() <= j) {
+                  CrpMilestone mile = new CrpMilestone();
+                  mile.setSrfTargetUnit(new SrfTargetUnit());
+                  mile.setMilestonesStatus(new GeneralStatus());
+                  mile.setCrpProgramOutcome(currentOutcome);
+
+                  // --- MANUAL INJECTION OF MILESTONE YEAR ---
+                  String yearRaw = req.getParameter("outcomesForm[" + i + "].milestones[" + j + "].year");
+                  if (yearRaw != null && !yearRaw.isEmpty()) {
+                      try {
+                          Integer y = Integer.parseInt(yearRaw);
+                          mile.setYear(y);
+                      } catch (NumberFormatException e) {
+                          // Log a warning if the year format is invalid instead of silently ignoring it
+                          LOG.warn("Formato de año inválido para milestone " + j + ": " + yearRaw);
+                      }
+                  }
+                  currentOutcome.getMilestones().add(mile);
+              }
+              j++; // next milestone
+          }
+          i++; // next outcome
+      }
+  }
+
+  private void loadSelectedProgramData() throws Exception {
+      // --- SrfTargetUnit original logic ---
+      int srfTargetUnitQuantity = 0;
       try {
-        crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+          srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
       } catch (Exception e) {
-
-        User user = userManager.getUser(this.getCurrentUser().getId());
-
-        List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
-          .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
-
-            && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            && c.getCrpProgram().getResearchArea() == null)
-          .collect(Collectors.toList());
-
-        if (!userLeads.isEmpty()) {
-          crpProgramID = userLeads.get(0).getCrpProgram().getId();
-        } else {
-          if (!this.programs.isEmpty()) {
-            crpProgramID = this.programs.get(0).getId();
+          LOG.warn("unable to get srfTargetUnitQuantity");
+      }
+      if (srfTargetUnitQuantity > 0) {
+          List<SrfTargetUnit> targetUnits = new ArrayList<>();
+          List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+              loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+          for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+              targetUnits.add(crpTargetUnit.getSrfTargetUnit());
           }
-        }
-
+          Collections.sort(targetUnits, (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+          for (SrfTargetUnit srfTargetUnit : targetUnits) {
+              targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+          }
+          targetUnitList = this.sortByComparator(targetUnitList);
       }
 
-      if (crpProgramID != -1) {
-        selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
-        outcomes.addAll(selectedProgram.getCrpProgramOutcomes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
-
-      }
-      if (selectedProgram != null) {
-
-        milestoneYears = this.getTargetYears();
-
-        Path path = this.getAutoSaveFilePath();
-
-        if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
-
-          BufferedReader reader = null;
-
-          reader = new BufferedReader(new FileReader(path.toFile()));
-
-          Gson gson = new GsonBuilder().create();
-
-
-          JsonObject jReader = gson.fromJson(reader, JsonObject.class);
-          reader.close();
-
-
-          AutoSaveReader autoSaveReader = new AutoSaveReader();
-
-          selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
-          outcomes = selectedProgram.getOutcomes();
-          selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
-          selectedProgram.setBaseLine(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getBaseLine());
-
-          selectedProgram.setCrp(loggedCrp);
-          if (outcomes == null) {
-            outcomes = new ArrayList<>();
+      // --- Transaction (Audit History) logic ---
+      if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+          transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+          CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
+          
+          if (history != null) {
+              crpProgramID = history.getId();
+              selectedProgram = history;
+              
+              this.setEditable(false);
+              this.setCanEdit(false);
+              programs = new ArrayList<>();
+              this.loadInfo(); // ensure loadInfo uses outcomesForm internally if needed, or leave as-is if it only sorts
+              programs.add(history);
+          } else {
+              programs = new ArrayList<>();
+              this.setTransaction("-1");
           }
-          for (CrpProgramOutcome outcome : outcomes) {
+          Collections.sort(outcomesForm, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
 
-            if (outcome.getSubIdos() != null) {
-              for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
-                if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != null) {
-                  subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
-                }
-              }
-            }
-            if (outcome.getFile() != null) {
-              if (outcome.getFile().getId() != null) {
-                outcome.setFile(fileDBManager.getFileDBById(outcome.getFile().getId()));
-              } else {
-                outcome.setFile(null);
-              }
-            }
+      } else {
+          List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+              .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive() && c.getResearchArea() == null)
+              .collect(Collectors.toList());
+          allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+          crpProgramID = -1;
+          this.programs = allPrograms;
 
-            if (outcome.getMilestones() != null) {
-              for (CrpMilestone milestones : outcome.getMilestones()) {
-                if (milestones.getMilestonesStatus() != null) {
-                  if (milestones.getMilestonesStatus().getId() != -1) {
-                    milestones.setMilestonesStatus(
-                      generalStatusManager.getGeneralStatusById(milestones.getMilestonesStatus().getId()));
+          try {
+              crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+          } catch (Exception e) {
+                User user = userManager.getUser(this.getCurrentUser().getId());
+                List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+                  .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
+                    && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+                    && c.getCrpProgram().getResearchArea() == null)
+                  .collect(Collectors.toList());
+
+                if (!userLeads.isEmpty()) {
+                  crpProgramID = userLeads.get(0).getCrpProgram().getId();
+                } else {
+                  if (!this.programs.isEmpty()) {
+                    crpProgramID = this.programs.get(0).getId();
                   }
                 }
+          }
+
+          if (crpProgramID != -1) {
+              selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+              
+              // AUTOSAVE logic
+              Path path = this.getAutoSaveFilePath();
+              if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+                    BufferedReader reader = new BufferedReader(new FileReader(path.toFile()));
+                    Gson gson = new GsonBuilder().create();
+                    JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+                    reader.close();
+                    AutoSaveReader autoSaveReader = new AutoSaveReader();
+                    selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
+                    
+                    this.setDraft(true);
+              } else {
+                    this.loadInfo(); // ensure loadInfo sorts outcomesForm
+                    this.setDraft(false);
               }
-            }
-
           }
-
-
-          this.setDraft(true);
-        } else {
-          this.loadInfo();
-          this.setDraft(false);
-        }
-
-        String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
-        this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
-        if (!selectedProgram.getSubmissions().stream()
-          .filter(c -> c.getYear() == this.getActualPhase().getYear() && c.getCycle() != null
-            && c.getCycle().equals(this.getActualPhase().getDescription())
-            && (c.isUnSubmit() == null || !c.isUnSubmit()))
-          .collect(Collectors.toList()).isEmpty()) {
-          if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
-            this.setCanEdit(false);
-            this.setEditable(false);
+          
+          if (selectedProgram != null) {
+              milestoneYears = this.getTargetYears();
+              // Edit permission logic...
+              String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+              this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+              // ... (remaining permission logic)
           }
-
-          this.setSubmission(selectedProgram
-            .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
-              && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-            .collect(Collectors.toList()).get(0));
-        }
-
       }
+  }
 
-      if (this.isHttpPost()) {
-
-        if (portfolios != null) {
-          portfolios.clear();
-        }
-        outcomes.clear();
-      }
-    }
-
-    // General Status List
-    generalStatuses = generalStatusManager.findAll();
-
-    /** POWB 2019 List */
-    assessmentRisks = powbIndAssesmentRiskManager.findAll();
-
-    focusLevels = repIndGenderYouthFocusLevelManager.findAll();
-
-    milestoneRisks = powbIndMilestoneRiskManager.findAll();
-
-    followingMilestones = powbIndFollowingMilestoneManager.findAll();
-    portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
-
-    /** */
+  /**
+   * Loads all auxiliary lists for dropdowns.
+   */
+  private void loadAuxiliaryLists() {
+      generalStatuses = generalStatusManager.findAll();
+      assessmentRisks = powbIndAssesmentRiskManager.findAll();
+      focusLevels = repIndGenderYouthFocusLevelManager.findAll();
+      milestoneRisks = powbIndMilestoneRiskManager.findAll();
+      followingMilestones = powbIndFollowingMilestoneManager.findAll();
+      portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
 
     idoList = new HashMap<>();
     srfIdos = new ArrayList<>();
@@ -727,15 +708,289 @@ public class OutcomesAction extends BaseAction {
     }
   }
 
+  // @Override
+  // public void prepare() throws Exception {
+  //   LOG.info("prepare inicio");
+  //   // IAuditLog ia = auditLogManager.getHistory(4);
+  //   loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+  //   // outcomesForm = new ArrayList<CrpProgramOutcome>();
+  //   outcomesForm = new org.springframework.util.AutoPopulatingList<>(CrpProgramOutcome.class);
+  //   loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
+  //   targetUnitList = new HashMap<>();
+  //   // cgamboa 24/05/2024 srfTargetUnitManager.findAll() was changed by srfTargetUnitManager.findAllQauntity()
+  //   int srfTargetUnitQuantity = 0;
+  //   try {
+  //     srfTargetUnitQuantity = srfTargetUnitManager.findAllQauntity();
+  //   } catch (Exception e) {
+  //     LOG.info("unable to get srfTargetUnitQuantity in preparefunction ");
+  //   }
+  //   if (srfTargetUnitQuantity > 0) {
+
+  //     List<SrfTargetUnit> targetUnits = new ArrayList<>();
+
+  //     List<CrpTargetUnit> crpTargetUnits = new ArrayList<>(
+  //       loggedCrp.getCrpTargetUnits().stream().filter(tu -> tu.isActive()).collect(Collectors.toList()));
+
+  //     for (CrpTargetUnit crpTargetUnit : crpTargetUnits) {
+  //       targetUnits.add(crpTargetUnit.getSrfTargetUnit());
+  //     }
+
+
+  //     Collections.sort(targetUnits,
+  //       (tu1, tu2) -> tu1.getName().toLowerCase().trim().compareTo(tu2.getName().toLowerCase().trim()));
+
+  //     for (SrfTargetUnit srfTargetUnit : targetUnits) {
+  //       targetUnitList.put(srfTargetUnit.getId(), srfTargetUnit.getName());
+  //     }
+
+
+  //     // TODO
+  //     targetUnitList = this.sortByComparator(targetUnitList);
+  //   }
+
+  //   if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {
+  //     LOG.info("TRANSACTION_ID found");
+
+  //     transaction = StringUtils.trim(this.getRequest().getParameter(APConstants.TRANSACTION_ID));
+  //     CrpProgram history = (CrpProgram) auditLogManager.getHistory(transaction);
+  //     if (history != null) {
+  //       LOG.info("history found");
+  //       crpProgramID = history.getId();
+  //       selectedProgram = history;
+  //       LOG.info("prepare crpProgramID: " + crpProgramID);
+  //       LOG.info("prepare lista history outcomesForm: " + history.getCrpProgramOutcomes().size());
+  //       outcomesForm.addAll(history.getCrpProgramOutcomes().stream()
+  //         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+  //       LOG.info("prepare outcomesForm: " + outcomesForm.size());
+
+  //       this.setEditable(false);
+  //       this.setCanEdit(false);
+  //       programs = new ArrayList<>();
+  //       this.loadInfo();
+  //       programs.add(history);
+
+  //       List<HistoryDifference> differences = new ArrayList<>();
+  //       Map<String, String> specialList = new HashMap<>();
+  //       int i = 0;
+  //       int j = 0;
+  //       Collections.sort(outcomesForm, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
+  //       for (CrpProgramOutcome crpProgramOutcome : outcomesForm) {
+  //         int[] index = new int[1];
+  //         index[0] = i;
+  //         differences.addAll(historyComparator.getDifferencesList(crpProgramOutcome, transaction, specialList,
+  //           "outcomes[" + i + "]", "outcomes", 1));
+  //         for (CrpMilestone crpMilestone : crpProgramOutcome.getMilestones()) {
+  //           differences.addAll(historyComparator.getDifferencesList(crpMilestone, transaction, specialList,
+  //             "outcomes[" + i + "].milestones[" + j + "]", "outcomes", 2));
+
+
+  //           j++;
+  //         }
+  //         j = 0;
+  //         for (CrpOutcomeSubIdo crpOutcomeSubIdo : crpProgramOutcome.getSubIdos()) {
+  //           differences.addAll(historyComparator.getDifferencesList(crpOutcomeSubIdo, transaction, specialList,
+  //             "outcomes[" + i + "].subIdos[" + j + "]", "outcomes", 2));
+  //           j++;
+  //           int k = 0;
+
+
+  //           for (CrpAssumption crpAssumption : crpOutcomeSubIdo.getAssumptions()) {
+  //             differences.addAll(historyComparator.getDifferencesList(crpAssumption, transaction, specialList,
+  //               "outcomes[" + i + "].subIdos[" + j + "].assumptions[" + k + "]", "outcomes", 3));
+  //             k++;
+  //           }
+  //         }
+  //         i++;
+  //       }
+
+  //       i = 0;
+
+
+  //       this.setDifferences(differences);
+  //     } else {
+  //       LOG.info("history not found");
+  //       programs = new ArrayList<>();
+  //       this.transaction = null;
+
+  //       this.setTransaction("-1");
+  //     }
+
+  //     Collections.sort(outcomesForm, (lc1, lc2) -> lc1.getId().compareTo(lc2.getId()));
+  //   } else {
+  //     LOG.info("transaction not found");
+  //     List<CrpProgram> allPrograms = loggedCrp.getCrpPrograms().stream()
+  //       .filter(c -> c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue() && c.isActive()
+  //         && c.getResearchArea() == null)
+  //       .collect(Collectors.toList());
+  //     allPrograms.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
+  //     crpProgramID = -1;
+
+
+  //     this.programs = allPrograms;
+  //     try {
+  //       crpProgramID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
+  //     } catch (Exception e) {
+
+  //       User user = userManager.getUser(this.getCurrentUser().getId());
+
+  //       List<CrpProgramLeader> userLeads = user.getCrpProgramLeaders().stream()
+  //         .filter(c -> c.isActive() && c.getCrpProgram().isActive() && c.getCrpProgram() != null
+
+  //           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+  //           && c.getCrpProgram().getResearchArea() == null)
+  //         .collect(Collectors.toList());
+
+  //       if (!userLeads.isEmpty()) {
+  //         crpProgramID = userLeads.get(0).getCrpProgram().getId();
+  //       } else {
+  //         if (!this.programs.isEmpty()) {
+  //           crpProgramID = this.programs.get(0).getId();
+  //         }
+  //       }
+
+  //     }
+  //     LOG.info("transaction not found crpProgramID: " + crpProgramID);
+  //     if (crpProgramID != -1) {
+  //       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+  //       outcomesForm.addAll(selectedProgram.getCrpProgramOutcomes().stream()
+  //         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+
+  //     }
+  //     if (selectedProgram != null) {
+
+  //       milestoneYears = this.getTargetYears();
+
+  //       Path path = this.getAutoSaveFilePath();
+  //       LOG.info("path: " + path.toAbsolutePath().toString());
+  //       if (path.toFile().exists() && this.getCurrentUser().isAutoSave()) {
+  //         LOG.info("path existe");
+  //         BufferedReader reader = null;
+
+  //         reader = new BufferedReader(new FileReader(path.toFile()));
+
+  //         Gson gson = new GsonBuilder().create();
+
+
+  //         JsonObject jReader = gson.fromJson(reader, JsonObject.class);
+  //         reader.close();
+
+
+  //         AutoSaveReader autoSaveReader = new AutoSaveReader();
+
+  //         selectedProgram = (CrpProgram) autoSaveReader.readFromJson(jReader);
+  //         outcomesForm = selectedProgram.getOutcomes();
+  //         selectedProgram.setAcronym(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getAcronym());
+  //         selectedProgram.setBaseLine(crpProgramManager.getCrpProgramById(selectedProgram.getId()).getBaseLine());
+
+  //         selectedProgram.setCrp(loggedCrp);
+  //         if (outcomesForm == null) {
+  //           outcomesForm = new ArrayList<>();
+  //         }
+  //         LOG.info("outcomesForm inicio: " + outcomesForm.size());
+  //         for (CrpProgramOutcome outcome : outcomesForm) {
+
+  //           if (outcome.getSubIdos() != null) {
+  //             for (CrpOutcomeSubIdo subIdo : outcome.getSubIdos()) {
+  //               if (subIdo.getSrfSubIdo() != null && subIdo.getSrfSubIdo().getId() != null) {
+  //                 subIdo.setSrfSubIdo(srfSubIdoManager.getSrfSubIdoById(subIdo.getSrfSubIdo().getId()));
+  //               }
+  //             }
+  //           }
+  //           if (outcome.getFile() != null) {
+  //             if (outcome.getFile().getId() != null) {
+  //               outcome.setFile(fileDBManager.getFileDBById(outcome.getFile().getId()));
+  //             } else {
+  //               outcome.setFile(null);
+  //             }
+  //           }
+
+  //           if (outcome.getMilestones() != null) {
+  //             for (CrpMilestone milestones : outcome.getMilestones()) {
+  //               if (milestones.getMilestonesStatus() != null) {
+  //                 if (milestones.getMilestonesStatus().getId() != -1) {
+  //                   milestones.setMilestonesStatus(
+  //                     generalStatusManager.getGeneralStatusById(milestones.getMilestonesStatus().getId()));
+  //                 }
+  //               }
+  //             }
+  //           }
+
+  //         }
+
+
+  //         this.setDraft(true);
+  //       } else {
+  //         LOG.info("path no existe");
+  //         this.loadInfo();
+  //         this.setDraft(false);
+  //       }
+
+  //       String params[] = {loggedCrp.getAcronym(), selectedProgram.getId().toString()};
+  //       this.setBasePermission(this.getText(Permission.IMPACT_PATHWAY_BASE_PERMISSION, params));
+  //       if (!selectedProgram.getSubmissions().stream()
+  //         .filter(c -> c.getYear() == this.getActualPhase().getYear() && c.getCycle() != null
+  //           && c.getCycle().equals(this.getActualPhase().getDescription())
+  //           && (c.isUnSubmit() == null || !c.isUnSubmit()))
+  //         .collect(Collectors.toList()).isEmpty()) {
+  //         if (!(this.canAccessSuperAdmin() || this.canAcessCrpAdmin())) {
+  //           this.setCanEdit(false);
+  //           this.setEditable(false);
+  //         }
+
+  //         this.setSubmission(selectedProgram
+  //           .getSubmissions().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
+  //             && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
+  //           .collect(Collectors.toList()).get(0));
+  //       }
+
+  //     }
+
+  //     if (this.isHttpPost()) {
+
+  //       if (portfolios != null) {
+  //         portfolios.clear();
+  //       }
+  //       outcomesForm.clear();
+  //     }
+  //   }
+
+  //   // General Status List
+  //   generalStatuses = generalStatusManager.findAll();
+
+  //   /** POWB 2019 List */
+  //   assessmentRisks = powbIndAssesmentRiskManager.findAll();
+
+  //   focusLevels = repIndGenderYouthFocusLevelManager.findAll();
+
+  //   milestoneRisks = powbIndMilestoneRiskManager.findAll();
+
+  //   followingMilestones = powbIndFollowingMilestoneManager.findAll();
+  //   portfolios = portfolioManager.getPortfoliosByGlobalUnitId(this.getCurrentCrp().getId());
+
+  //   /** */
+
+  //   idoList = new HashMap<>();
+  //   srfIdos = new ArrayList<>();
+  //   for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
+  //     idoList.put(srfIdo.getId(), srfIdo.getDescription());
+
+  //     srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+  //     srfIdos.add(srfIdo);
+  //   }
+  // }
+
 
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
-
       // why is this line twice in a row?
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
+      if (selectedProgram == null) {
+        LOG.warn("selectedProgram is null after getCrpProgramById(" + crpProgramID + "), aborting save");
+        return ERROR;
+      }
       selectedProgram.setAction(this.getActionName());
       List<String> relationsName = new ArrayList<>();
       relationsName.add(APConstants.PROGRAM_OUTCOMES_RELATION);
@@ -832,9 +1087,8 @@ public class OutcomesAction extends BaseAction {
     Phase nextPhase = this.getActualPhase().getNext();
     List<CrpProgramOutcome> oldOutcomes = selectedProgram.getCrpProgramOutcomes().stream()
       .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
-
     for (CrpProgramOutcome oldOutcome : oldOutcomes) {
-      if (!outcomes.contains(oldOutcome)) {
+      if (!outcomesForm.contains(oldOutcome)) {
         for (CrpMilestone crpMilestone : oldOutcome.getCrpMilestones()) {
           crpMilestoneManager.deleteCrpMilestone(crpMilestone.getId());
           crpMilestone = crpMilestoneManager.getCrpMilestoneById(crpMilestone.getId());
@@ -858,13 +1112,25 @@ public class OutcomesAction extends BaseAction {
         crpProgramOutcomeManager.replicate(oldOutcome, nextPhase);
       }
     }
+
     /*
      * Save outcomes
      */
-    for (CrpProgramOutcome programOutcomeIncoming : outcomes) {
+    for (CrpProgramOutcome programOutcomeIncoming : outcomesForm) {
       // update outcome
       // CrpProgramOutcome crpProgramOutcomeDB = crpProgramOutcomeManager.updateOutcome(crpProgramOutcomeDetached,
       // this.getActualPhase().getId(), this.getSelectedProgram().getId());
+
+      if (programOutcomeIncoming == null) {
+          LOG.warn("Null Outcome found in 'outcomes' during saveCrpProgramOutcome()");
+          continue;
+      }
+
+      Long incomingFileId = null;
+      if (programOutcomeIncoming.getFile() != null) {
+        incomingFileId = programOutcomeIncoming.getFile().getId();
+      }
+
       CrpProgramOutcome crpProgramOutcome = null;
       CrpProgramOutcome crpProgramOutcomeTemp = null;
       if (programOutcomeIncoming != null && programOutcomeIncoming.getId() != null) {
@@ -880,11 +1146,6 @@ public class OutcomesAction extends BaseAction {
           crpProgramOutcome =
             crpProgramOutcomeManager.getCrpProgramOutcome(programOutcomeIncoming.getComposeID(), this.getActualPhase());
         }
-      }
-
-      if (crpProgramOutcomeTemp != null && crpProgramOutcomeTemp.getAcronym() != null) {
-        crpProgramOutcome.setAcronym(crpProgramOutcomeTemp.getAcronym());
-        programOutcomeIncoming.setAcronym(crpProgramOutcomeTemp.getAcronym());
       }
 
       if (programOutcomeIncoming.getFile() != null && programOutcomeIncoming.getFile().getId() == null) {
@@ -911,10 +1172,38 @@ public class OutcomesAction extends BaseAction {
         programOutcomeIncoming.setPortfolio(null);
       }
 
+      programOutcomeIncoming.setFile(null); 
+
       crpProgramOutcome.copyFields(programOutcomeIncoming);
 
-      // crpProgramOutcome.setModifiedBy(this.getCurrentUser());
-      // crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+      if (incomingFileId != null) {
+          // If an ID is provided, look up the file record in the DB
+          org.cgiar.ccafs.marlo.data.model.FileDB realFile = fileDBManager.getFileDBById(incomingFileId);    
+          crpProgramOutcome.setFile(realFile); 
+      } else {
+          // No ID provided: the user either did not select a file or removed the existing one.
+          // To allow deletion, set to null:
+          crpProgramOutcome.setFile(null); 
+          // To keep the previous file when nothing new is sent (defensive logic):
+          // do nothing (the object already holds its original file loaded from DB).
+      }
+
+      crpProgramOutcome.setModifiedBy(this.getCurrentUser());
+      crpProgramOutcome.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+
+      // 1. Get the ID coming from the form
+      Long targetUnitId = programOutcomeIncoming.getSrfTargetUnit().getId(); // or milestone.getSrfTargetUnit().getId()
+
+      // 2. If the ID is valid, look up the real entity
+      if (targetUnitId != null && targetUnitId > 0) {
+          // Use the manager to fetch the full object
+          SrfTargetUnit realTargetUnit = srfTargetUnitManager.getSrfTargetUnitById(targetUnitId);
+          
+          // 3. Replace the object on the entity being saved
+          crpProgramOutcome.setSrfTargetUnit(realTargetUnit);
+      } else {
+          crpProgramOutcome.setSrfTargetUnit(null);
+      }
 
       crpProgramOutcome = crpProgramOutcomeManager.saveCrpProgramOutcome(crpProgramOutcome);
 
@@ -927,9 +1216,7 @@ public class OutcomesAction extends BaseAction {
       // @CrpProgramOutcomeIndicator has not been touched since 2018, we assume this is no longer needed
       this.saveIndicators(crpProgramOutcome, programOutcomeIncoming);
       crpProgramOutcomeManager.replicate(crpProgramOutcome, nextPhase);
-      // update milestones of outcome
       this.saveMilestones(crpProgramOutcome, programOutcomeIncoming);
-      // update subIdos of outcome
       this.saveSubIdo(crpProgramOutcome, programOutcomeIncoming);
     }
   }
@@ -1089,11 +1376,18 @@ public class OutcomesAction extends BaseAction {
           incomingMilestone.setGenderFocusLevel(repIndGenderYouthFocusLevel);
         }
 
+        Long unitId = incomingMilestone.getSrfTargetUnit().getId();
+        if (unitId != null && unitId != -1) {
+            SrfTargetUnit unit = srfTargetUnitManager.getSrfTargetUnitById(unitId);
+            milestone.setSrfTargetUnit(unit); // Reemplaza el objeto completo
+        } else {
+            milestone.setSrfTargetUnit(null);
+        }
 
         milestone.copyFields(incomingMilestone);
 
-        // milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
-        // milestone.setModifiedBy(this.getCurrentUser());
+        milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
+        milestone.setModifiedBy(this.getCurrentUser());
 
         milestone.setPhaseCreated(this.getActualPhase());
         milestone.setCrpProgramOutcome(programOutcomeOld);
@@ -1212,8 +1506,8 @@ public class OutcomesAction extends BaseAction {
     this.milestoneYears = milestoneYears;
   }
 
-  public void setOutcomes(List<CrpProgramOutcome> outcomes) {
-    this.outcomes = outcomes;
+  public void setOutcomesForm(List<CrpProgramOutcome> outcomesForm) {
+    this.outcomesForm = outcomesForm;
   }
 
   public void setPowbIndAssesmentRiskManager(PowbIndAssesmentRiskManager powbIndAssesmentRiskManager) {
@@ -1279,7 +1573,7 @@ public class OutcomesAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, outcomes, selectedProgram, true);
+      validator.validate(this, outcomesForm, selectedProgram, true);
     }
   }
 

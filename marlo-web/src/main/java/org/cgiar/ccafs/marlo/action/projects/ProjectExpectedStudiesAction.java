@@ -175,15 +175,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.hibernate.exception.LockAcquisitionException;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.struts2.dispatcher.Parameter;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -2338,6 +2341,9 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     if (this.hasPermission("canEdit") || user.getId().equals(this.expectedStudyDB.getCreatedBy().getId())) {
 
+      // Manual binding for Struts 6 compatibility (populate nested list items)
+      this.manualBinding();
+
       final Phase phase = this.getActualPhase();
       final Path path = this.getAutoSaveFilePath();
 
@@ -3354,39 +3360,71 @@ public class ProjectExpectedStudiesAction extends BaseAction {
    * @param phase
    */
   public void saveInnovations(ProjectExpectedStudy projectExpectedStudy, Phase phase) {
+    // Build a set of posted innovation IDs from request parameters
+    HttpServletRequest request = ServletActionContext.getRequest();
+    Set<Long> postedInnovationIds = new HashSet<>();
+    int index = 0;
+    String paramName = "expectedStudy.innovations[" + index + "].projectInnovation.id";
+    String innovationIdStr = request.getParameter(paramName);
 
-    // Search and deleted form Information
-    if ((projectExpectedStudy.getProjectExpectedStudyInnovations() != null)
-      && (projectExpectedStudy.getProjectExpectedStudyInnovations().size() > 0)) {
-      final List<ProjectExpectedStudyInnovation> innovationPrev =
-        new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
-          .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+    while (innovationIdStr != null) {
+      if (StringUtils.isNotBlank(innovationIdStr)) {
+        try {
+          postedInnovationIds.add(Long.parseLong(innovationIdStr));
+        } catch (NumberFormatException e) {
+          logger.warn("Invalid innovation ID: " + innovationIdStr);
+        }
+      }
+      index++;
+      paramName = "expectedStudy.innovations[" + index + "].projectInnovation.id";
+      innovationIdStr = request.getParameter(paramName);
+    }
 
-      for (final ProjectExpectedStudyInnovation studyInnovation : innovationPrev) {
-        if ((this.expectedStudy.getInnovations() == null)
-          || !this.expectedStudy.getInnovations().contains(studyInnovation)) {
-          this.projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(studyInnovation.getId());
+    // Determine existing innovation IDs for this study/phase
+    Set<Long> existingInnovationIds = new HashSet<>();
+    List<ProjectExpectedStudyInnovation> existingForPhase = new ArrayList<>();
+    if (projectExpectedStudy.getProjectExpectedStudyInnovations() != null) {
+      existingForPhase = projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
+        .filter(i -> i != null && i.isActive() && i.getPhase() != null && i.getPhase().getId() != null
+          && i.getPhase().getId().equals(phase.getId()) && i.getProjectInnovation() != null
+          && i.getProjectInnovation().getId() != null)
+        .collect(Collectors.toList());
+
+      existingInnovationIds.addAll(existingForPhase.stream()
+        .map(i -> i.getProjectInnovation().getId()).collect(Collectors.toSet()));
+    }
+
+    // Delete those no longer posted
+    for (ProjectExpectedStudyInnovation existing : existingForPhase) {
+      Long pid = existing.getProjectInnovation().getId();
+      if (!postedInnovationIds.contains(pid)) {
+        try {
+          this.projectExpectedStudyInnovationManager.deleteProjectExpectedStudyInnovation(existing.getId());
+        } catch (Exception e) {
+          logger.error("Failed deleting innovation relation id=" + existing.getId(), e);
+        }
+        // Keep parent lists in sync to avoid merge on stale proxies
+        projectExpectedStudy.getProjectExpectedStudyInnovations().remove(existing);
+        if (this.expectedStudy.getProjectExpectedStudyInnovations() != null) {
+          this.expectedStudy.getProjectExpectedStudyInnovations().remove(existing);
         }
       }
     }
 
-    // Save form Information
-    if (this.expectedStudy.getInnovations() != null) {
-      for (final ProjectExpectedStudyInnovation studyInnovation : this.expectedStudy.getInnovations()) {
-        if (studyInnovation.getId() == null) {
+    // Add newly posted innovations not already present
+    for (Long postedId : postedInnovationIds) {
+      if (!existingInnovationIds.contains(postedId)) {
+        final ProjectInnovation projectInnovation = this.projectInnovationManager.getProjectInnovationById(postedId);
+        if (projectInnovation != null) {
           final ProjectExpectedStudyInnovation studyInnovationSave = new ProjectExpectedStudyInnovation();
           studyInnovationSave.setProjectExpectedStudy(projectExpectedStudy);
           studyInnovationSave.setPhase(phase);
-
-          final ProjectInnovation projectInnovation =
-            this.projectInnovationManager.getProjectInnovationById(studyInnovation.getProjectInnovation().getId());
-
           studyInnovationSave.setProjectInnovation(projectInnovation);
 
           this.projectExpectedStudyInnovationManager.saveProjectExpectedStudyInnovation(studyInnovationSave);
-          // This is to add studyInnovationSave to generate correct
-          // auditlog.
+          // Keep both DB and in-memory lists consistent
           this.expectedStudy.getProjectExpectedStudyInnovations().add(studyInnovationSave);
+          projectExpectedStudy.getProjectExpectedStudyInnovations().add(studyInnovationSave);
         }
       }
     }
@@ -3505,49 +3543,66 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Search and deleted form Information
     if ((projectExpectedStudy.getProjectExpectedStudyLinks() != null)
-      && (!projectExpectedStudy.getProjectExpectedStudyLinks().isEmpty())) {
+      && (projectExpectedStudy.getProjectExpectedStudyLinks().size() > 0)) {
       final List<ProjectExpectedStudyLink> linkPrev =
         new ArrayList<>(projectExpectedStudy.getProjectExpectedStudyLinks().stream()
           .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
-      if (linkPrev != null && !linkPrev.isEmpty()) {
-        for (final ProjectExpectedStudyLink studyLink : linkPrev) {
-          if ((this.expectedStudy.getLinks() == null) || !this.expectedStudy.getLinks().contains(studyLink)) {
-            this.projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(studyLink.getId());
-          }
+
+      for (final ProjectExpectedStudyLink studyLink : linkPrev) {
+        if ((this.expectedStudy.getLinks() == null) || !this.expectedStudy.getLinks().contains(studyLink)) {
+          this.projectExpectedStudyLinkManager.deleteProjectExpectedStudyLink(studyLink.getId());
+          // Remove deleted link from the parent list to avoid Hibernate merge issues
+          projectExpectedStudy.getProjectExpectedStudyLinks().remove(studyLink);
         }
       }
     }
 
-    // Save form Information
-    if (this.expectedStudy.getLinks() != null) {
-      for (final ProjectExpectedStudyLink studyLink : this.expectedStudy.getLinks()) {
-        if (studyLink.getId() == null) {
+    // Save form Information - Get link values directly from request parameters
+    // because Struts2/OGNL cannot always bind these values correctly
+    HttpServletRequest request = ServletActionContext.getRequest();
+    int index = 0;
+    String linkParamName = "expectedStudy.links[" + index + "].link";
+    String idParamName = "expectedStudy.links[" + index + "].id";
+    String linkValue = request.getParameter(linkParamName);
+    String idValue = request.getParameter(idParamName);
+    
+    while (linkValue != null || idValue != null) {
+      if (StringUtils.isNotBlank(linkValue)) {
+        Long linkId = null;
+        if (StringUtils.isNotBlank(idValue)) {
+          try {
+            linkId = Long.parseLong(idValue);
+          } catch (NumberFormatException e) {
+            logger.warn("Invalid link ID: " + idValue);
+          }
+        }
+        
+        if (linkId != null) {
+          // Update existing link
+          ProjectExpectedStudyLink studyLinkSave = 
+            this.projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(linkId);
+          if (studyLinkSave != null) {
+            studyLinkSave.setLink(linkValue);
+            this.projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(studyLinkSave);
+          }
+        } else {
+          // Create new link
           final ProjectExpectedStudyLink studyLinkSave = new ProjectExpectedStudyLink();
           studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
           studyLinkSave.setPhase(phase);
-          studyLinkSave.setLink(studyLink.getLink());
+          studyLinkSave.setLink(linkValue);
 
           this.projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(studyLinkSave);
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
-          this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
-        } else {
-          ProjectExpectedStudyLink studyLinkSave = new ProjectExpectedStudyLink();
-          try {
-            studyLinkSave = this.projectExpectedStudyLinkManager.getProjectExpectedStudyLinkById(studyLink.getId());
-          } catch (Exception e) {
-            Log.error("error getting project expected study link " + e);
-          }
-          studyLinkSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyLinkSave.setPhase(phase);
-          studyLinkSave.setLink(studyLink.getLink());
-
-          this.projectExpectedStudyLinkManager.saveProjectExpectedStudyLink(studyLinkSave);
-          // This is to add studyLinkSave to generate correct
-          // auditlog.
+          // This is to add studyLinkSave to generate correct auditlog.
           this.expectedStudy.getProjectExpectedStudyLinks().add(studyLinkSave);
         }
       }
+      
+      index++;
+      linkParamName = "expectedStudy.links[" + index + "].link";
+      idParamName = "expectedStudy.links[" + index + "].id";
+      linkValue = request.getParameter(linkParamName);
+      idValue = request.getParameter(idParamName);
     }
   }
 
@@ -3940,21 +3995,27 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     // Save form Information
     if (this.expectedStudy.getProjects() != null) {
       for (final ExpectedStudyProject studyProject : this.expectedStudy.getProjects()) {
+
         if (studyProject.getId() == null) {
-          final ExpectedStudyProject studyProjectSave = new ExpectedStudyProject();
-          studyProjectSave.setProjectExpectedStudy(projectExpectedStudy);
-          studyProjectSave.setPhase(phase);
+            if (studyProject.getProject() == null || studyProject.getProject().getId() == null) {
+                continue;
+            }
 
-          final Project project = this.projectManager.getProjectById(studyProject.getProject().getId());
+            final ExpectedStudyProject studyProjectSave = new ExpectedStudyProject();
+            studyProjectSave.setProjectExpectedStudy(projectExpectedStudy);
+            studyProjectSave.setPhase(phase);
 
-          studyProjectSave.setProject(project);
+            final Project project = this.projectManager
+                .getProjectById(studyProject.getProject().getId());
 
-          this.expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
-          // This is to add studyProjectSave to generate correct
-          // auditlog.
-          this.expectedStudy.getExpectedStudyProjects().add(studyProjectSave);
+            studyProjectSave.setProject(project);
+
+            this.expectedStudyProjectManager.saveExpectedStudyProject(studyProjectSave);
+
+            this.expectedStudy.getExpectedStudyProjects().add(studyProjectSave);
         }
       }
+
     }
 
   }
@@ -4132,6 +4193,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
     // Save form Information
     if (this.expectedStudy.getReferences() != null) {
+      // Clear the collection to avoid stale references from previous saves
+      if (this.expectedStudy.getProjectExpectedStudyReferences() != null) {
+        this.expectedStudy.getProjectExpectedStudyReferences().clear();
+      }
       for (final ProjectExpectedStudyReference studyReference : this.expectedStudy.getReferences()) {
         if (studyReference.getId() == null) {
           final ProjectExpectedStudyReference studyReferenceSave = new ProjectExpectedStudyReference();
@@ -4870,6 +4935,83 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     } catch (Exception e) {
       Log.error("Error updating portfolio boolean value", e);
     }
+  }
+
+
+  // =====================================================
+  // MANUAL BINDING (Struts 6 compatibility)
+  // =====================================================
+
+  /**
+   * Manually bind nested parameters into expectedStudy to ensure lists like crpOutcomes
+   * have their nested objects set (e.g., crpOutcome.id) prior to save.
+   */
+  private void manualBinding() {
+    try {
+      final Map<String, Parameter> params = this.getParameters();
+      if (params != null && !params.isEmpty()) {
+        bindCrpOutcomes(params);
+      }
+    } catch (Exception e) {
+      this.logger.error("Error performing manual binding in ProjectExpectedStudiesAction", e);
+    }
+  }
+
+  /**
+   * Bind CRP outcomes from request params: expectedStudy.crpOutcomes[<index>].crpOutcome.id
+   * Requires the list skeleton to exist (created by Struts via the hidden marker name="...[]").
+   */
+  private void bindCrpOutcomes(Map<String, Parameter> params) {
+    try {
+      if (this.expectedStudy == null || this.expectedStudy.getCrpOutcomes() == null) {
+        return;
+      }
+
+      for (Map.Entry<String, Parameter> entry : params.entrySet()) {
+        final String key = entry.getKey();
+        if (key != null && key.matches("expectedStudy\\.crpOutcomes\\[\\d+\\]\\.crpOutcome\\.id")) {
+          try {
+            final int index = extractIndex(key);
+            final String value = entry.getValue() != null ? entry.getValue().getValue() : null;
+
+            if (value != null && !value.isEmpty() && index >= 0) {
+              final Long outcomeId = Long.parseLong(value);
+              if (outcomeId != -1) {
+                // Ensure index exists; Struts should have created placeholders via name="...[]"
+                if (index >= this.expectedStudy.getCrpOutcomes().size()) {
+                  // Extend list to accommodate this index
+                  while (this.expectedStudy.getCrpOutcomes().size() <= index) {
+                    this.expectedStudy.getCrpOutcomes().add(new ProjectExpectedStudyCrpOutcome());
+                  }
+                }
+
+                final ProjectExpectedStudyCrpOutcome item = this.expectedStudy.getCrpOutcomes().get(index);
+                if (item != null) {
+                  final CrpProgramOutcome outcome = this.crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId);
+                  if (outcome != null) {
+                    item.setCrpOutcome(outcome);
+                    this.logger.debug("Bound expectedStudy.crpOutcomes[" + index + "] => crpOutcome.id=" + outcomeId);
+                  }
+                }
+              }
+            }
+          } catch (Exception ex) {
+            this.logger.error("Error binding CRP outcome for key: " + key, ex);
+          }
+        }
+      }
+    } catch (Exception e) {
+      this.logger.error("Error in bindCrpOutcomes", e);
+    }
+  }
+
+  /**
+   * Extracts index from a key with format: object[index].property
+   */
+  private int extractIndex(String key) {
+    final int startIdx = key.indexOf('[') + 1;
+    final int endIdx = key.indexOf(']');
+    return Integer.parseInt(key.substring(startIdx, endIdx));
   }
 
 

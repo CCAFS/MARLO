@@ -459,8 +459,10 @@ public class ProjectHighlightAction extends BaseAction {
 
 
     // Getting countries list
-    countries = locElementManager.findAll().stream().filter(c -> c.getLocElementType().getId().intValue() == 2)
-      .collect(Collectors.toList());
+    countries = locElementManager.findAllToCountries();
+    if (countries == null) {
+      countries = new ArrayList<>();
+    }
 
     highlightDB = projectHighLightManager.getProjectHighligthById(highlightID);
 

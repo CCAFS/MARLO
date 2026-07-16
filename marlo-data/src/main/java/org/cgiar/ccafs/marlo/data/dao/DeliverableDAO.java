@@ -103,6 +103,15 @@ public interface DeliverableDAO {
    */
   public List<DeliverableHomeDTO> getDeliverablesByProjectAndPhaseHome(long phaseId, long projectId);
 
+  /**
+   * Same as {@link #getDeliverablesByProjectAndPhaseHome(long, long)} for many projects in one query.
+   *
+   * @param phaseId the Phase identifier
+   * @param projectIds Project identifiers (empty returns empty list)
+   * @return deliverables for the phase year across those projects
+   */
+  public List<DeliverableHomeDTO> getDeliverablesByProjectsAndPhaseHome(long phaseId, List<Long> projectIds);
+
   public List<Deliverable> getDeliverablesLeadByInstitution(long institutionId, long phaseId);
 
 

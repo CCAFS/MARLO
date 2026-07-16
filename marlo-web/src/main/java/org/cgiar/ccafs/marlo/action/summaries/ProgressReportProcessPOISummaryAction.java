@@ -1598,7 +1598,10 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
 
     try {
-      ServletActionContext.getContext().setLocale(locale);
+      //ServletActionContext.getContext().setLocale(locale);
+      if (this.request != null) {
+        this.request.getSession().setAttribute("locale", locale);
+      }
     } catch (Exception e) {
 
     }

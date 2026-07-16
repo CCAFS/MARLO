@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgressInnovationDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -208,6 +209,11 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  public List<InnovationHomeDTO> getInnovationsByProjectsAndPhaseHome(Long phaseId, List<Long> projectIds) {
+    return this.projectInnovationDAO.getInnovationsByProjectsAndPhaseHome(phaseId.longValue(), projectIds);
+  }
+
+  @Override
   public ProjectInnovation getProjectInnovationById(long projectInnovationID) {
 
     return projectInnovationDAO.find(projectInnovationID);
@@ -325,11 +331,13 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  @Transactional
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation) {
     return projectInnovationDAO.save(projectInnovation);
   }
 
   @Override
+  @Transactional
   public ProjectInnovation saveProjectInnovation(ProjectInnovation projectInnovation, String section,
     List<String> relationsName, Phase phase) {
     return projectInnovationDAO.save(projectInnovation, section, relationsName, phase);

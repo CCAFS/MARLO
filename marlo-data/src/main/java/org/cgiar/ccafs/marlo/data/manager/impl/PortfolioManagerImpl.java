@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.PortfolioDAO;
 import org.cgiar.ccafs.marlo.data.manager.PortfolioManager;
 import org.cgiar.ccafs.marlo.data.model.Portfolio;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   @Override
+  @Transactional
   public void deletePortfolio(long portfolioId) {
 
     portfolioDAO.deletePortfolio(portfolioId);
@@ -73,6 +75,7 @@ public class PortfolioManagerImpl implements PortfolioManager {
   }
 
   @Override
+  @Transactional
   public Portfolio savePortfolio(Portfolio portfolio) {
 
     return portfolioDAO.save(portfolio);

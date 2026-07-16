@@ -24,7 +24,7 @@
               [#if canEdit]<a id="cancelButton" class="btn btn-danger btn-xs" href="#" role="button">[@s.text name="form.buttons.recover" /] [@s.text name="logHistory.thisVersion" /]</a>[/#if]
             [/#if]
           </td>
-          <td class="person">${log.user.composedCompleteName?html}</td>
+          <td class="person">${(log.user.composedCompleteName)!''}</td>
           <td class="justification">${(log.modificationJustification)!'Prefilled if available'}</td>
           <td class="view text-center">
             [#if (!isSelected) && ((log.available)!false)]

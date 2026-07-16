@@ -31,6 +31,7 @@ public class MessagesAction extends BaseAction {
 
 
   private String diffTime;
+  private String notificationType;
 
   @Inject
   public MessagesAction(APConfig config) {
@@ -40,12 +41,17 @@ public class MessagesAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    HashMap<String, String> message = new HashMap<>();
-    message.put("message", this.message);
-    message.put("diffTime", diffTime);
+    HashMap<String, String> payload = new HashMap<>();
+    payload.put("message", this.message);
+    payload.put("diffTime", diffTime);
+
+    String eventName = "client-system-reset";
+    if ("simple".equalsIgnoreCase(notificationType)) {
+      eventName = "client-simple-notification";
+    }
 
     SendPusher sendPusher = new SendPusher(config);
-    sendPusher.sendPush("presence-global", "client-system-reset", message);
+    sendPusher.sendPush("presence-global", eventName, payload);
     return SUCCESS;
   }
 
@@ -58,12 +64,20 @@ public class MessagesAction extends BaseAction {
     return message;
   }
 
+  public String getNotificationType() {
+    return notificationType;
+  }
+
   public void setDiffTime(String diffTime) {
     this.diffTime = diffTime;
   }
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  public void setNotificationType(String notificationType) {
+    this.notificationType = notificationType;
   }
 
 }

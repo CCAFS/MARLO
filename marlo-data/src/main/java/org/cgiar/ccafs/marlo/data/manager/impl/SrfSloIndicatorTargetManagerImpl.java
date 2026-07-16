@@ -23,6 +23,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
@@ -39,6 +41,7 @@ public class SrfSloIndicatorTargetManagerImpl implements SrfSloIndicatorTargetMa
 	}
 
 	@Override
+	@Transactional
 	public void deleteSrfSloIndicatorTarget(long srfSloIndicatorTargetId) {
 
 		this.srfSloIndicatorTargetDAO.deleteSrfSloIndicatorTarget(srfSloIndicatorTargetId);
@@ -69,6 +72,7 @@ public class SrfSloIndicatorTargetManagerImpl implements SrfSloIndicatorTargetMa
 	}
 
 	@Override
+	@Transactional
 	public SrfSloIndicatorTarget saveSrfSloIndicatorTarget(SrfSloIndicatorTarget srfSloIndicatorTarget) {
 
 		return this.srfSloIndicatorTargetDAO.save(srfSloIndicatorTarget);

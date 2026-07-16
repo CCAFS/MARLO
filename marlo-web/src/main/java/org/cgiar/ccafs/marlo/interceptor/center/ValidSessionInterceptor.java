@@ -62,7 +62,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
 
     UserToken userToken = new UserToken();
     userToken.setUser((User) session.get(APConstants.SESSION_USER));
-    userToken.setSection(ActionContext.getContext().getName());
+    userToken.setSection(ActionContext.getContext().getActionName());
     if (session.containsKey(APConstants.USER_TOKEN)) {
       session.remove(APConstants.USER_TOKEN);
       session.put(APConstants.USER_TOKEN, userToken);
@@ -80,7 +80,7 @@ public class ValidSessionInterceptor extends AbstractInterceptor {
     looggedCenter = (GlobalUnit) session.get(APConstants.SESSION_CRP);
 
 
-    String[] actionMap = ActionContext.getContext().getName().split("/");
+    String[] actionMap = ActionContext.getContext().getActionName().split("/");
     if (actionMap.length > 1) {
       String enteredCrp = actionMap[0];
       GlobalUnit crp = crpManager.findGlobalUnitByAcronym(enteredCrp);

@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.FeedbackQACommentableFieldsDAO;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentableFieldsManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQACommentableFields;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
   }
 
   @Override
+  @Transactional
   public void deleteInternalQaCommentableFields(long internalQaCommentableFieldsId) {
 
     feedbackQACommentableFieldsDAO.deleteInternalQaCommentableFields(internalQaCommentableFieldsId);
@@ -106,6 +108,7 @@ public class FeedbackQACommentableFieldsManagerImpl implements FeedbackQAComment
   }
 
   @Override
+  @Transactional
   public FeedbackQACommentableFields
     saveInternalQaCommentableFields(FeedbackQACommentableFields feedbackQACommentableFields) {
 

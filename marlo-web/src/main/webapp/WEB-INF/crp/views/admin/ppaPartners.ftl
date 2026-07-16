@@ -3,12 +3,18 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
-  "${baseUrlMedia}/js/admin/ppaPartners.js",
-  "${baseUrlCdn}/global/js/fieldsValidation.js" 
-  ] 
+  "${baseUrlCdn}/global/js/usersManagement.js?20230927",
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js",
+  "${baseUrlCdn}/global/js/relationsModalDataTables.js?20260415",
+  "${baseUrlMedia}/js/admin/ppaPartners.js?20260528",
+  "${baseUrlCdn}/global/js/fieldsValidation.js"
+  ]
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/ppaPartners.css" ] /]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/admin/ppaPartners.css",
+  "${baseUrlMedia}/css/admin/relationsModalTables.css",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
+  ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "ppaPartners" /]
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
@@ -80,7 +86,7 @@
 [#-- Institutions array --]
 <ul style="display:none">
 [#list institutions as institution]
-  <li id="institutionArray-${(institution.id)!}">${(institution.composedName?html)!}</li>
+  <li id="institutionArray-${(institution.id)!}">${(institution.composedName)!}</li>
 [/#list]
 </ul>
 
@@ -143,7 +149,7 @@
   [#assign userCustomName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName())!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${userCustomName}.user.id" value="${(element.user.id)!}"/>
     <input class="id" type="hidden" name="${userCustomName}.id" value="${(element.id)!}"/>

@@ -3,7 +3,6 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloDeliverables.js?20201910" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpDeliverables" /]
 
@@ -13,6 +12,7 @@
 ]/]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
+[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 <hr />
 
 <div class="container">
@@ -55,9 +55,7 @@
                 </div>
                </div>
               </div>
-            </div>
-        
-           
+            
             [#if action.canAccessSuperAdmin()]
           
             <div class="col-md-12 ma-bot">
@@ -152,22 +150,7 @@
         </div>
         
         [#-- Section Buttons--]
-
-
-        <div class="buttons">
-          <div class="buttons-content">
-           <button type="button" class="button-save" data-toggle="modal" data-target="#modalConfirm">
-            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>Save
-          </button>          
-         </div>
-        </div>
-        
-
-        <!-- <div class="buttons">
-          <div class="buttons-content">
-            [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> [@s.text name="form.buttons.save" /][/@s.submit]
-          </div>
-        </div> -->
+        [#include "/WEB-INF/crp/views/admin/buttons-admin.ftl" /]
         
         [/@s.form]
       	

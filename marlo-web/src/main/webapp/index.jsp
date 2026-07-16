@@ -1,11 +1,12 @@
 <html>
 <head>
-    <title>JSP Redirect</title>
-    </head>
-    <body>
-       <%
-          String redirectURL = "http://clarisatest.ciat.cgiar.org/swagger/home.html";
-          response.sendRedirect(redirectURL);
-        %>
-    </body>
+    <title>MARLO</title>
+</head>
+<body>
+   <%
+      // Redirect to MARLO login (not to CLARISA)
+      String redirectURL = request.getContextPath() + "/login.do";
+      response.sendRedirect(redirectURL);
+   %>
+</body>
 </html>

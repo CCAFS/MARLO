@@ -172,6 +172,18 @@ div#tl-adnyds {
   color: #949494;
   border-top: 0px solid;
   border: 1px dashed #d8d8d8;
+  transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.example .frame ul li.phaseNoSelected:hover {
+  background: #eef4f8;
+  border-color: #bfd0dc;
+  color: #536574;
+  box-shadow: 0 1px 6px rgba(11, 123, 166, 0.14);
+}
+
+.example .frame ul li.phaseNoSelected:active {
+  box-shadow: 0 1px 3px rgba(11, 123, 166, 0.18);
 }
 
 .example .frame ul li.active {
@@ -191,7 +203,24 @@ div#tl-adnyds {
 }
 
 .example .frame ul li h4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   margin: 9px 0 1px 0px;
+}
+
+.example .frame ul li h4 .phaseTitleText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.example .frame ul li h4 .closedLabelContainer {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .example .scrollbar {
@@ -307,6 +336,14 @@ div#tl-adnyds {
  	 	width: 100%;
  	 	overflow: hidden;
 	}
+
+  .example .frame ul li h4 {
+    gap: 4px;
+  }
+
+  .example .frame ul li h4 .phaseTitleText {
+    font-size: 0.95em;
+  }
 }
 
 @media only screen and (max-width:440px){

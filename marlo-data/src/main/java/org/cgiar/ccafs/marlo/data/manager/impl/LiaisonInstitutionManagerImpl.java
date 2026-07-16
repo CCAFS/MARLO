@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.LiaisonInstitutionDAO;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
   }
 
   @Override
+  @Transactional
   public void deleteLiaisonInstitution(long liaisonInstitutionId) {
 
     liaisonInstitutionDAO.deleteLiaisonInstitution(liaisonInstitutionId);

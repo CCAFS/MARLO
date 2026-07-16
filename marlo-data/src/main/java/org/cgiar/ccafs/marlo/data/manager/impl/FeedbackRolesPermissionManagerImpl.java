@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.FeedbackRolesPermissionDAO;
 import org.cgiar.ccafs.marlo.data.manager.FeedbackRolesPermissionManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackRolesPermission;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class FeedbackRolesPermissionManagerImpl implements FeedbackRolesPermissi
   }
 
   @Override
+  @Transactional
   public void deleteFeedbackRolesPermission(long feedbackRolesPermissionId) {
 
     feedbackRolesPermissionDAO.deleteFeedbackRolesPermission(feedbackRolesPermissionId);
@@ -99,6 +101,7 @@ public class FeedbackRolesPermissionManagerImpl implements FeedbackRolesPermissi
   }
 
   @Override
+  @Transactional
   public FeedbackRolesPermission saveFeedbackRolesPermission(FeedbackRolesPermission feedbackRolesPermission) {
 
     return feedbackRolesPermissionDAO.save(feedbackRolesPermission);

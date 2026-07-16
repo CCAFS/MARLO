@@ -9,24 +9,33 @@ function init() {
 
 function attachEvents() {
   $('#systemReset button').on('click', function() {
-    var pushData = {
-        message: $('textarea.systemReset-message').val(),
-        diffTime: $('input.systemReset-diffTime').val() || 120,
+    const message = $.trim($('textarea.systemReset-message').val());
+    const diffTime = $.trim($('input.systemReset-diffTime').val());
+
+    if (!message || !diffTime) {
+      notificationError('Please enter both message and time before sending System Reset notification.');
+      return;
     }
-    // globalChannel.trigger("client-system-reset", pushData);
+
+    const pushData = {
+        message: message,
+        diffTime: diffTime,
+        notificationType: 'systemReset'
+    }
     $.ajax({
         url: baseURL + '/sendNotification.do',
         data: pushData,
-        success: resetSuccess
+      success: function() {
+        $('#systemReset').find('textarea, input').val('');
+      }
     });
-    $('#systemReset').find('textarea, input').val('');
 
-    var slackMessage = {
+    const slackMessage = {
         "text": "MARLO AICCRA Restart Message",
         "attachments": [
           {
               "color": "#f1c40f",
-              "author_name": $('#userInfo.name').text(),
+              "author_name": $('#userInfo .name, #userInfoOld .name').first().text().trim(),
               "text": pushData.message,
               "fields": [
                 {
@@ -35,7 +44,7 @@ function attachEvents() {
                     "short": true
                 }
               ],
-              "footer": window.location.href,
+              "footer": globalThis.location.href,
           }
         ]
     };
@@ -44,12 +53,22 @@ function attachEvents() {
   });
 
   $('#simpleNotification button').on('click', function() {
-    var pushData = {
-      message: $('textarea.simpleNotification-message').val()
+    const message = $.trim($('textarea.simpleNotification-message').val());
+    if (!message) {
+      notificationError('Please enter a message before sending Simple Message notification.');
+      return;
     }
-    globalChannel.trigger("client-simple-notification", pushData);
-    $('#simpleNotification').find('textarea, input').val('');
+
+    const pushData = {
+      message: message,
+      notificationType: 'simple'
+    }
+    $.ajax({
+      url: baseURL + '/sendNotification.do',
+      data: pushData,
+      success: function() {
+        $('#simpleNotification').find('textarea, input').val('');
+      }
+    });
   });
-}
-function resetSuccess() {
 }

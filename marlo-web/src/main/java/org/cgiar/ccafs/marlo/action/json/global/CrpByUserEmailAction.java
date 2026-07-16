@@ -53,7 +53,7 @@ public class CrpByUserEmailAction extends BaseAction {
   private GlobalUnitManager crpManager;
   private UserManager userManager;
 
-  @Inject
+  // @Inject
   public CrpByUserEmailAction(APConfig config, GlobalUnitManager crpManager, UserManager userManager) {
     super(config);
     this.crpManager = crpManager;

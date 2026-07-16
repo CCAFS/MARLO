@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -77,7 +78,11 @@ public class LoginAction extends BaseAction {
 
   private final CustomParameterManager customParameterManager;
 
-  @Inject
+  private List<GlobalUnit> crpList;
+  private List<GlobalUnit> centerList;
+  private List<GlobalUnit> platformsList;
+
+  // @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
     CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
     super(config);
@@ -89,9 +94,15 @@ public class LoginAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    crpList = getCrpCategoryList("1");
+    platformsList = getCrpCategoryList("3");
+    centerList = getCrpCategoryList("4");
     return SUCCESS;
   }
 
+  public List<GlobalUnit> getCrpList() { return crpList; }
+  public List<GlobalUnit> getCenterList() { return centerList; }
+  public List<GlobalUnit> getPlatformsList() { return platformsList; }
 
   public String getCrp() {
     return crp;
@@ -159,6 +170,12 @@ public class LoginAction extends BaseAction {
 
   public String login() {
 
+    // Load lists for login page display
+    if (platformsList == null) {
+      crpList = getCrpCategoryList("1");
+      platformsList = getCrpCategoryList("3");
+      centerList = getCrpCategoryList("4");
+    }
 
     if (user != null) {
 
@@ -213,7 +230,6 @@ public class LoginAction extends BaseAction {
   }
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
-
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
@@ -325,7 +341,7 @@ public class LoginAction extends BaseAction {
 
     return SUCCESS;
   }
-
+  
   public String randomColor() {
 
     Random random = new Random(); // Probably really put this somewhere where it gets executed only once

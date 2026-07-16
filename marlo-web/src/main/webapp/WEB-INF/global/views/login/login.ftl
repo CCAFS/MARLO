@@ -1,7 +1,7 @@
 [#ftl]
-[#assign title = "Welcome to AICCRA" /]
+[#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20230714"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260410"] /]
 [#assign currentSection = "home" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
@@ -104,7 +104,7 @@
   [#if element.marlo && element.login]
     [#if element.id != 17 && element.id != 27]
       <li id="crp-${element.acronym}" title="${element.login?string('', 'Coming soon...')}">
-        <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrlCdn}/global/images/crps/${element.acronym}.png" alt="${element.name}" />
+        <img class="${element.login?string('animated bounceIn', '')}" src="${baseUrl}/data/globalUnitLogo.do?acronym=${element.acronym}" alt="${element.name}" />
       </li>
     [/#if]
   [/#if]

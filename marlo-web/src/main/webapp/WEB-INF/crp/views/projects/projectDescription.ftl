@@ -14,6 +14,7 @@
 /]
 
 [#assign currentStage = "description" /]
+[#assign currentSection = "projects" /]
 [#assign hideJustification = true /]
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
@@ -21,18 +22,16 @@
 [#assign isManagementCluster = (action.isManagementCluster(project.id))!false ]
 
 [#if !action.isAiccra()]
-  [#assign currentSection = "projects" /]
   [#assign breadCrumb = [
     {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
     {"text":"P${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
     {"label":"projectDescription", "nameSpace":"${currentSection}", "action":""}
   ] /]
 [#else]
-  [#assign currentSection = "clusters" /]
   [#assign breadCrumb = [
-    {"label":"projectsList", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/projectsList"},
-    {"text":"C${project.id}", "nameSpace":"${currentSection}", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
-    {"label":"projectDescription", "nameSpace":"${currentSection}", "action":""}
+    {"label":"projectsList", "nameSpace":"clusters", "action":"${(crpSession)!}/projectsList"},
+    {"text":"C${project.id}", "nameSpace":"clusters", "action":"${crpSession}/description", "param": "projectID=${project.id?c}&edit=true&phaseID=${(actualPhase.id)!}"},
+    {"label":"projectDescription", "nameSpace":"clusters", "action":""}
   ] /]
 [/#if]
 
@@ -113,13 +112,27 @@
             <div class="form-group row">
               [#-- Project Program Creator --]
               <div class="col-md-6">
-                [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution"  disabled=!editable  listName="liaisonInstitutions" keyFieldName="id"  displayFieldName="composedName" required=true editable=editable && action.hasPermission("managementLiaison") /]
+                [#if editable && action.hasPermission("managementLiaison")]
+                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutions" keyFieldName="id" displayFieldName="composedName" required=true editable=true /]
+                [#else]
+                  <label class="col-form-label required">${action.getText("project.liaisonInstitution")}:</label>
+                  <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
+                    ${(project.projectInfo.liaisonInstitution.composedName)?string!"N/A"} 
+                  </p>
+                [/#if]
               </div>
               [#-- Cluster Types --]
               [#if action.isAiccra() && !isManagementCluster]  
              
                 <div class="col-md-6">
-                  [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType"  disabled=!editable  listName="clusterTypes" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+                  [#if editable]
+                    [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType" disabled=!editable listName="clusterTypes" keyFieldName="id" displayFieldName="name" required=true editable=true /]
+                  [#else]
+                    <label class="col-form-label required">${action.getText("project.clusterType")}:</label>
+                    <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
+                      ${(project.projectInfo.clusterType.name)?string!"N/A"} 
+                    </p>
+                  [/#if]
                 </div>  
               [/#if]    
               [#if action.hasSpecificities('previous_project_id_field_active') ]
@@ -133,7 +146,23 @@
             <div class="form-group row">
               [#-- CENTER Research program --]
               <div class="col-md-6 researchProgram ">
-                [@customForm.select name="project.projectInfo.liaisonInstitution.id" listName="liaisonInstitutions" paramText="${currentCrp.acronym}" keyFieldName="id" displayFieldName="composedName" i18nkey="project.researchProgram" className="liaisonInstitutionSelect" help="project.researchProgram.help" required=true editable=editable /]
+                [#if editable]
+                  [@customForm.select name="project.projectInfo.liaisonInstitution.id" 
+                    listName="liaisonInstitutions" 
+                    paramText="${currentCrp.acronym}" 
+                    keyFieldName="id" 
+                    displayFieldName="composedName" 
+                    i18nkey="project.researchProgram" 
+                    className="liaisonInstitutionSelect" 
+                    help="project.researchProgram.help" 
+                    required=true 
+                    editable=true /]
+                [#else]
+                  <label class="col-form-label required">${action.getText("project.researchProgram")}:</label>
+                  <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
+                    ${(project.projectInfo.liaisonInstitution.composedName)!action.getText("label.not.available")}
+                  </p>
+                [/#if]
               </div>
               [#if action.hasSpecificities('previous_project_id_field_active') ]
                 <div class="col-md-3">
@@ -172,7 +201,20 @@
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
-                  [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false required=true editable=(editable || editStatus) /]
+                  [#if editable || editStatus]
+                    [@customForm.select name="project.projectInfo.status" value="${(project.projectInfo.status)!}" i18nkey="project.status" className="description_project_status" listName="projectStatuses" header=false required=true editable=true /]
+                  [#else]
+                    <label class="col-form-label required">${action.getText("project.status")}:</label>
+                    [#assign statusText=""]
+                    [#list projectStatuses as statusId, statusName]
+                      [#if statusId?number == project.projectInfo.status] 
+                        [#assign statusText=statusName]
+                      [/#if]
+                    [/#list]
+                    <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
+                      ${(statusText)!action.getText("label.not.available")}
+                    </p>
+                  [/#if]
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
@@ -278,7 +320,7 @@
                       <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
                       <div class="clearfix"></div>
                       <ul class="leaders">
-                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName?html)!'null'}</li>[/#list]
+                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
                       </ul>
                     </li>
                   [/#list]

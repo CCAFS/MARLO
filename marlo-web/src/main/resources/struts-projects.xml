@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC 
 "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN" 
-  "http://struts.apache.org/dtds/struts-2.5.dtd">
+  "http://struts.apache.org/dtds/struts-6.0.dtd">
 <struts>
 	<!-- Add addition packages and configuration here. -->
 	<package name="projects" namespace="/projects"
@@ -360,9 +360,6 @@
 			<interceptor-ref name="editProjectListStack" />
 			<interceptor-ref name="editHighlight" />
 
-			<interceptor-ref name="defaultStack">
-				<param name="fileUpload.allowedTypes">image/bmp,image/gif,image/jpeg,image/png</param>
-			</interceptor-ref>
 			<result name="input">/WEB-INF/crp/views/projects/projectHighlight.ftl
 			</result>
 			<result name="success" type="redirectAction">

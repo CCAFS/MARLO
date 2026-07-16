@@ -10,7 +10,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>..
  *****************************************************************/
 
 package org.cgiar.ccafs.marlo;
@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -36,12 +37,12 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 /**
  * Configuration for Database and Flyway beans.
  */
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "org.cgiar.ccafs.marlo")
 public class MarloDatabaseConfiguration {
 
   /**
@@ -82,7 +83,7 @@ public class MarloDatabaseConfiguration {
     // config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
 
     config.setMaximumPoolSize(40);
-    config.setMinimumIdle(20);
+    config.setMinimumIdle(5);
     config.setIdleTimeout(5000);
     config.setConnectionTimeout(900000);
     // config.setConnectionTestQuery("SELECT 1");
@@ -94,7 +95,6 @@ public class MarloDatabaseConfiguration {
 
     config.addDataSourceProperty("autoReconnect", true);
     config.addDataSourceProperty("useSSL", false);
-
 
     HikariDataSource dataSource = new HikariDataSource(config);
     return dataSource;
@@ -138,7 +138,8 @@ public class MarloDatabaseConfiguration {
    * @return
    */
   // @Bean
-  // public PersistenceExceptionTranslationPostProcessor getExceptionTranslation() {
+  // public PersistenceExceptionTranslationPostProcessor getExceptionTranslation()
+  // {
   // return new PersistenceExceptionTranslationPostProcessor();
   // }
 

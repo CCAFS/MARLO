@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20250827",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20260619",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -74,7 +74,7 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
 
-        [@s.form action=actionName enctype="multipart/form-data" ]
+        [@s.form action=actionName ]
         [#-- Outcomes List --]
         <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
 
@@ -96,12 +96,12 @@
                 <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
               [/#if]
              </div>
-            [#if outcomes?has_content]
-              [#list outcomes as outcome]
-                [@outcomeMacro outcome=outcome name="outcomes" index=outcome_index /]
+            [#if outcomesForm?has_content]
+              [#list outcomesForm as outcome]
+                [@outcomeMacro outcome=outcome name="outcomesForm" index=outcome_index /]
               [/#list]
             [#else]
-              [@outcomeMacro outcome={} name="outcomes" index=0 /]
+              [@outcomeMacro outcome={} name="outcomesForm" index=0 /]
             [/#if]
             </div>
             [#-- Add Outcome Button --]
@@ -168,19 +168,19 @@
 </div>
 
 [#-- Outcome Template --]
-[@outcomeMacro outcome={} name="outcomes" index=-1 isTemplate=true /]
+[@outcomeMacro outcome={} name="outcomesForm" index=-1 isTemplate=true /]
 
 [#-- Milestone Template --]
-[@milestoneMacro milestone={} name="outcomes[0].milestones" index=-1 isTemplate=true  /]
+[@milestoneMacro milestone={} name="outcomesForm[0].milestones" index=-1 isTemplate=true  /]
 
 [#-- Sub-Ido Template --]
-[@subIDOMacro subIdo={} name="outcomes[0].subIdos" index=-1 isTemplate=true /]
+[@subIDOMacro subIdo={} name="outcomesForm[0].subIdos" index=-1 isTemplate=true /]
 
 [#-- Assumption Template --]
-[@assumptionMacro assumption={} name="outcomes[-1].subIdos[-1].assumptions" index=-1 isTemplate=true /]
+[@assumptionMacro assumption={} name="outcomesForm[-1].subIdos[-1].assumptions" index=-1 isTemplate=true /]
 
 [#-- Baseline Indicator Template --]
-[@baselineIndicatorMacro indicator={} name="outcomes[-1].indicators" index=-1 isTemplate=true /]
+[@baselineIndicatorMacro indicator={} name="outcomesForm[-1].indicators" index=-1 isTemplate=true /]
 
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 

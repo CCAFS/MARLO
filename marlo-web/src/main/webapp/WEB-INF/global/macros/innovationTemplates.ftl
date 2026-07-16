@@ -1493,7 +1493,7 @@
         [#if projectInnovationFunctionList?has_content]
           [#list projectInnovationFunctionList as function]
             <div class="col-md-12">
-              [#local functionLabel] ${function.title!""} [/#local]
+              [#local functionLabel = function.title!"" /]
               [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
 

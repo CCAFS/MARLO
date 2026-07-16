@@ -92,7 +92,7 @@
   [#assign userCustomName = "${name}[${index}]" /]
   <li id="user-${template?string('template',index)}" class="user userItem" style="display:${template?string('none','block')}">
     [#-- User Name --]
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName()?html)!'Unknown user'}</span>
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <span class="name"> ${(element.user.getComposedName())!'Unknown user'}</span>
     [#-- Hidden inputs --]
     <input class="user" type="hidden" name="${userCustomName}.user.id" value="${(element.user.id)!}"/>
     <input class="role" type="hidden" name="${userCustomName}.role.id" value="${userRole}"/>

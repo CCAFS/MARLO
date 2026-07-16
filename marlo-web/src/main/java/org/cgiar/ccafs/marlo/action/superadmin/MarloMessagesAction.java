@@ -46,7 +46,7 @@ public class MarloMessagesAction extends BaseAction {
 
   public String deleteMessage() {
     List<MarloMessage> messages = new ArrayList<>();
-    MarloMessage messageDelete = null;;
+    MarloMessage messageDelete = null;
 
     try {
       messages = marloMessageManager.findAll();
@@ -54,11 +54,13 @@ public class MarloMessagesAction extends BaseAction {
         messageDelete = messages.get(0);
       }
     } catch (Exception e) {
-      logger.debug(e + " error getting MARLO Messages");
+      logger.error("Error loading MARLO Messages", e);
     }
+
     if (messageDelete != null && messageDelete.getId() != null) {
       marloMessageManager.deleteMarloMessage(messageDelete.getId());
     }
+
     return SUCCESS;
   }
 
@@ -84,11 +86,13 @@ public class MarloMessagesAction extends BaseAction {
     List<MarloMessage> messages = new ArrayList<>();
 
     try {
-      if (marloMessageManager.getLastMessage() != null
-        && marloMessageManager.getLastMessage().getMessageValue() != null) {
-        lastMessage = marloMessageManager.getLastMessage().getMessageValue();
+      MarloMessage latestActiveMessage = marloMessageManager.getLastMessage();
+      if (latestActiveMessage != null && latestActiveMessage.getMessageValue() != null) {
+        lastMessage = latestActiveMessage.getMessageValue();
       }
-      lastMessage = lastMessage.replace("strong", "b");
+      if (lastMessage != null) {
+        lastMessage = lastMessage.replace("strong", "b");
+      }
 
       if (marloMessageManager.findAllHistory() != null && !marloMessageManager.findAllHistory().isEmpty()) {
         messageHistory = marloMessageManager.findAllHistory();
@@ -129,7 +133,7 @@ public class MarloMessagesAction extends BaseAction {
           }
 
         } catch (Exception e) {
-          logger.debug(e + " error getting MARLO Messages");
+          logger.error("Error deleting previous MARLO Message", e);
         }
 
         // New Activity

@@ -182,11 +182,11 @@ public class ManageUsersAction extends BaseAction {
     // Map<String, Object> parameters = this.getParameters();
     Map<String, Parameter> parameters = this.getParameters();
     // if searching a user, we need to get the queried String.
-    if (ActionContext.getContext().getName().equals("searchUsers")) {
+    if (ActionContext.getContext().getActionName().equals("searchUsers")) {
 
       // queryParameter = StringUtils.trim(((String[]) parameters.get(APConstants.QUERY_PARAMETER))[0]);
       queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
-    } else if (ActionContext.getContext().getName().equals("createUser")) {
+    } else if (ActionContext.getContext().getActionName().equals("createUser")) {
       // if Adding a new user, we need to get the info to be added.
       newUser = new User();
       newUser.setId((long) -1);

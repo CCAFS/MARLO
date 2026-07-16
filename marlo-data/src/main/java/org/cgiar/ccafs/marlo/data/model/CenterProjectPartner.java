@@ -4,6 +4,7 @@ package org.cgiar.ccafs.marlo.data.model;
 
 import org.cgiar.ccafs.marlo.data.IAuditLog;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,9 @@ public class CenterProjectPartner extends MarloAuditableEntity implements java.i
   private Set<CenterProjectPartnerPerson> projectPartnerPersons = new HashSet<CenterProjectPartnerPerson>(0);
 
   private List<CenterProjectPartnerPerson> users;
+
+  @Expose
+  private List<InstitutionLocation> selectedLocations = new ArrayList<>();
 
   public CenterProjectPartner() {
   }
@@ -105,6 +109,13 @@ public class CenterProjectPartner extends MarloAuditableEntity implements java.i
     this.users = users;
   }
 
+  public List<InstitutionLocation> getSelectedLocations() {
+    return selectedLocations;
+  }
+
+  public void setSelectedLocations(List<InstitutionLocation> selectedLocations) {
+    this.selectedLocations = selectedLocations;
+  }
 
   @Override
   public String toString() {

@@ -31,12 +31,12 @@
         <h4 class="sectionTitle">System Reset</h4>
         <div id="systemReset" class="borderBox ">
          <div class="form-group">
-          [@customForm.textArea name="" value="System reset scheduled" i18nkey="notifications.systemReset.message" placeholder="notifications.systemReset.message.placeholder" required=true className="systemReset-message" editable=true /]
+          [@customForm.textArea name="" i18nkey="notifications.systemReset.message" placeholder="notifications.systemReset.message.placeholder" required=true className="systemReset-message" editable=true /]
          </div>
          <div class="form-group">
            <div class="row">
            	<div class="col-md-4">
-              [@customForm.input name="" value="120" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
+              [@customForm.input name="" i18nkey="notifications.systemReset.diffTime" placeholder="notifications.systemReset.diffTime.placeholder" required=true className="systemReset-diffTime" /]
            	</div>
            </div>
          </div>
@@ -46,7 +46,7 @@
           </div>
           <hr />
           <ul>
-            <li><strong>Message #1:</strong> This message is to inform you that in 2 minutes we will restart the server, please save your changes. AICCRA will be available again in 6 minutes. Thank you</li>
+            <li><strong>Message #1:</strong> This message is to inform you that in 2 minutes we will restart the server, please save your changes. MARLO will be available again in 6 minutes. Thank you</li>
             <li><strong>Message #2:</strong> [@s.text name="systemMessage.serverReset" /]</li>
             <li><strong>Message #3:</strong> This message is to inform you that in 2 minutes we will restart the server, Please save what you are doing  (if needed) since you will have to log in again. Sorry for the inconvenience.</li>
 

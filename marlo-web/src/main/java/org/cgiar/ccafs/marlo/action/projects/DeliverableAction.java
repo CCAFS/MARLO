@@ -125,6 +125,7 @@ import org.cgiar.ccafs.marlo.data.model.GenderType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
+import org.cgiar.ccafs.marlo.data.model.MetadataElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerDivision;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -184,6 +185,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2613,9 +2615,758 @@ public class DeliverableAction extends BaseAction {
     }
   }
 
+  // =====================================================
+  // MÉTODO PRINCIPAL - Llamar al inicio de save()
+  // =====================================================
+
+  /**
+   * Binding manual de parámetros para compatibilidad con Struts 6
+   */
+  private void manualBinding() {
+      Map<String, Parameter> params = this.getParameters();
+      
+      // DeliverableInfo fields
+      bindDeliverableType(params);
+      bindStudyType(params);
+      
+      // Collections
+      bindActivities(params);
+      bindCrpOutcomes(params);
+      bindCrossCuttingMarkers(params);
+      bindFundingSources(params);
+      bindGeographicScopes(params);
+      bindMetadataElements(params);
+      bindClusterParticipants(params);
+      bindSharedDeliverables(params);
+      
+      // Partnerships
+      bindResponsiblePartnerships(params);
+      bindOtherPartnerships(params);
+      
+      // Other objects
+      bindDeliverableParticipant(params);
+      bindQualityCheck(params);
+
+      // Countries
+      bindCountriesIds(params);
+  }
+
+  // =====================================================
+  // DELIVERABLE INFO FIELDS
+  // =====================================================
+
+  private void bindDeliverableType(Map<String, Parameter> params) {
+      Parameter param = params.get("deliverable.deliverableInfo.deliverableType.id");
+      if (param != null && param.getValue() != null && !param.getValue().isEmpty()) {
+          try {
+              Long typeId = Long.parseLong(param.getValue());
+              if (typeId != -1) {
+                  DeliverableType type = deliverableTypeManager.getDeliverableTypeById(typeId);
+                  if (type != null) {
+                      deliverable.getDeliverableInfo(this.getActualPhase()).setDeliverableType(type);
+                      logger.debug("DeliverableType bindeado: " + type.getId());
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando deliverableType.id", e);
+          }
+      }
+  }
+
+  private void bindStudyType(Map<String, Parameter> params) {
+    Parameter param = params.get("deliverable.deliverableInfo.studyType.id");
+    if (param != null && param.getValue() != null && !param.getValue().isEmpty()) {
+        try {
+            Long id = Long.parseLong(param.getValue());
+            if (id != -1) {
+                StudyType studyType = studyTypeManager.getStudyTypeById(id);
+                if (studyType != null) {
+                    deliverable.getDeliverableInfo(this.getActualPhase()).setStudyType(studyType);
+                    logger.debug("StudyType bindeado: " + id);
+                }
+            } else {
+                // Si el id es -1, setear explícitamente a null
+                deliverable.getDeliverableInfo(this.getActualPhase()).setStudyType(null);
+                logger.debug("StudyType seteado a null (id=-1)");
+            }
+        } catch (NumberFormatException e) {
+            logger.error("Error parseando studyType.id", e);
+        }
+    }
+  }
+
+  // =====================================================
+  // ACTIVITIES
+  // =====================================================
+
+  private void bindActivities(Map<String, Parameter> params) {
+      if (deliverable.getActivities() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.activities\\[\\d+\\]\\.activity\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long activityId = Long.parseLong(value);
+                      if (activityId != -1 && index < deliverable.getActivities().size()) {
+                          Activity activity = activityManager.getActivityById(activityId);
+                          if (activity != null) {
+                              deliverable.getActivities().get(index).setActivity(activity);
+                              logger.debug("Activity[" + index + "] bindeado: " + activityId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando activity: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // CRP OUTCOMES
+  // =====================================================
+
+  private void bindCrpOutcomes(Map<String, Parameter> params) {
+      if (deliverable.getCrpOutcomes() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.crpOutcomes\\[\\d+\\]\\.crpProgramOutcome\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long outcomeId = Long.parseLong(value);
+                      if (outcomeId != -1 && index < deliverable.getCrpOutcomes().size()) {
+                          CrpProgramOutcome outcome = crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId);
+                          if (outcome != null) {
+                              deliverable.getCrpOutcomes().get(index).setCrpProgramOutcome(outcome);
+                              logger.debug("CrpOutcome[" + index + "] bindeado: " + outcomeId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando crpOutcome: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // CROSS CUTTING MARKERS
+  // =====================================================
+
+  private void bindCrossCuttingMarkers(Map<String, Parameter> params) {
+      if (deliverable.getCrossCuttingMarkers() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          try {
+              int index = -1;
+              
+              // Bind cgiarCrossCuttingMarker
+              if (key.matches("deliverable\\.crossCuttingMarkers\\[\\d+\\]\\.cgiarCrossCuttingMarker\\.id")) {
+                  index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getCrossCuttingMarkers().size()) {
+                      Long markerId = Long.parseLong(value);
+                      if (markerId != -1) {
+                          CgiarCrossCuttingMarker marker = cgiarCrossCuttingMarkerManager.getCgiarCrossCuttingMarkerById(markerId);
+                          if (marker != null) {
+                              deliverable.getCrossCuttingMarkers().get(index).setCgiarCrossCuttingMarker(marker);
+                              logger.debug("CrossCuttingMarker[" + index + "].cgiarCrossCuttingMarker bindeado: " + markerId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind repIndGenderYouthFocusLevel
+              if (key.matches("deliverable\\.crossCuttingMarkers\\[\\d+\\]\\.repIndGenderYouthFocusLevel\\.id")) {
+                  index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getCrossCuttingMarkers().size()) {
+                      Long levelId = Long.parseLong(value);
+                      if (levelId != -1) {
+                          RepIndGenderYouthFocusLevel level = repIndGenderYouthFocusLevelManager.getRepIndGenderYouthFocusLevelById(levelId);
+                          if (level != null) {
+                              deliverable.getCrossCuttingMarkers().get(index).setRepIndGenderYouthFocusLevel(level);
+                              logger.debug("CrossCuttingMarker[" + index + "].repIndGenderYouthFocusLevel bindeado: " + levelId);
+                          }
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              logger.error("Error bindeando crossCuttingMarker: " + key, e);
+          }
+      }
+  }
+
+  // =====================================================
+  // FUNDING SOURCES
+  // =====================================================
+  private void bindFundingSources(Map<String, Parameter> params) {
+    logger.info("=== Entrando a bindFundingSources ===");
+    
+    try {
+        // Encontrar todos los índices de fundingSources
+        List<Integer> indices = new ArrayList<>();
+        for (String key : params.keySet()) {
+            if (key.matches("deliverable\\.fundingSources\\[\\d+\\]\\.fundingSource\\.id")) {
+                int index = extractIndex(key);
+                if (!indices.contains(index)) {
+                    indices.add(index);
+                }
+                logger.info("Encontrado parámetro: " + key + " con índice " + index);
+            }
+        }
+        
+        if (indices.isEmpty()) {
+            logger.info("No se encontraron parámetros de fundingSources");
+            return;
+        }
+        
+        // Inicializar la lista si es necesario
+        if (deliverable.getFundingSources() == null) {
+            deliverable.setFundingSources(new ArrayList<>());
+            logger.info("Lista fundingSources inicializada");
+        }
+        
+        // Encontrar el máximo índice
+        int maxIndex = indices.stream().max(Integer::compare).orElse(-1);
+        logger.info("Máximo índice encontrado: " + maxIndex);
+        
+        // Asegurar que la lista tenga suficientes elementos
+        while (deliverable.getFundingSources().size() <= maxIndex) {
+            deliverable.getFundingSources().add(new DeliverableFundingSource());
+        }
+        logger.info("Lista fundingSources size después de inicializar: " + deliverable.getFundingSources().size());
+        
+        // IMPORTANTE: Asegurar que ningún elemento sea null
+        for (int i = 0; i <= maxIndex; i++) {
+            if (deliverable.getFundingSources().get(i) == null) {
+                deliverable.getFundingSources().set(i, new DeliverableFundingSource());
+                logger.info("Elemento fundingSources[" + i + "] era null, creado nuevo objeto");
+            }
+        }
+        
+        // Ahora hacer el binding
+        for (String key : params.keySet()) {
+            if (key.matches("deliverable\\.fundingSources\\[\\d+\\]\\.fundingSource\\.id")) {
+                int index = extractIndex(key);
+                String value = params.get(key).getValue();
+                logger.info("Procesando fundingSource[" + index + "] con valor: " + value);
+                
+                if (value != null && !value.isEmpty()) {
+                    Long fundingSourceId = Long.parseLong(value);
+                    if (fundingSourceId != -1) {
+                        FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceId);
+                        if (fundingSource != null) {
+                            // Verificar que el elemento no sea null
+                            if (deliverable.getFundingSources().get(index) == null) {
+                                deliverable.getFundingSources().set(index, new DeliverableFundingSource());
+                            }
+                            deliverable.getFundingSources().get(index).setFundingSource(fundingSource);
+                            logger.info("FundingSource[" + index + "] bindeado exitosamente: " + fundingSourceId);
+                        } else {
+                            logger.warn("FundingSource no encontrado con id: " + fundingSourceId);
+                        }
+                    }
+                }
+            }
+            
+            // También bindear el id del DeliverableFundingSource
+            if (key.matches("deliverable\\.fundingSources\\[\\d+\\]\\.id")) {
+                int index = extractIndex(key);
+                String value = params.get(key).getValue();
+                
+                if (value != null && !value.isEmpty()) {
+                    Long id = Long.parseLong(value);
+                    if (index < deliverable.getFundingSources().size()) {
+                        // Verificar que el elemento no sea null
+                        if (deliverable.getFundingSources().get(index) == null) {
+                            deliverable.getFundingSources().set(index, new DeliverableFundingSource());
+                        }
+                        deliverable.getFundingSources().get(index).setId(id);
+                        logger.info("FundingSource[" + index + "].id bindeado: " + id);
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        logger.error("Error en bindFundingSources: " + e.getMessage(), e);
+    }
+  }
+
+  // =====================================================
+  // GEOGRAPHIC SCOPES
+  // =====================================================
+
+  private void bindGeographicScopes(Map<String, Parameter> params) {
+      if (deliverable.getGeographicScopes() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.geographicScopes\\[\\d+\\]\\.repIndGeographicScope\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long scopeId = Long.parseLong(value);
+                      if (scopeId != -1 && index < deliverable.getGeographicScopes().size()) {
+                          RepIndGeographicScope scope = repIndGeographicScopeManager.getRepIndGeographicScopeById(scopeId);
+                          if (scope != null) {
+                              deliverable.getGeographicScopes().get(index).setRepIndGeographicScope(scope);
+                              logger.debug("GeographicScope[" + index + "] bindeado: " + scopeId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando geographicScope: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // METADATA ELEMENTS
+  // =====================================================
+
+  private void bindMetadataElements(Map<String, Parameter> params) {
+      if (deliverable.getMetadataElements() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.metadataElements\\[\\d+\\]\\.metadataElement\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long metadataId = Long.parseLong(value);
+                      if (metadataId != -1 && index < deliverable.getMetadataElements().size()) {
+                          MetadataElement metadata = metadataElementManager.getMetadataElementById(metadataId);
+                          if (metadata != null) {
+                              deliverable.getMetadataElements().get(index).setMetadataElement(metadata);
+                              logger.debug("MetadataElement[" + index + "] bindeado: " + metadataId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando metadataElement: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // CLUSTER PARTICIPANTS
+  // =====================================================
+
+  private void bindClusterParticipants(Map<String, Parameter> params) {
+      if (deliverable.getClusterParticipant() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.clusterParticipant\\[\\d+\\]\\.project\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long projectId = Long.parseLong(value);
+                      if (projectId != -1 && index < deliverable.getClusterParticipant().size()) {
+                          Project project = projectManager.getProjectById(projectId);
+                          if (project != null) {
+                              deliverable.getClusterParticipant().get(index).setProject(project);
+                              logger.debug("ClusterParticipant[" + index + "].project bindeado: " + projectId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando clusterParticipant.project: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // SHARED DELIVERABLES
+  // =====================================================
+
+  private void bindSharedDeliverables(Map<String, Parameter> params) {
+      if (deliverable.getSharedDeliverables() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          if (key.matches("deliverable\\.sharedDeliverables\\[\\d+\\]\\.project\\.id")) {
+              try {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty()) {
+                      Long projectId = Long.parseLong(value);
+                      if (projectId != -1 && index < deliverable.getSharedDeliverables().size()) {
+                          Project project = projectManager.getProjectById(projectId);
+                          if (project != null) {
+                              deliverable.getSharedDeliverables().get(index).setProject(project);
+                              logger.debug("SharedDeliverable[" + index + "].project bindeado: " + projectId);
+                          }
+                      }
+                  }
+              } catch (Exception e) {
+                  logger.error("Error bindeando sharedDeliverable.project: " + key, e);
+              }
+          }
+      }
+  }
+
+  // =====================================================
+  // RESPONSIBLE PARTNERSHIPS
+  // =====================================================
+
+  private void bindResponsiblePartnerships(Map<String, Parameter> params) {
+      if (deliverable.getResponsiblePartnership() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          try {
+              // Bind deliverablePartnerType
+              if (key.matches("deliverable\\.responsiblePartnership\\[\\d+\\]\\.deliverablePartnerType\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getResponsiblePartnership().size()) {
+                      Long typeId = Long.parseLong(value);
+                      if (typeId != -1) {
+                          DeliverablePartnerType partnerType = deliverablePartnerTypeManager.getDeliverablePartnerTypeById(typeId);
+                          if (partnerType != null) {
+                              deliverable.getResponsiblePartnership().get(index).setDeliverablePartnerType(partnerType);
+                              logger.debug("ResponsiblePartnership[" + index + "].deliverablePartnerType bindeado: " + typeId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind institution
+              if (key.matches("deliverable\\.responsiblePartnership\\[\\d+\\]\\.institution\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getResponsiblePartnership().size()) {
+                      Long institutionId = Long.parseLong(value);
+                      if (institutionId != -1) {
+                          Institution institution = institutionManager.getInstitutionById(institutionId);
+                          if (institution != null) {
+                              deliverable.getResponsiblePartnership().get(index).setInstitution(institution);
+                              logger.debug("ResponsiblePartnership[" + index + "].institution bindeado: " + institutionId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind partnershipPersons[x].user
+              if (key.matches("deliverable\\.responsiblePartnership\\[\\d+\\]\\.partnershipPersons\\[\\d+\\]\\.user\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() 
+                      && partnerIndex < deliverable.getResponsiblePartnership().size()) {
+                      DeliverableUserPartnership partnership = deliverable.getResponsiblePartnership().get(partnerIndex);
+                      if (partnership.getPartnershipPersons() != null 
+                          && personIndex < partnership.getPartnershipPersons().size()) {
+                          Long userId = Long.parseLong(value);
+                          if (userId != -1) {
+                              User user = userManager.getUser(userId);
+                              if (user != null) {
+                                  partnership.getPartnershipPersons().get(personIndex).setUser(user);
+                                  logger.debug("ResponsiblePartnership[" + partnerIndex + "].partnershipPersons[" + personIndex + "].user bindeado: " + userId);
+                              }
+                          }
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              logger.error("Error bindeando responsiblePartnership: " + key, e);
+          }
+      }
+  }
+
+  // =====================================================
+  // OTHER PARTNERSHIPS
+  // =====================================================
+
+  private void bindOtherPartnerships(Map<String, Parameter> params) {
+      if (deliverable.getOtherPartnerships() == null) {
+          return;
+      }
+      
+      for (String key : params.keySet()) {
+          try {
+              // Bind deliverablePartnerType
+              if (key.matches("deliverable\\.otherPartnerships\\[\\d+\\]\\.deliverablePartnerType\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getOtherPartnerships().size()) {
+                      Long typeId = Long.parseLong(value);
+                      if (typeId != -1) {
+                          DeliverablePartnerType partnerType = deliverablePartnerTypeManager.getDeliverablePartnerTypeById(typeId);
+                          if (partnerType != null) {
+                              deliverable.getOtherPartnerships().get(index).setDeliverablePartnerType(partnerType);
+                              logger.debug("OtherPartnership[" + index + "].deliverablePartnerType bindeado: " + typeId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind institution
+              if (key.matches("deliverable\\.otherPartnerships\\[\\d+\\]\\.institution\\.id")) {
+                  int index = extractIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() && index < deliverable.getOtherPartnerships().size()) {
+                      Long institutionId = Long.parseLong(value);
+                      if (institutionId != -1) {
+                          Institution institution = institutionManager.getInstitutionById(institutionId);
+                          if (institution != null) {
+                              deliverable.getOtherPartnerships().get(index).setInstitution(institution);
+                              logger.debug("OtherPartnership[" + index + "].institution bindeado: " + institutionId);
+                          }
+                      }
+                  }
+              }
+              
+              // Bind partnershipPersons[x].user
+              if (key.matches("deliverable\\.otherPartnerships\\[\\d+\\]\\.partnershipPersons\\[\\d+\\]\\.user\\.id")) {
+                  int partnerIndex = extractIndex(key);
+                  int personIndex = extractSecondIndex(key);
+                  String value = params.get(key).getValue();
+                  
+                  if (value != null && !value.isEmpty() 
+                      && partnerIndex < deliverable.getOtherPartnerships().size()) {
+                      DeliverableUserPartnership partnership = deliverable.getOtherPartnerships().get(partnerIndex);
+                      if (partnership.getPartnershipPersons() != null 
+                          && personIndex < partnership.getPartnershipPersons().size()) {
+                          Long userId = Long.parseLong(value);
+                          if (userId != -1) {
+                              User user = userManager.getUser(userId);
+                              if (user != null) {
+                                  partnership.getPartnershipPersons().get(personIndex).setUser(user);
+                                  logger.debug("OtherPartnership[" + partnerIndex + "].partnershipPersons[" + personIndex + "].user bindeado: " + userId);
+                              }
+                          }
+                      }
+                  }
+              }
+          } catch (Exception e) {
+              logger.error("Error bindeando otherPartnership: " + key, e);
+          }
+      }
+  }
+
+  // =====================================================
+  // DELIVERABLE PARTICIPANT
+  // =====================================================
+
+  private void bindDeliverableParticipant(Map<String, Parameter> params) {
+      if (deliverable.getDeliverableParticipant() == null) {
+          return;
+      }
+      
+      // RepIndTypeActivity
+      Parameter paramActivity = params.get("deliverable.deliverableParticipant.repIndTypeActivity.id");
+      if (paramActivity != null && paramActivity.getValue() != null && !paramActivity.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramActivity.getValue());
+              if (id != -1) {
+                  RepIndTypeActivity typeActivity = repIndTypeActivityManager.getRepIndTypeActivityById(id);
+                  if (typeActivity != null) {
+                      deliverable.getDeliverableParticipant().setRepIndTypeActivity(typeActivity);
+                      logger.debug("DeliverableParticipant.repIndTypeActivity bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando repIndTypeActivity.id", e);
+          }
+      }
+      
+      // RepIndTypeParticipant
+      Parameter paramParticipant = params.get("deliverable.deliverableParticipant.repIndTypeParticipant.id");
+      if (paramParticipant != null && paramParticipant.getValue() != null && !paramParticipant.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramParticipant.getValue());
+              if (id != -1) {
+                  RepIndTypeParticipant typeParticipant = repIndTypeParticipantManager.getRepIndTypeParticipantById(id);
+                  if (typeParticipant != null) {
+                      deliverable.getDeliverableParticipant().setRepIndTypeParticipant(typeParticipant);
+                      logger.debug("DeliverableParticipant.repIndTypeParticipant bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando repIndTypeParticipant.id", e);
+          }
+      }
+      
+      // RepIndTrainingTerm
+      Parameter paramTrainingTerm = params.get("deliverable.deliverableParticipant.repIndTrainingTerm.id");
+      if (paramTrainingTerm != null && paramTrainingTerm.getValue() != null && !paramTrainingTerm.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramTrainingTerm.getValue());
+              if (id != -1) {
+                  RepIndTrainingTerm trainingTerm = repIndTrainingTermManager.getRepIndTrainingTermById(id);
+                  if (trainingTerm != null) {
+                      deliverable.getDeliverableParticipant().setRepIndTrainingTerm(trainingTerm);
+                      logger.debug("DeliverableParticipant.repIndTrainingTerm bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando repIndTrainingTerm.id", e);
+          }
+      }
+  }
+
+  // =====================================================
+  // QUALITY CHECK
+  // =====================================================
+
+  private void bindQualityCheck(Map<String, Parameter> params) {
+      if (deliverable.getQualityCheck() == null) {
+          return;
+      }
+      
+      // FileAssurance
+      Parameter paramAssurance = params.get("deliverable.qualityCheck.fileAssurance.id");
+      if (paramAssurance != null && paramAssurance.getValue() != null && !paramAssurance.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramAssurance.getValue());
+              if (id != -1) {
+                  FileDB file = fileDBManager.getFileDBById(id);
+                  if (file != null) {
+                      deliverable.getQualityCheck().setFileAssurance(file);
+                      logger.debug("QualityCheck.fileAssurance bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando fileAssurance.id", e);
+          }
+      }
+      
+      // FileDictionary
+      Parameter paramDictionary = params.get("deliverable.qualityCheck.fileDictionary.id");
+      if (paramDictionary != null && paramDictionary.getValue() != null && !paramDictionary.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramDictionary.getValue());
+              if (id != -1) {
+                  FileDB file = fileDBManager.getFileDBById(id);
+                  if (file != null) {
+                      deliverable.getQualityCheck().setFileDictionary(file);
+                      logger.debug("QualityCheck.fileDictionary bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando fileDictionary.id", e);
+          }
+      }
+      
+      // FileTools
+      Parameter paramTools = params.get("deliverable.qualityCheck.fileTools.id");
+      if (paramTools != null && paramTools.getValue() != null && !paramTools.getValue().isEmpty()) {
+          try {
+              Long id = Long.parseLong(paramTools.getValue());
+              if (id != -1) {
+                  FileDB file = fileDBManager.getFileDBById(id);
+                  if (file != null) {
+                      deliverable.getQualityCheck().setFileTools(file);
+                      logger.debug("QualityCheck.fileTools bindeado: " + id);
+                  }
+              }
+          } catch (NumberFormatException e) {
+              logger.error("Error parseando fileTools.id", e);
+          }
+      }
+  }
+
+  private void bindCountriesIds(Map<String, Parameter> params) {
+    logger.info("=== Entrando a bindCountriesIds ===");
+    
+    try {
+        // El parámetro puede venir como un solo valor o múltiples valores
+        Parameter param = params.get("deliverable.countriesIds");
+        
+        if (param != null) {
+            // Inicializar la lista si es necesario
+            if (deliverable.getCountriesIds() == null) {
+                deliverable.setCountriesIds(new ArrayList<>());
+            } else {
+                deliverable.getCountriesIds().clear();
+            }
+            
+            // getMultipleValues() retorna todos los valores si hay múltiples
+            String[] values = param.getMultipleValues();
+            
+            if (values != null && values.length > 0) {
+                for (String value : values) {
+                    if (value != null && !value.trim().isEmpty()) {
+                        deliverable.getCountriesIds().add(value.trim());
+                        logger.info("CountryId bindeado: " + value.trim());
+                    }
+                }
+            }
+            
+            logger.info("Total countriesIds bindeados: " + deliverable.getCountriesIds().size());
+        } else {
+            logger.info("No se encontró parámetro deliverable.countriesIds");
+        }
+    } catch (Exception e) {
+        logger.error("Error en bindCountriesIds: " + e.getMessage(), e);
+    }
+  }
+
+  // =====================================================
+  // UTILITY METHODS
+  // =====================================================
+
+  /**
+   * Extrae el índice de un parámetro con formato "objeto[indice].propiedad"
+   */
+  private int extractIndex(String key) {
+      int startIdx = key.indexOf('[') + 1;
+      int endIdx = key.indexOf(']');
+      return Integer.parseInt(key.substring(startIdx, endIdx));
+  }
+
+  /**
+   * Extrae el segundo índice de un parámetro con formato "objeto[indice1].objeto2[indice2].propiedad"
+   */
+  private int extractSecondIndex(String key) {
+      int firstClose = key.indexOf(']');
+      int secondStart = key.indexOf('[', firstClose) + 1;
+      int secondEnd = key.indexOf(']', firstClose + 1);
+      return Integer.parseInt(key.substring(secondStart, secondEnd));
+  }
 
   @Override
   public String save() {
+    // Binding manual para compatibilidad con Struts 6
+    this.manualBinding();
+
     if (this.hasPermission("canEdit")) {
 
       this.getSession().put("indexTab", indexTab);
@@ -3137,6 +3888,19 @@ public class DeliverableAction extends BaseAction {
         } catch (Exception e) {
           logger.error("unable to get activity", e);
         }
+
+        // AGREGAR VALIDACIÓN NULL
+        if (deliverableActivity.getActivity() != null && deliverableActivity.getActivity().getId() != null) {
+            try {
+                deliverableActivity.setActivity(activityManager.getActivityById(deliverableActivity.getActivity().getId()));
+            } catch (Exception e) {
+                logger.error("unable to get activity", e);
+            }
+        } else {
+            logger.warn("DeliverableActivity sin Activity asociado, saltando...");
+            continue; // o manejar de otra forma
+        }
+
         deliverableActivity.setPhase(this.getActualPhase());
         deliverableActivityManager.saveDeliverableActivity(deliverableActivity);
         // This add projectFocus to generate correct auditlog.

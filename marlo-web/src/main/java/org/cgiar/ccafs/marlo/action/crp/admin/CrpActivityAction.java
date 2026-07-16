@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -73,11 +75,10 @@ public class CrpActivityAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    activities = activityTitleManager.findAll();
-    if (this.isHttpPost()) {
-
-      if (activities != null) {
-        activities.clear();
+    if (!this.isHttpPost()) {
+      activities = activityTitleManager.findAll();
+      if (activities == null) {
+        activities = new ArrayList<>();
       }
     }
   }
@@ -114,42 +115,52 @@ public class CrpActivityAction extends BaseAction {
   }
 
   private void saveActivities() {
-    // Delete activity
-    List<ActivityTitle> activitiesDB = new ArrayList<>();
-    activitiesDB = activityTitleManager.findAll();
-    if (activitiesDB != null && !activitiesDB.isEmpty()) {
-      for (ActivityTitle activityDB : activitiesDB) {
-        if (activities != null && !activities.isEmpty() && !activities.contains(activityDB)) {
-          activityTitleManager.deleteActivityTitle(activityDB.getId());
+    List<ActivityTitle> activitiesDB = activityTitleManager.findAll();
+    if (activitiesDB == null) {
+      activitiesDB = new ArrayList<>();
+    }
+
+    Set<Long> submittedIds = new HashSet<>();
+    if (activities != null) {
+      for (ActivityTitle activity : activities) {
+        if (activity != null && activity.getId() != null && activity.getId() > 0) {
+          submittedIds.add(activity.getId());
         }
       }
     }
 
-    // Update activity
-    if (activities != null && !activities.isEmpty()) {
-      for (ActivityTitle activity : activities) {
-        if (activity != null) {
-          if (activity.getId() != null) {
+    for (ActivityTitle activityDB : activitiesDB) {
+      if (activityDB.getId() != null && !submittedIds.contains(activityDB.getId())) {
+        activityTitleManager.deleteActivityTitle(activityDB.getId());
+      }
+    }
 
-            ActivityTitle activityDB = new ActivityTitle();
-            activityDB = activityTitleManager.getActivityTitleById(activity.getId());
-            if (activityDB != null) {
-              if (activity.getTitle() != null && !activity.getTitle().isEmpty()) {
-                activityTitleManager.saveActivityTitle(activity);
-              }
-            }
+    if (activities == null || activities.isEmpty()) {
+      return;
+    }
 
-          } else {
-            // Create new activity
-            /*
-             * ActivityTitle activityNew = new ActivityTitle();
-             * if (activity.getTitle() != null && activity.getTitle().isEmpty()) {
-             * activityNew.setTitle(activity.getTitle());
-             * }
-             * activityTitleManager.saveActivityTitle(activityNew);
-             */
-          }
+    for (ActivityTitle activity : activities) {
+      if (activity == null) {
+        continue;
+      }
+      String title = activity.getTitle();
+      if (title != null) {
+        title = title.trim();
+      }
+      if (title == null || title.isEmpty()) {
+        continue;
+      }
+
+      if (activity.getId() != null && activity.getId() > 0) {
+        ActivityTitle activityDB = activityTitleManager.getActivityTitleById(activity.getId());
+        if (activityDB != null) {
+          activityDB.setTitle(title);
+          activityTitleManager.saveActivityTitle(activityDB);
         }
+      } else {
+        ActivityTitle activityNew = new ActivityTitle();
+        activityNew.setTitle(title);
+        activityTitleManager.saveActivityTitle(activityNew);
       }
     }
   }
@@ -163,10 +174,10 @@ public class CrpActivityAction extends BaseAction {
     if (save) {
       HashMap<String, String> error = new HashMap<>();
 
-      if (activities != null || !activities.isEmpty()) {
+      if (activities != null && !activities.isEmpty()) {
         int index = 0;
         for (ActivityTitle activity : activities) {
-          if (activity != null && (activity.getTitle() != null && activity.getTitle().isEmpty())) {
+          if (activity != null && activity.getTitle() != null && activity.getTitle().trim().isEmpty()) {
             error.put("input-activities[" + index + "].title",
               this.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Activities"}));
           }

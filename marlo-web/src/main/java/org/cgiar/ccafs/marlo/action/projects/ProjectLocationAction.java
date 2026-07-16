@@ -52,6 +52,9 @@ import org.cgiar.ccafs.marlo.utils.CountryLocationLevel;
 import org.cgiar.ccafs.marlo.utils.LocationLevel;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectLocationValidator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -106,6 +109,9 @@ public class ProjectLocationAction extends BaseAction {
   private String transaction;
   private List<LocationLevel> locationsLevels;
   private final ProjectLocationValidator locationValidator;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectLocationAction.class);
+
 
   @Inject
   public ProjectLocationAction(APConfig config, GlobalUnitManager crpManager, ProjectManager projectManager,
@@ -356,7 +362,7 @@ public class ProjectLocationAction extends BaseAction {
       for (CountryLocationLevel locationData : project.getLocationsData()) {
         if (locationData.getLocElements() != null) {
           for (LocElement locElement : locationData.getLocElements()) {
-            if (locElement.getId() != null && locElement.getId() != -1) {
+            if (locElement != null && locElement.getId() != null && locElement.getId() != -1) {
 
               LocElement elementReview = locElementManager.getLocElementById(locElement.getId());
 
@@ -989,7 +995,7 @@ public class ProjectLocationAction extends BaseAction {
 
           if (locationData.getLocElements() != null && !locationData.getLocElements().isEmpty()) {
             for (LocElement locElement : locationData.getLocElements()) {
-              if (locElement.getId() != null && locElement.getId() != -1) {
+              if (locElement != null && locElement.getId() != null && locElement.getId() != -1) {
 
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
 
@@ -1017,7 +1023,9 @@ public class ProjectLocationAction extends BaseAction {
                   }
                 }
               } else {
-                this.saveGeoProjectLocation(locElement, locationData.getId());
+                if (locElement != null) {
+                  this.saveGeoProjectLocation(locElement, locationData.getId());
+                }
               }
             }
 
@@ -1050,7 +1058,7 @@ public class ProjectLocationAction extends BaseAction {
 
           if (locationData.getLocElements() != null) {
             for (LocElement locElement : locationData.getLocElements()) {
-              if (locElement.getId() != null && locElement.getId() != -1) {
+              if (locElement != null && locElement.getId() != null && locElement.getId() != -1) {
 
                 LocElement element = locElementManager.getLocElementById(locElement.getId());
 
@@ -1085,7 +1093,9 @@ public class ProjectLocationAction extends BaseAction {
                   }
                 }
               } else {
-                this.saveGeoProjectLocation(locElement, locationData.getId());
+                if (locElement != null) {
+                  this.saveGeoProjectLocation(locElement, locationData.getId());
+                }
               }
             }
           }
@@ -1130,10 +1140,11 @@ public class ProjectLocationAction extends BaseAction {
     for (CountryLocationLevel countryLocationLevel : locationsDataPrew) {
       if (!project.getLocationsData().contains(countryLocationLevel)) {
         for (LocElement locElement : countryLocationLevel.getLocElements()) {
-          ProjectLocation projectLocation = this.getDBLocations().stream()
-            .filter(
-              pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == locElement.getId())
-            .collect(Collectors.toList()).get(0);
+          if (locElement != null) {
+            ProjectLocation projectLocation = this.getDBLocations().stream()
+              .filter(
+                pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == locElement.getId())
+              .collect(Collectors.toList()).get(0);
 
           if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType().getId()
             .longValue() == 2) {
@@ -1149,6 +1160,7 @@ public class ProjectLocationAction extends BaseAction {
           }
 
         }
+      }
 
         ProjectLocationElementType projectLocationElementType =
           projectLocationElementTypeManager.getByProjectAndElementType(project.getId(), countryLocationLevel.getId());
@@ -1309,6 +1321,7 @@ public class ProjectLocationAction extends BaseAction {
     regions.addAll(this.getDBLocations().stream()
       .filter(fl -> fl.isActive() && fl.getLocElement() == null && fl.getLocElementType() != null)
       .collect(Collectors.toList()));
+
     if (regions != null && regions.size() > 0) {
 
       if (project.getProjecInfoPhase(this.getActualPhase()).getLocationRegional()) {
@@ -1372,22 +1385,29 @@ public class ProjectLocationAction extends BaseAction {
     for (ProjectLocation projectLocation : project.getProjectRegions()) {
 
       if (projectLocation.getId() == null || projectLocation.getId() == -1) {
-
         ProjectLocation projectLocationSave = new ProjectLocation();
         projectLocationSave.setProject(project);
         projectLocationSave.setPhase(this.getActualPhase());
         if (!projectLocation.isScope()) {
-          LocElement locElement = locElementManager.getLocElementById(projectLocation.getLocElement().getId());
+          if (projectLocation.getLocElementId() != null) {
+            LocElement locElement = locElementManager.getLocElementById(projectLocation.getLocElementId());
 
-          projectLocationSave.setLocElement(locElement);
+            projectLocationSave.setLocElement(locElement);
+          } else {
+            LOG.error("ERROR: projectLocation.getLocElementId() es NULL");
+          }
         } else {
-          long elementId = projectLocation.getLocElement().getId();
-          LocElementType elementType = locElementTypeManager.getLocElementTypeById(elementId);
+          if (projectLocation.getLocElementTypeId() != null) {
+            long elementId = projectLocation.getLocElementTypeId();
+            LocElementType elementType = locElementTypeManager.getLocElementTypeById(elementId);
 
-          projectLocationSave.setLocElementType(elementType);
+            projectLocationSave.setLocElementType(elementType);
+          } else {
+            LOG.error("ERROR: projectLocation.getLocElementTypeId() es NULL en scope");
+          }
         }
 
-        projectLocationManager.saveProjectLocation(projectLocationSave);
+        ProjectLocation saved = projectLocationManager.saveProjectLocation(projectLocationSave);
       }
     }
 
@@ -1414,7 +1434,6 @@ public class ProjectLocationAction extends BaseAction {
     if (project.getRegionFS() == null) {
       project.setRegionFS(new ArrayList<>());
     }
-
     for (CountryFundingSources countryFundingSources : project.getRegionFS()) {
 
       ProjectLocation projectLocationSave = new ProjectLocation();
@@ -1423,14 +1442,13 @@ public class ProjectLocationAction extends BaseAction {
       if (countryFundingSources.getLocElement() == null) {
         if (!regionsCustomSaved.contains(countryFundingSources.getLocElementType())
           && countryFundingSources.isSelected()) {
-
           projectLocationSave.setLocElementType(countryFundingSources.getLocElementType());
           projectLocationManager.saveProjectLocation(projectLocationSave);
+
         }
 
       } else {
         if (!regionsSaved.contains(countryFundingSources.getLocElement()) && countryFundingSources.isSelected()) {
-
           projectLocationSave.setLocElement(countryFundingSources.getLocElement());
           projectLocationManager.saveProjectLocation(projectLocationSave);
         }
@@ -1484,6 +1502,8 @@ public class ProjectLocationAction extends BaseAction {
           project.getProjecInfoPhase(this.getActualPhase()).setActivitiesCSVFile(null);
         }
       }
+
+      
       locationValidator.validate(this, project, true);
     }
   }

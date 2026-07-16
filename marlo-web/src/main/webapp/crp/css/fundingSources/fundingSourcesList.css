@@ -141,3 +141,47 @@ td.institutionLead hr {
   margin-bottom: 15px;
   font-style: italic;
 }
+
+/* Match DataTables toolbar visual style with Projects list. */
+#active-tab .dataTables_wrapper,
+#archived-tab .dataTables_wrapper {
+  margin-left: 14px;
+  margin-right: 14px;
+}
+
+#active-tab .dataTables_wrapper .row,
+#archived-tab .dataTables_wrapper .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#active-tab .dataTables_wrapper .row > [class^="col-"],
+#active-tab .dataTables_wrapper .row > [class*=" col-"],
+#archived-tab .dataTables_wrapper .row > [class^="col-"],
+#archived-tab .dataTables_wrapper .row > [class*=" col-"] {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#active-tab .dataTables_filter,
+#archived-tab .dataTables_filter {
+  float: left !important;
+}
+
+#active-tab .dataTables_filter label input,
+#archived-tab .dataTables_filter label input {
+  height: 30px !important;
+  width: 295px !important;
+  margin-left: 0 !important;
+}
+
+#active-tab .iconSearch,
+#archived-tab .iconSearch {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  margin-left: 285px;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+}

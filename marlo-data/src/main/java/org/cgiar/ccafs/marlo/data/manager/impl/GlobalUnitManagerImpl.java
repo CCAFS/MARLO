@@ -38,8 +38,8 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
-	public List<GlobalUnit> crpUsers(String emai) {
-		return this.globalUnitDAO.crpUsers(emai);
+	public List<GlobalUnit> crpUsers(String email) {
+		return this.globalUnitDAO.crpUsers(email);
 	}
 
 	@Override
