@@ -666,10 +666,11 @@
     <input type="hidden"  name="${customName}.composeID" value="${(indicator.composeID)!}"/>
 
     [#if editable]
-      [@customForm.textArea name="${customName}.indicator" value=indicator.title i18nkey="baselineIndicator.title" showTitle=true className="statement limitWords-50" required=true editable=editable allowTextEditor=true/]
+      [@customForm.textArea name="${customName}.indicator" value=(indicator.indicator)! i18nkey="baselineIndicator.title" showTitle=true className="statement limitWords-50" required=true editable=editable allowTextEditor=true/]
     [#else]
       [#if indicator.indicator?has_content]
-        <div class="input"><p>${(indicator.indicator)!}</p></div>
+        [#-- decodeHTML turns escaped markup into rendered HTML (same pattern as customForm.textArea + allowTextEditor) --]
+        <div class="input"><p class="decodeHTML trumbowyg-editor">${(indicator.indicator)!}</p></div>
       [/#if]
     [/#if]
     <div class="clearfix"></div>
