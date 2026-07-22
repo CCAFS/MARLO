@@ -117,7 +117,11 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  @Transactional
   public boolean saveLastLogin(User user) {
+    // @Transactional is required so Spring starts a transaction and switches the OSIV session
+    // from FlushMode.MANUAL to AUTO, flushing the update. Without it (Java 17 / Spring 5 setup)
+    // the merge stays in memory and last_login / agree_terms are never persisted.
     if (user.getId() == null) {
       super.saveEntity(user);
     } else {
