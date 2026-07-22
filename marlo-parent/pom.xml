@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -52,7 +52,7 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-		<tomcat-catalina.version>9.0.110</tomcat-catalina.version>
+		<tomcat-catalina.version>9.0.118</tomcat-catalina.version>
 		<jackson.version>2.17.1</jackson.version>
 		<jackson.version.databind>2.12.7.1</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
@@ -856,7 +856,7 @@
                         <dependency>
                             <groupId>org.apache.tomcat</groupId>
                             <artifactId>tomcat-catalina</artifactId>
-                            <version>9.0.110</version>
+                            <version>9.0.118</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.tomcat</groupId>
