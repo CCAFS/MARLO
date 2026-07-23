@@ -2,7 +2,7 @@
 [#assign title = "Global Unit Management" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260410" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "globalUnitManagement" /]
@@ -128,6 +128,7 @@
             <small class="logo-selected-file text-muted">No file selected.</small>
           </div>
           <div class="logo-upload-status" style="margin-top:4px;"></div>
+          <div class="logo-acronym-warning text-warning" style="margin-top:4px; display:none;"></div>
           [#if !isTemplate && element.acronym?has_content]
             [#assign currentLogoUrl = action.getLogoUrl(element.acronym) /]
             <div class="logo-preview-block">
@@ -172,7 +173,7 @@
             [#if institutions?has_content]
               [#list institutions as institution]
                 <option value="${(institution.id)!}" [#if element.institution?? && element.institution.id?? && element.institution.id == institution.id]selected[/#if]>
-                  ${(institution.name)!}
+                  ${(institution.composedName)!}
                 </option>
               [/#list]
             [/#if]

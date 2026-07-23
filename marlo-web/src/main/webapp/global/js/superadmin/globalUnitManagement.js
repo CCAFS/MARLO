@@ -69,6 +69,10 @@ function attachLogoUploadEvents() {
     initLogoFileUpload($(this));
   });
 
+  $(document).on("input", ".acronym-input", function() {
+    updateLogoAcronymWarning($(this).closest(".globalUnit"));
+  });
+
   $(document).on("click", ".logo-file-browse-btn", function() {
     const $dropZone = $(this).closest(".logo-drop-zone");
     $dropZone.find(".logo-file-input").trigger("click");
@@ -81,6 +85,23 @@ function attachLogoUploadEvents() {
       $(this).find(".logo-file-input").trigger("click");
     }
   });
+}
+
+function updateLogoAcronymWarning($gu) {
+  const $dropZone = $gu.find(".logo-drop-zone");
+  const uploadedAcronym = ($dropZone.data("uploadedAcronym") || "").trim().toUpperCase();
+  const currentAcronym = ($gu.find(".acronym-input").val() || "").trim().toUpperCase();
+  const $warning = $gu.find(".logo-acronym-warning");
+
+  if (uploadedAcronym && uploadedAcronym !== currentAcronym) {
+    $warning.text(
+      "The uploaded logo is linked to " + uploadedAcronym
+        + ". Upload it again after setting the final acronym."
+    ).show();
+    return;
+  }
+
+  $warning.text("").hide();
 }
 
 function initLogoFileUpload($fileInput) {
@@ -149,6 +170,8 @@ function initLogoFileUpload($fileInput) {
       $gu.find(".logo-upload-status").html("");
       $dropZone.removeClass("is-dragover");
       if (r?.saved) {
+        $dropZone.data("uploadedAcronym", (r.acronym || "").trim().toUpperCase());
+        updateLogoAcronymWarning($gu);
         const logoSrc = r.logoUrl + "?t=" + Date.now();
         const uploadedName = (r.acronym || "logo") + ".png";
         const $previewBlock = $gu.find(".logo-preview-block");

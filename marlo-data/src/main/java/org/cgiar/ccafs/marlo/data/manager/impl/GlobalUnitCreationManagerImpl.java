@@ -66,9 +66,6 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreationManagerImpl.class);
 
-  private static final List<String> REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS =
-    Arrays.asList("*", "superadmin:canEdit");
-
   /** Parameter format used for boolean-like specificities (true/false). */
   private static final int PARAMETER_FORMAT_BOOLEAN = 1;
   /** Parameter category used for specificities. */
@@ -169,19 +166,13 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       LOG.warn("No super admin user could be resolved while creating Global Unit '{}'. "
         + "The new Global Unit will be created without super admin access assignment.", globalUnit.getAcronym());
     }
-    if (templateGlobalUnit != null && templateGlobalUnit.getId() != null) {
-      long templateGlobalUnitId = templateGlobalUnit.getId().longValue();
-      this.cloneRoles(globalUnit, templateGlobalUnitId);
-      // Flush pending session inserts (global unit + cloned roles) so the following native SQL, which joins on the
-      // freshly created target roles, sees them and does not violate FKs or clone zero permissions.
-      this.sessionFactory.getCurrentSession().flush();
-      roleManager.cloneRolePermissionsByAcronym(templateGlobalUnitId, globalUnit.getId());
-      this.cloneLocTypes(globalUnit, templateGlobalUnitId);
-    } else {
-      // Flush pending session inserts (global unit) so the native role/permission SQL can reference it.
-      this.sessionFactory.getCurrentSession().flush();
-      roleManager.ensureSuperAdminRoleAndPermissions(globalUnit.getId(), 45L);
-    }
+    long templateGlobalUnitId = templateGlobalUnit.getId().longValue();
+    this.cloneRoles(globalUnit, templateGlobalUnitId);
+    // Flush pending session inserts (global unit + cloned roles) so the following native SQL, which joins on the
+    // freshly created target roles, sees them and does not violate FKs or clone zero permissions.
+    this.sessionFactory.getCurrentSession().flush();
+    roleManager.cloneRolePermissionsByAcronym(templateGlobalUnitId, globalUnit.getId());
+    this.cloneLocTypes(globalUnit, templateGlobalUnitId);
     this.createSuperAdminAccess(globalUnit, superAdminUser);
     this.assignSuperAdminRole(globalUnit, superAdminUser);
     LiaisonInstitution pmuLiaisonInstitution =
@@ -356,20 +347,10 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
   }
 
   private GlobalUnit resolveTemplateGlobalUnit(long templateGlobalUnitId) {
-    if (templateGlobalUnitId > 0L) {
-      GlobalUnit templateGlobalUnit = globalUnitManager.getGlobalUnitById(templateGlobalUnitId);
-      if (templateGlobalUnit != null && templateGlobalUnit.getId() != null) {
-        return templateGlobalUnit;
-      }
-    }
-
-    List<GlobalUnit> availableGlobalUnits = globalUnitManager.findAll();
-    if (availableGlobalUnits == null) {
+    if (templateGlobalUnitId <= 0L) {
       return null;
     }
-
-    return availableGlobalUnits.stream().filter(globalUnit -> globalUnit != null && globalUnit.getId() != null)
-      .findFirst().orElse(null);
+    return globalUnitManager.getGlobalUnitById(templateGlobalUnitId);
   }
 
   private Institution resolveInstitution(Long institutionId) {
@@ -397,8 +378,14 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       errors.add("Missing parameter key for custom file: " + APConstants.CRP_CUSTOM_FILE);
     }
 
-    if (templateGlobalUnit == null && !roleManager.existsPermissionsByNames(REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS)) {
-      errors.add("Missing required fallback permissions: " + String.join(", ", REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS));
+    if (templateGlobalUnit == null || templateGlobalUnit.getId() == null) {
+      errors.add("No valid template Global Unit was selected and the current session has no compatible Global Unit");
+    } else if (!templateGlobalUnit.isActive()) {
+      errors.add("The template Global Unit must be active");
+    } else if (templateGlobalUnit.getGlobalUnitType() == null
+      || templateGlobalUnit.getGlobalUnitType().getId() == null
+      || templateGlobalUnit.getGlobalUnitType().getId().longValue() != globalUnitType.getId().longValue()) {
+      errors.add("The template Global Unit must have the same type as the new Global Unit");
     }
 
     if (!errors.isEmpty()) {

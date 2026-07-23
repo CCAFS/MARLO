@@ -712,22 +712,29 @@ public class GlobalUnitCreateAction extends BaseAction {
   }
 
   private long resolveTemplateGlobalUnitId() {
-    if (templateGlobalUnitId != null && templateGlobalUnitId.longValue() > 0L
-      && globalUnitManager.existGlobalUnit(templateGlobalUnitId.longValue())) {
-      return templateGlobalUnitId.longValue();
+    if (templateGlobalUnitId != null && templateGlobalUnitId.longValue() > 0L) {
+      GlobalUnit selectedTemplate = globalUnitManager.getGlobalUnitById(templateGlobalUnitId.longValue());
+      if (this.isCompatibleTemplate(selectedTemplate)) {
+        return selectedTemplate.getId().longValue();
+      }
     }
 
-    if (globalUnitManager.existGlobalUnit(45L)) {
-      return 45L;
+    GlobalUnit currentGlobalUnit = this.getCurrentGlobalUnit();
+    if (this.isCompatibleTemplate(currentGlobalUnit)) {
+      return currentGlobalUnit.getId().longValue();
     }
 
-    List<GlobalUnit> availableGlobalUnits = globalUnitManager.findAll();
-    if (availableGlobalUnits == null) {
-      return 0L;
-    }
+    return 0L;
+  }
 
-    return availableGlobalUnits.stream().filter(globalUnit -> globalUnit != null && globalUnit.getId() != null)
-      .map(GlobalUnit::getId).findFirst().orElse(0L);
+  private boolean isCompatibleTemplate(GlobalUnit template) {
+    if (template == null || template.getId() == null || !template.isActive()
+      || !globalUnitManager.existGlobalUnit(template.getId().longValue())) {
+      return false;
+    }
+    return globalUnitTypeId == null || globalUnitTypeId.longValue() <= 0L || template.getGlobalUnitType() != null
+      && template.getGlobalUnitType().getId() != null
+      && template.getGlobalUnitType().getId().longValue() == globalUnitTypeId.longValue();
   }
 
   private void assignGlobalUnitType(GlobalUnit toSave, GlobalUnit item, boolean isNew) {
