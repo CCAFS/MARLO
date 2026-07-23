@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.superadmin.GlobalUnitCreateValidator;
@@ -41,6 +42,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -48,6 +50,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Super Admin action to list, create and upload logo for Global Units.
@@ -55,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 public class GlobalUnitCreateAction extends BaseAction {
 
   private static final long serialVersionUID = 6280478669923657397L;
+  private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreateAction.class);
   private static final String USER_DIR_PROPERTY = "user.dir";
   private static final String LOGO_FOLDER = "marlo-web/src/main/webapp/global/images/crps";
   private static final String LOGOS_RELATIVE_PATH = "globalUnits" + File.separator + "logos" + File.separator;
@@ -86,6 +91,7 @@ public class GlobalUnitCreateAction extends BaseAction {
   private boolean managementMode;
   private boolean marlo = true;
   private boolean login = true;
+  private String deletedGlobalUnitIds;
 
   private File logoFile;
   private String logoFileFileName;
@@ -190,6 +196,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       .collect(Collectors.toList());
     institutions = institutionManager.findAll().stream()
       .filter(institution -> institution != null && institution.getId() != null).collect(Collectors.toList());
+    this.loadCrpAdminTeams();
     this.loadExistingLogoAcronyms();
 
     if (templateGlobalUnitId == null || templateGlobalUnitId.longValue() <= 0L) {
@@ -223,7 +230,7 @@ public class GlobalUnitCreateAction extends BaseAction {
 
     List<GlobalUnitCreationManager.PhaseInput> phaseInputs = this.parsePhasesDefinition(phasesDefinition);
     if (phaseInputs.isEmpty()) {
-      this.addActionError("At least one valid phase definition is required.");
+      this.addActionError(this.getText("globalUnitManagement.validation.phasesRequired"));
       return INPUT;
     }
 
@@ -248,10 +255,10 @@ public class GlobalUnitCreateAction extends BaseAction {
       this.copyLogoIfPresent(createdGlobalUnit);
       this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
       this.refreshAvailableGlobalTypesSession();
-      this.addActionMessage("message:Global Unit created successfully");
+      this.addActionMessage("message:" + this.getText("globalUnitManagement.create.success"));
       return SUCCESS;
     } catch (Exception e) {
-      this.addActionError("Unable to create Global Unit: " + e.getMessage());
+      this.addActionError(this.getText("globalUnitManagement.create.error", new String[] {e.getMessage()}));
       return INPUT;
     }
   }
@@ -290,6 +297,10 @@ public class GlobalUnitCreateAction extends BaseAction {
 
   public void setManagementMode(boolean managementMode) {
     this.managementMode = managementMode;
+  }
+
+  public void setDeletedGlobalUnitIds(String deletedGlobalUnitIds) {
+    this.deletedGlobalUnitIds = deletedGlobalUnitIds;
   }
 
   public void setLogin(boolean login) {
@@ -545,36 +556,76 @@ public class GlobalUnitCreateAction extends BaseAction {
 
   private String saveGlobalUnitsFromManagement() {
     final List<GlobalUnit> unitsToSave = (globalUnits == null) ? Collections.emptyList() : globalUnits;
-    final Set<Long> keepIds = unitsToSave.stream().map(GlobalUnit::getId).filter(Objects::nonNull)
-      .collect(Collectors.toSet());
-
-    Long currentGlobalUnitId = this.resolveCurrentGlobalUnitId();
-    if (currentGlobalUnitId != null) {
-      // Never soft-delete the Global Unit of the active session.
-      keepIds.add(currentGlobalUnitId);
-    }
-
-    final List<GlobalUnit> existingGlobalUnits = globalUnitManager.findAll().stream()
-      .filter(item -> item != null && item.getId() != null && item.isActive()).collect(Collectors.toList());
 
     try {
-      for (GlobalUnit item : unitsToSave) {
-        this.saveManagementItem(item);
+      for (int index = 0; index < unitsToSave.size(); index++) {
+        this.saveManagementItem(unitsToSave.get(index), index);
       }
     } catch (Exception e) {
-      this.addActionError("Unable to save Global Units: " + e.getMessage());
+      this.addActionError(this.getText("globalUnitManagement.save.error", new String[] {e.getMessage()}));
       return INPUT;
     }
 
-    for (GlobalUnit existing : existingGlobalUnits) {
-      if (!keepIds.contains(existing.getId())) {
-        globalUnitManager.deleteGlobalUnit(existing.getId());
-      }
+    try {
+      this.deleteRequestedGlobalUnits();
+    } catch (Exception e) {
+      this.addActionError(this.getText("globalUnitManagement.save.error", new String[] {e.getMessage()}));
+      return INPUT;
     }
 
     this.refreshAvailableGlobalTypesSession();
     this.addActionMessage("message:" + this.getText("saving.saved"));
     return SUCCESS;
+  }
+
+  /**
+   * Soft-deletes only the Global Units explicitly requested by the user (via {@code deletedGlobalUnitIds}).
+   * Deletion is never inferred from missing rows, so a partial or malformed POST cannot remove Global Units.
+   * The Global Unit of the active session is always protected.
+   */
+  private void deleteRequestedGlobalUnits() {
+    Set<Long> requestedIds = this.parseDeletedGlobalUnitIds();
+    if (requestedIds.isEmpty()) {
+      return;
+    }
+
+    Long currentGlobalUnitId = this.resolveCurrentGlobalUnitId();
+    for (Long globalUnitId : requestedIds) {
+      if (currentGlobalUnitId != null && currentGlobalUnitId.equals(globalUnitId)) {
+        // Never soft-delete the Global Unit of the active session.
+        continue;
+      }
+
+      GlobalUnit existing = globalUnitManager.getGlobalUnitById(globalUnitId);
+      if (existing == null || existing.getId() == null || !existing.isActive()) {
+        continue;
+      }
+
+      globalUnitCreationManager.softDeleteGlobalUnit(globalUnitId);
+    }
+  }
+
+  private Set<Long> parseDeletedGlobalUnitIds() {
+    Set<Long> ids = new HashSet<>();
+    if (StringUtils.isBlank(deletedGlobalUnitIds)) {
+      return ids;
+    }
+
+    for (String rawId : StringUtils.split(deletedGlobalUnitIds, ',')) {
+      String trimmedId = StringUtils.trim(rawId);
+      if (StringUtils.isBlank(trimmedId)) {
+        continue;
+      }
+      try {
+        long parsedId = Long.parseLong(trimmedId);
+        if (parsedId > 0L) {
+          ids.add(parsedId);
+        }
+      } catch (NumberFormatException e) {
+        LOG.warn("Ignoring invalid Global Unit id to delete: {}", trimmedId);
+      }
+    }
+    return ids;
   }
 
   /**
@@ -585,6 +636,88 @@ public class GlobalUnitCreateAction extends BaseAction {
     if (this.getSession() != null) {
       this.getSession().remove(APConstants.AVAILABLES_GLOBAL_TYPES);
     }
+  }
+
+  private List<Long> getCrpAdminUserIds(List<UserRole> submittedTeam) {
+    return this.getCrpAdminUserIds(-1, submittedTeam);
+  }
+
+  private List<Long> getCrpAdminUserIds(int globalUnitIndex, List<UserRole> submittedTeam) {
+    if (submittedTeam == null) {
+      submittedTeam = Collections.emptyList();
+    }
+
+    Set<Long> userIds = new HashSet<>();
+    for (UserRole userRole : submittedTeam) {
+      if (userRole != null && userRole.getUser() != null && userRole.getUser().getId() != null
+        && userRole.getUser().getId().longValue() > 0L) {
+        userIds.add(userRole.getUser().getId());
+      }
+    }
+
+    // Fallback for dynamic rows: if nested list binding is partial, read submitted user ids from request.
+    if (userIds.isEmpty() && globalUnitIndex >= 0) {
+      userIds.addAll(this.extractCrpAdminUserIdsFromRequest(globalUnitIndex));
+    }
+
+    return new ArrayList<>(userIds);
+  }
+
+  private Set<Long> extractCrpAdminUserIdsFromRequest(int globalUnitIndex) {
+    Set<Long> userIds = new HashSet<>();
+    if (globalUnitIndex < 0 || this.getRequest() == null) {
+      return userIds;
+    }
+
+    String parameterPrefix = "globalUnits[" + globalUnitIndex + "].crpAdminTeam[";
+    String parameterSuffix = "].user.id";
+    Map<String, String[]> parameterMap = this.getRequest().getParameterMap();
+    if (parameterMap == null || parameterMap.isEmpty()) {
+      return userIds;
+    }
+
+    for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+      String parameterName = entry.getKey();
+      if (StringUtils.isBlank(parameterName) || !parameterName.startsWith(parameterPrefix)
+        || !parameterName.endsWith(parameterSuffix)) {
+        continue;
+      }
+
+      String[] values = entry.getValue();
+      if (values == null || values.length == 0 || StringUtils.isBlank(values[0])) {
+        continue;
+      }
+
+      try {
+        long parsedUserId = Long.parseLong(StringUtils.trim(values[0]));
+        if (parsedUserId > 0L) {
+          userIds.add(parsedUserId);
+        }
+      } catch (NumberFormatException e) {
+        LOG.warn("Ignoring invalid CRP Admin user id '{}' for parameter '{}'", values[0], parameterName);
+      }
+    }
+
+    return userIds;
+  }
+
+  private void loadCrpAdminTeams() {
+    if (globalUnits == null) {
+      return;
+    }
+    for (GlobalUnit globalUnit : globalUnits) {
+      List<UserRole> team = globalUnitCreationManager.getCrpAdminTeam(globalUnit.getId());
+      globalUnit.setCrpAdminTeam(new ArrayList<>(team));
+    }
+  }
+
+  /**
+   * Delegates role resolution and atomic (per-Global-Unit) synchronization to the transactional manager, so
+   * add/remove of {@code user_roles} and {@code crp_users} cannot be left half-applied.
+   */
+  private void syncCrpAdminTeam(GlobalUnit globalUnit, List<UserRole> submittedTeam, int globalUnitIndex) {
+    globalUnitCreationManager.syncCrpAdminTeam(globalUnit.getId(),
+      this.getCrpAdminUserIds(globalUnitIndex, submittedTeam));
   }
 
   private Long resolveCurrentGlobalUnitId() {
@@ -598,7 +731,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     return current.getId();
   }
 
-  private void saveManagementItem(GlobalUnit item) {
+  private void saveManagementItem(GlobalUnit item, int globalUnitIndex) {
     if (item == null) {
       return;
     }
@@ -620,7 +753,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     }
 
     if (isNew) {
-      this.createManagementGlobalUnit(item, itemName, itemAcronym);
+      this.createManagementGlobalUnit(item, itemName, itemAcronym, globalUnitIndex);
       return;
     }
 
@@ -636,9 +769,11 @@ public class GlobalUnitCreateAction extends BaseAction {
     }
 
     globalUnitManager.saveGlobalUnit(toSave);
+    this.syncCrpAdminTeam(toSave, item.getCrpAdminTeam(), globalUnitIndex);
   }
 
-  private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym) {
+  private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym,
+    int globalUnitIndex) {
     GlobalUnitCreationManager.CreateRequest request = new GlobalUnitCreationManager.CreateRequest();
     request.setName(itemName);
     request.setAcronym(itemAcronym);
@@ -653,6 +788,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     request.setLiaisonName("");
     request.setLiaisonAcronym("");
     request.setSuperAdminUserId(this.resolveCreatorUserId());
+    request.setCrpAdminUserIds(this.getCrpAdminUserIds(globalUnitIndex, item.getCrpAdminTeam()));
 
     GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
     this.copyInternationalizationFileIfNeeded(createdGlobalUnit);

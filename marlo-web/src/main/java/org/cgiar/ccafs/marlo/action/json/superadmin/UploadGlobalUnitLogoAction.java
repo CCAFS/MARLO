@@ -58,13 +58,13 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
 
     if (StringUtils.isBlank(acronym)) {
       LOG.warn("globalUnitLogoUpload: acronym is blank, skipping upload");
-      message = "Set the acronym before uploading a logo.";
+      message = this.getText("globalUnitManagement.logo.upload.acronymRequired");
       return SUCCESS;
     }
 
     if (file == null || !file.exists()) {
       LOG.warn("globalUnitLogoUpload: no file received for acronym {}", acronym);
-      message = "No file was received by the server.";
+      message = this.getText("globalUnitManagement.logo.upload.noFile");
       return SUCCESS;
     }
 
@@ -72,19 +72,19 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
     String uploadsBase = config.getUploadsBaseFolder();
     if (StringUtils.isBlank(uploadsBase)) {
       LOG.error("globalUnitLogoUpload: uploads base folder not configured");
-      message = "Uploads base folder is not configured.";
+      message = this.getText("globalUnitManagement.logo.upload.uploadsNotConfigured");
       return SUCCESS;
     }
 
     File targetDir = new File(uploadsBase, LOGOS_RELATIVE_PATH);
     if (!targetDir.exists() && !targetDir.mkdirs()) {
       LOG.error("globalUnitLogoUpload: unable to create target directory {}", targetDir.getAbsolutePath());
-      message = "Unable to create the target upload directory.";
+      message = this.getText("globalUnitManagement.logo.upload.dirCreateFailed");
       return SUCCESS;
     }
     if (!targetDir.canWrite()) {
       LOG.error("globalUnitLogoUpload: target directory is not writable {}", targetDir.getAbsolutePath());
-      message = "The server has no write permission for the upload directory.";
+      message = this.getText("globalUnitManagement.logo.upload.dirNotWritable");
       return SUCCESS;
     }
 
@@ -92,14 +92,14 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
     File targetFile = new File(targetDir, finalFileName);
     if (targetFile.exists() && !targetFile.canWrite()) {
       LOG.error("globalUnitLogoUpload: target file is not writable {}", targetFile.getAbsolutePath());
-      message = "The server has no write permission for the target logo file.";
+      message = this.getText("globalUnitManagement.logo.upload.fileNotWritable");
       return SUCCESS;
     }
 
     BufferedImage sourceImage = ImageIO.read(file);
     if (sourceImage == null) {
       LOG.warn("globalUnitLogoUpload: uploaded file is not a readable image for acronym {}", normalizedAcronym);
-      message = "The uploaded file is not a valid image.";
+      message = this.getText("globalUnitManagement.logo.upload.invalidImage");
       return SUCCESS;
     }
 
@@ -108,20 +108,20 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
       written = ImageIO.write(sourceImage, "png", targetFile);
     } catch (IOException e) {
       LOG.error("globalUnitLogoUpload: failed to write image to {}", targetFile.getAbsolutePath(), e);
-      message = "The server could not write the uploaded logo file. Please contact an administrator.";
+      message = this.getText("globalUnitManagement.logo.upload.writeFailed");
       return SUCCESS;
     }
     if (!written || !targetFile.exists() || targetFile.length() == 0) {
       LOG.error("globalUnitLogoUpload: image write failed for source {} and target {}", file.getAbsolutePath(),
         targetFile.getAbsolutePath());
-      message = "The server could not save the uploaded logo file.";
+      message = this.getText("globalUnitManagement.logo.upload.saveFailed");
       return SUCCESS;
     }
 
     this.acronym = normalizedAcronym;
     this.logoUrl = this.getBaseUrl() + "/data/globalUnitLogo.do?acronym=" + normalizedAcronym;
     saved = true;
-    message = "Logo uploaded successfully.";
+    message = this.getText("globalUnitManagement.logo.upload.success");
 
     return SUCCESS;
   }

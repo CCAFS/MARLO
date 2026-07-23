@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreationManagerImpl.class);
+  private static final String CRP_ADMIN_ROLE_ACRONYM = "CRP-Admin";
+  private static final String SUPER_ADMIN_ROLE_ACRONYM = "superadmin";
 
   /** Parameter format used for boolean-like specificities (true/false). */
   private static final int PARAMETER_FORMAT_BOOLEAN = 1;
@@ -173,14 +176,172 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     this.sessionFactory.getCurrentSession().flush();
     roleManager.cloneRolePermissionsByAcronym(templateGlobalUnitId, globalUnit.getId());
     this.cloneLocTypes(globalUnit, templateGlobalUnitId);
-    this.createSuperAdminAccess(globalUnit, superAdminUser);
+    this.ensureCrpUserAccess(globalUnit, superAdminUser);
     this.assignSuperAdminRole(globalUnit, superAdminUser);
+    this.assignCrpAdminUsers(globalUnit, request.getCrpAdminUserIds());
     LiaisonInstitution pmuLiaisonInstitution =
       this.createLiaisonInstitution(globalUnit, request.getLiaisonName(), request.getLiaisonAcronym());
     this.initializeCustomParameters(globalUnit, templateGlobalUnit, createdPhases, request.getCurrentPhaseIndex(),
       request.getCustomFileName(), pmuLiaisonInstitution);
 
     return globalUnit;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<UserRole> getCrpAdminTeam(long globalUnitId) {
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId);
+    if (globalUnit == null || globalUnit.getId() == null) {
+      return Collections.emptyList();
+    }
+
+    Role crpAdminRole = this.resolveCrpAdminRole(globalUnit);
+    if (crpAdminRole == null || crpAdminRole.getId() == null) {
+      LOG.warn("The CRP-Admin role could not be resolved while loading Global Unit {}", globalUnitId);
+      return Collections.emptyList();
+    }
+    List<UserRole> assignments = userRoleManager.getUserRolesByRoleId(crpAdminRole.getId());
+    return assignments == null ? Collections.emptyList() : assignments;
+  }
+
+  @Override
+  @Transactional
+  public void syncCrpAdminTeam(long globalUnitId, List<Long> submittedUserIds) {
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId);
+    if (globalUnit == null || globalUnit.getId() == null) {
+      throw new IllegalArgumentException("Invalid Global Unit id: " + globalUnitId);
+    }
+
+    Role crpAdminRole = this.resolveCrpAdminRole(globalUnit);
+    if (crpAdminRole == null || crpAdminRole.getId() == null) {
+      throw new IllegalStateException("The CRP-Admin role could not be resolved for Global Unit "
+        + globalUnit.getAcronym());
+    }
+
+    Set<Long> targetUserIds = submittedUserIds == null ? new HashSet<>()
+      : submittedUserIds.stream().filter(Objects::nonNull).filter(userId -> userId.longValue() > 0L)
+        .collect(Collectors.toCollection(HashSet::new));
+    if (targetUserIds.isEmpty()) {
+      throw new IllegalArgumentException("At least one CRP Admin is required for Global Unit "
+        + globalUnit.getAcronym());
+    }
+
+    List<UserRole> currentAssignments = userRoleManager.getUserRolesByRoleId(crpAdminRole.getId());
+    if (currentAssignments == null) {
+      currentAssignments = new ArrayList<>();
+    }
+
+    Set<Long> currentUserIds = new HashSet<>();
+    for (UserRole assignment : currentAssignments) {
+      if (assignment != null && assignment.getUser() != null && assignment.getUser().getId() != null) {
+        currentUserIds.add(assignment.getUser().getId());
+      }
+    }
+
+    // Remove assignments that are no longer submitted.
+    for (UserRole assignment : currentAssignments) {
+      if (assignment == null || assignment.getId() == null || assignment.getUser() == null
+        || assignment.getUser().getId() == null) {
+        continue;
+      }
+      if (!targetUserIds.contains(assignment.getUser().getId())) {
+        User removedUser = assignment.getUser();
+        userRoleManager.deleteUserRole(assignment.getId());
+        this.removeCrpUserAccessIfNoRolesRemain(globalUnit, removedUser);
+      }
+    }
+
+    // Add newly submitted users.
+    for (Long userId : targetUserIds) {
+      User user = userManager.getUser(userId.longValue());
+      if (user == null || user.getId() == null) {
+        throw new IllegalArgumentException("Invalid CRP Admin user id: " + userId);
+      }
+      this.ensureCrpUserAccess(globalUnit, user);
+      if (currentUserIds.contains(userId)) {
+        continue;
+      }
+      UserRole userRole = new UserRole();
+      userRole.setUser(user);
+      userRole.setRole(crpAdminRole);
+      userRoleManager.saveUserRole(userRole);
+    }
+  }
+
+  @Override
+  @Transactional
+  public void softDeleteGlobalUnit(long globalUnitId) {
+    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId);
+    if (globalUnit == null || globalUnit.getId() == null) {
+      throw new IllegalArgumentException("Invalid Global Unit id: " + globalUnitId);
+    }
+
+    this.removeAllCrpAdminAssignments(globalUnit);
+    globalUnitManager.deleteGlobalUnit(globalUnitId);
+  }
+
+  /**
+   * Removes every CRP-Admin assignment of the given Global Unit. When the CRP-Admin role cannot be resolved the
+   * soft-delete still proceeds (legacy / incomplete seed data).
+   */
+  private void removeAllCrpAdminAssignments(GlobalUnit globalUnit) {
+    Role crpAdminRole = this.resolveCrpAdminRole(globalUnit);
+    if (crpAdminRole == null || crpAdminRole.getId() == null) {
+      LOG.warn("Skipping CRP-Admin cleanup for Global Unit {}: role could not be resolved", globalUnit.getId());
+      return;
+    }
+
+    List<UserRole> assignments = userRoleManager.getUserRolesByRoleId(crpAdminRole.getId());
+    if (assignments == null || assignments.isEmpty()) {
+      return;
+    }
+
+    for (UserRole assignment : assignments) {
+      if (assignment == null || assignment.getId() == null) {
+        continue;
+      }
+      User removedUser = assignment.getUser();
+      userRoleManager.deleteUserRole(assignment.getId());
+      this.removeCrpUserAccessIfNoRolesRemain(globalUnit, removedUser);
+    }
+  }
+
+  /**
+   * Deactivates the {@code crp_users} access of a user for a Global Unit only when:
+   * <ul>
+   * <li>the user keeps no other role in that Global Unit, and</li>
+   * <li>the user is not SuperAdmin in any Global Unit.</li>
+   * </ul>
+   * Uses a targeted lookup instead of scanning the whole {@code crp_users} table.
+   */
+  private void removeCrpUserAccessIfNoRolesRemain(GlobalUnit globalUnit, User user) {
+    if (globalUnit == null || globalUnit.getId() == null || user == null || user.getId() == null) {
+      return;
+    }
+
+    List<UserRole> remainingRoles = userRoleManager.getUserRolesByUserId(user.getId());
+    if (remainingRoles != null) {
+      boolean keepsRoleInGlobalUnit = remainingRoles.stream().anyMatch(userRole ->
+        userRole != null && userRole.getRole() != null && userRole.getRole().getCrp() != null
+          && userRole.getRole().getCrp().getId() != null
+          && globalUnit.getId().equals(userRole.getRole().getCrp().getId()));
+      if (keepsRoleInGlobalUnit) {
+        return;
+      }
+
+      // SuperAdmin of any Global Unit must keep crp_users access when CRP-Admin is removed.
+      boolean isSuperAdminAnywhere = remainingRoles.stream().anyMatch(userRole ->
+        userRole != null && userRole.getRole() != null
+          && SUPER_ADMIN_ROLE_ACRONYM.equalsIgnoreCase(userRole.getRole().getAcronym()));
+      if (isSuperAdminAnywhere) {
+        return;
+      }
+    }
+
+    CrpUser crpUser = crpUserManager.getCrpUserByUserIdAndCrpId(user.getId(), globalUnit.getId());
+    if (crpUser != null && crpUser.getId() != null && crpUser.isActive()) {
+      crpUserManager.deleteCrpUser(crpUser.getId());
+    }
   }
 
   private GlobalUnit createBaseGlobalUnit(CreateRequest request, GlobalUnitType globalUnitType, Institution institution) {
@@ -226,7 +387,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     Role superAdminRole = globalUnitRoles.stream()
       .filter(role -> role != null && role.getId() != null && role.getCrp() != null && role.getCrp().getId() != null
         && role.getCrp().getId().equals(globalUnit.getId()) && role.getAcronym() != null
-        && "superadmin".equalsIgnoreCase(role.getAcronym()))
+        && SUPER_ADMIN_ROLE_ACRONYM.equalsIgnoreCase(role.getAcronym()))
       .findFirst().orElse(null);
 
     if (superAdminRole == null || superAdminRole.getId() == null) {
@@ -246,15 +407,91 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     userRoleManager.saveUserRole(userRole);
   }
 
-  private void createSuperAdminAccess(GlobalUnit globalUnit, User superAdminUser) {
-    if (globalUnit == null || globalUnit.getId() == null || superAdminUser == null || superAdminUser.getId() == null
-      || crpUserManager.existCrpUser(superAdminUser.getId(), globalUnit.getId())) {
+  private void assignCrpAdminUsers(GlobalUnit globalUnit, List<Long> crpAdminUserIds) {
+    if (crpAdminUserIds == null || crpAdminUserIds.isEmpty()) {
       return;
     }
 
-    CrpUser crpUser = new CrpUser();
+    Role crpAdminRole = this.resolveCrpAdminRole(globalUnit);
+    if (crpAdminRole == null || crpAdminRole.getId() == null) {
+      throw new IllegalStateException("The CRP-Admin role could not be resolved for the new Global Unit");
+    }
+
+    Set<Long> distinctUserIds = crpAdminUserIds.stream().filter(Objects::nonNull)
+      .filter(userId -> userId.longValue() > 0L).collect(Collectors.toSet());
+    if (distinctUserIds.isEmpty()) {
+      throw new IllegalArgumentException("At least one valid CRP Admin user is required");
+    }
+
+    for (Long userId : distinctUserIds) {
+      User user = userManager.getUser(userId.longValue());
+      if (user == null || user.getId() == null) {
+        throw new IllegalArgumentException("Invalid CRP Admin user id: " + userId);
+      }
+
+      UserRole userRole = new UserRole();
+      userRole.setUser(user);
+      userRole.setRole(crpAdminRole);
+      userRoleManager.saveUserRole(userRole);
+      this.ensureCrpUserAccess(globalUnit, user);
+    }
+  }
+
+  /**
+   * Canonical CRP-Admin role resolution for creation, loading and synchronization.
+   * <ol>
+   * <li>Use the active {@code crp_admin_rol} custom parameter when it points to the CRP-Admin role of this GU.</li>
+   * <li>Fallback to the role acronym for new GUs (whose custom parameters are initialized later) and legacy data.</li>
+   * </ol>
+   */
+  private Role resolveCrpAdminRole(GlobalUnit globalUnit) {
+    if (globalUnit == null || globalUnit.getId() == null) {
+      throw new IllegalArgumentException("A persisted Global Unit is required to resolve the CRP-Admin role");
+    }
+
+    CustomParameter roleParameter = customParameterManager
+      .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_ADMIN_ROLE, globalUnit.getId());
+    if (roleParameter != null && roleParameter.isActive() && StringUtils.isNotBlank(roleParameter.getValue())) {
+      try {
+        Role configuredRole = roleManager.getRoleById(Long.parseLong(StringUtils.trim(roleParameter.getValue())));
+        if (this.isCrpAdminRoleForGlobalUnit(configuredRole, globalUnit)) {
+          return configuredRole;
+        }
+      } catch (NumberFormatException e) {
+        LOG.warn("Invalid crp_admin_rol value '{}' for Global Unit {}", roleParameter.getValue(), globalUnit.getId());
+      }
+    }
+
+    List<Role> roles = roleManager.findAll();
+    if (roles != null) {
+      Role roleByAcronym = roles.stream().filter(role -> this.isCrpAdminRoleForGlobalUnit(role, globalUnit))
+        .findFirst().orElse(null);
+      if (roleByAcronym != null) {
+        return roleByAcronym;
+      }
+    }
+
+    return null;
+  }
+
+  private boolean isCrpAdminRoleForGlobalUnit(Role role, GlobalUnit globalUnit) {
+    return role != null && role.getId() != null && role.getCrp() != null && role.getCrp().getId() != null
+      && role.getCrp().getId().equals(globalUnit.getId())
+      && CRP_ADMIN_ROLE_ACRONYM.equalsIgnoreCase(role.getAcronym());
+  }
+
+  private void ensureCrpUserAccess(GlobalUnit globalUnit, User user) {
+    if (globalUnit == null || globalUnit.getId() == null || user == null || user.getId() == null) {
+      return;
+    }
+
+    CrpUser crpUser = crpUserManager.getCrpUserByUserIdAndCrpId(user.getId(), globalUnit.getId());
+    if (crpUser == null) {
+      crpUser = new CrpUser();
+    }
     crpUser.setCrp(globalUnit);
-    crpUser.setUser(superAdminUser);
+    crpUser.setUser(user);
+    crpUser.setActive(true);
     crpUserManager.saveCrpUser(crpUser);
   }
 

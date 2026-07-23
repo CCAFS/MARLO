@@ -77,6 +77,14 @@ public class GlobalUnitCreateValidator extends BaseValidator {
       action.getInvalidFields().put(invalidFieldPrefix + "institution.id", InvalidFieldsMessages.EMPTYFIELD);
       action.addFieldError(fieldPrefix + ".institution.id", action.getText(REQUIRED_FIELD_KEY));
     }
+
+    boolean hasCrpAdmin = globalUnit != null && globalUnit.getCrpAdminTeam() != null
+      && globalUnit.getCrpAdminTeam().stream().anyMatch(userRole -> userRole != null && userRole.getUser() != null
+        && userRole.getUser().getId() != null && userRole.getUser().getId().longValue() > 0L);
+    if (!hasCrpAdmin) {
+      action.getInvalidFields().put(invalidFieldPrefix + "crpAdminTeam", InvalidFieldsMessages.EMPTYUSERLIST);
+      action.addFieldError(fieldPrefix + ".crpAdminTeam", action.getText(REQUIRED_FIELD_KEY));
+    }
   }
 
   private void validateLogo(GlobalUnitCreateAction action) {
@@ -87,7 +95,7 @@ public class GlobalUnitCreateValidator extends BaseValidator {
     String contentType = StringUtils.trimToEmpty(action.getLogoFileContentType()).toLowerCase();
     if (!contentType.startsWith("image/")) {
       action.getInvalidFields().put("input-logoFile", InvalidFieldsMessages.INVALID_FORMAT);
-      action.addFieldError("logoFile", "Logo file must be an image.");
+      action.addFieldError("logoFile", action.getText("globalUnitManagement.validation.logoImage"));
     }
   }
 
@@ -109,7 +117,7 @@ public class GlobalUnitCreateValidator extends BaseValidator {
 
     if (!this.isValidString(action.getPhasesDefinition())) {
       action.getInvalidFields().put("input-phasesDefinition", InvalidFieldsMessages.EMPTYFIELD);
-      action.addFieldError("phasesDefinition", "At least one phase is required.");
+      action.addFieldError("phasesDefinition", action.getText("globalUnitManagement.validation.phasesRequired"));
     }
 
     if (action.getCurrentPhaseIndex() == null || action.getCurrentPhaseIndex().intValue() < 0) {
