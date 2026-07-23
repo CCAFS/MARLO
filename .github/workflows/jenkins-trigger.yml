@@ -3,7 +3,7 @@ name: Trigger Jenkins Job
 on:
   push:
     branches:
-      - dev # This will trigger the workflow on any branch that receives a push
+      - aiccra-dev # This will trigger the workflow on any branch that receives a push
   workflow_dispatch: # This allows the workflow to be manually triggered if needed
 
 jobs:
