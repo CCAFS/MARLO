@@ -2,8 +2,8 @@
 [#assign title = "Global Unit Management" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723b" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260723b" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "globalUnitManagement" /]
 
@@ -86,8 +86,15 @@
 [@globalUnitMacro element={} index=-1 isTemplate=true /]
 
 [#macro globalUnitMacro element index isTemplate=false]
-  <div id="globalUnit-${isTemplate?string('template',index)}" class="globalUnit borderBox" style="display:${isTemplate?string('none','block')}">
-    <div class="remove-element removeElement sm" title="Remove"></div>
+  [#assign isCurrentGlobalUnit = !isTemplate && element.id?? && action.currentCrp?? && action.currentCrp.id?? && element.id == action.currentCrp.id /]
+  <div id="globalUnit-${isTemplate?string('template',index)}" class="globalUnit borderBox[#if isCurrentGlobalUnit] current-global-unit[/#if]"
+    data-current-global-unit="${isCurrentGlobalUnit?string('true','false')}"
+    style="display:${isTemplate?string('none','block')}">
+    [#if !isCurrentGlobalUnit]
+      <div class="remove-element removeElement sm" title="Remove"></div>
+    [#else]
+      <span class="label label-info current-global-unit-badge" title="This is the Global Unit of the current session">Current</span>
+    [/#if]
 
     <div class="blockTitle closed">
       <strong>Global Unit ${index + 1}: </strong>
@@ -153,20 +160,7 @@
       </div>
 
       <div class="row">
-        <div class="col-md-6 form-group">
-          <label>Type</label>
-          <select class="form-control" name="globalUnits[${index}].globalUnitType.id">
-            <option value="">Select type</option>
-            [#if globalUnitTypes?has_content]
-              [#list globalUnitTypes as type]
-                <option value="${(type.id)!}" [#if element.globalUnitType?? && element.globalUnitType.id?? && element.globalUnitType.id == type.id]selected[/#if]>
-                  ${(type.name)!}
-                </option>
-              [/#list]
-            [/#if]
-          </select>
-        </div>
-        <div class="col-md-6 form-group">
+        <div class="col-md-12 form-group">
           <label>Institution</label>
           <select class="form-control institution-select" name="globalUnits[${index}].institution.id">
             <option value="">None</option>

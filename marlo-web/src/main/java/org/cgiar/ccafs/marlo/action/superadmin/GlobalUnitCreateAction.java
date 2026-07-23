@@ -60,6 +60,7 @@ public class GlobalUnitCreateAction extends BaseAction {
   private static final String GLOBAL_PROPERTIES_SOURCE = "marlo-web/src/main/resources/global.properties";
   private static final String CUSTOM_PROPERTIES_FOLDER = "marlo-web/src/main/resources/custom";
   private static final boolean ENABLE_CUSTOM_PROPERTIES_FILE_CREATION = false;
+  private static final long PLATFORM_GLOBAL_UNIT_TYPE_ID = 3L;
 
   private final GlobalUnitManager globalUnitManager;
   private final GlobalUnitTypeManager globalUnitTypeManager;
@@ -541,6 +542,12 @@ public class GlobalUnitCreateAction extends BaseAction {
     final Set<Long> keepIds = unitsToSave.stream().map(GlobalUnit::getId).filter(Objects::nonNull)
       .collect(Collectors.toSet());
 
+    Long currentGlobalUnitId = this.resolveCurrentGlobalUnitId();
+    if (currentGlobalUnitId != null) {
+      // Never soft-delete the Global Unit of the active session.
+      keepIds.add(currentGlobalUnitId);
+    }
+
     final List<GlobalUnit> existingGlobalUnits = globalUnitManager.findAll().stream()
       .filter(item -> item != null && item.getId() != null && item.isActive()).collect(Collectors.toList());
 
@@ -561,6 +568,17 @@ public class GlobalUnitCreateAction extends BaseAction {
 
     this.addActionMessage("message:" + this.getText("saving.saved"));
     return SUCCESS;
+  }
+
+  private Long resolveCurrentGlobalUnitId() {
+    GlobalUnit current = this.getCurrentCrp();
+    if (current == null) {
+      current = this.getCurrentGlobalUnit();
+    }
+    if (current == null || current.getId() == null) {
+      return null;
+    }
+    return current.getId();
   }
 
   private void saveManagementItem(GlobalUnit item) {
@@ -606,15 +624,10 @@ public class GlobalUnitCreateAction extends BaseAction {
   }
 
   private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym) {
-    long typeId = this.resolveTypeId(item);
-    if (typeId <= 0L) {
-      return;
-    }
-
     GlobalUnitCreationManager.CreateRequest request = new GlobalUnitCreationManager.CreateRequest();
     request.setName(itemName);
     request.setAcronym(itemAcronym);
-    request.setGlobalUnitTypeId(typeId);
+    request.setGlobalUnitTypeId(PLATFORM_GLOBAL_UNIT_TYPE_ID);
     request.setInstitutionId(this.resolveInstitutionId(item));
     request.setMarlo(item.isMarlo());
     request.setLogin(item.isLogin());
@@ -682,18 +695,6 @@ public class GlobalUnitCreateAction extends BaseAction {
       return this.getActualPhase().getYear();
     }
     return Calendar.getInstance().get(Calendar.YEAR);
-  }
-
-  private long resolveTypeId(GlobalUnit item) {
-    if (item != null && item.getGlobalUnitType() != null && item.getGlobalUnitType().getId() != null) {
-      return item.getGlobalUnitType().getId().longValue();
-    }
-
-    if (globalUnitTypes != null && !globalUnitTypes.isEmpty() && globalUnitTypes.get(0).getId() != null) {
-      return globalUnitTypes.get(0).getId().longValue();
-    }
-
-    return 0L;
   }
 
   private Long resolveInstitutionId(GlobalUnit item) {

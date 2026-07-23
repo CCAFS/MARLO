@@ -36,6 +36,11 @@ function attachAddGlobalUnitEvent() {
 function attachRemoveElementEvent() {
   $(document).on("click", ".remove-element", function() {
     const $item = $(this).closest(".globalUnit");
+    if ($item.attr("data-current-global-unit") === "true") {
+      notificationError("The current session Global Unit cannot be deleted.");
+      return;
+    }
+
     const unitLabel = ($item.find(".blockTitle").text() || "").trim();
 
     // Store the item to be removed so we can access it in the modal button handler
@@ -54,6 +59,11 @@ function attachRemoveElementEvent() {
     const $item = $modal.data("itemToRemove");
 
     if ($item?.length) {
+      if ($item.attr("data-current-global-unit") === "true") {
+        $modal.modal("hide");
+        notificationError("The current session Global Unit cannot be deleted.");
+        return;
+      }
       $modal.modal("hide");
       $item.hide("slow", function() {
         $item.remove();
