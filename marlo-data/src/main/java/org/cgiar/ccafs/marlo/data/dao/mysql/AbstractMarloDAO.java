@@ -526,6 +526,10 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity) {
+    // Ensure AuditLogContext exists before merging (required by the Hibernate audit listeners on flush).
+    // The plain update(entity) is used by paths such as UserManager.saveLastLogin, whose request may not have
+    // gone through MARLOCustomPersistFilter (e.g. the login flow), so the context would otherwise be missing.
+    ensureAuditLogContext();
     entity = (T) sessionFactory.getCurrentSession().merge(entity);
     return entity;
   }
