@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
@@ -84,6 +86,7 @@ public class PhaseManagerImpl implements PhaseManager {
   }
 
   @Override
+  @Transactional
   public Phase savePhase(Phase phase) {
 
     return phaseDAO.save(phase);

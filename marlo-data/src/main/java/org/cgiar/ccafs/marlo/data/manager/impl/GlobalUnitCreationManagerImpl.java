@@ -50,9 +50,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
 public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager {
+
+  private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreationManagerImpl.class);
 
   private static final long PREFERRED_SUPER_ADMIN_USER_ID = 1082L;
   private static final List<String> REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS =
@@ -70,6 +76,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
   private final LiaisonInstitutionManager liaisonInstitutionManager;
   private final ParameterManager parameterManager;
   private final CustomParameterManager customParameterManager;
+  private final SessionFactory sessionFactory;
 
   @Inject
   public GlobalUnitCreationManagerImpl(GlobalUnitManager globalUnitManager, GlobalUnitTypeManager globalUnitTypeManager,
@@ -77,7 +84,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     UserManager userManager, RoleManager roleManager, UserRoleManager userRoleManager,
     CrpLocElementTypeManager crpLocElementTypeManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ParameterManager parameterManager,
-    CustomParameterManager customParameterManager) {
+    CustomParameterManager customParameterManager, SessionFactory sessionFactory) {
     this.globalUnitManager = globalUnitManager;
     this.globalUnitTypeManager = globalUnitTypeManager;
     this.institutionManager = institutionManager;
@@ -90,9 +97,11 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     this.liaisonInstitutionManager = liaisonInstitutionManager;
     this.parameterManager = parameterManager;
     this.customParameterManager = customParameterManager;
+    this.sessionFactory = sessionFactory;
   }
 
   @Override
+  @Transactional
   public GlobalUnit createGlobalUnit(CreateRequest request) {
     this.validateRequest(request);
 
@@ -105,12 +114,21 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     List<Phase> createdPhases = this.createPhases(globalUnit, request.getPhasesInput());
 
     User superAdminUser = this.resolveConfiguredSuperAdminUser(request.getSuperAdminUserId());
+    if (superAdminUser == null || superAdminUser.getId() == null) {
+      LOG.warn("No super admin user could be resolved while creating Global Unit '{}'. "
+        + "The new Global Unit will be created without super admin access assignment.", globalUnit.getAcronym());
+    }
     if (templateGlobalUnit != null && templateGlobalUnit.getId() != null) {
       long templateGlobalUnitId = templateGlobalUnit.getId().longValue();
       this.cloneRoles(globalUnit, templateGlobalUnitId);
+      // Flush pending session inserts (global unit + cloned roles) so the following native SQL, which joins on the
+      // freshly created target roles, sees them and does not violate FKs or clone zero permissions.
+      this.sessionFactory.getCurrentSession().flush();
       roleManager.cloneRolePermissionsByAcronym(templateGlobalUnitId, globalUnit.getId());
       this.cloneLocTypes(globalUnit, templateGlobalUnitId);
     } else {
+      // Flush pending session inserts (global unit) so the native role/permission SQL can reference it.
+      this.sessionFactory.getCurrentSession().flush();
       roleManager.ensureSuperAdminRoleAndPermissions(globalUnit.getId(), 45L);
     }
     this.createSuperAdminAccess(globalUnit, superAdminUser);
