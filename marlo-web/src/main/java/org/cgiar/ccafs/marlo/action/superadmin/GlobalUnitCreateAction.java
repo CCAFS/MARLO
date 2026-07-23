@@ -24,6 +24,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.validation.superadmin.GlobalUnitCreateValidator;
@@ -238,7 +239,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       request.setCustomFileName(this.resolveCustomFileName(acronym));
       request.setLiaisonName(liaisonName);
       request.setLiaisonAcronym(liaisonAcronym);
-      request.setSuperAdminUserId(0L);
+      request.setSuperAdminUserId(this.resolveCreatorUserId());
 
       GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
 
@@ -623,7 +624,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     request.setCustomFileName(this.resolveCustomFileName(itemAcronym));
     request.setLiaisonName("");
     request.setLiaisonAcronym("");
-    request.setSuperAdminUserId(0L);
+    request.setSuperAdminUserId(this.resolveCreatorUserId());
 
     GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
     this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
@@ -700,6 +701,14 @@ public class GlobalUnitCreateAction extends BaseAction {
       return item.getInstitution().getId();
     }
     return null;
+  }
+
+  private long resolveCreatorUserId() {
+    User currentUser = this.getCurrentUser();
+    if (currentUser != null && currentUser.getId() != null) {
+      return currentUser.getId().longValue();
+    }
+    return 0L;
   }
 
   private long resolveTemplateGlobalUnitId() {

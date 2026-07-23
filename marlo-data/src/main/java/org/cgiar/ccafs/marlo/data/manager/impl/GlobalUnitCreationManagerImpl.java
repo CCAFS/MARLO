@@ -43,7 +43,13 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -60,9 +66,54 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreationManagerImpl.class);
 
-  private static final long PREFERRED_SUPER_ADMIN_USER_ID = 1082L;
   private static final List<String> REQUIRED_SUPER_ADMIN_FALLBACK_PERMISSIONS =
     Arrays.asList("*", "superadmin:canEdit");
+
+  /** Parameter format used for boolean-like specificities (true/false). */
+  private static final int PARAMETER_FORMAT_BOOLEAN = 1;
+  /** Parameter category used for specificities. */
+  private static final int PARAMETER_CATEGORY_SPECIFICITY = 2;
+
+  /**
+   * Keys that must never be copied literally from the template: they are computed for the new GU,
+   * forced to a safe startup value, or remapped through cloned roles.
+   */
+  private static final Set<String> NEVER_INHERIT_PARAMETER_KEYS =
+    Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+      APConstants.CURRENT_PHASE_PARAM,
+      APConstants.CRP_CUSTOM_FILE,
+      APConstants.CRP_CLOSED,
+      APConstants.CRP_REFRESH,
+      APConstants.CRP_ADMIN_ROLE,
+      APConstants.CRP_CL_ROLE,
+      APConstants.CRP_FPL_ROLE,
+      APConstants.CRP_FPM_ROLE,
+      APConstants.CRP_PC_ROLE,
+      APConstants.CRP_CP_ROLE,
+      APConstants.CRP_PL_ROLE,
+      APConstants.CRP_PMU_ROLE,
+      APConstants.CRP_RPL_ROLE,
+      APConstants.CRP_RPM_ROLE,
+      APConstants.CRP_SL_ROLE,
+      APConstants.CRP_CD_ROLE,
+      APConstants.CRP_CU,
+      APConstants.CRP_AICCRA_AF_START_PHASE,
+      APConstants.CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION)));
+
+  private static final Set<String> ROLE_PARAMETER_KEYS =
+    Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+      APConstants.CRP_ADMIN_ROLE,
+      APConstants.CRP_CL_ROLE,
+      APConstants.CRP_FPL_ROLE,
+      APConstants.CRP_FPM_ROLE,
+      APConstants.CRP_PC_ROLE,
+      APConstants.CRP_CP_ROLE,
+      APConstants.CRP_PL_ROLE,
+      APConstants.CRP_PMU_ROLE,
+      APConstants.CRP_RPL_ROLE,
+      APConstants.CRP_RPM_ROLE,
+      APConstants.CRP_SL_ROLE,
+      APConstants.CRP_CD_ROLE)));
 
   private final GlobalUnitManager globalUnitManager;
   private final GlobalUnitTypeManager globalUnitTypeManager;
@@ -133,8 +184,10 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     }
     this.createSuperAdminAccess(globalUnit, superAdminUser);
     this.assignSuperAdminRole(globalUnit, superAdminUser);
-    this.createLiaisonInstitution(globalUnit, request.getLiaisonName(), request.getLiaisonAcronym());
-    this.saveCriticalParameters(globalUnit, createdPhases, request.getCurrentPhaseIndex(), request.getCustomFileName());
+    LiaisonInstitution pmuLiaisonInstitution =
+      this.createLiaisonInstitution(globalUnit, request.getLiaisonName(), request.getLiaisonAcronym());
+    this.initializeCustomParameters(globalUnit, templateGlobalUnit, createdPhases, request.getCurrentPhaseIndex(),
+      request.getCustomFileName(), pmuLiaisonInstitution);
 
     return globalUnit;
   }
@@ -145,21 +198,28 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     globalUnit.setAcronym(StringUtils.upperCase(StringUtils.trim(request.getAcronym())));
     globalUnit.setGlobalUnitType(globalUnitType);
     globalUnit.setInstitution(institution);
+    // Required for the GU to appear and be selectable on the login page (marlo + login + active).
+    globalUnit.setActive(true);
     globalUnit.setMarlo(request.isMarlo());
     globalUnit.setLogin(request.isLogin());
+    if (!globalUnit.isMarlo() || !globalUnit.isLogin()) {
+      LOG.warn("Global Unit '{}' created with marlo={} login={}. It will not appear as selectable on login "
+        + "until both flags are true.", globalUnit.getAcronym(), globalUnit.isMarlo(), globalUnit.isLogin());
+    }
     return globalUnitManager.saveGlobalUnit(globalUnit);
   }
 
-  private void createLiaisonInstitution(GlobalUnit globalUnit, String liaisonName, String liaisonAcronym) {
-    if (StringUtils.isBlank(liaisonName) && StringUtils.isBlank(liaisonAcronym)) {
-      return;
-    }
-
+  /**
+   * Creates the PMU liaison institution required by Admin Management ({@code crp_cu}).
+   * Always creates one: Management and other admin screens parse {@code crp_cu} as a Long without null checks.
+   */
+  private LiaisonInstitution createLiaisonInstitution(GlobalUnit globalUnit, String liaisonName,
+    String liaisonAcronym) {
     LiaisonInstitution liaisonInstitution = new LiaisonInstitution();
     liaisonInstitution.setCrp(globalUnit);
     liaisonInstitution.setName(StringUtils.defaultIfBlank(StringUtils.trim(liaisonName), "PMU"));
     liaisonInstitution.setAcronym(StringUtils.defaultIfBlank(StringUtils.trim(liaisonAcronym), "PMU"));
-    liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+    return liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
   }
 
   private void assignSuperAdminRole(GlobalUnit globalUnit, User superAdminUser) {
@@ -207,32 +267,27 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     crpUserManager.saveCrpUser(crpUser);
   }
 
+  /**
+   * Resolves the user that receives initial {@code crp_users} access and the SuperAdmin role.
+   * Priority: creator passed in the request (logged-in user) → last-resort username heuristic.
+   */
   private User resolveConfiguredSuperAdminUser(long superAdminUserId) {
-    User superAdminUser = null;
-
-    superAdminUser = userManager.getUser(PREFERRED_SUPER_ADMIN_USER_ID);
-
-    if (superAdminUser == null || superAdminUser.getId() == null) {
-      superAdminUser = null;
+    if (superAdminUserId > 0L) {
+      User creatorUser = userManager.getUser(superAdminUserId);
+      if (creatorUser != null && creatorUser.getId() != null) {
+        return creatorUser;
+      }
+      LOG.warn("Creator user id {} was provided but could not be loaded.", superAdminUserId);
     }
 
-    if ((superAdminUser == null || superAdminUser.getId() == null) && superAdminUserId > 0L) {
-      superAdminUser = userManager.getUser(superAdminUserId);
+    User fallbackUser = userManager.getActiveSuperAdminUserByUsernameOccurrence();
+    if (fallbackUser != null && fallbackUser.getId() != null) {
+      LOG.warn("No creator user id was provided; falling back to username heuristic user id {}.",
+        fallbackUser.getId());
+      return fallbackUser;
     }
 
-    if (superAdminUser != null && superAdminUser.getId() != null) {
-      return superAdminUser;
-    }
-
-    if (superAdminUser == null || superAdminUser.getId() == null) {
-      superAdminUser = userManager.getActiveSuperAdminUserByUsernameOccurrence();
-    }
-
-    if (superAdminUser == null || superAdminUser.getId() == null) {
-      return null;
-    }
-
-    return superAdminUser;
+    return null;
   }
 
   private List<Phase> createPhases(GlobalUnit globalUnit, List<PhaseInput> phasesInput) {
@@ -366,16 +421,188 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       && parameterKey.equals(parameter.getKey()) && globalUnitType.getId().equals(parameter.getGlobalUnitType().getId()));
   }
 
-  private void saveCriticalParameters(GlobalUnit globalUnit, List<Phase> createdPhases, int currentPhaseIndex,
-    String customFileName) {
-    if (currentPhaseIndex >= 0 && currentPhaseIndex < createdPhases.size()) {
-      Phase currentPhase = createdPhases.get(currentPhaseIndex);
-      this.saveCustomParameterValue(globalUnit, APConstants.CURRENT_PHASE_PARAM, String.valueOf(currentPhase.getId()));
+  private void initializeCustomParameters(GlobalUnit globalUnit, GlobalUnit templateGlobalUnit,
+    List<Phase> createdPhases, int currentPhaseIndex, String customFileName,
+    LiaisonInstitution pmuLiaisonInstitution) {
+    if (globalUnit == null || globalUnit.getId() == null || globalUnit.getGlobalUnitType() == null
+      || globalUnit.getGlobalUnitType().getId() == null) {
+      return;
     }
 
-    if (StringUtils.isNotBlank(customFileName)) {
-      this.saveCustomParameterValue(globalUnit, APConstants.CRP_CUSTOM_FILE, StringUtils.trim(customFileName));
+    List<Parameter> typeParameters = this.getParametersForGlobalUnitType(globalUnit.getGlobalUnitType().getId());
+    if (typeParameters.isEmpty()) {
+      LOG.warn("No parameters found for Global Unit type {} while initializing '{}'.",
+        globalUnit.getGlobalUnitType().getId(), globalUnit.getAcronym());
+      return;
     }
+
+    Map<String, String> templateValues = this.buildTemplateCustomParameterMap(templateGlobalUnit);
+    Map<String, Long> newRolesByAcronym = this.buildNewRolesByAcronym(globalUnit.getId());
+
+    String computedCurrentPhase = null;
+    if (currentPhaseIndex >= 0 && createdPhases != null && currentPhaseIndex < createdPhases.size()
+      && createdPhases.get(currentPhaseIndex) != null && createdPhases.get(currentPhaseIndex).getId() != null) {
+      computedCurrentPhase = String.valueOf(createdPhases.get(currentPhaseIndex).getId());
+    }
+    String computedCustomFile = StringUtils.trimToNull(customFileName);
+    String computedCrpCu = null;
+    if (pmuLiaisonInstitution != null && pmuLiaisonInstitution.getId() != null) {
+      computedCrpCu = String.valueOf(pmuLiaisonInstitution.getId());
+    }
+
+    for (Parameter parameter : typeParameters) {
+      if (parameter == null || parameter.getId() == null || StringUtils.isBlank(parameter.getKey())) {
+        continue;
+      }
+
+      String value = this.resolveCustomParameterValue(parameter, templateValues, newRolesByAcronym,
+        computedCurrentPhase, computedCustomFile, computedCrpCu);
+      if (value == null) {
+        continue;
+      }
+
+      this.saveCustomParameterValue(globalUnit, parameter, value);
+    }
+  }
+
+  private String resolveCustomParameterValue(Parameter parameter, Map<String, String> templateValues,
+    Map<String, Long> newRolesByAcronym, String computedCurrentPhase, String computedCustomFile,
+    String computedCrpCu) {
+    String key = parameter.getKey();
+
+    if (APConstants.CURRENT_PHASE_PARAM.equals(key)) {
+      return computedCurrentPhase;
+    }
+    if (APConstants.CRP_CUSTOM_FILE.equals(key)) {
+      return computedCustomFile;
+    }
+    if (APConstants.CRP_CU.equals(key)) {
+      return computedCrpCu;
+    }
+    // Timeline zoom accepts only 1..8; migration default_value '423' is invalid. New GUs start at 4.
+    if (APConstants.CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION.equals(key)) {
+      return "4";
+    }
+    // New GU must not start closed or force a session refresh cycle from the template.
+    if (APConstants.CRP_CLOSED.equals(key) || APConstants.CRP_REFRESH.equals(key)) {
+      return "false";
+    }
+    if (ROLE_PARAMETER_KEYS.contains(key)) {
+      String remappedRoleId = this.remapRoleParameterValue(key, templateValues.get(key), newRolesByAcronym);
+      if (remappedRoleId != null) {
+        return remappedRoleId;
+      }
+      return StringUtils.trimToNull(parameter.getDefaultValue());
+    }
+
+    if (this.isSafeToInherit(parameter) && templateValues.containsKey(key)) {
+      return templateValues.get(key);
+    }
+
+    return StringUtils.trimToNull(parameter.getDefaultValue());
+  }
+
+  private boolean isSafeToInherit(Parameter parameter) {
+    if (parameter == null || StringUtils.isBlank(parameter.getKey())) {
+      return false;
+    }
+    if (NEVER_INHERIT_PARAMETER_KEYS.contains(parameter.getKey())) {
+      return false;
+    }
+    if (parameter.getFormat() != null && parameter.getFormat().intValue() == PARAMETER_FORMAT_BOOLEAN) {
+      return true;
+    }
+    if (parameter.getCategory() != null && parameter.getCategory().intValue() == PARAMETER_CATEGORY_SPECIFICITY) {
+      return true;
+    }
+    String key = parameter.getKey().toLowerCase(Locale.ROOT);
+    return key.endsWith("_active") || key.endsWith("_module");
+  }
+
+  private String remapRoleParameterValue(String parameterKey, String templateRoleIdValue,
+    Map<String, Long> newRolesByAcronym) {
+    if (StringUtils.isBlank(templateRoleIdValue) || newRolesByAcronym == null || newRolesByAcronym.isEmpty()) {
+      return null;
+    }
+
+    long templateRoleId;
+    try {
+      templateRoleId = Long.parseLong(StringUtils.trim(templateRoleIdValue));
+    } catch (NumberFormatException e) {
+      LOG.warn("Role parameter '{}' has non-numeric template value '{}'; skipping remap.", parameterKey,
+        templateRoleIdValue);
+      return null;
+    }
+
+    Role templateRole = roleManager.getRoleById(templateRoleId);
+    if (templateRole == null || StringUtils.isBlank(templateRole.getAcronym())) {
+      LOG.warn("Could not resolve template role id {} for parameter '{}'.", templateRoleId, parameterKey);
+      return null;
+    }
+
+    Long newRoleId = newRolesByAcronym.get(templateRole.getAcronym().toLowerCase(Locale.ROOT));
+    if (newRoleId == null) {
+      LOG.warn("No cloned role with acronym '{}' found for parameter '{}' on the new Global Unit.",
+        templateRole.getAcronym(), parameterKey);
+      return null;
+    }
+    return String.valueOf(newRoleId);
+  }
+
+  private Map<String, String> buildTemplateCustomParameterMap(GlobalUnit templateGlobalUnit) {
+    Map<String, String> values = new HashMap<>();
+    if (templateGlobalUnit == null || templateGlobalUnit.getId() == null) {
+      return values;
+    }
+
+    List<CustomParameter> templateParameters =
+      customParameterManager.getAllCustomParametersByGlobalUnitId(templateGlobalUnit.getId());
+    if (templateParameters == null) {
+      return values;
+    }
+
+    for (CustomParameter customParameter : templateParameters) {
+      if (customParameter == null || !customParameter.isActive() || customParameter.getParameter() == null
+        || StringUtils.isBlank(customParameter.getParameter().getKey()) || customParameter.getValue() == null) {
+        continue;
+      }
+      values.put(customParameter.getParameter().getKey(), customParameter.getValue());
+    }
+    return values;
+  }
+
+  private Map<String, Long> buildNewRolesByAcronym(Long globalUnitId) {
+    Map<String, Long> rolesByAcronym = new HashMap<>();
+    if (globalUnitId == null) {
+      return rolesByAcronym;
+    }
+
+    List<Role> roles = roleManager.findAll();
+    if (roles == null) {
+      return rolesByAcronym;
+    }
+
+    for (Role role : roles) {
+      if (role == null || role.getId() == null || role.getCrp() == null || role.getCrp().getId() == null
+        || !globalUnitId.equals(role.getCrp().getId()) || StringUtils.isBlank(role.getAcronym())) {
+        continue;
+      }
+      rolesByAcronym.put(role.getAcronym().toLowerCase(Locale.ROOT), role.getId());
+    }
+    return rolesByAcronym;
+  }
+
+  private List<Parameter> getParametersForGlobalUnitType(Long globalUnitTypeId) {
+    List<Parameter> parameters = parameterManager.findAll();
+    if (parameters == null || parameters.isEmpty() || globalUnitTypeId == null) {
+      return Collections.emptyList();
+    }
+
+    return parameters.stream()
+      .filter(parameter -> parameter != null && parameter.getGlobalUnitType() != null
+        && parameter.getGlobalUnitType().getId() != null
+        && globalUnitTypeId.equals(parameter.getGlobalUnitType().getId()))
+      .collect(Collectors.toList());
   }
 
   private void validateRequest(CreateRequest request) {
@@ -393,18 +620,9 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     }
   }
 
-  private void saveCustomParameterValue(GlobalUnit globalUnit, String parameterKey, String value) {
-    if (globalUnit == null || globalUnit.getGlobalUnitType() == null || StringUtils.isBlank(parameterKey)) {
-      return;
-    }
-
-    Parameter parameter = parameterManager.findAll().stream()
-      .filter(p -> p != null && p.getKey() != null && p.getGlobalUnitType() != null && p.getGlobalUnitType().getId() != null
-        && parameterKey.equals(p.getKey())
-        && p.getGlobalUnitType().getId().equals(globalUnit.getGlobalUnitType().getId()))
-      .findFirst().orElse(null);
-
-    if (parameter == null || parameter.getId() == null) {
+  private void saveCustomParameterValue(GlobalUnit globalUnit, Parameter parameter, String value) {
+    if (globalUnit == null || globalUnit.getId() == null || parameter == null || parameter.getId() == null
+      || value == null) {
       return;
     }
 
