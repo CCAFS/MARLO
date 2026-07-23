@@ -1,9 +1,9 @@
-name: Trigger Jenkins Job Java 17 New Server
+name: Trigger Jenkins Job Java 17 New Server (PROD)
 
 on:
   push:
     branches:
-      - "AICCRA-V2"
+      - "main"
   workflow_dispatch:
 
 jobs:
