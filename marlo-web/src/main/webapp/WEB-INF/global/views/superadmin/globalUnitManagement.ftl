@@ -2,7 +2,7 @@
 [#assign title = "Global Unit Management" /]
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723b" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723c" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260723b" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "globalUnitManagement" /]
@@ -114,12 +114,12 @@
 
       <div class="row">
         <div class="col-md-6 form-group">
-          <label>Name</label>
-          <input class="form-control" type="text" name="globalUnits[${index}].name" value="${(element.name)!}" />
+          <label>Name <span class="red requiredTag">*</span></label>
+          <input class="form-control required" type="text" name="globalUnits[${index}].name" value="${(element.name)!}" />
         </div>
         <div class="col-md-6 form-group">
-          <label>Acronym</label>
-          <input class="form-control acronym-input" type="text" name="globalUnits[${index}].acronym"
+          <label>Acronym <span class="red requiredTag">*</span></label>
+          <input class="form-control acronym-input required" type="text" name="globalUnits[${index}].acronym"
             value="${(element.acronym)!}" />
         </div>
       </div>
@@ -161,9 +161,9 @@
 
       <div class="row">
         <div class="col-md-12 form-group">
-          <label>Institution</label>
-          <select class="form-control institution-select" name="globalUnits[${index}].institution.id">
-            <option value="">None</option>
+          <label>Institution <span class="red requiredTag">*</span></label>
+          <select class="form-control institution-select required" name="globalUnits[${index}].institution.id">
+            <option value="">Select institution</option>
             [#if institutions?has_content]
               [#list institutions as institution]
                 <option value="${(institution.id)!}" [#if element.institution?? && element.institution.id?? && element.institution.id == institution.id]selected[/#if]>
@@ -172,21 +172,6 @@
               [/#list]
             [/#if]
           </select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 form-group">
-          <label>
-            <input type="checkbox" name="globalUnits[${index}].marlo" value="true" [#if isTemplate || (element.marlo)!false]checked[/#if] />
-            Is MARLO
-          </label>
-        </div>
-        <div class="col-md-6 form-group">
-          <label>
-            <input type="checkbox" name="globalUnits[${index}].login" value="true" [#if isTemplate || (element.login)!false]checked[/#if] />
-            Login enabled
-          </label>
         </div>
       </div>
 

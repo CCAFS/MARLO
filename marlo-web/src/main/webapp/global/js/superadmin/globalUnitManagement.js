@@ -3,7 +3,9 @@ $(document).ready(function() {
   attachAddGlobalUnitEvent();
   attachRemoveElementEvent();
   attachLogoUploadEvents();
+  attachRequiredFieldsValidation();
   initInstitutionSelect2($(".globalUnits-list"));
+  highlightServerValidationErrors();
 });
 
 function attachAccordionEvents() {
@@ -238,6 +240,98 @@ function updateIndexes() {
       $title.text("Global Unit " + (i + 1) + ": ");
     }
   });
+}
+
+function attachRequiredFieldsValidation() {
+  $(document).on("input change select2:select select2:clear select2:unselect", ".globalUnit .required", function() {
+    const $field = $(this);
+    setRequiredFieldState($field, $.trim($field.val() || "").length > 0);
+  });
+
+  $(".button-save").on("click", function(event) {
+    const $saveButton = $(this);
+    const $invalidFields = validateRequiredGlobalUnitFields();
+
+    if (!$invalidFields.length) {
+      $(".globalUnits-list .logo-file-input").prop("disabled", true);
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (typeof closeLoadPage === "function") {
+      closeLoadPage();
+    }
+    if (typeof turnSavingStateOff === "function") {
+      turnSavingStateOff($saveButton);
+    }
+    openGlobalUnitWithInvalidField($invalidFields.first());
+    notificationError("Please complete Name, Acronym and Institution for every Global Unit.");
+  });
+}
+
+function validateRequiredGlobalUnitFields() {
+  const $invalidFields = $();
+
+  $(".globalUnits-list .globalUnit").each(function() {
+    $(this).find(".required").each(function() {
+      const $field = $(this);
+      const isValid = $.trim($field.val() || "").length > 0;
+      setRequiredFieldState($field, isValid);
+      if (!isValid) {
+        $invalidFields.push(this);
+      }
+    });
+  });
+
+  return $invalidFields;
+}
+
+function setRequiredFieldState($field, isValid) {
+  $field.toggleClass("fieldError", !isValid);
+  $field.closest(".form-group").toggleClass("has-error", !isValid);
+
+  if ($field.hasClass("institution-select")) {
+    const $select2Container = $field.next(".select2-container");
+    $select2Container.toggleClass("fieldError", !isValid);
+    $select2Container.find(".select2-selection").toggleClass("missingSelect2", !isValid);
+  }
+}
+
+function openGlobalUnitWithInvalidField($field) {
+  const $globalUnit = $field.closest(".globalUnit");
+  const $title = $globalUnit.find(".blockTitle");
+  if ($title.hasClass("closed")) {
+    $title.trigger("click");
+  }
+  $field.trigger("focus");
+}
+
+function highlightServerValidationErrors() {
+  const $serverErrors = $(".globalUnits-list .fieldError").filter(function() {
+    return $.trim($(this).text()).length > 0;
+  });
+
+  if (!$serverErrors.length) {
+    return;
+  }
+
+  let $firstInvalidField = $();
+  $serverErrors.each(function() {
+    const $field = $(this).siblings(".required").first();
+    if (!$field.length) {
+      return;
+    }
+    setRequiredFieldState($field, false);
+    if (!$firstInvalidField.length) {
+      $firstInvalidField = $field;
+    }
+  });
+
+  if ($firstInvalidField.length) {
+    openGlobalUnitWithInvalidField($firstInvalidField);
+  }
+  notificationError("Please complete Name, Acronym and Institution for every Global Unit.");
 }
 
 function initInstitutionSelect2($container) {

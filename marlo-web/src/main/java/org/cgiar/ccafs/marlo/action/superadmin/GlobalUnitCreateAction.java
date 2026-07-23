@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitCreationManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitTypeManager;
@@ -246,6 +247,7 @@ public class GlobalUnitCreateAction extends BaseAction {
 
       this.copyLogoIfPresent(createdGlobalUnit);
       this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
+      this.refreshAvailableGlobalTypesSession();
       this.addActionMessage("message:Global Unit created successfully");
       return SUCCESS;
     } catch (Exception e) {
@@ -331,9 +333,13 @@ public class GlobalUnitCreateAction extends BaseAction {
 
   @Override
   public void validate() {
-    if (save && !this.isManagementSaveRequest()) {
-      validator.validate(this);
+    if (!save) {
+      return;
     }
+    if (this.isManagementSaveRequest()) {
+      this.managementMode = true;
+    }
+    validator.validate(this);
   }
 
   private void copyLogoIfPresent(GlobalUnit createdGlobalUnit) {
@@ -566,8 +572,19 @@ public class GlobalUnitCreateAction extends BaseAction {
       }
     }
 
+    this.refreshAvailableGlobalTypesSession();
     this.addActionMessage("message:" + this.getText("saving.saved"));
     return SUCCESS;
+  }
+
+  /**
+   * Clears the cached Global Unit list used by the superadmin top bar so soft-deleted or newly created
+   * units are reflected without requiring a full logout.
+   */
+  private void refreshAvailableGlobalTypesSession() {
+    if (this.getSession() != null) {
+      this.getSession().remove(APConstants.AVAILABLES_GLOBAL_TYPES);
+    }
   }
 
   private Long resolveCurrentGlobalUnitId() {
@@ -609,8 +626,6 @@ public class GlobalUnitCreateAction extends BaseAction {
 
     toSave.setName(itemName);
     toSave.setAcronym(itemAcronym);
-    toSave.setMarlo(item.isMarlo());
-    toSave.setLogin(item.isLogin());
     toSave.setActive(true);
 
     this.assignGlobalUnitType(toSave, item, isNew);
@@ -629,8 +644,8 @@ public class GlobalUnitCreateAction extends BaseAction {
     request.setAcronym(itemAcronym);
     request.setGlobalUnitTypeId(PLATFORM_GLOBAL_UNIT_TYPE_ID);
     request.setInstitutionId(this.resolveInstitutionId(item));
-    request.setMarlo(item.isMarlo());
-    request.setLogin(item.isLogin());
+    request.setMarlo(true);
+    request.setLogin(true);
     request.setTemplateGlobalUnitId(this.resolveTemplateGlobalUnitId());
     request.setPhasesInput(this.buildDefaultPhasesForManagement());
     request.setCurrentPhaseIndex(0);
