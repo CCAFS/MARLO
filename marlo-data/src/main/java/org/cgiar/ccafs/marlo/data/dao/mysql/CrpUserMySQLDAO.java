@@ -80,6 +80,17 @@ public class CrpUserMySQLDAO extends AbstractMarloDAO<CrpUser, Long> implements 
   }
 
   @Override
+  public CrpUser getCrpUserByUserIdAndCrpId(long userId, long crpId) {
+    String query = "from " + CrpUser.class.getName() + " where user_id=" + userId + " and global_unit_id=" + crpId
+      + " order by is_active desc";
+    List<CrpUser> crpUsers = super.findAll(query);
+    if (crpUsers == null || crpUsers.isEmpty()) {
+      return null;
+    }
+    return crpUsers.get(0);
+  }
+
+  @Override
   public List<CrpUser> findAll() {
     String query = "from " + CrpUser.class.getName() + " where is_active=1";
     List<CrpUser> list = super.findAll(query);

@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.util.Date;
 import java.util.List;
@@ -124,6 +125,7 @@ public interface GlobalUnitCreationManager {
     private String liaisonName;
     private String liaisonAcronym;
     private long superAdminUserId;
+    private List<Long> crpAdminUserIds;
 
     public String getAcronym() {
       return acronym;
@@ -131,6 +133,10 @@ public interface GlobalUnitCreationManager {
 
     public String getCustomFileName() {
       return customFileName;
+    }
+
+    public List<Long> getCrpAdminUserIds() {
+      return crpAdminUserIds;
     }
 
     public int getCurrentPhaseIndex() {
@@ -187,6 +193,10 @@ public interface GlobalUnitCreationManager {
 
     public void setCustomFileName(String customFileName) {
       this.customFileName = customFileName;
+    }
+
+    public void setCrpAdminUserIds(List<Long> crpAdminUserIds) {
+      this.crpAdminUserIds = crpAdminUserIds;
     }
 
     public void setGlobalUnitTypeId(long globalUnitTypeId) {
@@ -248,4 +258,38 @@ public interface GlobalUnitCreationManager {
    * @throws Exception if any step fails (full rollback occurs)
    */
   GlobalUnit createGlobalUnit(CreateRequest request);
+
+  /**
+   * Gets the current CRP-Admin assignments for a Global Unit using the canonical role resolution.
+   *
+   * @param globalUnitId target Global Unit id
+   * @return CRP-Admin assignments, or an empty list when the role has no users
+   */
+  List<UserRole> getCrpAdminTeam(long globalUnitId);
+
+  /**
+   * Atomically synchronizes the CRP-Admin team of an existing Global Unit inside a single transaction.
+   * <ul>
+   * <li>Removes CRP-Admin assignments that are no longer submitted. When a removed user keeps no other role in
+   * the Global Unit and is not SuperAdmin in any Global Unit, its {@code crp_users} access is deactivated.</li>
+   * <li>Adds the newly submitted users to the CRP-Admin role and grants (or reactivates) their {@code crp_users}
+   * access to the Global Unit.</li>
+   * </ul>
+   * If any step fails the whole synchronization for this Global Unit is rolled back.
+   *
+   * @param globalUnitId target Global Unit id
+   * @param submittedUserIds user ids that must remain assigned as CRP-Admin (must contain at least one)
+   * @throws IllegalArgumentException when the Global Unit, the role, or the submitted users are invalid
+   */
+  void syncCrpAdminTeam(long globalUnitId, List<Long> submittedUserIds);
+
+  /**
+   * Soft-deletes a Global Unit and removes all CRP-Admin {@code user_roles} for that Global Unit inside a single
+   * transaction. {@code crp_users} access is deactivated only when the user keeps no other role in the Global Unit
+   * and is not SuperAdmin in any Global Unit.
+   *
+   * @param globalUnitId target Global Unit id
+   * @throws IllegalArgumentException when the Global Unit does not exist
+   */
+  void softDeleteGlobalUnit(long globalUnitId);
 }

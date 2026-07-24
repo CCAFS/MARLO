@@ -100,6 +100,8 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   private List<UserRole> programManagmenTeam; // Used by CrpAdminManagmentAction
 
+  private List<UserRole> crpAdminTeam; // Used by GlobalUnitCreateAction
+
 
   private List<LocElementType> locationCustomElementTypes; // Used by CrpLocationsAction
 
@@ -292,6 +294,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   public List<UserRole> getProgramManagmenTeam() {
     return programManagmenTeam;
+  }
+
+  public List<UserRole> getCrpAdminTeam() {
+    return crpAdminTeam;
   }
 
   public Set<Role> getRoles() {
@@ -493,6 +499,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   public void setProgramManagmenTeam(List<UserRole> programManagmenTeam) {
     this.programManagmenTeam = programManagmenTeam;
+  }
+
+  public void setCrpAdminTeam(List<UserRole> crpAdminTeam) {
+    this.crpAdminTeam = crpAdminTeam;
   }
 
   public void setRoles(Set<Role> roles) {

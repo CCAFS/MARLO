@@ -44,7 +44,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
-  @Transactional
+	@Transactional
 	public void deleteGlobalUnit(long globalUnitId) {
 
 		this.globalUnitDAO.deleteGlobalUnit(globalUnitId);
@@ -82,6 +82,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
+	@Transactional
 	public GlobalUnit saveGlobalUnit(GlobalUnit globalUnit) {
 
 		return this.globalUnitDAO.save(globalUnit);

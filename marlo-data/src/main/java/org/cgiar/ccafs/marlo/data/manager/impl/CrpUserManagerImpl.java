@@ -80,6 +80,11 @@ public class CrpUserManagerImpl implements CrpUserManager {
   }
 
   @Override
+  public CrpUser getCrpUserByUserIdAndCrpId(long userId, long crpId) {
+    return crpUserDAO.getCrpUserByUserIdAndCrpId(userId, crpId);
+  }
+
+  @Override
   public CrpUser saveCrpUser(CrpUser crpUser) {
 
     return crpUserDAO.save(crpUser);
