@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -73,6 +74,7 @@ public class DeliverableDisseminationManagerImpl implements DeliverableDissemina
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableDissemination(long deliverableDisseminationId) {
 
     deliverableDisseminationDAO.deleteDeliverableDissemination(deliverableDisseminationId);

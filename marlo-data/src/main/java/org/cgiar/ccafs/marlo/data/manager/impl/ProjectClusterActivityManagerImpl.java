@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -84,6 +85,7 @@ public class ProjectClusterActivityManagerImpl implements ProjectClusterActivity
   }
 
   @Override
+  @Transactional
   public void deleteProjectClusterActivity(long projectClusterActivityId) {
 
     ProjectClusterActivity projectClusterActivity = this.getProjectClusterActivityById(projectClusterActivityId);

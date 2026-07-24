@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -54,6 +55,7 @@ public class ReportSynthesisSrfProgressTargetManagerImpl implements ReportSynthe
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisSrfProgressTarget(long reportSynthesisSrfProgressTargetId) {
 
     reportSynthesisSrfProgressTargetDAO.deleteReportSynthesisSrfProgressTarget(reportSynthesisSrfProgressTargetId);

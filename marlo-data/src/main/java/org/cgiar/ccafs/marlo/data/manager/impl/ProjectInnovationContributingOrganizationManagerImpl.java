@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -46,6 +47,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationContributingOrganization(long projectInnovationContributingOrganizationId) {
 
     ProjectInnovationContributingOrganization projectInnovationContributingOrganization = this
@@ -76,6 +78,7 @@ public class ProjectInnovationContributingOrganizationManagerImpl
         .deleteProjectInnovationContributingOrganization(projectInnovationContributingOrganizationId);
   }
 
+  @Transactional
   public void deleteProjectInnovationContributingOrganizationPhase(Phase next, long innovationID,
       ProjectInnovationContributingOrganization projectInnovationContributingOrganization) {
     Phase phase = phaseDAO.find(next.getId());

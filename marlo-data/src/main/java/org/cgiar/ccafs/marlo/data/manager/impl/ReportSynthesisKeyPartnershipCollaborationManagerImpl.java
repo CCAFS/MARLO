@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -56,6 +57,7 @@ public class ReportSynthesisKeyPartnershipCollaborationManagerImpl
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisKeyPartnershipCollaboration(long reportSynthesisKeyPartnershipCollaborationId) {
 
     reportSynthesisKeyPartnershipCollaborationDAO

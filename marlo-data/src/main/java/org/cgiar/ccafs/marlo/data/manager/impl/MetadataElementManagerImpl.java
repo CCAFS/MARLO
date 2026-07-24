@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -39,6 +40,7 @@ public class MetadataElementManagerImpl implements MetadataElementManager {
 	}
 
 	@Override
+  @Transactional
 	public void deleteMetadataElement(long metadataElementId) {
 
 		metadataElementDAO.deleteMetadataElement(metadataElementId);

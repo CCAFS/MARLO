@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class GlobalUnitManagerImpl implements GlobalUnitManager {
 	}
 
 	@Override
+  @Transactional
 	public void deleteGlobalUnit(long globalUnitId) {
 
 		this.globalUnitDAO.deleteGlobalUnit(globalUnitId);

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -48,6 +49,7 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
   }
 
   @Override
+  @Transactional
   public void deleteProjectHighligthType(long projectHighligthTypeId) {
     ProjectHighlightType projectHighlightType = this.getProjectHighligthTypeById(projectHighligthTypeId);
 
@@ -58,6 +60,7 @@ public class ProjectHighligthTypeManagerImpl implements ProjectHighligthTypeMana
     projectHighligthTypeDAO.deleteProjectHighligthType(projectHighligthTypeId);
   }
 
+  @Transactional
   public void deleteProjectHighligthTypePhase(Phase next, long projecID, ProjectHighlightType projectHighlightCountry) {
     Phase phase = phaseDAO.find(next.getId());
 

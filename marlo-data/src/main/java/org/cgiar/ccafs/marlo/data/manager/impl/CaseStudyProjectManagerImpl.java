@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class CaseStudyProjectManagerImpl implements CaseStudyProjectManager {
   }
 
   @Override
+  @Transactional
   public void deleteCaseStudyProject(long caseStudyProjectId) {
 
     caseStudyProjectDAO.deleteCaseStudyProject(caseStudyProjectId);

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -58,6 +59,7 @@ public class FundingSourceInstitutionManagerImpl implements FundingSourceInstitu
   }
 
   @Override
+  @Transactional
   public void deleteFundingSourceInstitution(long fundingSourceInstitutionId) {
     FundingSourceInstitution fundingSourceInstitution =
       this.getFundingSourceInstitutionById(fundingSourceInstitutionId);

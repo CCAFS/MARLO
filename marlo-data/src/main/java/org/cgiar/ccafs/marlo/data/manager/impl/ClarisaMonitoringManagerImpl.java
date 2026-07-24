@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -43,6 +44,7 @@ public class ClarisaMonitoringManagerImpl implements ClarisaMonitoringManager {
   }
 
   @Override
+  @Transactional
   public void deleteClarisaMonitoring(long clarisaMonitoringId) {
 
     clarisaMonitoringDAO.deleteClarisaMonitoring(clarisaMonitoringId);

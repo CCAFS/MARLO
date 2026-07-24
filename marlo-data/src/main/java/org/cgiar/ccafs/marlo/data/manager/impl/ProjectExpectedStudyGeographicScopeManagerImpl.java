@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -49,6 +50,7 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
   }
 
   @Override
+  @Transactional
   public void deleteProjectExpectedStudyGeographicScope(long projectExpectedStudyGeographicScopeId) {
 
     ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope =
@@ -78,6 +80,7 @@ public class ProjectExpectedStudyGeographicScopeManagerImpl implements ProjectEx
       .deleteProjectExpectedStudyGeographicScope(projectExpectedStudyGeographicScopeId);
   }
 
+  @Transactional
   public void deleteProjectExpectedStudyGeographicScopePhase(Phase next, long expectedID,
     ProjectExpectedStudyGeographicScope projectExpectedStudyGeographicScope) {
     Phase phase = phaseDAO.find(next.getId());

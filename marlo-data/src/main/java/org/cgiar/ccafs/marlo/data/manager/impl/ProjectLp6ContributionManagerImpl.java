@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
 public class ProjectLp6ContributionManagerImpl implements ProjectLp6ContributionManager {
@@ -47,6 +48,7 @@ public class ProjectLp6ContributionManagerImpl implements ProjectLp6Contribution
   }
 
   @Override
+  @Transactional
   public void deleteProjectLp6Contribution(long projectLp6ContributionId) {
     projectLp6ContributionDAO.deleteProjectLp6Contribution(projectLp6ContributionId);
   }

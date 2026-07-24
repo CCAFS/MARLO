@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -58,6 +59,7 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectImpacts(long projectImpactsId) {
 
     projectImpactsDAO.deleteProjectImpacts(projectImpactsId);

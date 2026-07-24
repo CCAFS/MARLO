@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class PowbMonitoringEvaluationLearningExerciseManagerImpl implements Powb
   }
 
   @Override
+  @Transactional
   public void deletePowbMonitoringEvaluationLearningExercise(long powbMonitoringEvaluationLearningExerciseId) {
 
     powbMonitoringEvaluationLearningExerciseDAO.deletePowbMonitoringEvaluationLearningExercise(powbMonitoringEvaluationLearningExerciseId);

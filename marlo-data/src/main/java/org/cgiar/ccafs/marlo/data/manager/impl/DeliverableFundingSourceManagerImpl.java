@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -91,6 +92,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableFundingSource(long deliverableFundingSourceId) {
 
     DeliverableFundingSource deliverableFundingSource =
@@ -121,6 +123,7 @@ public class DeliverableFundingSourceManagerImpl implements DeliverableFundingSo
 
   }
 
+  @Transactional
   public void deleteDeliverableFundingSource(Phase next, long deliverableID,
     DeliverableFundingSource deliverableFundingSource) {
     Phase phase = phaseDao.find(next.getId());

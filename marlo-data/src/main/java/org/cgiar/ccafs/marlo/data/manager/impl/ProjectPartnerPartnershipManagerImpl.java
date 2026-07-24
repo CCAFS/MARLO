@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class ProjectPartnerPartnershipManagerImpl implements ProjectPartnerPartn
   }
 
   @Override
+  @Transactional
   public void deleteProjectPartnerPartnership(long projectPartnerPartnershipId) {
 
     projectPartnerPartnershipDAO.deleteProjectPartnerPartnership(projectPartnerPartnershipId);

@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -74,6 +75,7 @@ public class DeliverableIntellectualAssetManagerImpl implements DeliverableIntel
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableIntellectualAsset(long deliverableIntellectualAssetId) {
 
     deliverableIntellectualAssetDAO.deleteDeliverableIntellectualAsset(deliverableIntellectualAssetId);

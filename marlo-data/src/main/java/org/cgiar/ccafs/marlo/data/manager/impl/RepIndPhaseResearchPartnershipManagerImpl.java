@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -49,6 +50,7 @@ public class RepIndPhaseResearchPartnershipManagerImpl implements RepIndPhaseRes
   }
 
   @Override
+  @Transactional
   public void deleteRepIndPhaseResearchPartnership(long repIndPhaseResearchPartnershipId) {
 
     repIndPhaseResearchPartnershipDAO.deleteRepIndPhaseResearchPartnership(repIndPhaseResearchPartnershipId);

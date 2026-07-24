@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -92,6 +93,7 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
 
   }
 
+  @Transactional
   public void deleteFundingSourceLocationPhase(Phase next, long fundingSourceID,
     FundingSourceLocation fundingSourceLocation) {
     Phase phase = phaseDAO.find(next.getId());
@@ -130,6 +132,7 @@ public class FundingSourceLocationsManagerImpl implements FundingSourceLocations
   }
 
   @Override
+  @Transactional
   public void deleteFundingSourceLocations(long fundingSourceLocationsId) {
 
     // fundingSourceLocationsDAO.deleteFundingSourceLocations(fundingSourceLocationsId);

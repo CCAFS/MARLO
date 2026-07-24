@@ -45,6 +45,7 @@ public class ActivityTitleManagerImpl implements ActivityTitleManager {
   }
 
   @Override
+  @Transactional
   public void deleteActivityTitle(long activityTitleId) {
 
     activityTitleDAO.deleteActivityTitle(activityTitleId);

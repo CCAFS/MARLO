@@ -134,6 +134,7 @@ public class ProjectBudgetManagerImpl implements ProjectBudgetManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectBudget(long projectBudgetId) {
 
 

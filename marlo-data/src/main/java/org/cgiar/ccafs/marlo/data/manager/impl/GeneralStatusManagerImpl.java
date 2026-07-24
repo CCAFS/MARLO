@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -50,6 +51,7 @@ public class GeneralStatusManagerImpl implements GeneralStatusManager {
   }
 
   @Override
+  @Transactional
   public void deleteGeneralStatus(long generalStatusId) {
 
     this.generalStatusDAO.deleteGeneralStatus(generalStatusId);

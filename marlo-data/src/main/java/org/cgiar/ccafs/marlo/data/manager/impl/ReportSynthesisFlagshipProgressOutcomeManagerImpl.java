@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -45,6 +46,7 @@ public class ReportSynthesisFlagshipProgressOutcomeManagerImpl
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisFlagshipProgressOutcome(long reportSynthesisFlagshipProgressOutcomeId) {
 
     reportSynthesisFlagshipProgressOutcomeDAO

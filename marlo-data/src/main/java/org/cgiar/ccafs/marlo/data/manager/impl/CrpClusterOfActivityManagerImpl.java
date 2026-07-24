@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -163,6 +164,7 @@ public class CrpClusterOfActivityManagerImpl implements CrpClusterOfActivityMana
 	}
 
 	@Override
+  @Transactional
 	public void deleteCrpClusterOfActivity(long crpClusterOfActivityId) {
 
 		crpClusterOfActivityDAO.deleteCrpClusterOfActivity(crpClusterOfActivityId);

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -48,6 +49,7 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
   }
 
 
+  @Transactional
   public void deleteProjectCrossCuttingMarkerPhase(Phase next, long policyID,
     ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker) {
     Phase phase = phaseDAO.find(next.getId());
@@ -74,6 +76,7 @@ public class ProjectPolicyCrossCuttingMarkerManagerImpl implements ProjectPolicy
 
 
   @Override
+  @Transactional
   public void deleteProjectPolicyCrossCuttingMarker(long projectPolicyCrossCuttingMarkerId) {
 
     ProjectPolicyCrossCuttingMarker projectPolicyCrossCuttingMarker =

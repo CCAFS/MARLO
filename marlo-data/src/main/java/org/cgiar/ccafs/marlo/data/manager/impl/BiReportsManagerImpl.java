@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
@@ -43,6 +44,7 @@ public class BiReportsManagerImpl implements BiReportsManager {
   }
 
   @Override
+  @Transactional
   public void deleteBiReports(long biReportsId) {
 
     biReportsDAO.deleteBiReports(biReportsId);

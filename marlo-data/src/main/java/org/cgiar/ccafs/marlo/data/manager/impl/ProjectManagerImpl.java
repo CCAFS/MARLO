@@ -63,6 +63,7 @@ public class ProjectManagerImpl implements ProjectManager {
   }
 
   @Override
+  @Transactional
   public void deleteProject(Project project) {
 
     projectDAO.deleteProject(project);

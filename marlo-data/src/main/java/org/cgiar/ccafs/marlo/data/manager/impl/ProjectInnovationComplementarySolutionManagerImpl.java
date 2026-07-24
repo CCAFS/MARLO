@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -54,6 +55,7 @@ public class ProjectInnovationComplementarySolutionManagerImpl
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationComplementarySolution(long projectInnovationComplementarySolutionId) {
     ProjectInnovationComplementarySolution projectInnovationComplementarySolution =
       this.getProjectInnovationComplementarySolutionById(projectInnovationComplementarySolutionId);
@@ -80,6 +82,7 @@ public class ProjectInnovationComplementarySolutionManagerImpl
       .deleteProjectInnovationComplementarySolution(projectInnovationComplementarySolutionId);
   }
 
+  @Transactional
   public void deleteProjectInnovationComplementarySolutionPhase(Phase next, long innovationID,
     ProjectInnovationComplementarySolution projectInnovationComplementarySolution) {
 

@@ -29,6 +29,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
@@ -54,6 +55,7 @@ public class DeliverableMetadataExternalSourcesManagerImpl implements Deliverabl
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableMetadataExternalSources(long deliverableMetadataExternalSourceId) {
     deliverableMetadataExternalSourceDAO.deleteDeliverableMetadataExternalSources(deliverableMetadataExternalSourceId);
   }

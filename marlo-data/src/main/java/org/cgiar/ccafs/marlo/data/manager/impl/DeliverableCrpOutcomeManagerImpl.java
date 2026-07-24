@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -55,6 +56,7 @@ public class DeliverableCrpOutcomeManagerImpl implements DeliverableCrpOutcomeMa
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableCrpOutcome(long deliverableCrpOutcomeId, long phaseId) {
 
     DeliverableCrpOutcome deliverableCrpOutcome = deliverableCrpOutcomeDAO.find(deliverableCrpOutcomeId);
@@ -75,6 +77,7 @@ public class DeliverableCrpOutcomeManagerImpl implements DeliverableCrpOutcomeMa
     }
   }
 
+  @Transactional
   public void deleteDeliverableCrpOutcomePhase(Phase next, long deliverableId,
     DeliverableCrpOutcome deliverableCrpOutcome) {
     Phase phase = phaseDAO.find(next.getId());

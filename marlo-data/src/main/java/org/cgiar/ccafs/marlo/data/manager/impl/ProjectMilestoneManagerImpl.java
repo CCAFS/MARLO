@@ -46,6 +46,7 @@ public class ProjectMilestoneManagerImpl implements ProjectMilestoneManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectMilestone(long projectMilestoneId) {
 
     projectMilestoneDAO.deleteProjectMilestone(projectMilestoneId);

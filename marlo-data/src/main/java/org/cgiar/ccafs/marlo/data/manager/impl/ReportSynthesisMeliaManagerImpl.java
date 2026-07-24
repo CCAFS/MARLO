@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -65,6 +66,7 @@ public class ReportSynthesisMeliaManagerImpl implements ReportSynthesisMeliaMana
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisMelia(long reportSynthesisMeliaId) {
 
     reportSynthesisMeliaDAO.deleteReportSynthesisMelia(reportSynthesisMeliaId);
