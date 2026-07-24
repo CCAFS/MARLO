@@ -62,6 +62,13 @@ public interface ActivityTitleDAO {
    */
   public List<ActivityTitle> findByCurrentYear(int year);
 
+  /**
+   * This method gets a list of activityTitle filtered by a given global unit identifier
+   * 
+   * @param globalUnitId is the global unit identifier.
+   * @return a list from ActivityTitle null if no exist records
+   */
+  public List<ActivityTitle> findByGlobalUnit(long globalUnitId);
 
   /**
    * This method saves the information of the given activityTitle

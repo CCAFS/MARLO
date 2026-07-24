@@ -82,5 +82,9 @@ public class ActivityTitleManagerImpl implements ActivityTitleManager {
     return activityTitleDAO.save(activityTitle);
   }
 
+  @Override
+  public List<ActivityTitle> findByGlobalUnit(long globalUnitId) {
+    return activityTitleDAO.findByGlobalUnit(globalUnitId);
+  }
 
 }

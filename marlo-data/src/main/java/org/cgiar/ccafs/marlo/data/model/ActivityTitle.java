@@ -35,6 +35,16 @@ public class ActivityTitle extends MarloBaseEntity implements java.io.Serializab
   private int startYear;
   @Expose
   private int endYear;
+  @Expose
+  private GlobalUnit globalUnit;
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
+  }
 
   @Override
   public boolean equals(Object obj) {
