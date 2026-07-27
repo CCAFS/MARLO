@@ -133,8 +133,10 @@
   <p class="login-disclaimer">[@s.text name="login.byContinuing"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/].</a></p>
 </div>
 
+[#-- Every Global Unit with login=true is rendered here, but a card starts hidden and is only
+     revealed by login.js for the units the current user is actually assigned to (data.crps) --]
 [#macro availableItems element]
-  <li id="crp-${element.acronym}" class="option ${element.login?string('enabled', 'disabled')}" title="" tabindex="">
+  <li id="crp-${element.acronym}" class="option hidden ${element.login?string('enabled', 'disabled')}" title="${element.name}" tabindex="">
     <img class="selection-bar-image animated bounceIn hidden" src="${baseUrl}/data/globalUnitLogo.do?acronym=${element.acronym}" alt="${element.name}"/>
     <div class="selection-bar-acronym hidden">${element.acronym}</div>
   </li>

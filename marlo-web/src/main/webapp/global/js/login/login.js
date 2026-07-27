@@ -6,6 +6,10 @@ var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
 var incorrectPasswordCount = 0;
+// Number of crps/centers/platforms actually assigned to the user (data.crps.length from crpByEmail.do),
+// NOT the count of <li> elements in the DOM (which always renders every Global Unit with login=true,
+// regardless of the current user's access)
+var availableCrpsCount = 0;
 
 function init() {
   initJreject();
@@ -132,7 +136,7 @@ function init() {
 
   // Go back to the previous step when click on the "Go back" link
   $('.login-back-container p.loginBack').on('click', function() {
-    if(currentStep == "password" && crpSession == "" && $(".crps-select .selection-bar-options ul li").length > 1) {
+    if(currentStep == "password" && crpSession == "" && availableCrpsCount > 1) {
       showProjectStep();
     } else {
       showEmailStep();
@@ -146,6 +150,7 @@ function showEmailStep() {
   // refresh variables
   currentStep = "email";
   hasAccess = false;
+  availableCrpsCount = 0;
 
   cleanWrongData();
 
@@ -168,6 +173,11 @@ function showEmailStep() {
   // Hide the crps-centers-platforms images or acronyms in selection bar
   $('.selection-bar-options ul .selection-bar-image,' + '.selection-bar-options ul .selection-bar-acronym').addClass(
       "hidden");
+
+  // Hide every card and re-show all the groups, so a lookup for a different email
+  // starts from a clean list instead of keeping the previous user's options
+  $('.selection-bar-options ul li').addClass("hidden");
+  $('.crps-select .selection-bar-options').removeClass("hidden");
 
   // Change height value according to the first step
   $("#loginFormContainer .loginForm").removeClass("max-size");
@@ -324,6 +334,10 @@ function loadAvailableItems(email) {
             } else {
               var crpCookie = getCrpCookie();
 
+              // Track the real number of crps/centers/platforms assigned to this user,
+              // used by the "Go back" handler to decide whether Step 2 makes sense to show
+              availableCrpsCount = data.crps.length;
+
               //console.log(data.crps[0].acronym);
 
               if(data.crps[0].acronym == "AICCRA") {
@@ -348,24 +362,32 @@ function loadAvailableItems(email) {
                 // in the select bar
                 $(".crps-select .name-type-container.type-" + data.crps[i].idType).removeClass("hidden");
 
-                // If the user has access to less than 7 crps, show images in select bar, if doesn't, show acronyms
-                // boxes
+                // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
+                // so the ones this user is not assigned to must stay hidden, otherwise they show up
+                // as empty bordered cards next to the real options
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym).removeClass("hidden");
+
+                // Always show the logo, no matter how many options the user has. The acronym element
+                // is kept in the markup (hidden) as a fallback we may want to bring back
                 // Additionally set tabindex to make crp change accessible by keyboard
-                if(data.crps.length < 7) {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr(
-                      'tabindex', '0');
-                } else {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').attr(
-                      'tabindex', '0');
-                }
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
+                    "hidden");
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr('tabindex',
+                    '0');
 
                 // If user has a crp cookie, click it
                 if(crpCookie == data.crps[i].acronym) {
                   $('.selection-bar-options ul #crp-' + data.crps[i].acronym).click();
+                }
+              });
+
+              // Collapse type groups that ended up without any visible card, so their
+              // separator and spacing don't leave a gap in the list
+              $(".crps-select .selection-bar-options").each(function() {
+                if($(this).find("ul li:not(.hidden)").length === 0) {
+                  $(this).addClass("hidden");
+                } else {
+                  $(this).removeClass("hidden");
                 }
               });
 

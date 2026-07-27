@@ -439,20 +439,68 @@
 }
 
 /* Project selection (Step 2) - re-skinned as a card grid */
+/* Capped height so the split-screen layout keeps its shape no matter how many
+   crps/centers/platforms a user is assigned to (the old design used 380px + scroll) */
 .crps-select {
   display: block;
   position: static;
   width: 100%;
   height: auto;
+  max-height: 280px;
   background: transparent;
   border: none;
   box-shadow: none;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
   margin: 0;
 }
 
+.crps-select::-webkit-scrollbar {
+  width: 6px;
+}
+
+.crps-select::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.crps-select::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.crps-select::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0;
+}
+
+/* Group separator ("CRPs:", "Centers:", "Platforms:") - a label plus a rule that
+   fills the remaining width, so each type reads as its own section */
 .crps-select .name-type-container {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.crps-select .name-type-container::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: #e4e4e4;
+}
+
+.crps-select .name-type-container:not(:first-child) {
+  margin-top: 18px;
+}
+
+.crps-select .selection-bar-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #57a7b5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .selection-bar-options ul{
@@ -495,6 +543,15 @@
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
   text-align: center;
+}
+
+/* Acronym fallback: kept styled but hidden, since the cards always show the logo.
+   Ready to bring back if we ever need a text-only mode for units without a logo */
+.selection-bar-options ul li .selection-bar-acronym{
+  font-weight: 500;
+  color: #021a23;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .selection-bar-options ul li:hover{
