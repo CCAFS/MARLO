@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Named;
 import javax.inject.Inject;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Christian Garcia
  */
@@ -43,6 +45,7 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  @Transactional
   public void deleteRole(long roleId) {
 
     roleDAO.deleteRole(roleId);
@@ -67,11 +70,13 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  @Transactional
   public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
     return roleDAO.cloneRolePermissionsByAcronym(templateGlobalUnitId, targetGlobalUnitId);
   }
 
   @Override
+  @Transactional
   public int ensureSuperAdminRoleAndPermissions(long targetGlobalUnitId, long templateGlobalUnitId) {
     return roleDAO.ensureSuperAdminRoleAndPermissions(targetGlobalUnitId, templateGlobalUnitId);
   }
@@ -83,6 +88,7 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  @Transactional
   public Role saveRole(Role role) {
 
     return roleDAO.save(role);

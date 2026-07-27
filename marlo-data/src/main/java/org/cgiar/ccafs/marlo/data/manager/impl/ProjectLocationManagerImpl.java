@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -146,6 +147,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectLocation(long projectLocationId) {
 
     ProjectLocation projectLocation = this.getProjectLocationById(projectLocationId);
@@ -172,6 +174,7 @@ public class ProjectLocationManagerImpl implements ProjectLocationManager {
 
   }
 
+  @Transactional
   public void deleteProjectLocationPhase(Phase next, long projectID, ProjectLocation projectLocation) {
     Phase phase = phaseMySQLDAO.find(next.getId());
     boolean hasLocElement = false;

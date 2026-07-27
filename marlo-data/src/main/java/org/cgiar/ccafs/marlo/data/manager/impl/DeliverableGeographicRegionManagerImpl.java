@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -47,6 +48,7 @@ public class DeliverableGeographicRegionManagerImpl implements DeliverableGeogra
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableGeographicRegion(long deliverableGeographicRegionId) {
 
     DeliverableGeographicRegion deliverableGeographicRegion =
@@ -71,6 +73,7 @@ public class DeliverableGeographicRegionManagerImpl implements DeliverableGeogra
     deliverableGeographicRegionDAO.deleteDeliverableGeographicRegion(deliverableGeographicRegionId);
   }
 
+  @Transactional
   public void deleteDeliverableGeographicRegionPhase(Phase next, long deliverableID,
     DeliverableGeographicRegion deliverableGeographicRegion) {
     Phase phase = phaseDAO.find(next.getId());

@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -50,6 +51,7 @@ public class CrpProgramOutcomeIndicatorManagerImpl implements CrpProgramOutcomeI
   }
 
   @Override
+  @Transactional
   public void deleteCrpProgramOutcomeIndicator(long crpProgramOutcomeIndicatorId) {
 
     crpProgramOutcomeIndicatorDAO.deleteCrpProgramOutcomeIndicator(crpProgramOutcomeIndicatorId);

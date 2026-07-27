@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class PowbCollaborationRegionManagerImpl implements PowbCollaborationRegi
   }
 
   @Override
+  @Transactional
   public void deletePowbCollaborationRegion(long powbCollaborationRegionId) {
 
     powbCollaborationRegionDAO.deletePowbCollaborationRegion(powbCollaborationRegionId);

@@ -38,6 +38,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -65,6 +66,7 @@ public class DeliverableInfoManagerImpl implements DeliverableInfoManager {
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableInfo(long deliverableInfoId) {
 
     deliverableInfoDAO.deleteDeliverableInfo(deliverableInfoId);

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -53,6 +54,7 @@ public class ReportSynthesisKeyPartnershipExternalManagerImpl implements ReportS
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisKeyPartnershipExternal(long reportSynthesisKeyPartnershipExternalId) {
 
     reportSynthesisKeyPartnershipExternalDAO

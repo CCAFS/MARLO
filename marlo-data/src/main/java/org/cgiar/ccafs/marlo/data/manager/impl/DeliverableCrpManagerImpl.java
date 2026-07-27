@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -58,6 +59,7 @@ public class DeliverableCrpManagerImpl implements DeliverableCrpManager {
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableCrp(long deliverableCrpId) {
     DeliverableCrp deliverableCrp = this.getDeliverableCrpById(deliverableCrpId);
     Phase currentPhase = phaseDAO.find(deliverableCrp.getPhase().getId());

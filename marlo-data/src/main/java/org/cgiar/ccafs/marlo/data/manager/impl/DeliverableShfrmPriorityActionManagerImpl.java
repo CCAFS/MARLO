@@ -29,6 +29,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -51,6 +52,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableShfrmPriorityAction(long deliverableShfrmPriorityActionId) {
 
     DeliverableShfrmPriorityAction deliverableShfrmPriorityAction =
@@ -66,6 +68,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
     deliverableShfrmPriorityActionDAO.deleteDeliverableShfrmPriorityAction(deliverableShfrmPriorityActionId);
   }
 
+  @Transactional
   public void deleteDeliverableShfrmPriorityActionPhase(Phase next, long deliverableId,
     DeliverableShfrmPriorityAction deliverableShfrmPriorityAction) {
     Phase phase = phaseDAO.find(next.getId());

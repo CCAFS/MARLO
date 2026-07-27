@@ -256,6 +256,7 @@ public class ProjectPartnerManagerImpl implements ProjectPartnerManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectPartner(long projectPartnerId) {
 
 

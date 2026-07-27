@@ -38,6 +38,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -86,6 +87,7 @@ public class ProjectInnovationPartnershipManagerImpl implements ProjectInnovatio
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationPartnership(long projectInnovationPartnershipId) {
 
     ProjectInnovationPartnership projectInnovationPartnership =
@@ -111,6 +113,7 @@ public class ProjectInnovationPartnershipManagerImpl implements ProjectInnovatio
   }
 
 
+  @Transactional
   public void deleteProjectInnovationPartnershipPhase(Phase next, long innovationID,
     ProjectInnovationPartnership projectInnovationPartnership) {
     if (projectInnovationPartnership != null) {

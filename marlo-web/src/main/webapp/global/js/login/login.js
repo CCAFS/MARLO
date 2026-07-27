@@ -1,7 +1,8 @@
 $(document).ready(init);
 
-// currentStep is one of "email", "project" or "password", matching the 3 login screens
-var cookieTime, currentStep = "email", hasAccess = false;
+// The email input view is equal to isSecondForm=false
+// The password input view is equal to isSecondForm=true
+var cookieTime, isSecondForm = false, hasAccess = false;
 var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
@@ -41,9 +42,6 @@ function init() {
     // Hidden input that contains the selected crp id
     $("input#crp-input").val(selectedImageAcronym);
     setCRPCookie();
-
-    // Mirror the selected project card (image/acronym) into the step 3 full-width card
-    $('#login-selected-project-card').html($(this).html());
   });
 
   // Hide wrong data line and message in email and password inputs
@@ -75,30 +73,24 @@ function init() {
     }
   });
 
-  // Next / Log in Button
+  // Next Button
   $("input#login_next").on('click', function(e) {
     e.preventDefault();
 
-    if(currentStep == "email") {
-      // Save the email in cookies
-      setCookie("username.email", username.val(), cookieTime);
-      // Clean bottom red line in input
-      $('input.login-input').removeClass("wrongData");
-      var email = username.val();
-      /* || !isEmail(email) if you want to check if isEmail */
-      if(email == "") {
-        wrongData("invalidEmail");
-      } else {
-        showProjectSkeleton();
-        loadAvailableItems(email);
-      }
-    } else if(currentStep == "project") {
-      // A project is already selected by default (loadAvailableItems auto-selects one)
-      showPasswordStep();
+    // Save the email in cookies
+    setCookie("username.email", username.val(), cookieTime);
+    // Clean bottom red line in input
+    $('input.login-input').removeClass("wrongData");
+    var email = username.val();
+    /* || !isEmail(email) if you want to check if isEmail */
+    if(email == "") {
+      wrongData("invalidEmail");
+    } else if(!isSecondForm) {
+      loadAvailableItems(email);
     } else if(inputPassword.val() == "") {
       wrongData("voidPassword");
     } else {
-      checkPassword(username.val(), inputPassword.val());
+      checkPassword(email, inputPassword.val());
     }
   });
 
@@ -125,26 +117,22 @@ function init() {
     }
   });
 
-  // Return to the email step when click on the user name
+  // Return to the first form (email input) when click on the user name
   $(".loginForm .login-input-container.username").on('click', function() {
-    showEmailStep();
+    firstForm();
   });
 
-  // Go back to the previous step when click on the "Go back" link
+  // Return to the first form (email input) when click on the bottom message in form
   $('.login-back-container p.loginBack').on('click', function() {
-    if(currentStep == "password" && crpSession == "" && $(".crps-select .selection-bar-options ul li").length > 1) {
-      showProjectStep();
-    } else {
-      showEmailStep();
-    }
+    $(".loginForm .login-input-container.username").click();
   });
 
 }
 
-// Step 1: Email
-function showEmailStep() {
+// First form (email input)
+function firstForm() {
   // refresh variables
-  currentStep = "email";
+  isSecondForm = false;
   hasAccess = false;
 
   cleanWrongData();
@@ -152,14 +140,14 @@ function showEmailStep() {
   // Reset input password
   $(".loginForm #login-password .user-password").val("");
 
-  // Hide the big crp image, the welcome message, and the project/password steps
-  $(".crps-select, .project-skeleton, .loginForm .form-group, .loginForm .welcome-message-container").addClass("hidden");
-  $("#login-step-project, #login-step-password").addClass("hidden");
+  // Hide the big crp image, the welcome message, and the input password (jquery selectors in order)
+  $(".crps-select, .loginForm .form-group," + " .loginForm .welcome-message-container, " + ".loginForm #login-password")
+      .addClass("hidden");
 
   // Hide terms and conditions checkbox
   $('.terms-container').addClass("hidden");
 
-  // Hide the "go back" link
+  // Hide the "login with different user" button
   $('.login-back-container').addClass('hidden');
 
   // Hide the labels (CRPs,Centers and Platforms)
@@ -169,93 +157,15 @@ function showEmailStep() {
   $('.selection-bar-options ul .selection-bar-image,' + '.selection-bar-options ul .selection-bar-acronym').addClass(
       "hidden");
 
-  // Change height value according to the first step
+  // Change height value according to the first form
   $("#loginFormContainer .loginForm").removeClass("max-size");
 
-  // Show email step
-  $("#login-step-email").removeClass("hidden");
+  // Show email input
+  $(".loginForm #login-email").removeClass("hidden");
 
   // Change button value to Next
-  $("input#login_next").val("Log in");
+  $("input#login_next").val("Next");
 
-  // Set focus on email input
-  $(".loginForm #login-email .user-email").focus();
-}
-
-// Show 2 placeholder cards in the project step while crpByEmail.do is loading,
-// avoiding the jarring gray loading block that used to replace the button
-function showProjectSkeleton() {
-  cleanWrongData();
-
-  $("#login-step-email, #login-step-password").addClass("hidden");
-  $("#login-step-project").removeClass("hidden");
-
-  $(".crps-select").addClass("hidden");
-  $(".project-skeleton").removeClass("hidden");
-
-  // Hide the "go back" link while the request is in flight
-  $('.login-back-container').addClass('hidden');
-  $('.terms-container').addClass("hidden");
-
-  $("#loginFormContainer .loginForm").addClass("max-size");
-}
-
-// Step 2: Select project (CRP/Center/Platform)
-function showProjectStep() {
-  currentStep = "project";
-
-  cleanWrongData();
-
-  $("#login-step-email, #login-step-password").addClass("hidden");
-  $("#login-step-project").removeClass("hidden");
-
-  // Show the project card grid, hide the loading skeleton
-  $(".project-skeleton").addClass("hidden");
-  $(".crps-select").removeClass("hidden");
-
-  // Show the "go back" link, hide terms checkbox (shown again on the password step)
-  $('.login-back-container').removeClass('hidden');
-  $('.terms-container').addClass("hidden");
-
-  $("#loginFormContainer .loginForm").addClass("max-size");
-
-  // Change button value to Login
-  $("input#login_next").val("Log in");
-}
-
-// Step 3: Password
-function showPasswordStep() {
-  currentStep = "password";
-
-  cleanWrongData();
-
-  // Show terms and conditions checkbox
-  showTermsCheckbox();
-
-  // Echo the email entered in step 1
-  $(".login-echoed-email").text(username.val());
-
-  // Mirror the actually selected project card (image/acronym), in case it was
-  // auto-selected before its "hidden" class was cleared
-  var $activeProjectCard = $('.selection-bar-options ul li.active');
-  if($activeProjectCard.length) {
-    $('#login-selected-project-card').html($activeProjectCard.html());
-  }
-
-  // Change height value to the password step
-  $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
-
-  $("#login-step-email, #login-step-project").addClass("hidden");
-  $("#login-step-password").removeClass("hidden");
-
-  // Change button value to Login
-  $("input#login_next").val("Log in");
-
-  // Set focus on password input
-  $(".loginForm #login-password input").focus();
-
-  // Show the "go back" link
-  $('.login-back-container').removeClass('hidden');
 }
 
 // Returns true if the {nameCookie} exists
@@ -313,14 +223,16 @@ function loadAvailableItems(email) {
             userEmail: email
           },
           beforeSend: function() {
-            // Disable the button while the project cards skeleton is shown on step 2
+            // Add the animated gif in button and remove the next text
+            $("input#login_next").addClass("login-loadingBlock");
             $("input#login_next").attr("disabled", true);
+            $("input#login_next").val("");
           },
           success: function(data) {
             // If the user doesn't exists show a predefined message and reset the button value to (next)
             if(data.user == null) {
-              showEmailStep();
               wrongData("emailNotFound");
+              $("input#login_next").val("Next");
             } else {
               var crpCookie = getCrpCookie();
 
@@ -381,50 +293,75 @@ function loadAvailableItems(email) {
               if(hasAccess || crpSession == "") {
                 secondForm(data);
               } else {
-                showEmailStep();
                 wrongData("deniedAccess");
+                $("input#login_next").val("Next");
               }
             }
           },
           complete: function(data) {
+            $("input#login_next").removeClass("login-loadingBlock");
             $("input#login_next").attr("disabled", false);
           },
           error: function(data) {
-            showEmailStep();
             wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+            $("input#login_next").removeClass("login-loadingBlock");
+            $("input#login_next").attr("disabled", false);
           }
       });
 }
 
-// Decide which step to show next (project selection or password), reusing the same
-// hasAccess / crpSession / data.crps checks the app already relied on
+// Second Form (password input)
 function secondForm(data) {
+  // Submit Button control, just send the form when is in the second form
+  isSecondForm = true;
+
+  // Show terms and conditions checkbox
+  showTermsCheckbox();
+
   cleanWrongData();
 
-  // Show user name in form (kept for the hidden welcome-message-container)
+  // Show user name in form
   $(".welcome-message-container .username span").text(data.user.name);
 
+  // Change height value to secondForm
+  $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
+
+  // Hide email input
+  $(".loginForm #login-email").addClass("hidden");
+
+  // Show crp image, welcome message and input password
+  $(".loginForm .form-group, " + ".loginForm .welcome-message-container, " + ".loginForm #login-password").removeClass(
+      "hidden");
+
+  // Change button value to Login
+  $("input#login_next").val("Login");
+
+  // Set focus on password input
+  $(".loginForm #login-password input").focus();
+
+  // Show the back to email button
+  $('.login-back-container').removeClass('hidden');
+
   // If has a crpSession validate if user has access, if doesn't click the crpSession option
-  // If hasn't crpSession and user has multiple projects, show the project selection step
+  // If hasn't crpSession show the side select bar
   if(crpSession != '') {
 
     if(!hasAccess) {
-      showPasswordStep();
       wrongData("deniedAccess");
     } else {
       $('.selection-bar-options ul #crp-' + crpSession).click();
-      showPasswordStep();
     }
 
   } else {
 
-    // When user has access to multiple crps, show the project selection step
+    // When user has access to multiple crps, show the side bar
     if(data.crps.length > 1) {
-      showProjectStep();
+      $(".crps-select").removeClass("hidden");
+      // Move crps select side bar to left
+      $(".crps-select").addClass('show-select-bar');
     } else {
-      // Click on the unique loaded crp and go straight to the password step
+      // Click on the unique loaded crp
       $('.selection-bar-options ul #crp-' + data.crps[0].acronym).click();
-      showPasswordStep();
     }
   }
 }
@@ -440,11 +377,11 @@ function checkPassword(email,password) {
               agree: $('input#terms').is(':checked')
           },
           beforeSend: function() {
-            // If terms and conditions is checked, show a small spinner over the button
+            // If terms and conditions is checked, show loading gif
             if($('input#terms').is(':checked')) {
-              $("input#login_next").addClass("is-loading");
+              $("input#login_next").addClass("login-loadingBlock");
               $("input#login_next").attr("disabled", true);
-              $(".login-button-spinner").removeClass("hidden");
+              $("input#login_next").val("");
             }
           },
           success: function(data) {
@@ -471,13 +408,12 @@ function checkPassword(email,password) {
                 wrongData("incorrectPassword", data.messageEror);
               }
 
-              // Hide the loading spinner
-              $("input#login_next").removeClass("is-loading");
-              $(".login-button-spinner").addClass("hidden");
+              // Hide the loading gif
+              $("input#login_next").removeClass("login-loadingBlock");
               if (incorrectPasswordCount != 3){
                 $("input#login_next").attr("disabled", false);
               }
-              $("input#login_next").val("Log in");
+              $("input#login_next").val("Login");
             } else {
               $("input#login_formSubmit").click();
             }
@@ -486,10 +422,6 @@ function checkPassword(email,password) {
           },
           error: function(data) {
             wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
-            $("input#login_next").removeClass("is-loading");
-            $(".login-button-spinner").addClass("hidden");
-            $("input#login_next").attr("disabled", false);
-            $("input#login_next").val("Log in");
           }
       });
 }

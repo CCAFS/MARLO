@@ -20,6 +20,7 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 
@@ -76,7 +77,8 @@ public class CrpActivityAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     if (!this.isHttpPost()) {
-      activities = activityTitleManager.findAll();
+      GlobalUnit globalUnit = this.getCurrentGlobalUnit();
+      activities = activityTitleManager.findByGlobalUnit(globalUnit.getId());
       if (activities == null) {
         activities = new ArrayList<>();
       }
@@ -90,7 +92,7 @@ public class CrpActivityAction extends BaseAction {
       this.saveActivities();
 
       Collection<String> messages = this.getActionMessages();
-      if (!this.getInvalidFields().isEmpty()) {
+      if (this.getInvalidFields()!= null && !this.getInvalidFields().isEmpty()) {
 
         this.setActionMessages(null);
         // this.addActionMessage(Map.toString(this.getInvalidFields().toArray()));
@@ -115,7 +117,8 @@ public class CrpActivityAction extends BaseAction {
   }
 
   private void saveActivities() {
-    List<ActivityTitle> activitiesDB = activityTitleManager.findAll();
+    GlobalUnit globalUnit = this.getCurrentGlobalUnit();
+    List<ActivityTitle> activitiesDB = activityTitleManager.findByGlobalUnit(globalUnit.getId());
     if (activitiesDB == null) {
       activitiesDB = new ArrayList<>();
     }
@@ -155,11 +158,13 @@ public class CrpActivityAction extends BaseAction {
         ActivityTitle activityDB = activityTitleManager.getActivityTitleById(activity.getId());
         if (activityDB != null) {
           activityDB.setTitle(title);
+          activityDB.setGlobalUnit(this.getCurrentGlobalUnit());
           activityTitleManager.saveActivityTitle(activityDB);
         }
       } else {
         ActivityTitle activityNew = new ActivityTitle();
         activityNew.setTitle(title);
+        activityNew.setGlobalUnit(this.getCurrentGlobalUnit());
         activityTitleManager.saveActivityTitle(activityNew);
       }
     }

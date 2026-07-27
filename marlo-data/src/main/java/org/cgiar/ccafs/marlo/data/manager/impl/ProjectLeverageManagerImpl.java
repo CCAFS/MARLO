@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -62,6 +63,7 @@ public class ProjectLeverageManagerImpl implements ProjectLeverageManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectLeverage(long projectLeverageId) {
 
     ProjectLeverage projectLeverage = this.getProjectLeverageById(projectLeverageId);

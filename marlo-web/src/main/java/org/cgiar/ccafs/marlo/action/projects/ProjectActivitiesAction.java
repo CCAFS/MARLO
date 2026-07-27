@@ -473,19 +473,13 @@ public class ProjectActivitiesAction extends BaseAction {
         }
       }
 
-      List<ActivityTitle> ActivityTitleList = new ArrayList<>();
-      ActivityTitleList = activityTitleManager.findAll();
+      GlobalUnit globalUnit = this.getCurrentGlobalUnit();
       activityTitles = new ArrayList<>();
+      activityTitles = activityTitleManager.findByGlobalUnit(globalUnit.getId());
 
-      if (this.isAiccra()) {
-        if (ActivityTitleList != null && !ActivityTitleList.isEmpty()) {
-
-          if (activityTitles == null || (activityTitles != null && activityTitles.isEmpty())) {
-            activityTitles = ActivityTitleList;// activityTitleManager.findAll();
+        if (activityTitles != null && !activityTitles.isEmpty()) {
             activityTitles.sort((a1, a2) -> a1.getTitle().compareTo(a2.getTitle()));
-          }
-        }
-      }
+        }      
 
       deliverablesMissingActivity = new ArrayList<>();
 

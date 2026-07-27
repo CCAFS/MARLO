@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Named
@@ -55,6 +56,7 @@ public class FundingSourceDivisionManagerImpl implements FundingSourceDivisionMa
   }
 
   @Override
+  @Transactional
   public void deleteFundingSourceDivision(long fundingSourceDivisionId) {
     FundingSourceDivision fundingSourceDivision = this.getFundingSourceDivisionById(fundingSourceDivisionId);
     fundingSourceDivisionDAO.deleteFundingSourceDivision(fundingSourceDivisionId);

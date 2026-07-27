@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -39,6 +40,7 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  @Transactional
   public void deleteInstitution(long institutionId) {
     institutionDao.deleteInstitution(institutionId);
   }

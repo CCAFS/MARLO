@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -57,6 +58,7 @@ public class DeliverableUserManagerImpl implements DeliverableUserManager {
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableUser(long deliverableUserId) {
 
     DeliverableUser deliverableUser = this.getDeliverableUserById(deliverableUserId);

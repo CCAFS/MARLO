@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -49,6 +50,7 @@ public class RepIndInnovationTypeManagerImpl implements RepIndInnovationTypeMana
   }
 
   @Override
+  @Transactional
   public void deleteRepIndInnovationType(long repIndInnovationTypeId) {
 
     repIndInnovationTypeDAO.deleteRepIndInnovationType(repIndInnovationTypeId);

@@ -63,7 +63,7 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
   public List<ActivityTitle> findAll() {
     String query = "from " + ActivityTitle.class.getName();
     List<ActivityTitle> list = super.findAll(query);
-    if (list.size() > 0) {
+    if (!list.isEmpty()) {
       return list;
     }
     return null;
@@ -95,5 +95,16 @@ public class ActivityTitleMySQLDAO extends AbstractMarloDAO<ActivityTitle, Long>
     return activityTitle;
   }
 
+  @Override
+  public List<ActivityTitle> findByGlobalUnit(long globalUnitId) {
+    String query = "select pat from ActivityTitle pat where pat.globalUnit.id = :globalUnitId";
+    Query<ActivityTitle> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("globalUnitId", globalUnitId);
+    List<ActivityTitle> list = super.findAll(createQuery);
+    if (!list.isEmpty()) {
+      return list;
+    }
+    return null;
+  }
 
 }

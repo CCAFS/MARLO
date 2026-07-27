@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -49,6 +50,7 @@ public class ProjectInnovationInfoManagerImpl implements ProjectInnovationInfoMa
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationInfo(long projectInnovationInfoId) {
 
     projectInnovationInfoDAO.deleteProjectInnovationInfo(projectInnovationInfoId);

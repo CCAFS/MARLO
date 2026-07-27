@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -48,6 +49,7 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
 
 
   @Override
+  @Transactional
   public void deleteProjectLp6ContributionDeliverable(long projectLp6ContributionDeliverableID) {
     ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable =
       this.getProjectLp6ContributionDeliverableById(projectLp6ContributionDeliverableID);
@@ -60,6 +62,7 @@ public class ProjectLp6ContributionDeliverableManagerImpl implements ProjectLp6C
     projectLp6ContributionDeliverableDAO.deleteProjectLp6ContributionDeliverable(projectLp6ContributionDeliverableID);
   }
 
+  @Transactional
   public void deleteProjectLp6ContributionDeliverablePhase(Phase next, long projectLp6ContributionDeliverableID,
     ProjectLp6ContributionDeliverable projectLp6ContributionDeliverable) {
     Phase phase = phaseDAO.find(next.getId());

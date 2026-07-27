@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class PowbExpectedCrpProgressManagerImpl implements PowbExpectedCrpProgre
   }
 
   @Override
+  @Transactional
   public void deletePowbExpectedCrpProgress(long powbExpectedCrpProgressId) {
 
     powbExpectedCrpProgressDAO.deletePowbExpectedCrpProgress(powbExpectedCrpProgressId);
