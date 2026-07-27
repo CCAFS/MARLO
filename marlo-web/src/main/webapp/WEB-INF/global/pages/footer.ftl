@@ -2,15 +2,13 @@
     <!-- The errorTag is DEPRECIATED right now it's not being use -->
     <!-- <span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>-->
     <!-- ${actionName} Content end-->
-    [#if !(avoidFooter!false)]
-    <footer class="footer">
+    <footer class="footer">    
       <div class="container">
         [#-- Importing footer information --]
         [#include "/WEB-INF/global/pages/footer-info.ftl" /]
       </div>
     </footer>
-    [/#if]
-
+    
     [#compress]
     [#-- Importing JavaScript files --]
     [#if globalLibs??]
