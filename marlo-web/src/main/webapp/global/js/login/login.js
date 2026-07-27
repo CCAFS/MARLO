@@ -6,6 +6,10 @@ var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
 var incorrectPasswordCount = 0;
+// Number of crps/centers/platforms actually assigned to the user (data.crps.length from crpByEmail.do),
+// NOT the count of <li> elements in the DOM (which always renders every Global Unit with login=true,
+// regardless of the current user's access)
+var availableCrpsCount = 0;
 
 function init() {
   initJreject();
@@ -132,7 +136,7 @@ function init() {
 
   // Go back to the previous step when click on the "Go back" link
   $('.login-back-container p.loginBack').on('click', function() {
-    if(currentStep == "password" && crpSession == "" && $(".crps-select .selection-bar-options ul li").length > 1) {
+    if(currentStep == "password" && crpSession == "" && availableCrpsCount > 1) {
       showProjectStep();
     } else {
       showEmailStep();
@@ -146,6 +150,7 @@ function showEmailStep() {
   // refresh variables
   currentStep = "email";
   hasAccess = false;
+  availableCrpsCount = 0;
 
   cleanWrongData();
 
@@ -323,6 +328,10 @@ function loadAvailableItems(email) {
               wrongData("emailNotFound");
             } else {
               var crpCookie = getCrpCookie();
+
+              // Track the real number of crps/centers/platforms assigned to this user,
+              // used by the "Go back" handler to decide whether Step 2 makes sense to show
+              availableCrpsCount = data.crps.length;
 
               //console.log(data.crps[0].acronym);
 
