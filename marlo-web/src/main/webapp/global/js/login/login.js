@@ -174,6 +174,11 @@ function showEmailStep() {
   $('.selection-bar-options ul .selection-bar-image,' + '.selection-bar-options ul .selection-bar-acronym').addClass(
       "hidden");
 
+  // Hide every card and re-show all the groups, so a lookup for a different email
+  // starts from a clean list instead of keeping the previous user's options
+  $('.selection-bar-options ul li').addClass("hidden");
+  $('.crps-select .selection-bar-options').removeClass("hidden");
+
   // Change height value according to the first step
   $("#loginFormContainer .loginForm").removeClass("max-size");
 
@@ -357,24 +362,32 @@ function loadAvailableItems(email) {
                 // in the select bar
                 $(".crps-select .name-type-container.type-" + data.crps[i].idType).removeClass("hidden");
 
-                // If the user has access to less than 7 crps, show images in select bar, if doesn't, show acronyms
-                // boxes
+                // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
+                // so the ones this user is not assigned to must stay hidden, otherwise they show up
+                // as empty bordered cards next to the real options
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym).removeClass("hidden");
+
+                // Always show the logo, no matter how many options the user has. The acronym element
+                // is kept in the markup (hidden) as a fallback we may want to bring back
                 // Additionally set tabindex to make crp change accessible by keyboard
-                if(data.crps.length < 7) {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr(
-                      'tabindex', '0');
-                } else {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').attr(
-                      'tabindex', '0');
-                }
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
+                    "hidden");
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr('tabindex',
+                    '0');
 
                 // If user has a crp cookie, click it
                 if(crpCookie == data.crps[i].acronym) {
                   $('.selection-bar-options ul #crp-' + data.crps[i].acronym).click();
+                }
+              });
+
+              // Collapse type groups that ended up without any visible card, so their
+              // separator and spacing don't leave a gap in the list
+              $(".crps-select .selection-bar-options").each(function() {
+                if($(this).find("ul li:not(.hidden)").length === 0) {
+                  $(this).addClass("hidden");
+                } else {
+                  $(this).removeClass("hidden");
                 }
               });
 
