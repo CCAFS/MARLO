@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -46,6 +47,7 @@ public class ProjectInnovationPRMSManagerImpl implements ProjectInnovationPRMSMa
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationPRMS(long projectInnovationPRMSId) {
     ProjectInnovationPRMS link = this.getProjectInnovationPRMSById(projectInnovationPRMSId);
     if (link == null || link.getPhase() == null) {
@@ -75,6 +77,7 @@ public class ProjectInnovationPRMSManagerImpl implements ProjectInnovationPRMSMa
    * @param innovationID owner innovation id
    * @param link original link to compare against (by PRMSInnovation)
    */
+  @Transactional
   public void deleteProjectInnovationPRMSPhase(Phase next, long innovationID, ProjectInnovationPRMS link) {
     Phase phase = phaseDAO.find(next.getId());
 

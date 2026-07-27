@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
@@ -39,6 +40,7 @@ public class BiParametersManagerImpl implements BiParametersManager {
   }
 
   @Override
+  @Transactional
   public void deleteBiParameters(long biParametersId) {
 
     biParametersDAO.deleteBiParameters(biParametersId);

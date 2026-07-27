@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -49,6 +50,7 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
   }
 
   @Override
+  @Transactional
   public void deleteExpectedStudyProject(long expectedStudyProjectId) {
 
     ExpectedStudyProject expectedStudyProject = this.getExpectedStudyProjectById(expectedStudyProjectId);
@@ -75,6 +77,7 @@ public class ExpectedStudyProjectManagerImpl implements ExpectedStudyProjectMana
   }
 
 
+  @Transactional
   public void deleteExpectedStudyProjectPhase(Phase next, long expectedID, ExpectedStudyProject pxpectedStudyProject) {
     Phase phase = phaseDAO.find(next.getId());
 

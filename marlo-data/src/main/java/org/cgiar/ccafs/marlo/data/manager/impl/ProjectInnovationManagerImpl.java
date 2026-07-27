@@ -70,6 +70,7 @@ public class ProjectInnovationManagerImpl implements ProjectInnovationManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovation(long projectInnovationId) {
 
     projectInnovationDAO.deleteProjectInnovation(projectInnovationId);

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -43,6 +44,7 @@ public class BudgetTypeManagerImpl implements BudgetTypeManager {
   }
 
   @Override
+  @Transactional
   public void deleteBudgetType(long budgetTypeId) {
 
     budgetTypeDAO.deleteBudgetType(budgetTypeId);

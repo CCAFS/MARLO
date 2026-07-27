@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -60,6 +61,7 @@ public class DeliverableClusterParticipantManagerImpl implements DeliverableClus
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableClusterParticipant(long deliverableClusterParticipantId) {
 
     DeliverableClusterParticipant deliverableClusterParticipant =
@@ -86,6 +88,7 @@ public class DeliverableClusterParticipantManagerImpl implements DeliverableClus
     deliverableClusterParticipantDAO.deleteDeliverableClusterParticipant(deliverableClusterParticipantId);
   }
 
+  @Transactional
   public void deleteDeliverableClusterParticipantPhase(Phase next, long deliverableID,
     DeliverableClusterParticipant deliverableClusterParticipant) {
     Phase phase = phaseDAO.find(next.getId());

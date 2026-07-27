@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -45,6 +46,7 @@ public class IpLiaisonInstitutionManagerImpl implements IpLiaisonInstitutionMana
   }
 
   @Override
+  @Transactional
   public void deleteIpLiaisonInstitution(long ipLiaisonInstitutionId) {
 
     ipLiaisonInstitutionDAO.deleteIpLiaisonInstitution(ipLiaisonInstitutionId);

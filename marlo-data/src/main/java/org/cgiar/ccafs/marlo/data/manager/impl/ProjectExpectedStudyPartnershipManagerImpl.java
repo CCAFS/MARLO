@@ -38,6 +38,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -92,6 +93,7 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
   }
 
   @Override
+  @Transactional
   public void deleteProjectExpectedStudyPartnership(long projectExpectedStudyPartnershipId) {
 
 
@@ -118,6 +120,7 @@ public class ProjectExpectedStudyPartnershipManagerImpl implements ProjectExpect
     projectExpectedStudyPartnershipDAO.deleteProjectExpectedStudyPartnership(projectExpectedStudyPartnershipId);
   }
 
+  @Transactional
   public void deleteProjectExpectedStudyPartnershipPhase(Phase next, long expectedID,
     ProjectExpectedStudyPartnership projectExpectedStudyPartnership) {
     if (projectExpectedStudyPartnership != null) {

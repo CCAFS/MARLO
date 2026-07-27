@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -45,6 +46,7 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
   }
 
   @Override
+  @Transactional
   public void deletePolicyMilestone(long policyMilestoneId) {
 
     PolicyMilestone policyMilestone = this.getPolicyMilestoneById(policyMilestoneId);
@@ -67,6 +69,7 @@ public class PolicyMilestoneManagerImpl implements PolicyMilestoneManager {
     policyMilestoneDAO.deletePolicyMilestone(policyMilestoneId);
   }
 
+  @Transactional
   public void deletePolicyMilestonePhase(Phase next, long policyID, PolicyMilestone policyMilestone) {
     Phase phase = phaseDAO.find(next.getId());
 

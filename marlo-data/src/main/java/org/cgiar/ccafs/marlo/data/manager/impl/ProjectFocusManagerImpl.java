@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -75,6 +76,7 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectFocus(long projectFocusId) {
 
     projectFocusDAO.deleteProjectFocus(projectFocusId);

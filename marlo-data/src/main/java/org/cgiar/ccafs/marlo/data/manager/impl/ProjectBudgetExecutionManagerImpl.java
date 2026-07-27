@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -87,6 +88,7 @@ public class ProjectBudgetExecutionManagerImpl implements ProjectBudgetExecution
   }
 
   @Override
+  @Transactional
   public void deleteProjectBudgetExecution(long projectBudgetExecutionId) {
 
     projectBudgetExecutionDAO.deleteProjectBudgetExecution(projectBudgetExecutionId);

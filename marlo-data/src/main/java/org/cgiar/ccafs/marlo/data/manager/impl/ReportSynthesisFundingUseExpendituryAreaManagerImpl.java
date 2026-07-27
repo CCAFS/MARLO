@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -49,6 +50,7 @@ public class ReportSynthesisFundingUseExpendituryAreaManagerImpl
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisFundingUseExpendituryArea(long reportSynthesisFundingUseExpendituryAreaId) {
 
     reportSynthesisFundingUseExpendituryAreaDAO

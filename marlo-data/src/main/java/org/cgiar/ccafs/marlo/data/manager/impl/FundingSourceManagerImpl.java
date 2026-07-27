@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -62,6 +63,7 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
   }
 
   @Override
+  @Transactional
   public void deleteFundingSource(long fundingSourceId) {
 
     fundingSourceDAO.deleteFundingSource(fundingSourceId);

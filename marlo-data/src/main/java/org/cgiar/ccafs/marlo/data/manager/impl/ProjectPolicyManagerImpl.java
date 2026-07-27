@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -69,6 +70,7 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectPolicy(long projectPolicyId) {
 
     projectPolicyDAO.deleteProjectPolicy(projectPolicyId);

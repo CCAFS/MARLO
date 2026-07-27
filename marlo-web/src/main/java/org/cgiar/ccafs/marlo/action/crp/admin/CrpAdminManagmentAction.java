@@ -757,8 +757,15 @@ public class CrpAdminManagmentAction extends BaseAction {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
     loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
 
-    pmuRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-    cuId = Long.parseLong((String) this.getSession().get(APConstants.CRP_CU));
+    String pmuRoleParam = (String) this.getSession().get(APConstants.CRP_PMU_ROLE);
+    String cuParam = (String) this.getSession().get(APConstants.CRP_CU);
+    if (pmuRoleParam == null || pmuRoleParam.trim().isEmpty() || cuParam == null || cuParam.trim().isEmpty()) {
+      throw new IllegalStateException("Missing required CRP parameters in session for Admin Management: "
+        + APConstants.CRP_PMU_ROLE + " and/or " + APConstants.CRP_CU
+        + ". Re-login after ensuring custom parameters are configured for this Global Unit.");
+    }
+    pmuRol = Long.parseLong(pmuRoleParam);
+    cuId = Long.parseLong(cuParam);
     rolePmu = roleManager.getRoleById(pmuRol);
     if (rolePmu != null && rolePmu.getUserRoles() != null) {
       loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));

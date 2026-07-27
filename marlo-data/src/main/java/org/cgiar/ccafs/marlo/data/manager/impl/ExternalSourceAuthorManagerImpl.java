@@ -32,6 +32,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
@@ -59,6 +60,7 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   }
 
   @Override
+  @Transactional
   public void deleteAllAuthorsFromPhase(Deliverable deliverable, Phase initialPhase) {
     Phase current = initialPhase;
     int initialPhaseYear = initialPhase.getYear();
@@ -88,6 +90,7 @@ public class ExternalSourceAuthorManagerImpl implements ExternalSourceAuthorMana
   }
 
   @Override
+  @Transactional
   public void deleteExternalSourceAuthor(long externalSourceAuthorId) {
     externalSourceAuthorDAO.deleteExternalSourceAuthor(externalSourceAuthorId);
   }

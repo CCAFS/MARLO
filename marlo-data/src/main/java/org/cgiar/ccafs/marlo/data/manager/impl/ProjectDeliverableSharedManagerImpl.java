@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -47,6 +48,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
   }
 
   @Override
+  @Transactional
   public void deleteProjectDeliverableShared(long projectDeliverableSharedId) {
 
     ProjectDeliverableShared projectDeliverableShared =
@@ -73,6 +75,7 @@ public class ProjectDeliverableSharedManagerImpl implements ProjectDeliverableSh
     projectDeliverableSharedDAO.deleteProjectDeliverableShared(projectDeliverableSharedId);
   }
 
+  @Transactional
   public void deleteProjectDeliverableSharedPhase(Phase next, long innovationID,
     ProjectDeliverableShared projectDeliverableShared) {
     Phase phase = phaseDAO.find(next.getId());

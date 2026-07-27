@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -43,6 +44,7 @@ public class ReportSynthesisNarrativeManagerImpl implements ReportSynthesisNarra
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisNarrative(long reportSynthesisNarrativeId) {
 
     reportSynthesisNarrativeDAO.deleteReportSynthesisNarrative(reportSynthesisNarrativeId);

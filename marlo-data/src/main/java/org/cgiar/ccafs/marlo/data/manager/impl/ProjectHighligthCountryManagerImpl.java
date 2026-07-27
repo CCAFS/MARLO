@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -47,6 +48,7 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
   }
 
   @Override
+  @Transactional
   public void deleteProjectHighligthCountry(long projectHighligthCountryId) {
 
     ProjectHighlightCountry projectHighlightCountry = this.getProjectHighligthCountryById(projectHighligthCountryId);
@@ -60,6 +62,7 @@ public class ProjectHighligthCountryManagerImpl implements ProjectHighligthCount
 
   }
 
+  @Transactional
   public void deleteProjectHighligthCountryPhase(Phase next, long projecID,
     ProjectHighlightCountry projectHighlightCountry) {
     Phase phase = phaseDAO.find(next.getId());

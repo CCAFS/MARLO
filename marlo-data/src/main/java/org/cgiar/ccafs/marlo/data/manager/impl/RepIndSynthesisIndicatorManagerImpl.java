@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -43,6 +44,7 @@ public class RepIndSynthesisIndicatorManagerImpl implements RepIndSynthesisIndic
   }
 
   @Override
+  @Transactional
   public void deleteRepIndSynthesisIndicator(long repIndSynthesisIndicatorId) {
 
     repIndSynthesisIndicatorDAO.deleteRepIndSynthesisIndicator(repIndSynthesisIndicatorId);

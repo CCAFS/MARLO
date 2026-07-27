@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -43,6 +44,7 @@ public class ReportSynthesisFinancialSummaryManagerImpl implements ReportSynthes
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisFinancialSummary(long reportSynthesisFinancialSummaryId) {
 
     reportSynthesisFinancialSummaryDAO.deleteReportSynthesisFinancialSummary(reportSynthesisFinancialSummaryId);

@@ -44,6 +44,7 @@ public class CustomParameterManagerImpl implements CustomParameterManager {
   }
 
   @Override
+  @Transactional
   public void deleteCustomParameter(long customParameterId) {
 
     customParameterDAO.deleteCustomParameter(customParameterId);

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -50,6 +51,7 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationDeliverable(long projectInnovationDeliverableId) {
 
     ProjectInnovationDeliverable projectInnovationDeliverable =
@@ -77,6 +79,7 @@ public class ProjectInnovationDeliverableManagerImpl implements ProjectInnovatio
     projectInnovationDeliverableDAO.deleteProjectInnovationDeliverable(projectInnovationDeliverableId);
   }
 
+  @Transactional
   public void deleteProjectInnovationDeliverablePhase(Phase next, long innovationID,
     ProjectInnovationDeliverable projectInnovationDeliverable) {
     Phase phase = phaseDAO.find(next.getId());

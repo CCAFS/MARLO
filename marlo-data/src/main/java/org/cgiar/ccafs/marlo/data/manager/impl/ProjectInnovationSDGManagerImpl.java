@@ -31,6 +31,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -52,6 +53,7 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationSDG(long projectInnovationSDGId) {
     ProjectInnovationSDG projectInnovationSDG = this.getProjectInnovationSDGById(projectInnovationSDGId);
 
@@ -76,6 +78,7 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
     projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGId);
   }
 
+  @Transactional
   public void deleteProjectInnovationSDGPhase(Phase next, long innovationID,
     ProjectInnovationSDG projectInnovationSDG) {
     Phase phase = phaseDAO.find(next.getId());

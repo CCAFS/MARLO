@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 @Named
 public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCenterManager {
@@ -46,6 +47,7 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationCenter(long projectInnovationCenterId) {
     ProjectInnovationCenter projectInnovationCenter = this.getProjectInnovationCenterById(projectInnovationCenterId);
 
@@ -71,6 +73,7 @@ public class ProjectInnovationCenterManagerImpl implements ProjectInnovationCent
 
   }
 
+  @Transactional
   public void deleteProjectInnovationCenterPhase(Phase next, long innovationID,
     ProjectInnovationCenter projectInnovationCenter) {
     Phase phase = phaseDAO.find(next.getId());

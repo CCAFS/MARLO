@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -44,6 +45,7 @@ public class CapdevHighestDegreeManagerImpl implements CapdevHighestDegreeManage
   }
 
   @Override
+  @Transactional
   public void deleteCapdevHighestDegree(long capdevHighestDegreeId) {
 
     capdevHighestDegreeDAO.deleteCapdevHighestDegree(capdevHighestDegreeId);
