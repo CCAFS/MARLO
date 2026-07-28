@@ -1,5 +1,5 @@
 /************* LOGIN *****************/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap");
 
 .login-split {
   display: flex;
@@ -51,7 +51,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(2, 119, 162, 0.55), rgba(2, 90, 130, 0.65));
+  background: linear-gradient(
+    180deg,
+    rgba(2, 119, 162, 0.55),
+    rgba(2, 90, 130, 0.65)
+  );
 }
 
 .login-right-star {
@@ -102,14 +106,14 @@
 }
 
 .login-testers-note p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #7f7f7f;
   text-align: center;
   margin: 2px 0;
 }
 
-.user-password{
+.user-password {
   width: 91% !important;
 }
 .icon-show-password {
@@ -142,7 +146,7 @@
 }
 
 .login-headline {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: #2a2e45;
@@ -151,7 +155,7 @@
 }
 
 .login-subtext {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-size: 12px;
   color: #57a7b5;
@@ -160,7 +164,7 @@
 }
 
 .login-field-label {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #57a7b5;
   margin: 0 0 5px;
@@ -171,10 +175,21 @@
 }
 
 .login-echoed-email {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #021a23;
   margin: 0;
+}
+
+/* Complete name of the user, when the record has one */
+.login-echoed-name {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Email or username actually typed, secondary to the name */
+.login-echoed-username {
+  color: rgb(141, 140, 140);
 }
 
 .selected-project-container {
@@ -211,7 +226,7 @@
   max-height: 100%;
   margin: 0;
   object-fit: contain;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   text-align: center;
 }
@@ -246,7 +261,7 @@
   }
 }
 
-.wrongData{
+.wrongData {
   border-color: red !important;
 }
 
@@ -265,14 +280,14 @@
   border: 1.005px solid #d9d9d9;
   border-radius: 10px;
   background: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #021a23;
 }
 
 .loginForm .login-input-container input.form-control::placeholder {
   color: #d9d9d9;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .loginForm *:focus {
@@ -295,15 +310,15 @@
   }
 }
 
-.terms-container{
+.terms-container {
   z-index: 100;
   margin-top: 4px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 11px;
   color: #021a23;
 }
 
-.terms-container #terms{
+.terms-container #terms {
   margin-right: 7px;
 }
 
@@ -311,7 +326,7 @@
   color: #1689ca;
 }
 
-.login-button-container{
+.login-button-container {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -320,14 +335,14 @@
   margin-top: 12px;
 }
 
-.login-button-container .login-form-button{
+.login-button-container .login-form-button {
   width: 100% !important;
   height: 40px;
   background: #0277a2;
   border: none;
   border-radius: 10px;
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-size: 14px;
   line-height: 1;
@@ -335,12 +350,12 @@
   box-sizing: border-box;
 }
 
-.login-button-container .login-form-button:disabled{
+.login-button-container .login-form-button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-.login-button-container .login-form-button.is-loading{
+.login-button-container .login-form-button.is-loading {
   color: transparent;
 }
 
@@ -364,16 +379,16 @@
   }
 }
 
-.login-back-container{
+.login-back-container {
   position: static;
   width: 100%;
   text-align: center;
   margin-top: 4px;
 }
 
-.login-back-container .loginBack{
+.login-back-container .loginBack {
   color: #7f7f7f;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   text-decoration: underline;
   cursor: pointer;
@@ -391,7 +406,7 @@
 }
 
 .login-support p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #021a23;
   margin: 2px 0;
@@ -402,8 +417,8 @@
   text-decoration: underline;
 }
 
-.login-disclaimer{
-  font-family: 'Poppins', sans-serif;
+.login-disclaimer {
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #021a23;
   text-align: center;
@@ -416,13 +431,14 @@
   flex-flow: row wrap;
 }
 
-.login-logos-container ul, .selection-bar-options ul{
+.login-logos-container ul,
+.selection-bar-options ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
 }
 
-.login-logos-container ul li{
+.login-logos-container ul li {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -430,7 +446,7 @@
   height: 50px;
 }
 
-.login-logos-container ul li img{
+.login-logos-container ul li img {
   width: auto;
   height: auto;
   max-width: 130px;
@@ -494,7 +510,7 @@
 }
 
 .crps-select .selection-bar-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: #57a7b5;
@@ -503,14 +519,14 @@
   white-space: nowrap;
 }
 
-.selection-bar-options ul{
+.selection-bar-options ul {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   justify-content: flex-start;
 }
 
-.selection-bar-options ul li{
+.selection-bar-options ul li {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -525,12 +541,13 @@
   cursor: pointer;
 }
 
-.selection-bar-options ul li.disabled{
+.selection-bar-options ul li.disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.selection-bar-options ul li img.selection-bar-image, .selection-bar-options ul li .selection-bar-acronym{
+.selection-bar-options ul li img.selection-bar-image,
+.selection-bar-options ul li .selection-bar-acronym {
   border: none;
   background: none;
   width: auto;
@@ -540,96 +557,76 @@
   margin: 0;
   cursor: pointer;
   object-fit: contain;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   text-align: center;
 }
 
 /* Acronym fallback: kept styled but hidden, since the cards always show the logo.
    Ready to bring back if we ever need a text-only mode for units without a logo */
-.selection-bar-options ul li .selection-bar-acronym{
+.selection-bar-options ul li .selection-bar-acronym {
   font-weight: 500;
   color: #021a23;
   line-height: 1.2;
   word-break: break-word;
 }
 
-.selection-bar-options ul li:hover{
+.selection-bar-options ul li:hover {
   border-color: #0277a2;
   background-color: #fff;
 }
 
-.selection-bar-options ul li.active{
+.selection-bar-options ul li.active {
   border: 1px solid #0277a2;
   background-color: #fff;
 }
 
-span.login-input-container.welcome-message{
-  color: rgb(141, 140, 140);
-}
-
-span.login-input-container.username{
-  margin: 8px;
-  text-decoration: #d3d3d3 dotted underline;
-  cursor: pointer;
-}
-
-/* Icon style */
-span.login-input-container.username i{
-  font-size: 12px;
-  vertical-align: middle;
-  line-height: 5px;
-  height: 10px;
-}
-
-span.login-input-container.username:hover i{
-  color: rgb(182, 182, 182);
-}
-
-.loginForm p.invalidField{
+.loginForm p.invalidField {
   padding-right: 15px;
   font-size: 11px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color: red;
   margin: 0;
 }
 
-#loginFormContainer .loginForm div input[type=submit] {
+#loginFormContainer .loginForm div input[type="submit"] {
   width: 100%;
 }
 
-#loginFormContainer .loginForm div input[type=text],#loginFormContainer .loginForm div input[type=password] {
+#loginFormContainer .loginForm div input[type="text"],
+#loginFormContainer .loginForm div input[type="password"] {
   box-shadow: none;
 }
 
-#loginFormContainer input[type=checkbox] {
+#loginFormContainer input[type="checkbox"] {
   transform: scale(1.1);
 }
 
-#loginFormContainer input[type="submit"]:disabled{
+#loginFormContainer input[type="submit"]:disabled {
   opacity: 0.5;
 }
 
-.action-login{
+.action-login {
   display: none;
 }
 
-.button-pdf-modal{
+.button-pdf-modal {
   display: none;
 }
 
-.container-recaptcha{
+.container-recaptcha {
   text-align: -webkit-center !important;
 }
 
-@media(max-width: 767px){
-  .login-split{
+@media (max-width: 767px) {
+  .login-split {
     flex-direction: column;
   }
-  .login-left, .login-right{
+  .login-left,
+  .login-right {
     width: 100%;
   }
-  .login-right{
+  .login-right {
     min-height: 220px;
   }
 }
