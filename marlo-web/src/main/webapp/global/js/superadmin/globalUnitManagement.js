@@ -5,6 +5,7 @@ $(document).ready(function() {
   attachLogoUploadEvents();
   attachCrpAdminTeamEvents();
   attachRequiredFieldsValidation();
+  attachAcronymValidation();
   initInstitutionSelect2($(".globalUnits-list"));
   highlightServerValidationErrors();
   addUser = addCrpAdminUser;
@@ -140,6 +141,67 @@ function attachLogoUploadEvents() {
       $(this).find(".logo-file-input").trigger("click");
     }
   });
+}
+
+function attachAcronymValidation() {
+  $(document).on("input", ".acronym-input", function() {
+    validateAcronymField($(this), true);
+    updateLogoAcronymWarning($(this).closest(".globalUnit"));
+  });
+
+  $(document).on("change", ".acronym-input", function() {
+    validateAcronymField($(this), false);
+  });
+
+  $(".acronym-input").each(function() {
+    validateAcronymField($(this), false);
+  });
+}
+
+function validateAcronymField($input, showMessage) {
+  const rawValue = ($input.val() || "").toString();
+  const sanitizedValue = rawValue.replace(/\s+/g, "");
+  const hadWhitespace = /\s/.test(rawValue);
+
+  if (rawValue !== sanitizedValue) {
+    $input.val(sanitizedValue);
+  }
+
+  const hasValue = $.trim(sanitizedValue).length > 0;
+  const isValid = hasValue;
+  const $formGroup = $input.closest(".form-group");
+  const $message = $formGroup.find(".acronym-validation-message");
+
+  setRequiredFieldState($input, hasValue);
+
+  if (showMessage && hadWhitespace) {
+    showTemporaryAcronymMessage($message, guMsg("msg-gu-acronymWhitespace"));
+  } else if (!hadWhitespace) {
+    $message.text("").hide();
+  }
+
+  if (!isValid) {
+    $input.addClass("fieldError");
+    $formGroup.addClass("has-error");
+  } else {
+    $input.removeClass("fieldError");
+    $formGroup.removeClass("has-error");
+  }
+
+  return isValid;
+}
+
+function showTemporaryAcronymMessage($message, text) {
+  const existingTimer = $message.data("acronymTimer");
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  $message.text(text).show();
+  $message.data("acronymTimer", setTimeout(function() {
+    $message.text("").hide();
+    $message.removeData("acronymTimer");
+  }, 1400));
 }
 
 function updateLogoAcronymWarning($gu) {
@@ -362,7 +424,8 @@ function validateRequiredGlobalUnitFields() {
     const $globalUnit = $(this);
     $globalUnit.find(".required").each(function() {
       const $field = $(this);
-      const isValid = $.trim($field.val() || "").length > 0;
+      const isAcronymField = $field.hasClass("acronym-input");
+      const isValid = isAcronymField ? validateAcronymField($field, false) : $.trim($field.val() || "").length > 0;
       setRequiredFieldState($field, isValid);
       if (!isValid) {
         $invalidFields.push(this);
