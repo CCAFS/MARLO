@@ -1,6 +1,8 @@
 [#ftl]
 [#assign emailPlaceholder][@s.text name="login.email"/][/#assign]
 [#assign passwordPlaceholder][@s.text name="login.password"/][/#assign]
+[#-- Headline key: pages including this form may override it (e.g. the 401 unauthorized access page) --]
+[#assign loginHeadlineKey = (loginHeadlineKey)!"login.headline" /]
 <div id="loginFormContainer">
   [#-- [#if !config.production]
   <div class="login-testers-note">
@@ -16,7 +18,7 @@
 
         [#-- Step 1: Email --]
         <div class="login-step" id="login-step-email">
-          <p class="login-headline">[@s.text name="login.headline"/]</p>
+          <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
           <p class="login-subtext">[@s.text name="login.emailHint"/]</p>
           <p class="login-field-label">[@s.text name="login.emailLabel"/]</p>
           <div class="login-input-container" id="login-email">
@@ -29,7 +31,7 @@
 
         [#-- Step 2: Project selection --]
         <div class="login-step hidden" id="login-step-project">
-          <p class="login-headline">[@s.text name="login.headline"/]</p>
+          <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
           <p class="login-subtext">[@s.text name="login.selectProject"/]</p>
           [#-- Login CRPs select bar, re-skinned as project cards --]
           <div class="crps-select hidden">
@@ -69,7 +71,7 @@
 
         [#-- Step 3: Password --]
         <div class="login-step hidden" id="login-step-password">
-          <p class="login-headline">[@s.text name="login.headline"/]</p>
+          <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">
