@@ -78,13 +78,12 @@
               <li id="login-selected-project-card" class="selected-project-card"></li>
             </ul>
           </div>
+          [#-- Complete name of the user (when the record has one) followed by what was typed in step 1 --]
           <div class="login-echoed-email-container">
-            <p class="login-field-label">[@s.text name="login.emailLabel"/]</p>
-            <p class="login-echoed-email"></p>
-          </div>
-          <div class="row welcome-message-container hidden">
-            <span class="login-input-container welcome-message">[@s.text name="login.welcome"/]:</span>
-            <span class="login-input-container username"><i class="glyphicon glyphicon-triangle-left"></i><span></span></span>
+            <p class="login-field-label">[@s.text name="login.loggingInAs"/]</p>
+            <p class="login-echoed-email">
+              <span class="login-echoed-name"></span><span class="login-echoed-username"></span>
+            </p>
           </div>
           <p class="login-field-label">[@s.text name="login.password"/]:</p>
           <div class="login-input-container" id="login-password">

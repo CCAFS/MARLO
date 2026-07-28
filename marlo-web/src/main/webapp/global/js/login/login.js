@@ -10,6 +10,9 @@ var incorrectPasswordCount = 0;
 // NOT the count of <li> elements in the DOM (which always renders every Global Unit with login=true,
 // regardless of the current user's access)
 var availableCrpsCount = 0;
+// Complete name of the user being authenticated (users.first_name + users.last_name, as returned by
+// crpByEmail.do). Empty when the record has no name; the password step then echoes only what was typed
+var userDisplayName = "";
 
 function init() {
   initJreject();
@@ -129,11 +132,6 @@ function init() {
     }
   });
 
-  // Return to the email step when click on the user name
-  $(".loginForm .login-input-container.username").on('click', function() {
-    showEmailStep();
-  });
-
   // Go back to the previous step when click on the "Go back" link
   $('.login-back-container p.loginBack').on('click', function() {
     if(currentStep == "password" && crpSession == "" && availableCrpsCount > 1) {
@@ -151,14 +149,15 @@ function showEmailStep() {
   currentStep = "email";
   hasAccess = false;
   availableCrpsCount = 0;
+  userDisplayName = "";
 
   cleanWrongData();
 
   // Reset input password
   $(".loginForm #login-password .user-password").val("");
 
-  // Hide the big crp image, the welcome message, and the project/password steps
-  $(".crps-select, .project-skeleton, .loginForm .form-group, .loginForm .welcome-message-container").addClass("hidden");
+  // Hide the big crp image and the project/password steps
+  $(".crps-select, .project-skeleton, .loginForm .form-group").addClass("hidden");
   $("#login-step-project, #login-step-password").addClass("hidden");
 
   // Hide terms and conditions checkbox
@@ -242,8 +241,15 @@ function showPasswordStep() {
   // Show terms and conditions checkbox
   showTermsCheckbox();
 
-  // Echo the email entered in step 1
-  $(".login-echoed-email").text(username.val());
+  // Echo who is logging in: the complete name when the user record has one, and always what was
+  // typed in step 1 - between parentheses when it accompanies the name, on its own otherwise
+  if(userDisplayName != "") {
+    $(".login-echoed-name").text(userDisplayName);
+    $(".login-echoed-username").text(" (" + username.val() + ")");
+  } else {
+    $(".login-echoed-name").text("");
+    $(".login-echoed-username").text(username.val());
+  }
 
   // Mirror the actually selected project card (image/acronym), in case it was
   // auto-selected before its "hidden" class was cleared
@@ -423,8 +429,8 @@ function loadAvailableItems(email) {
 function secondForm(data) {
   cleanWrongData();
 
-  // Show user name in form (kept for the hidden welcome-message-container)
-  $(".welcome-message-container .username span").text(data.user.name);
+  // Keep the user's complete name to show it on the password step
+  userDisplayName = sanitizeUserName(data.user.name);
 
   // If has a crpSession validate if user has access, if doesn't click the crpSession option
   // If hasn't crpSession and user has multiple projects, show the project selection step
@@ -541,7 +547,7 @@ function wrongData(type,customMessage) {
       "attachments": [
         {
             "color": "#e74c3c",
-            "author_name": $('.login-input-container.username span').text(),
+            "author_name": userDisplayName,
             "text": $invalidField.text(),
             "fields": [
                 {
@@ -559,6 +565,26 @@ function wrongData(type,customMessage) {
       ]
   };
   postMessageToSlack(JSON.stringify(slackMessage));
+}
+
+// getComposedCompleteName() on the server concatenates first_name and last_name without validating
+// them, so an incomplete record arrives here as "null null" or "Kenji null". Drop those tokens and
+// return "" when nothing usable is left
+function sanitizeUserName(name) {
+  if(name == null) {
+    return "";
+  }
+
+  var parts = String(name).split(/\s+/);
+  var cleaned = [];
+
+  $.each(parts, function(i, part) {
+    if(part != "" && part.toLowerCase() != "null") {
+      cleaned.push(part);
+    }
+  });
+
+  return cleaned.join(" ");
 }
 
 // Hide wrong data line and message in email and password inputs
