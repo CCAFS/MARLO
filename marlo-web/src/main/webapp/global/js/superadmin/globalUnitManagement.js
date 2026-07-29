@@ -5,6 +5,7 @@ $(document).ready(function() {
   attachLogoUploadEvents();
   attachCrpAdminTeamEvents();
   attachRequiredFieldsValidation();
+  attachAcronymValidation();
   initInstitutionSelect2($(".globalUnits-list"));
   highlightServerValidationErrors();
   addUser = addCrpAdminUser;
@@ -121,7 +122,12 @@ function registerDeletedGlobalUnitId($item) {
 function attachLogoUploadEvents() {
   // Initialize fileupload on any existing .logo-file-input elements on page load
   $(".logo-file-input").each(function() {
-    initLogoFileUpload($(this));
+    const $input = $(this);
+    const isTemplateInput = $input.closest(".globalUnit").attr("id") === "globalUnit-template";
+    if (isTemplateInput) {
+      return;
+    }
+    initLogoFileUpload($input);
   });
 
   $(document).on("input", ".acronym-input", function() {
@@ -142,6 +148,67 @@ function attachLogoUploadEvents() {
   });
 }
 
+function attachAcronymValidation() {
+  $(document).on("input", ".acronym-input", function() {
+    validateAcronymField($(this), true);
+    updateLogoAcronymWarning($(this).closest(".globalUnit"));
+  });
+
+  $(document).on("change", ".acronym-input", function() {
+    validateAcronymField($(this), false);
+  });
+
+  $(".acronym-input").each(function() {
+    validateAcronymField($(this), false);
+  });
+}
+
+function validateAcronymField($input, showMessage) {
+  const rawValue = ($input.val() || "").toString();
+  const sanitizedValue = rawValue.replace(/\s+/g, "");
+  const hadWhitespace = /\s/.test(rawValue);
+
+  if (rawValue !== sanitizedValue) {
+    $input.val(sanitizedValue);
+  }
+
+  const hasValue = $.trim(sanitizedValue).length > 0;
+  const isValid = hasValue;
+  const $formGroup = $input.closest(".form-group");
+  const $message = $formGroup.find(".acronym-validation-message");
+
+  setRequiredFieldState($input, hasValue);
+
+  if (showMessage && hadWhitespace) {
+    showTemporaryAcronymMessage($message, guMsg("msg-gu-acronymWhitespace"));
+  } else if (!hadWhitespace) {
+    $message.text("").hide();
+  }
+
+  if (!isValid) {
+    $input.addClass("fieldError");
+    $formGroup.addClass("has-error");
+  } else {
+    $input.removeClass("fieldError");
+    $formGroup.removeClass("has-error");
+  }
+
+  return isValid;
+}
+
+function showTemporaryAcronymMessage($message, text) {
+  const existingTimer = $message.data("acronymTimer");
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  $message.text(text).show();
+  $message.data("acronymTimer", setTimeout(function() {
+    $message.text("").hide();
+    $message.removeData("acronymTimer");
+  }, 1400));
+}
+
 function updateLogoAcronymWarning($gu) {
   const $dropZone = $gu.find(".logo-drop-zone");
   const uploadedAcronym = ($dropZone.data("uploadedAcronym") || "").trim().toUpperCase();
@@ -157,6 +224,10 @@ function updateLogoAcronymWarning($gu) {
 }
 
 function initLogoFileUpload($fileInput) {
+  if ($fileInput.data("guLogoUploadBound") === true) {
+    return;
+  }
+
   if (typeof $fileInput.fileupload !== "function") {
     const $gu = $fileInput.closest(".globalUnit");
     $gu.find(".logo-upload-status").html("<span style='color:red'>" + guMsg("msg-gu-logoLibraryMissing") + "</span>");
@@ -270,6 +341,8 @@ function initLogoFileUpload($fileInput) {
     }
     data.formData = { acronym: acronymValue };
   });
+
+  $fileInput.data("guLogoUploadBound", true);
 }
 
 function updateIndexes() {
@@ -362,7 +435,8 @@ function validateRequiredGlobalUnitFields() {
     const $globalUnit = $(this);
     $globalUnit.find(".required").each(function() {
       const $field = $(this);
-      const isValid = $.trim($field.val() || "").length > 0;
+      const isAcronymField = $field.hasClass("acronym-input");
+      const isValid = isAcronymField ? validateAcronymField($field, false) : $.trim($field.val() || "").length > 0;
       setRequiredFieldState($field, isValid);
       if (!isValid) {
         $invalidFields.push(this);

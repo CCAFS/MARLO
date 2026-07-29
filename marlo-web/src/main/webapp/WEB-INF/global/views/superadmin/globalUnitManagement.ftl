@@ -4,7 +4,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js",
-  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260723f"
+  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260729b"
 ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260723b" ] /]
 [#assign currentSection = "superadmin" /]
@@ -109,6 +109,7 @@
   <span id="msg-gu-logoUploadFailed">[@s.text name="globalUnitManagement.logo.uploadFailed" /]</span>
   <span id="msg-gu-logoUploadError">[@s.text name="globalUnitManagement.logo.uploadError" /]</span>
   <span id="msg-gu-logoAcronymRequired">[@s.text name="globalUnitManagement.logo.acronymRequired" /]</span>
+  <span id="msg-gu-acronymWhitespace">[@s.text name="globalUnitManagement.validation.acronymNoWhitespace" /]</span>
   <span id="msg-gu-crpAdminDuplicate">[@s.text name="globalUnitManagement.crpAdminTeam.duplicate" /]</span>
   <span id="msg-gu-validationRequired">[@s.text name="globalUnitManagement.validation.requiredFields" /]</span>
   <span id="msg-gu-institutionPlaceholder">[@s.text name="globalUnitManagement.institution.placeholder" /]</span>
@@ -158,6 +159,7 @@
           <label>[@s.text name="globalUnitManagement.acronym" /] <span class="red requiredTag">*</span></label>
           <input class="form-control acronym-input required" type="text" name="globalUnits[${index}].acronym"
             value="${(element.acronym)!}" />
+          <div class="acronym-validation-message text-danger" style="display:none; margin-top:4px;" aria-live="polite"></div>
         </div>
       </div>
 
