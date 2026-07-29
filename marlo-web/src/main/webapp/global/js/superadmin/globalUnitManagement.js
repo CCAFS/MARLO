@@ -122,7 +122,12 @@ function registerDeletedGlobalUnitId($item) {
 function attachLogoUploadEvents() {
   // Initialize fileupload on any existing .logo-file-input elements on page load
   $(".logo-file-input").each(function() {
-    initLogoFileUpload($(this));
+    const $input = $(this);
+    const isTemplateInput = $input.closest(".globalUnit").attr("id") === "globalUnit-template";
+    if (isTemplateInput) {
+      return;
+    }
+    initLogoFileUpload($input);
   });
 
   $(document).on("input", ".acronym-input", function() {
@@ -219,6 +224,10 @@ function updateLogoAcronymWarning($gu) {
 }
 
 function initLogoFileUpload($fileInput) {
+  if ($fileInput.data("guLogoUploadBound") === true) {
+    return;
+  }
+
   if (typeof $fileInput.fileupload !== "function") {
     const $gu = $fileInput.closest(".globalUnit");
     $gu.find(".logo-upload-status").html("<span style='color:red'>" + guMsg("msg-gu-logoLibraryMissing") + "</span>");
@@ -332,6 +341,8 @@ function initLogoFileUpload($fileInput) {
     }
     data.formData = { acronym: acronymValue };
   });
+
+  $fileInput.data("guLogoUploadBound", true);
 }
 
 function updateIndexes() {
