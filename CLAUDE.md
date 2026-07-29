@@ -29,8 +29,21 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 | Add a feature flag conditional on Global Unit | `AGENTS.md` "Specificity Implementation Guide" |
 | Add a database column, table, index, or migration | `AGENTS.md` "Database Migrations" + `docs/detailed-design/detailed-design.md` §3 |
 | Add or change i18n strings | `AGENTS.md` "File Organization" + `marlo-web/src/main/resources/global.properties` (and `custom/*.properties` per program) |
+| Work in an existing domain module | `docs/specs/domain/<module>/agent-context.md` first, when present; then inspect the target source files |
 | Build or update a module spec | `docs/specs/general-setup/requirements.md` + `design.md` + `task.md` |
 | Onboard a new spec area | Pick the right taxonomy folder under `docs/specs/`: `domain/`, `enhancement/`, `bugfix/`, or `epic/` |
+
+---
+
+## Mandatory Agent-Context Rule
+
+Before implementing or editing code in any existing domain module, Claude (and any AI assistant) MUST check for and
+read `docs/specs/domain/<module>/agent-context.md` first when the file exists.
+
+- If `agent-context.md` exists: treat it as the module's first-stop operational guide.
+- If it does not exist: continue with `AGENTS.md`, this guide, and target source inspection.
+- For broad, architectural, or high-risk changes: after reading `agent-context.md`, also read the full module spec
+	(`requirements.md`, `design.md`, `task.md`).
 
 ---
 
@@ -42,7 +55,7 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 - `docs/specs/bugfix/<slug>/` — structured bug-driven specs that need explicit traceability beyond a normal commit.
 - `docs/specs/epic/<name>/` — multi-spec initiatives (e.g., `epic/java-17-cutover/`, `epic/tenant-onboarding/`, `epic/legacy-modules-retirement/`).
 
-Each spec folder MUST contain three files: `requirements.md`, `design.md`, `task.md`, all following the templates under `docs/specs/general-setup/`.
+Each spec folder MUST contain three files: `requirements.md`, `design.md`, `task.md`, all following the templates under `docs/specs/general-setup/`. A spec folder MAY also contain `agent-context.md`: a compact, agent-first summary for routine work. When it exists, read `agent-context.md` before the longer spec files and open the longer files only when the change is broad, architectural, risky, or needs formal traceability.
 
 ---
 
@@ -65,14 +78,16 @@ Each spec folder MUST contain three files: `requirements.md`, `design.md`, `task
 
 ## How to start a new piece of work
 
-1. Read this file, `AGENTS.md`, and the relevant ai-context docs.
-2. Locate or create the spec folder under `docs/specs/...`.
-3. Draft `requirements.md` (use `docs/specs/general-setup/requirements.md` as the template).
-4. Draft `design.md` (use `docs/specs/general-setup/design.md` as the template).
-5. Draft `task.md` (use `docs/specs/general-setup/task.md` as the template).
-6. Have the spec reviewed before implementation begins.
-7. Implement against the task plan; keep `task.md` up to date with verification notes.
-8. Update relevant `reports/ai-context/*.md` files when the change alters routing, validation, replication, or composition contracts.
+1. Read this file and `AGENTS.md`.
+2. If the target domain has `docs/specs/domain/<module>/agent-context.md`, read it first for routine work.
+3. Open the relevant ai-context docs only for the contracts the change touches (routing, validation, replication, composition, expandable blocks).
+4. For broad, architectural, risky, or formally tracked work, locate or create the spec folder under `docs/specs/...`.
+5. Draft or update `requirements.md` (use `docs/specs/general-setup/requirements.md` as the template).
+6. Draft or update `design.md` (use `docs/specs/general-setup/design.md` as the template).
+7. Draft or update `task.md` (use `docs/specs/general-setup/task.md` as the template).
+8. Have the spec reviewed before implementation begins when the change requires formal approval.
+9. Implement against the task plan; keep `task.md` up to date with verification notes when a formal task plan exists.
+10. Update relevant `reports/ai-context/*.md` files when the change alters routing, validation, replication, or composition contracts.
 
 ---
 
