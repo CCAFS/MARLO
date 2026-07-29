@@ -72,7 +72,7 @@ MARLO is a Java EE web application that:
 - **Production (AWS, Virginia)** — multiple EC2 instances: core application, frontend, CLARISA integration, automation, backup. Lambda for specific AI/automation tasks. RDS MySQL as system of record. S3 for backups and documents.
 - **Test (CIAT Palmira)** — on-premise; reachable via FortiClient VPN.
 - **Staging** — being built out to mirror Production behind GlobalProtect VPN.
-- **CI/CD** — Jenkins (https://automation.prms.cgiar.org/) triggered by GitHub Actions workflow `jenkins-trigger.yml` on every push. SonarCloud workflows (`sonarcloud.yml`, `sonartest.yml`) provide static analysis.
+- **CI/CD** — Jenkins (https://automation.prms.cgiar.org/) is triggered by the GitHub Actions workflows under `.github/workflows/` (`jenkins-trigger*.yml`). Dedicated SonarCloud workflow files are not present in this checkout; treat Sonar/static-analysis execution as CI-environment dependent unless the workflow is added.
 
 ---
 
@@ -145,7 +145,7 @@ Top-level Struts action packages and their domains:
 
 - **Engine:** MySQL (AWS RDS in production).
 - **ORM:** Hibernate 5.4.x via JPA-style annotations on entities under `marlo-data/.../data/model`.
-- **Connection pool:** HikariCP (≥ 5.x post-Jan 2026).
+- **Connection pool:** HikariCP (current checkout: 2.4.6; upgrade to 5.x is a modernization target that requires compatibility validation).
 - **Schema migrations:** Flyway 4.0.1 (`marlo-web/src/main/resources/database/migrations/`); no raw schema changes outside migrations.
 
 ### 3.2 Entity scale
@@ -416,19 +416,22 @@ Interceptors (`canEditProject`, `canEditAi`, `canEditDeliverable`, `editFunding`
 - `errors/` package provides standardized 4xx / 5xx responses.
 - Public unauthenticated read endpoints, if any, MUST be explicitly enumerated in their controller and reviewed in module specs.
 
-### 8.5 Web security hardening (post-Jan 2026)
+### 8.5 Web security hardening and dependency baseline
 
-The SETI 2026 modernization completed:
+`marlo-parent/pom.xml` is the source of truth for dependency versions in the active checkout. The current security-aligned baseline includes:
 
 - Apache Struts2 ≥ 6.4.0.
 - Tomcat Catalina ≥ 9.0.96.
 - Spring Framework ≥ 5.3.39.
 - Jackson ≥ 2.17.x.
-- HikariCP ≥ 5.x.
-- Springdoc OpenAPI replaces Springfox/Swagger 2.9.2.
-- Groovy ≥ 2.4.21.
+- Springdoc OpenAPI is present; legacy Swagger/Springfox artifacts may still exist until dependency cleanup is completed.
 
-These versions are constitutional floors. Downgrades require an explicit, documented rationale and PMU sign-off.
+Known modernization exceptions in this checkout:
+
+- HikariCP remains at 2.4.6.
+- Groovy remains at 2.4.8.
+
+Do not claim HikariCP ≥ 5.x or Groovy ≥ 2.4.21 until those upgrades are implemented and validated. Downgrades from the versions declared in `marlo-parent/pom.xml` require an explicit, documented rationale and PMU sign-off.
 
 ### 8.6 Data security
 
@@ -486,7 +489,7 @@ These versions are constitutional floors. Downgrades require an explicit, docume
 ### 10.1 Static analysis
 
 - **Checkstyle** — `mvn checkstyle:check` against `configuration/marlo-checkstyle.xml`. Gate for merges.
-- **SonarCloud** — automated on PRs (`.github/workflows/sonarcloud.yml`, `sonartest.yml`).
+- **SonarCloud/static analysis** — CI-environment dependent in this checkout; no dedicated `sonarcloud.yml` or `sonartest.yml` workflow file is present.
 - **Snyk** — security scans in the modernization cycle.
 
 ### 10.2 Unit tests
@@ -539,8 +542,10 @@ These versions are constitutional floors. Downgrades require an explicit, docume
 
 ### 11.3 Run scripts
 
-- Java 8 branches: `scripts/run-marlo-java8.sh` (or `.bat`).
-- Java 17 branches: `scripts/run-marlo-java17.sh` (or `.bat`). Use only when the branch contains `java17` / `java_17`.
+- MARLO currently uses Java 17.
+- Use `scripts/run-marlo-java17.sh` (or `.bat`) for local runs.
+- Use `marlo-parent/pom.xml` to verify the active Java level if this changes in a future branch.
+- Use `scripts/run-marlo-java8.sh` (or `.bat`) only for legacy Java 8 branches/profiles.
 - Local property files (`marlo-dev.properties`) are gitignored; bootstrap from `marlo-test.properties` template.
 
 ### 11.4 Environment / configuration
@@ -565,6 +570,6 @@ These are the decisions that shape MARLO at constitution time. Future ADRs SHOUL
 | ADR-7 | Microsoft Fabric Lakehouse + Power BI for analytics | Accepted | Bronze / Silver / Gold; refresh every 8 hours (Results) / 30 minutes (QA). |
 | ADR-8 | AWS Bedrock (Claude + Titan) + OpenSearch for AI services | Accepted | Multi-stage RAG pipelines; responses cite sources. |
 | ADR-9 | Jenkins-driven CI/CD with Slack notifications | Accepted | Triggered by GitHub Actions (`jenkins-trigger.yml`). |
-| ADR-10 | SETI January 2026 dependency baseline | Accepted | Constitutional floors documented in §8.5. |
+| ADR-10 | Dependency baseline follows the active POM | Accepted | Current floors and modernization exceptions are documented in §8.5. |
 | ADR-11 | Light theme only | Accepted | See `docs/system-design/design.md` §11. |
 | ADR-12 | No new Struts JSON paths beyond existing patterns | Accepted | Per `AGENTS.md` scope guardrails. |

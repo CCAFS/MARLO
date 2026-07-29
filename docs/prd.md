@@ -194,8 +194,7 @@ Acceptance criteria are stated at the product level. Each module spec under `doc
 
 1. **Checkstyle** — `mvn checkstyle:check` MUST pass against `configuration/marlo-checkstyle.xml`.
 2. **CVEs** — Critical Snyk findings introduced by a change MUST be remediated before merge to `aiccra-staging`.
-3. **Dependency baselines (Jan 2026, post-SETI)** — MUST NOT be downgraded:
-   Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, Jackson ≥ 2.17.x, HikariCP ≥ 5.x, Springdoc OpenAPI (replaces Springfox/Swagger 2.9.2), Groovy ≥ 2.4.21.
+3. **Dependency baselines (current checkout)** — dependency versions declared in `marlo-parent/pom.xml` MUST NOT be downgraded without explicit approval. Current security-aligned floors include Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, and Jackson ≥ 2.17.x. HikariCP 2.4.6 and Groovy 2.4.8 remain documented modernization exceptions until upgraded and validated.
 4. **QA completeness** — A change to a critical save section MUST be retested against its `Validator` and its interceptor stack before deploy.
 
 ### 7.3 Operational acceptance
@@ -237,7 +236,7 @@ Acceptance criteria are stated at the product level. Each module spec under `doc
 
 ### 8.3 Constitutional constraints
 
-- **Tech stack** — Java + Struts 2 + Hibernate + Spring (REST) + FreeMarker + Tomcat 9 + MySQL. Java versions: 8 and 17 branches coexist; choose the run script per branch.
+- **Tech stack** — Java 17 + Struts 2 + Hibernate + Spring (REST) + FreeMarker + Tomcat 9 + MySQL. `marlo-parent/pom.xml` verifies the active Java level; Java 8 scripts remain only for legacy branches/profiles.
 - **Multi-module Maven** — `marlo-parent` aggregates `marlo-utils`, `marlo-core`, `marlo-data`, `marlo-web`. No new top-level module without a constitutional update.
 - **Web framework boundary** — `.do` (Struts) for internal flows; `/api/*` (Spring MVC) for REST. JSON via Struts is *punctual* and limited to existing patterns (per `AGENTS.md`).
 - **Phased persistence** — Changes that touch `ManagerImpl` save logic MUST preserve the recursive replication contract (`reports/ai-context/persistence-replication-managerimpl.md`).
@@ -250,7 +249,7 @@ Acceptance criteria are stated at the product level. Each module spec under `doc
 
 These are the live, unresolved questions the constitution cannot answer alone. They MUST be resolved (or explicitly deferred) by an `epic` spec before they block product evolution.
 
-1. **Java 8 → Java 17 cutover** — When does the AICCRA production line switch fully off Java 8? Today both run scripts coexist (`scripts/run-marlo-java8.sh`, `scripts/run-marlo-java17.sh`). Modernization timeline TBD.
+1. **Java 8 legacy cleanup** — MARLO currently uses Java 17, while Java 8 run scripts still coexist for legacy branches/profiles. Define when the Java 8 scripts and profiles can be retired.
 2. **Frontend modernization** — FreeMarker + jQuery + Bootstrap is the current UI stack. A move toward server-rendered components with progressive enhancement (or partial React islands) has been discussed but not committed. Constitutional default remains FTL + macros.
 3. **Public REST API surface** — `/api/*` is currently used by trusted integrations. A formal external partner API (rate-limited, versioned beyond v2, OAuth2) is not yet committed.
 4. **Staging environment parity** — Staging is "currently being implemented." Until it mirrors production, hot fixes still validate against Test (CIAT Palmira). Define and ratify the parity contract.

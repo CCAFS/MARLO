@@ -57,8 +57,8 @@ Each spec folder MUST contain three files: `requirements.md`, `design.md`, `task
 7. **Code style:** 2-space indent, 120 char line limit, braces on same line, mandatory blocks for `if/while/for/do`, max file length 3500 lines. Checkstyle (`mvn checkstyle:check`) is a gate.
 8. **English only** in code, identifiers, and inline comments. User-facing strings MUST be i18n-keyed.
 9. **Branching:** never commit directly to `AICCRA`. Feature branches start from `aiccra-staging` and merge back into it. `aiccra-dev` is unstable and used only for integration experiments.
-10. **Run scripts:** branches containing `java17` / `java_17` use `scripts/run-marlo-java17.sh`; otherwise `scripts/run-marlo-java8.sh`.
-11. **Dependency floors (post-Jan 2026 SETI baseline) MUST NOT be downgraded:** Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, Jackson ≥ 2.17.x, HikariCP ≥ 5.x, Springdoc OpenAPI (replaces Springfox/Swagger 2.9.2), Groovy ≥ 2.4.21.
+10. **Run scripts:** MARLO currently uses Java 17. Use `scripts/run-marlo-java17.sh` (or `.bat`) for local runs. `marlo-parent/pom.xml` is the verification source for the active Java level. Use `scripts/run-marlo-java8.sh` only for legacy Java 8 branches/profiles.
+11. **Dependency baseline:** do not downgrade dependency versions declared in `marlo-parent/pom.xml` without explicit approval. Current security-aligned floors in this checkout include Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, and Jackson ≥ 2.17.x. Modernization exceptions still present in the POM are HikariCP 2.4.6 and Groovy 2.4.8; do not claim HikariCP ≥ 5.x or Groovy ≥ 2.4.21 until those upgrades are implemented and validated.
 12. **Do not commit credential files.** `marlo-${profile}.properties` is gitignored; bootstrap from `marlo-test.properties`.
 
 ---
