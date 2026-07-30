@@ -3018,35 +3018,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Long getCrpID() {
     try {
-      if (this.session != null && !this.session.isEmpty()) {
-        try {
-          GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-            ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-          this.crpID = crp.getId();
-
-          if (crp == null || crpID == null || crpID == 0) {
-            crp = crpManager.getGlobalUnitById(45);
-          }
-        } catch (Exception e) {
-          LOG.warn("There was a problem trying to find the user crp in the session.");
-        }
-      } else {
-        if (this.crpID == null || this.crpID == 0) {
-          GlobalUnit crp = crpManager.getGlobalUnitById(45);
-          this.crpID = crp.getId();
-        }
+      if (this.crpID != null && this.crpID != 0L) {
         return this.crpID;
+      }
 
+      if (this.session == null || this.session.isEmpty()) {
+        return this.crpID;
+      }
+
+      Object sessionCrp = this.session.get(APConstants.SESSION_CRP);
+      if (!(sessionCrp instanceof GlobalUnit)) {
+        return this.crpID;
+      }
+
+      GlobalUnit crp = (GlobalUnit) sessionCrp;
+      if (crp.getId() != null && crp.getId() != 0L) {
+        this.crpID = crp.getId();
       }
     } catch (Exception e) {
-      LOG.error(
-        "I'm not exactly sure what exception this is supposed to catch!  If this statement ever gets printed, I will be surprised!",
-        e);
-      /**
-       * Original code swallows the exception and didn't even log it. Now
-       * we at least log it, but we need to revisit to see if we should
-       * continue processing or re-throw the exception.
-       */
+      LOG.warn("There was a problem trying to find the user crp in the session.", e);
     }
     return this.crpID;
   }

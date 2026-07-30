@@ -10,7 +10,7 @@ MARLO (Managing Agricultural Research for Learning and Outcomes) is an online ma
 ## Project Structure
 - `marlo-core`: Core configuration and initialization.
 - `marlo-data`: Data layer (JPA entities and repositories).
-- `marlo-web`: Web app (actions, REST endpoints, JSPs, JavaScript).
+- `marlo-web`: Web app (actions, REST endpoints, FreeMarker/FTL views, JavaScript).
 - `marlo-utils`: Utility classes.
 - `marlo-parent`: Parent POM and dependency management.
 
@@ -19,13 +19,13 @@ MARLO (Managing Agricultural Research for Learning and Outcomes) is an online ma
 - Maven (build and dependency management)
 - Struts 2 (web framework)
 - Hibernate/JPA (ORM)
-- JSP (server-side templating)
+- FreeMarker/FTL (server-side templating)
 - Tomcat 9 (local container via Cargo)
 - JavaScript (frontend)
 - SQL migrations
 
 ## Web Layer: Struts 2 vs Spring MVC
-- **Struts 2**: Traditional web actions (`.do`, `.json`), JSPs, and interceptors. Main config: `marlo-web/src/main/resources/struts.xml` plus module-specific `struts-*.xml` files (e.g. `struts-projects.xml`, `struts-admin.xml`, `struts-api.xml`).
+- **Struts 2**: Traditional web actions (`.do`, `.json`), FreeMarker/FTL views, and interceptors. Main config: `marlo-web/src/main/resources/struts.xml` plus module-specific `struts-*.xml` files (e.g. `struts-projects.xml`, `struts-admin.xml`, `struts-api.xml`).
 - **Spring MVC**: REST API under `/api/*`. These paths are excluded from Struts via `struts.action.excludePattern`. Controllers use `@RestController` and `@RequestMapping`.
 
 ## Configuration & Properties
@@ -153,9 +153,10 @@ if (this.hasSpecificities(APConstants.<SPECIFICITY_CONSTANT_NAME>)) {
 }
 ```
 
-### 5. Frontend usage (FTL/JSP/JS)
+### 5. Frontend usage (FTL/JS)
 - In FTL views, use `action.hasSpecificities('<specificity_key>')` to toggle sections.
 - Keep behavior explicit with `[#if] ... [/#if]` blocks.
+- Do not create new JSP views; JSP is limited to legacy/bootstrap entry points such as `index.jsp`.
 
 Example:
 
