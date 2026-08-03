@@ -13,6 +13,9 @@ var availableCrpsCount = 0;
 // Complete name of the user being authenticated (users.first_name + users.last_name, as returned by
 // crpByEmail.do). Empty when the record has no name; the password step then echoes only what was typed
 var userDisplayName = "";
+// True while validateUser.do is in flight. Guards the step navigation ("Go back") and the button
+// state, so an attempt that is still running can't be navigated away from or submitted twice
+var isSubmitting = false;
 
 function init() {
   initJreject();
@@ -58,6 +61,12 @@ function init() {
     cleanWrongData();
   });
 
+  // Keep the submit button disabled while the email/username field is empty, so step 1 can't be
+  // submitted with nothing typed. "input" (not "change") so it reacts on every keystroke and on paste
+  username.on("input", function() {
+    updateNextButtonState();
+  });
+
   // Set focus on email input on page load
   $(".loginForm #login-email .user-email").focus();
 
@@ -87,15 +96,21 @@ function init() {
     e.preventDefault();
 
     if(currentStep == "email") {
-      // Save the email in cookies
-      setCookie("username.email", username.val(), cookieTime);
       // Clean bottom red line in input
       $('input.login-input').removeClass("wrongData");
-      var email = username.val();
-      /* || !isEmail(email) if you want to check if isEmail */
+      var email = $.trim(username.val());
+
+      // Two-stage validation, so a malformed value is caught here instead of being reported as a
+      // missing database record. The field accepts an email OR a username (crpByEmail.do falls back
+      // to getUserByUsername), so the email format is only enforced when the value looks like an
+      // email attempt: without "@" it is a username and is left for the server to resolve
       if(email == "") {
+        wrongData("emailRequired");
+      } else if(email.indexOf("@") > -1 && !looksLikeEmail(email)) {
         wrongData("invalidEmail");
       } else {
+        // Only remember a value that passed validation
+        setCookie("username.email", email, cookieTime);
         showProjectSkeleton();
         loadAvailableItems(email);
       }
@@ -121,6 +136,17 @@ function init() {
   // Accessible "Enter" (keyCode==13) to login
   $(".loginForm .login-input").keyup(function(event) {
     if(event.keyCode === 13) {
+      // The button is disabled while step 1 is empty, and a disabled button is not guaranteed to
+      // dispatch a click, so raise the validation message here instead of relying on one
+      if(currentStep == "email" && $.trim(username.val()) == "") {
+        wrongData("emailRequired");
+        return;
+      }
+
+      if(isSubmitting) {
+        return;
+      }
+
       $("input#login_next").click();
     }
   });
@@ -134,12 +160,21 @@ function init() {
 
   // Go back to the previous step when click on the "Go back" link
   $('.login-back-container p.loginBack').on('click', function() {
+    // Ignore clicks while a login attempt is still running: navigating away mid-request left the
+    // form on another step while the pending response was still about to repaint the button
+    if(isSubmitting) {
+      return;
+    }
+
     if(currentStep == "password" && crpSession == "" && availableCrpsCount > 1) {
       showProjectStep();
     } else {
       showEmailStep();
     }
   });
+
+  // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
+  updateNextButtonState();
 
 }
 
@@ -187,6 +222,11 @@ function showEmailStep() {
   // Change button value to Next
   $("input#login_next").val("Log in");
 
+  // Drop any spinner/disabled state left behind by a failed attempt, then re-evaluate the button
+  // against the (possibly empty) email field
+  clearLoginButtonLoading();
+  updateNextButtonState();
+
   // Set focus on email input
   $(".loginForm #login-email .user-email").focus();
 }
@@ -230,6 +270,9 @@ function showProjectStep() {
 
   // Change button value to Login
   $("input#login_next").val("Log in");
+
+  clearLoginButtonLoading();
+  updateNextButtonState();
 }
 
 // Step 3: Password
@@ -266,6 +309,9 @@ function showPasswordStep() {
 
   // Change button value to Login
   $("input#login_next").val("Log in");
+
+  clearLoginButtonLoading();
+  updateNextButtonState();
 
   // Set focus on password input
   $(".loginForm #login-password input").focus();
@@ -325,6 +371,8 @@ function loadAvailableItems(email) {
   $
       .ajax({
           url: baseUrl + "/crpByEmail.do",
+          // POST so the account identifier is not left in the URL (proxy logs, browser history, Referer)
+          type: "POST",
           data: {
             userEmail: email
           },
@@ -333,8 +381,18 @@ function loadAvailableItems(email) {
             $("input#login_next").attr("disabled", true);
           },
           success: function(data) {
-            // If the user doesn't exists show a predefined message and reset the button value to (next)
-            if(data.user == null) {
+            // Same guard as in checkPassword: an HTML error page answered with a 200 must not be
+            // reported to the user as "account not found"
+            if(data == null || data.crps == null) {
+              showEmailStep();
+              wrongData("serverError");
+              return;
+            }
+
+            // If the user doesn't exists show a predefined message and reset the button value to (next).
+            // An empty crps list is treated the same way: the code below indexes data.crps[0], and
+            // throwing there would strand the user on the loading skeleton
+            if(data.user == null || data.crps.length == 0) {
               showEmailStep();
               wrongData("emailNotFound");
             } else {
@@ -415,11 +473,11 @@ function loadAvailableItems(email) {
             }
           },
           complete: function(data) {
-            $("input#login_next").attr("disabled", false);
+            updateNextButtonState();
           },
           error: function(data) {
             showEmailStep();
-            wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+            wrongData("serverError");
           }
       });
 }
@@ -462,20 +520,34 @@ function checkPassword(email,password) {
   $
       .ajax({
           url: baseUrl + "/validateUser.do",
+          // POST so the credentials are not left in the URL (proxy logs, browser history, Referer)
+          type: "POST",
           data: {
               userEmail: email,
               userPassword: password,
               agree: $('input#terms').is(':checked')
           },
           beforeSend: function() {
-            // If terms and conditions is checked, show a small spinner over the button
-            if($('input#terms').is(':checked')) {
-              $("input#login_next").addClass("is-loading");
-              $("input#login_next").attr("disabled", true);
-              $(".login-button-spinner").removeClass("hidden");
-            }
+            // Lock the button for the whole request. It used to be locked only when the terms
+            // checkbox was checked, which let a second attempt be fired on top of the first one
+            isSubmitting = true;
+            $("input#login_next").addClass("is-loading");
+            $("input#login_next").attr("disabled", true);
+            $(".login-button-spinner").removeClass("hidden");
+            // Grey out the step navigation for the duration of the request
+            $('.login-back-container').addClass("is-busy");
           },
           success: function(data) {
+            // A proxy or the container can answer 200 with an HTML body instead of the expected JSON.
+            // Treat any unexpected payload as a server error instead of throwing inside this callback,
+            // which is the other way the button used to end up stuck with its spinner
+            if(data == null || data.userFound == null) {
+              clearLoginButtonLoading();
+              updateNextButtonState();
+              wrongData("serverError");
+              return;
+            }
+
             // If login success is false show the error message, if doesn't send form
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
@@ -499,41 +571,55 @@ function checkPassword(email,password) {
                 wrongData("incorrectPassword", data.messageEror);
               }
 
-              // Hide the loading spinner
-              $("input#login_next").removeClass("is-loading");
-              $(".login-button-spinner").addClass("hidden");
-              if (incorrectPasswordCount != 3){
-                $("input#login_next").attr("disabled", false);
-              }
-              $("input#login_next").val("Log in");
+              // Hide the loading spinner. Runs after the recaptcha block above, so that
+              // updateNextButtonState() sees the incremented counter and keeps the button locked
+              clearLoginButtonLoading();
+              updateNextButtonState();
             } else {
+              // Keep the spinner and the lock while the real form submits and the page navigates away
               $("input#login_formSubmit").click();
             }
           },
           complete: function(data) {
           },
           error: function(data) {
-            wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
-            $("input#login_next").removeClass("is-loading");
-            $(".login-button-spinner").addClass("hidden");
-            $("input#login_next").attr("disabled", false);
-            $("input#login_next").val("Log in");
+            // Release the button before rendering the message, so a failure inside wrongData() can
+            // never again leave the spinner running (this is what the 502 on AD accounts exposed)
+            clearLoginButtonLoading();
+            updateNextButtonState();
+            wrongData("serverError");
           }
       });
 }
 
 // Show error message and bottom red line in input
-// if has a custom message show them, but if is a default type (i.e. incorrectPassword, etc.), show them
+// {type} is the CSS class of one of the <p class="invalidField ..."> elements in loginForm.ftl
+// {customMessage} optionally replaces that element's default (i18n) text
 function wrongData(type,customMessage) {
+  // Only ever show one message: submitting with "Enter" keeps the focus on the input, so its "change"
+  // event never fires and a message from the previous attempt used to stay on screen and stack
+  cleanWrongData();
+
   // bottom red line in input
   $('input.login-input').addClass("wrongData");
-  $invalidField = $('.loginForm p.invalidField.' + type);
+
+  // {type} must be a bare CSS class. Passing a whole sentence built an invalid selector
+  // (".loginForm p.invalidField.An error has ocurred...") and made jQuery throw, which aborted the
+  // rest of the caller - leaving the button stuck with its spinner. Fall back to the generic slot
+  // Guard against a non-string too: null coerces to "null", which would select nothing and leave the
+  // user with no message at all
+  var $invalidField;
+  if(typeof type == "string" && /^[A-Za-z][\w-]*$/.test(type)) {
+    $invalidField = $('.loginForm p.invalidField.' + type);
+  } else {
+    $invalidField = $('.loginForm p.invalidField.serverError');
+    customMessage = (customMessage != null) ? customMessage : type;
+  }
+
   if(customMessage != null) {
     $invalidField.text(customMessage);
-    $invalidField.removeClass("hidden");
-  } else {
-    $invalidField.removeClass("hidden");
   }
+  $invalidField.removeClass("hidden");
 
   // Set focus on the wrong field
   if(type == "voidPassword" || type == "incorrectPassword") {
@@ -593,6 +679,40 @@ function cleanWrongData() {
   $('input.login-input').removeClass("wrongData");
   // Hide error message
   $('.loginForm p.invalidField').addClass("hidden");
+}
+
+// Clear the in-flight visual state of the submit button. Called on every step change and whenever a
+// request settles, so a failed or abandoned attempt can never leave the button spinning forever.
+// Deliberately does not touch "disabled" - that belongs to updateNextButtonState()
+function clearLoginButtonLoading() {
+  isSubmitting = false;
+  $("input#login_next").removeClass("is-loading");
+  $(".login-button-spinner").addClass("hidden");
+  $("input#login_next").val("Log in");
+  $('.login-back-container').removeClass("is-busy");
+}
+
+// Permissive check for "looks like a usable email address": a single "@", something before it, and a
+// dotted domain after it. Deliberately laxer than isEmail() in utils.js, which caps the top level
+// domain at 4 characters and would reject valid addresses such as name@example.africa. Its only job
+// is to catch an obviously malformed address ("name@", "name@domain") before the database lookup
+function looksLikeEmail(value) {
+  return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(value);
+}
+
+// The submit button is shared by the 3 steps: on the email step it stays disabled until something is
+// typed, on the other steps it is always available
+function updateNextButtonState() {
+  // A request is still running, or the recaptcha is on screen and owns the button until its callback
+  if(isSubmitting || incorrectPasswordCount >= 3) {
+    return;
+  }
+
+  if(currentStep == "email") {
+    $("input#login_next").attr("disabled", $.trim(username.val()) == "");
+  } else {
+    $("input#login_next").attr("disabled", false);
+  }
 }
 
 // Show terms and conditions checkbox
