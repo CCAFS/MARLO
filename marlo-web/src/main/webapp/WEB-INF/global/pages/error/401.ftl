@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260803"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260803v2"] /]
 [#assign currentSection = "home" /]
 [#assign avoidHeader = true /]
 [#-- Unauthorized access: the login form headline replaces the generic 401 error message --]

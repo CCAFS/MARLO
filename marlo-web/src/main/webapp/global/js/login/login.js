@@ -133,9 +133,31 @@ function init() {
     $('html, body').enableScroll();
   });
 
+  // Submitting on "Enter" is keyup-based, so it only belongs to an input that also received the
+  // matching keydown. A <button> activated with Enter dispatches its click on keydown, and the
+  // "Go back" handler moves the focus into an input while going back - the trailing keyup then
+  // landed on that freshly focused input and immediately submitted the step the user had just
+  // left. Pairing the two events keeps a keyup that started somewhere else from counting here
+  $(".loginForm .login-input").on('keydown', function(event) {
+    if(event.keyCode === 13) {
+      $(this).data("enterStartedHere", true);
+    }
+  });
+
+  // A key held down while the focus moves away never delivers its keyup here, so drop the flag
+  // rather than leaving it armed for an unrelated keyup later on
+  $(".loginForm .login-input").on('blur', function() {
+    $(this).removeData("enterStartedHere");
+  });
+
   // Accessible "Enter" (keyCode==13) to login
   $(".loginForm .login-input").keyup(function(event) {
     if(event.keyCode === 13) {
+      if(!$(this).data("enterStartedHere")) {
+        return;
+      }
+      $(this).removeData("enterStartedHere");
+
       // The button is disabled while step 1 is empty, and a disabled button is not guaranteed to
       // dispatch a click, so raise the validation message here instead of relying on one
       if(currentStep == "email" && $.trim(username.val()) == "") {
@@ -158,8 +180,9 @@ function init() {
     }
   });
 
-  // Go back to the previous step when click on the "Go back" link
-  $('.login-back-container p.loginBack').on('click', function() {
+  // Go back to the previous step when the "Go back" button is activated. It is a native <button>,
+  // so Enter and Space raise this same click event and no extra key handler is needed
+  $('.login-back-container .loginBack').on('click', function() {
     // Ignore clicks while a login attempt is still running: navigating away mid-request left the
     // form on another step while the pending response was still about to repaint the button
     if(isSubmitting) {
@@ -534,8 +557,10 @@ function checkPassword(email,password) {
             $("input#login_next").addClass("is-loading");
             $("input#login_next").attr("disabled", true);
             $(".login-button-spinner").removeClass("hidden");
-            // Grey out the step navigation for the duration of the request
+            // Grey out the step navigation for the duration of the request, and disable the button
+            // so it also leaves the tab order instead of being a focusable no-op
             $('.login-back-container').addClass("is-busy");
+            $('.login-back-container .loginBack').attr("disabled", true);
           },
           success: function(data) {
             // A proxy or the container can answer 200 with an HTML body instead of the expected JSON.
@@ -690,6 +715,7 @@ function clearLoginButtonLoading() {
   $(".login-button-spinner").addClass("hidden");
   $("input#login_next").val("Log in");
   $('.login-back-container').removeClass("is-busy");
+  $('.login-back-container .loginBack').attr("disabled", false);
 }
 
 // Permissive check for "looks like a usable email address": a single "@", something before it, and a
