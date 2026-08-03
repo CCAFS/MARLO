@@ -193,16 +193,16 @@ Acceptance criteria are stated at the product level. Each module spec under `doc
 ### 7.2 Quality and security acceptance
 
 1. **Checkstyle** — `mvn checkstyle:check` MUST pass against `configuration/marlo-checkstyle.xml`.
-2. **CVEs** — Critical Snyk findings introduced by a change MUST be remediated before merge to `aiccra-staging`.
+2. **CVEs** — Critical Snyk findings introduced by a change MUST be remediated before merge to `staging`.
 3. **Dependency baselines (current checkout)** — dependency versions declared in `marlo-parent/pom.xml` MUST NOT be downgraded without explicit approval. Current security-aligned floors include Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, and Jackson ≥ 2.17.x. HikariCP 2.4.6 and Groovy 2.4.8 remain documented modernization exceptions until upgraded and validated.
 4. **QA completeness** — A change to a critical save section MUST be retested against its `Validator` and its interceptor stack before deploy.
 
 ### 7.3 Operational acceptance
 
 1. **CI/CD** — Merges to integration branches MUST trigger the Jenkins pipeline. Slack notifications confirm success/failure (existing convention).
-2. **Branching** — `AICCRA` (production) is merge-only from `aiccra-staging`. Direct commits to production are forbidden.
+2. **Branching** — `main` (production) is merge-only from `staging`. Direct commits to production are forbidden.
 3. **Backups** — The daily MySQL → S3 backup job MUST remain green; monitoring and alerting on failures is a constitutional requirement.
-4. **Environments** — Test (CIAT Palmira), Staging (in build-out), Production (AWS Virginia). New features MUST be validated in Test before reaching `aiccra-staging`.
+4. **Environments** — Test (CIAT Palmira), Staging (in build-out), Production (AWS Virginia). New features MUST be validated in Test before reaching `staging`.
 
 ---
 

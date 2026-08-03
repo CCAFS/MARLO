@@ -111,7 +111,7 @@ AC for FN-001:
 - [ ] REST: any new /api/* endpoint uses Spring MVC, DTOs, Springdoc OpenAPI, and the rest/errors handlers.
 - [ ] Audit: auditable changes integrate with IAuditLog / HibernateAuditLogListener.
 - [ ] Dependency floors (post-Jan 2026 SETI baseline) preserved.
-- [ ] Branching: feature branch created from aiccra-staging; merge target is aiccra-staging; production AICCRA receives merges only.
+- [ ] Branching: feature branch created from staging; merge target is staging; production main receives merges only.
 ```
 
 ---

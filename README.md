@@ -112,7 +112,7 @@ For the module breakdown in detail, see [`docs/detailed-design/detailed-design.m
 ```bash
 git clone https://github.com/CCAFS/MARLO.git
 cd MARLO
-git checkout aiccra-staging   # branch off here for new work
+git checkout staging   # branch off here for new work
 ```
 
 ### Configure local properties
@@ -158,10 +158,10 @@ SonarCloud and Snyk run automatically on push / PR via GitHub Actions.
 
 | Branch | Role | Rules |
 |---|---|---|
-| `AICCRA` | Production | Merge-only from `aiccra-staging`. **No direct commits.** |
-| `aiccra-staging` | Stable integration | All feature branches merge here. |
-| `aiccra-dev` | Experimentation | Highly unstable; integration testing only. |
-| `aiccra-<slug>` | Feature branches | Created from `aiccra-staging`; merged back into it. |
+| `main` | Production | Merge-only from `staging`. **No direct commits.** |
+| `staging` | Stable integration | All feature branches merge here. |
+| `dev` | Experimentation | Highly unstable; integration testing only. |
+| `<TICKET-ID>-<Description>` | Feature branches | Created from `staging`; merged back into it. Use a descriptive `<slug>` when the work has no ticket. |
 
 CI/CD: a push to any branch triggers the Jenkins job `marlo-<branch-suffix>`. Slack receives success/failure notifications.
 
@@ -219,7 +219,7 @@ These rules are constitutional. Deviations require an explicit, justified Decisi
 6. **GPL header** on every new Java file (template in `AGENTS.md`).
 7. **Code style:** 2-space indent, 120 char line limit, braces on same line, mandatory blocks for `if/while/for/do`, max file length 3500 lines. `mvn checkstyle:check` is a gate.
 8. **English only** in code, identifiers, and inline comments. User-facing strings MUST be i18n-keyed.
-9. **Branching:** never commit directly to `AICCRA`.
+9. **Branching:** never commit directly to `main`.
 10. **Run scripts** match the branch's Java version (Java 17 only on branches containing `java17` / `java_17`).
 11. **Dependency floors** (post-January 2026 SETI baseline) MUST NOT be downgraded.
 12. **Never commit credentials.** `marlo-${profile}.properties` is gitignored.
@@ -237,12 +237,12 @@ To report a security issue, contact the IBD team at `Marlosupport@cgiar.org` rat
 ## Contributing
 
 1. Read [`CLAUDE.md`](./CLAUDE.md) and [`AGENTS.md`](./AGENTS.md).
-2. Branch from `aiccra-staging` as `aiccra-<slug>`.
+2. Branch from `staging` as `<TICKET-ID>-<Description>` (e.g. `A2-2395-Rename-narratives-to-Period-targets`), or as a descriptive `<slug>` when the work has no ticket.
 3. Draft the spec under `docs/specs/...` (`requirements.md` → `design.md` → `task.md`).
 4. Get the spec reviewed before implementation.
 5. Implement, keeping `task.md` up to date with verification notes.
 6. Update relevant `reports/ai-context/*.md` files when the change alters routing, validation, replication, or composition contracts.
-7. Open a PR into `aiccra-staging`. Ensure Checkstyle, SonarCloud, and Snyk are clean.
+7. Open a PR into `staging`. Ensure Checkstyle, SonarCloud, and Snyk are clean.
 
 ---
 

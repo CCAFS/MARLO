@@ -444,7 +444,7 @@ Do not claim HikariCP ≥ 5.x or Groovy ≥ 2.4.21 until those upgrades are impl
 
 - Snyk scans on the monorepo each release cycle.
 - Semi-annual review of legacy components flagged in §16.4 (Pentaho, iText).
-- New critical CVEs introduced by a change block merge to `aiccra-staging`.
+- New critical CVEs introduced by a change block merge to `staging`.
 
 ---
 
@@ -531,7 +531,7 @@ Do not claim HikariCP ≥ 5.x or Groovy ≥ 2.4.21 until those upgrades are impl
 6. **Phased data is forward-only** — past phases are immutable.
 7. **Multi-module Maven layout** — adding a top-level module is a constitutional event.
 8. **Spring MVC owns `/api/*`** — Struts is excluded from this prefix.
-9. **Branch protection** — `AICCRA` (production) accepts merges only from `aiccra-staging`. Feature branches start from `aiccra-staging`.
+9. **Branch protection** — `main` (production) accepts merges only from `staging`. Feature branches start from `staging`.
 
 ### 11.2 Soft constraints (assumptions that may evolve)
 
