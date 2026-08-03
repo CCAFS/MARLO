@@ -396,6 +396,14 @@
   margin: 0;
 }
 
+/* While a login attempt is in flight the step navigation is unavailable, so it must not look
+   clickable either. login.js also guards the handler, which covers keyboard activation */
+.login-back-container.is-busy .loginBack {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
 .login-support {
   width: 100%;
   max-width: 327px;

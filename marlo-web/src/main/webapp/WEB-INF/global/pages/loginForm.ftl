@@ -1,5 +1,6 @@
 [#ftl]
-[#assign emailPlaceholder][@s.text name="login.email"/][/#assign]
+[#-- Placeholder shows the expected format, the visible label above the field names it (login.emailLabel) --]
+[#assign emailPlaceholder][@s.text name="login.emailPlaceholder"/][/#assign]
 [#assign passwordPlaceholder][@s.text name="login.password"/][/#assign]
 [#-- Headline key: pages including this form may override it (e.g. the 401 unauthorized access page) --]
 [#assign loginHeadlineKey = (loginHeadlineKey)!"login.headline" /]
@@ -92,9 +93,13 @@
           </div>
         </div>
 
-        [#-- Error messages --]
+        [#-- Error messages. login.js shows exactly one of these at a time, selecting it by its
+             second CSS class --]
+        <p class="invalidField emailRequired hidden">[@s.text name="login.error.invalidField.emailRequired"/]</p>
         <p class="invalidField invalidEmail hidden">[@s.text name="login.error.invalidField.invalidEmail"/]</p>
         <p class="invalidField emailNotFound hidden">[@s.text name="login.error.invalidField.emailNotFound"/]</p>
+        [#-- Generic slot for unexpected failures (request errors, proxy/gateway errors) --]
+        <p class="invalidField serverError hidden">[@s.text name="login.error.invalidField.serverError"/]</p>
         <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
         <p class="invalidField voidPassword hidden">[@s.text name="login.error.invalidField.voidPassword"/]</p>
         <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
