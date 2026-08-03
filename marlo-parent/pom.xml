@@ -21,7 +21,7 @@
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
 		<struts2.version>6.4.0</struts2.version>
-		<mysql.version>8.0.28</mysql.version>
+		<mysql.version>8.4.0</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.17</poi.version>
@@ -406,8 +406,8 @@
 			</dependency>
 			<!-- Database dependencies -->
 			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
 				<version>${mysql.version}</version>
 			</dependency>
 			<dependency>
