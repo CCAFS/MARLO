@@ -386,19 +386,50 @@
   margin-top: 4px;
 }
 
+/* The control is a <button>, so the browser defaults (chrome background, border, button font) are
+   reset here to keep the plain underlined-text look it had as a <p> */
 .login-back-container .loginBack {
+  display: inline-block;
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
   color: #7f7f7f;
   font-family: "Poppins", sans-serif;
   font-size: 12px;
+  line-height: 1.5;
   text-decoration: underline;
   cursor: pointer;
   text-align: center;
   margin: 0;
 }
 
+/* ".loginForm *:focus" clears the outline for every control in the form, so the keyboard focus
+   state is restored here with enough specificity to win over it.
+   The pair below is the progressive-enhancement pattern: browsers that don't know
+   :focus-visible drop both of those rules as invalid and keep the plain :focus outline */
+.login-back-container .loginBack:focus {
+  outline: 2px solid #1689ca;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.login-back-container .loginBack:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+.login-back-container .loginBack:focus-visible {
+  outline: 2px solid #1689ca;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* While a login attempt is in flight the step navigation is unavailable, so it must not look
-   clickable either. login.js also guards the handler, which covers keyboard activation */
-.login-back-container.is-busy .loginBack {
+   clickable either. login.js disables the button for the same window, which is what actually takes
+   it out of the tab order and announces it as unavailable */
+.login-back-container.is-busy .loginBack,
+.login-back-container .loginBack:disabled {
   opacity: 0.5;
   cursor: default;
   pointer-events: none;

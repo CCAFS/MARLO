@@ -2,6 +2,8 @@
 [#-- Placeholder shows the expected format, the visible label above the field names it (login.emailLabel) --]
 [#assign emailPlaceholder][@s.text name="login.emailPlaceholder"/][/#assign]
 [#assign passwordPlaceholder][@s.text name="login.password"/][/#assign]
+[#-- Accessible name of the "Go back" control, longer than the visible label it contains --]
+[#assign goBackAccessibleName][@s.text name="login.goBack.accessibleName"/][/#assign]
 [#-- Headline key: pages including this form may override it (e.g. the 401 unauthorized access page) --]
 [#assign loginHeadlineKey = (loginHeadlineKey)!"login.headline" /]
 <div id="loginFormContainer">
@@ -123,9 +125,11 @@
           [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
         </div>
 
-        [#-- Go back to the previous step --]
+        [#-- Go back to the previous step. A real <button> so it is in the tab order, exposes a
+             button role to screen readers and is activated by Enter/Space for free.
+             type="button" keeps it from submitting the login form --]
         <div class="login-back-container hidden">
-          <p class="loginBack">[@s.text name="login.goBack"/]</p>
+          <button type="button" id="login-go-back" class="loginBack" aria-label="${goBackAccessibleName}">[@s.text name="login.goBack"/]</button>
         </div>
      </div>
      </div>
