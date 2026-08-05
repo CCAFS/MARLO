@@ -1,5 +1,5 @@
 /************* LOGIN *****************/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap");
 
 .login-split {
   display: flex;
@@ -22,7 +22,7 @@
 }
 
 .login-left::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background-image: url(../../global/images/login/login-texture.jpg);
@@ -48,10 +48,14 @@
 }
 
 .login-right::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(2, 119, 162, 0.55), rgba(2, 90, 130, 0.65));
+  background: linear-gradient(
+    180deg,
+    rgba(2, 119, 162, 0.55),
+    rgba(2, 90, 130, 0.65)
+  );
 }
 
 .login-right-star {
@@ -102,7 +106,7 @@
 }
 
 .login-testers-note p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #7f7f7f;
   text-align: center;
@@ -116,27 +120,15 @@
   position: absolute !important;
   top: unset;
   bottom: 0;
-  right: 0;
-  margin: 0px 10px 7px 0px;
+  right: 11px;
+  margin: 0 0 7px 0;
   cursor: pointer;
   z-index: 1000;
+  color: #7f7f7f;
 }
 .loginForm {
-  padding-top: 2em;
-  width: 100%;
-  opacity: 0;
-  -webkit-animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
-  animation: fadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) 0.175s 1 normal forwards;
-}
-.loginForm .login-input-container {
   position: relative;
-  height: 2.9em;
-  border-bottom-width: 1px;
-  font-size: 20px;
-  margin-top: 20px;
-}
-
-.loginForm .login-loadingBlock {
+  z-index: 1;
   width: 100%;
   max-width: 329px;
   margin: 0 auto;
@@ -154,7 +146,7 @@
 }
 
 .login-headline {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: #2a2e45;
@@ -163,7 +155,7 @@
 }
 
 .login-subtext {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-size: 12px;
   color: #57a7b5;
@@ -172,7 +164,7 @@
 }
 
 .login-field-label {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #57a7b5;
   margin: 0 0 5px;
@@ -183,7 +175,7 @@
 }
 
 .login-echoed-email {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #021a23;
   margin: 0;
@@ -234,7 +226,7 @@
   max-height: 100%;
   margin: 0;
   object-fit: contain;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   text-align: center;
 }
@@ -273,9 +265,14 @@
   border-color: red !important;
 }
 
-.loginForm input:not(#terms) {
+.loginForm .login-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.loginForm .login-input-container input.form-control {
   display: block;
-  position: absolute;
+  position: static;
   box-sizing: border-box;
   width: 100%;
   height: 30px;
@@ -283,177 +280,16 @@
   border: 1.005px solid #d9d9d9;
   border-radius: 10px;
   background: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   color: #021a23;
 }
 
 .loginForm .login-input-container input.form-control::placeholder {
   color: #d9d9d9;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
-.loginForm label {
-  font-family: 'Helvetica Neue', Helvetica, Arial;
-  display: block;
-  position: absolute;
-  margin-top: 2px;
-  padding: 1px;
-  letter-spacing: 0.012em;
-  color: #acacac;
-  font-size: 1em;
-  -webkit-animation-name: labelIn;
-  animation-name: labelIn;
-  -webkit-animation-duration: 0.35s;
-  animation-duration: 0.35s;
-  -webkit-animation-direction: reverse;
-  animation-direction: reverse;
-  -webkit-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-  -webkit-animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
-  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
-}
-.loginForm input:focus + label,
-.loginForm input:valid + label {
-  -webkit-animation-name: labelOut;
-  animation-name: labelOut;
-  -webkit-animation-duration: 0.35s;
-  animation-duration: 0.35s;
-  -webkit-animation-direction: normal;
-  animation-direction: normal;
-  -webkit-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-  -webkit-animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
-  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
-}
-@-webkit-keyframes labelIn {
-  0% {
-    left: 1px;
-    opacity: 1;
-    top: 1.2em;
-    font-size: 1em;
-    font-weight: 300;
-  }
-  50% {
-    font-size: 1em;
-    left: 1em;
-    opacity: 0;
-    top: 1.2em;
-    font-weight: 300;
-  }
-  50.01% {
-    font-size: 0.65em;
-    left: 1em;
-    opacity: 0;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-  100% {
-    font-size: 0.65em;
-    opacity: 1;
-    left: 1px;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-}
-@keyframes labelIn {
-  0% {
-    left: 1px;
-    opacity: 1;
-    top: 1.2em;
-    font-size: 1em;
-    font-weight: 300;
-  }
-  50% {
-    font-size: 1em;
-    left: 1em;
-    opacity: 0;
-    top: 1.2em;
-    font-weight: 300;
-  }
-  50.01% {
-    font-size: 0.65em;
-    left: 1em;
-    opacity: 0;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-  100% {
-    font-size: 0.65em;
-    opacity: 1;
-    left: 1px;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-}
-@-webkit-keyframes labelOut {
-  0% {
-    left: 1px;
-    opacity: 1;
-    top: 1.2em;
-    font-size: 1em;
-    font-weight: 300;
-  }
-  50% {
-    font-size: 1em;
-    left: 1em;
-    opacity: 0;
-    top: 1.2em;
-    font-weight: 300;
-  }
-  50.01% {
-    font-size: 0.65em;
-    left: 1em;
-    opacity: 0;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-  100% {
-    font-size: 0.65em;
-    opacity: 1;
-    left: 1px;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-}
-@keyframes labelOut {
-  0% {
-    left: 1px;
-    opacity: 1;
-    top: 1.2em;
-    font-size: 1em;
-    font-weight: 300;
-  }
-  50% {
-    font-size: 1em;
-    left: 1em;
-    opacity: 0;
-    top: 1.2em;
-    font-weight: 300;
-  }
-  50.01% {
-    font-size: 0.65em;
-    left: 1em;
-    opacity: 0;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-  100% {
-    font-size: 0.65em;
-    opacity: 1;
-    left: 1px;
-    top: 0.2em;
-    color: #0075d5;
-    font-weight: 400;
-  }
-}
 .loginForm *:focus {
   outline: 0;
 }
@@ -477,7 +313,7 @@
 .terms-container {
   z-index: 100;
   margin-top: 4px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 11px;
   color: #021a23;
 }
@@ -492,10 +328,11 @@
 
 .login-button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   width: 100%;
-  font-size: 20px;
-  height: 30px;
+  position: relative;
+  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
 .login-button-container .login-form-button {
@@ -505,7 +342,7 @@
   border: none;
   border-radius: 10px;
   color: #ffffff;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-size: 14px;
   line-height: 1;
@@ -559,7 +396,7 @@
   -webkit-appearance: none;
   appearance: none;
   color: #7f7f7f;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 12px;
   line-height: 1.5;
   text-decoration: underline;
@@ -608,7 +445,7 @@
 }
 
 .login-support p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #021a23;
   margin: 2px 0;
@@ -620,7 +457,7 @@
 }
 
 .login-disclaimer {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 10px;
   color: #021a23;
   text-align: center;
@@ -701,7 +538,7 @@
 }
 
 .crps-select .name-type-container::after {
-  content: '';
+  content: "";
   flex: 1 1 auto;
   height: 1px;
   background: #e4e4e4;
@@ -712,7 +549,7 @@
 }
 
 .crps-select .selection-bar-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: #57a7b5;
@@ -759,12 +596,9 @@
   margin: 0;
   cursor: pointer;
   object-fit: contain;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   text-align: center;
-  vertical-align: middle;
-  line-height: 30px;
-  font-size: 18px;
 }
 
 /* Acronym fallback: kept styled but hidden, since the cards always show the logo.
@@ -779,7 +613,6 @@
 .selection-bar-options ul li:hover {
   border-color: #0277a2;
   background-color: #fff;
-  border: 1px dashed #2ca6cb;
 }
 
 .selection-bar-options ul li.active {
@@ -790,64 +623,25 @@
 .loginForm p.invalidField {
   padding-right: 15px;
   font-size: 11px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color: red;
+  margin: 0;
 }
 
-.loginForm p.invalidField {
-  position: relative !important;
-}
-
-#loginFormContainer .loginForm {
-  background-color: #f7f7f7;
-  border: 1px solid #ececec;
-  padding: 8px 24px;
-  border-radius: 7px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  margin-top: 10px;
-  z-index: 2;
-}
-
-#loginFormContainer .loginForm:not(.instructions) {
-  min-height: 200px;
-}
-
-#loginFormContainer .loginForm.max-size {
-  height: 410px;
-}
-
-#loginFormContainer .loginForm p {
-  margin: 5px 0;
-}
-
-#loginFormContainer .loginForm .fieldError {
-  font-weight: bold;
-  text-align: center;
-  padding: 0;
-}
-
-#loginFormContainer .loginForm h6 {
-  margin: 0px;
-}
-
-#loginFormContainer .loginForm div label {
-  font-size: 13px;
-}
-
-#loginFormContainer .loginForm div input[type='submit'] {
+#loginFormContainer .loginForm div input[type="submit"] {
   width: 100%;
 }
 
-#loginFormContainer .loginForm div input[type='text'],
-#loginFormContainer .loginForm div input[type='password'] {
+#loginFormContainer .loginForm div input[type="text"],
+#loginFormContainer .loginForm div input[type="password"] {
   box-shadow: none;
 }
 
-#loginFormContainer input[type='checkbox'] {
+#loginFormContainer input[type="checkbox"] {
   transform: scale(1.1);
 }
 
-#loginFormContainer input[type='submit']:disabled {
+#loginFormContainer input[type="submit"]:disabled {
   opacity: 0.5;
 }
 
