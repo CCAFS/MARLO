@@ -420,7 +420,7 @@ Interceptors (`canEditProject`, `canEditAi`, `canEditDeliverable`, `editFunding`
 
 `marlo-parent/pom.xml` is the source of truth for dependency versions in the active checkout. The current security-aligned baseline includes:
 
-- Apache Struts2 ≥ 6.4.0.
+- Apache Struts2 (version source of truth: `marlo-parent/pom.xml` property `struts2.version`).
 - Tomcat Catalina ≥ 9.0.96.
 - Spring Framework ≥ 5.3.39.
 - Jackson ≥ 2.17.x.
