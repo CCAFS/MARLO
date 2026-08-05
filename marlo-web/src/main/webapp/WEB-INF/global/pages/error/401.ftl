@@ -1,18 +1,27 @@
 [#ftl]
-[#assign title = "Unauthorized Access!" /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260410"] /]
+[#assign title = "Welcome to MARLO" /]
+[#assign pageLibs = ["select2"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20260803v2"] /]
+[#assign currentSection = "home" /]
+[#assign avoidHeader = true /]
+[#-- Unauthorized access: the login form headline replaces the generic 401 error message --]
+[#assign loginHeadlineKey = "login.headline.unauthorized" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
-[#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<section class="content">
-  <div class="col-md-8 col-center">
-    <p class="errorText primary center">[@s.text name="server.error.401" /]</p> 
-    <div class="col-md-offset-3 col-xs-12 col-sm-6 col-md-7 col-lg-5 col-center">
-      [#-- Login Form --]
-      [#include "/WEB-INF/global/pages/loginForm.ftl" /]
+<div class="login-split">
+  <div class="login-left">
+    <div class="login-brand">
+      <img class="login-brand-logo" src="${baseUrlCdn}/global/images/cgiar_logo_black.png" alt="Alliance of Bioversity International and CIAT / CGIAR" />
+      <span class="login-brand-divider"></span>
+      <img class="login-brand-marlo" src="${baseUrlCdn}/global/images/login/marlo-logo.png" alt="MARLO" />
     </div>
+    [#include "/WEB-INF/global/pages/loginForm.ftl" /]
   </div>
-</section>
+  <div class="login-right">
+    <img class="login-right-photo" src="${baseUrlCdn}/global/images/login/login-bg-photo.jpg" alt="" />
+  </div>
+</div>
 
-[#include "/WEB-INF/global/pages/footer.ftl"]
+[#assign avoidFooter = true /]
+[#include "/WEB-INF/global/pages/footer.ftl" /]
