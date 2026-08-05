@@ -25,10 +25,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.apache.struts2.ServletActionContext;
 
 /**
  * @author Andres Valencia - CIAT/CCAFS
@@ -60,6 +59,14 @@ public class ValidateUserAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     userFound = new HashMap<String, Object>();
+
+    // Reject non-POST requests to avoid exposing credentials in URL query strings.
+    if (ServletActionContext.getRequest() == null
+      || !"POST".equalsIgnoreCase(ServletActionContext.getRequest().getMethod())) {
+      userFound.put("loginSuccess", false);
+      messageEror = "Invalid request method";
+      return SUCCESS;
+    }
 
     User user = userManager.login(userEmail, userPassword);
     this.getLoginMessages();
