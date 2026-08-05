@@ -194,7 +194,7 @@ Acceptance criteria are stated at the product level. Each module spec under `doc
 
 1. **Checkstyle** — `mvn checkstyle:check` MUST pass against `configuration/marlo-checkstyle.xml`.
 2. **CVEs** — Critical Snyk findings introduced by a change MUST be remediated before merge to `aiccra-staging`.
-3. **Dependency baselines (current checkout)** — dependency versions declared in `marlo-parent/pom.xml` MUST NOT be downgraded without explicit approval. Current security-aligned floors include Struts2 ≥ 6.4.0, Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, and Jackson ≥ 2.17.x. HikariCP 2.4.6 and Groovy 2.4.8 remain documented modernization exceptions until upgraded and validated.
+3. **Dependency baselines (current checkout)** — dependency versions declared in `marlo-parent/pom.xml` MUST NOT be downgraded without explicit approval. Struts2 version MUST be validated against `marlo-parent/pom.xml` property `struts2.version` whenever it is updated. Current security-aligned floors include Tomcat Catalina ≥ 9.0.96, Spring Framework ≥ 5.3.39, and Jackson ≥ 2.17.x. HikariCP 2.4.6 and Groovy 2.4.8 remain documented modernization exceptions until upgraded and validated.
 4. **QA completeness** — A change to a critical save section MUST be retested against its `Validator` and its interceptor stack before deploy.
 
 ### 7.3 Operational acceptance

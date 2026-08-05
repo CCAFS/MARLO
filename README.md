@@ -49,7 +49,7 @@ For the full product framing, see [`docs/prd.md`](./docs/prd.md).
 | Concern | Technology |
 |---|---|
 | Language | Java (8 and 17 branches coexist) |
-| Web framework (internal flows) | Apache Struts 2 (≥ 6.4.0) |
+| Web framework (internal flows) | Apache Struts 2 (version source of truth: `marlo-parent/pom.xml` property `struts2.version`) |
 | Web framework (REST API) | Spring MVC under `/api/*` (Spring ≥ 5.3.39) |
 | ORM | Hibernate 5.4.x |
 | Database | MySQL (AWS RDS in production) |

@@ -392,11 +392,9 @@
 		<artifactId>saaj-impl</artifactId>
 	</dependency>
 
-	<!-- Nuevas Dependencias o actualizaciones -->
 	<dependency>
 		<groupId>org.apache.struts</groupId>
 		<artifactId>struts2-core</artifactId>
-		<version>6.4.0</version>
 		<exclusions>
 			<!-- Ensure the Hibernate version of javassist is used -->
 			<exclusion>
@@ -664,6 +662,3 @@
 		</license>
 	</licenses>
 </project>
-
-
-
