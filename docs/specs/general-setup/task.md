@@ -16,8 +16,8 @@
 **Owner:** <name / team>
 **Last Updated:** YYYY-MM-DD
 **Implements design:** docs/specs/<area>/<slug>/design.md
-**Branching:** feature branch from aiccra-staging, named aiccra-<slug-or-id>.
-**Target merge:** aiccra-staging (then promoted to AICCRA per release process).
+**Branching:** feature branch from staging, named <TICKET-ID>-<Description> (or a descriptive <slug> when the work has no ticket).
+**Target merge:** staging (then promoted to main per release process).
 ```
 
 ---
@@ -27,7 +27,7 @@
 A `task.md` MUST follow this section order. Empty sections MUST stay present with a "Not applicable" justification.
 
 1. **Execution Context** — environment, tools, run script (`scripts/run-marlo-java8.sh` or `run-marlo-java17.sh`), Spring profile.
-2. **Pre-flight Checklist** — confirm `requirements.md` and `design.md` are approved; pull latest `aiccra-staging`; create feature branch.
+2. **Pre-flight Checklist** — confirm `requirements.md` and `design.md` are approved; pull latest `staging`; create feature branch.
 3. **Task List** — ordered, atomic steps with IDs, dependencies, acceptance, and verification.
 4. **Dependency Graph** — visual or list form showing task ordering.
 5. **Testing Plan** — explicit unit, integration, regression, and manual testing per task or per group.
@@ -176,7 +176,7 @@ Cover every layer relevant to the change.
 ## Rollback Plan
 
 ### Code
-- Revert merge commit on aiccra-staging.
+- Revert merge commit on staging.
 - Re-deploy previous artifact via Jenkins.
 
 ### Data
@@ -203,8 +203,8 @@ Cover every layer relevant to the change.
 - [ ] Documentation updated:
   - This task.md: every task marked done with verification notes.
   - reports/ai-context/<file>.md updated if the change altered routing, validation, or replication contracts.
-- [ ] Merged to aiccra-staging.
-- [ ] Promoted to AICCRA via the release pipeline.
+- [ ] Merged to staging.
+- [ ] Promoted to main via the release pipeline.
 - [ ] Deployment confirmed in production; backup green; QA dashboard confirms refresh latency.
 ```
 
@@ -212,7 +212,7 @@ Cover every layer relevant to the change.
 
 ## Conventions reminders
 
-- **Branching:** never commit directly to `AICCRA`. Feature branches start from `aiccra-staging` and merge back into it. `aiccra-dev` is unstable and used only for integration experiments.
+- **Branching:** never commit directly to `main`. Feature branches start from `staging` and merge back into it. `dev` is unstable and used only for integration experiments.
 - **Java version:** match the run script to the branch. If the branch contains `java17` / `java_17`, use `scripts/run-marlo-java17.sh`. Otherwise `scripts/run-marlo-java8.sh`.
 - **Local properties:** `marlo-${profile}.properties` files with credentials are gitignored; bootstrap from `marlo-test.properties`.
 - **Migration naming:** `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`.

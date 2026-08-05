@@ -268,7 +268,7 @@
 							            [/#if]
 							          [/#list]
 							          [#if !foundMilestone]
-							            <p class="emptyMessage text-center">There is no milestone added for ${year}.</p>
+							            <p class="emptyMessage text-center">There is no [@s.text name="global.CrpMilestone"/] added for ${year}.</p>
 							          [/#if]
 							        </div>
 							      </div>
@@ -400,7 +400,7 @@
                               [#-- end progress targets--]
                               
                           [#else]
-                            <p class="emptyMessage text-center">There is not a Intermediate Target added for ${year}.</p>
+                            <p class="emptyMessage text-center">There is not a [@s.text name="global.CrpMilestone"/] added for ${year}.</p>
                           [/#if]
                       </div>
                       
