@@ -6054,7 +6054,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                   && (text == null || text.isEmpty()
                     || ((text != null || !text.isEmpty()) && !text.contains(milestone.getNarrativeTarget())))) {
 
-                  milestones += "● Intermediate Target for " + milestone.getYear() + "\n <br>"
+                  milestones += "● " + this.getText("global.CrpMilestone") + " for " + milestone.getYear() + "\n <br>"
                     + milestone.getCrpMilestone().getComposedName() + "\n <br><br>";
 
                   if (milestone.getNarrativeTarget() != null) {
