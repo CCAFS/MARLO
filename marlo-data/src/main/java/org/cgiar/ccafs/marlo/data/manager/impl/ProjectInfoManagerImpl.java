@@ -115,6 +115,7 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
   }
 
   @Override
+  @Transactional
   public void deleteProjectInfo(long projectInfoId) {
 
     projectInfoDAO.deleteProjectInfo(projectInfoId);

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -76,6 +77,7 @@ public class ProjectBudgetsFlagshipManagerImpl implements ProjectBudgetsFlagship
   }
 
   @Override
+  @Transactional
   public void deleteProjectBudgetsFlagship(long projectBudgetsFlagshipId) {
 
     projectBudgetsFlagshipDAO.deleteProjectBudgetsFlagship(projectBudgetsFlagshipId);

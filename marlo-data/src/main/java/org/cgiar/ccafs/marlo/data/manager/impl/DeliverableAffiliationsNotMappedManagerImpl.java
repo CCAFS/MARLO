@@ -31,6 +31,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
@@ -60,6 +61,7 @@ public class DeliverableAffiliationsNotMappedManagerImpl implements DeliverableA
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableAffiliationsNotMapped(long deliverableAffiliationsNotMappedId) {
     deliverableAffiliationsNotMappedDAO.deleteDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMappedId);
   }

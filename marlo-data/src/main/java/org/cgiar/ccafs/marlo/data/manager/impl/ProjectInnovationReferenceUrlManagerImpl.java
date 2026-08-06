@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -48,6 +49,7 @@ public class ProjectInnovationReferenceUrlManagerImpl implements ProjectInnovati
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationReferenceUrl(long projectInnovationReferenceUrlId) {
     ProjectInnovationReferenceUrl projectInnovationReferenceUrl =
       this.getProjectInnovationReferenceUrlById(projectInnovationReferenceUrlId);
@@ -73,6 +75,7 @@ public class ProjectInnovationReferenceUrlManagerImpl implements ProjectInnovati
     projectInnovationReferenceUrlDAO.deleteProjectInnovationReferenceUrl(projectInnovationReferenceUrlId);
   }
 
+  @Transactional
   public void deleteProjectInnovationReferenceUrlPhase(Phase next, long innovationID,
     ProjectInnovationReferenceUrl projectInnovationReferenceUrl) {
     Phase phase = phaseDAO.find(next.getId());

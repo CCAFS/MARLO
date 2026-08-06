@@ -78,6 +78,15 @@ public interface CrpUserManager {
   public CrpUser getCrpUserById(long crpUserID);
 
   /**
+   * Gets the user access record for a Global Unit, including inactive records.
+   *
+   * @param userId user identifier
+   * @param crpId Global Unit identifier
+   * @return matching access record, or null when it does not exist
+   */
+  public CrpUser getCrpUserByUserIdAndCrpId(long userId, long crpId);
+
+  /**
    * This method saves the information of the given crpUser
    * 
    * @param crpUser - is the crpUser object with the new information to be added/updated.

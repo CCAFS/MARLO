@@ -2352,16 +2352,7 @@ public class ProjectPartnerAction extends BaseAction {
         path.toFile().delete();
       }
 
-      // --- AQUÍ DEBES COLOCARLO ---
-      this.getInvalidFields().clear(); // Borra los errores de validación (como el del Cluster Leader)
-      this.setActionMessages(null);    // Limpia mensajes previos
-      project = projectManager.getProjectById(projectID); // Recarga el proyecto para la vista
-      // ----------------------------
-
       if (this.getUrl() == null || this.getUrl().isEmpty()) {
-        Collection<String> messages = this.getActionMessages();
-        
-        // Como arriba hicimos .clear(), esta lista estará vacía
         if (!this.getInvalidFields().isEmpty()) {
           this.setActionMessages(null);
           List<String> keys = new ArrayList<String>(this.getInvalidFields().keySet());
@@ -2370,7 +2361,6 @@ public class ProjectPartnerAction extends BaseAction {
           }
 
         } else {
-          // Entrará aquí y mostrará el banner verde de éxito
           this.addActionMessage("message:" + this.getText("saving.saved"));
         }
         return SUCCESS;

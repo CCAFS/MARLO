@@ -12,7 +12,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ciat-adauth.version>5.6</ciat-adauth.version>
-		<hibernate-core-version>5.4.33.Final</hibernate-core-version>
+		<hibernate-core-version>5.6.15.Final</hibernate-core-version>
 		<org.springframework-version>5.3.39</org.springframework-version>
 		<junit.version>4.13.2</junit.version>
 		<logback-classic.version>1.2.13</logback-classic.version>
@@ -20,8 +20,8 @@
 		<javax.inject.version>1</javax.inject.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<com.sun.mail.version>1.5.5</com.sun.mail.version>
-		<struts2.version>6.4.0</struts2.version>
-		<mysql.version>8.0.28</mysql.version>
+		<struts2.version>6.8.0</struts2.version>
+		<mysql.version>8.4.0</mysql.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2.1</jsp-api.version>
 		<poi.version>3.17</poi.version>
@@ -52,9 +52,8 @@
 		<easyrules-core.version>2.4.0</easyrules-core.version>
 		<commons-discovery.version>0.4</commons-discovery.version>
 		<wsdl4j.version>1.6.2</wsdl4j.version>
-		<tomcat-catalina.version>9.0.110</tomcat-catalina.version>
-		<jackson.version>2.17.1</jackson.version>
-		<jackson.version.databind>2.12.7.1</jackson.version.databind>
+		<jackson.version>2.18.9</jackson.version>
+		<jackson.version.databind>2.18.9</jackson.version.databind>
 		<org.mapstruct.version>1.2.0.Final</org.mapstruct.version>
 		<slack.webhook.version>1.3.0</slack.webhook.version>
 		<hibernate-validator.version>5.3.6.Final</hibernate-validator.version>
@@ -67,7 +66,7 @@
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
 		<javax.inject.version>1</javax.inject.version>
-		<tomcat.version>9.0.110</tomcat.version>
+		<tomcat.version>9.0.118</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -178,13 +177,13 @@
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-catalina</artifactId>
-				<version>${tomcat-catalina.version}</version>
+				<version>${tomcat.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-juli</artifactId>
-				<version>9.0.110</version>
+				<version>${tomcat.version}</version>
 				<scope>provided</scope> 
 			</dependency>
 			<dependency>
@@ -407,8 +406,8 @@
 			</dependency>
 			<!-- Database dependencies -->
 			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
+				<groupId>com.mysql</groupId>
+				<artifactId>mysql-connector-j</artifactId>
 				<version>${mysql.version}</version>
 			</dependency>
 			<dependency>
@@ -557,11 +556,6 @@
 				<version>${rs-api.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-client</artifactId>
-				<version>${jersey-client.version}</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/jfree/jfreechart -->
 			<dependency>
 				<groupId>jfree</groupId>
@@ -611,12 +605,12 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-        		<version>2.17.1</version>
+		        	<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-        		<version>2.17.1</version>
+		        	<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mapstruct</groupId>
@@ -856,17 +850,17 @@
                         <dependency>
                             <groupId>org.apache.tomcat</groupId>
                             <artifactId>tomcat-catalina</artifactId>
-                            <version>9.0.110</version>
+                            <version>${tomcat.version}</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.tomcat</groupId>
                             <artifactId>tomcat-coyote</artifactId>
-                            <version>9.0.110</version>
+                            <version>${tomcat.version}</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.tomcat</groupId>
                             <artifactId>tomcat-util</artifactId>
-                            <version>9.0.110</version>
+                            <version>${tomcat.version}</version>
                         </dependency>
                         <dependency>
         <groupId>org.springdoc</groupId>
@@ -933,7 +927,3 @@
 		</license>
 	</licenses>
 </project>
-
-
-
-

@@ -38,6 +38,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -118,6 +119,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
 
   @Override
+  @Transactional
   public void deleteDeliverableUserPartnership(long deliverableUserPartnershipId) {
     DeliverableUserPartnership deliverableUserPartnership =
       this.getDeliverableUserPartnershipById(deliverableUserPartnershipId);
@@ -147,6 +149,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
     }
   }
 
+  @Transactional
   public void deleteDeliverableUserPartnershipPhase(Phase next, long deliverableID,
     DeliverableUserPartnership deliverableUserPartnership) {
     if (deliverableUserPartnership != null) {

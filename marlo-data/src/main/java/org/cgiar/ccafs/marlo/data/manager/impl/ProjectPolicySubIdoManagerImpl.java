@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -47,6 +48,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
   }
 
   @Override
+  @Transactional
   public void deleteProjectPolicySubIdo(long projectPolicySubIdoId) {
 
     ProjectPolicySubIdo projectPolicySubIdo = this.getProjectPolicySubIdoById(projectPolicySubIdoId);
@@ -73,6 +75,7 @@ public class ProjectPolicySubIdoManagerImpl implements ProjectPolicySubIdoManage
   }
 
 
+  @Transactional
   public void deleteProjectPolicySubIdoPhase(Phase next, long policyID, ProjectPolicySubIdo projectPolicySubIdo) {
     Phase phase = phaseDAO.find(next.getId());
 

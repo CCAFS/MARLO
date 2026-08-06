@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -51,6 +52,7 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableActivity(long deliverableActivityId) {
 
     DeliverableActivity deliverableActivity = this.getDeliverableActivityById(deliverableActivityId);
@@ -75,6 +77,7 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
     deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityId);
   }
 
+  @Transactional
   public void deleteDeliverableActivityPhase(Phase next, long deliverableID, DeliverableActivity deliverableActivity) {
     Phase phase = phaseDAO.find(next.getId());
 

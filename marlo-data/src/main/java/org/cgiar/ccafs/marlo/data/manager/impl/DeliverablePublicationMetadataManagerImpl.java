@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -64,6 +65,7 @@ public class DeliverablePublicationMetadataManagerImpl implements DeliverablePub
   }
 
   @Override
+  @Transactional
   public void deleteDeliverablePublicationMetadata(long deliverablePublicationMetadataId) {
 
     deliverablePublicationMetadataDAO.deleteDeliverablePublicationMetadata(deliverablePublicationMetadataId);

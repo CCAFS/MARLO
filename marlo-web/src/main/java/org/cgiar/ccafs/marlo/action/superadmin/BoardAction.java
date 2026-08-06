@@ -99,20 +99,22 @@ public class BoardAction extends BaseAction {
   }
 
   private void deleteRemovedTargetUnits() {
-    List<SrfTargetUnit> targetsPreview =
-      srfTargetUnitManager.findAll().stream().filter(c -> c.isActive()).toList();
+    List<SrfTargetUnit> targetsPreview = new ArrayList<>();
+    List<SrfTargetUnit> allTargetUnits = srfTargetUnitManager.findAll();
+    if (allTargetUnits != null) {
+      targetsPreview = allTargetUnits.stream().filter(c -> c.isActive()).toList();
+    }
 
-    List<Long> incomingIds = targetUnitList.stream()
-      .filter(tu -> tu != null && tu.getId() != null && tu.getId() != -1L)
-      .map(SrfTargetUnit::getId)
-      .toList();
+    List<Long> incomingIds = new ArrayList<>();
+    if (targetUnitList != null) {
+      incomingIds = targetUnitList.stream().filter(tu -> tu != null && tu.getId() != null && tu.getId() != -1L)
+        .map(SrfTargetUnit::getId).toList();
+    }
 
-    if (targetsPreview != null) {
-      for (SrfTargetUnit srfTargetUnit : targetsPreview) {
-        if (!incomingIds.contains(srfTargetUnit.getId())) {
-          this.deleteCrpTargetUnitsForTarget(srfTargetUnit);
-          srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
-        }
+    for (SrfTargetUnit srfTargetUnit : targetsPreview) {
+      if (!incomingIds.contains(srfTargetUnit.getId())) {
+        this.deleteCrpTargetUnitsForTarget(srfTargetUnit);
+        srfTargetUnitManager.deleteSrfTargetUnit(srfTargetUnit.getId());
       }
     }
   }

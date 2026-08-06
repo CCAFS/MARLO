@@ -26,6 +26,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * RepositoryChannelManagerImpl
@@ -51,6 +52,7 @@ public class RepositoryChannelManagerImpl implements RepositoryChannelManager {
   }
 
   @Override
+  @Transactional
   public void deleteRepositoryChannel(long repositoryChannelId) {
 
     repositoryChannelDAO.deleteRepositoryChannel(repositoryChannelId);

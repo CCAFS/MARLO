@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -55,6 +56,7 @@ public class RepIndOrganizationTypeManagerImpl implements RepIndOrganizationType
   }
 
   @Override
+  @Transactional
   public void deleteRepIndOrganizationType(long repIndOrganizationTypeId) {
 
     repIndOrganizationTypeDAO.deleteRepIndOrganizationType(repIndOrganizationTypeId);

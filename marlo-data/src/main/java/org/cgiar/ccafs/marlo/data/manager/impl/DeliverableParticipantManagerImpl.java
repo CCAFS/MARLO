@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -74,6 +75,7 @@ public class DeliverableParticipantManagerImpl implements DeliverableParticipant
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableParticipant(long deliverableParticipantId) {
 
     deliverableParticipantDAO.deleteDeliverableParticipant(deliverableParticipantId);

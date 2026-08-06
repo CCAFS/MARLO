@@ -99,6 +99,18 @@
   cursor: pointer;
 }
 
+.globalUnit.current-global-unit {
+  border-color: #5b9bd5;
+  position: relative;
+}
+
+.globalUnit .current-global-unit-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 2;
+}
+
 .logo-drop-zone {
   border: 2px dashed #c7d4e2;
   border-radius: 4px;

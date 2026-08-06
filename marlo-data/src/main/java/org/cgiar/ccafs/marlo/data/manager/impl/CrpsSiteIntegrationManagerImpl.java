@@ -47,6 +47,7 @@ public class CrpsSiteIntegrationManagerImpl implements CrpsSiteIntegrationManage
   }
 
   @Override
+  @Transactional
   public void deleteCrpsSiteIntegration(long crpsSiteIntegrationId) {
 
     crpsSiteIntegrationDAO.deleteCrpsSiteIntegration(crpsSiteIntegrationId);

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -44,6 +45,7 @@ public class ReportSynthesisKeyPartnershipPmuManagerImpl implements ReportSynthe
   }
 
   @Override
+  @Transactional
   public void deleteReportSynthesisKeyPartnershipPmu(long reportSynthesisKeyPartnershipPmuId) {
 
     reportSynthesisKeyPartnershipPmuDAO.deleteReportSynthesisKeyPartnershipPmu(reportSynthesisKeyPartnershipPmuId);

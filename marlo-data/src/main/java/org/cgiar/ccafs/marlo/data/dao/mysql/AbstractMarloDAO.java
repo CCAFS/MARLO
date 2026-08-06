@@ -526,7 +526,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity) {
-    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    // Ensure AuditLogContext exists before merging (required by the Hibernate audit listeners on flush).
+    // The plain update(entity) is used by paths such as UserManager.saveLastLogin, whose request may not have
+    // gone through MARLOCustomPersistFilter (e.g. the login flow), so the context would otherwise be missing.
+    ensureAuditLogContext();
+    if (entity == null) {
+      return null;
+    }
+
+    Session session = sessionFactory.getCurrentSession();
+    if (session.contains(entity)) {
+      return entity;
+    }
+
+    entity = (T) session.merge(entity);
     return entity;
   }
 
@@ -538,8 +551,17 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity, String actionName, List<String> relationsName) {
+    if (entity == null) {
+      return null;
+    }
+
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName);
-    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    Session session = sessionFactory.getCurrentSession();
+    if (session.contains(entity)) {
+      return entity;
+    }
+
+    entity = (T) session.merge(entity);
     return entity;
   }
 
@@ -552,8 +574,17 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * @return true if the the save/updated was successfully made, false otherwhise.
    */
   protected T update(T entity, String actionName, List<String> relationsName, Phase phase) {
+    if (entity == null) {
+      return null;
+    }
+
     this.addAuditLogFieldsToThreadStorage(entity, actionName, relationsName, phase);
-    entity = (T) sessionFactory.getCurrentSession().merge(entity);
+    Session session = sessionFactory.getCurrentSession();
+    if (session.contains(entity)) {
+      return entity;
+    }
+
+    entity = (T) session.merge(entity);
     return entity;
   }
 

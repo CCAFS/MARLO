@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -66,6 +67,7 @@ public class CrpPpaPartnerManagerImpl implements CrpPpaPartnerManager {
   }
 
   @Override
+  @Transactional
   public void deleteCrpPpaPartner(long crpPpaPartnerId) {
     CrpPpaPartner crpPpaPartner = this.getCrpPpaPartnerById(crpPpaPartnerId);
     crpPpaPartnerDao.deleteCrpPpaPartner(crpPpaPartner.getId());

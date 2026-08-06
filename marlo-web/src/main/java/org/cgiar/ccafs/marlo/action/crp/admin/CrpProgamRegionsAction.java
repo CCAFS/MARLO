@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -754,6 +755,85 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
   }
 
+  private void removeRegionalProgramData(CrpProgram crpProgram) {
+    CrpProgram crpProgramDb = crpProgramManager.getCrpProgramById(crpProgram.getId());
+    if (crpProgramDb == null) {
+      return;
+    }
+
+    List<CrpProgramLeader> activeLeaders = crpProgramDb.getCrpProgramLeaders().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList());
+
+    for (CrpProgramLeader leader : activeLeaders) {
+      User user = userManager.getUser(leader.getUser().getId());
+
+      Set<LiaisonInstitution> liaisonInstitutions = crpProgramDb.getLiaisonInstitutions();
+      for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+        List<LiaisonUser> liaisonUsers = liaisonInstitution.getLiaisonUsers().stream()
+          .filter(c -> c.getUser().getId().equals(user.getId())).collect(Collectors.toList());
+        for (LiaisonUser liaisonUser : liaisonUsers) {
+          liaisonUserManager.deleteLiaisonUser(liaisonUser.getId());
+        }
+      }
+
+      List<CrpProgramCountry> activeCountries = crpProgramDb.getCrpProgramCountries().stream().filter(c -> c.isActive())
+        .collect(Collectors.toList());
+      for (CrpProgramCountry crpProgramCountry : activeCountries) {
+        this.deleteSiteIntegrationLeader(crpProgramCountry, user);
+      }
+
+      crpProgramLeaderManager.deleteCrpProgramLeader(leader.getId());
+
+      List<CrpProgramLeader> existsUserLeader = user.getCrpProgramLeaders().stream()
+        .filter(u -> u.isActive() && u.getCrpProgram().getCrp().getId().longValue() == loggedCrp.getId().longValue()
+          && u.getCrpProgram().getProgramType() == crpProgramDb.getProgramType())
+        .collect(Collectors.toList());
+
+      if (existsUserLeader == null || existsUserLeader.isEmpty()) {
+        if (crpProgramDb.getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+          List<UserRole> userRoles = user.getUserRoles().stream()
+            .filter(ur -> ur.getRole().equals(rplRole) || ur.getRole().equals(rpmRole)).collect(Collectors.toList());
+          if (CollectionUtils.isNotEmpty(userRoles)) {
+            for (UserRole userRole : userRoles) {
+              userRoleManager.deleteUserRole(userRole.getId());
+              this.notifyRoleUnassigned(userRole.getUser(), userRole.getRole(), crpProgramDb);
+            }
+          }
+        }
+      }
+
+      this.checkCrpUserByRole(user);
+    }
+
+    List<CrpProgramCountry> activeCountries = crpProgramDb.getCrpProgramCountries().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList());
+    for (CrpProgramCountry crpProgramCountry : activeCountries) {
+      crpProgramCountryManager.deleteCrpProgramCountry(crpProgramCountry.getId());
+      this.deleteSiteIntegration(crpProgramCountry);
+    }
+
+    for (LiaisonInstitution institution : crpProgramDb.getLiaisonInstitutions().stream().filter(c -> c.isActive())
+      .collect(Collectors.toList())) {
+      liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
+    }
+
+    crpProgramManager.deleteCrpProgram(crpProgramDb.getId());
+  }
+
+  private boolean isDeletedProgramGhost(CrpProgram crpProgram) {
+    if (crpProgram == null || crpProgram.getId() != null) {
+      return false;
+    }
+
+    boolean emptyAcronym = crpProgram.getAcronym() == null || crpProgram.getAcronym().trim().isEmpty();
+    boolean emptyName = crpProgram.getName() == null || crpProgram.getName().trim().isEmpty();
+    boolean emptyLeaders = crpProgram.getLeaders() == null || crpProgram.getLeaders().isEmpty();
+    boolean emptyManagers = crpProgram.getManagers() == null || crpProgram.getManagers().isEmpty();
+    boolean emptyCountries = crpProgram.getSelectedCountries() == null || crpProgram.getSelectedCountries().isEmpty();
+
+    return emptyAcronym && emptyName && emptyLeaders && emptyManagers && emptyCountries;
+  }
+
 
   @Override
   public String save() {
@@ -761,27 +841,44 @@ public class CrpProgamRegionsAction extends BaseAction {
       this.setUsersToActive(new ArrayList<>());
       List<CrpProgram> rgProgramsRewiev =
         crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
-      // Removing crp flagship program type
-      if (rgProgramsRewiev != null) {
-        for (CrpProgram crpProgram : rgProgramsRewiev) {
-          if (!regionsPrograms.contains(crpProgram)) {
-            CrpProgram crpProgramBD = crpProgramManager.getCrpProgramById(crpProgram.getId());
-
-            if (crpProgramBD.getCrpProgramLeaders().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-              .isEmpty()
-              && crpProgramBD.getCrpProgramCountries().stream().filter(c -> c.isActive()).collect(Collectors.toList())
-                .isEmpty()) {
-              for (LiaisonInstitution institution : crpProgram.getLiaisonInstitutions().stream()
-                .filter(c -> c.isActive()).collect(Collectors.toList())) {
-                liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
-              }
-
-              crpProgramManager.deleteCrpProgram(crpProgram.getId());
-            }
+      Set<Long> regionProgramIds = new HashSet<>();
+      if (regionsPrograms != null) {
+        for (CrpProgram program : regionsPrograms) {
+          if (program != null && program.getId() != null) {
+            regionProgramIds.add(program.getId());
           }
         }
       }
-      // Add crp flagship program type
+
+      // Removing regional programs no longer present in submitted list.
+      if (rgProgramsRewiev != null) {
+        for (CrpProgram crpProgram : rgProgramsRewiev) {
+          if (!regionProgramIds.contains(crpProgram.getId())) {
+            this.removeRegionalProgramData(crpProgram);
+          }
+        }
+      }
+
+      // Refresh valid IDs and drop deleted/ghost entries before add/update processing.
+      Set<Long> validRegionalProgramIds = new HashSet<>();
+      List<CrpProgram> remainingRegionalPrograms =
+        crpProgramManager.findCrpProgramsByType(loggedCrp.getId(), ProgramType.REGIONAL_PROGRAM_TYPE.getValue());
+      if (remainingRegionalPrograms != null) {
+        for (CrpProgram remainingProgram : remainingRegionalPrograms) {
+          if (remainingProgram != null && remainingProgram.getId() != null) {
+            validRegionalProgramIds.add(remainingProgram.getId());
+          }
+        }
+      }
+
+      if (regionsPrograms != null) {
+        regionsPrograms = regionsPrograms.stream().filter(crpProgram -> crpProgram != null)
+          .filter(crpProgram -> !this.isDeletedProgramGhost(crpProgram))
+          .filter(crpProgram -> crpProgram.getId() == null || validRegionalProgramIds.contains(crpProgram.getId()))
+          .collect(Collectors.toList());
+      }
+
+      // Add or update regional programs.
       for (CrpProgram crpProgram : regionsPrograms) {
         if (crpProgram.getId() == null) {
           crpProgram.setCrp(loggedCrp);

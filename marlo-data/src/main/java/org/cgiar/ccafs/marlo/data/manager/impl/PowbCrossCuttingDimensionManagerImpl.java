@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class PowbCrossCuttingDimensionManagerImpl implements PowbCrossCuttingDim
   }
 
   @Override
+  @Transactional
   public void deletePowbCrossCuttingDimension(long powbCrossCuttingDimensionId) {
 
     powbCrossCuttingDimensionDAO.deletePowbCrossCuttingDimension(powbCrossCuttingDimensionId);

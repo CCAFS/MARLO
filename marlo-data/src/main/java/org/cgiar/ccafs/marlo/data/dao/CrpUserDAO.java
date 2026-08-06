@@ -66,6 +66,15 @@ public interface CrpUserDAO {
   public CrpUser find(long id);
 
   /**
+   * Gets the user access record for a Global Unit, including inactive records.
+   *
+   * @param userId user identifier
+   * @param crpId Global Unit identifier
+   * @return matching access record, or null when it does not exist
+   */
+  public CrpUser getCrpUserByUserIdAndCrpId(long userId, long crpId);
+
+  /**
    * This method gets a list of crpUser that are active
    * 
    * @return a list from CrpUser null if no exist records

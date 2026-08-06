@@ -1,12 +1,21 @@
 $(document).ready(init);
 
-// The email input view is equal to isSecondForm=false
-// The password input view is equal to isSecondForm=true
-var cookieTime, isSecondForm = false, hasAccess = false;
+// currentStep is one of "email", "project" or "password", matching the 3 login screens
+var cookieTime, currentStep = "email", hasAccess = false;
 var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
 var incorrectPasswordCount = 0;
+// Number of crps/centers/platforms actually assigned to the user (data.crps.length from crpByEmail.do),
+// NOT the count of <li> elements in the DOM (which always renders every Global Unit with login=true,
+// regardless of the current user's access)
+var availableCrpsCount = 0;
+// Complete name of the user being authenticated (users.first_name + users.last_name, as returned by
+// crpByEmail.do). Empty when the record has no name; the password step then echoes only what was typed
+var userDisplayName = "";
+// True while validateUser.do is in flight. Guards the step navigation ("Go back") and the button
+// state, so an attempt that is still running can't be navigated away from or submitted twice
+var isSubmitting = false;
 
 function init() {
   initJreject();
@@ -42,11 +51,20 @@ function init() {
     // Hidden input that contains the selected crp id
     $("input#crp-input").val(selectedImageAcronym);
     setCRPCookie();
+
+    // Mirror the selected project card (image/acronym) into the step 3 full-width card
+    $('#login-selected-project-card').html($(this).html());
   });
 
   // Hide wrong data line and message in email and password inputs
   $('input.login-input').on("change", function(e) {
     cleanWrongData();
+  });
+
+  // Keep the submit button disabled while the email/username field is empty, so step 1 can't be
+  // submitted with nothing typed. "input" (not "change") so it reacts on every keystroke and on paste
+  username.on("input", function() {
+    updateNextButtonState();
   });
 
   // Set focus on email input on page load
@@ -73,24 +91,36 @@ function init() {
     }
   });
 
-  // Next Button
+  // Next / Log in Button
   $("input#login_next").on('click', function(e) {
     e.preventDefault();
 
-    // Save the email in cookies
-    setCookie("username.email", username.val(), cookieTime);
-    // Clean bottom red line in input
-    $('input.login-input').removeClass("wrongData");
-    var email = username.val();
-    /* || !isEmail(email) if you want to check if isEmail */
-    if(email == "") {
-      wrongData("invalidEmail");
-    } else if(!isSecondForm) {
-      loadAvailableItems(email);
+    if(currentStep == "email") {
+      // Clean bottom red line in input
+      $('input.login-input').removeClass("wrongData");
+      var email = $.trim(username.val());
+
+      // Two-stage validation, so a malformed value is caught here instead of being reported as a
+      // missing database record. The field accepts an email OR a username (crpByEmail.do falls back
+      // to getUserByUsername), so the email format is only enforced when the value looks like an
+      // email attempt: without "@" it is a username and is left for the server to resolve
+      if(email == "") {
+        wrongData("emailRequired");
+      } else if(email.indexOf("@") > -1 && !looksLikeEmail(email)) {
+        wrongData("invalidEmail");
+      } else {
+        // Only remember a value that passed validation
+        setCookie("username.email", email, cookieTime);
+        showProjectSkeleton();
+        loadAvailableItems(email);
+      }
+    } else if(currentStep == "project") {
+      // A project is already selected by default (loadAvailableItems auto-selects one)
+      showPasswordStep();
     } else if(inputPassword.val() == "") {
       wrongData("voidPassword");
     } else {
-      checkPassword(email, inputPassword.val());
+      checkPassword(username.val(), inputPassword.val());
     }
   });
 
@@ -103,9 +133,42 @@ function init() {
     $('html, body').enableScroll();
   });
 
+  // Submitting on "Enter" is keyup-based, so it only belongs to an input that also received the
+  // matching keydown. A <button> activated with Enter dispatches its click on keydown, and the
+  // "Go back" handler moves the focus into an input while going back - the trailing keyup then
+  // landed on that freshly focused input and immediately submitted the step the user had just
+  // left. Pairing the two events keeps a keyup that started somewhere else from counting here
+  $(".loginForm .login-input").on('keydown', function(event) {
+    if(event.keyCode === 13) {
+      $(this).data("enterStartedHere", true);
+    }
+  });
+
+  // A key held down while the focus moves away never delivers its keyup here, so drop the flag
+  // rather than leaving it armed for an unrelated keyup later on
+  $(".loginForm .login-input").on('blur', function() {
+    $(this).removeData("enterStartedHere");
+  });
+
   // Accessible "Enter" (keyCode==13) to login
   $(".loginForm .login-input").keyup(function(event) {
     if(event.keyCode === 13) {
+      if(!$(this).data("enterStartedHere")) {
+        return;
+      }
+      $(this).removeData("enterStartedHere");
+
+      // The button is disabled while step 1 is empty, and a disabled button is not guaranteed to
+      // dispatch a click, so raise the validation message here instead of relying on one
+      if(currentStep == "email" && $.trim(username.val()) == "") {
+        wrongData("emailRequired");
+        return;
+      }
+
+      if(isSubmitting) {
+        return;
+      }
+
       $("input#login_next").click();
     }
   });
@@ -117,37 +180,48 @@ function init() {
     }
   });
 
-  // Return to the first form (email input) when click on the user name
-  $(".loginForm .login-input-container.username").on('click', function() {
-    firstForm();
+  // Go back to the previous step when the "Go back" button is activated. It is a native <button>,
+  // so Enter and Space raise this same click event and no extra key handler is needed
+  $('.login-back-container .loginBack').on('click', function() {
+    // Ignore clicks while a login attempt is still running: navigating away mid-request left the
+    // form on another step while the pending response was still about to repaint the button
+    if(isSubmitting) {
+      return;
+    }
+
+    if(currentStep == "password" && crpSession == "" && availableCrpsCount > 1) {
+      showProjectStep();
+    } else {
+      showEmailStep();
+    }
   });
 
-  // Return to the first form (email input) when click on the bottom message in form
-  $('.login-back-container p.loginBack').on('click', function() {
-    $(".loginForm .login-input-container.username").click();
-  });
+  // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
+  updateNextButtonState();
 
 }
 
-// First form (email input)
-function firstForm() {
+// Step 1: Email
+function showEmailStep() {
   // refresh variables
-  isSecondForm = false;
+  currentStep = "email";
   hasAccess = false;
+  availableCrpsCount = 0;
+  userDisplayName = "";
 
   cleanWrongData();
 
   // Reset input password
   $(".loginForm #login-password .user-password").val("");
 
-  // Hide the big crp image, the welcome message, and the input password (jquery selectors in order)
-  $(".crps-select, .loginForm .form-group," + " .loginForm .welcome-message-container, " + ".loginForm #login-password")
-      .addClass("hidden");
+  // Hide the big crp image and the project/password steps
+  $(".crps-select, .project-skeleton, .loginForm .form-group").addClass("hidden");
+  $("#login-step-project, #login-step-password").addClass("hidden");
 
   // Hide terms and conditions checkbox
   $('.terms-container').addClass("hidden");
 
-  // Hide the "login with different user" button
+  // Hide the "go back" link
   $('.login-back-container').addClass('hidden');
 
   // Hide the labels (CRPs,Centers and Platforms)
@@ -157,15 +231,116 @@ function firstForm() {
   $('.selection-bar-options ul .selection-bar-image,' + '.selection-bar-options ul .selection-bar-acronym').addClass(
       "hidden");
 
-  // Change height value according to the first form
+  // Hide every card and re-show all the groups, so a lookup for a different email
+  // starts from a clean list instead of keeping the previous user's options
+  $('.selection-bar-options ul li').addClass("hidden");
+  $('.crps-select .selection-bar-options').removeClass("hidden");
+
+  // Change height value according to the first step
   $("#loginFormContainer .loginForm").removeClass("max-size");
 
-  // Show email input
-  $(".loginForm #login-email").removeClass("hidden");
+  // Show email step
+  $("#login-step-email").removeClass("hidden");
 
   // Change button value to Next
-  $("input#login_next").val("Next");
+  $("input#login_next").val("Log in");
 
+  // Drop any spinner/disabled state left behind by a failed attempt, then re-evaluate the button
+  // against the (possibly empty) email field
+  clearLoginButtonLoading();
+  updateNextButtonState();
+
+  // Set focus on email input
+  $(".loginForm #login-email .user-email").focus();
+}
+
+// Show 2 placeholder cards in the project step while crpByEmail.do is loading,
+// avoiding the jarring gray loading block that used to replace the button
+function showProjectSkeleton() {
+  cleanWrongData();
+
+  $("#login-step-email, #login-step-password").addClass("hidden");
+  $("#login-step-project").removeClass("hidden");
+
+  $(".crps-select").addClass("hidden");
+  $(".project-skeleton").removeClass("hidden");
+
+  // Hide the "go back" link while the request is in flight
+  $('.login-back-container').addClass('hidden');
+  $('.terms-container').addClass("hidden");
+
+  $("#loginFormContainer .loginForm").addClass("max-size");
+}
+
+// Step 2: Select project (CRP/Center/Platform)
+function showProjectStep() {
+  currentStep = "project";
+
+  cleanWrongData();
+
+  $("#login-step-email, #login-step-password").addClass("hidden");
+  $("#login-step-project").removeClass("hidden");
+
+  // Show the project card grid, hide the loading skeleton
+  $(".project-skeleton").addClass("hidden");
+  $(".crps-select").removeClass("hidden");
+
+  // Show the "go back" link, hide terms checkbox (shown again on the password step)
+  $('.login-back-container').removeClass('hidden');
+  $('.terms-container').addClass("hidden");
+
+  $("#loginFormContainer .loginForm").addClass("max-size");
+
+  // Change button value to Login
+  $("input#login_next").val("Log in");
+
+  clearLoginButtonLoading();
+  updateNextButtonState();
+}
+
+// Step 3: Password
+function showPasswordStep() {
+  currentStep = "password";
+
+  cleanWrongData();
+
+  // Show terms and conditions checkbox
+  showTermsCheckbox();
+
+  // Echo who is logging in: the complete name when the user record has one, and always what was
+  // typed in step 1 - between parentheses when it accompanies the name, on its own otherwise
+  if(userDisplayName != "") {
+    $(".login-echoed-name").text(userDisplayName);
+    $(".login-echoed-username").text(" (" + username.val() + ")");
+  } else {
+    $(".login-echoed-name").text("");
+    $(".login-echoed-username").text(username.val());
+  }
+
+  // Mirror the actually selected project card (image/acronym), in case it was
+  // auto-selected before its "hidden" class was cleared
+  var $activeProjectCard = $('.selection-bar-options ul li.active');
+  if($activeProjectCard.length) {
+    $('#login-selected-project-card').html($activeProjectCard.html());
+  }
+
+  // Change height value to the password step
+  $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
+
+  $("#login-step-email, #login-step-project").addClass("hidden");
+  $("#login-step-password").removeClass("hidden");
+
+  // Change button value to Login
+  $("input#login_next").val("Log in");
+
+  clearLoginButtonLoading();
+  updateNextButtonState();
+
+  // Set focus on password input
+  $(".loginForm #login-password input").focus();
+
+  // Show the "go back" link
+  $('.login-back-container').removeClass('hidden');
 }
 
 // Returns true if the {nameCookie} exists
@@ -219,22 +394,36 @@ function loadAvailableItems(email) {
   $
       .ajax({
           url: baseUrl + "/crpByEmail.do",
+          // POST so the account identifier is not left in the URL (proxy logs, browser history, Referer)
+          type: "POST",
           data: {
             userEmail: email
           },
           beforeSend: function() {
-            // Add the animated gif in button and remove the next text
-            $("input#login_next").addClass("login-loadingBlock");
+            // Disable the button while the project cards skeleton is shown on step 2
             $("input#login_next").attr("disabled", true);
-            $("input#login_next").val("");
           },
           success: function(data) {
-            // If the user doesn't exists show a predefined message and reset the button value to (next)
-            if(data.user == null) {
+            // Same guard as in checkPassword: an HTML error page answered with a 200 must not be
+            // reported to the user as "account not found"
+            if(data == null || data.crps == null) {
+              showEmailStep();
+              wrongData("serverError");
+              return;
+            }
+
+            // If the user doesn't exists show a predefined message and reset the button value to (next).
+            // An empty crps list is treated the same way: the code below indexes data.crps[0], and
+            // throwing there would strand the user on the loading skeleton
+            if(data.user == null || data.crps.length == 0) {
+              showEmailStep();
               wrongData("emailNotFound");
-              $("input#login_next").val("Next");
             } else {
               var crpCookie = getCrpCookie();
+
+              // Track the real number of crps/centers/platforms assigned to this user,
+              // used by the "Go back" handler to decide whether Step 2 makes sense to show
+              availableCrpsCount = data.crps.length;
 
               //console.log(data.crps[0].acronym);
 
@@ -260,24 +449,32 @@ function loadAvailableItems(email) {
                 // in the select bar
                 $(".crps-select .name-type-container.type-" + data.crps[i].idType).removeClass("hidden");
 
-                // If the user has access to less than 7 crps, show images in select bar, if doesn't, show acronyms
-                // boxes
+                // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
+                // so the ones this user is not assigned to must stay hidden, otherwise they show up
+                // as empty bordered cards next to the real options
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym).removeClass("hidden");
+
+                // Always show the logo, no matter how many options the user has. The acronym element
+                // is kept in the markup (hidden) as a fallback we may want to bring back
                 // Additionally set tabindex to make crp change accessible by keyboard
-                if(data.crps.length < 7) {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr(
-                      'tabindex', '0');
-                } else {
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').removeClass(
-                      "hidden");
-                  $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-acronym').attr(
-                      'tabindex', '0');
-                }
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').removeClass(
+                    "hidden");
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym + ' .selection-bar-image').attr('tabindex',
+                    '0');
 
                 // If user has a crp cookie, click it
                 if(crpCookie == data.crps[i].acronym) {
                   $('.selection-bar-options ul #crp-' + data.crps[i].acronym).click();
+                }
+              });
+
+              // Collapse type groups that ended up without any visible card, so their
+              // separator and spacing don't leave a gap in the list
+              $(".crps-select .selection-bar-options").each(function() {
+                if($(this).find("ul li:not(.hidden)").length === 0) {
+                  $(this).addClass("hidden");
+                } else {
+                  $(this).removeClass("hidden");
                 }
               });
 
@@ -293,75 +490,50 @@ function loadAvailableItems(email) {
               if(hasAccess || crpSession == "") {
                 secondForm(data);
               } else {
+                showEmailStep();
                 wrongData("deniedAccess");
-                $("input#login_next").val("Next");
               }
             }
           },
           complete: function(data) {
-            $("input#login_next").removeClass("login-loadingBlock");
-            $("input#login_next").attr("disabled", false);
+            updateNextButtonState();
           },
           error: function(data) {
-            wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
-            $("input#login_next").removeClass("login-loadingBlock");
-            $("input#login_next").attr("disabled", false);
+            showEmailStep();
+            wrongData("serverError");
           }
       });
 }
 
-// Second Form (password input)
+// Decide which step to show next (project selection or password), reusing the same
+// hasAccess / crpSession / data.crps checks the app already relied on
 function secondForm(data) {
-  // Submit Button control, just send the form when is in the second form
-  isSecondForm = true;
-
-  // Show terms and conditions checkbox
-  showTermsCheckbox();
-
   cleanWrongData();
 
-  // Show user name in form
-  $(".welcome-message-container .username span").text(data.user.name);
-
-  // Change height value to secondForm
-  $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
-
-  // Hide email input
-  $(".loginForm #login-email").addClass("hidden");
-
-  // Show crp image, welcome message and input password
-  $(".loginForm .form-group, " + ".loginForm .welcome-message-container, " + ".loginForm #login-password").removeClass(
-      "hidden");
-
-  // Change button value to Login
-  $("input#login_next").val("Login");
-
-  // Set focus on password input
-  $(".loginForm #login-password input").focus();
-
-  // Show the back to email button
-  $('.login-back-container').removeClass('hidden');
+  // Keep the user's complete name to show it on the password step
+  userDisplayName = sanitizeUserName(data.user.name);
 
   // If has a crpSession validate if user has access, if doesn't click the crpSession option
-  // If hasn't crpSession show the side select bar
+  // If hasn't crpSession and user has multiple projects, show the project selection step
   if(crpSession != '') {
 
     if(!hasAccess) {
+      showPasswordStep();
       wrongData("deniedAccess");
     } else {
       $('.selection-bar-options ul #crp-' + crpSession).click();
+      showPasswordStep();
     }
 
   } else {
 
-    // When user has access to multiple crps, show the side bar
+    // When user has access to multiple crps, show the project selection step
     if(data.crps.length > 1) {
-      $(".crps-select").removeClass("hidden");
-      // Move crps select side bar to left
-      $(".crps-select").addClass('show-select-bar');
+      showProjectStep();
     } else {
-      // Click on the unique loaded crp
+      // Click on the unique loaded crp and go straight to the password step
       $('.selection-bar-options ul #crp-' + data.crps[0].acronym).click();
+      showPasswordStep();
     }
   }
 }
@@ -371,20 +543,36 @@ function checkPassword(email,password) {
   $
       .ajax({
           url: baseUrl + "/validateUser.do",
+          // POST so the credentials are not left in the URL (proxy logs, browser history, Referer)
+          type: "POST",
           data: {
               userEmail: email,
               userPassword: password,
               agree: $('input#terms').is(':checked')
           },
           beforeSend: function() {
-            // If terms and conditions is checked, show loading gif
-            if($('input#terms').is(':checked')) {
-              $("input#login_next").addClass("login-loadingBlock");
-              $("input#login_next").attr("disabled", true);
-              $("input#login_next").val("");
-            }
+            // Lock the button for the whole request. It used to be locked only when the terms
+            // checkbox was checked, which let a second attempt be fired on top of the first one
+            isSubmitting = true;
+            $("input#login_next").addClass("is-loading");
+            $("input#login_next").attr("disabled", true);
+            $(".login-button-spinner").removeClass("hidden");
+            // Grey out the step navigation for the duration of the request, and disable the button
+            // so it also leaves the tab order instead of being a focusable no-op
+            $('.login-back-container').addClass("is-busy");
+            $('.login-back-container .loginBack').attr("disabled", true);
           },
           success: function(data) {
+            // A proxy or the container can answer 200 with an HTML body instead of the expected JSON.
+            // Treat any unexpected payload as a server error instead of throwing inside this callback,
+            // which is the other way the button used to end up stuck with its spinner
+            if(data == null || data.userFound == null) {
+              clearLoginButtonLoading();
+              updateNextButtonState();
+              wrongData("serverError");
+              return;
+            }
+
             // If login success is false show the error message, if doesn't send form
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
@@ -408,36 +596,55 @@ function checkPassword(email,password) {
                 wrongData("incorrectPassword", data.messageEror);
               }
 
-              // Hide the loading gif
-              $("input#login_next").removeClass("login-loadingBlock");
-              if (incorrectPasswordCount != 3){
-                $("input#login_next").attr("disabled", false);
-              }
-              $("input#login_next").val("Login");
+              // Hide the loading spinner. Runs after the recaptcha block above, so that
+              // updateNextButtonState() sees the incremented counter and keeps the button locked
+              clearLoginButtonLoading();
+              updateNextButtonState();
             } else {
+              // Keep the spinner and the lock while the real form submits and the page navigates away
               $("input#login_formSubmit").click();
             }
           },
           complete: function(data) {
           },
           error: function(data) {
-            wrongData("An error has ocurred. Please try again or contact with the MARLO Support team (MARLOSupport@cgiar.org)");
+            // Release the button before rendering the message, so a failure inside wrongData() can
+            // never again leave the spinner running (this is what the 502 on AD accounts exposed)
+            clearLoginButtonLoading();
+            updateNextButtonState();
+            wrongData("serverError");
           }
       });
 }
 
 // Show error message and bottom red line in input
-// if has a custom message show them, but if is a default type (i.e. incorrectPassword, etc.), show them
+// {type} is the CSS class of one of the <p class="invalidField ..."> elements in loginForm.ftl
+// {customMessage} optionally replaces that element's default (i18n) text
 function wrongData(type,customMessage) {
+  // Only ever show one message: submitting with "Enter" keeps the focus on the input, so its "change"
+  // event never fires and a message from the previous attempt used to stay on screen and stack
+  cleanWrongData();
+
   // bottom red line in input
   $('input.login-input').addClass("wrongData");
-  $invalidField = $('.loginForm p.invalidField.' + type);
+
+  // {type} must be a bare CSS class. Passing a whole sentence built an invalid selector
+  // (".loginForm p.invalidField.An error has ocurred...") and made jQuery throw, which aborted the
+  // rest of the caller - leaving the button stuck with its spinner. Fall back to the generic slot
+  // Guard against a non-string too: null coerces to "null", which would select nothing and leave the
+  // user with no message at all
+  var $invalidField;
+  if(typeof type == "string" && /^[A-Za-z][\w-]*$/.test(type)) {
+    $invalidField = $('.loginForm p.invalidField.' + type);
+  } else {
+    $invalidField = $('.loginForm p.invalidField.serverError');
+    customMessage = (customMessage != null) ? customMessage : type;
+  }
+
   if(customMessage != null) {
     $invalidField.text(customMessage);
-    $invalidField.removeClass("hidden");
-  } else {
-    $invalidField.removeClass("hidden");
   }
+  $invalidField.removeClass("hidden");
 
   // Set focus on the wrong field
   if(type == "voidPassword" || type == "incorrectPassword") {
@@ -451,7 +658,7 @@ function wrongData(type,customMessage) {
       "attachments": [
         {
             "color": "#e74c3c",
-            "author_name": $('.login-input-container.username span').text(),
+            "author_name": userDisplayName,
             "text": $invalidField.text(),
             "fields": [
                 {
@@ -471,12 +678,67 @@ function wrongData(type,customMessage) {
   postMessageToSlack(JSON.stringify(slackMessage));
 }
 
+// getComposedCompleteName() on the server concatenates first_name and last_name without validating
+// them, so an incomplete record arrives here as "null null" or "Kenji null". Drop those tokens and
+// return "" when nothing usable is left
+function sanitizeUserName(name) {
+  if(name == null) {
+    return "";
+  }
+
+  var parts = String(name).split(/\s+/);
+  var cleaned = [];
+
+  $.each(parts, function(i, part) {
+    if(part != "" && part.toLowerCase() != "null") {
+      cleaned.push(part);
+    }
+  });
+
+  return cleaned.join(" ");
+}
+
 // Hide wrong data line and message in email and password inputs
 function cleanWrongData() {
   // Hide input bottom red line
   $('input.login-input').removeClass("wrongData");
   // Hide error message
   $('.loginForm p.invalidField').addClass("hidden");
+}
+
+// Clear the in-flight visual state of the submit button. Called on every step change and whenever a
+// request settles, so a failed or abandoned attempt can never leave the button spinning forever.
+// Deliberately does not touch "disabled" - that belongs to updateNextButtonState()
+function clearLoginButtonLoading() {
+  isSubmitting = false;
+  $("input#login_next").removeClass("is-loading");
+  $(".login-button-spinner").addClass("hidden");
+  $("input#login_next").val("Log in");
+  $('.login-back-container').removeClass("is-busy");
+  $('.login-back-container .loginBack').attr("disabled", false);
+}
+
+// Permissive check for "looks like a usable email address": a single "@", something before it, and a
+// dotted domain after it. Deliberately laxer than isEmail() in utils.js, which caps the top level
+// domain at 4 characters and would reject valid addresses such as name@example.africa. Its only job
+// is to catch an obviously malformed address ("name@", "name@domain") before the database lookup
+function looksLikeEmail(value) {
+  return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(value);
+}
+
+// The submit button is shared by the 3 steps: on the email step it stays disabled until something is
+// typed, on the other steps it is always available
+function updateNextButtonState() {
+  // A request is still running, or the recaptcha is on screen and owns the button until its callback
+  if(isSubmitting || incorrectPasswordCount >= 3) {
+    return;
+  }
+
+  if(currentStep == "email") {
+    $("input#login_next").attr("disabled", $.trim(username.val()) == "");
+  } else {
+    $("input#login_next").attr("disabled", false);
+  }
 }
 
 // Show terms and conditions checkbox

@@ -110,7 +110,11 @@ Every phased screen renders the **active phase chip** in the page header (e.g., 
 
 ## 4. Screen Inventory
 
-This is the *constitutional* set of top-level views. Each lives under `marlo-web/src/main/webapp/WEB-INF/crp/views/<area>/` (or `WEB-INF/global/...` for shared screens). Module specs may add screens, but renaming or removing a screen here is a constitutional event.
+This is the current set of top-level navigable views. CRP-scoped views live under
+`marlo-web/src/main/webapp/WEB-INF/crp/views/<area>/`; shared and Super Admin views live under
+`marlo-web/src/main/webapp/WEB-INF/global/views/`. This inventory intentionally excludes supporting partials such
+as `buttons-*`, `messages-*`, `menu-*`, `submenu-*`, `availability-*`, `dataInfo-*`, and macro files. Module specs
+may add screens, but renaming or removing a screen here is a constitutional event.
 
 ### 4.1 Home
 
@@ -119,51 +123,83 @@ This is the *constitutional* set of top-level views. Each lives under `marlo-web
 ### 4.2 Impact Pathway
 
 - `impactPathway/outcomes.ftl`
-- `impactPathway/sloIndicators.ftl`
-- `impactPathway/programImpacts.ftl`
-- `impactPathway/crossCuttingDimensions.ftl`
+- `impactPathway/clusterActivities.ftl`
 
 ### 4.3 POWB
 
+- `powb/powb_adjustmentsChanges.ftl`
+- `powb/powb_collaborationIntegration.ftl`
+- `powb/powb_crossCuttingDimensions.ftl`
+- `powb/powb_crpStaffing.ftl`
+- `powb/powb_evidenceRelevant.ftl`
+- `powb/powb_expectedProgress.ftl`
 - `powb/powb_financialPlan.ftl`
 - `powb/powb_managementGovernance.ftl`
-- `powb/powb_evidence.ftl`
-- `powb/powb_crossCuttingDimensions.ftl`
+- `powb/powb_managementRisks.ftl`
+- `powb/powb_mel.ftl`
+- `powb/powb_plansByFlagship.ftl`
 - (legacy) `powb2019/*` — frozen, retained for historical compatibility.
 
 ### 4.4 Projects / Clusters
 
-- `projects/projectDescription.ftl`
-- `projects/projectPartners.ftl`
-- `projects/projectLocations.ftl`
 - `projects/projectActivities.ftl`
-- `projects/projectDeliverable.ftl`
-- `projects/projectExpectedStudy.ftl`
-- `projects/projectInnovation.ftl`
-- `projects/projectHighLights.ftl`
-- `projects/projectCaseStudy.ftl`
-- `projects/projectBudgetByPartners.ftl`
 - `projects/projectBudgetByCoAs.ftl`
+- `projects/projectBudgetByFlagships.ftl`
+- `projects/projectBudgetByPartners.ftl`
+- `projects/projectCaseStudies.ftl`
+- `projects/projectCaseStudy.ftl`
+- `projects/projectCcafsOutcomes.ftl`
+- `projects/projectCenterPrograms.ftl`
+- `projects/projectContributionCrp.ftl`
+- `projects/projectContributionToLP6.ftl`
+- `projects/projectContributionsCrpList.ftl`
+- `projects/projectDeliverable.ftl`
+- `projects/projectDescription.ftl`
+- `projects/projectExpectedStudies.ftl`
+- `projects/projectHighlight.ftl`
+- `projects/projectHighlightsList.ftl`
+- `projects/projectImpacts.ftl`
+- `projects/projectInnovation.ftl`
+- `projects/projectInnovationList.ftl`
+- `projects/projectLeverages.ftl`
+- `projects/projectLocations.ftl`
+- `projects/projectOtherContributions.ftl`
 - `projects/projectOutcomes.ftl`
+- `projects/projectOverviewByMogs.ftl`
+- `projects/projectPartners.ftl`
+- `projects/projectPolicies.ftl`
+- `projects/projectPolicy.ftl`
+- `projects/projectStudies.ftl`
+- `projects/projectStudy.ftl`
+- `projects/projectSubmission.ftl`
+- `projects/projectsList.ftl`
+- `projects/safeguard.ftl`
 
 ### 4.5 Funding Sources
 
 - `fundingSources/fundingSource.ftl`
 - `fundingSources/fundingSourcesList.ftl`
-- `fundingSources/fundingSourcesSummary.ftl`
 
 ### 4.6 Quality Assurance
 
-- `qualityAssessment/qualityAssessmentList.ftl`
-- `qualityAssessment/qualityAssessmentDetail.ftl`
+- `qualityAssessment/qualityAssessment.ftl`
 
 ### 4.7 Annual Report
 
-- `annualReport/annualReport_melia.ftl`
+- `annualReport/annualReport_ccDimensions.ftl`
+- `annualReport/annualReport_control.ftl`
+- `annualReport/annualReport_crossPartnerships.ftl`
+- `annualReport/annualReport_crpProgress.ftl`
+- `annualReport/annualReport_efficiency.ftl`
+- `annualReport/annualReport_externalPartnerships.ftl`
+- `annualReport/annualReport_financial.ftl`
+- `annualReport/annualReport_flagshipProgress.ftl`
+- `annualReport/annualReport_fundingUse.ftl`
 - `annualReport/annualReport_governance.ftl`
-- `annualReport/annualReport_communications.ftl`
-- `annualReport/annualReport_crossCutting.ftl`
-- `annualReport/annualReport_evidence.ftl`
+- `annualReport/annualReport_influence.ftl`
+- `annualReport/annualReport_melia.ftl`
+- `annualReport/annualReport_plannedVariance.ftl`
+- `annualReport/annualReport_risks.ftl`
 - (legacy) `annualReport2018/*` — frozen.
 
 ### 4.8 Synthesis & Summaries
@@ -183,22 +219,47 @@ This is the *constitutional* set of top-level views. Each lives under `marlo-web
 
 ### 4.11 AI
 
-- `ai/aiUserIdeas.ftl` (or analogous landing for AI services)
+- `ai/aiDashboard.ftl`
 
 ### 4.12 Admin
 
+- `admin/activityManager.ftl`
+- `admin/allianceLeversManagement.ftl`
+- `admin/crpDeliverables.ftl`
+- `admin/crpPhases.ftl`
+- `admin/crpUsers.ftl`
+- `admin/feedbackManagement.ftl`
+- `admin/feedbackRolesPermissionsManagement.ftl`
+- `admin/locations.ftl`
+- `admin/management.ftl`
+- `admin/marloInstitutions.ftl`
+- `admin/marloUsers.ftl`
 - `admin/portfoliosManagement.ftl`
+- `admin/ppaPartners.ftl`
+- `admin/projectPhases.ftl`
+- `admin/regionalMapping.ftl`
+- `admin/siteIntegration.ftl`
+- `admin/targetUnits.ftl`
 - `admin/timelineManagement.ftl`
-- `admin/partnersManagement.ftl`
-- `admin/usersManagement.ftl`
-- `admin/locationsManagement.ftl`
-- `admin/parametersManagement.ftl`
-- `admin/messagesManagement.ftl`
-- `admin/notificationsManagement.ftl`
 
 ### 4.13 Super Admin
 
-- `superadmin/*.ftl` — phases, Global Units, cross-program parameters.
+- `superadmin/buttonGuideManagement.ftl`
+- `superadmin/globalUnitManagement.ftl`
+- `superadmin/marloBoard.ftl`
+- `superadmin/marloBulkReplication.ftl`
+- `superadmin/marloCrossCutting.ftl`
+- `superadmin/marloEmails.ftl`
+- `superadmin/marloIDOs.ftl`
+- `superadmin/marloInstitutions.ftl`
+- `superadmin/marloLocations.ftl`
+- `superadmin/marloMessages.ftl`
+- `superadmin/marloNotifications.ftl`
+- `superadmin/marloParameters.ftl`
+- `superadmin/marloSLOs.ftl`
+- `superadmin/marloSiteIntegration.ftl`
+- `superadmin/reportsManagement.ftl`
+- `superadmin/tipManagement.ftl`
 
 ---
 

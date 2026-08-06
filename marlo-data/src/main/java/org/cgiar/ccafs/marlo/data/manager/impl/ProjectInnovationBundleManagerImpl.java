@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -50,6 +51,7 @@ public class ProjectInnovationBundleManagerImpl implements ProjectInnovationBund
   }
 
   @Override
+  @Transactional
   public void deleteProjectInnovationBundle(long projectInnovationBundleId) {
     ProjectInnovationBundle projectInnovationBundle = this.getProjectInnovationBundleById(projectInnovationBundleId);
 
@@ -72,6 +74,7 @@ public class ProjectInnovationBundleManagerImpl implements ProjectInnovationBund
     projectInnovationBundleDAO.deleteProjectInnovationBundle(projectInnovationBundleId);
   }
 
+  @Transactional
   public void deleteProjectInnovationBundlePhase(Phase next, long innovationID,
     ProjectInnovationBundle projectInnovationBundle) {
 

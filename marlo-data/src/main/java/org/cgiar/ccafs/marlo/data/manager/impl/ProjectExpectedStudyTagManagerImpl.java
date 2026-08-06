@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author CCAFS
@@ -43,6 +44,7 @@ public class ProjectExpectedStudyTagManagerImpl implements ProjectExpectedStudyT
   }
 
   @Override
+  @Transactional
   public void deleteProjectExpectedStudyTag(long projectExpectedStudyTagId) {
 
     projectExpectedStudyTagDAO.deleteProjectExpectedStudyTag(projectExpectedStudyTagId);
