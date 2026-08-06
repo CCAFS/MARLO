@@ -302,8 +302,7 @@ public class ProjectPartnersValidator extends BaseValidator {
     if (project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
       if (action.hasSpecificities(APConstants.CRP_PARTNER_CONTRIBUTIONS)) {
         if (!projectValidator.isValidPersonResponsibilities(partner.getResponsibilities())) {
-
-          action.addMissingField("project.projectPartners[" + partnerCounter + "].responsibilities");
+          action.addMessage("project.partners[" + partnerCounter + "].responsibilities");
           action.getInvalidFields().put("input-project.partners[" + partnerCounter + "].responsibilities",
             InvalidFieldsMessages.EMPTYFIELD);
         }
