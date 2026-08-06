@@ -3,7 +3,7 @@ name: Trigger Jenkins Job Java 17 (STAGING)
 on:
   push:
     branches:
-      - "staging"
+      - "main"
   workflow_dispatch:
 
 jobs:
