@@ -282,11 +282,13 @@ public class OutcomeValidator extends BaseValidator
     }
 
     // 3. Validación Portfolio
-    if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
-            || outcome.getPortfolio().getId() == -1) {
-        action.addMessage(action.getText("outcome.action.portfolio.required", params));
-        // CAMBIO: Usamos outcomesForm
-        action.getInvalidFields().put(prefix + ".portfolio.id", InvalidFieldsMessages.EMPTYFIELD);
+    if (action.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE)) {
+        if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
+                || outcome.getPortfolio() != null && outcome.getPortfolio().getId() == -1) {
+            action.addMessage(action.getText("outcome.action.portfolio.required", params));
+            // CAMBIO: Usamos outcomesForm
+            action.getInvalidFields().put(prefix + ".portfolio.id", InvalidFieldsMessages.EMPTYFIELD);
+        }
     }
 
     // 4. Validación StartYear
