@@ -1,9 +1,9 @@
-name: Trigger Jenkins Job Java 17 (STAGING)
+name: Trigger Jenkins Job Java 17 (DEV)
 
 on:
   push:
     branches:
-      - "main"
+      - "dev"
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}  # Remove 'refs/heads/' from GITHUB_REF
           BRANCH_NAME=${BRANCH_NAME#aiccra-}  # Remove 'aiccra-' from BRANCH_NAME
-          JENKINS_URL="https://automation.prms.cgiar.org/job/marlo-fsrp-${BRANCH_NAME}/build"
+          JENKINS_URL="https://automation.prms.cgiar.org/job/marlo-dev-docker/build"
           echo "Jenkins job URL for the branch $BRANCH_NAME is: $JENKINS_URL"
           echo "JENKINS_URL=${JENKINS_URL}" >> $GITHUB_ENV
 
