@@ -1,79 +1,131 @@
-$(document).ready(function() {
-
-  var $example = $('#timelineScroll');
-  var $frame = $example.find('.frame');
-
-  window.frr = $frame;
-  var sly = new Sly($frame, {
-      horizontal: 1,
-      itemNav: 'forceCentered',
-      activateMiddle: 1,
-      smart: 1,
-      activateOn: 'click',
-      mouseDragging: 0,
-      touchDragging: 0,
-      releaseSwing: 1,
-      startAt: currenPhaseIndex,
-      scrollBar: $example.find('.scrollbar'),
-      scrollBy: 0,
-      pagesBar: $example.find('.pages'),
-      activatePageOn: 'click',
-      speed: 200,
-      moveBy: 600,
-      elasticBounds: 1,
-      dragHandle: 1,
-      dynamicHandle: 1,
-      clickBar: 1,
-
-      // Buttons
-      forward: $example.find('._forward'),
-      backward: $example.find('._backward'),
-      prev: $example.find('.backward'),
-      next: $example.find('.forward'),
-      prevPage: $example.find('.prevPage'),
-      nextPage: $example.find('.nextPage')
-  }).init();
-
-  $('.phaseBox.phaseNoSelected').on('click', function(e,i) {
-    var phaseID = $(this).attr('id').split('-')[1];
-    setPhaseID(phaseID);
-  });
-
-  sly.on('active', function(eventName,itemIndex) {
-    console.log("eventName", eventName);
-    console.log("itemIndex", itemIndex);
-  });
-
-  fitPhaseTitles();
-
-  $(window).on('resize', function() {
-    fitPhaseTitles();
-  });
-
-});
-
 /**
- * Reduce title font size until it fits in one line without displacing the Closed label.
+ * Reporting phase selector.
+ *
+ * Open phases render as pills; the rest live in the "All phases" panel, which
+ * groups by year and can be filtered. Selecting any phase goes through
+ * setPhaseID(), which is the unchanged contract with the server.
  */
-function fitPhaseTitles() {
-  $('.phaseTitleText').each(function() {
-    var $title = $(this);
-    var maxFontSize = 16;
-    var minFontSize = 10;
-    var currentSize = maxFontSize;
+(function () {
+  'use strict';
 
-    $title.css('font-size', currentSize + 'px');
+  document.addEventListener('DOMContentLoaded', function () {
+    var selector = document.getElementById('timelineScroll');
+    if (!selector || !selector.classList.contains('phaseSelector')) {
+      return;
+    }
 
-    while (this.scrollWidth > this.clientWidth && currentSize > minFontSize) {
-      currentSize -= 0.5;
-      $title.css('font-size', currentSize + 'px');
+    var toggle = document.getElementById('allPhasesToggle');
+    var panel = document.getElementById('allPhasesPanel');
+    var search = document.getElementById('phaseSearchInput');
+    var empty = panel ? panel.querySelector('.phasePanel__empty') : null;
+
+    /* ---- Phase switching ---- */
+
+    selector.addEventListener('click', function (event) {
+      var target = event.target.closest('[data-phase-id]');
+      if (!target || target.disabled) {
+        return;
+      }
+      setPhaseID(target.getAttribute('data-phase-id'));
+    });
+
+    /* ---- Panel open / close ---- */
+
+    function isOpen() {
+      return toggle && toggle.getAttribute('aria-expanded') === 'true';
+    }
+
+    function setOpen(open) {
+      if (!toggle || !panel) {
+        return;
+      }
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      if (open && search) {
+        search.focus();
+      }
+      if (!open) {
+        resetSearch();
+      }
+    }
+
+    if (toggle && panel) {
+      toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+        setOpen(!isOpen());
+      });
+
+      document.addEventListener('click', function (event) {
+        if (isOpen() && !panel.contains(event.target) && !toggle.contains(event.target)) {
+          setOpen(false);
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && isOpen()) {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+    }
+
+    /* ---- Search ---- */
+
+    function resetSearch() {
+      if (!search) {
+        return;
+      }
+      search.value = '';
+      applySearch('');
+    }
+
+    /**
+     * Filter rows by name, then hide any year heading left without matches.
+     */
+    function applySearch(term) {
+      if (!panel) {
+        return;
+      }
+      var needle = term.trim().toLowerCase();
+      var matches = 0;
+      var headings = panel.querySelectorAll('.phasePanel__year');
+
+      Array.prototype.forEach.call(headings, function (heading) {
+        var visibleInGroup = 0;
+        var node = heading.nextElementSibling;
+
+        while (node && !node.classList.contains('phasePanel__year')) {
+          if (node.classList.contains('phaseRow')) {
+            var haystack = node.getAttribute('data-phase-search') || '';
+            var hit = needle === '' || haystack.indexOf(needle) !== -1;
+            node.hidden = !hit;
+            if (hit) {
+              visibleInGroup++;
+            }
+          }
+          node = node.nextElementSibling;
+        }
+
+        heading.hidden = visibleInGroup === 0;
+        matches += visibleInGroup;
+      });
+
+      if (empty) {
+        empty.hidden = matches !== 0;
+      }
+    }
+
+    if (search) {
+      search.addEventListener('input', function () {
+        applySearch(search.value);
+      });
     }
   });
-}
+})();
 
 /**
  * Execute an AJAX that change the phase in the session
- * 
+ *
  * @param phaseID
  * @returns
  */

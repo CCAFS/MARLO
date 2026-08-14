@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign pageLibs = ["jQuery-Timelinr","cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
+[#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js?20250509",
   "${baseUrlCdn}/global/js/impactGraphic.js"
@@ -44,209 +44,359 @@
 <!--  africa-color.svg  -->
 
 
-
   <div class="container">
     [#-- What do you want to do --]
 
   <section class="marlo-content">
   [#-- Hide map section only when this specificity is active --]
   [#if !action.hasSpecificities('homepage_hide_section_map')]
-  <section class="sectionMap">	
-  <div class="containerMapsection">
-    <div class="containerTextMap">
-      <p class="titleMap">What is a Cluster?</p>
-      <p class="textMap">A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>
-    </div>
-    <div class="containerImgMap">
-      <img src="${baseUrlCdn}/global/images/Map_africa.svg">
-      <div class="dialogMap">
-        <p class="dialogMapTitle">Cluster</p>
-        <p class="dialogMapText"></p>
+  [#--
+    Cluster banner. The 12 map hotspots keep project id and label together so
+    they cannot drift apart the way they did when the ids lived here and the
+    labels lived in dashboard.js. Coordinates are the percentage of the map
+    image at which each dot is centred, measured from the previous layout.
+  --]
+  [#assign clusterHotspots = [
+    {"projectID": 102076, "label": "Senegal: Activities led by ILRI",                              "x": "11.25", "y": "31.57"},
+    {"projectID": 102088, "label": "Ethiopia: Activities led by ILRI",                             "x": "77.25", "y": "48.87"},
+    {"projectID": 102081, "label": "Ghana: Activities led by IITA",                                "x": "25.25", "y": "41.39"},
+    {"projectID": 102085, "label": "Kenya: Activities led by ILRI",                                "x": "74.25", "y": "36.71"},
+    {"projectID": 102082, "label": "Zambia: Activities led by IWMI",                               "x": "61.25", "y": "73.19"},
+    {"projectID": 102084, "label": "Theme 1: Activities led by ILRI",                              "x": "44.25", "y": "1.64"},
+    {"projectID": 102077, "label": "Theme 2: Activities led by the Alliance",                      "x": "8.75",  "y": "11.46"},
+    {"projectID": 102086, "label": "West Africa",                                                  "x": "2.75",  "y": "37.65"},
+    {"projectID": 102087, "label": "Theme 4: Activities led by Alliance",                          "x": "37.25", "y": "62.90"},
+    {"projectID": 102090, "label": "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)",   "x": "81.75", "y": "73.66"},
+    {"projectID": 102080, "label": "East and Southern Africa",                                     "x": "78.25", "y": "24.55"},
+    {"projectID": 102083, "label": "Mali: Activities led by AfricaRice",                           "x": "23.75", "y": "26.89"}
+  ]/]
+
+  <section class="clusterBanner" id="clusterBanner">
+    <div class="clusterBanner__body">
+      <div class="clusterBanner__head">
+        <svg class="clusterBanner__icon" width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.1v4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="5.6" r="1" fill="currentColor"/></svg>
+        <h2 class="clusterBanner__title">[@s.text name="dashboard.cluster.title" /]</h2>
+        <button type="button" class="clusterBanner__toggle" id="clusterBannerToggle"
+          aria-expanded="true" aria-controls="clusterBannerContent"
+          data-label-hide="[@s.text name="dashboard.cluster.hide" /]"
+          data-label-show="[@s.text name="dashboard.cluster.show" /]">
+          <span>[@s.text name="dashboard.cluster.hide" /]</span>
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102076&edit=true" target="blank"  rel="noreferrer noopener">
-        <div class="circleMap" id="cluster1"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102088&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster2"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102081&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster3"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102085&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster4"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102082&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster5"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102084&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster6"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102077&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster7"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102086&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster8"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102087&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster9"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102090&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster10"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102080&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster11"></div>
-      </a>
-      <a href="${baseUrl}/clusters/AICCRA/description.do?projectID=102083&edit=true" target="blank" rel="noreferrer noopener">
-        <div class="circleMap" id="cluster12"></div>
-      </a>
+
+      <div class="clusterBanner__content" id="clusterBannerContent">
+        <p class="clusterBanner__text">[@s.text name="dashboard.cluster.description" /]</p>
+        <div class="clusterBanner__links">
+          <a class="clusterBanner__link" href="[@s.url namespace="/clusters" action='${(crpSession)!}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            [@s.text name="dashboard.cluster.browse" /]
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="clusterBanner__link clusterBanner__link--muted" target="_blank" rel="noreferrer noopener" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="dashboard.cluster.glossary" /]</a>
+        </div>
+      </div>
     </div>
+
+    <div class="clusterBanner__map" id="clusterBannerMap">
+      <div class="clusterMap">
+        <img src="${baseUrlCdn}/global/images/Map_africa.svg" alt="[@s.text name="dashboard.cluster.mapAlt" /]">
+        [#list clusterHotspots as hotspot]
+          <a class="clusterMap__spot" style="left:${hotspot.x}%;top:${hotspot.y}%"
+            href="[@s.url namespace="/clusters" action='${(crpSession)!}/description'][@s.param name='projectID']${hotspot.projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
+            target="_blank" rel="noreferrer noopener" aria-label="${hotspot.label}">
+            <span class="clusterMap__tip">${hotspot.label}</span>
+          </a>
+        [/#list]
+      </div>
     </div>
   </section>
-  <div class="borderMap"></div>
   [/#if]
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
-  <section class="timelineRefresh">	
-    <div class="homeTitleTimeline"><b>Schedule</b></div>
-    <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/loading-loading-forever.gif" >    
-	</section>
-  <section class="timeline" style="display: none">	
-		<div class="containerTimeline">
-			<div class="scroll-x-containerTimeline2 " id="listItemTimeline2">
-        <div id="timelineInfo">
-          <div id="timelineDescription">
-            <div id="timelineDescription_zoom">
-              <img src="${baseUrlCdn}/global/images/zoom_in.png" class="sideButtonZoom buttonZoomOut" name="zoom-in" >
-              <p id="timelineDescription_zoom_weeks"> Week(s) displayed </p>
-              <img src="${baseUrlCdn}/global/images/zoom_out.png" class="sideButtonZoom buttonZoomIn" name="zoom-out" >
-            </div>
+  [#--
+    Reporting timeline.
 
-            <div id="timelineDescription_title">
-              <div class="sideButtonTimeline buttonLeftTimeline"><p><</p></div>
-              <b>Schedule</b>
-              <div class="sideButtonTimeline buttonRightTimeline"><p>></p></div>
-              
-            </div>
+    Every coordinate is derived from the phase dates: the axis runs from the
+    first day of the earliest phase's month to the first day of the month after
+    the latest phase's end, and positions are that span expressed as a
+    percentage. Lane colour follows the same open/upcoming/closed rule as the
+    phase selector, so both components cannot disagree.
+  --]
+  [#assign tlDayMs = 86400000 /]
+  [#assign tlToday = .now?date /]
 
-            <div id="timelineAlert">
-              <b>Progress status:</b>
-              <section id="timelineAlert_container">
-                <article class="timelineAlert_item">
-                  <div class="timelineAlert_item_color timelineAlert_item_color--1"></div>
-                  <p>Not started</p>
-                </article>
-                <article class="timelineAlert_item">
-                  <div class="timelineAlert_item_color timelineAlert_item_color--2"></div>
-                  <p>In progress</p>
-                </article>
-                <article class="timelineAlert_item">
-                  <div class="timelineAlert_item_color timelineAlert_item_color--3"></div>
-                  <p>Completed</p>
-                </article>
-              </section>
-            </div>
+  [#function tlPhaseStatus phase]
+    [#if (phase.editable)!false][#return "open"][/#if]
+    [#if (phase.startDate)?? && phase.startDate?date gt tlToday][#return "upcoming"][/#if]
+    [#return "closed"]
+  [/#function]
 
+  [#-- Only phases with a usable range can be plotted. --]
+  [#assign tlPhases = [] /]
+  [#list phases as phase]
+    [#if (phase.startDate)?? && (phase.endDate)??]
+      [#assign tlPhases = tlPhases + [phase] /]
+    [/#if]
+  [/#list]
+
+  [#if tlPhases?has_content]
+    [#assign tlActive = [] /]
+    [#assign tlClosed = [] /]
+    [#list tlPhases as phase]
+      [#if tlPhaseStatus(phase) == "closed"]
+        [#assign tlClosed = tlClosed + [phase] /]
+      [#else]
+        [#assign tlActive = tlActive + [phase] /]
+      [/#if]
+    [/#list]
+
+    [#assign tlOpenCount = 0 /]
+    [#list tlActive as phase][#if tlPhaseStatus(phase) == "open"][#assign tlOpenCount = tlOpenCount + 1 /][/#if][/#list]
+
+    [#-- Lanes are the non-closed phases; closed ones sit behind the toggle. --]
+    [#assign tlLanes = tlActive /]
+
+    <section class="reportTimeline">
+      <div class="reportTimeline__head">
+        <div class="reportTimeline__heading">
+          <h2 class="reportTimeline__title">[@s.text name="dashboard.reportingTimeline.title" /]</h2>
+          <span class="reportTimeline__subtitle">
+            [@s.text name="dashboard.reportingTimeline.today"][@s.param]${tlToday?string("dd MMMM yyyy")}[/@s.param][/@s.text] &middot;
+            [#if tlOpenCount == 0][@s.text name="dashboard.reportingTimeline.noPhasesOpen" /]
+            [#elseif tlOpenCount == 1][@s.text name="dashboard.reportingTimeline.onePhaseOpen" /]
+            [#else][@s.text name="dashboard.reportingTimeline.phasesOpen"][@s.param]${tlOpenCount?c}[/@s.param][/@s.text][/#if]
+          </span>
         </div>
-  </div>
-			</div>
-		</div>
-	</section>
-[/#if]
-
-  <section class="containerTabletItems">
-  <div class="tableItemsBackground"></div>	
-    <div class="containerSeccionItems">
-      <div class="sectionItems">
-        <div class="tableItemsTitle">
-          <p>Select a category you want to call in</p>
+        <div class="reportTimeline__legend">
+          <span class="reportTimeline__key reportTimeline__key--open">[@s.text name="dashboard.reportingTimeline.legend.open" /]</span>
+          <span class="reportTimeline__key reportTimeline__key--upcoming">[@s.text name="dashboard.reportingTimeline.legend.upcoming" /]</span>
+          <span class="reportTimeline__key reportTimeline__key--closed">[@s.text name="dashboard.reportingTimeline.legend.closed" /]</span>
+          <span class="reportTimeline__key reportTimeline__key--today">[@s.text name="dashboard.reportingTimeline.legend.today" /]</span>
         </div>
-        <div class="containerItems">
-          <div class="itemsTablet itemsActive projects" id="projects">
-            <img class="itemimgprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png" >
-            <img class="itemgifprojects" src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif" style="display:none;">
-            <p>Clusters</p>
+      </div>
+
+      [#if tlLanes?has_content]
+        [#-- Axis bounds, snapped to whole months so the labels line up. --]
+        [#assign tlMinStart = tlLanes[0].startDate?date /]
+        [#assign tlMaxEnd = tlLanes[0].endDate?date /]
+        [#list tlLanes as phase]
+          [#if phase.startDate?date lt tlMinStart][#assign tlMinStart = phase.startDate?date /][/#if]
+          [#if phase.endDate?date gt tlMaxEnd][#assign tlMaxEnd = phase.endDate?date /][/#if]
+        [/#list]
+
+        [#assign tlY0 = tlMinStart?string("yyyy")?number /]
+        [#assign tlM0 = tlMinStart?string("MM")?number /]
+        [#assign tlY1 = tlMaxEnd?string("yyyy")?number /]
+        [#assign tlM1 = tlMaxEnd?string("MM")?number /]
+        [#assign tlMonths = (tlY1 - tlY0) * 12 + (tlM1 - tlM0) + 1 /]
+
+        [#assign tlAxisStart = (tlY0?c + "-" + tlM0?string("00") + "-01")?date("yyyy-MM-dd") /]
+        [#assign tlEndIdx = tlM0 + tlMonths /]
+        [#assign tlEndYear = tlY0 + ((tlEndIdx - 1) / 12)?floor /]
+        [#assign tlEndMonth = tlEndIdx - (((tlEndIdx - 1) / 12)?floor) * 12 /]
+        [#assign tlAxisEnd = (tlEndYear?c + "-" + tlEndMonth?string("00") + "-01")?date("yyyy-MM-dd") /]
+        [#assign tlSpan = tlAxisEnd?long - tlAxisStart?long /]
+
+        [#function tlPct instant]
+          [#return (((instant?long - tlAxisStart?long) / tlSpan) * 100)?string("0.##")]
+        [/#function]
+
+        <div class="reportTimeline__axis">
+          <div class="reportTimeline__labelCol"></div>
+          <div class="reportTimeline__scale">
+            [#list 0..(tlMonths - 1) as i]
+              [#assign tlIdx = tlM0 + i /]
+              [#assign tlYear = tlY0 + ((tlIdx - 1) / 12)?floor /]
+              [#assign tlMonth = tlIdx - (((tlIdx - 1) / 12)?floor) * 12 /]
+              [#assign tlTick = (tlYear?c + "-" + tlMonth?string("00") + "-01")?date("yyyy-MM-dd") /]
+              <span class="reportTimeline__month" style="left:${tlPct(tlTick)}%">${tlTick?string("MMM")?upper_case}</span>
+            [/#list]
           </div>
-          <div class="itemsTablet" id="deliverables">
-            <img class="itemimgdeliverables" src="${baseUrlCdn}/global/images/verification.png" >
-            <img class="itemgifdeliverables" src="${baseUrlCdn}/global/images/verification.gif" style="display:none;" >
-            <p>Deliverables</p>
+          <div class="reportTimeline__statusCol"></div>
+        </div>
+
+        <div class="reportTimeline__lanes">
+          <div class="reportTimeline__grid" aria-hidden="true">
+            [#list 1..(tlMonths - 1) as i]
+              [#assign tlIdx = tlM0 + i /]
+              [#assign tlYear = tlY0 + ((tlIdx - 1) / 12)?floor /]
+              [#assign tlMonth = tlIdx - (((tlIdx - 1) / 12)?floor) * 12 /]
+              <span class="reportTimeline__gridline" style="left:${tlPct((tlYear?c + "-" + tlMonth?string("00") + "-01")?date("yyyy-MM-dd"))}%"></span>
+            [/#list]
+            [#if tlToday gte tlAxisStart && tlToday lt tlAxisEnd]
+              <span class="reportTimeline__now" style="left:${tlPct(tlToday)}%"></span>
+              <span class="reportTimeline__nowTag" style="left:${tlPct(tlToday)}%">[@s.text name="dashboard.reportingTimeline.legend.today" /]</span>
+            [/#if]
           </div>
-          <div class="itemsTablet" id="studies">
-            <img class="itemimgstudies" src="${baseUrlCdn}/global/images/oicrs_icon.png" >
-            <img class="itemgifstudies" src="${baseUrlCdn}/global/images/oicrs_icon.gif" style="display:none;">
-            <p class="textOICRs">OICRs</p>
-          </div>
-          [#if action.hasSpecificities('innovation_section_active') ]
-            <div class="itemsTablet" id="innovations">
-              <img class="itemimginnovations" src="${baseUrlCdn}/global/images/innovationDashboard.png" width="70">
-              <img class="itemgifinnovations" src="${baseUrlCdn}/global/images/innovationDashboard.gif" style="display:none;" width="70">
-              <p>Innovations</p>
+
+          [#list tlLanes as phase]
+            [#assign tlStatus = tlPhaseStatus(phase) /]
+            [#assign tlLeft = tlPct(phase.startDate?date) /]
+            [#assign tlWidth = (((phase.endDate?long - phase.startDate?long) / tlSpan) * 100)?string("0.##") /]
+            [#assign tlRemaining = ((phase.endDate?long - tlToday?long) / tlDayMs)?round /]
+            [#assign tlUntilOpen = ((phase.startDate?long - tlToday?long) / tlDayMs)?round /]
+            <div class="reportTimeline__lane">
+              <div class="reportTimeline__labelCol">
+                <span class="reportTimeline__laneName reportTimeline__laneName--${tlStatus}">${(phase.composedName)!}</span>
+                <span class="reportTimeline__laneDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
+              </div>
+              <div class="reportTimeline__track">
+                <div class="reportTimeline__bar reportTimeline__bar--${tlStatus}"
+                  style="left:${tlLeft}%;width:${tlWidth}%"
+                  title="${(phase.composedName)!} &middot; ${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}">
+                  <span>${(phase.composedName)!}</span>
+                </div>
+              </div>
+              <div class="reportTimeline__statusCol">
+                [#if tlStatus == "open"]
+                  <span class="reportTimeline__chip[#if tlRemaining lte 21] reportTimeline__chip--urgent[/#if]">
+                    [#if tlRemaining gt 0][@s.text name="dashboard.reportingTimeline.daysLeft"][@s.param]${tlRemaining?c}[/@s.param][/@s.text]
+                    [#else][@s.text name="dashboard.reportingTimeline.lastDay" /][/#if]
+                  </span>
+                [#elseif tlStatus == "upcoming"]
+                  <span class="reportTimeline__muted">[@s.text name="dashboard.reportingTimeline.opensIn"][@s.param]${tlUntilOpen?c}[/@s.param][/@s.text]</span>
+                [/#if]
+              </div>
+            </div>
+          [/#list]
+
+          [#if tlClosed?has_content]
+            <div class="reportTimeline__closed" id="reportTimelineClosed" hidden>
+              [#list tlClosed?reverse as phase]
+                <div class="reportTimeline__lane">
+                  <div class="reportTimeline__labelCol">
+                    <span class="reportTimeline__laneName reportTimeline__laneName--closed">${(phase.composedName)!}</span>
+                    <span class="reportTimeline__laneDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
+                  </div>
+                  <div class="reportTimeline__track"><div class="reportTimeline__hatch"></div></div>
+                  <div class="reportTimeline__statusCol">
+                    <span class="phaseBadge phaseBadge--closed">[@s.text name="dashboard.reportingTimeline.legend.closed" /]</span>
+                    <button type="button" class="reportTimeline__view" data-phase-id="${phase.id?c}">[@s.text name="dashboard.reportingTimeline.view" /]</button>
+                  </div>
+                </div>
+              [/#list]
             </div>
           [/#if]
         </div>
-      </div>
-      <div id="dashboardContent" class="">
-        
-        <div class="col-md-12">
-        [#if !action.isAiccra()]
-          
-          <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
-            <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
-          </ul>
-        [#else]
-        <div class="infTableItems">[@s.text name="dashboard.homepage.description" /]</div>
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
-            <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
-            <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
-            <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
-            <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
-          </ul>
-        [/#if]
-
-          <div class="tab-content">
-            <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-              [#if !action.isAiccra()]
-                  [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
-              [#else]
-                [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/description" /]
-              [/#if]
-            </div>
-
-            <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-              [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
-            </div>
-            
-            <div role="tabpanel" class="tab-pane fade" id="myStudies">
-              [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
-            </div>
-            
-            <div role="tabpanel" class="tab-pane fade" id="myInnovations">
-              [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/innovation" /]
-            </div>
-
-            <div role="tabpanel" class="tab-pane fade" id="impactP">
-              <div id="infoRelations" class="panel panel-default">
-                <div class="panel-heading"><strong>Relations</strong></div>
-                <div id="infoContent" class="panel-body">
-                  <ul></ul>
-                </div>
-              </div>
-              <div id="contentGraph">
-                <div id="impactGraphic" ></div>
-                <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
-              </div>
-            </div>
+      [#else]
+        [#-- No open or upcoming phase: show what is coming instead of an empty chart. --]
+        <div class="reportTimeline__empty">
+          <div class="reportTimeline__emptyMain">
+            <span class="reportTimeline__emptyTitle">[@s.text name="dashboard.reportingTimeline.nothingDue" /]</span>
+            <p>[@s.text name="dashboard.reportingTimeline.nothingDueText" /]</p>
           </div>
         </div>
-      </div> 
+      [/#if]
+
+      [#if tlClosed?has_content]
+        <div class="reportTimeline__foot">
+          <button type="button" class="reportTimeline__toggle" id="reportTimelineToggle"
+            aria-expanded="false" aria-controls="reportTimelineClosed"
+            data-label-show="[@s.text name="dashboard.reportingTimeline.showClosed"][@s.param]${tlClosed?size?c}[/@s.param][/@s.text]"
+            data-label-hide="[@s.text name="dashboard.reportingTimeline.hideClosed" /]">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>[@s.text name="dashboard.reportingTimeline.showClosed"][@s.param]${tlClosed?size?c}[/@s.param][/@s.text]</span>
+          </button>
+        </div>
+      [/#if]
+    </section>
+  [/#if]
+[/#if]
+
+  [#assign browseScope = (actualPhase.composedName)!'' /]
+  [#assign phaseEditable = (actualPhase.editable)!false /]
+
+  <section class="dashboardBrowse">
+    <div class="dashboardBrowse__rail">
+      <h3 class="dashboardBrowse__railTitle">[@s.text name="dashboard.browse.title" /]</h3>
+      <div class="dashboardBrowse__cats">
+        <button type="button" class="dashboardBrowse__cat is-active" id="projects" aria-pressed="true"
+          data-pane="myProjects" data-scope="[@s.text name="dashboard.myProjects.title" /]">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myProjects.title" /]</span>
+          <span class="dashboardBrowse__catCount">${(myProjects?size)!0}</span>
+        </button>
+        [#if action.isAiccra()]
+          <button type="button" class="dashboardBrowse__cat" id="deliverables" aria-pressed="false"
+            data-pane="myDeliverables" data-scope="[@s.text name="dashboard.myDeliverables.title" /]">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 2.5h6.5L16 7v10.5H5V2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.5 2.5V7H16" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myDeliverables.title" /]</span>
+            <span class="dashboardBrowse__catCount">${(myDeliverables?size)!0}</span>
+          </button>
+          <button type="button" class="dashboardBrowse__cat" id="studies" aria-pressed="false"
+            data-pane="myStudies" data-scope="[@s.text name="dashboard.studies.table.title" /]">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="2.5" width="14" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 7h7M6.5 10.5h7M6.5 14h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.studies.table.title" /]</span>
+            <span class="dashboardBrowse__catCount">${(myStudies?size)!0}</span>
+          </button>
+          [#if action.hasSpecificities('innovation_section_active') ]
+            <button type="button" class="dashboardBrowse__cat" id="innovations" aria-pressed="false"
+              data-pane="myInnovations" data-scope="[@s.text name="dashboard.innovations.table.title" /]">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7 13.5a5 5 0 1 1 6 0V15H7v-1.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 17.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.innovations.table.title" /]</span>
+              <span class="dashboardBrowse__catCount">${(myInnovations?size)!0}</span>
+            </button>
+          [/#if]
+        [/#if]
+      </div>
+      <p class="dashboardBrowse__note">[@s.text name="dashboard.browse.note" /]</p>
     </div>
-	</section>
 
+    <div class="dashboardBrowse__panel">
+      <div class="dashboardBrowse__scope">
+        <span class="dashboardBrowse__scopeLabel">[@s.text name="dashboard.browse.showing" /]</span>
+        <span class="dashboardBrowse__scopeChip" id="dashboardScopeChip"
+          data-scope-template="[@s.text name="dashboard.browse.scope"][@s.param]{0}[/@s.param][@s.param]${browseScope}[/@s.param][/@s.text]">
+          [@s.text name="dashboard.browse.scope"][@s.param][@s.text name="dashboard.myProjects.title" /][/@s.param][@s.param]${browseScope}[/@s.param][/@s.text]
+        </span>
+        [#if phaseEditable]
+          <span class="dashboardBrowse__state dashboardBrowse__state--open">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 5.5V4a1.5 1.5 0 0 1 3 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="2.8" y="5.4" width="6.4" height="4.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>
+            [@s.text name="dashboard.browse.editable" /]
+          </span>
+        [#else]
+          <span class="dashboardBrowse__state dashboardBrowse__state--locked">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 5.4V4a2 2 0 0 1 4 0v1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="2.8" y="5.4" width="6.4" height="4.4" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>
+            [@s.text name="dashboard.browse.readOnly" /]
+          </span>
+        [/#if]
+      </div>
 
-    <!--  <div class="homeTitle2"><b>[@s.text name="dashboard.homepage.title" /] ${(currentUser.firstName)!}!</b></div>    -->
-    <!--  <div class="homeDescription2 col-md-12">[@s.text name="dashboard.homepage.description" /]</div>   -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
+          [#if !action.isAiccra()]
+            [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
+          [#else]
+            [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/description" /]
+          [/#if]
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
+          [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="myStudies">
+          [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="myInnovations">
+          [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/innovation" /]
+        </div>
+
+        <div role="tabpanel" class="tab-pane fade" id="impactP">
+          <div id="infoRelations" class="panel panel-default">
+            <div class="panel-heading"><strong>Relations</strong></div>
+            <div id="infoContent" class="panel-body"><ul></ul></div>
+          </div>
+          <div id="contentGraph">
+            <div id="impactGraphic"></div>
+            <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 
   
 
@@ -322,106 +472,15 @@
 
     [#-- Shorcuts --]
     <div id="shorcuts"  class="col-md-5">
-    [#-- if crpSession?contains("CCAFS")  --]
-    [#if false ]
-      <div class="homeTitle"><strong>Timeline</strong></div>
-      <div class="borderBox col-md-12">
-        <div id="timeline">
-        <span class="timelineControl leftControl glyphicon glyphicon-chevron-left"></span>
-        <span class="timelineControl rigthControl control glyphicon glyphicon-chevron-right"></span>
-          <ul id="dates">
-          [#list timeline as time]
-            <li><a href="#${time.id}">[#if time.startDate?has_content]${(time.startDate)?date("MM/dd/yyyy")}[/#if]</a></li>
-          [/#list]
-          </ul>
 
-          <div class="borderBox">
-            <ul id="issues">
-            [#list timeline as time]
-              <li class="infoActions" id="${time.id}">
-                <span class="startDate hidden">${time.startDate}</span>
-                <span class="endDate hidden">${time.endDate}</span>
-                <h1>[#if time.startDate?has_content]${((time.startDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if] [#if time.endDate?has_content]- ${((time.endDate)?date("MM/dd/yyyy"))?split(",")[0]}[/#if]</h1>
-                <hr />
-                <label for="">What happen?</label>
-                <p> ${time.what}</p>
-                [#if (time.who?has_content)]
-                <hr />
-                <label for="">Who?</label>
-                <p>${time.who}</p>
-                [/#if]
-              </li>
-            [/#list]
-            </ul>
-          </div>
-        </div>
-      </div>
-      [/#if]
-
-        [#if aiccra]
-            <!--  <p><h3>What is a Cluster?</h3></p><p>A cluster is defined as the group of AICCRA main activities led by each AICCRA Country Leader (Ghana, Mali, Senegal, Ethiopia, Kenya and Zambia), AICCRA Regional Leaders (Western Africa and Eastern & Southern Africa), and  AICCRA Thematic leaders (Theme 1, Theme 2, Theme 3, and Theme 4). In each cluster, participants are involved as leaders, coordinators and collaborators with specific budget allocations for each AICCRA main activity with a set of deliverables and contributions towards our performance indicators.</p>  -->
-        [#else]
+        [#-- The AICCRA cluster copy now lives in the banner at the top of the
+             page (dashboard.cluster.* in the properties files). --]
+        [#if !aiccra]
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
         [/#if]
 
     </div>
-
-    [#-- Dashboard --]
-    <!--  <div id="dashboardContent" class="col-md-12">
-      <div class="homeTitle col-md-12"></div>
-      <div class="col-md-12">
-      [#if !action.isAiccra()]
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
-          <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
-        </ul>
-      [#else]
-      <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a  id="projects" href="#myProjects" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myProjects.title" /]</a></li>
-          <li role="presentation"><a id="deliverables" href="#myDeliverables" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.myDeliverables.title" /]</a></li>
-          <li role="presentation"><a id="studies" href="#myStudies" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.studies.table.title" /]</a></li>
-          <li role="presentation"><a id="innovations" href="#myInnovations" aria-controls="myProjects" role="tab" data-toggle="tab">[@s.text name="dashboard.innovations.table.title" /]</a></li>
-          <li role="presentation" style="display:none;"><a id="impact" href="#impactP" aria-controls="impactP" role="tab" data-toggle="tab">Impact pathway</a></li>
-        </ul>
-      [/#if]
-
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane fade in active" id="myProjects">
-            [#if !action.isAiccra()]
-                [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/projects" defaultAction="${(crpSession)!}/description" /]
-            [#else]
-              [@projectList.dashboardProjectsList projects=myProjects canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/description" /]
-            [/#if]
-          </div>
-
-          <div role="tabpanel" class="tab-pane fade" id="myDeliverables">
-            [@indicatorLists.deliverablesHomeList deliverables=myDeliverables canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" /]
-          </div>
-          
-          <div role="tabpanel" class="tab-pane fade" id="myStudies">
-            [@indicatorLists.studiesHomeList studies=myStudies canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/study" /]
-          </div>
-          
-          <div role="tabpanel" class="tab-pane fade" id="myInnovations">
-            [@indicatorLists.innovationsHomeList innovations=myInnovations canValidate=true canEdit=true namespace="/clusters" defaultAction="${(crpSession)!}/innovation" /]
-          </div>
-
-          <div role="tabpanel" class="tab-pane fade" id="impactP">
-            <div id="infoRelations" class="panel panel-default">
-              <div class="panel-heading"><strong>Relations</strong></div>
-              <div id="infoContent" class="panel-body">
-                <ul></ul>
-              </div>
-            </div>
-            <div id="contentGraph">
-              <div id="impactGraphic" ></div>
-              <span title="View full graph" id="fullscreen" class="glyphicon glyphicon-fullscreen"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>    -->
 
 
     <div id="impactGraphic-content"  style="display:none;" >
