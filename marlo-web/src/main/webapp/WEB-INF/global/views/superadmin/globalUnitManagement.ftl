@@ -4,7 +4,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js",
-  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260729b"
+  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260814a"
 ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260723b" ] /]
 [#assign currentSection = "superadmin" /]
