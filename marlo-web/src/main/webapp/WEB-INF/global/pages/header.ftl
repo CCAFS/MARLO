@@ -41,14 +41,14 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
 
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20251112" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260819" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
     [/#if]
 
     [#-- Redesign layer: overrides global.css, must stay after it --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260819a" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260819b" />
     [#-- Top bar behaviour. Deferred so it runs after the markup is parsed;
          it is plain DOM code and does not wait for the footer bundles. --]
     <script defer src="${baseUrlCdn}/global/js/global-unit-switcher.js?20260814"></script>
