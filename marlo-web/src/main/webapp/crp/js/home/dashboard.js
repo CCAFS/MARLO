@@ -154,47 +154,16 @@ $('table.projectsList').dataTable({
 });
 
 
-//Add styles to the table
-var iconSearch = $("<div></div>").addClass("iconSearch");
-var divDataTables_filter = $('.dataTables_filter').parent();
-iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-iconSearch.prependTo(divDataTables_filter);
-
-var divDataTables_filterParent = $(divDataTables_filter).parent();
-divDataTables_filterParent.removeClass('row');
-
-
-var divDataTables_length = $('.dataTables_length').parent();
-divDataTables_length.css("position", "absolute");
-divDataTables_length.css("bottom", "8px");
-divDataTables_length.css("margin-left", "43%");
-divDataTables_length.css("z-index", "1");
-
-var windowWidth = $(window).width();
-
-
-if (windowWidth < 768) {
-
-  divDataTables_filter.css({
-    "width": "100%",
-  });
-
-  divDataTables_length.css({
-    "left": "30vw",
-    "bottom": "0",
-    "margin-top": "4rem",
-    "margin-left": "0"
-  });
-}
-
-if (windowWidth < 440) {
-  divDataTables_length.css({
-    "left": "18vw",
-    "bottom": "0",
-    "margin-top": "32px",
-    "margin-left": "0"
-  })
-}
+// Search icon, appended to the column dataTables.net-bs builds for the filter.
+// Placement is CSS only: the previous version stripped the .row class off the
+// control rows and pulled the page-size column out of flow with an absolute
+// position, which dropped it on top of the pagination buttons.
+$('.dataTables_filter').parent().each(function () {
+  $('<div></div>')
+    .addClass('iconSearch')
+    .append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="" style="width: 24px; margin: auto;" >')
+    .prependTo(this);
+});
 
 $('a#impact[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   e.target // newly activated tab

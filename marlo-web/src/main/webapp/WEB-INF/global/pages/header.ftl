@@ -48,7 +48,7 @@
     [/#if]
 
     [#-- Redesign layer: overrides global.css, must stay after it --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260814" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260818" />
     [#-- Top bar behaviour. Deferred so it runs after the markup is parsed;
          it is plain DOM code and does not wait for the footer bundles. --]
     <script defer src="${baseUrlCdn}/global/js/global-unit-switcher.js?20260814"></script>

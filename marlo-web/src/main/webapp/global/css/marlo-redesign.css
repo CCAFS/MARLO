@@ -1139,7 +1139,14 @@ header {
 .phaseTag span,
 .phaseTag span.planning,
 .phaseTag span.reporting {
+  /* timeline-phases.css used to pin this tag; it is gone with the redesign, so
+     the rule is restored here. Without `fixed` the tag stayed in the flow and
+     scrolled off behind the stuck navbar, which is exactly what QA reported.
+     `top` matches the 50px height of #mainMenu .menuContent.positionFixedTop,
+     and the z-index sits just under that bar (1001) but above page content. */
+  position: fixed;
   top: 50px;
+  z-index: 1000;
   padding: 4px 12px;
   border-radius: 0 0 var(--marlo-radius-md) var(--marlo-radius-md);
   background: var(--marlo-brand);

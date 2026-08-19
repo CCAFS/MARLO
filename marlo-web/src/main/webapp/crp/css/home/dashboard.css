@@ -867,16 +867,62 @@ div#impactGraphic-fullscreen {
     padding: 0;
   }
 
-  /* ---- DataTables chrome ---- */
+  /* ---- DataTables chrome ----
+     dataTables.net-bs wraps every control in .row > .col-sm-*, and the legacy
+     script used to pull the length column out of flow to place it. Laying the
+     two control rows out here instead keeps everything in normal flow, so
+     nothing can end up on top of the pagination. */
   .dashboardBrowse__panel .dataTables_wrapper {
     padding: 14px 0 0;
   }
 
+  /* Only the two control rows are laid out here — the middle row holds the
+     table in a .col-sm-12 and must keep its full width. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+
+  /* Bootstrap's clearfix pseudo-elements would become flex items. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child::before,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child::after,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child::before,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child::after {
+    content: none;
+  }
+
+  /* The search icon is a sibling of .dataTables_filter, prepended by
+     dashboard.js, so the column is the flex context that pairs them. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child > [class^="col-"],
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child > [class^="col-"] {
+    display: flex;
+    align-items: center;
+    float: none;
+    width: auto;
+    padding: 0;
+  }
+
+  .dashboardBrowse__panel .dataTables_filter {
+    margin: 0;
+  }
+
+  .dashboardBrowse__panel .dataTables_filter label {
+    display: block;
+    margin: 0;
+  }
+
   .dashboardBrowse__panel .dataTables_filter label input {
     height: 36px !important;
+    margin: 0 !important;
     padding: 0 11px;
     border: 1px solid var(--marlo-border-strong);
-    border-radius: var(--marlo-radius-md);
+    border-right: 0;
+    border-radius: var(--marlo-radius-md) 0 0 var(--marlo-radius-md);
     background: var(--marlo-surface);
     color: var(--marlo-ink);
     font: 400 14px/1 var(--marlo-font-sans);
@@ -888,8 +934,13 @@ div#impactGraphic-fullscreen {
   }
 
   .dashboardBrowse__panel .iconSearch {
-    background: var(--marlo-brand);
+    position: static;
+    order: 2;
+    width: 40px;
     height: 36px;
+    margin: 0;
+    flex: none;
+    background: var(--marlo-brand);
     border-radius: 0 var(--marlo-radius-md) var(--marlo-radius-md) 0;
   }
 
@@ -951,30 +1002,83 @@ div#impactGraphic-fullscreen {
     font: 500 13.5px/1.4 var(--marlo-font-mono);
   }
 
-  .dashboardBrowse__panel .dataTables_info, .dashboardBrowse__panel .dataTables_length, .dashboardBrowse__panel .dataTables_paginate {
+  .dashboardBrowse__panel .dataTables_info,
+  .dashboardBrowse__panel .dataTables_length,
+  .dashboardBrowse__panel .dataTables_paginate {
+    margin: 0;
     padding: 12px 20px 16px;
     color: var(--marlo-text-muted);
     font: 400 13px/1.4 var(--marlo-font-sans);
   }
 
+  .dashboardBrowse__panel .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .dashboardBrowse__panel .dataTables_length select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--marlo-border-strong);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-surface);
+    color: var(--marlo-ink);
+    font: 400 13px/1 var(--marlo-font-sans);
+  }
+
+  /* With the Bootstrap integration .paginate_button is the <li>; the <a>
+     inside is what DataTables binds the click to, so the button has to be
+     painted on the anchor or the visible control is not the clickable one. */
+  .dashboardBrowse__panel .dataTables_paginate .pagination {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+  }
+
   .dashboardBrowse__panel .dataTables_paginate .paginate_button {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > span {
+    display: block;
+    float: none;
     height: 30px;
-    padding: 0 11px;
+    margin: 0;
+    padding: 0 12px;
     border: 1px solid var(--marlo-border);
     border-radius: 7px;
     background: var(--marlo-surface);
     color: var(--marlo-text);
     font: 500 13px/28px var(--marlo-font-sans);
+    text-decoration: none;
   }
 
-  .dashboardBrowse__panel .dataTables_paginate .paginate_button.current {
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > a:hover {
+    border-color: var(--marlo-brand-tint-border);
+    background: var(--marlo-brand-tint);
+    color: var(--marlo-brand-dark);
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.active > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.active > a:hover {
     border-color: var(--marlo-brand);
     background: var(--marlo-brand);
     color: #fff;
     font-weight: 600;
   }
 
-  .dashboardBrowse__panel .dataTables_paginate .paginate_button.disabled {
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.disabled > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.disabled > a:hover {
+    border-color: var(--marlo-border-soft);
+    background: var(--marlo-surface);
     color: var(--marlo-text-disabled);
     cursor: not-allowed;
   }

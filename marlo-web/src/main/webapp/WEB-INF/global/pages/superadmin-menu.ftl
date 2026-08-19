@@ -59,7 +59,7 @@
             aria-label="[@s.text name="globalUnitSwitcher.label" /]" hidden>
 
             <div class="guPanel__current">
-              <span class="guPanel__label">[@s.text name="globalUnitSwitcher.currentPortfolio" /]</span>
+              <span class="guPanel__label">[@s.text name="globalUnitSwitcher.currentProject" /]</span>
               <div class="guPanel__currentRow">
                 <span class="guPanel__currentName">${(currentGlobalUnit.acronym)!'--'}</span>
                 [#if guOpenPhases gt 0]
