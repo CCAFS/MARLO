@@ -2576,10 +2576,8 @@ a#userLogOut:hover {
 #secondaryMenu>ul {
 	list-style-type: none;
 	margin-left: 0;
-	/* border: 1px solid #dbdbdb; */
-	border-radius: 5px 5px 5px 5px;
+	border-radius: 8px;
 	background: #f5f5f5;
-	/* box-shadow: 0px 0px 7px rgba(0,0,0,0.1); */
 	padding: 8px 0;
 }
 
@@ -2614,12 +2612,13 @@ a.currentSection li {
 #secondaryMenu ul p.menuTitle {
 	list-style: none;
 	margin: 0;
-	padding: 2px 0;
+	padding: 3px 8px;
 	font-weight: lighter;
+	letter-spacing: 0.02em;
 	color: #ffffff;
 	background: #0b7ba6;
 	text-align: center;
-	border-radius: 2px;
+	border-radius: 4px;
 }
 
 #secondaryMenu ul p.subText {
@@ -2652,6 +2651,9 @@ a.currentSection li {
 
 #secondaryMenu ul li ul>li.currentSection {
 	font-weight: bold;
+	background-color: #f4fafc;
+	border-color: #cfe6ef;
+	box-shadow: inset 3px 0 0 #0b7ba6, 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 #secondaryMenu ul li ul>li.currentSection.hasBackground {
@@ -2660,6 +2662,7 @@ a.currentSection li {
 
 #secondaryMenu ul li ul>li.hasBackground {
 	background: rgb(254, 247, 207);
+	border-color: #e8ddab;
 }
 
 #secondaryMenu ul li ul>li.hasBackground:hover {
@@ -2671,12 +2674,18 @@ a.currentSection li {
 	list-style: none;
 	font-size: 0.9em;
 	border: 1px solid #e8e7e7;
-	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+	border-radius: 4px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
 	background: #fff;
+	transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 #secondaryMenu ul li>ul li.disabled {
 	opacity: 0.4;
+}
+
+#secondaryMenu ul li>ul li.disabled>a {
+	cursor: not-allowed;
 }
 
 #secondaryMenu ul li>ul li.submitted>a {
@@ -2707,9 +2716,15 @@ a.currentSection li {
 #secondaryMenu ul li>ul li a {
 	display: block;
 	text-decoration: none;
-	color: #5E5E5E;
+	color: #4f4f4f;
 	padding: 5px 19px 5px 10px !important;
-	/* border-left: 5px solid; */
+	border-radius: 3px;
+	transition: color 0.15s ease;
+}
+
+#secondaryMenu ul li>ul li a:focus-visible {
+	outline: 2px solid #0b7ba6;
+	outline-offset: -2px;
 }
 
 #secondaryMenu ul li>ul li ul li a {
@@ -2718,6 +2733,8 @@ a.currentSection li {
 
 #secondaryMenu ul li>ul li:hover {
 	background-color: #F7F7F7;
+	border-color: #dcdcdc;
+	box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
 }
 
 #secondaryMenu ul li>ul li:hover a {
@@ -2773,13 +2790,14 @@ a.currentSection li {
 	color: #1da5ce;
 	text-align: center;
 	font-size: 1.3em;
-	line-height: 0.9em;
-	margin-bottom: 4px;
+	line-height: 1.1;
+	letter-spacing: 0.01em;
+	margin-bottom: 6px;
 }
 
 #secondaryMenu>p small {
 	font-size: 0.6em;
-	color: #7fcce3;
+	color: #5f9fb5;
 }
 
 #secondaryMenu.BILATERAL>ul>li>p {
