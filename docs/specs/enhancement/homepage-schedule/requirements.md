@@ -77,9 +77,11 @@ several phases are open at once — which is the normal state, not the exception
   (`Progress - 2026` plus its `Opens in 44 days` pill must not clip).
 - **ENH-SCHED-NF-004** — WCAG 2.1 AA throughout. No white text on the light brand blue or green. No
   status conveyed by colour alone. 12px is the type floor.
-- **ENH-SCHED-NF-005** — Activity descriptions are free text typed by users and nothing in this app
-  auto-escapes. The FTL→JS payload MUST be escaped for both the JSON and the HTML-attribute layer,
-  and JavaScript MUST write activity text with `textContent` only.
+- **ENH-SCHED-NF-005** — Activity descriptions are free text typed by users. The FTL→JS payload MUST
+  be escaped for both the JSON and the HTML-attribute layer, and JavaScript MUST write activity text
+  with `textContent` only. The attribute layer is covered by FreeMarker's own auto-escaping, which
+  Struts 6.8.0 enables unconditionally; the legacy `?html` built-in MUST NOT be used, because it is a
+  parse error under that policy.
 - **ENH-SCHED-NF-006** — JavaScript MUST be ES5 (no `let`/`const`, arrow functions or template
   literals), matching the other homepage-redesign files. There is no transpiler for webapp JS.
 - **ENH-SCHED-NF-007** — No new schema, no new Struts action, no new JSON endpoint.
@@ -200,3 +202,22 @@ several phases are open at once — which is the normal state, not the exception
 - 2026-08-19 — **The label column stays 276px at all viewports.** — An earlier revision narrowed it to
   232px below 1100px, which ellipsized "Progress - 2026". The track absorbs the loss instead; it
   scrolls either way.
+- 2026-08-19 — **The edge masks are inset by the measured scrollbar thickness.** — The masks are
+  positioned on `__frame`, whose padding box extends under the scroll container's scrollbars, so a
+  `bottom: 0` mask painted a white notch across the horizontal bar where it crossed the label-column
+  edge. Thickness is platform-dependent (0 for overlay bars, 11-15px for classic ones), so
+  `schedule.js` measures both axes into `--sched-hbar` / `--sched-vbar`. A second `ResizeObserver`
+  watches the **canvas**, not the scroll container: the container's height is capped by `max-height`,
+  so it never reports the content growth (a web font swapping in) that makes a vertical bar appear
+  after boot. That observer only re-measures the bars, which affects no layout, so it cannot feed
+  itself.
+- 2026-08-19 — **The scroll container's `:focus` ring was removed.** — Requested; the browser default
+  ring still marks keyboard focus on `tabindex="0"`, and MARLO's only universal focus reset is scoped
+  to `.loginForm` (`customLogin.css:293`), so the indicator survives for WCAG 2.4.7.
+- 2026-08-19 — **`?html` is removed from the payload; auto-escaping covers the attribute layer.** —
+  Running the card in Tomcat produced a FreeMarker `ParseException` at `dashboard.ftl:181` and a blank
+  dashboard. The premise recorded earlier in this spec, that the app has no auto-escaping, was wrong:
+  Struts 6.8.0 turns it on inside `super.createConfiguration`, which `APFreemarkerManager` calls. See
+  `design.md` ADR-7. The verification harness had configured FreeMarker without an output format,
+  which is why it could not reproduce the failure; it now mirrors the Struts configuration and a
+  control run with `?html` reinstated reproduces the exact error.

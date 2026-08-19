@@ -94,6 +94,8 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 ├─ __head            title, subtitle, 5-item legend
 ├─ __controls        4 zoom buttons (aria-pressed) + Jump to today
 ├─ __frame           1px border, radius, overflow hidden, edge masks
+│                    (masks inset by --sched-hbar / --sched-vbar so they never
+│                     veil a scrollbar; schedule.js measures both)
 │  └─ __scroll       overflow auto, max-height 388px, tabindex=0, aria-label
 │     └─ __canvas    position relative, width max-content
 │        ├─ __gridLayer  z 0   absolute, left var(--sched-label)
@@ -148,8 +150,10 @@ price of a fixed-height container.
 ### FTL → JS boundary
 
 One JSON payload in a **double-quoted** `data-schedule` attribute. Every string passes
-`?json_string?html`: `?json_string` for the JSON string layer (it also escapes `<` as `<`, so no
-`<script` substring ever reaches the HTML parser), `?html` for the attribute layer. Numbers use `?c`.
+`?json_string` for the JSON string layer (it also escapes `<` as `\u003C`, so no `<script` substring
+ever reaches the HTML parser). The attribute layer is FreeMarker's own auto-escaping, which is on for
+every template Struts renders — `?html` is a **parse error** under that policy, see ADR-7.
+Numbers use `?c`.
 Dates serialize as `yyyy-MM-dd` and are parsed in JS with an explicit `new Date(y, m-1, d)` from a
 split — `new Date("2026-08-19")` is read as UTC and lands a day early west of Greenwich. Per-item
 display date ranges are formatted server-side; only zoom-dependent axis labels are assembled in JS,
@@ -206,13 +210,17 @@ activities; the lane region stayed 272px in all three. Reflow is debounced at 12
 ## 13. Security Considerations
 
 The one real surface is the activity `description`: free text from a Timeline Management textarea,
-stored raw (client-side `sanitizeInputs()` only does NFKD normalization and strips non-BMP), and this
-app has no FreeMarker auto-escaping — `APFreemarkerManager` returns the default configuration
-unchanged and no view uses `[#escape]`. The predecessor week grid injected the description straight
-into `innerHTML` and a `title=` attribute.
+stored raw (client-side `sanitizeInputs()` only does NFKD normalization and strips non-BMP). The
+predecessor week grid injected the description straight into `innerHTML` and a `title=` attribute.
 
-Mitigation is layered and both layers are load-bearing: `?json_string?html` on the way out, and
-`textContent` on the way into the DOM. Verified by rendering an activity described as
+FreeMarker auto-escaping **is** on: `APFreemarkerManager.createConfiguration` delegates to
+`super.createConfiguration`, and Struts 6.8.0's `FreemarkerManager` ends that method with
+`setAutoEscapingPolicy(ENABLE_IF_DEFAULT)` + `setOutputFormat(HTMLOutputFormat.INSTANCE)`,
+unconditionally and with no setting to opt out. Every `${...}` in every `.ftl` is therefore escaped
+for HTML, which is also why no view needs `[#escape]`.
+
+Mitigation is layered and both layers are load-bearing: `?json_string` plus that auto-escaping on the
+way out, and `textContent` on the way into the DOM. Verified by rendering an activity described as
 `<script>window.__pwned=1;</script>` — nothing executed, zero `<script>` or `<b>` elements were
 created inside the card, and the raw attribute contained no literal double quote and no `<script`
 substring.
@@ -243,7 +251,8 @@ The 17 retired i18n keys are safe to remove because no `custom/*.properties` ove
 - **ADR-4 — Overflow chips get their own row.** Structural, per §5.
 - **ADR-5 — One JSON payload in a `data-*` attribute.** The repo has a working precedent
   (`innovationTemplates.ftl` → `projectInnovations.js`), but it uses a single-quoted attribute, which
-  leaves an apostrophe-injection hole. This uses double quotes plus `?html`. Rejected: reviving
+  leaves an apostrophe-injection hole. This uses double quotes plus auto-escaping, which covers `'`
+  as well as `"`. Rejected: reviving
   `async: false` AJAX (would reintroduce a loading state the value stack makes unnecessary), a hidden
   `<span>` of JSON (interpolates raw), and building a JS literal in an inline `<script>` (no
   precedent in the repo for anything but scalars).
@@ -252,6 +261,15 @@ The 17 retired i18n keys are safe to remove because no `custom/*.properties` ove
   fail AA behind white text; `--marlo-warning-ink: #4A3000` is the dark ink for the amber fill;
   `--marlo-outline-dashed: #C3CBD5` and `--marlo-today-line: #C7401C` complete the set. The light
   hues stay for status dots and legend swatches.
+- **ADR-7 — The attribute layer is auto-escaping, not `?html`.** Struts 6.8.0's `FreemarkerManager`
+  finishes `createConfiguration` with `setAutoEscapingPolicy(ENABLE_IF_DEFAULT)` and
+  `setOutputFormat(HTMLOutputFormat.INSTANCE)`, unconditionally; `APFreemarkerManager` inherits that
+  by calling `super`. Under an HTML output format FreeMarker rejects `?html` at **parse** time
+  ("legacy escaping is not allowed ... to avoid double-escaping mistakes"), so the template never
+  compiles and the page returns a 500. `${...}` already escapes `<`, `>`, `&`, `"` and `'`, which is
+  a superset of what `?html` did, so the fix is to delete the built-in and keep the payload otherwise
+  identical. Rejected: `?no_esc` (would emit the raw payload and reopen the injection hole) and
+  `?esc` (equivalent, but redundant noise under an already-escaping policy).
 
 ## 16. Open Risks
 
@@ -266,3 +284,7 @@ The 17 retired i18n keys are safe to remove because no `custom/*.properties` ove
 4. **`?json_string` is new to this repo.** It is used zero other times, so there is no in-repo
    precedent to fall back on if a FreeMarker upgrade changes its behaviour. FreeMarker is pinned at
    2.3.32 in `marlo-parent/pom.xml`.
+5. **30 pre-existing `?html` uses in 20 other templates.** Out of scope for this spec, but they are
+   the same parse error ADR-7 describes, latent since the Struts 6 upgrade (`a9a2ed2e77`,
+   2025-10-27). Any page rendering one of them returns a 500. None of them is in the dashboard's
+   include chain.

@@ -46,21 +46,6 @@
     height: 330px;
 }
 
-#myProjects {
-    padding: 15px;
-}
-
-#myDeliverables {
-    padding: 15px;
-}
-
-#myStudies {
-    padding: 15px;
-}
-
-#myInnovations {
-    padding: 15px;
-}
 
 
 #projects_wrapper {
@@ -498,13 +483,20 @@ div#impactGraphic-fullscreen {
   }
 
   /* Edge masks signalling more track in both directions. They start after the
-     label column so they never veil a lane name. */
+     label column so they never veil a lane name.
+
+     They are positioned on the frame, whose padding box extends under the
+     scroll container's scrollbars, so bottom/right must be inset by the
+     scrollbar thickness or the left mask paints a white notch across the
+     horizontal bar. The thickness is platform-dependent (0 for macOS overlay
+     bars, ~11-15px for classic ones), so schedule.js measures it into
+     --sched-hbar / --sched-vbar and these fall back to 0. */
   .scheduleCard__frame::before,
   .scheduleCard__frame::after {
     content: "";
     position: absolute;
     top: var(--sched-axis);
-    bottom: 0;
+    bottom: var(--sched-hbar, 0px);
     width: 22px;
     z-index: 6;
     pointer-events: none;
@@ -516,7 +508,7 @@ div#impactGraphic-fullscreen {
   }
 
   .scheduleCard__frame::after {
-    right: 0;
+    right: var(--sched-vbar, 0px);
     background: linear-gradient(to left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
   }
 
@@ -525,11 +517,6 @@ div#impactGraphic-fullscreen {
     overflow: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: thin;
-  }
-
-  .scheduleCard__scroll:focus {
-    outline: 2px solid var(--marlo-today-line);
-    outline-offset: -2px;
   }
 
   .scheduleCard__canvas {
@@ -1363,7 +1350,6 @@ div#impactGraphic-fullscreen {
     align-items: center;
     float: none;
     width: auto;
-    padding: 0;
   }
 
   .dashboardBrowse__panel .dataTables_filter {

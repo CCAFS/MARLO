@@ -264,6 +264,18 @@
       contentWidth = totalDays * pxPerDay;
     }
 
+    /* The edge masks live on the frame, which is one box wider and taller than
+       the scroll viewport whenever a classic scrollbar is present. Handing the
+       measured thickness to CSS keeps them off the bars; overlay scrollbars
+       measure 0, which is exactly the fallback. Must run after the track widths
+       are set, because that is what decides whether a bar exists at all. */
+    function measureScrollbars() {
+      var hbar = scroll.offsetHeight - scroll.clientHeight;
+      var vbar = scroll.offsetWidth - scroll.clientWidth;
+      card.style.setProperty('--sched-hbar', (hbar > 0 ? hbar : 0) + 'px');
+      card.style.setProperty('--sched-vbar', (vbar > 0 ? vbar : 0) + 'px');
+    }
+
     function centreOnToday() {
       scroll.scrollLeft = Math.max(0, todayDay * pxPerDay - trackWidth / 2);
     }
@@ -562,6 +574,7 @@
       var placedTotal = paintActivities(packed);
       paintOverflow(packed);
       paintFoot(placedTotal);
+      measureScrollbars();
     }
 
     /* ---- Overflow popover ---- */
@@ -713,6 +726,14 @@
 
     if (window.ResizeObserver) {
       new window.ResizeObserver(scheduleReflow).observe(scroll);
+      /* Whether a scrollbar exists depends on the canvas, not on the viewport,
+         and the canvas can grow after boot without any resize -- a web font
+         swapping in makes every row taller and can push it past max-height,
+         adding a vertical bar that the observer above never sees because the
+         scroll container's own height is capped. This second observer only
+         re-measures the bars; that changes no geometry which affects layout, so
+         it cannot feed itself. */
+      new window.ResizeObserver(measureScrollbars).observe(canvas);
     } else {
       window.addEventListener('resize', scheduleReflow);
     }

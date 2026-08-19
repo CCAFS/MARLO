@@ -20,16 +20,11 @@ table tr:first-child th:last-child{
 
 .dataTables_wrapper {
   margin-bottom: 30px;
-  margin-top: 30px;
   position: relative;
 }
 
 .dataTables_wrapper .row:nth-child(1) {
   width: 100%;
-}
-
-.dataTables_wrapper .row:nth-child(1) div {
-  padding-left: 0;
 }
 
 .dataTables_wrapper .row:nth-child(2) {
@@ -178,7 +173,7 @@ table.dataTable a {
   height: 19px;
   float: left;
   cursor: pointer;
-  *cursor: hand;
+  cursor: hand;
   color: #366506 !important;
 }
 
@@ -186,7 +181,7 @@ table.dataTable a {
   height: 19px;
   float: left;
   cursor: pointer !important;
-  *cursor: pointer;
+  cursor: pointer;
   color: #666666 !important;
   text-decoration: none !important;
 }

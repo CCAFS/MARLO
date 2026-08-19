@@ -174,11 +174,14 @@
   [/#list]
 
   <section class="scheduleCard" id="scheduleCard"
-    [#-- One JSON payload. json_string covers the JSON layer, html the attribute
-         layer, and both are load-bearing: activity descriptions are free text
-         typed by users and nothing in this app auto-escapes. The en dash is
-         written as a JSON \u escape so the payload stays pure ASCII. --]
-    data-schedule="${('{"today":"' + scToday?string("yyyy-MM-dd") + '","months":["' + scMonths?join('","') + '"]' + ',"phases":[' + scPhaseJson?join(",") + ']' + ',"activities":[' + scItemJson?join(",") + ']}')?html}"
+    [#-- One JSON payload. json_string covers the JSON layer; the attribute layer
+         is FreeMarker's own auto-escaping, which Struts 6.8 switches on
+         unconditionally together with the HTML output format -- which is also
+         why ?html cannot be used here, it is a parse error under that policy.
+         Both layers are load-bearing: activity descriptions are free text typed
+         by users. The en dash is written as a JSON \u escape so the payload
+         stays pure ASCII. --]
+    data-schedule="${('{"today":"' + scToday?string("yyyy-MM-dd") + '","months":["' + scMonths?join('","') + '"]' + ',"phases":[' + scPhaseJson?join(",") + ']' + ',"activities":[' + scItemJson?join(",") + ']}')}"
     data-label-notstarted="[@s.text name="dashboard.schedule.legend.notStarted" /]"
     data-label-inprogress="[@s.text name="dashboard.schedule.legend.inProgress" /]"
     data-label-completed="[@s.text name="dashboard.schedule.legend.completed" /]"
@@ -222,7 +225,6 @@
           [/#list]
         </div>
         <button type="button" class="scheduleCard__jump" id="scheduleJump">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2.5v7M2.5 6h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
           <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
         </button>
       </div>

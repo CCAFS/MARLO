@@ -22,6 +22,13 @@
 - Browser verification ran against a static harness that loads the **real** `dashboard.css` and the
   **real** `schedule.js` with fixture payloads, plus a FreeMarker 2.3.32 renderer driving the **real**
   template block. See Testing Plan.
+- **The first run in Tomcat failed** with a FreeMarker `ParseException` on the `data-schedule`
+  interpolation, blanking the dashboard. Cause: the payload used `?html`, which Struts 6.8.0's
+  auto-escaping policy rejects at parse time (`design.md` ADR-7). The harness had not caught it
+  because it left FreeMarker's output format undefined. It now applies the same settings Struts does
+  — `setAutoEscapingPolicy(ENABLE_IF_DEFAULT)`, `setOutputFormat(HTMLOutputFormat.INSTANCE)`,
+  `setNewBuiltinClassResolver(SAFER_RESOLVER)`, `VERSION_2_3_28`, no `numberFormat` override — and a
+  control run with `?html` reinstated reproduces the production error verbatim, down to the column.
 
 ## 2. Pre-flight Checklist
 
@@ -67,8 +74,12 @@ T05, T06, T10, T11 ──> T12 ──> T13
 
 ### Server-side template (FreeMarker 2.3.32, real block, stubbed `s:` namespace)
 
+Configured exactly as Struts 6.8.0 configures it, auto-escaping and HTML output format included; a
+harness that skips this cannot reproduce ADR-7's parse error.
+
 | Scenario | Result |
 |---|---|
+| control: `?html` reinstated | fails to parse with the exact production message at the same column — the harness reproduces the defect it previously missed |
 | reference (2 open, 1 upcoming, 2 closed, 1 null-date phase) | 3 lanes; closed and null-date phases excluded; valid JSON |
 | all i18n keys | zero `MISSING_KEY` across every scenario |
 | hostile descriptions (`<script>`, `"`, `'`, `<b>`, `&`, `\`, newline, tab, unicode) | valid JSON; raw attribute contains no literal `"` and no `<script` |
