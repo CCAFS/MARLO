@@ -82,6 +82,18 @@
   --marlo-neutral-border: #E0E5EB;
   --marlo-neutral-text: #6B7280;
 
+  /* Status — solid bars. The light hues above fail AA behind white text, so a
+     bar that carries a label uses these instead; the light ones stay for the
+     small status dots and legend swatches. */
+  --marlo-info-solid: #15719B;
+  --marlo-success-solid: #2E7D32;
+  --marlo-warning-ink: #4A3000;
+  --marlo-outline-dashed: #C3CBD5;
+
+  /* Today marker — darker than --marlo-danger so a 2px hairline still reads
+     against white. */
+  --marlo-today-line: #C7401C;
+
   /* Radii */
   --marlo-radius-xs: 4px;
   --marlo-radius-sm: 6px;

@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPolicyManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
+import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
@@ -32,12 +33,14 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPhase;
 import org.cgiar.ccafs.marlo.data.model.StudyHomeDTO;
+import org.cgiar.ccafs.marlo.data.model.Timeline;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,6 +73,8 @@ public class DashboardAction extends BaseAction {
 
   private SectionStatusManager sectionStatusManager;
 
+  private TimelineManager timelineManager;
+
   // Variables
   private GlobalUnit loggedCrp;
 
@@ -78,11 +83,13 @@ public class DashboardAction extends BaseAction {
   private List<StudyHomeDTO> myStudies = new ArrayList<>();
   private List<InnovationHomeDTO> myInnovations = new ArrayList<>();
 
+  private List<Timeline> scheduleActivities = new ArrayList<>();
+
   // @Inject
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
-    SectionStatusManager sectionStatusManager) {
+    SectionStatusManager sectionStatusManager, TimelineManager timelineManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -92,6 +99,7 @@ public class DashboardAction extends BaseAction {
     this.projectInnovationManager = projectInnovationManager;
     this.projectPolicyManager = projectPolicyManager;
     this.sectionStatusManager = sectionStatusManager;
+    this.timelineManager = timelineManager;
   }
 
   /**
@@ -169,6 +177,41 @@ public class DashboardAction extends BaseAction {
     return myStudies;
   }
 
+  /**
+   * Timeline activities for the homepage Schedule card. Scoped to the current
+   * global unit, which is the only relation the Timeline entity has: these are
+   * platform-wide in the sense of belonging to no project and no phase.
+   *
+   * @return the activities, never null
+   */
+  public List<Timeline> getScheduleActivities() {
+    return scheduleActivities;
+  }
+
+  /**
+   * Load the timeline activities the Schedule card draws.
+   * findAllByGlobalUnit returns null rather than an empty list when the unit has
+   * none, so the result is normalised here and the view never has to guard it.
+   * Sorting by the optional order field first keeps a deterministic sequence for
+   * equal start dates, which is what the lane packer breaks ties on.
+   */
+  private void loadScheduleActivities() {
+    try {
+      List<Timeline> activities = timelineManager.findAllByGlobalUnit(loggedCrp.getId());
+      if (activities == null) {
+        scheduleActivities = new ArrayList<>();
+        return;
+      }
+      scheduleActivities = new ArrayList<>(activities);
+      scheduleActivities.sort(Comparator
+        .comparing(Timeline::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))
+        .thenComparing(Timeline::getId, Comparator.nullsLast(Comparator.naturalOrder())));
+    } catch (Exception e) {
+      LOG.error("unable to load the timeline activities for the Schedule card: " + e.getMessage());
+      scheduleActivities = new ArrayList<>();
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -178,6 +221,8 @@ public class DashboardAction extends BaseAction {
     if (this.isSwitchSession()) {
       this.clearPermissionsCache();
     }
+
+    this.loadScheduleActivities();
 
     // if (projectManager.findAll() != null) {
     myProjects = new ArrayList<>();

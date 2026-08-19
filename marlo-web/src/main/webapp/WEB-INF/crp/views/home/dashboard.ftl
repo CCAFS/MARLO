@@ -3,12 +3,13 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20250509",
+  "${baseUrlMedia}/js/home/dashboard.js?20260819",
+  "${baseUrlMedia}/js/home/schedule.js?20260819",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20250930",
+  "${baseUrlMedia}/css/home/dashboard.css?20260819",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -22,19 +23,6 @@
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 [#import "/WEB-INF/crp/macros/projectsListTemplate.ftl" as projectList /]
 [#import "/WEB-INF/global/macros/homeDashboard.ftl" as indicatorLists /]
-
-[#assign timeline = [
-  {"id":"1", "startDate":"11/28/2016", "endDate":"11/30/2016","what":"MARLO opens for Impact Pathway","who":"Flagship Leaders"},
-  {"id":"2", "startDate":"12/01/2016", "endDate":"12/02/2016","what":"Create new projects according to new budget distribution; Assign W1/W2 budget to all projects.","who":"Finance Manager"},
-  {"id":"3", "startDate":"12/01/2016", "endDate":"12/06/2016","what":"Pre-set projects portfolio","who":"Flagship Leaders and Regional Program Leaders"},
-  {"id":"4", "startDate":"12/07/2016", "endDate":"01/16/2017","what":"MARLO opens for planning (Project Leaders) ","who":"Project Leaders"},
-  {"id":"5", "startDate":"12/19/2016", "endDate":"01/10/2017","what":"Management liaison to review the plan, liaise with the PL and approve/make recommendations for project submission","who":"Flagship Leaders and Regional Program Leaders"},
-  {"id":"6", "startDate":"01/11/2017", "endDate":"01/13/2017","what":"PLs to make changes accordingly and submit the project","who":"Project Leaders"},
-  {"id":"5", "startDate":"01/16/2017", "endDate":"",          "what":"MARLO closes planning stage","who":"KDS Team"},
-  {"id":"7", "startDate":"02/01/2017", "endDate":"02/17/2017","what":"Project Leaders and Contact Pounts will be responsible to input detailed information regarding their projects for 2016.","who":""},
-  {"id":"8", "startDate":"02/20/2017", "endDate":"02/24/2017","what":"<small>Contact Points will be responsible to report on the CRP indicators and on any publications that are not directly linked to a particular project. <br>Regional Program Leaders will be responsible to complete the synthesis by MOG and by CCAFS Outcome, based on the information reported by Project Leaders.</small>","who":""},
-  {"id":"9", "startDate":"02/27/2017", "endDate":"03/03/2017","what":"Flagship Program Leaders will be responsible to report on the CRP indicators, synthesis by MOG and synthesis by CCAFS Outcome based on the information reported by project leaders and Regional Program leaders.","who":""}
-]/]
 
 [#if switchSession]
   <script type="text/javascript">
@@ -114,193 +102,277 @@
 
 [#if action.hasSpecificities('homepage_timeline_active') ]
   [#--
-    Reporting timeline.
+    Schedule.
 
-    Every coordinate is derived from the phase dates: the axis runs from the
-    first day of the earliest phase's month to the first day of the month after
-    the latest phase's end, and positions are that span expressed as a
-    percentage. Lane colour follows the same open/upcoming/closed rule as the
-    phase selector, so both components cannot disagree.
+    Split by what the server can know. Dates are server business: the label
+    column, the countdown pills, the counts and every visible string are
+    rendered here and never reach JavaScript except as {0} templates. Geometry
+    is not: pixels-per-day depends on the measured width of the track and on the
+    zoom stop, so bars, pills, ticks and the lane packing are drawn by
+    schedule.js from the payload in data-schedule.
+
+    Phase status uses only what Phase actually carries. `editable` is the source
+    of truth for an open phase — an administrator can reopen one whose dates have
+    passed — and dates only separate a closed phase from one that has not
+    started. There is no completion figure anywhere in the model, so none is
+    shown. Closed phases are not lanes here at all; they live in the "All phases"
+    popover in the selector above.
   --]
-  [#assign tlDayMs = 86400000 /]
-  [#assign tlToday = .now?date /]
+  [#assign scDayMs = 86400000 /]
+  [#assign scToday = .now?date /]
 
-  [#function tlPhaseStatus phase]
-    [#if (phase.editable)!false][#return "open"][/#if]
-    [#if (phase.startDate)?? && phase.startDate?date gt tlToday][#return "upcoming"][/#if]
+  [#function scPhaseStatus phase]
+    [#if (phase.editable)!false][#return "inProgress"][/#if]
+    [#if (phase.startDate)?? && phase.startDate?date gt scToday][#return "upcoming"][/#if]
     [#return "closed"]
   [/#function]
 
-  [#-- Only phases with a usable range can be plotted. --]
-  [#assign tlPhases = [] /]
-  [#list phases as phase]
+  [#-- Only a phase with both dates can be plotted. --]
+  [#assign scLanes = [] /]
+  [#assign scOpenCount = 0 /]
+  [#assign scUpcoming = [] /]
+  [#list (phases)![] as phase]
     [#if (phase.startDate)?? && (phase.endDate)??]
-      [#assign tlPhases = tlPhases + [phase] /]
+      [#assign scStatus = scPhaseStatus(phase) /]
+      [#if scStatus == "inProgress"]
+        [#assign scLanes = scLanes + [phase] /]
+        [#assign scOpenCount = scOpenCount + 1 /]
+      [#elseif scStatus == "upcoming"]
+        [#assign scLanes = scLanes + [phase] /]
+        [#assign scUpcoming = scUpcoming + [phase] /]
+      [/#if]
+    [/#if]
+  [/#list]
+  [#assign scClosedCount = (phases?size)!0 - scLanes?size /]
+
+  [#-- Timeline activities are global-unit wide: not per project, not per phase.
+       DashboardAction sorts them; anything missing a date or a description
+       cannot be drawn. --]
+  [#assign scItems = [] /]
+  [#list (scheduleActivities)![] as activity]
+    [#if (activity.startDate)?? && (activity.endDate)?? && ((activity.description)!'')?trim?has_content]
+      [#assign scItems = scItems + [activity] /]
     [/#if]
   [/#list]
 
-  [#if tlPhases?has_content]
-    [#assign tlActive = [] /]
-    [#assign tlClosed = [] /]
-    [#list tlPhases as phase]
-      [#if tlPhaseStatus(phase) == "closed"]
-        [#assign tlClosed = tlClosed + [phase] /]
-      [#else]
-        [#assign tlActive = tlActive + [phase] /]
-      [/#if]
-    [/#list]
+  [#-- Month names come from the server so the axis stays in the bundle's
+       language; schedule.js only assembles them. --]
+  [#assign scMonths = [] /]
+  [#list 1..12 as scMonthIndex]
+    [#assign scMonths = scMonths + [("2001-" + scMonthIndex?string("00") + "-01")?date("yyyy-MM-dd")?string("MMM")] /]
+  [/#list]
 
-    [#assign tlOpenCount = 0 /]
-    [#list tlActive as phase][#if tlPhaseStatus(phase) == "open"][#assign tlOpenCount = tlOpenCount + 1 /][/#if][/#list]
+  [#assign scPhaseJson = [] /]
+  [#list scLanes as phase]
+    [#assign scPhaseJson = scPhaseJson + ['{"name":"' + ((phase.composedName)!'')?json_string + '","status":"' + scPhaseStatus(phase) + '","start":"' + phase.startDate?date?string("yyyy-MM-dd") + '","end":"' + phase.endDate?date?string("yyyy-MM-dd") + '","dates":"' + phase.startDate?date?string("dd MMM") + ' \\u2013 ' + phase.endDate?date?string("dd MMM yyyy") + '"}'] /]
+  [/#list]
 
-    [#-- Lanes are the non-closed phases; closed ones sit behind the toggle. --]
-    [#assign tlLanes = tlActive /]
+  [#assign scItemJson = [] /]
+  [#list scItems as activity]
+    [#assign scSame = activity.startDate?date?string("yyyy-MM-dd") == activity.endDate?date?string("yyyy-MM-dd") /]
+    [#assign scItemJson = scItemJson + ['{"id":' + activity.id?c + ',"name":"' + ((activity.description)!'')?trim?json_string + '","start":"' + activity.startDate?date?string("yyyy-MM-dd") + '","end":"' + activity.endDate?date?string("yyyy-MM-dd") + '","dates":"' + scSame?then(activity.startDate?date?string("dd MMM yyyy"), activity.startDate?date?string("dd MMM") + ' \\u2013 ' + activity.endDate?date?string("dd MMM yyyy")) + '","order":' + ((activity.order)??)?then(((activity.order)!0)?c, 'null') + '}'] /]
+  [/#list]
 
-    <section class="reportTimeline">
-      <div class="reportTimeline__head">
-        <div class="reportTimeline__heading">
-          <h2 class="reportTimeline__title">[@s.text name="dashboard.reportingTimeline.title" /]</h2>
-          <span class="reportTimeline__subtitle">
-            [@s.text name="dashboard.reportingTimeline.today"][@s.param]${tlToday?string("dd MMMM yyyy")}[/@s.param][/@s.text] &middot;
-            [#if tlOpenCount == 0][@s.text name="dashboard.reportingTimeline.noPhasesOpen" /]
-            [#elseif tlOpenCount == 1][@s.text name="dashboard.reportingTimeline.onePhaseOpen" /]
-            [#else][@s.text name="dashboard.reportingTimeline.phasesOpen"][@s.param]${tlOpenCount?c}[/@s.param][/@s.text][/#if]
-          </span>
+  <section class="scheduleCard" id="scheduleCard"
+    [#-- One JSON payload. json_string covers the JSON layer, html the attribute
+         layer, and both are load-bearing: activity descriptions are free text
+         typed by users and nothing in this app auto-escapes. The en dash is
+         written as a JSON \u escape so the payload stays pure ASCII. --]
+    data-schedule="${('{"today":"' + scToday?string("yyyy-MM-dd") + '","months":["' + scMonths?join('","') + '"]' + ',"phases":[' + scPhaseJson?join(",") + ']' + ',"activities":[' + scItemJson?join(",") + ']}')?html}"
+    data-label-notstarted="[@s.text name="dashboard.schedule.legend.notStarted" /]"
+    data-label-inprogress="[@s.text name="dashboard.schedule.legend.inProgress" /]"
+    data-label-completed="[@s.text name="dashboard.schedule.legend.completed" /]"
+    data-label-upcoming="[@s.text name="dashboard.schedule.legend.upcoming" /]"
+    data-label-today="[@s.text name="dashboard.schedule.legend.today" /]"
+    data-label-overflow="[@s.text name="dashboard.schedule.overflowHeading" /]"
+    data-tpl-item="[@s.text name="dashboard.schedule.item.accessibleName"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
+    data-tpl-more="[@s.text name="dashboard.schedule.more"][@s.param]{0}[/@s.param][/@s.text]">
+
+    <div class="scheduleCard__head">
+      <div class="scheduleCard__heading">
+        <h2 class="scheduleCard__title">[@s.text name="dashboard.schedule.title" /]</h2>
+        <span class="scheduleCard__subtitle">
+          [@s.text name="dashboard.schedule.today"][@s.param]${scToday?string("dd MMMM yyyy")}[/@s.param][/@s.text] &middot;
+          [#if scOpenCount == 0][@s.text name="dashboard.schedule.noPhasesOpen" /]
+          [#elseif scOpenCount == 1][@s.text name="dashboard.schedule.onePhaseOpen" /]
+          [#else][@s.text name="dashboard.schedule.phasesOpen"][@s.param]${scOpenCount?c}[/@s.param][/@s.text][/#if] &middot;
+          [#if scItems?size == 0][@s.text name="dashboard.schedule.noActivities" /]
+          [#elseif scItems?size == 1][@s.text name="dashboard.schedule.oneActivity" /]
+          [#else][@s.text name="dashboard.schedule.activityCount"][@s.param]${scItems?size?c}[/@s.param][/@s.text][/#if]
+        </span>
+      </div>
+      [#-- Status is never colour alone: every swatch is paired with its name,
+           exactly as every bar and pill carries a text label. --]
+      <div class="scheduleCard__legend">
+        <span class="scheduleCard__key scheduleCard__key--notStarted">[@s.text name="dashboard.schedule.legend.notStarted" /]</span>
+        <span class="scheduleCard__key scheduleCard__key--inProgress">[@s.text name="dashboard.schedule.legend.inProgress" /]</span>
+        <span class="scheduleCard__key scheduleCard__key--completed">[@s.text name="dashboard.schedule.legend.completed" /]</span>
+        <span class="scheduleCard__key scheduleCard__key--upcoming">[@s.text name="dashboard.schedule.legend.upcoming" /]</span>
+        <span class="scheduleCard__key scheduleCard__key--today">[@s.text name="dashboard.schedule.legend.today" /]</span>
+      </div>
+    </div>
+
+    [#if scOpenCount gt 0]
+      <div class="scheduleCard__controls">
+        <div class="scheduleCard__zoom" role="group" aria-label="[@s.text name="dashboard.schedule.zoom.label" /]">
+          [#list [2, 4, 8, 16] as scWeeks]
+            <button type="button" class="scheduleCard__zoomBtn" data-weeks="${scWeeks?c}"
+              aria-pressed="${(scWeeks == 8)?string}"
+              aria-label="[@s.text name="dashboard.schedule.zoom.accessibleName"][@s.param]${scWeeks?c}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.zoom.weeks"][@s.param]${scWeeks?c}[/@s.param][/@s.text]</button>
+          [/#list]
         </div>
-        <div class="reportTimeline__legend">
-          <span class="reportTimeline__key reportTimeline__key--open">[@s.text name="dashboard.reportingTimeline.legend.open" /]</span>
-          <span class="reportTimeline__key reportTimeline__key--upcoming">[@s.text name="dashboard.reportingTimeline.legend.upcoming" /]</span>
-          <span class="reportTimeline__key reportTimeline__key--closed">[@s.text name="dashboard.reportingTimeline.legend.closed" /]</span>
-          <span class="reportTimeline__key reportTimeline__key--today">[@s.text name="dashboard.reportingTimeline.legend.today" /]</span>
+        <button type="button" class="scheduleCard__jump" id="scheduleJump">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2.5v7M2.5 6h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
+        </button>
+      </div>
+
+      <div class="scheduleCard__frame">
+        <div class="scheduleCard__scroll" id="scheduleScroll" tabindex="0"
+          aria-label="[@s.text name="dashboard.schedule.scroll.accessibleName" /]">
+          <div class="scheduleCard__canvas" id="scheduleCanvas">
+            <div class="scheduleCard__gridLayer" id="scheduleGrid" aria-hidden="true"></div>
+            <div class="scheduleCard__nowLayer" id="scheduleNow" aria-hidden="true"></div>
+
+            <div class="scheduleCard__row scheduleCard__row--axis">
+              <div class="scheduleCard__cell scheduleCard__cell--label">
+                <span class="scheduleCard__eyebrow" id="scheduleViewLabel"
+                  data-label="[@s.text name="dashboard.schedule.viewLabel"][@s.param]{0}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.viewLabel"][@s.param]8[/@s.param][/@s.text]</span>
+              </div>
+              <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
+            </div>
+
+            <div class="scheduleCard__row scheduleCard__row--section">
+              <div class="scheduleCard__cell scheduleCard__cell--label">
+                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.phases.title" /]</span>
+                <span class="scheduleCard__badge">
+                  [#if scOpenCount == 1][@s.text name="dashboard.schedule.phases.oneOpen" /]
+                  [#else][@s.text name="dashboard.schedule.phases.open"][@s.param]${scOpenCount?c}[/@s.param][/@s.text][/#if]
+                </span>
+              </div>
+              <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="phases"></div>
+            </div>
+
+            [#list scLanes as phase]
+              [#assign scStatus = scPhaseStatus(phase) /]
+              [#assign scRemaining = ((phase.endDate?long - scToday?long) / scDayMs)?round /]
+              [#assign scUntilOpen = ((phase.startDate?long - scToday?long) / scDayMs)?round /]
+              <div class="scheduleCard__row scheduleCard__row--phase scheduleCard__row--${scStatus}">
+                <div class="scheduleCard__cell scheduleCard__cell--label">
+                  <span class="scheduleCard__phaseLabel">
+                    <span class="scheduleCard__phaseName">
+                      <span>${(phase.composedName)!}</span>
+                      [#-- The countdown sits beside the name rather than at the
+                           bar's right edge, which scrolls out of view. --]
+                      [#if scStatus == "inProgress"]
+                        <span class="scheduleCard__count[#if scRemaining lt 15] scheduleCard__count--urgent[/#if]">
+                          [#if scRemaining gt 0][@s.text name="dashboard.schedule.daysLeft"][@s.param]${scRemaining?c}[/@s.param][/@s.text]
+                          [#elseif scRemaining == 0][@s.text name="dashboard.schedule.lastDay" /]
+                          [#else][@s.text name="dashboard.schedule.overdue" /][/#if]
+                        </span>
+                      [#else]
+                        <span class="scheduleCard__count">
+                          [#if scUntilOpen lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
+                          [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scUntilOpen?c}[/@s.param][/@s.text][/#if]
+                        </span>
+                      [/#if]
+                    </span>
+                    <span class="scheduleCard__phaseDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
+                  </span>
+                </div>
+                <div class="scheduleCard__cell scheduleCard__cell--track" data-phase-track="${phase_index?c}"></div>
+              </div>
+            [/#list]
+
+            <div class="scheduleCard__row scheduleCard__row--section">
+              <div class="scheduleCard__cell scheduleCard__cell--label">
+                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.activities.title" /]</span>
+                <span class="scheduleCard__badge">${scItems?size?c}</span>
+              </div>
+              <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="activities"></div>
+            </div>
+
+            [#-- Three reserved lanes and one overflow strip, whatever the
+                 activity count. A lane carries no meaning of its own: an
+                 activity can change lane as the window changes, which is the
+                 price of a container that never grows. --]
+            [#list 0..2 as scLane]
+              <div class="scheduleCard__row scheduleCard__row--lane">
+                <div class="scheduleCard__cell scheduleCard__cell--label">
+                  <span class="scheduleCard__laneName">[@s.text name="dashboard.schedule.laneName"][@s.param]${(scLane + 1)?c}[/@s.param][/@s.text]</span>
+                  <span class="scheduleCard__laneCount" data-lane-count="${scLane?c}">0</span>
+                </div>
+                <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
+              </div>
+            [/#list]
+
+            <div class="scheduleCard__row scheduleCard__row--overflow">
+              <div class="scheduleCard__cell scheduleCard__cell--label">
+                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.overflow.title" /]</span>
+                <span class="scheduleCard__badge" id="scheduleOverflowCount">0</span>
+              </div>
+              <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleOverflowTrack"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      [#if tlLanes?has_content]
-        [#-- Axis bounds, snapped to whole months so the labels line up. --]
-        [#assign tlMinStart = tlLanes[0].startDate?date /]
-        [#assign tlMaxEnd = tlLanes[0].endDate?date /]
-        [#list tlLanes as phase]
-          [#if phase.startDate?date lt tlMinStart][#assign tlMinStart = phase.startDate?date /][/#if]
-          [#if phase.endDate?date gt tlMaxEnd][#assign tlMaxEnd = phase.endDate?date /][/#if]
-        [/#list]
+      [#if scItems?size == 0]
+        <p class="scheduleCard__laneEmpty">[@s.text name="dashboard.schedule.activities.none" /]</p>
+      [/#if]
 
-        [#assign tlY0 = tlMinStart?string("yyyy")?number /]
-        [#assign tlM0 = tlMinStart?string("MM")?number /]
-        [#assign tlY1 = tlMaxEnd?string("yyyy")?number /]
-        [#assign tlM1 = tlMaxEnd?string("MM")?number /]
-        [#assign tlMonths = (tlY1 - tlY0) * 12 + (tlM1 - tlM0) + 1 /]
+      [#-- The footer reports the packing honestly rather than implying every
+           activity found a lane. --]
+      <div class="scheduleCard__foot">
+        <span id="scheduleFootLeft"
+          data-window="[@s.text name="dashboard.schedule.foot.window"][@s.param]{0}[/@s.param][/@s.text]"
+          data-span="[@s.text name="dashboard.schedule.foot.span"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"></span>
+        <span id="scheduleFootRight"
+          data-placed="[@s.text name="dashboard.schedule.foot.placed"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
+          data-all-placed="[@s.text name="dashboard.schedule.foot.allPlaced"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"
+          data-hint="[@s.text name="dashboard.schedule.foot.hint" /]"></span>
+      </div>
+    [#else]
+      [#-- No open phase is a real state between reporting cycles, not an error,
+           so it keeps the card shell and says what happens next. --]
+      [#assign scNext = [] /]
+      [#list scUpcoming as phase]
+        [#if !scNext?has_content || phase.startDate?date lt scNext[0].startDate?date]
+          [#assign scNext = [phase] /]
+        [/#if]
+      [/#list]
 
-        [#assign tlAxisStart = (tlY0?c + "-" + tlM0?string("00") + "-01")?date("yyyy-MM-dd") /]
-        [#assign tlEndIdx = tlM0 + tlMonths /]
-        [#assign tlEndYear = tlY0 + ((tlEndIdx - 1) / 12)?floor /]
-        [#assign tlEndMonth = tlEndIdx - (((tlEndIdx - 1) / 12)?floor) * 12 /]
-        [#assign tlAxisEnd = (tlEndYear?c + "-" + tlEndMonth?string("00") + "-01")?date("yyyy-MM-dd") /]
-        [#assign tlSpan = tlAxisEnd?long - tlAxisStart?long /]
-
-        [#function tlPct instant]
-          [#return (((instant?long - tlAxisStart?long) / tlSpan) * 100)?string("0.##")]
-        [/#function]
-
-        <div class="reportTimeline__axis">
-          <div class="reportTimeline__labelCol"></div>
-          <div class="reportTimeline__scale">
-            [#list 0..(tlMonths - 1) as i]
-              [#assign tlIdx = tlM0 + i /]
-              [#assign tlYear = tlY0 + ((tlIdx - 1) / 12)?floor /]
-              [#assign tlMonth = tlIdx - (((tlIdx - 1) / 12)?floor) * 12 /]
-              [#assign tlTick = (tlYear?c + "-" + tlMonth?string("00") + "-01")?date("yyyy-MM-dd") /]
-              <span class="reportTimeline__month" style="left:${tlPct(tlTick)}%">${tlTick?string("MMM")?upper_case}</span>
-            [/#list]
-          </div>
-          <div class="reportTimeline__statusCol"></div>
-        </div>
-
-        <div class="reportTimeline__lanes">
-          <div class="reportTimeline__grid" aria-hidden="true">
-            [#list 1..(tlMonths - 1) as i]
-              [#assign tlIdx = tlM0 + i /]
-              [#assign tlYear = tlY0 + ((tlIdx - 1) / 12)?floor /]
-              [#assign tlMonth = tlIdx - (((tlIdx - 1) / 12)?floor) * 12 /]
-              <span class="reportTimeline__gridline" style="left:${tlPct((tlYear?c + "-" + tlMonth?string("00") + "-01")?date("yyyy-MM-dd"))}%"></span>
-            [/#list]
-            [#if tlToday gte tlAxisStart && tlToday lt tlAxisEnd]
-              <span class="reportTimeline__now" style="left:${tlPct(tlToday)}%"></span>
-              <span class="reportTimeline__nowTag" style="left:${tlPct(tlToday)}%">[@s.text name="dashboard.reportingTimeline.legend.today" /]</span>
-            [/#if]
-          </div>
-
-          [#list tlLanes as phase]
-            [#assign tlStatus = tlPhaseStatus(phase) /]
-            [#assign tlLeft = tlPct(phase.startDate?date) /]
-            [#assign tlWidth = (((phase.endDate?long - phase.startDate?long) / tlSpan) * 100)?string("0.##") /]
-            [#assign tlRemaining = ((phase.endDate?long - tlToday?long) / tlDayMs)?round /]
-            [#assign tlUntilOpen = ((phase.startDate?long - tlToday?long) / tlDayMs)?round /]
-            <div class="reportTimeline__lane">
-              <div class="reportTimeline__labelCol">
-                <span class="reportTimeline__laneName reportTimeline__laneName--${tlStatus}">${(phase.composedName)!}</span>
-                <span class="reportTimeline__laneDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
-              </div>
-              <div class="reportTimeline__track">
-                <div class="reportTimeline__bar reportTimeline__bar--${tlStatus}"
-                  style="left:${tlLeft}%;width:${tlWidth}%"
-                  title="${(phase.composedName)!} &middot; ${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}">
-                  <span>${(phase.composedName)!}</span>
-                </div>
-              </div>
-              <div class="reportTimeline__statusCol">
-                [#if tlStatus == "open"]
-                  <span class="reportTimeline__chip[#if tlRemaining lte 21] reportTimeline__chip--urgent[/#if]">
-                    [#if tlRemaining gt 0][@s.text name="dashboard.reportingTimeline.daysLeft"][@s.param]${tlRemaining?c}[/@s.param][/@s.text]
-                    [#else][@s.text name="dashboard.reportingTimeline.lastDay" /][/#if]
-                  </span>
-                [#elseif tlStatus == "upcoming"]
-                  <span class="reportTimeline__muted">[@s.text name="dashboard.reportingTimeline.opensIn"][@s.param]${tlUntilOpen?c}[/@s.param][/@s.text]</span>
-                [/#if]
-              </div>
-            </div>
-          [/#list]
-
-          [#if tlClosed?has_content]
-            <div class="reportTimeline__closed" id="reportTimelineClosed" hidden>
-              [#list tlClosed?reverse as phase]
-                <div class="reportTimeline__lane">
-                  <div class="reportTimeline__labelCol">
-                    <span class="reportTimeline__laneName reportTimeline__laneName--closed">${(phase.composedName)!}</span>
-                    <span class="reportTimeline__laneDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
-                  </div>
-                  <div class="reportTimeline__track"><div class="reportTimeline__hatch"></div></div>
-                  <div class="reportTimeline__statusCol">
-                    <span class="phaseBadge phaseBadge--closed">[@s.text name="dashboard.reportingTimeline.legend.closed" /]</span>
-                    <button type="button" class="reportTimeline__view" data-phase-id="${phase.id?c}">[@s.text name="dashboard.reportingTimeline.view" /]</button>
-                  </div>
-                </div>
-              [/#list]
-            </div>
+      <div class="scheduleCard__empty">
+        <div class="scheduleCard__emptyMain">
+          <span class="scheduleCard__emptyTitle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M5.2 8.3 7 10.1l3.8-3.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            [@s.text name="dashboard.schedule.empty.title" /]
+          </span>
+          <p>[@s.text name="dashboard.schedule.empty.text" /]</p>
+          [#if scClosedCount gt 0]
+            [#-- Closed phases are browsed in the selector's own popover; this
+                 only points at it rather than duplicating the list. --]
+            <button type="button" class="scheduleCard__emptyBrowse" id="scheduleBrowseClosed">
+              [@s.text name="dashboard.schedule.empty.browse"][@s.param]${scClosedCount?c}[/@s.param][/@s.text]
+            </button>
           [/#if]
         </div>
-      [#else]
-        [#-- No open or upcoming phase: show what is coming instead of an empty chart. --]
-        <div class="reportTimeline__empty">
-          <div class="reportTimeline__emptyMain">
-            <span class="reportTimeline__emptyTitle">[@s.text name="dashboard.reportingTimeline.nothingDue" /]</span>
-            <p>[@s.text name="dashboard.reportingTimeline.nothingDueText" /]</p>
-          </div>
-        </div>
-      [/#if]
 
-      [#if tlClosed?has_content]
-        <div class="reportTimeline__foot">
-          <button type="button" class="reportTimeline__toggle" id="reportTimelineToggle"
-            aria-expanded="false" aria-controls="reportTimelineClosed"
-            data-label-show="[@s.text name="dashboard.reportingTimeline.showClosed"][@s.param]${tlClosed?size?c}[/@s.param][/@s.text]"
-            data-label-hide="[@s.text name="dashboard.reportingTimeline.hideClosed" /]">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>[@s.text name="dashboard.reportingTimeline.showClosed"][@s.param]${tlClosed?size?c}[/@s.param][/@s.text]</span>
-          </button>
-        </div>
-      [/#if]
-    </section>
-  [/#if]
+        [#if scNext?has_content]
+          [#assign scUntilOpen = ((scNext[0].startDate?long - scToday?long) / scDayMs)?round /]
+          <div class="scheduleCard__emptyNext">
+            <span class="scheduleCard__emptyEyebrow">[@s.text name="dashboard.schedule.empty.nextEyebrow" /]</span>
+            <span class="scheduleCard__emptyPhase">${(scNext[0].composedName)!}</span>
+            <span class="scheduleCard__emptyDates">[@s.text name="dashboard.schedule.empty.nextDates"][@s.param]${scNext[0].startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${scNext[0].endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
+            <span class="scheduleCard__emptyChip">
+              [#if scUntilOpen lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
+              [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scUntilOpen?c}[/@s.param][/@s.text][/#if]
+            </span>
+          </div>
+        [/#if]
+      </div>
+    [/#if]
+  </section>
 [/#if]
 
   [#assign browseScope = (actualPhase.composedName)!'' /]

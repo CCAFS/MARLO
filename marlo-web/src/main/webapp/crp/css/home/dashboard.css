@@ -322,12 +322,30 @@ div#impactGraphic-fullscreen {
   }
 
 
-  /*************** Reporting timeline ********************/
-  /* Lane geometry is inline (percentages computed in the template); this only
-     provides the chrome. Label and status columns are fixed so the bar track
-     lines up with the month scale above it. */
+  /*************** Schedule ********************/
+  /* Vertically fixed, horizontally scrolled. The card holds three phase lanes,
+     three packed activity lanes and one overflow strip; adding activities
+     changes the chip counts, never the height.
 
-  .reportTimeline {
+     Geometry is set by schedule.js, which is the only thing that knows
+     pixels-per-day: it measures the track and multiplies by the zoom stop.
+     This stylesheet owns the chrome and the two structural numbers the script
+     reads back out of it, --sched-label and --sched-axis.
+
+     Stacking inside .scheduleCard__canvas, which is the only stacking context:
+       0  gridlines            (explicit z-index: 0, first in tree order)
+       -  section-header tints (positioned, z-index auto, later in tree order)
+       1  bars and pills
+       2  today line
+       3  sticky label column
+       4  sticky axis row, 5 its own label cell
+     No row may carry a z-index of its own or the label column falls behind the
+     today line. */
+
+  .scheduleCard {
+    --sched-label: 276px;
+    --sched-axis: 32px;
+    position: relative;
     display: block;
     margin-top: 16px;
     padding: 18px 20px 16px;
@@ -338,39 +356,42 @@ div#impactGraphic-fullscreen {
     font-family: var(--marlo-font-sans);
   }
 
-  .reportTimeline__head {
+  /* ---- Header ---- */
+  .scheduleCard__head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
-  .reportTimeline__heading {
+  .scheduleCard__heading {
     display: flex;
     flex-direction: column;
     gap: 3px;
+    min-width: 0;
   }
 
-  .reportTimeline__title {
+  .scheduleCard__title {
     margin: 0;
     color: var(--marlo-ink);
     font: 600 18px/1.3 var(--marlo-font-sans);
   }
 
-  .reportTimeline__subtitle {
+  .scheduleCard__subtitle {
     color: var(--marlo-text-muted);
     font: 400 13px/1.3 var(--marlo-font-sans);
   }
 
-  .reportTimeline__legend {
+  .scheduleCard__legend {
     display: flex;
     align-items: center;
     gap: 14px;
     flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
-  .reportTimeline__key {
+  .scheduleCard__key {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -379,285 +400,642 @@ div#impactGraphic-fullscreen {
     white-space: nowrap;
   }
 
-  .reportTimeline__key::before {
+  .scheduleCard__key::before {
     content: "";
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
+    flex: none;
     border-radius: 2px;
   }
 
-  .reportTimeline__key--open::before { background: var(--marlo-info); }
-  .reportTimeline__key--upcoming::before { background: var(--marlo-warning); }
-  .reportTimeline__key--closed::before { background: var(--marlo-border-strong); }
+  .scheduleCard__key--notStarted::before { background: var(--marlo-warning); }
+  .scheduleCard__key--inProgress::before { background: var(--marlo-info); }
+  .scheduleCard__key--completed::before { background: var(--marlo-success); }
 
-  .reportTimeline__key--today::before {
+  .scheduleCard__key--upcoming::before {
+    background: var(--marlo-surface);
+    border: 1px dashed var(--marlo-outline-dashed);
+  }
+
+  .scheduleCard__key--today::before {
     width: 2px;
     height: 11px;
     border-radius: 0;
-    background: var(--marlo-danger);
+    background: var(--marlo-today-line);
   }
 
-  /* ---- Columns ---- */
-  .reportTimeline__labelCol {
-    width: 172px;
-    flex: none;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    padding-right: 12px;
-  }
-
-  .reportTimeline__statusCol {
-    width: 210px;
-    flex: none;
+  /* ---- Zoom + jump controls ---- */
+  .scheduleCard__controls {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
   }
 
-  .reportTimeline__axis {
-    display: flex;
-    align-items: stretch;
+  .scheduleCard__zoom {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-md);
+    background: var(--marlo-surface-sunken);
   }
 
-  .reportTimeline__scale {
-    flex: 1;
+  .scheduleCard__zoomBtn {
+    height: 26px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: var(--marlo-radius-sm);
+    background: none;
+    color: var(--marlo-text);
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .scheduleCard__zoomBtn:hover {
+    color: var(--marlo-brand);
+  }
+
+  .scheduleCard__zoomBtn[aria-pressed="true"] {
+    background: var(--marlo-surface);
+    border: 1px solid var(--marlo-border);
+    color: var(--marlo-ink);
+    box-shadow: 0 1px 2px rgba(31, 42, 55, 0.08);
+    /* Keep the 26px outer height once the border appears. */
+    padding: 0 10px;
+    cursor: default;
+  }
+
+  .scheduleCard__jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid var(--marlo-border-strong);
+    border-radius: 7px;
+    background: var(--marlo-surface);
+    color: var(--marlo-text);
+    font: 600 12.5px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .scheduleCard__jump:hover {
+    border-color: var(--marlo-brand);
+    color: var(--marlo-brand);
+  }
+
+  /* ---- Scroll frame ---- */
+  .scheduleCard__frame {
     position: relative;
-    height: 18px;
-    border-bottom: 1px solid var(--marlo-border);
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-lg);
+    overflow: hidden;
   }
 
-  .reportTimeline__month {
+  /* Edge masks signalling more track in both directions. They start after the
+     label column so they never veil a lane name. */
+  .scheduleCard__frame::before,
+  .scheduleCard__frame::after {
+    content: "";
     position: absolute;
-    top: 0;
-    color: var(--marlo-text-subtle);
-    font: 600 11px/1 var(--marlo-font-sans);
-    letter-spacing: 0.06em;
+    top: var(--sched-axis);
+    bottom: 0;
+    width: 22px;
+    z-index: 6;
+    pointer-events: none;
   }
 
-  /* ---- Lanes ---- */
-  .reportTimeline__lanes {
+  .scheduleCard__frame::before {
+    left: var(--sched-label);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .scheduleCard__frame::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .scheduleCard__scroll {
+    max-height: 388px;
+    overflow: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .scheduleCard__scroll:focus {
+    outline: 2px solid var(--marlo-today-line);
+    outline-offset: -2px;
+  }
+
+  .scheduleCard__canvas {
     position: relative;
+    width: max-content;
+    min-width: 100%;
+    background: var(--marlo-surface);
   }
 
-  .reportTimeline__grid {
+  /* ---- Overlay layers ---- */
+  .scheduleCard__gridLayer,
+  .scheduleCard__nowLayer {
     position: absolute;
-    left: 172px;
-    right: 210px;
-    top: 0;
+    left: var(--sched-label);
+    right: 0;
+    top: var(--sched-axis);
     bottom: 0;
     pointer-events: none;
   }
 
-  .reportTimeline__gridline {
+  .scheduleCard__gridLayer { z-index: 0; }
+  .scheduleCard__nowLayer { z-index: 2; }
+
+  .scheduleCard__gridline {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 1px;
+    background: var(--marlo-border-faint);
+  }
+
+  .scheduleCard__gridline--month {
     background: var(--marlo-border-soft);
   }
 
-  .reportTimeline__now {
+  .scheduleCard__now {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 2px;
-    border-radius: 1px;
-    background: var(--marlo-danger);
+    background: var(--marlo-today-line);
   }
 
-  .reportTimeline__nowTag {
+  /* ---- Rows ---- */
+  /* No z-index here: see the stacking note at the top of this section. */
+  .scheduleCard__row {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .scheduleCard__cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .scheduleCard__cell--label {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    width: var(--sched-label);
+    flex: none;
+    gap: 8px;
+    padding: 0 12px;
+    background: var(--marlo-surface);
+    border-right: 1px solid var(--marlo-border);
+  }
+
+  /* flex-basis must stay auto: schedule.js sets an explicit width here and a
+     basis of 0 (which plain `flex: 1` implies) would make the browser ignore
+     it, collapsing the canvas that the sticky columns scroll inside. */
+  .scheduleCard__cell--track {
+    flex: 1 0 auto;
+    align-self: stretch;
+  }
+
+  /* ---- Axis ---- */
+  .scheduleCard__row--axis {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    height: var(--sched-axis);
+    background: var(--marlo-surface);
+    border-bottom: 1px solid var(--marlo-border);
+  }
+
+  .scheduleCard__row--axis .scheduleCard__cell--label {
+    z-index: 5;
+  }
+
+  .scheduleCard__tick {
     position: absolute;
-    top: -9px;
-    padding: 1px 6px;
+    top: 11px;
+    color: var(--marlo-text-subtle);
+    font: 600 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transform: translateX(8px);
+  }
+
+  .scheduleCard__tick--month {
+    color: var(--marlo-text-muted);
+  }
+
+  .scheduleCard__todayTag {
+    position: absolute;
+    top: 6px;
+    padding: 2px 7px;
     transform: translateX(-50%);
     border-radius: var(--marlo-radius-xs);
-    background: var(--marlo-danger);
+    background: var(--marlo-today-line);
     color: #fff;
-    font: 700 9.5px/1.4 var(--marlo-font-sans);
-    letter-spacing: 0.07em;
+    font: 700 12px/1.15 var(--marlo-font-sans);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     white-space: nowrap;
   }
 
-  .reportTimeline__lane {
-    display: flex;
-    align-items: center;
-    height: 42px;
-    position: relative;
+  /* ---- Section headers ---- */
+  .scheduleCard__row--section {
+    min-height: 28px;
+    background: var(--marlo-surface-sunken);
+    border-bottom: 1px solid var(--marlo-border-soft);
   }
 
-  .reportTimeline__lane + .reportTimeline__lane {
-    border-top: 1px solid var(--marlo-border-faint);
+  .scheduleCard__row--section .scheduleCard__cell--label,
+  .scheduleCard__row--section .scheduleCard__cell--track {
+    background: var(--marlo-surface-sunken);
   }
 
-  .reportTimeline__laneName {
-    color: var(--marlo-ink);
-    font: 600 13.5px/1.3 var(--marlo-font-sans);
-  }
-
-  .reportTimeline__laneName--upcoming, .reportTimeline__laneName--closed {
+  .scheduleCard__eyebrow {
     color: var(--marlo-text-muted);
-    font-weight: 500;
-  }
-
-  .reportTimeline__laneDates {
-    color: var(--marlo-text-muted);
-    font: 400 11.5px/1.3 var(--marlo-font-sans);
-  }
-
-  .reportTimeline__laneName--upcoming ~ .reportTimeline__laneDates, .reportTimeline__laneName--closed ~ .reportTimeline__laneDates {
-    color: var(--marlo-text-subtle);
-  }
-
-  .reportTimeline__track {
-    flex: 1;
-    position: relative;
-    height: 42px;
-    min-width: 0;
-  }
-
-  .reportTimeline__bar {
-    position: absolute;
-    top: 9px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    border-radius: 12px;
-    cursor: default;
-  }
-
-  .reportTimeline__bar span {
-    color: #fff;
-    font: 600 11.5px/1 var(--marlo-font-sans);
+    font: 700 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .reportTimeline__bar--open {
-    background: var(--marlo-info);
-    box-shadow: 0 1px 3px rgba(59, 159, 209, 0.4);
-  }
-
-  .reportTimeline__bar--upcoming {
-    background: var(--marlo-surface-sunken);
-    border: 1px dashed var(--marlo-border-strong);
-  }
-
-  .reportTimeline__bar--upcoming span {
-    color: var(--marlo-text-muted);
-  }
-
-  .reportTimeline__chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 8px;
+  .scheduleCard__badge {
+    margin-left: auto;
+    flex: none;
+    padding: 2px 7px;
     border: 1px solid var(--marlo-neutral-border);
-    border-radius: var(--marlo-radius-sm);
-    background: var(--marlo-neutral-bg);
+    border-radius: var(--marlo-radius-pill);
+    background: var(--marlo-surface);
     color: var(--marlo-text);
-    font: 600 11.5px/1.3 var(--marlo-font-sans);
+    font: 600 12px/1.2 var(--marlo-font-sans);
     white-space: nowrap;
   }
 
-  .reportTimeline__chip--urgent {
+  /* ---- Phase lanes ---- */
+  .scheduleCard__row--phase {
+    height: 44px;
+  }
+
+  .scheduleCard__row--phase + .scheduleCard__row--phase {
+    border-top: 1px solid var(--marlo-border-faint);
+  }
+
+  .scheduleCard__phaseLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .scheduleCard__phaseName {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .scheduleCard__phaseName > span:first-child {
+    color: var(--marlo-ink);
+    font: 600 13.5px/1.25 var(--marlo-font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scheduleCard__row--upcoming .scheduleCard__phaseName > span:first-child {
+    color: var(--marlo-text-muted);
+    font-weight: 500;
+  }
+
+  .scheduleCard__phaseDates {
+    color: var(--marlo-text-muted);
+    font: 400 12px/1.25 var(--marlo-font-sans);
+    white-space: nowrap;
+  }
+
+  /* Countdown lives in the label column, not at the bar's right edge, so it
+     stays readable no matter how far the track is scrolled. */
+  .scheduleCard__count {
+    flex: none;
+    padding: 2px 7px;
+    border: 1px solid var(--marlo-neutral-border);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-neutral-bg);
+    color: var(--marlo-neutral-text);
+    font: 600 12px/1.25 var(--marlo-font-sans);
+    white-space: nowrap;
+  }
+
+  .scheduleCard__count--urgent {
     background: var(--marlo-danger-bg);
     border-color: var(--marlo-danger-border);
     color: var(--marlo-danger-text);
     font-weight: 700;
   }
 
-  .reportTimeline__muted {
-    color: var(--marlo-text-subtle);
-    font: 500 11.5px/1.3 var(--marlo-font-sans);
-    white-space: nowrap;
+  .scheduleCard__bar {
+    position: absolute;
+    top: 10px;
+    z-index: 1;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 11px;
+    border-radius: 12px;
+    cursor: default;
+    overflow: hidden;
   }
 
-  /* ---- Closed lanes ---- */
-  .reportTimeline__closed {
-    max-height: 126px;
-    margin-top: 4px;
-    border-top: 1px solid var(--marlo-border);
+  .scheduleCard__bar > span {
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* A bar starting before the rendered range is cut square rather than drawn
+     at a start date it does not have. */
+  .scheduleCard__bar--clipStart {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .scheduleCard__bar--clipEnd {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .scheduleCard__bar--inProgress {
+    background: var(--marlo-info-solid);
+    color: #fff;
+  }
+
+  .scheduleCard__bar--notStarted {
+    background: var(--marlo-warning);
+    color: var(--marlo-warning-ink);
+  }
+
+  .scheduleCard__bar--completed {
+    background: var(--marlo-success-solid);
+    color: #fff;
+  }
+
+  .scheduleCard__bar--upcoming {
+    background: var(--marlo-surface);
+    border: 1px dashed var(--marlo-outline-dashed);
+    color: var(--marlo-text-muted);
+  }
+
+  /* ---- Activity lanes ---- */
+  .scheduleCard__row--lane {
+    height: 36px;
+  }
+
+  .scheduleCard__row--lane + .scheduleCard__row--lane {
+    border-top: 1px solid var(--marlo-border-faint);
+  }
+
+  .scheduleCard__laneName {
+    color: var(--marlo-text);
+    font: 500 13.5px/1.25 var(--marlo-font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scheduleCard__laneCount {
+    margin-left: auto;
+    flex: none;
+    min-width: 22px;
+    padding: 1px 6px;
+    border-radius: var(--marlo-radius-pill);
+    background: var(--marlo-surface-sunken);
+    color: var(--marlo-text-muted);
+    font: 600 12px/1.4 var(--marlo-font-sans);
+    text-align: center;
+  }
+
+  /* Soft tint plus matching border and ink, never a saturated fill: a long
+     title has to stay readable inside the pill. */
+  .scheduleCard__pill {
+    position: absolute;
+    top: 5px;
+    z-index: 1;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px;
+    border: 1px solid transparent;
+    border-radius: var(--marlo-radius-md);
+    cursor: default;
+    overflow: hidden;
+  }
+
+  .scheduleCard__pill > span {
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scheduleCard__pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .scheduleCard__pill--completed {
+    background: var(--marlo-success-bg);
+    border-color: var(--marlo-success-border);
+    color: var(--marlo-success-text);
+  }
+
+  .scheduleCard__pill--completed::before { background: var(--marlo-success); }
+
+  .scheduleCard__pill--inProgress {
+    background: var(--marlo-info-bg);
+    border-color: var(--marlo-info-border);
+    color: var(--marlo-info-text);
+  }
+
+  .scheduleCard__pill--inProgress::before { background: var(--marlo-info); }
+
+  .scheduleCard__pill--notStarted {
+    background: var(--marlo-warning-bg);
+    border-color: var(--marlo-warning-border);
+    color: var(--marlo-warning-text);
+  }
+
+  .scheduleCard__pill--notStarted::before { background: var(--marlo-warning); }
+
+  /* Single-day activity: a white capsule wide enough to read, not a
+     zero-width sliver. */
+  .scheduleCard__pill--milestone {
+    background: var(--marlo-surface);
+    border-style: dashed;
+    border-color: var(--marlo-outline-dashed);
+    color: var(--marlo-ink);
+  }
+
+  .scheduleCard__pill--clipStart {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .scheduleCard__pill--clipEnd {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  /* ---- Overflow strip ---- */
+  /* Chips get their own lane. A chip is positioned by the start date of the
+     activity it stands for, which is by definition inside the span of the pill
+     that displaced it — drawn in a packed lane it would always cover one. */
+  .scheduleCard__row--overflow {
+    height: 32px;
+    border-top: 1px solid var(--marlo-border-soft);
+    background: var(--marlo-surface-alt);
+  }
+
+  .scheduleCard__row--overflow .scheduleCard__cell--label {
+    background: var(--marlo-surface-alt);
+  }
+
+  .scheduleCard__chip {
+    position: absolute;
+    top: 4px;
+    z-index: 1;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px dashed var(--marlo-border-strong);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-surface);
+    color: var(--marlo-text);
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .scheduleCard__chip:hover,
+  .scheduleCard__chip[aria-expanded="true"] {
+    border-color: var(--marlo-brand);
+    border-style: solid;
+    color: var(--marlo-brand);
+  }
+
+  .scheduleCard__popover {
+    position: absolute;
+    z-index: 20;
+    width: 300px;
+    max-height: 210px;
     overflow-y: auto;
+    padding: 12px 14px;
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-md);
+    background: var(--marlo-surface);
+    box-shadow: var(--marlo-shadow-popover);
     scrollbar-width: thin;
   }
 
-  .reportTimeline__closed[hidden] {
+  .scheduleCard__popover[hidden] {
     display: none;
   }
 
-  .reportTimeline__hatch {
-    position: absolute;
-    left: 0;
-    top: 15px;
-    width: 100%;
-    height: 12px;
-    border-radius: 6px;
-    background: repeating-linear-gradient(90deg, #E5E9EF 0 6px, #F1F3F6 6px 12px);
+  .scheduleCard__popoverTitle {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--marlo-text-muted);
+    font: 700 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .reportTimeline__view {
+  .scheduleCard__popoverList {
+    margin: 0;
     padding: 0;
-    border: 0;
-    background: none;
-    color: var(--marlo-brand);
-    font: 600 12px/1.3 var(--marlo-font-sans);
-    cursor: pointer;
+    list-style: none;
   }
 
-  .reportTimeline__view:hover {
-    text-decoration: underline;
-  }
-
-  /* ---- Footer toggle ---- */
-  .reportTimeline__foot {
+  .scheduleCard__popoverList li {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--marlo-border-soft);
-  }
-
-  .reportTimeline__toggle {
-    display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 7px;
-    height: 30px;
-    padding: 0 12px;
-    border: 1px solid var(--marlo-border-strong);
-    border-radius: 7px;
-    background: var(--marlo-surface);
-    color: var(--marlo-text);
-    font: 600 12.5px/1 var(--marlo-font-sans);
-    cursor: pointer;
+    padding: 5px 0;
+    color: var(--marlo-ink);
+    font: 500 12.5px/1.4 var(--marlo-font-sans);
   }
 
-  .reportTimeline__toggle:hover {
-    border-color: var(--marlo-brand);
-    color: var(--marlo-brand);
+  .scheduleCard__popoverList li + li {
+    border-top: 1px solid var(--marlo-border-faint);
   }
 
-  .reportTimeline__toggle svg {
-    transition: transform 0.15s ease;
+  .scheduleCard__popoverDot {
+    margin-top: 5px;
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
   }
 
-  .reportTimeline__toggle[aria-expanded="true"] svg {
-    transform: rotate(180deg);
+  .scheduleCard__popoverDot--completed { background: var(--marlo-success); }
+  .scheduleCard__popoverDot--inProgress { background: var(--marlo-info); }
+  .scheduleCard__popoverDot--notStarted { background: var(--marlo-warning); }
+
+  .scheduleCard__popoverDates {
+    display: block;
+    color: var(--marlo-text-muted);
+    font: 400 12px/1.35 var(--marlo-font-sans);
   }
 
-  /* ---- Empty state: no open or upcoming phase ---- */
-  .reportTimeline__empty {
+  /* ---- Footer ---- */
+  .scheduleCard__foot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+    color: var(--marlo-text-muted);
+    font: 400 12px/1.4 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__foot > span:last-child {
+    text-align: right;
+  }
+
+  /* ---- Empty lane region: no activities configured ---- */
+  .scheduleCard__laneEmpty {
+    padding: 14px 16px;
+    color: var(--marlo-text-muted);
+    font: 400 13px/1.4 var(--marlo-font-sans);
+  }
+
+  /* ---- Zero open phases ---- */
+  /* A real state between reporting cycles, so it keeps the card shell and
+     reads as a designed panel rather than a failure. */
+  .scheduleCard__empty {
     display: flex;
     align-items: stretch;
     gap: 18px;
   }
 
-  .reportTimeline__emptyMain {
+  .scheduleCard__emptyMain {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -669,24 +1047,105 @@ div#impactGraphic-fullscreen {
     background: #FAFCFD;
   }
 
-  .reportTimeline__emptyTitle {
+  .scheduleCard__emptyTitle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     color: var(--marlo-success-text);
     font: 600 12px/1 var(--marlo-font-sans);
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
-  .reportTimeline__emptyMain p {
+  .scheduleCard__emptyMain p {
     margin: 0;
     max-width: 620px;
     color: var(--marlo-ink);
     font: 400 14px/1.55 var(--marlo-font-sans);
   }
 
-  @media (max-width: 1100px){
-    .reportTimeline__labelCol { width: 140px; }
-    .reportTimeline__statusCol { width: 150px; }
-    .reportTimeline__grid { left: 140px; right: 150px; }
+  .scheduleCard__emptyBrowse {
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--marlo-brand);
+    font: 600 13px/1.3 var(--marlo-font-sans);
+    cursor: pointer;
+  }
+
+  .scheduleCard__emptyBrowse:hover {
+    text-decoration: underline;
+  }
+
+  .scheduleCard__emptyNext {
+    width: 340px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: var(--marlo-radius-lg);
+    background: var(--marlo-brand-tint);
+  }
+
+  .scheduleCard__emptyEyebrow {
+    color: var(--marlo-info-text);
+    font: 700 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .scheduleCard__emptyPhase {
+    color: var(--marlo-ink);
+    font: 600 20px/1.25 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__emptyDates {
+    color: var(--marlo-text);
+    font: 400 13px/1.4 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__emptyChip {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 3px 9px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: var(--marlo-radius-pill);
+    background: var(--marlo-surface);
+    color: var(--marlo-info-text);
+    font: 600 12px/1.3 var(--marlo-font-sans);
+  }
+
+  @media (max-width: 860px) {
+    .scheduleCard__empty {
+      display: block;
+    }
+
+    .scheduleCard__emptyNext {
+      width: auto;
+      margin-top: 12px;
+    }
+  }
+
+  /* There is no print stylesheet in the app, and a scrolling track would print
+     clipped at whatever the scroll position happened to be. Unclamp it and drop
+     the controls so the whole span reaches paper. */
+  @media print {
+    .scheduleCard__controls {
+      display: none;
+    }
+
+    .scheduleCard__frame::before,
+    .scheduleCard__frame::after {
+      display: none;
+    }
+
+    .scheduleCard__scroll {
+      max-height: none;
+      overflow: visible;
+    }
   }
 
   /*************** Category browser + results ********************/

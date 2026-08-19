@@ -2,7 +2,6 @@ $(document).ready(initDashboard);
 
 function initDashboard() {
   initClusterBanner();
-  initReportTimeline();
   initBrowseByCategory();
 
   $('#newProject').on('click', function (e) {
@@ -60,37 +59,6 @@ function initClusterBanner() {
       // Nothing to do; the toggle still works for this page view.
     }
   });
-}
-
-/**
- * Reporting timeline: reveal the closed phase lanes, and let a closed lane be
- * loaded through the same phase-switch contract the selector uses.
- */
-function initReportTimeline() {
-  var toggle = document.getElementById('reportTimelineToggle');
-  var closed = document.getElementById('reportTimelineClosed');
-
-  if (toggle && closed) {
-    var label = toggle.querySelector('span');
-    toggle.addEventListener('click', function () {
-      var open = toggle.getAttribute('aria-expanded') !== 'true';
-      toggle.setAttribute('aria-expanded', String(open));
-      closed.hidden = !open;
-      label.textContent = open
-        ? toggle.getAttribute('data-label-hide')
-        : toggle.getAttribute('data-label-show');
-    });
-  }
-
-  var timeline = document.querySelector('.reportTimeline');
-  if (timeline) {
-    timeline.addEventListener('click', function (event) {
-      var view = event.target.closest('.reportTimeline__view');
-      if (view && typeof setPhaseID === 'function') {
-        setPhaseID(view.getAttribute('data-phase-id'));
-      }
-    });
-  }
 }
 
 /**
