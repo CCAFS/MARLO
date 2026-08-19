@@ -556,8 +556,8 @@ public class ProjectActivitiesAction extends BaseAction {
   }
 
   /**
-   * Manual binding de actividades desde request parameters.
-   * Struts2 tiene problemas para auto-poblar listas complejas, especialmente cuando hay índices no consecutivos.
+   * Manual binding of activities from request parameters.
+   * Struts2 has issues auto-populating complex lists, especially when indexes are non-consecutive.
    */
   private void bindActivitiesFromRequest() {
     try {
@@ -577,12 +577,9 @@ public class ProjectActivitiesAction extends BaseAction {
       activityIndexes.addAll(uniqueIndexes);
 
       if (activityIndexes.isEmpty()) {
-        logger.debug("bindActivitiesFromRequest: No submitted activity indexes found; clearing bound list");
         project.setProjectActivities(new ArrayList<Activity>());
         return;
       }
-
-      logger.debug("bindActivitiesFromRequest: Starting manual binding for indexes {}", activityIndexes);
 
       for (Integer index : activityIndexes) {
         String titleParam = this.getRequest().getParameter("project.projectActivities[" + index + "].activityTitle.id");
@@ -597,16 +594,15 @@ public class ProjectActivitiesAction extends BaseAction {
             || StringUtils.isNotBlank(this.getRequest().getParameter("project.projectActivities[" + index + "].endDate"))
             || StringUtils.isNotBlank(this.getRequest().getParameter("project.projectActivities[" + index + "].activityStatus"));
           if (!hasOtherData) {
-            logger.debug("bindActivitiesFromRequest: Skipping activity index {} because it has no form data", index);
             continue;
           }
           titleParam = "New Activity";
         }
 
         Activity activity = new Activity();
-        activity.setId(-1L); // Nueva actividad por defecto
+        activity.setId(-1L); // Default new activity
 
-        // ID de la actividad (puede ser -1 para nuevas)
+        // Activity ID (can be -1 for new records)
         String idParam = this.getRequest().getParameter("project.projectActivities[" + index + "].id");
         if (idParam != null && !idParam.trim().isEmpty()) {
           try {
@@ -688,18 +684,15 @@ public class ProjectActivitiesAction extends BaseAction {
           }
         }
 
-        // Binding de deliverables para esta actividad
+        // Bind deliverables for this activity
         List<DeliverableActivity> deliverables = bindDeliverablesForActivity(index);
         if (deliverables != null && !deliverables.isEmpty()) {
           activity.setDeliverables(deliverables);
-          logger.debug("bindActivitiesFromRequest: Bound {} deliverables to activity at index {}", deliverables.size(), index);
         }
 
         activities.add(activity);
-        logger.debug("bindActivitiesFromRequest: Bound activity at index {} with title {}", index, titleParam);
       }
 
-      logger.debug("bindActivitiesFromRequest: Successfully bound {} activities", activities.size());
       project.setProjectActivities(activities);
 
     } catch (Exception e) {
@@ -708,7 +701,7 @@ public class ProjectActivitiesAction extends BaseAction {
   }
 
   /**
-   * Binding de deliverables para una actividad específica
+   * Bind deliverables for a specific activity.
    */
   private List<DeliverableActivity> bindDeliverablesForActivity(int activityIndex) {
     List<DeliverableActivity> deliverables = new ArrayList<>();
@@ -756,9 +749,6 @@ public class ProjectActivitiesAction extends BaseAction {
       // Manual binding de actividades desde request parameters
       this.bindActivitiesFromRequest();
 
-      logger.debug("SAVE: project.getProjectActivities() size = {}",
-        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
-
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
       // improve performance
       List<Activity> existingActivities = new ArrayList<>();
@@ -774,9 +764,6 @@ public class ProjectActivitiesAction extends BaseAction {
       if (existingActivities != null && !existingActivities.isEmpty()) {
         this.deleteActivities(existingActivities);
       }
-
-      logger.debug("SAVE after delete: project.getProjectActivities() size = {}",
-        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
 
       if (project.getProjectActivities() == null || project.getProjectActivities().isEmpty()) {
         logger.info("SAVE: no activities submitted for project {} - skipping persistence of new activity rows",
@@ -834,24 +821,19 @@ public class ProjectActivitiesAction extends BaseAction {
 
   public void saveActivitiesNewData() {
     if (project.getProjectActivities() == null) {
-      logger.warn("saveActivitiesNewData: project.getProjectActivities() is NULL");
       return;
     }
     if (project.getProjectActivities().isEmpty()) {
-      logger.info("saveActivitiesNewData: no activities to save for project {}", projectID);
       return;
     }
     if (project.getActivities() == null) {
       project.setActivities(new HashSet<Activity>());
     }
-    logger.debug("saveActivitiesNewData: Found {} activities to save", project.getProjectActivities().size());
 
     for (Activity activityUI : project.getProjectActivities()) {
       if (activityUI == null) {
-        logger.warn("saveActivitiesNewData: Found null activity in list, skipping");
         continue;
       }
-      logger.debug("saveActivitiesNewData: Processing activity ID={}, title={}", activityUI.getId(), activityUI.getTitle());
 
       boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
       Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
@@ -885,8 +867,6 @@ public class ProjectActivitiesAction extends BaseAction {
       // Deliverables - guardar tanto para actividades nuevas como existentes
       if (activityUI.getDeliverables() != null && !activityUI.getDeliverables().isEmpty()) {
         activityEntity.setDeliverables(activityUI.getDeliverables());
-        logger.debug("saveActivitiesNewData: Activity {} has {} deliverables to save",
-          activityUI.getId(), activityUI.getDeliverables().size());
       }
 
       Activity saved = activityManager.saveActivity(activityEntity);
