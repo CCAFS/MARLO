@@ -806,6 +806,25 @@ header {
   box-shadow: none;
 }
 
+/************* 3c. DEBUG PANEL (local only) ***************/
+/* footer.ftl renders #debugPanel only when config.debug is on outside
+   production. global.css and center/global-center.css position it absolute
+   with no z-index, which happened to paint above the main menu only because
+   the bar was an unpositioned block — a positioned element paints above
+   in-flow boxes. Now that #mainMenu is sticky with z-index 1001 the bar
+   covers the panel and hides its "Form outputs" section, so the panel is
+   lifted just above the bar (and stays below modals at 1040/1050).
+
+   `fixed` replaces `absolute`: the panel was anchored to the document, not
+   the viewport, so it scrolled away with the page — useless for a debug
+   overlay. jQuery UI keeps it draggable either way (utils.js). Overriding
+   here rather than in global.css is deliberate: global-center.css redeclares
+   #debugPanel and loads after it, so only this layer reaches both. */
+#debugPanel {
+  position: fixed;
+  z-index: 1002;
+}
+
 /************* 4. PHASE SELECTOR ***************/
 .timeline-phases {
   margin-bottom: 0;
