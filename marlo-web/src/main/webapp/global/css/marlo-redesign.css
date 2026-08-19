@@ -496,7 +496,20 @@ header {
 }
 
 /************* 3. MAIN MENU ***************/
+/* The bar is pinned here, in CSS. global.js used to measure a scroll threshold
+   once on ready() and toggle .positionFixedTop to make .menuContent `fixed`;
+   that threshold went stale whenever the header above it reflowed, and the
+   bar detached 20px late because of a hardcoded offset.
+
+   `sticky` goes on the <nav>, not on .menuContent: a sticky child inside a
+   50px-tall parent has nowhere to travel. It also makes #mainMenu a positioned
+   element, which activates the `z-index: 5000` global.css declares here and
+   would lift the bar above modals (1050) and the pace bar (2000) — so the
+   z-index is pinned back to the 1001 the fixed bar used. */
 #mainMenu {
+  position: sticky;
+  top: 0;
+  z-index: 1001;
   height: 50px;
 }
 
@@ -601,14 +614,18 @@ header {
   border-top: 0;
 }
 
-/* Stuck state: same 50px bar, only an added shadow. It used to shrink to 36px
-   and re-scale its contents, which no longer matches the design. */
-#mainMenu .menuContent.positionFixedTop {
-  height: 50px;
-  font-size: 1em;
+/* Stuck state: same 50px bar, only an added shadow. `sticky` has no selector
+   for "currently pinned", so global.js still toggles one class — but only for
+   this shadow, off `scrollTop > 0`, with no threshold to measure. */
+#mainMenu.is-stuck .menuContent {
   box-shadow: 0 2px 8px rgba(31, 42, 55, 0.18);
 }
 
+/* Everything below keyed on .positionFixedTop is inert: global.js no longer
+   applies that class, and each of these rules duplicated the base state
+   anyway (the redesign made pinned and unpinned identical). Left in place so
+   this change stays reviewable; a follow-up commit removes them here and the
+   legacy 36px-shrink rules in global.css and center/global-center.css. */
 #mainMenu .menuContent.positionFixedTop ul li {
   padding: 0;
 }
