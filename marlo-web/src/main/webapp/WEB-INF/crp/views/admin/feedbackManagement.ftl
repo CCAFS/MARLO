@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js"
  ] /]
-[#-- assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /--]
+[#-- assign customCSS = [ "${baseUrlMedia}/css/admin/crpUsers.css" ] /--]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackManagement" /]
 
