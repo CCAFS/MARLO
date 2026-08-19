@@ -78,12 +78,8 @@ select.input-sm {
 
 .container:not(.loginPage) {
 	position: relative;
-}
-
-@media only screen and (max-width: 1300px) {
-	.container:not(.loginPage) {
-		width: 95% !important;
-	}
+	width: 95% !important;
+	max-width: 1600px;
 }
 
 a:hover {
@@ -2309,7 +2305,6 @@ a#userLogOut:hover {
 	letter-spacing: 0.02em;
 	line-height: 1.3;
 	border: 0;
-	border-bottom: 2px solid rgba(15, 45, 55, 0.22);
 	border-radius: 999px;
 	background: #ffffff;
 	color: #275f70;
@@ -2333,7 +2328,6 @@ a#userLogOut:hover {
 #userInfo-drop #userLogOut:focus {
 	background: #eaf4f7;
 	color: #1c4a58;
-	border-bottom-color: rgba(15, 45, 55, 0.32);
 	box-shadow: 0 2px 6px rgba(15, 45, 55, 0.26);
 	outline: none;
 }
