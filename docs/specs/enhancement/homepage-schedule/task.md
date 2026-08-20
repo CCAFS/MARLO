@@ -150,7 +150,8 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Plain wheel | not `preventDefault`ed; page scrolling preserved |
 | Jump to today | restores the centre offset exactly |
 | Zoom keeps position (buttons) | centre day held across 4 → 2 → 16 → 4 → 8, no clamping |
-| DOM well-formedness (all 6 render scenarios) | balanced and correctly nested per `balance.py`; `.scheduleCard` and `.dashboardBrowse` are siblings |
+| Subtitle after dropping the phase clause | `Today, 20 August 2026 · 2 timeline activities`; unchanged when no phase is open, since activities do not depend on phases |
+| DOM well-formedness (all 7 render scenarios) | balanced and correctly nested per `balance.py`; `.scheduleCard` and `.dashboardBrowse` are siblings |
 | Legend after removing `Upcoming` | 4 swatches: Not started, In progress, Completed, Today; zero `upcoming` classes left in the rendered card |
 | Future phase bar | `--notStarted`, amber `rgb(245,166,35)` on ink `rgb(74,48,0)`, 6.05:1 — matches its legend swatch |
 | Stuck jQuery UI tooltip (QA report) | reproduced with native `clear()` — orphaned `.ui-tooltip` in `<body>` after the hovered pill was destroyed; 0 stuck after the fix, across `Cmd`+wheel, `Ctrl`+wheel and both zoom buttons, with every trial confirmed to have actually re-rendered |
@@ -190,7 +191,7 @@ scripted to perform were then run by hand instead, and all passed:
 
 - The bundle loads through `java.util.Properties`: 5897 keys, 44 under `dashboard.schedule.*`, and the
   `\u2013` / `\u2318` / `\u00b7` escapes decode to `–`, `⌘` and `·`.
-- 38 keys defined, 38 referenced — no unused key and no undefined reference. (`legend.upcoming`
+- 35 keys defined, 35 referenced — no unused key and no undefined reference. (`legend.upcoming`
   retired with the category; 6 render scenarios show zero `MISSING_KEY`.)
 - Placeholder arity matches the `[@s.param]` count at every call site.
 - Repo-wide grep for `reportTimeline`, `reportingTimeline` and `initReportTimeline`: no survivors.

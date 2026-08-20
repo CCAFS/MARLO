@@ -127,17 +127,13 @@
     [#return "closed"]
   [/#function]
 
-  [#-- Only a phase with both dates can be plotted. --]
-  [#assign scOpenCount = 0 /]
+  [#-- The card plots activities only, so the sole thing still needed from
+       `phases` is the soonest one yet to open: the fallback for the
+       "what's next" panel. A phase needs both dates to be datable at all. --]
   [#assign scNotStarted = [] /]
   [#list (phases)![] as phase]
-    [#if (phase.startDate)?? && (phase.endDate)??]
-      [#assign scStatus = scPhaseStatus(phase) /]
-      [#if scStatus == "inProgress"]
-        [#assign scOpenCount = scOpenCount + 1 /]
-      [#elseif scStatus == "notStarted"]
-        [#assign scNotStarted = scNotStarted + [phase] /]
-      [/#if]
+    [#if (phase.startDate)?? && (phase.endDate)?? && scPhaseStatus(phase) == "notStarted"]
+      [#assign scNotStarted = scNotStarted + [phase] /]
     [/#if]
   [/#list]
 
@@ -206,9 +202,6 @@
         <h2 class="scheduleCard__title">[@s.text name="dashboard.schedule.title" /]</h2>
         <span class="scheduleCard__subtitle">
           [@s.text name="dashboard.schedule.today"][@s.param]${scToday?string("dd MMMM yyyy")}[/@s.param][/@s.text] &middot;
-          [#if scOpenCount == 0][@s.text name="dashboard.schedule.noPhasesOpen" /]
-          [#elseif scOpenCount == 1][@s.text name="dashboard.schedule.onePhaseOpen" /]
-          [#else][@s.text name="dashboard.schedule.phasesOpen"][@s.param]${scOpenCount?c}[/@s.param][/@s.text][/#if] &middot;
           [#if scItems?size == 0][@s.text name="dashboard.schedule.noActivities" /]
           [#elseif scItems?size == 1][@s.text name="dashboard.schedule.oneActivity" /]
           [#else][@s.text name="dashboard.schedule.activityCount"][@s.param]${scItems?size?c}[/@s.param][/@s.text][/#if]

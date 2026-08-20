@@ -163,7 +163,7 @@ several phases are open at once — which is the normal state, not the exception
 | 5. Schema changes ship as Flyway migrations | Not applicable — no schema change. |
 | 6. GPL header on every new Java file | Not applicable — no new Java file; `DashboardAction.java` already carries it. |
 | 7. Code style, Checkstyle gate | Honored on the rules — Checkstyle 8.18 with `configuration/marlo-checkstyle.xml` reports zero violations on the changed Java file. **The `mvn checkstyle:check` goal is broken repo-wide** (plugin 2.9.1 vs checkstyle 8.18, `NoSuchMethodError`), pre-existing and unrelated to this change — see `task.md` §1. |
-| 8. English only; user-facing strings i18n-keyed | Honored — 38 keys under `dashboard.schedule.*`. |
+| 8. English only; user-facing strings i18n-keyed | Honored — 35 keys under `dashboard.schedule.*`. |
 | 9. Branching | Honored — feature branch `A2-2398-US1-Re-design-MARLO-home-page`; `staging` is the integration branch. |
 | 10. Run scripts / Java 17 | Honored — built and verified with Zulu 17. |
 | 11. Dependency baseline | Honored — no dependency change. |
@@ -203,6 +203,12 @@ several phases are open at once — which is the normal state, not the exception
   `timelineManagement.help` previously promised admins that dates do not determine order; it has been
   reworded. Packing strictly in `order` sequence would strand a late activity in lane 1 above an
   earlier one, which reads as a bug.
+- 2026-08-20 — **The subtitle no longer counts open phases.** — Follow-up to removing the phase
+  lanes: `Today, 20 August 2026 · 2 phases open · 40 timeline activities` announced a figure the card
+  no longer illustrates. It now reads `Today, 20 August 2026 · 40 timeline activities`. Three more i18n
+  keys retired (`noPhasesOpen`, `onePhaseOpen`, `phasesOpen`), leaving 35, and the `scOpenCount`
+  accumulator went with them — the phase loop now exists solely to find the soonest phase yet to open,
+  the fallback for the "what's next" panel.
 - 2026-08-20 — **The reporting-phases section is removed from the timeline.** — Product asked for the
   timeline to carry activities only. Removed: the section header and its badge, the phase lanes and
   bars, the countdown pills that lived in their label column, the `phases` array in the

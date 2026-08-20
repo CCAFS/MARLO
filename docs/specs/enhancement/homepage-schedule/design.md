@@ -34,7 +34,7 @@ schedule.js (ES5 IIFE, DOMContentLoaded)▼
   └─ paints axis ticks, gridlines, today line, bars, pills, chips, counts, footer
 ```
 
-Consequence: all 38 user-facing strings stay in `global.properties`. JavaScript receives only
+Consequence: all 35 user-facing strings stay in `global.properties`. JavaScript receives only
 `{0}`-style templates through `data-*` attributes, the idiom already used at `dashboard.ftl` →
 `dashboard.js`.
 
@@ -53,7 +53,7 @@ Consequence: all 38 user-facing strings stay in `global.properties`. JavaScript 
   injected; `loadScheduleActivities()`; `getScheduleActivities()`.
 - **Modified:** `webapp/crp/js/home/dashboard.js` — `initReportTimeline()` and its call removed.
 - **Modified:** `resources/global.properties` — `dashboard.reportingTimeline.*` (17 keys) replaced by
-  `dashboard.schedule.*` (38 keys); `timelineManagement.help` reworded.
+  `dashboard.schedule.*` (35 keys); `timelineManagement.help` reworded.
 
 ### marlo-data
 
@@ -91,7 +91,7 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 
 ```
 .scheduleCard[data-schedule]
-├─ __head               title, subtitle, 4-item legend
+├─ __head               title, subtitle (date + activity count), 4-item legend
 └─ __layout             flex row; becomes display:block at 1250px and below
    ├─ __main            the whole timeline. No border or padding of its own —
    │  │                 __frame is already a bordered box. Also the positioning
