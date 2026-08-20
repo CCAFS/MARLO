@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -555,124 +556,152 @@ public class ProjectActivitiesAction extends BaseAction {
   }
 
   /**
-   * Manual binding de actividades desde request parameters.
-   * Struts2 tiene problemas para auto-poblar listas complejas, especialmente cuando hay índices no consecutivos.
+   * Manual binding of activities from request parameters.
+   * Struts2 has issues auto-populating complex lists, especially when indexes are non-consecutive.
    */
   private void bindActivitiesFromRequest() {
     try {
       List<Activity> activities = new ArrayList<>();
-      int index = 0;
-      boolean hasMore = true;
-      
-      logger.debug("bindActivitiesFromRequest: Starting manual binding");
-      
-      while (hasMore) {
+      List<Integer> activityIndexes = new ArrayList<>();
+      java.util.Set<Integer> uniqueIndexes = new java.util.TreeSet<>();
+
+      for (String parameterName : this.getRequest().getParameterMap().keySet()) {
+        Matcher matcher = Pattern.compile(
+          "^project\\.projectActivities\\[(\\d+)\\]\\.(?:activityTitle\\.id|title|id|description|activityStatus|startDate|endDate|projectPartnerPerson\\.id)$")
+          .matcher(parameterName);
+        if (matcher.matches()) {
+          uniqueIndexes.add(Integer.parseInt(matcher.group(1)));
+        }
+      }
+
+      activityIndexes.addAll(uniqueIndexes);
+
+      if (activityIndexes.isEmpty()) {
+        project.setProjectActivities(new ArrayList<Activity>());
+        return;
+      }
+
+      for (Integer index : activityIndexes) {
         String titleParam = this.getRequest().getParameter("project.projectActivities[" + index + "].activityTitle.id");
-        
-        if (titleParam != null) {
-          Activity activity = new Activity();
-          activity.setId(-1L); // Nueva actividad por defecto
-          
-          // ID de la actividad (puede ser -1 para nuevas)
-          String idParam = this.getRequest().getParameter("project.projectActivities[" + index + "].id");
-          if (idParam != null && !idParam.trim().isEmpty()) {
-            try {
-              activity.setId(Long.parseLong(idParam));
-            } catch (NumberFormatException e) {
-              logger.warn("Error parsing activity id at index {}: {}", index, e.getMessage());
-            }
+        if (titleParam == null || titleParam.trim().isEmpty()) {
+          titleParam = this.getRequest().getParameter("project.projectActivities[" + index + "].title");
+        }
+
+        if (titleParam == null || titleParam.trim().isEmpty()) {
+          String description = this.getRequest().getParameter("project.projectActivities[" + index + "].description");
+          boolean hasOtherData = StringUtils.isNotBlank(description)
+            || StringUtils.isNotBlank(this.getRequest().getParameter("project.projectActivities[" + index + "].startDate"))
+            || StringUtils.isNotBlank(this.getRequest().getParameter("project.projectActivities[" + index + "].endDate"))
+            || StringUtils.isNotBlank(this.getRequest().getParameter("project.projectActivities[" + index + "].activityStatus"));
+          if (!hasOtherData) {
+            continue;
           }
-          
-          // Activity Title
+          titleParam = "New Activity";
+        }
+
+        Activity activity = new Activity();
+        activity.setId(-1L); // Default new activity
+
+        // Activity ID (can be -1 for new records)
+        String idParam = this.getRequest().getParameter("project.projectActivities[" + index + "].id");
+        if (idParam != null && !idParam.trim().isEmpty()) {
+          try {
+            activity.setId(Long.parseLong(idParam));
+          } catch (NumberFormatException e) {
+            logger.warn("Error parsing activity id at index {}: {}", index, e.getMessage());
+          }
+        }
+
+        // Activity Title
+        if (this.isAiccra()) {
           try {
             long activityTitleId = Long.parseLong(titleParam);
             ActivityTitle activityTitle = activityTitleManager.getActivityTitleById(activityTitleId);
             activity.setActivityTitle(activityTitle);
+            if (activityTitle != null) {
+              activity.setTitle(activityTitle.getTitle());
+            }
           } catch (NumberFormatException e) {
             logger.warn("Error parsing activityTitle.id at index {}: {}", index, e.getMessage());
           }
-          
-          // Description
-          String description = this.getRequest().getParameter("project.projectActivities[" + index + "].description");
-          activity.setDescription(description);
-          
-          // Start Date
-          String startDate = this.getRequest().getParameter("project.projectActivities[" + index + "].startDate");
-          if (startDate != null && !startDate.trim().isEmpty()) {
-            try {
-              // Asumiendo formato yyyy-MM-dd o similar
-              activity.setStartDate(java.sql.Date.valueOf(startDate));
-            } catch (Exception e) {
-              logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
-            }
+        } else {
+          activity.setTitle(titleParam);
+        }
+
+        // Description
+        String description = this.getRequest().getParameter("project.projectActivities[" + index + "].description");
+        activity.setDescription(description);
+
+        // Start Date
+        String startDate = this.getRequest().getParameter("project.projectActivities[" + index + "].startDate");
+        if (startDate != null && !startDate.trim().isEmpty()) {
+          try {
+            // Asumiendo formato yyyy-MM-dd o similar
+            activity.setStartDate(java.sql.Date.valueOf(startDate));
+          } catch (Exception e) {
+            logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
           }
-          
-          // End Date
-          String endDate = this.getRequest().getParameter("project.projectActivities[" + index + "].endDate");
-          if (endDate != null && !endDate.trim().isEmpty()) {
-            try {
-              activity.setEndDate(java.sql.Date.valueOf(endDate));
-            } catch (Exception e) {
-              logger.warn("Error parsing endDate at index {}: {}", index, e.getMessage());
-            }
+        }
+
+        // End Date
+        String endDate = this.getRequest().getParameter("project.projectActivities[" + index + "].endDate");
+        if (endDate != null && !endDate.trim().isEmpty()) {
+          try {
+            activity.setEndDate(java.sql.Date.valueOf(endDate));
+          } catch (Exception e) {
+            logger.warn("Error parsing endDate at index {}: {}", index, e.getMessage());
           }
-          
-          // Activity Progress
-          String progress = this.getRequest().getParameter("project.projectActivities[" + index + "].activityProgress");
-          activity.setActivityProgress(progress);
-          
-          // Activity Status
-          String status = this.getRequest().getParameter("project.projectActivities[" + index + "].activityStatus");
-          if (status != null && !status.trim().isEmpty()) {
-            try {
-              activity.setActivityStatus(Integer.parseInt(status));
-            } catch (NumberFormatException e) {
-              logger.warn("Error parsing activityStatus at index {}: {}", index, e.getMessage());
-              activity.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
-            }
-          } else {
+        }
+
+        // Activity Progress
+        String progress = this.getRequest().getParameter("project.projectActivities[" + index + "].activityProgress");
+        activity.setActivityProgress(progress);
+
+        // Activity Status
+        String status = this.getRequest().getParameter("project.projectActivities[" + index + "].activityStatus");
+        if (status != null && !status.trim().isEmpty()) {
+          try {
+            activity.setActivityStatus(Integer.parseInt(status));
+          } catch (NumberFormatException e) {
+            logger.warn("Error parsing activityStatus at index {}: {}", index, e.getMessage());
             activity.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
           }
-          
-          // Partner Person
-          String partnerPersonId = this.getRequest().getParameter("project.projectActivities[" + index + "].projectPartnerPerson.id");
-          if (partnerPersonId != null && !partnerPersonId.trim().isEmpty()) {
-            try {
-              long ppId = Long.parseLong(partnerPersonId);
-              if (ppId > 0) {
-                ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(ppId);
-                activity.setProjectPartnerPerson(partnerPerson);
-              }
-            } catch (NumberFormatException e) {
-              logger.warn("Error parsing projectPartnerPerson.id at index {}: {}", index, e.getMessage());
-            }
-          }
-          
-          // Binding de deliverables para esta actividad
-          List<DeliverableActivity> deliverables = bindDeliverablesForActivity(index);
-          if (deliverables != null && !deliverables.isEmpty()) {
-            activity.setDeliverables(deliverables);
-            logger.debug("bindActivitiesFromRequest: Bound {} deliverables to activity at index {}", deliverables.size(), index);
-          }
-          
-          activities.add(activity);
-          logger.debug("bindActivitiesFromRequest: Bound activity at index {} with title ID: {}", index, titleParam);
-          index++;
         } else {
-          hasMore = false;
+          activity.setActivityStatus(Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId()));
         }
+
+        // Partner Person
+        String partnerPersonId = this.getRequest().getParameter("project.projectActivities[" + index + "].projectPartnerPerson.id");
+        if (partnerPersonId != null && !partnerPersonId.trim().isEmpty()) {
+          try {
+            long ppId = Long.parseLong(partnerPersonId);
+            if (ppId > 0) {
+              ProjectPartnerPerson partnerPerson = projectPartnerPersonManager.getProjectPartnerPersonById(ppId);
+              activity.setProjectPartnerPerson(partnerPerson);
+            }
+          } catch (NumberFormatException e) {
+            logger.warn("Error parsing projectPartnerPerson.id at index {}: {}", index, e.getMessage());
+          }
+        }
+
+        // Bind deliverables for this activity
+        List<DeliverableActivity> deliverables = bindDeliverablesForActivity(index);
+        if (deliverables != null && !deliverables.isEmpty()) {
+          activity.setDeliverables(deliverables);
+        }
+
+        activities.add(activity);
       }
-      
-      logger.debug("bindActivitiesFromRequest: Successfully bound {} activities", activities.size());
+
       project.setProjectActivities(activities);
-      
+
     } catch (Exception e) {
       logger.error("Error in bindActivitiesFromRequest", e);
     }
   }
 
   /**
-   * Binding de deliverables para una actividad específica
+   * Bind deliverables for a specific activity.
    */
   private List<DeliverableActivity> bindDeliverablesForActivity(int activityIndex) {
     List<DeliverableActivity> deliverables = new ArrayList<>();
@@ -720,9 +749,6 @@ public class ProjectActivitiesAction extends BaseAction {
       // Manual binding de actividades desde request parameters
       this.bindActivitiesFromRequest();
 
-      logger.debug("SAVE: project.getProjectActivities() size = {}",
-        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
-
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
       // improve performance
       List<Activity> existingActivities = new ArrayList<>();
@@ -733,18 +759,21 @@ public class ProjectActivitiesAction extends BaseAction {
         logger.warn("Unable to get activities from the database in save()", e);
       }
 
-      // Sync deletions with UI: remove DB rows not present in the submitted list (same snapshot as the old dual-query path when both calls succeeded).
+      // Sync deletions with UI: remove DB rows not present in the submitted list. When the list is empty,
+      // the intent is to clear all activities for the phase instead of persisting a phantom empty item set.
       if (existingActivities != null && !existingActivities.isEmpty()) {
         this.deleteActivities(existingActivities);
       }
 
-      logger.debug("SAVE after delete: project.getProjectActivities() size = {}",
-        project.getProjectActivities() != null ? project.getProjectActivities().size() : "NULL");
-
-      try {
-        this.saveActivitiesNewData();
-      } catch (Exception e) {
-        logger.error("Error saving activities", e);
+      if (project.getProjectActivities() == null || project.getProjectActivities().isEmpty()) {
+        logger.info("SAVE: no activities submitted for project {} - skipping persistence of new activity rows",
+          projectID);
+      } else {
+        try {
+          this.saveActivitiesNewData();
+        } catch (Exception e) {
+          logger.error("Error saving activities", e);
+        }
       }
 
 
@@ -791,19 +820,20 @@ public class ProjectActivitiesAction extends BaseAction {
 
 
   public void saveActivitiesNewData() {
-    // Log para diagnóstico - verificar si hay actividades para guardar
     if (project.getProjectActivities() == null) {
-      logger.warn("saveActivitiesNewData: project.getProjectActivities() is NULL");
       return;
     }
-    logger.debug("saveActivitiesNewData: Found {} activities to save", project.getProjectActivities().size());
+    if (project.getProjectActivities().isEmpty()) {
+      return;
+    }
+    if (project.getActivities() == null) {
+      project.setActivities(new HashSet<Activity>());
+    }
 
     for (Activity activityUI : project.getProjectActivities()) {
       if (activityUI == null) {
-        logger.warn("saveActivitiesNewData: Found null activity in list, skipping");
         continue;
       }
-      logger.debug("saveActivitiesNewData: Processing activity ID={}, title={}", activityUI.getId(), activityUI.getTitle());
 
       boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
       Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
@@ -814,6 +844,10 @@ public class ProjectActivitiesAction extends BaseAction {
       activityEntity.setActivityTitle(activityUI.getActivityTitle());
       if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getTitle() != null) {
         activityEntity.setTitle(activityUI.getActivityTitle().getTitle());
+      } else if (StringUtils.isNotBlank(activityUI.getTitle())) {
+        activityEntity.setTitle(activityUI.getTitle());
+      } else {
+        activityEntity.setTitle("New Activity");
       }
       activityEntity.setDescription(activityUI.getDescription());
       activityEntity.setStartDate(activityUI.getStartDate());
@@ -833,11 +867,13 @@ public class ProjectActivitiesAction extends BaseAction {
       // Deliverables - guardar tanto para actividades nuevas como existentes
       if (activityUI.getDeliverables() != null && !activityUI.getDeliverables().isEmpty()) {
         activityEntity.setDeliverables(activityUI.getDeliverables());
-        logger.debug("saveActivitiesNewData: Activity {} has {} deliverables to save",
-          activityUI.getId(), activityUI.getDeliverables().size());
       }
 
       Activity saved = activityManager.saveActivity(activityEntity);
+      if (saved != null && saved.getId() != null) {
+        activityEntity.setId(saved.getId());
+        activityUI.setId(saved.getId());
+      }
       project.getActivities().add(saved);
     }
 

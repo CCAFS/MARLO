@@ -165,8 +165,9 @@ function attachAcronymValidation() {
 
 function validateAcronymField($input, showMessage) {
   const rawValue = ($input.val() || "").toString();
-  const sanitizedValue = rawValue.replace(/\s+/g, "");
+  const sanitizedValue = rawValue.replace(/[\s-]+/g, "");
   const hadWhitespace = /\s/.test(rawValue);
+  const hadDash = /-/.test(rawValue);
 
   if (rawValue !== sanitizedValue) {
     $input.val(sanitizedValue);
@@ -179,9 +180,9 @@ function validateAcronymField($input, showMessage) {
 
   setRequiredFieldState($input, hasValue);
 
-  if (showMessage && hadWhitespace) {
+  if (showMessage && (hadWhitespace || hadDash)) {
     showTemporaryAcronymMessage($message, guMsg("msg-gu-acronymWhitespace"));
-  } else if (!hadWhitespace) {
+  } else if (!hadWhitespace && !hadDash) {
     $message.text("").hide();
   }
 

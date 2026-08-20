@@ -202,12 +202,12 @@ or for hide-on-true behavior:
 ## Domain Notes
 - MARLO content and workflows reference CGIAR Research Programs (CRPs) across multiple resources and actions.
 
-## Run Scripts by Branch Java Version (Local Development)
-Scripts in `scripts/` run MARLO locally (build, update properties, start server). Choose by Java version:
-- If the branch name contains `java17` or `java_17`, use the Java 17 run script in `scripts/`:
+## Run Scripts by Current Java Version (Local Development)
+Scripts in `scripts/` run MARLO locally (build, update properties, start server). The current active Java version for this repository is Java 17.
+- Use the Java 17 run script in `scripts/`:
   - macOS/Linux: `scripts/run-marlo-java17.sh`
   - Windows: `scripts/run-marlo-java17.bat` (if provided; otherwise use `.sh` in Git Bash)
-- Otherwise, use the Java 8 run script in `scripts/`:
+- Use the Java 8 script only for legacy Java 8 branches or profiles that explicitly require it.
   - macOS/Linux: `scripts/run-marlo-java8.sh`
   - Windows: `scripts/run-marlo-java8.bat` (if provided; otherwise use `.sh` in Git Bash)
 

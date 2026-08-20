@@ -196,7 +196,7 @@
       
       [#if !action.isAiccra()]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.activityTitle.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=false /]
+        [@customForm.input name="${customName}.title" value="${(element.activityTitle.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=editable /]
       </div>
       [/#if]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
