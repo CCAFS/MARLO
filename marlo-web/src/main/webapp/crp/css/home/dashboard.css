@@ -47,7 +47,6 @@
 }
 
 
-
 #projects_wrapper {
     margin-bottom: 0;
 }
@@ -315,20 +314,20 @@ div#impactGraphic-fullscreen {
      Geometry is set by schedule.js, which is the only thing that knows
      pixels-per-day: it measures the track and multiplies by the zoom stop.
      This stylesheet owns the chrome and the two structural numbers the script
-     reads back out of it, --sched-label and --sched-axis.
+     reads back out of it, --sched-label and --sched-axis. --sched-label is 0
+     since the label column was removed; the variable stays because schedule.js
+     subtracts it to get the track width, and a future inset would only need to
+     change this one value.
 
      Stacking inside .scheduleCard__canvas, which is the only stacking context:
-       0  gridlines            (explicit z-index: 0, first in tree order)
-       -  section-header tints (positioned, z-index auto, later in tree order)
-       1  bars and pills
+       0  gridlines   (explicit z-index: 0, first in tree order)
+       1  pills
        2  today line
-       3  sticky label column
-       4  sticky axis row, 5 its own label cell
-     No row may carry a z-index of its own or the label column falls behind the
-     today line. */
+       4  sticky axis row
+     No row may carry a z-index of its own or the axis row stops winning. */
 
   .scheduleCard {
-    --sched-label: 276px;
+    --sched-label: 0px;
     --sched-axis: 32px;
     position: relative;
     display: block;
@@ -570,17 +569,6 @@ div#impactGraphic-fullscreen {
     min-width: 0;
   }
 
-  .scheduleCard__cell--label {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    width: var(--sched-label);
-    flex: none;
-    gap: 8px;
-    padding: 0 12px;
-    background: var(--marlo-surface);
-    border-right: 1px solid var(--marlo-border);
-  }
 
   /* flex-basis must stay auto: schedule.js sets an explicit width here and a
      basis of 0 (which plain `flex: 1` implies) would make the browser ignore
@@ -600,9 +588,6 @@ div#impactGraphic-fullscreen {
     border-bottom: 1px solid var(--marlo-border);
   }
 
-  .scheduleCard__row--axis .scheduleCard__cell--label {
-    z-index: 5;
-  }
 
   .scheduleCard__tick {
     position: absolute;
@@ -632,61 +617,6 @@ div#impactGraphic-fullscreen {
     white-space: nowrap;
   }
 
-  /* ---- Section headers ---- */
-  .scheduleCard__row--section {
-    min-height: 28px;
-    background: var(--marlo-surface-sunken);
-    border-bottom: 1px solid var(--marlo-border-soft);
-  }
-
-  .scheduleCard__row--section .scheduleCard__cell--label,
-  .scheduleCard__row--section .scheduleCard__cell--track {
-    background: var(--marlo-surface-sunken);
-  }
-
-  .scheduleCard__eyebrow {
-    color: var(--marlo-text-muted);
-    font: 700 12px/1 var(--marlo-font-sans);
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .scheduleCard__badge {
-    margin-left: auto;
-    flex: none;
-    padding: 2px 7px;
-    border: 1px solid var(--marlo-neutral-border);
-    border-radius: var(--marlo-radius-pill);
-    background: var(--marlo-surface);
-    color: var(--marlo-text);
-    font: 600 12px/1.2 var(--marlo-font-sans);
-    white-space: nowrap;
-  }
-
-  /* ---- Phase lanes ---- */
-
-
-
-
-
-
-
-  /* Countdown lives in the label column, not at the bar's right edge, so it
-     stays readable no matter how far the track is scrolled. */
-
-
-
-
-  /* A bar starting before the rendered range is cut square rather than drawn
-     at a start date it does not have. */
-
-
-
-
-
   /* ---- Activity lanes ---- */
   .scheduleCard__row--lane {
     height: 36px;
@@ -696,25 +626,6 @@ div#impactGraphic-fullscreen {
     border-top: 1px solid var(--marlo-border-faint);
   }
 
-  .scheduleCard__laneName {
-    color: var(--marlo-text);
-    font: 500 13.5px/1.25 var(--marlo-font-sans);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .scheduleCard__laneCount {
-    margin-left: auto;
-    flex: none;
-    min-width: 22px;
-    padding: 1px 6px;
-    border-radius: var(--marlo-radius-pill);
-    background: var(--marlo-surface-sunken);
-    color: var(--marlo-text-muted);
-    font: 600 12px/1.4 var(--marlo-font-sans);
-    text-align: center;
-  }
 
   /* Soft tint plus matching border and ink, never a saturated fill: a long
      title has to stay readable inside the pill. */
@@ -801,9 +712,6 @@ div#impactGraphic-fullscreen {
     background: var(--marlo-surface-alt);
   }
 
-  .scheduleCard__row--overflow .scheduleCard__cell--label {
-    background: var(--marlo-surface-alt);
-  }
 
   .scheduleCard__chip {
     position: absolute;

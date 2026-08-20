@@ -239,21 +239,12 @@
                 <div class="scheduleCard__gridLayer" id="scheduleGrid" aria-hidden="true"></div>
                 <div class="scheduleCard__nowLayer" id="scheduleNow" aria-hidden="true"></div>
 
+                [#-- No label column: the timeline carries activities only, so the
+                     lane names carried no meaning and the counts they showed are
+                     already in the footer. The section header row went with them,
+                     since labelling the section was its only job. --]
                 <div class="scheduleCard__row scheduleCard__row--axis">
-                  <div class="scheduleCard__cell scheduleCard__cell--label">
-                    <span class="scheduleCard__eyebrow" id="scheduleViewLabel"
-                      data-label="[@s.text name="dashboard.schedule.viewLabel"][@s.param]{0}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.viewLabel"][@s.param]8[/@s.param][/@s.text]</span>
-                  </div>
                   <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
-                </div>
-
-
-                <div class="scheduleCard__row scheduleCard__row--section">
-                  <div class="scheduleCard__cell scheduleCard__cell--label">
-                    <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.activities.title" /]</span>
-                    <span class="scheduleCard__badge">${scItems?size?c}</span>
-                  </div>
-                  <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="activities"></div>
                 </div>
 
                 [#-- Three reserved lanes and one overflow strip, whatever the
@@ -262,19 +253,11 @@
                      price of a container that never grows. --]
                 [#list 0..2 as scLane]
                   <div class="scheduleCard__row scheduleCard__row--lane">
-                    <div class="scheduleCard__cell scheduleCard__cell--label">
-                      <span class="scheduleCard__laneName">[@s.text name="dashboard.schedule.laneName"][@s.param]${(scLane + 1)?c}[/@s.param][/@s.text]</span>
-                      <span class="scheduleCard__laneCount" data-lane-count="${scLane?c}">0</span>
-                    </div>
                     <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
                   </div>
                 [/#list]
 
                 <div class="scheduleCard__row scheduleCard__row--overflow">
-                  <div class="scheduleCard__cell scheduleCard__cell--label">
-                    <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.overflow.title" /]</span>
-                    <span class="scheduleCard__badge" id="scheduleOverflowCount">0</span>
-                  </div>
                   <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleOverflowTrack"></div>
                 </div>
               </div>

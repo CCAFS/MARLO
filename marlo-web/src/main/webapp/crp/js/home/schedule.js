@@ -131,9 +131,12 @@
        the panel. */
     var main = document.getElementById('scheduleMain');
 
-    /* Without the scroll frame there is nothing to draw into — the card is in
-       its zero-open-phases state, which is entirely server-rendered. */
-    if (!scroll || !canvas || !axis || !gridLayer || !nowLayer || !overflowTrack || !overflowCount) {
+    /* Without the scroll frame there is nothing to draw into. Only the elements
+       actually drawn into belong in this guard: the label column's readouts
+       (#scheduleOverflowCount, #scheduleViewLabel, [data-lane-count]) are
+       optional chrome, and requiring them here would blank the whole card the
+       moment that column is removed. */
+    if (!scroll || !canvas || !axis || !gridLayer || !nowLayer || !overflowTrack) {
       return;
     }
 
@@ -501,7 +504,9 @@
     function paintOverflow(packed) {
       clear(overflowTrack);
       closePopover();
-      overflowCount.textContent = String(packed.overflowTotal);
+      if (overflowCount) {
+        overflowCount.textContent = String(packed.overflowTotal);
+      }
 
       for (var c = 0; c < packed.chips.length; c++) {
         var chip = packed.chips[c];

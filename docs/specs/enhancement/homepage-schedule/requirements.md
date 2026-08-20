@@ -86,8 +86,10 @@ several phases are open at once — which is the normal state, not the exception
 - **ENH-SCHED-NF-002** — The visible track width MUST be measured at runtime. No fixed pixel track
   width is permitted, because `global.css` forces `.container` to `95% !important` below a 1300px
   viewport.
-- **ENH-SCHED-NF-003** — The label column MUST stay 276px at every viewport; it is a content minimum
-  (`Progress - 2026` plus its `Opens in 44 days` pill must not clip).
+- **ENH-SCHED-NF-003** — *Withdrawn 2026-08-20.* There is no label column. With the timeline reduced
+  to activities, its contents were a zoom readout duplicated by the footer, a section header, three
+  meaningless lane names and counts the footer already totals. `--sched-label` stays in the stylesheet
+  at `0px` because `schedule.js` subtracts it to derive the track width.
 - **ENH-SCHED-NF-004** — WCAG 2.1 AA throughout. No white text on the light brand blue or green. No
   status conveyed by colour alone. 12px is the type floor.
 - **ENH-SCHED-NF-005** — Activity descriptions are free text typed by users. The FTL→JS payload MUST
@@ -163,7 +165,7 @@ several phases are open at once — which is the normal state, not the exception
 | 5. Schema changes ship as Flyway migrations | Not applicable — no schema change. |
 | 6. GPL header on every new Java file | Not applicable — no new Java file; `DashboardAction.java` already carries it. |
 | 7. Code style, Checkstyle gate | Honored on the rules — Checkstyle 8.18 with `configuration/marlo-checkstyle.xml` reports zero violations on the changed Java file. **The `mvn checkstyle:check` goal is broken repo-wide** (plugin 2.9.1 vs checkstyle 8.18, `NoSuchMethodError`), pre-existing and unrelated to this change — see `task.md` §1. |
-| 8. English only; user-facing strings i18n-keyed | Honored — 35 keys under `dashboard.schedule.*`. |
+| 8. English only; user-facing strings i18n-keyed | Honored — 31 keys under `dashboard.schedule.*`. |
 | 9. Branching | Honored — feature branch `A2-2398-US1-Re-design-MARLO-home-page`; `staging` is the integration branch. |
 | 10. Run scripts / Java 17 | Honored — built and verified with Zulu 17. |
 | 11. Dependency baseline | Honored — no dependency change. |
@@ -203,6 +205,18 @@ several phases are open at once — which is the normal state, not the exception
   `timelineManagement.help` previously promised admins that dates do not determine order; it has been
   reworded. Packing strictly in `order` sequence would strand a late activity in lane 1 above an
   earlier one, which reads as a bug.
+- 2026-08-20 — **The 276px label column is removed.** — Once the timeline carried activities only, the
+  column held nothing worth its width: `4-WEEK VIEW` (the zoom, also in the footer and in the pressed
+  button), `TIMELINE ACTIVITIES · 43` (the footer states placed-of-total), `Activity lane 1/2/3` (a
+  lane carries no meaning — this spec says so under §5) and per-lane counts. Removing it hands the
+  full **276px** back to the track, which is the only variable that decides how many activities fit:
+  at 1600px the track goes 852px → **1128px** and overflow drops from 12 to 11 at 8 weeks and from 20
+  to 16 at 16 weeks. The section header row went too, since labelling was its only job, taking the
+  card from 375px to **347px**. Four more i18n keys retired (`viewLabel`, `activities.title`,
+  `overflow.title`, `laneName`), leaving 31. **What is lost:** the per-lane counts, which nothing else
+  reports; the aggregate survives in the footer. `#scheduleOverflowCount` had to come out of
+  `schedule.js`'s early-return guard first — leaving it there would have blanked the entire card the
+  moment the element disappeared.
 - 2026-08-20 — **The subtitle no longer counts open phases.** — Follow-up to removing the phase
   lanes: `Today, 20 August 2026 · 2 phases open · 40 timeline activities` announced a figure the card
   no longer illustrates. It now reads `Today, 20 August 2026 · 40 timeline activities`. Three more i18n

@@ -24,7 +24,7 @@ DashboardAction.prepare()
 dashboard.ftl                           ▼
   ├─ derives phase status from `editable` + dates; keeps open + not-started only
   ├─ renders the shell: header, legend, zoom control, section headers,
-  │  label column (name, dates, countdown pill), lane labels, footer templates
+  │  footer templates
   └─ emits ONE payload:  data-schedule="{today, months[], activities[]}"
                                         │
 schedule.js (ES5 IIFE, DOMContentLoaded)▼
@@ -118,14 +118,12 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 
 **Stacking contract.** `.scheduleCard__canvas` is the only stacking context. Order: gridlines 0,
 section-header tints (positioned, `z-index: auto`, later in tree order), bars/pills 1, today line 2,
-sticky label column 3, sticky axis row 4, its own label cell 5, edge masks 6, popover 20. **No row may
-carry a `z-index`** — a row with one becomes a stacking context and its label cell then paints *below*
-the today line, which would draw the hairline across the phase names. This is commented in the
-stylesheet at the top of the section.
+sticky axis row 4, edge masks 6, popover 20. **No row may carry a `z-index`** — a row with one becomes
+a stacking context and stops the sticky axis row winning over it. This is commented in the stylesheet
+at the top of the section.
 
-The label column is `position: sticky; left: 0` with an opaque background so bars scroll under it. The
-axis row is `position: sticky; top: 0`. Both survive the vertical scroll that appears at four or more
-phase lanes.
+There is no label column any more (`--sched-label: 0px`), so the track starts at the frame's left
+edge. The axis row is still `position: sticky; top: 0`.
 
 ### Height budget
 

@@ -119,6 +119,8 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | overflow popover with the side panel | hosted by `__main`, stays inside it (right edge 1146 vs panel at 1184), never overlaps the panel |
 | stacking breakpoint | verified against the CSS engine, not a screenshot: `matchMedia('(max-width: 1250px)')` is the rule in the sheet; at 1250px `__layout` computes to `display: block` with the panel full-width and its 44px offset reset to 12px; at 1251px it stays `flex` |
 | stacked layout (measured at the earlier 1300px breakpoint) | at 1200px panel full-width below, track 790px instead of 200px, overflow back to 30% |
+| label column removed | `--sched-label: 0px`, grid layer starts at 0, track equals the viewport: 852px → **1128px** at 1600px; overflow 12 → 11 at 8 wks and 20 → 16 at 16 wks; card 375px → 347px |
+| today marker after the origin moved | line and `TODAY` badge share the same `left` at all four zooms, and the day index matches the fixture's own span (51 for `forty`, whose timeline starts 29 Jun) |
 | lane region, activities only | exactly **140px** (`3 × 36` + `32`) at 2/4/8/16 wks; card 375px side-by-side. No vertical scrollbar at all now |
 | phase artefacts after removal | 0 `.scheduleCard__bar`, 0 `[data-phase-track]`, 0 `[data-section-track="phases"]` in the rendered card; payload keys are exactly `today`, `months`, `activities` |
 | 400 activities, side-by-side | all 400 accounted for, lane region 140px, card 375px, render 1.7–6.2ms, popover still opens from `__main`, no page h-scroll |
@@ -143,7 +145,7 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Labels clipped mid-word, all stops | none, after T11 |
 | Page body horizontal scroll | never |
 | 4 phase lanes | clamps at `max-height: 388px` and scrolls vertically |
-| Sticky axis (scrolled down) / sticky label column (scrolled right) | both hold; label column opaque |
+| Sticky axis (scrolled down) | holds; there is no label column to stick sideways any more |
 | z-index stack | rows `auto`, grid 0, today 2, label 3, axis 4 — as specified |
 | Zoom persistence | 16 stored, restored after reload, footer and axis label follow |
 | Modifier + wheel | 8 → 4 → 2 in, clamps at 2; 3 steps out → 16, clamps at 16 |
@@ -165,7 +167,7 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Axis ticks in the accessibility tree | 0 exposed at every stop (25 ticks at 2 wks, 5 at 8 wks); the `TODAY` badge stays exposed |
 | Accessible text per item | 19 `.sr-only` spans (3 phase bars + 16 pills) carry full name, dates and status |
 | 1280px (95% container active) | container 1216px, track 866px, no overflow |
-| 1024px | label column 276px, zero clipped labels, no overflow |
+| 1024px | no clipped content, no page overflow |
 
 ### Adversarial review
 
