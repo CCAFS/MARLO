@@ -2647,7 +2647,7 @@ a.currentSection li {
 	font-weight: bold;
 	background-color: #f4fafc;
 	border-color: #cfe6ef;
-	box-shadow: inset 3px 0 0 #0b7ba6, 0 1px 2px rgba(15, 23, 42, 0.06);
+	/*box-shadow: inset 3px 0 0 #0b7ba6, 0 1px 2px rgba(15, 23, 42, 0.06);*/
 }
 
 #secondaryMenu ul li ul>li.currentSection.hasBackground {
