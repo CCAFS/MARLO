@@ -22,6 +22,15 @@
 - Browser verification ran against a static harness that loads the **real** `dashboard.css` and the
   **real** `schedule.js` with fixture payloads, plus a FreeMarker 2.3.32 renderer driving the **real**
   template block. See Testing Plan.
+- **A third self-inflicted bug that the harness did NOT catch, and the check added because of it.**
+  The restructure that moved the timeline into `__layout` dropped the `</section>` closing
+  `.scheduleCard`, so `.dashboardBrowse` nested *inside* the Schedule card. QA found it, not the
+  harness — two blind spots lined up: the FreeMarker test only asserted i18n keys and JSON validity,
+  and the browser harness renders a Python replica of the markup whose template *did* close the
+  section, so every structural measurement was taken against well-formed markup the template did not
+  produce. `ftltest/balance.py` now parses each rendered scenario and fails on unbalanced or
+  mis-nested tags; a control run with the `</section>` removed renders with 0 missing keys and is
+  reported `MALFORMED — unclosed <section class='scheduleCard'>`, so the check demonstrably covers it.
 - **Two self-inflicted bugs caught before shipping, both by the harness rather than by reading.**
   (1) Deleting the phase-normalisation block also deleted the `var i;` it happened to declare; the
   file is `'use strict'`, so three later loops would have thrown `ReferenceError: i is not defined`
@@ -108,7 +117,8 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | next panel picks the activity | future multi-day → `Next activity` / `Runs 05 Sep – 20 Sep 2026` / `Starts in 16 days`; single-day tomorrow → `Runs 21 Aug 2026` / `Starts tomorrow`; date beats the admin's `order` (9.0 chosen over 1.0); an activity starting **today** is correctly not "next" |
 | next panel falls back | no future activity → `Next phase` / `Opens 01 Oct 2026 · closes 15 Nov 2026` / `Opens in 42 days` |
 | overflow popover with the side panel | hosted by `__main`, stays inside it (right edge 1146 vs panel at 1184), never overlaps the panel |
-| stacking under 1300px | at 1200px `__layout` computes to `display: block`, panel full-width below, track 790px instead of 200px, overflow back to 30% |
+| stacking breakpoint | verified against the CSS engine, not a screenshot: `matchMedia('(max-width: 1250px)')` is the rule in the sheet; at 1250px `__layout` computes to `display: block` with the panel full-width and its 44px offset reset to 12px; at 1251px it stays `flex` |
+| stacked layout (measured at the earlier 1300px breakpoint) | at 1200px panel full-width below, track 790px instead of 200px, overflow back to 30% |
 | lane region, activities only | exactly **140px** (`3 × 36` + `32`) at 2/4/8/16 wks; card 375px side-by-side. No vertical scrollbar at all now |
 | phase artefacts after removal | 0 `.scheduleCard__bar`, 0 `[data-phase-track]`, 0 `[data-section-track="phases"]` in the rendered card; payload keys are exactly `today`, `months`, `activities` |
 | 400 activities, side-by-side | all 400 accounted for, lane region 140px, card 375px, render 1.7–6.2ms, popover still opens from `__main`, no page h-scroll |
@@ -140,6 +150,7 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Plain wheel | not `preventDefault`ed; page scrolling preserved |
 | Jump to today | restores the centre offset exactly |
 | Zoom keeps position (buttons) | centre day held across 4 → 2 → 16 → 4 → 8, no clamping |
+| DOM well-formedness (all 6 render scenarios) | balanced and correctly nested per `balance.py`; `.scheduleCard` and `.dashboardBrowse` are siblings |
 | Legend after removing `Upcoming` | 4 swatches: Not started, In progress, Completed, Today; zero `upcoming` classes left in the rendered card |
 | Future phase bar | `--notStarted`, amber `rgb(245,166,35)` on ink `rgb(74,48,0)`, 6.05:1 — matches its legend swatch |
 | Stuck jQuery UI tooltip (QA report) | reproduced with native `clear()` — orphaned `.ui-tooltip` in `<body>` after the hovered pill was destroyed; 0 stuck after the fix, across `Cmd`+wheel, `Ctrl`+wheel and both zoom buttons, with every trial confirmed to have actually re-rendered |

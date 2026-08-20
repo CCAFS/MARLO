@@ -986,12 +986,12 @@ div#impactGraphic-fullscreen {
     font: 600 12px/1.3 var(--marlo-font-sans);
   }
 
-  /* Stack below 1300px. Measured with 40 activities: a 340px panel beside the
-     track costs almost nothing at 1600px (28% -> 30% of activities pushed to
-     overflow) but is punishing at 1000px (40% -> 60%, track down to 200px,
-     where a 178px milestone capsule spans ~50 days of axis). 1300px is also
-     where global.css already drops .container to 95%. */
-  @media (max-width: 1299px) {
+  /* Stack at 1250px and below. The panel is a fixed 300px and every pixel it
+     takes comes off the track, so stacking early keeps the three lanes usable:
+     a narrow track packs fewer activities and pushes the rest into the overflow
+     strip. 1250px sits just under the 1300px where global.css already drops
+     .container to 95%, so the two thresholds do not fight each other. */
+  @media (max-width: 1250px) {
     .scheduleCard__layout {
       display: block;
     }
@@ -1103,9 +1103,46 @@ div#impactGraphic-fullscreen {
     background: var(--marlo-warning);
   }
 
-  .dashboardBrowse__cat svg {
+  /* The category icons are the platform's original raster pair: a still PNG
+     that swaps to an animated GIF on hover, restored at QA's request. Served
+     from the app's own /global/images, never from a remote host. */
+  .dashboardBrowse__catIcon {
     flex: none;
+    width: 30px;
+    height: 30px;
     margin-left: 6px;
+    object-fit: contain;
+  }
+
+  /* Hidden until hover, and eagerly loaded — the same two-<img> swap the
+     platform used before the redesign (dashboard.js: updateGif / updateImg).
+     Deliberately NOT loading="lazy": with the still hidden on hover, a GIF that
+     has not arrived yet leaves an empty gap on first hover. The cost is that
+     the four GIFs (~1.6MB) load with the page; see the note in requirements.md
+     if that needs optimising. */
+  .dashboardBrowse__catIcon--anim {
+    display: none;
+  }
+
+  .dashboardBrowse__cat:hover .dashboardBrowse__catIcon,
+  .dashboardBrowse__cat:focus-visible .dashboardBrowse__catIcon {
+    display: none;
+  }
+
+  .dashboardBrowse__cat:hover .dashboardBrowse__catIcon--anim,
+  .dashboardBrowse__cat:focus-visible .dashboardBrowse__catIcon--anim {
+    display: block;
+  }
+
+  /* On the selected row the artwork sits on --marlo-brand, where it was almost
+     unreadable: the dark strokes manage 3.59:1 but the teal accents only 1.65:1,
+     well under the 3:1 that WCAG 1.4.11 asks of a graphic. brightness(0) flattens
+     the icon to black and invert(1) lifts it to white — shape kept, 5.04:1, and
+     it matches the white label beside it. This is also what the outgoing inline
+     SVGs did, since they painted with currentColor. Applies to the GIF too, so a
+     hover on the active row stays consistent. */
+  .dashboardBrowse__cat.is-active .dashboardBrowse__catIcon {
+    filter: brightness(0) invert(1);
   }
 
   .dashboardBrowse__catLabel {
@@ -1337,7 +1374,7 @@ div#impactGraphic-fullscreen {
   .dashboardBrowse__panel .dataTables_length,
   .dashboardBrowse__panel .dataTables_paginate {
     margin: 0;
-    padding: 12px 20px 16px;
+    padding: 12px 20px 16px 0px;
     color: var(--marlo-text-muted);
     font: 400 13px/1.4 var(--marlo-font-sans);
   }

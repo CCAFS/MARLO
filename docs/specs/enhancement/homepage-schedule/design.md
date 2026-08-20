@@ -92,7 +92,7 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 ```
 .scheduleCard[data-schedule]
 ├─ __head               title, subtitle, 4-item legend
-└─ __layout             flex row; becomes display:block under 1300px
+└─ __layout             flex row; becomes display:block at 1250px and below
    ├─ __main            the whole timeline. No border or padding of its own —
    │  │                 __frame is already a bordered box. Also the positioning
    │  │                 host for __popover, so the popover cannot drift over the

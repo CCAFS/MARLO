@@ -70,8 +70,10 @@ several phases are open at once — which is the normal state, not the exception
   MUST name the soonest activity that has not started yet, falling back to the soonest phase still to
   open, and MUST be omitted when neither exists. (Amended 2026-08-20; this originally specified a
   separate zero-state that *replaced* the timeline when no phase was open. See the Decision Log.)
-- **ENH-SCHED-FN-014** — The "what's next" panel MUST stack below the timeline under a 1300px
-  viewport, because a fixed side panel starves the track at those widths. The panel is 300px wide and
+- **ENH-SCHED-FN-014** — The "what's next" panel MUST stack below the timeline at **1250px** and
+  below, because the panel is a fixed 300px and every pixel it takes comes off the track, which packs
+  fewer activities into the three lanes. (Set to 1300px, briefly moved to 1024px, settled at 1250px on
+  2026-08-20.) The panel is 300px wide and
   offset 44px from the top of the column so it aligns with the timeline frame, not with the zoom
   controls; the offset MUST be reset when stacked.
 - **ENH-SCHED-FN-013** — The card MUST remain behind the `homepage_timeline_active` specificity.
@@ -145,8 +147,9 @@ several phases are open at once — which is the normal state, not the exception
   is next; the reporting-phases section is omitted only when there is no lane at all to draw.
 - **AC-011b** (FN-012) — Given a future activity and a future phase both exist, then the panel names
   the activity. Given only a future phase, it names the phase. Given neither, it is absent.
-- **AC-011c** (FN-014) — Given a viewport under 1300px, then the panel is full-width below the
-  timeline and the track keeps the width it would have had without the panel.
+- **AC-011c** (FN-014) — Given a viewport of 1250px or less, then the panel is full-width below the
+  timeline and the track keeps the width it would have had without the panel. At 1251px and above the
+  layout stays side by side.
 - **AC-012** (FN-013) — Given `homepage_timeline_active` is false, then the card is absent entirely.
 
 ## 7. Constitutional Compliance Checklist
@@ -220,7 +223,8 @@ several phases are open at once — which is the normal state, not the exception
   reporting-phases section is omitted when there is no lane, rather than showing a header above
   nothing; (c) the panel prefers the next *activity* and falls back to the next *phase*, with distinct
   labels so the two are never confused; (d) `__main` carries no border or padding, because the frame
-  inside it is already a bordered box. Measured before choosing the 1300px breakpoint (40 activities):
+  inside it is already a bordered box. Measured before first choosing a 1300px breakpoint, later moved
+  to 1024px at product's request (40 activities):
   a 340px side panel costs 28% → 30% overflow at 1600px but 40% → 60% at 1000px, where the track falls
   to 200px. Stacked at 1200px the track is 790px and overflow is back to 30%.
 - 2026-08-20 — **The panel is 300px and drops 44px to meet the frame.** — Product asked for both. The
