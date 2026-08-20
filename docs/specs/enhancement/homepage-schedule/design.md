@@ -22,7 +22,7 @@ DashboardAction.prepare()
                                  null-guarded, sorted by (order nullsLast, id)
                                         │
 dashboard.ftl                           ▼
-  ├─ derives phase status from `editable` + dates; keeps open + upcoming only
+  ├─ derives phase status from `editable` + dates; keeps open + not-started only
   ├─ renders the shell: header, legend, zoom control, section headers,
   │  label column (name, dates, countdown pill), lane labels, footer templates
   └─ emits ONE payload:  data-schedule="{today, months[], phases[], activities[]}"
@@ -34,7 +34,7 @@ schedule.js (ES5 IIFE, DOMContentLoaded)▼
   └─ paints axis ticks, gridlines, today line, bars, pills, chips, counts, footer
 ```
 
-Consequence: all 44 user-facing strings stay in `global.properties`. JavaScript receives only
+Consequence: all 43 user-facing strings stay in `global.properties`. JavaScript receives only
 `{0}`-style templates through `data-*` attributes, the idiom already used at `dashboard.ftl` →
 `dashboard.js`.
 
@@ -48,12 +48,12 @@ Consequence: all 44 user-facing strings stay in `global.properties`. JavaScript 
   sequence deleted; `schedule.js` registered in `customJS`; cache-bust query strings bumped.
 - **Modified:** `webapp/crp/css/home/dashboard.css` — the `.reportTimeline` block replaced by
   `.scheduleCard`.
-- **Modified:** `webapp/global/css/marlo-redesign.css` — five tokens added to the single `:root`.
+- **Modified:** `webapp/global/css/marlo-redesign.css` — four tokens added to the single `:root`.
 - **Modified:** `java/org/cgiar/ccafs/marlo/action/home/DashboardAction.java` — `TimelineManager`
   injected; `loadScheduleActivities()`; `getScheduleActivities()`.
 - **Modified:** `webapp/crp/js/home/dashboard.js` — `initReportTimeline()` and its call removed.
 - **Modified:** `resources/global.properties` — `dashboard.reportingTimeline.*` (17 keys) replaced by
-  `dashboard.schedule.*` (44 keys); `timelineManagement.help` reworded.
+  `dashboard.schedule.*` (43 keys); `timelineManagement.help` reworded.
 
 ### marlo-data
 
@@ -91,7 +91,7 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 
 ```
 .scheduleCard[data-schedule]
-├─ __head            title, subtitle, 5-item legend
+├─ __head            title, subtitle, 4-item legend
 ├─ __controls        4 zoom buttons (aria-pressed) + Jump to today
 ├─ __frame           1px border, radius, overflow hidden, edge masks
 │                    (masks inset by --sched-hbar / --sched-vbar so they never
@@ -136,7 +136,8 @@ clamped to today ±550 days so one outlier date cannot flatten the track.
 ### Packing
 
 Greedy first-fit over three lanes, iterating activities sorted by `(startDate, order, id)`. The only
-absolute lengths are an 8px gutter, a 6px minimum width, 178px for a milestone capsule with 170px of
+absolute lengths are an 8px gutter, a 6px minimum width, 178px for a milestone capsule (shape only —
+`--milestone` must never set a colour, or it outranks the status rules that follow it) with 170px of
 reserved label room, and a 190px chip-merge threshold. Because those are pixel constants and the date
 axis compresses with zoom, overflow grows at wider windows — expected, and reported in the footer.
 
@@ -186,9 +187,18 @@ simply does not get the card.
 
 ## 10. Integration Points
 
-**Not applicable.** No CLARISA, CGSpace, BI, AI-services, S3 or Pusher interaction. The only
-cross-component contract is the zero-state button calling the phase selector's `#allPhasesToggle`,
-guarded by a null check.
+No CLARISA, CGSpace, BI, AI-services, S3 or Pusher interaction. Two cross-component contracts:
+
+1. The zero-state button calls the phase selector's `#allPhasesToggle`, guarded by a null check.
+2. **jQuery UI's tooltip widget owns every `title` on the page.** `global.js` initialises it inside
+   `$(document).ready`, so the widget element is `document` and every descendant carrying a `title`
+   — including this card's phase bars and activity pills — is a *delegated* target. For delegated
+   targets the widget tears an open tooltip down from a `remove` handler on the target, reached only
+   through jQuery UI's `$.cleanData` override, which jQuery calls from `.empty()`/`.remove()` and
+   never from native `removeChild`. Any component that rebuilds DOM carrying `title` attributes must
+   therefore remove the old nodes **through jQuery**, or leave an orphaned `.ui-tooltip` div stuck in
+   `<body>`. `clear()` in `schedule.js` does this, falling back to the native loop when jQuery is
+   absent. This is a repo-wide hazard, not specific to this card.
 
 ## 11. Observability
 
@@ -246,7 +256,7 @@ The 17 retired i18n keys are safe to remove because no `custom/*.properties` ove
   overflows the card below roughly 1400px. `measure()` reads `scroll.clientWidth` and
   `--sched-label` via `getComputedStyle`, so the two languages never disagree about the column width.
 - **ADR-3 — Phase status uses only the fields `Phase` has.** See `requirements.md` Decision Log. Two
-  reachable states for phases (`In progress`, `Upcoming`), three for activities (`Completed`,
+  reachable states for phases (`In progress`, `Not started`), three for activities (`Completed`,
   `In progress`, `Not started`); every legend swatch keeps a referent and no figure is invented.
 - **ADR-4 — Overflow chips get their own row.** Structural, per §5.
 - **ADR-5 — One JSON payload in a `data-*` attribute.** The repo has a working precedent
@@ -259,8 +269,10 @@ The 17 retired i18n keys are safe to remove because no `custom/*.properties` ove
 - **ADR-6 — Five new tokens rather than literal colours.** `--marlo-info-solid: #15719B` and
   `--marlo-success-solid: #2E7D32` exist because the light brand `--marlo-info` / `--marlo-success`
   fail AA behind white text; `--marlo-warning-ink: #4A3000` is the dark ink for the amber fill;
-  `--marlo-outline-dashed: #C3CBD5` and `--marlo-today-line: #C7401C` complete the set. The light
-  hues stay for status dots and legend swatches.
+  `--marlo-today-line: #C7401C` completes the set. The light hues stay for status dots and legend
+  swatches. `--marlo-outline-dashed` was also added but is **gone again**: its only three uses were the
+  `Upcoming` swatch, the `Upcoming` bar and the milestone's own border colour, all of which were
+  removed, so keeping the token would leave a declaration with no referent.
 - **ADR-7 — The attribute layer is auto-escaping, not `?html`.** Struts 6.8.0's `FreemarkerManager`
   finishes `createConfiguration` with `setAutoEscapingPolicy(ENABLE_IF_DEFAULT)` and
   `setOutputFormat(HTMLOutputFormat.INSTANCE)`, unconditionally; `APFreemarkerManager` inherits that

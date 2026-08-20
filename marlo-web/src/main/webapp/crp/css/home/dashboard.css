@@ -397,11 +397,6 @@ div#impactGraphic-fullscreen {
   .scheduleCard__key--inProgress::before { background: var(--marlo-info); }
   .scheduleCard__key--completed::before { background: var(--marlo-success); }
 
-  .scheduleCard__key--upcoming::before {
-    background: var(--marlo-surface);
-    border: 1px dashed var(--marlo-outline-dashed);
-  }
-
   .scheduleCard__key--today::before {
     width: 2px;
     height: 11px;
@@ -702,7 +697,7 @@ div#impactGraphic-fullscreen {
     text-overflow: ellipsis;
   }
 
-  .scheduleCard__row--upcoming .scheduleCard__phaseName > span:first-child {
+  .scheduleCard__row--notStarted .scheduleCard__phaseName > span:first-child {
     color: var(--marlo-text-muted);
     font-weight: 500;
   }
@@ -779,12 +774,6 @@ div#impactGraphic-fullscreen {
   .scheduleCard__bar--completed {
     background: var(--marlo-success-solid);
     color: #fff;
-  }
-
-  .scheduleCard__bar--upcoming {
-    background: var(--marlo-surface);
-    border: 1px dashed var(--marlo-outline-dashed);
-    color: var(--marlo-text-muted);
   }
 
   /* ---- Activity lanes ---- */
@@ -872,13 +861,13 @@ div#impactGraphic-fullscreen {
 
   .scheduleCard__pill--notStarted::before { background: var(--marlo-warning); }
 
-  /* Single-day activity: a white capsule wide enough to read, not a
-     zero-width sliver. */
+  /* Single-day activity: a capsule wide enough to read, not a zero-width
+     sliver. Shape only — the dashed edge is what says "one day"; the colour
+     still comes from the status class, which is why the pill carries both.
+     Setting a background, border-colour or text colour here would silently
+     outrank every status rule: same specificity, and this one comes later. */
   .scheduleCard__pill--milestone {
-    background: var(--marlo-surface);
     border-style: dashed;
-    border-color: var(--marlo-outline-dashed);
-    color: var(--marlo-ink);
   }
 
   .scheduleCard__pill--clipStart {

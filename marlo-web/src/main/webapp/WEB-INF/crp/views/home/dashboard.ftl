@@ -123,23 +123,23 @@
 
   [#function scPhaseStatus phase]
     [#if (phase.editable)!false][#return "inProgress"][/#if]
-    [#if (phase.startDate)?? && phase.startDate?date gt scToday][#return "upcoming"][/#if]
+    [#if (phase.startDate)?? && phase.startDate?date gt scToday][#return "notStarted"][/#if]
     [#return "closed"]
   [/#function]
 
   [#-- Only a phase with both dates can be plotted. --]
   [#assign scLanes = [] /]
   [#assign scOpenCount = 0 /]
-  [#assign scUpcoming = [] /]
+  [#assign scNotStarted = [] /]
   [#list (phases)![] as phase]
     [#if (phase.startDate)?? && (phase.endDate)??]
       [#assign scStatus = scPhaseStatus(phase) /]
       [#if scStatus == "inProgress"]
         [#assign scLanes = scLanes + [phase] /]
         [#assign scOpenCount = scOpenCount + 1 /]
-      [#elseif scStatus == "upcoming"]
+      [#elseif scStatus == "notStarted"]
         [#assign scLanes = scLanes + [phase] /]
-        [#assign scUpcoming = scUpcoming + [phase] /]
+        [#assign scNotStarted = scNotStarted + [phase] /]
       [/#if]
     [/#if]
   [/#list]
@@ -185,7 +185,6 @@
     data-label-notstarted="[@s.text name="dashboard.schedule.legend.notStarted" /]"
     data-label-inprogress="[@s.text name="dashboard.schedule.legend.inProgress" /]"
     data-label-completed="[@s.text name="dashboard.schedule.legend.completed" /]"
-    data-label-upcoming="[@s.text name="dashboard.schedule.legend.upcoming" /]"
     data-label-today="[@s.text name="dashboard.schedule.legend.today" /]"
     data-label-overflow="[@s.text name="dashboard.schedule.overflowHeading" /]"
     data-tpl-item="[@s.text name="dashboard.schedule.item.accessibleName"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
@@ -210,7 +209,6 @@
         <span class="scheduleCard__key scheduleCard__key--notStarted">[@s.text name="dashboard.schedule.legend.notStarted" /]</span>
         <span class="scheduleCard__key scheduleCard__key--inProgress">[@s.text name="dashboard.schedule.legend.inProgress" /]</span>
         <span class="scheduleCard__key scheduleCard__key--completed">[@s.text name="dashboard.schedule.legend.completed" /]</span>
-        <span class="scheduleCard__key scheduleCard__key--upcoming">[@s.text name="dashboard.schedule.legend.upcoming" /]</span>
         <span class="scheduleCard__key scheduleCard__key--today">[@s.text name="dashboard.schedule.legend.today" /]</span>
       </div>
     </div>
@@ -338,7 +336,7 @@
       [#-- No open phase is a real state between reporting cycles, not an error,
            so it keeps the card shell and says what happens next. --]
       [#assign scNext = [] /]
-      [#list scUpcoming as phase]
+      [#list scNotStarted as phase]
         [#if !scNext?has_content || phase.startDate?date lt scNext[0].startDate?date]
           [#assign scNext = [phase] /]
         [/#if]

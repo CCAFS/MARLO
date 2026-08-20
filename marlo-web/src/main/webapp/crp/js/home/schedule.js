@@ -69,7 +69,22 @@
     return node;
   }
 
+  /* Removal has to go through jQuery when it is loaded, not just removeChild.
+     global.js binds jQuery UI's tooltip widget inside $(document).ready, so the
+     widget element IS document and every bar and pill is a *delegated* target.
+     For those, the widget tears an open tooltip down from a `remove` handler on
+     the target, and that handler is only reached via jQuery UI's $.cleanData
+     override -- which jQuery calls from .empty()/.remove() and never from native
+     removeChild. Repainting while the cursor sits on a bar, which Cmd/Ctrl +
+     wheel zoom guarantees, therefore orphaned the tooltip div in <body>, where
+     it stayed stuck on screen. Going through jQuery lets the widget clean up
+     after itself and also releases its data on the discarded nodes. The native
+     loop remains, both as the no-jQuery fallback and to catch anything left. */
   function clear(node) {
+    var jq = window.jQuery;
+    if (jq && node.firstChild) {
+      jq(node).empty();
+    }
     while (node.firstChild) {
       node.removeChild(node.firstChild);
     }
@@ -145,8 +160,7 @@
     var statusLabels = {
       notStarted: card.getAttribute('data-label-notstarted') || '',
       inProgress: card.getAttribute('data-label-inprogress') || '',
-      completed: card.getAttribute('data-label-completed') || '',
-      upcoming: card.getAttribute('data-label-upcoming') || ''
+      completed: card.getAttribute('data-label-completed') || ''
     };
     var tplItem = card.getAttribute('data-tpl-item') || '{0}. {1}. {2}.';
     var tplMore = card.getAttribute('data-tpl-more') || '{0} more';
@@ -278,6 +292,29 @@
 
     function centreOnToday() {
       scroll.scrollLeft = Math.max(0, todayDay * pxPerDay - trackWidth / 2);
+    }
+
+    /* Track offsets, not canvas offsets: the label column is sticky, so it
+       overlays the first labelWidth pixels of the viewport and day 0 sits at
+       scrollLeft 0. Both helpers share that convention with centreOnToday. */
+    function dayAtTrackOffset(offset) {
+      return pxPerDay ? (scroll.scrollLeft + offset) / pxPerDay : todayDay;
+    }
+
+    /* Re-render at the current scale while keeping anchorDay in the same place
+       in the viewport. Anything that changes pxPerDay -- a zoom, a resize --
+       would otherwise leave the user looking at a different date than the one
+       they were reading.
+
+       afterOffset is where anchorDay should land AFTER the render, and that is
+       not always where it was before: a zoom leaves trackWidth alone, but a
+       resize changes it, so "keep it centred" means the new half-width, not the
+       old one. Omit the argument for that case; pass an explicit offset only
+       when it is tied to something that did not move, such as the pointer. */
+    function renderAnchored(anchorDay, afterOffset) {
+      render();
+      var offset = typeof afterOffset === 'number' ? afterOffset : trackWidth / 2;
+      scroll.scrollLeft = Math.max(0, anchorDay * pxPerDay - offset);
     }
 
     /* ---- Packing ---- */
@@ -485,8 +522,12 @@
         for (var b = 0; b < bucket.length; b++) {
           var slot = bucket[b];
           var item = slot.item;
-          var pill = el('div', 'scheduleCard__pill scheduleCard__pill--' +
-            (item.milestone ? 'milestone' : item.status));
+          /* Status and shape are independent: a single-day activity is still
+             completed, running or not started. Using --milestone *instead of*
+             the status class left every milestone with no fill, no border
+             colour and no status dot, so a finished one read as blank. */
+          var pill = el('div', 'scheduleCard__pill scheduleCard__pill--' + item.status +
+            (item.milestone ? ' scheduleCard__pill--milestone' : ''));
           if (slot.clipStart) {
             pill.className += ' scheduleCard__pill--clipStart';
           }
@@ -658,10 +699,18 @@
 
     /* ---- Zoom ---- */
 
-    function setWeeks(next, recentre) {
+    /* anchorOffset is where in the visible track the date being read should
+       stay put; it defaults to the middle. Zooming does NOT return to today --
+       that would throw away the user's position every time they changed scale,
+       and the "Today" button is there for when they do want to go back. */
+    function setWeeks(next, anchorOffset) {
       if (ZOOMS.indexOf(next) === -1 || next === weeks) {
         return;
       }
+      /* trackWidth depends only on the measured viewport, never on the zoom
+         stop, so the same offset is valid before and after the change. */
+      var offset = typeof anchorOffset === 'number' ? anchorOffset : trackWidth / 2;
+      var anchorDay = dayAtTrackOffset(offset);
       weeks = next;
       try {
         window.localStorage.setItem(STORAGE_KEY, String(weeks));
@@ -669,10 +718,7 @@
         // The zoom still applies to this page view.
       }
       syncZoomButtons();
-      render();
-      if (recentre !== false) {
-        centreOnToday();
-      }
+      renderAnchored(anchorDay, offset);
     }
 
     function syncZoomButtons() {
@@ -705,7 +751,11 @@
       var at = ZOOMS.indexOf(weeks);
       var step = event.deltaY > 0 ? 1 : -1;
       var target = ZOOMS[Math.min(ZOOMS.length - 1, Math.max(0, at + step))];
-      setWeeks(target);
+      /* Zoom about the pointer, the way every map does: the date under the
+         cursor is the one the user is pointing at. Over the label column the
+         offset goes negative, so fall back to the centre. */
+      var pointer = event.clientX - scroll.getBoundingClientRect().left - labelWidth;
+      setWeeks(target, pointer >= 0 && pointer <= trackWidth ? pointer : trackWidth / 2);
     }, { passive: false });
 
     /* ---- Reflow ---- */
@@ -717,10 +767,8 @@
       }
       resizeTimer = window.setTimeout(function () {
         resizeTimer = null;
-        var anchor = scroll.scrollLeft + trackWidth / 2;
-        var anchorDay = pxPerDay ? anchor / pxPerDay : todayDay;
-        render();
-        scroll.scrollLeft = Math.max(0, anchorDay * pxPerDay - trackWidth / 2);
+        /* Centre before, centre after -- each measured at its own trackWidth. */
+        renderAnchored(dayAtTrackOffset(trackWidth / 2));
       }, 120);
     }
 

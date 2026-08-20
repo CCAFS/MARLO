@@ -38,13 +38,14 @@ several phases are open at once — which is the normal state, not the exception
 
 ### Functional
 
-- **ENH-SCHED-FN-001** — The card MUST render one lane per **open or upcoming** reporting phase, with
+- **ENH-SCHED-FN-001** — The card MUST render one lane per **open or not-started** reporting phase, with
   a bar positioned by real dates. Closed phases MUST NOT be rendered.
 - **ENH-SCHED-FN-002** — Each phase lane MUST show the phase name, its full date range, and a
   countdown pill in the sticky label column (not at the bar's right edge, which scrolls out of view).
 - **ENH-SCHED-FN-003** — The countdown MUST read `N days left` while open, `Last day` on the end
   date, `Past its end date` for a phase reopened beyond its end date, and `Opens in N days` /
-  `Opens tomorrow` for an upcoming phase.
+  `Opens tomorrow` for a phase that has not started. (The countdown is timing, not status: a
+  not-started phase still shows when it opens.)
 - **ENH-SCHED-FN-004** — Platform-wide timeline activities (`Timeline`, scoped to the current global
   unit) MUST be packed into exactly **three** reserved lanes by greedy first-fit, ordered by start
   date with the `order` field as tiebreaker.
@@ -52,13 +53,18 @@ several phases are open at once — which is the normal state, not the exception
   overflow strip, never inside the three packed lanes. Clicking a chip MUST open a popover listing
   those activities with name, date range and status.
 - **ENH-SCHED-FN-006** — An activity whose start equals its end MUST render as a single-day milestone
-  capsule wide enough to read its label, not a zero-width bar.
+  capsule wide enough to read its label, not a zero-width bar. Shape and status are **independent**:
+  the capsule MUST still carry its status colour and status dot.
 - **ENH-SCHED-FN-007** — Zoom MUST offer 2 / 4 / 8 / 16 visible weeks, defaulting to 8, and MUST
   recompute the lane packing — not stretch the DOM. Modifier + wheel MUST step the zoom.
 - **ENH-SCHED-FN-008** — The zoom choice MUST persist per browser via `localStorage`.
 - **ENH-SCHED-FN-009** — A single vertical today marker MUST span all lanes, with a `TODAY` badge on
   the axis row aligned to the same offset.
-- **ENH-SCHED-FN-010** — "Jump to today" MUST re-centre the track; any zoom change MUST also re-centre.
+- **ENH-SCHED-FN-010** — The `Today` button MUST re-centre the track on today. A zoom change MUST
+  **preserve** the user's position instead: the buttons keep the day at the centre of the viewport,
+  and modifier + wheel keeps the day under the pointer. (Amended 2026-08-19; this originally required
+  every zoom change to re-centre on today, which discards the user's position each time they change
+  scale. See the Decision Log.)
 - **ENH-SCHED-FN-011** — The footer MUST report the packing honestly: the window size, the span of
   the rendered range, and how many of the total activities were placed.
 - **ENH-SCHED-FN-012** — When no phase is open, the card MUST render a designed zero-state naming the
@@ -112,10 +118,16 @@ several phases are open at once — which is the normal state, not the exception
   treatment; given an editable phase whose end date has passed, then it reads `Past its end date`.
 - **AC-003** (FN-004, FN-005) — Given N activities, then the sum of the three lane counts plus the
   overflow count equals N at every zoom stop, and no chip is drawn inside lanes 1–3.
+- **AC-004b** (FN-006) — Given a single-day activity whose date has passed, then it renders in the
+  `Completed` colour with a visible `Completed` dot, and still with the dashed single-day edge.
 - **AC-004** (FN-006) — Given an activity with start equal to end, then it renders as a dashed capsule
   approximately 178px wide with its label legible.
 - **AC-005** (FN-007, FN-010) — Given any zoom stop, when it is selected, then the packing is
-  recomputed, the track re-centres on today, no pill escapes the track, and no label clips mid-word.
+  recomputed, no pill escapes the track, and no label clips mid-word.
+- **AC-005b** (FN-010) — Given the track is scrolled to a date away from today, when the zoom changes
+  by button, then the date at the centre of the viewport is unchanged; when it changes by modifier +
+  wheel, then the date under the pointer is unchanged. Except where the timeline's end clamps
+  `scrollLeft`, which is permitted.
 - **AC-006** (FN-008) — Given a user picks 16 weeks and reloads, then the card renders at 16 weeks.
 - **AC-007** (FN-009) — Given today falls inside the rendered range, then the today line's offset
   equals the `TODAY` badge's offset exactly.
@@ -139,7 +151,7 @@ several phases are open at once — which is the normal state, not the exception
 | 5. Schema changes ship as Flyway migrations | Not applicable — no schema change. |
 | 6. GPL header on every new Java file | Not applicable — no new Java file; `DashboardAction.java` already carries it. |
 | 7. Code style, Checkstyle gate | Honored on the rules — Checkstyle 8.18 with `configuration/marlo-checkstyle.xml` reports zero violations on the changed Java file. **The `mvn checkstyle:check` goal is broken repo-wide** (plugin 2.9.1 vs checkstyle 8.18, `NoSuchMethodError`), pre-existing and unrelated to this change — see `task.md` §1. |
-| 8. English only; user-facing strings i18n-keyed | Honored — 44 keys under `dashboard.schedule.*`. |
+| 8. English only; user-facing strings i18n-keyed | Honored — 43 keys under `dashboard.schedule.*`. |
 | 9. Branching | Honored — feature branch `A2-2398-US1-Re-design-MARLO-home-page`; `staging` is the integration branch. |
 | 10. Run scripts / Java 17 | Honored — built and verified with Zulu 17. |
 | 11. Dependency baseline | Honored — no dependency change. |
@@ -179,7 +191,27 @@ several phases are open at once — which is the normal state, not the exception
   `timelineManagement.help` previously promised admins that dates do not determine order; it has been
   reworded. Packing strictly in `order` sequence would strand a late activity in lane 1 above an
   earlier one, which reads as a bug.
-- 2026-08-19 — **Phase bars render only `In progress` or `Upcoming`; no completion percentage.** — The
+- 2026-08-19 — **A single-day activity keeps its status; `--milestone` now styles shape only.** — QA
+  spotted "MARLO AICCRA opens for reporting" rendering white although its date had passed. Two faults
+  stacked. In `schedule.js` the class was chosen by ternary — `item.milestone ? 'milestone' :
+  item.status` — so a milestone got the shape class *instead of* the status class and had no fill, no
+  border colour and no status dot at all (the dot computed to `rgba(0, 0, 0, 0)`). In the stylesheet
+  `--milestone` also set `background`, `border-color` and `color`, and being later in source with equal
+  specificity it would have outranked every status rule anyway. The pill now carries **both** classes
+  and `--milestone` keeps only `border-style: dashed`. The status calculation itself was always
+  correct, and the overflow popover had always shown the right dot — which is why the same activity
+  looked finished in the popover and blank on the track. Contrast re-checked: 5.87:1 completed,
+  5.52:1 not started.
+- 2026-08-19 — **`Upcoming` is removed; a future phase is `Not started`.** — The two categories were
+  computed by the same test — `startDate > today` — one applied to phases (`upcoming`) and one to
+  activities (`notStarted`), so the legend carried five swatches for four real states. A future phase
+  now takes the `Not started` treatment that future activities already had, which also gives
+  `.scheduleCard__bar--notStarted` a referent; it previously had none, since phases could never reach
+  that status. Contrast re-checked: 6.05:1 on the amber bar, 5.52:1 on the pill. `Opens in N days` is
+  unaffected — it is timing, not status. **Not touched:** the phase selector (`timeline-phases.ftl`)
+  keeps its own independent `upcoming` vocabulary and `phaseSelector.summary` still reads
+  `N open · N closed · N upcoming`; aligning it is a separate change to a separate component.
+- 2026-08-19 — **Phase bars render only `In progress` or `Not started`; no completion percentage.** — The
   design mockup showed a phase as "Not started · 24%" while its date range contained today, so phase
   status there was neither date-derived nor backed by data. `Phase` carries only `startDate`,
   `endDate`, `editable`, `visible`, `year`, `name`, `description`, `upkeep` and `next`. `Not started`
@@ -208,9 +240,31 @@ several phases are open at once — which is the normal state, not the exception
   edge. Thickness is platform-dependent (0 for overlay bars, 11-15px for classic ones), so
   `schedule.js` measures both axes into `--sched-hbar` / `--sched-vbar`. A second `ResizeObserver`
   watches the **canvas**, not the scroll container: the container's height is capped by `max-height`,
-  so it never reports the content growth (a web font swapping in) that makes a vertical bar appear
+  so it never reports content growth (a web font swapping in) that could make a vertical bar appear
   after boot. That observer only re-measures the bars, which affects no layout, so it cannot feed
-  itself.
+  itself. **Correction:** this observer was originally justified by an apparently stale `--sched-vbar`
+  on the four-phase fixture. That reading was a harness artifact — the verification browser pane does
+  not deliver `ResizeObserver` or `requestAnimationFrame` callbacks, so the DOM was simply stale
+  relative to the viewport. The observer is kept as defence for the font-swap case, which is real, but
+  no such defect was ever observed.
+- 2026-08-19 — **DOM is cleared through jQuery so jQuery UI releases its tooltip.** — QA reported the
+  `ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content` div sticking to the screen
+  after zooming with `Cmd` + scroll over a card. Cause: `clear()` used native `removeChild`, which
+  bypasses jQuery UI's `$.cleanData` override and therefore the `remove` handler the widget relies on
+  to close a delegated tooltip. Zoom-by-wheel guarantees the cursor is over a bar, so the hovered
+  element was destroyed under an open tooltip. Rejected `$(document).tooltip('close')` in `render()`:
+  it treats the symptom, assumes the widget stays bound to `document`, and would silently stop working
+  if `global.js` changed. Rejected dropping the `title` attributes: they are how a truncated pill
+  label is read. See `design.md` §10 — this hazard applies to any dynamically rebuilt DOM in MARLO.
+- 2026-08-19 — **Changing the zoom keeps the user's position instead of jumping to today.** — Every
+  zoom change called `centreOnToday()`, so a user reading, say, early 2025 was thrown back to today
+  and had to scroll out again after each step. The buttons now pin the day at the centre of the
+  viewport, and `Ctrl`/`Cmd` + wheel pins the day under the pointer, which is what a scale control is
+  expected to do. Returning to today stays available and explicit through the `Today` button. The
+  resize path already worked this way, so both now share `dayAtTrackOffset` / `renderAnchored`; note
+  that `renderAnchored` must apply the **post**-render half-width when re-centring, because a resize
+  changes `trackWidth` while a zoom does not. Position is preserved exactly except where the timeline
+  end clamps `scrollLeft`, which is unavoidable.
 - 2026-08-19 — **The scroll container's `:focus` ring was removed.** — Requested; the browser default
   ring still marks keyboard focus on `tabindex="0"`, and MARLO's only universal focus reset is scoped
   to `.loginForm` (`customLogin.css:293`), so the indicator survives for WCAG 2.4.7.

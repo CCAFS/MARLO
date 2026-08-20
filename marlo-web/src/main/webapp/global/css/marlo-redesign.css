@@ -88,7 +88,6 @@
   --marlo-info-solid: #15719B;
   --marlo-success-solid: #2E7D32;
   --marlo-warning-ink: #4A3000;
-  --marlo-outline-dashed: #C3CBD5;
 
   /* Today marker — darker than --marlo-danger so a 2px hairline still reads
      against white. */

@@ -22,6 +22,14 @@
 - Browser verification ran against a static harness that loads the **real** `dashboard.css` and the
   **real** `schedule.js` with fixture payloads, plus a FreeMarker 2.3.32 renderer driving the **real**
   template block. See Testing Plan.
+- **Harness limitation, learned the hard way.** The verification browser pane does not deliver
+  `ResizeObserver` or `requestAnimationFrame` callbacks — a plain observer attached by hand fired 0
+  times while the observed element demonstrably resized, and `requestAnimationFrame` never ran, though
+  `setTimeout` did. So the DOM goes stale relative to the viewport and any measurement taken after a
+  programmatic resize is worthless. Every sample must be guarded by an invariant that proves the
+  layout is fresh; the checks below use the today marker's `style.left`, which must always resolve to
+  day 72 on the reference fixture. Resize-triggered behaviour cannot be verified here at all and needs
+  a real browser. Synchronous paths (clicks, dispatched wheel events) are unaffected.
 - **The first run in Tomcat failed** with a FreeMarker `ParseException` on the `data-schedule`
   interpolation, blanking the dashboard. Cause: the payload used `?html`, which Struts 6.8.0's
   auto-escaping policy rejects at parse time (`design.md` ADR-7). The harness had not caught it
@@ -45,10 +53,10 @@
 |---|---|---|---|---|
 | ENH-HOMEPAGE-SCHEDULE-001-T01 | Replace the 17 `dashboard.reportingTimeline.*` keys with 44 `dashboard.schedule.*` keys | — | New section header comment follows the `# <Name> (<view path>)` convention | `grep -rn reportingTimeline marlo-web/src` returns nothing |
 | …-T02 | Reword `timelineManagement.help` to describe date-driven placement and the `order` tiebreaker | T01 | Old text about dates not determining order is gone; the pre-existing "if its filled" typo is gone | Rendered raw in `timelineManagement.ftl`, so the `<em>` still works |
-| …-T03 | Add five tokens to the single `:root` in `marlo-redesign.css` | — | `--marlo-info-solid`, `--marlo-success-solid`, `--marlo-warning-ink`, `--marlo-outline-dashed`, `--marlo-today-line` | `getComputedStyle` resolves `--marlo-today-line` to `#C7401C` |
+| …-T03 | Add four tokens to the single `:root` in `marlo-redesign.css` | — | `--marlo-info-solid`, `--marlo-success-solid`, `--marlo-warning-ink`, `--marlo-today-line` | `getComputedStyle` resolves `--marlo-today-line` to `#C7401C`; `--marlo-outline-dashed` was added then retired once its last use went |
 | …-T04 | Replace the `.reportTimeline` CSS block with `.scheduleCard` | T03 | Stacking contract commented; card shell recipe reused verbatim from the existing pattern | Brace balance unchanged; zero `.reportTimeline` selectors remain |
 | …-T05 | Write `webapp/crp/js/home/schedule.js` (ES5 IIFE) | T04 | Measures the track, packs three lanes, paints axis/bars/pills/chips, owns zoom + popover | `node --check` passes; no `let`/`const`/arrow/template literals |
-| …-T06 | Replace the gated card block in `dashboard.ftl` and emit the `data-schedule` payload | T01, T05 | `homepage_timeline_active` gate kept; open + upcoming phases only | Renders through FreeMarker 2.3.32 with valid JSON and no missing keys |
+| …-T06 | Replace the gated card block in `dashboard.ftl` and emit the `data-schedule` payload | T01, T05 | `homepage_timeline_active` gate kept; open + not-started phases only | Renders through FreeMarker 2.3.32 with valid JSON and no missing keys |
 | …-T07 | Delete the dead hardcoded 2016/2017 `[#assign timeline = [...]]` sequence | T06 | Nothing lists or dereferences it | `grep` for `#list timeline` / `timeline as` returns nothing |
 | …-T08 | Register `schedule.js` in `customJS` and bump cache-bust query strings | T05, T06 | Loaded from `baseUrlMedia`, after `utils.js`/`global.js` | Present in the `customJS` assign at the top of `dashboard.ftl` |
 | …-T09 | Remove `initReportTimeline()` and its call from `dashboard.js` | T06 | No dangling reference | `node --check` passes; `grep initReportTimeline` returns nothing |
@@ -72,6 +80,10 @@ T05, T06, T10, T11 ──> T12 ──> T13
 
 ## 5. Testing Plan
 
+The browser harness loads real jQuery 3.x + jQuery UI 1.12.1 and a verbatim replica of the
+`global.js` tooltip initialiser, because the stuck-tooltip defect is an interaction with that widget
+and cannot be reproduced without it.
+
 ### Server-side template (FreeMarker 2.3.32, real block, stubbed `s:` namespace)
 
 Configured exactly as Struts 6.8.0 configures it, auto-escaping and HTML output format included; a
@@ -80,13 +92,13 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Scenario | Result |
 |---|---|
 | control: `?html` reinstated | fails to parse with the exact production message at the same column — the harness reproduces the defect it previously missed |
-| reference (2 open, 1 upcoming, 2 closed, 1 null-date phase) | 3 lanes; closed and null-date phases excluded; valid JSON |
+| reference (2 open, 1 not started, 2 closed, 1 null-date phase) | 3 lanes; closed and null-date phases excluded; valid JSON; statuses `inProgress`, `inProgress`, `notStarted` |
 | all i18n keys | zero `MISSING_KEY` across every scenario |
 | hostile descriptions (`<script>`, `"`, `'`, `<b>`, `&`, `\`, newline, tab, unicode) | valid JSON; raw attribute contains no literal `"` and no `<script` |
 | blank description / null dates | skipped, not rendered as empty pills |
 | `order` as `2.0` and `6.5` | serialized as `2` and `6.5`; JSON-parseable |
 | zero open phases | zero-state renders; `emptyNext` present, `browseClosed` present, no frame |
-| zero open **and** zero upcoming | zero-state renders **without** the next-phase panel |
+| zero open **and** none not started | zero-state renders **without** the next-phase panel |
 | countdown edges | `10 days left` URGENT · `42 days left` neutral · `Last day` URGENT · `Past its end date` URGENT · `Opens tomorrow` · `Opens in 43 days` |
 | "notify" anywhere in output | 0 occurrences |
 
@@ -101,7 +113,9 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Negative offsets | none |
 | Today line vs `TODAY` badge offset | identical (0px delta) at every stop |
 | Minimum chip gap vs the 190px merge threshold | ≥ 198px in every scenario |
-| Milestones | dashed capsules, 178px, labels legible; 20/20 packed as 7/7/6 |
+| Milestones | dashed capsules, 178px at every zoom, labels legible; 20/20 packed as 7/7/6 |
+| Milestone status colour (QA report) | all-milestones fixture: 0 mismatches against the date-derived status at 2/8/16 wks, 0 pills without a status class, every milestone still dashed; all three statuses reachable (11 completed / 1 in progress / 8 not started) |
+| Activity accounting after the change | pills + chip totals = 20 at every zoom stop |
 | Labels clipped mid-word, all stops | none, after T11 |
 | Page body horizontal scroll | never |
 | 4 phase lanes | clamps at `max-height: 388px` and scrolls vertically |
@@ -111,8 +125,15 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | Modifier + wheel | 8 → 4 → 2 in, clamps at 2; 3 steps out → 16, clamps at 16 |
 | Plain wheel | not `preventDefault`ed; page scrolling preserved |
 | Jump to today | restores the centre offset exactly |
+| Zoom keeps position (buttons) | centre day held across 4 → 2 → 16 → 4 → 8, no clamping |
+| Legend after removing `Upcoming` | 4 swatches: Not started, In progress, Completed, Today; zero `upcoming` classes left in the rendered card |
+| Future phase bar | `--notStarted`, amber `rgb(245,166,35)` on ink `rgb(74,48,0)`, 6.05:1 — matches its legend swatch |
+| Stuck jQuery UI tooltip (QA report) | reproduced with native `clear()` — orphaned `.ui-tooltip` in `<body>` after the hovered pill was destroyed; 0 stuck after the fix, across `Cmd`+wheel, `Ctrl`+wheel and both zoom buttons, with every trial confirmed to have actually re-rendered |
+| Tooltips still function after the fix | hover reopens one normally |
+| Render cost, 400 activities, 8 zoom changes | median 3.1ms, worst 8.1ms; card still 535px |
+| Zoom keeps position (modifier + wheel) | day under the pointer held at 80% across the track while the centre correctly moved |
+| Focus ring | removed on request; the browser default still marks keyboard focus |
 | Overflow popover | opens, `role="dialog"`, lists name + dates + status, escapes the frame's clipping, closes on Escape and resets `aria-expanded` |
-| Focus ring | computes to `solid 2px rgb(199, 64, 28)` at `-2px` offset |
 | Script injection | `window.__pwned` undefined; 0 `<script>` and 0 `<b>` elements inside the card |
 | WCAG 2.5.3 Label in Name on the zoom buttons | all four pass — the visible `8 wks` is a substring of the accessible name |
 | Axis ticks in the accessibility tree | 0 exposed at every stop (25 ticks at 2 wks, 5 at 8 wks); the `TODAY` badge stays exposed |
@@ -144,7 +165,8 @@ scripted to perform were then run by hand instead, and all passed:
 
 - The bundle loads through `java.util.Properties`: 5897 keys, 44 under `dashboard.schedule.*`, and the
   `\u2013` / `\u2318` / `\u00b7` escapes decode to `–`, `⌘` and `·`.
-- 44 keys defined, 44 referenced — no unused key and no undefined reference.
+- 43 keys defined, 43 referenced — no unused key and no undefined reference. (`legend.upcoming`
+  retired with the category; 6 render scenarios show zero `MISSING_KEY`.)
 - Placeholder arity matches the `[@s.param]` count at every call site.
 - Repo-wide grep for `reportTimeline`, `reportingTimeline` and `initReportTimeline`: no survivors.
 - `timelineManagement.help` is rendered with `[@s.text /]` inside a `<p>`, unescaped, so its `<em>`
