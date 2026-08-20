@@ -36,6 +36,14 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Backing action for the System Admin > Parameters screen.
+ * <p>
+ * IMPORTANT (developers): the view (marloParameters.ftl) relabels 'crp' as 'System' for display purposes
+ * only. Parameter keys are persisted and read with their original `crp_` prefix, so any database lookup,
+ * {@code hasSpecificities()} / {@code specificityValue()} call or APConstants constant MUST use the stored
+ * key (for example {@code crp_has_contact_point}), never the label shown in the UI.
+ */
 public class CrpParametersAction extends BaseAction {
 
 

@@ -2,7 +2,7 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260618" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260820" ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260618" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "parameters" /]
@@ -116,7 +116,24 @@
         <input type="hidden" name="${customName}.parameter.description" value="${(element.parameter.description)!}" />
         <input type="hidden" name="${customName}.paramater.key" value="${(element.parameter.key)!}" />
         <input type="hidden" name="${customName}.parameter.category" value="${(element.parameter.category)!}" />
-        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description?replace('\n', '<br>'))!})</i></small>
+        [#--
+          IMPORTANT (developers): the label rendered below is a DISPLAY-ONLY relabeling of 'crp' to 'System'.
+          Nothing is renamed in the database: the `parameters` table keeps the original `crp_` prefix in
+          `key` and the original wording in `description`, and the hidden inputs above submit them verbatim,
+          so saving this form never rewrites them.
+
+          To look a parameter up, ALWAYS use the stored key, never the label shown on screen:
+            SELECT * FROM parameters WHERE `key` = 'crp_has_contact_point';    -- correct
+            SELECT * FROM parameters WHERE `key` = 'system_has_contact_point'; -- returns no rows
+          Same rule for custom_parameters (joined through parameter_id) and for the APConstants constants in
+          marlo-data and marlo-web: their value MUST keep matching parameters.key, so they stay 'crp_...'.
+
+          Only relabel here. Renaming a key for real means a Flyway migration plus both APConstants files
+          plus every usage, and it is out of scope for this view.
+        --]
+        [#local displayKey = (element.parameter.key?replace(r'^crp_', 'system_', 'r'))!'' ]
+        [#local displayDescription = (element.parameter.description?replace('\n', '<br>')?replace(r'\bCRPs\b', 'Systems', 'ri')?replace(r'\bCRP\b', 'System', 'ri'))!'' ]
+        <strong>${displayKey} </strong> <br /> <small><i>(${displayDescription})</i></small>
       [/#if]
     </td>
     <td class="col-md-3 text-center">
