@@ -128,22 +128,18 @@
   [/#function]
 
   [#-- Only a phase with both dates can be plotted. --]
-  [#assign scLanes = [] /]
   [#assign scOpenCount = 0 /]
   [#assign scNotStarted = [] /]
   [#list (phases)![] as phase]
     [#if (phase.startDate)?? && (phase.endDate)??]
       [#assign scStatus = scPhaseStatus(phase) /]
       [#if scStatus == "inProgress"]
-        [#assign scLanes = scLanes + [phase] /]
         [#assign scOpenCount = scOpenCount + 1 /]
       [#elseif scStatus == "notStarted"]
-        [#assign scLanes = scLanes + [phase] /]
         [#assign scNotStarted = scNotStarted + [phase] /]
       [/#if]
     [/#if]
   [/#list]
-  [#assign scClosedCount = (phases?size)!0 - scLanes?size /]
 
   [#-- Timeline activities are global-unit wide: not per project, not per phase.
        DashboardAction sorts them; anything missing a date or a description
@@ -162,9 +158,24 @@
     [#assign scMonths = scMonths + [("2001-" + scMonthIndex?string("00") + "-01")?date("yyyy-MM-dd")?string("MMM")] /]
   [/#list]
 
-  [#assign scPhaseJson = [] /]
-  [#list scLanes as phase]
-    [#assign scPhaseJson = scPhaseJson + ['{"name":"' + ((phase.composedName)!'')?json_string + '","status":"' + scPhaseStatus(phase) + '","start":"' + phase.startDate?date?string("yyyy-MM-dd") + '","end":"' + phase.endDate?date?string("yyyy-MM-dd") + '","dates":"' + phase.startDate?date?string("dd MMM") + ' \\u2013 ' + phase.endDate?date?string("dd MMM yyyy") + '"}'] /]
+  [#-- The next activity is the soonest one that has not started yet; scItems is
+       ordered by the admin's `order`, not by date, so this has to scan. --]
+  [#assign scNextItem = [] /]
+  [#list scItems as activity]
+    [#if activity.startDate?date gt scToday]
+      [#if !scNextItem?has_content || activity.startDate?date lt scNextItem[0].startDate?date]
+        [#assign scNextItem = [activity] /]
+      [/#if]
+    [/#if]
+  [/#list]
+
+  [#-- Fallback when nothing is ahead in the timeline: the soonest phase still
+       to open. Used to be the zero-open-phases state's only content. --]
+  [#assign scNextPhase = [] /]
+  [#list scNotStarted as phase]
+    [#if !scNextPhase?has_content || phase.startDate?date lt scNextPhase[0].startDate?date]
+      [#assign scNextPhase = [phase] /]
+    [/#if]
   [/#list]
 
   [#assign scItemJson = [] /]
@@ -181,7 +192,7 @@
          Both layers are load-bearing: activity descriptions are free text typed
          by users. The en dash is written as a JSON \u escape so the payload
          stays pure ASCII. --]
-    data-schedule="${('{"today":"' + scToday?string("yyyy-MM-dd") + '","months":["' + scMonths?join('","') + '"]' + ',"phases":[' + scPhaseJson?join(",") + ']' + ',"activities":[' + scItemJson?join(",") + ']}')}"
+    data-schedule="${('{"today":"' + scToday?string("yyyy-MM-dd") + '","months":["' + scMonths?join('","') + '"]' + ',"activities":[' + scItemJson?join(",") + ']}')}"
     data-label-notstarted="[@s.text name="dashboard.schedule.legend.notStarted" /]"
     data-label-inprogress="[@s.text name="dashboard.schedule.legend.inProgress" /]"
     data-label-completed="[@s.text name="dashboard.schedule.legend.completed" /]"
@@ -213,166 +224,116 @@
       </div>
     </div>
 
-    [#if scOpenCount gt 0]
-      <div class="scheduleCard__controls">
-        <div class="scheduleCard__zoom" role="group" aria-label="[@s.text name="dashboard.schedule.zoom.label" /]">
-          [#list [2, 4, 8, 16] as scWeeks]
-            <button type="button" class="scheduleCard__zoomBtn" data-weeks="${scWeeks?c}"
-              aria-pressed="${(scWeeks == 8)?string}"
-              aria-label="[@s.text name="dashboard.schedule.zoom.accessibleName"][@s.param]${scWeeks?c}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.zoom.weeks"][@s.param]${scWeeks?c}[/@s.param][/@s.text]</button>
-          [/#list]
-        </div>
-        <button type="button" class="scheduleCard__jump" id="scheduleJump">
-          <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
-        </button>
-      </div>
-
-      <div class="scheduleCard__frame">
-        <div class="scheduleCard__scroll" id="scheduleScroll" tabindex="0"
-          aria-label="[@s.text name="dashboard.schedule.scroll.accessibleName" /]">
-          <div class="scheduleCard__canvas" id="scheduleCanvas">
-            <div class="scheduleCard__gridLayer" id="scheduleGrid" aria-hidden="true"></div>
-            <div class="scheduleCard__nowLayer" id="scheduleNow" aria-hidden="true"></div>
-
-            <div class="scheduleCard__row scheduleCard__row--axis">
-              <div class="scheduleCard__cell scheduleCard__cell--label">
-                <span class="scheduleCard__eyebrow" id="scheduleViewLabel"
-                  data-label="[@s.text name="dashboard.schedule.viewLabel"][@s.param]{0}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.viewLabel"][@s.param]8[/@s.param][/@s.text]</span>
-              </div>
-              <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
+    <div class="scheduleCard__layout">
+      <div class="scheduleCard__main" id="scheduleMain">
+          <div class="scheduleCard__controls">
+            <div class="scheduleCard__zoom" role="group" aria-label="[@s.text name="dashboard.schedule.zoom.label" /]">
+              [#list [2, 4, 8, 16] as scWeeks]
+                <button type="button" class="scheduleCard__zoomBtn" data-weeks="${scWeeks?c}"
+                  aria-pressed="${(scWeeks == 8)?string}"
+                  aria-label="[@s.text name="dashboard.schedule.zoom.accessibleName"][@s.param]${scWeeks?c}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.zoom.weeks"][@s.param]${scWeeks?c}[/@s.param][/@s.text]</button>
+              [/#list]
             </div>
-
-            <div class="scheduleCard__row scheduleCard__row--section">
-              <div class="scheduleCard__cell scheduleCard__cell--label">
-                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.phases.title" /]</span>
-                <span class="scheduleCard__badge">
-                  [#if scOpenCount == 1][@s.text name="dashboard.schedule.phases.oneOpen" /]
-                  [#else][@s.text name="dashboard.schedule.phases.open"][@s.param]${scOpenCount?c}[/@s.param][/@s.text][/#if]
-                </span>
-              </div>
-              <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="phases"></div>
-            </div>
-
-            [#list scLanes as phase]
-              [#assign scStatus = scPhaseStatus(phase) /]
-              [#assign scRemaining = ((phase.endDate?long - scToday?long) / scDayMs)?round /]
-              [#assign scUntilOpen = ((phase.startDate?long - scToday?long) / scDayMs)?round /]
-              <div class="scheduleCard__row scheduleCard__row--phase scheduleCard__row--${scStatus}">
-                <div class="scheduleCard__cell scheduleCard__cell--label">
-                  <span class="scheduleCard__phaseLabel">
-                    <span class="scheduleCard__phaseName">
-                      <span>${(phase.composedName)!}</span>
-                      [#-- The countdown sits beside the name rather than at the
-                           bar's right edge, which scrolls out of view. --]
-                      [#if scStatus == "inProgress"]
-                        <span class="scheduleCard__count[#if scRemaining lt 15] scheduleCard__count--urgent[/#if]">
-                          [#if scRemaining gt 0][@s.text name="dashboard.schedule.daysLeft"][@s.param]${scRemaining?c}[/@s.param][/@s.text]
-                          [#elseif scRemaining == 0][@s.text name="dashboard.schedule.lastDay" /]
-                          [#else][@s.text name="dashboard.schedule.overdue" /][/#if]
-                        </span>
-                      [#else]
-                        <span class="scheduleCard__count">
-                          [#if scUntilOpen lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
-                          [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scUntilOpen?c}[/@s.param][/@s.text][/#if]
-                        </span>
-                      [/#if]
-                    </span>
-                    <span class="scheduleCard__phaseDates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
-                  </span>
-                </div>
-                <div class="scheduleCard__cell scheduleCard__cell--track" data-phase-track="${phase_index?c}"></div>
-              </div>
-            [/#list]
-
-            <div class="scheduleCard__row scheduleCard__row--section">
-              <div class="scheduleCard__cell scheduleCard__cell--label">
-                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.activities.title" /]</span>
-                <span class="scheduleCard__badge">${scItems?size?c}</span>
-              </div>
-              <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="activities"></div>
-            </div>
-
-            [#-- Three reserved lanes and one overflow strip, whatever the
-                 activity count. A lane carries no meaning of its own: an
-                 activity can change lane as the window changes, which is the
-                 price of a container that never grows. --]
-            [#list 0..2 as scLane]
-              <div class="scheduleCard__row scheduleCard__row--lane">
-                <div class="scheduleCard__cell scheduleCard__cell--label">
-                  <span class="scheduleCard__laneName">[@s.text name="dashboard.schedule.laneName"][@s.param]${(scLane + 1)?c}[/@s.param][/@s.text]</span>
-                  <span class="scheduleCard__laneCount" data-lane-count="${scLane?c}">0</span>
-                </div>
-                <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
-              </div>
-            [/#list]
-
-            <div class="scheduleCard__row scheduleCard__row--overflow">
-              <div class="scheduleCard__cell scheduleCard__cell--label">
-                <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.overflow.title" /]</span>
-                <span class="scheduleCard__badge" id="scheduleOverflowCount">0</span>
-              </div>
-              <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleOverflowTrack"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      [#if scItems?size == 0]
-        <p class="scheduleCard__laneEmpty">[@s.text name="dashboard.schedule.activities.none" /]</p>
-      [/#if]
-
-      [#-- The footer reports the packing honestly rather than implying every
-           activity found a lane. --]
-      <div class="scheduleCard__foot">
-        <span id="scheduleFootLeft"
-          data-window="[@s.text name="dashboard.schedule.foot.window"][@s.param]{0}[/@s.param][/@s.text]"
-          data-span="[@s.text name="dashboard.schedule.foot.span"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"></span>
-        <span id="scheduleFootRight"
-          data-placed="[@s.text name="dashboard.schedule.foot.placed"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
-          data-all-placed="[@s.text name="dashboard.schedule.foot.allPlaced"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"
-          data-hint="[@s.text name="dashboard.schedule.foot.hint" /]"></span>
-      </div>
-    [#else]
-      [#-- No open phase is a real state between reporting cycles, not an error,
-           so it keeps the card shell and says what happens next. --]
-      [#assign scNext = [] /]
-      [#list scNotStarted as phase]
-        [#if !scNext?has_content || phase.startDate?date lt scNext[0].startDate?date]
-          [#assign scNext = [phase] /]
-        [/#if]
-      [/#list]
-
-      <div class="scheduleCard__empty">
-        <div class="scheduleCard__emptyMain">
-          <span class="scheduleCard__emptyTitle">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M5.2 8.3 7 10.1l3.8-3.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            [@s.text name="dashboard.schedule.empty.title" /]
-          </span>
-          <p>[@s.text name="dashboard.schedule.empty.text" /]</p>
-          [#if scClosedCount gt 0]
-            [#-- Closed phases are browsed in the selector's own popover; this
-                 only points at it rather than duplicating the list. --]
-            <button type="button" class="scheduleCard__emptyBrowse" id="scheduleBrowseClosed">
-              [@s.text name="dashboard.schedule.empty.browse"][@s.param]${scClosedCount?c}[/@s.param][/@s.text]
+            <button type="button" class="scheduleCard__jump" id="scheduleJump">
+              <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
             </button>
-          [/#if]
-        </div>
-
-        [#if scNext?has_content]
-          [#assign scUntilOpen = ((scNext[0].startDate?long - scToday?long) / scDayMs)?round /]
-          <div class="scheduleCard__emptyNext">
-            <span class="scheduleCard__emptyEyebrow">[@s.text name="dashboard.schedule.empty.nextEyebrow" /]</span>
-            <span class="scheduleCard__emptyPhase">${(scNext[0].composedName)!}</span>
-            <span class="scheduleCard__emptyDates">[@s.text name="dashboard.schedule.empty.nextDates"][@s.param]${scNext[0].startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${scNext[0].endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
-            <span class="scheduleCard__emptyChip">
-              [#if scUntilOpen lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
-              [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scUntilOpen?c}[/@s.param][/@s.text][/#if]
-            </span>
           </div>
-        [/#if]
+
+          <div class="scheduleCard__frame">
+            <div class="scheduleCard__scroll" id="scheduleScroll" tabindex="0"
+              aria-label="[@s.text name="dashboard.schedule.scroll.accessibleName" /]">
+              <div class="scheduleCard__canvas" id="scheduleCanvas">
+                <div class="scheduleCard__gridLayer" id="scheduleGrid" aria-hidden="true"></div>
+                <div class="scheduleCard__nowLayer" id="scheduleNow" aria-hidden="true"></div>
+
+                <div class="scheduleCard__row scheduleCard__row--axis">
+                  <div class="scheduleCard__cell scheduleCard__cell--label">
+                    <span class="scheduleCard__eyebrow" id="scheduleViewLabel"
+                      data-label="[@s.text name="dashboard.schedule.viewLabel"][@s.param]{0}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.viewLabel"][@s.param]8[/@s.param][/@s.text]</span>
+                  </div>
+                  <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
+                </div>
+
+
+                <div class="scheduleCard__row scheduleCard__row--section">
+                  <div class="scheduleCard__cell scheduleCard__cell--label">
+                    <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.activities.title" /]</span>
+                    <span class="scheduleCard__badge">${scItems?size?c}</span>
+                  </div>
+                  <div class="scheduleCard__cell scheduleCard__cell--track" data-section-track="activities"></div>
+                </div>
+
+                [#-- Three reserved lanes and one overflow strip, whatever the
+                     activity count. A lane carries no meaning of its own: an
+                     activity can change lane as the window changes, which is the
+                     price of a container that never grows. --]
+                [#list 0..2 as scLane]
+                  <div class="scheduleCard__row scheduleCard__row--lane">
+                    <div class="scheduleCard__cell scheduleCard__cell--label">
+                      <span class="scheduleCard__laneName">[@s.text name="dashboard.schedule.laneName"][@s.param]${(scLane + 1)?c}[/@s.param][/@s.text]</span>
+                      <span class="scheduleCard__laneCount" data-lane-count="${scLane?c}">0</span>
+                    </div>
+                    <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
+                  </div>
+                [/#list]
+
+                <div class="scheduleCard__row scheduleCard__row--overflow">
+                  <div class="scheduleCard__cell scheduleCard__cell--label">
+                    <span class="scheduleCard__eyebrow">[@s.text name="dashboard.schedule.overflow.title" /]</span>
+                    <span class="scheduleCard__badge" id="scheduleOverflowCount">0</span>
+                  </div>
+                  <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleOverflowTrack"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          [#if scItems?size == 0]
+            <p class="scheduleCard__laneEmpty">[@s.text name="dashboard.schedule.activities.none" /]</p>
+          [/#if]
+
+          [#-- The footer reports the packing honestly rather than implying every
+               activity found a lane. --]
+          <div class="scheduleCard__foot">
+            <span id="scheduleFootLeft"
+              data-window="[@s.text name="dashboard.schedule.foot.window"][@s.param]{0}[/@s.param][/@s.text]"
+              data-span="[@s.text name="dashboard.schedule.foot.span"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"></span>
+            <span id="scheduleFootRight"
+              data-placed="[@s.text name="dashboard.schedule.foot.placed"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
+              data-all-placed="[@s.text name="dashboard.schedule.foot.allPlaced"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]"
+              data-hint="[@s.text name="dashboard.schedule.foot.hint" /]"></span>
+          </div>
       </div>
-    [/#if]
-  </section>
+
+      [#-- "What's next" prefers the next activity and falls back to the next
+           phase, so the panel stays useful mid-cycle when every phase is
+           already open and only activities are still ahead. --]
+      [#if scNextItem?has_content]
+        [#assign scNextStart = scNextItem[0].startDate?date /]
+        [#assign scNextIn = ((scNextItem[0].startDate?long - scToday?long) / scDayMs)?round /]
+        [#assign scNextSame = scNextItem[0].startDate?date?string("yyyy-MM-dd") == scNextItem[0].endDate?date?string("yyyy-MM-dd") /]
+        <aside class="scheduleCard__next">
+          <span class="scheduleCard__nextEyebrow">[@s.text name="dashboard.schedule.next.activityEyebrow" /]</span>
+          <span class="scheduleCard__nextName">${((scNextItem[0].description)!'')?trim}</span>
+          <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.runs"][@s.param][#if scNextSame]${scNextStart?string("dd MMM yyyy")}[#else]${scNextStart?string("dd MMM")} &ndash; ${scNextItem[0].endDate?date?string("dd MMM yyyy")}[/#if][/@s.param][/@s.text]</span>
+          <span class="scheduleCard__nextChip">
+            [#if scNextIn lte 1][@s.text name="dashboard.schedule.next.startsTomorrow" /]
+            [#else][@s.text name="dashboard.schedule.next.startsIn"][@s.param]${scNextIn?c}[/@s.param][/@s.text][/#if]
+          </span>
+        </aside>
+      [#elseif scNextPhase?has_content]
+        [#assign scNextIn = ((scNextPhase[0].startDate?long - scToday?long) / scDayMs)?round /]
+        <aside class="scheduleCard__next">
+          <span class="scheduleCard__nextEyebrow">[@s.text name="dashboard.schedule.next.phaseEyebrow" /]</span>
+          <span class="scheduleCard__nextName">${(scNextPhase[0].composedName)!}</span>
+          <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.phaseDates"][@s.param]${scNextPhase[0].startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${scNextPhase[0].endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
+          <span class="scheduleCard__nextChip">
+            [#if scNextIn lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
+            [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scNextIn?c}[/@s.param][/@s.text][/#if]
+          </span>
+        </aside>
+      [/#if]
+    </div>
 [/#if]
 
   [#assign browseScope = (actualPhase.composedName)!'' /]

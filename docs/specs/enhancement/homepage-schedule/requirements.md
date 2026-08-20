@@ -38,14 +38,12 @@ several phases are open at once — which is the normal state, not the exception
 
 ### Functional
 
-- **ENH-SCHED-FN-001** — The card MUST render one lane per **open or not-started** reporting phase, with
-  a bar positioned by real dates. Closed phases MUST NOT be rendered.
-- **ENH-SCHED-FN-002** — Each phase lane MUST show the phase name, its full date range, and a
-  countdown pill in the sticky label column (not at the bar's right edge, which scrolls out of view).
-- **ENH-SCHED-FN-003** — The countdown MUST read `N days left` while open, `Last day` on the end
-  date, `Past its end date` for a phase reopened beyond its end date, and `Opens in N days` /
-  `Opens tomorrow` for a phase that has not started. (The countdown is timing, not status: a
-  not-started phase still shows when it opens.)
+- **ENH-SCHED-FN-001** — *Withdrawn 2026-08-20.* The timeline renders **activities only**; there is no
+  reporting-phases section, no phase lane and no phase bar. Phase dates reach the user through the
+  phase selector above the card and through the "what's next" panel's fallback (FN-012).
+- **ENH-SCHED-FN-002** — *Withdrawn 2026-08-20* with FN-001.
+- **ENH-SCHED-FN-003** — *Withdrawn 2026-08-20* with FN-001, except that `Opens in N days` /
+  `Opens tomorrow` survive in the "what's next" panel when it falls back to a phase.
 - **ENH-SCHED-FN-004** — Platform-wide timeline activities (`Timeline`, scoped to the current global
   unit) MUST be packed into exactly **three** reserved lanes by greedy first-fit, ordered by start
   date with the `order` field as tiebreaker.
@@ -67,15 +65,22 @@ several phases are open at once — which is the normal state, not the exception
   scale. See the Decision Log.)
 - **ENH-SCHED-FN-011** — The footer MUST report the packing honestly: the window size, the span of
   the rendered range, and how many of the total activities were placed.
-- **ENH-SCHED-FN-012** — When no phase is open, the card MUST render a designed zero-state naming the
-  next phase and its dates, not an empty or broken component.
+- **ENH-SCHED-FN-012** — The card MUST always use the two-column layout: the timeline (controls,
+  frame, footer, overflow popover) in the main column and a "what's next" panel beside it. The panel
+  MUST name the soonest activity that has not started yet, falling back to the soonest phase still to
+  open, and MUST be omitted when neither exists. (Amended 2026-08-20; this originally specified a
+  separate zero-state that *replaced* the timeline when no phase was open. See the Decision Log.)
+- **ENH-SCHED-FN-014** — The "what's next" panel MUST stack below the timeline under a 1300px
+  viewport, because a fixed side panel starves the track at those widths. The panel is 300px wide and
+  offset 44px from the top of the column so it aligns with the timeline frame, not with the zoom
+  controls; the offset MUST be reset when stacked.
 - **ENH-SCHED-FN-013** — The card MUST remain behind the `homepage_timeline_active` specificity.
 
 ### Non-functional
 
-- **ENH-SCHED-NF-001** — The lane region MUST stay ~272px (250–290px) with three phase lanes, three
-  activity lanes and the overflow strip, and MUST NOT grow with activity count. Verified at 20, 40
-  and 400 activities.
+- **ENH-SCHED-NF-001** — The lane region MUST stay **140px** (`3 × 36` activity lanes + `32` overflow)
+  and MUST NOT grow with activity count. Verified at 20, 40 and 400 activities. (Was ~272px while the
+  three phase lanes existed; FN-001 withdrew them.)
 - **ENH-SCHED-NF-002** — The visible track width MUST be measured at runtime. No fixed pixel track
   width is permitted, because `global.css` forces `.container` to `95% !important` below a 1300px
   viewport.
@@ -136,8 +141,12 @@ several phases are open at once — which is the normal state, not the exception
   the card and the page body does not scroll horizontally.
 - **AC-010** (NF-005) — Given an activity described as `<script>…</script>`, then no script executes,
   no element is created from the markup, and the text is shown literally.
-- **AC-011** (FN-012) — Given no open phase, then the zero-state renders with the next phase named and
-  a "Browse closed phases (N)" action, and no notification affordance.
+- **AC-011** (FN-012) — Given no open phase, then the timeline still renders and the panel names what
+  is next; the reporting-phases section is omitted only when there is no lane at all to draw.
+- **AC-011b** (FN-012) — Given a future activity and a future phase both exist, then the panel names
+  the activity. Given only a future phase, it names the phase. Given neither, it is absent.
+- **AC-011c** (FN-014) — Given a viewport under 1300px, then the panel is full-width below the
+  timeline and the track keeps the width it would have had without the panel.
 - **AC-012** (FN-013) — Given `homepage_timeline_active` is false, then the card is absent entirely.
 
 ## 7. Constitutional Compliance Checklist
@@ -151,7 +160,7 @@ several phases are open at once — which is the normal state, not the exception
 | 5. Schema changes ship as Flyway migrations | Not applicable — no schema change. |
 | 6. GPL header on every new Java file | Not applicable — no new Java file; `DashboardAction.java` already carries it. |
 | 7. Code style, Checkstyle gate | Honored on the rules — Checkstyle 8.18 with `configuration/marlo-checkstyle.xml` reports zero violations on the changed Java file. **The `mvn checkstyle:check` goal is broken repo-wide** (plugin 2.9.1 vs checkstyle 8.18, `NoSuchMethodError`), pre-existing and unrelated to this change — see `task.md` §1. |
-| 8. English only; user-facing strings i18n-keyed | Honored — 43 keys under `dashboard.schedule.*`. |
+| 8. English only; user-facing strings i18n-keyed | Honored — 38 keys under `dashboard.schedule.*`. |
 | 9. Branching | Honored — feature branch `A2-2398-US1-Re-design-MARLO-home-page`; `staging` is the integration branch. |
 | 10. Run scripts / Java 17 | Honored — built and verified with Zulu 17. |
 | 11. Dependency baseline | Honored — no dependency change. |
@@ -191,6 +200,35 @@ several phases are open at once — which is the normal state, not the exception
   `timelineManagement.help` previously promised admins that dates do not determine order; it has been
   reworded. Packing strictly in `order` sequence would strand a late activity in lane 1 above an
   earlier one, which reads as a bug.
+- 2026-08-20 — **The reporting-phases section is removed from the timeline.** — Product asked for the
+  timeline to carry activities only. Removed: the section header and its badge, the phase lanes and
+  bars, the countdown pills that lived in their label column, the `phases` array in the
+  `data-schedule` payload, and `paintPhases()` with its track lookups in `schedule.js`. The rendered
+  span is now derived from activities alone (still seeded with today, so an empty list renders).
+  Consequences: the lane region drops from 272px to **140px** and the card from 535px to 375px; six
+  i18n keys are retired (`phases.title`, `phases.open`, `phases.oneOpen`, `daysLeft`, `lastDay`,
+  `overdue`), leaving 38; sixteen CSS rules for phase rows and bars are deleted. `opensIn` /
+  `opensTomorrow` stay because the "what's next" panel still falls back to a phase. The subtitle's
+  `N phases open` was **kept** — it is header context, not part of the timeline — which is worth a
+  product check now that no phase is plotted.
+- 2026-08-20 — **The two-column layout becomes the default; the zero-state is gone.** — Product
+  preferred the composition that only appeared when every phase was closed, so it is now the card's
+  normal state: `__layout > __main` holds the whole timeline and `__next` sits beside it. Consequences
+  taken deliberately: (a) the "Nothing due right now" heading, its paragraph and the
+  "Browse closed phases (N)" button are **removed** (5 i18n keys retired, 6 added, net 44), which also
+  removes the card's only dependency on the phase selector's `#allPhasesToggle`; (b) the
+  reporting-phases section is omitted when there is no lane, rather than showing a header above
+  nothing; (c) the panel prefers the next *activity* and falls back to the next *phase*, with distinct
+  labels so the two are never confused; (d) `__main` carries no border or padding, because the frame
+  inside it is already a bordered box. Measured before choosing the 1300px breakpoint (40 activities):
+  a 340px side panel costs 28% → 30% overflow at 1600px but 40% → 60% at 1000px, where the track falls
+  to 200px. Stacked at 1200px the track is 790px and overflow is back to 30%.
+- 2026-08-20 — **The panel is 300px and drops 44px to meet the frame.** — Product asked for both. The
+  44px is not a round guess: it is the controls row measured exactly — 34px of button plus its 10px
+  `margin-bottom` — so `panelTop === frameTop` to the pixel. It is a coupled constant, so the comment
+  in the stylesheet says what it tracks; the stacked media query resets it to 12px, verified so the
+  offset cannot leak into the stacked layout. Narrowing 340 → 300 returned 40px to the track (812 →
+  852px at 1600px).
 - 2026-08-19 — **A single-day activity keeps its status; `--milestone` now styles shape only.** — QA
   spotted "MARLO AICCRA opens for reporting" rendering white although its date had passed. Two faults
   stacked. In `schedule.js` the class was chosen by ternary — `item.milestone ? 'milestone' :

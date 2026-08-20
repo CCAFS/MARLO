@@ -125,24 +125,11 @@
     var footRight = document.getElementById('scheduleFootRight');
     var viewLabel = document.getElementById('scheduleViewLabel');
     var jump = document.getElementById('scheduleJump');
-
-    /* Wired before the guard below: in the zero-open-phases state this button
-       is the only interactive thing on the card, and the guard returns. Closed
-       phases are browsed in the phase selector's own popover rather than
-       duplicated inside the card. */
-    var browseClosed = document.getElementById('scheduleBrowseClosed');
-    if (browseClosed) {
-      browseClosed.addEventListener('click', function () {
-        var selectorToggle = document.getElementById('allPhasesToggle');
-        if (!selectorToggle) {
-          return;
-        }
-        selectorToggle.scrollIntoView({ block: 'center' });
-        if (selectorToggle.getAttribute('aria-expanded') !== 'true') {
-          selectorToggle.click();
-        }
-      });
-    }
+    /* The popover is positioned against the timeline column rather than the
+       whole card: with the "what's next" panel beside it, the card is wider
+       than the track and clamping to the card would let the popover drift over
+       the panel. */
+    var main = document.getElementById('scheduleMain');
 
     /* Without the scroll frame there is nothing to draw into — the card is in
        its zero-open-phases state, which is entirely server-rendered. */
@@ -153,7 +140,6 @@
     var months = payload.months || [];
     var today = parseDay(payload.today);
 
-    var phaseTracks = card.querySelectorAll('[data-phase-track]');
     var laneTracks = card.querySelectorAll('[data-lane]');
     var laneCounts = card.querySelectorAll('[data-lane-count]');
 
@@ -167,20 +153,11 @@
 
     /* ---- Model ---- */
 
-    var phases = [];
-    var i;
-    for (i = 0; i < (payload.phases || []).length; i++) {
-      var rawPhase = payload.phases[i];
-      phases.push({
-        name: rawPhase.name,
-        status: rawPhase.status,
-        dates: rawPhase.dates,
-        start: parseDay(rawPhase.start),
-        end: parseDay(rawPhase.end)
-      });
-    }
-
     var activities = [];
+    /* Shared by the loops below. It used to be declared with the phase
+       normalisation that lived here; the file is 'use strict', so leaving it
+       implicit would be a ReferenceError, not a global. */
+    var i;
     for (i = 0; i < (payload.activities || []).length; i++) {
       var rawItem = payload.activities[i];
       var start = parseDay(rawItem.start);
@@ -214,7 +191,10 @@
     var CLAMP_DAYS = 550;
     var earliest = today;
     var latest = today;
-    var all = phases.concat(activities);
+    /* Activities only: the reporting-phases lanes were removed from the
+       timeline, so nothing else contributes to the rendered span. today is
+       already the seed for earliest/latest, so an empty list still renders. */
+    var all = activities;
     for (i = 0; i < all.length; i++) {
       if (all[i].start.getTime() < earliest.getTime()) {
         earliest = all[i].start;
@@ -474,42 +454,6 @@
       }
     }
 
-    function paintPhases() {
-      for (var p = 0; p < phaseTracks.length; p++) {
-        var track = phaseTracks[p];
-        clear(track);
-        var phase = phases[+track.getAttribute('data-phase-track')];
-        if (!phase) {
-          continue;
-        }
-
-        var rawLeft = dayIndex(phase.start) * pxPerDay;
-        var left = Math.max(0, rawLeft);
-        var right = Math.min(contentWidth, (dayIndex(phase.end) + 1) * pxPerDay);
-        var width = right - left;
-        if (width < MIN_W) {
-          width = MIN_W;
-        }
-
-        var bar = el('div', 'scheduleCard__bar scheduleCard__bar--' + phase.status);
-        if (rawLeft < -0.5) {
-          bar.className += ' scheduleCard__bar--clipStart';
-        }
-        if ((dayIndex(phase.end) + 1) * pxPerDay > contentWidth + 0.5) {
-          bar.className += ' scheduleCard__bar--clipEnd';
-        }
-        bar.style.left = left + 'px';
-        bar.style.width = width + 'px';
-
-        var label = el('span');
-        label.textContent = phase.name + ' · ' + statusLabels[phase.status];
-        bar.appendChild(label);
-        bar.appendChild(srOnly(accessibleName(phase)));
-        bar.setAttribute('title', phase.name + ' · ' + phase.dates + ' · ' + statusLabels[phase.status]);
-        track.appendChild(bar);
-      }
-    }
-
     function paintActivities(packed) {
       var placedTotal = 0;
       var lane;
@@ -596,9 +540,6 @@
     function render() {
       measure();
 
-      for (var t = 0; t < phaseTracks.length; t++) {
-        phaseTracks[t].style.width = contentWidth + 'px';
-      }
       for (var l = 0; l < laneTracks.length; l++) {
         laneTracks[l].style.width = contentWidth + 'px';
       }
@@ -610,7 +551,6 @@
       }
 
       paintAxis();
-      paintPhases();
       var packed = packLanes();
       var placedTotal = paintActivities(packed);
       paintOverflow(packed);
@@ -628,7 +568,8 @@
     var popoverList = el('ul', 'scheduleCard__popoverList');
     popover.appendChild(popoverTitle);
     popover.appendChild(popoverList);
-    card.appendChild(popover);
+    var popoverHost = main || card;
+    popoverHost.appendChild(popover);
     popover.setAttribute('aria-label', popoverTitle.textContent);
 
     var openChip = null;
@@ -660,11 +601,11 @@
 
       popover.hidden = false;
       var chipBox = chip.getBoundingClientRect();
-      var cardBox = card.getBoundingClientRect();
-      var left = chipBox.left - cardBox.left;
-      var maxLeft = card.clientWidth - popover.offsetWidth;
+      var hostBox = popoverHost.getBoundingClientRect();
+      var left = chipBox.left - hostBox.left;
+      var maxLeft = popoverHost.clientWidth - popover.offsetWidth;
       popover.style.left = Math.max(0, Math.min(left, maxLeft)) + 'px';
-      popover.style.top = (chipBox.bottom - cardBox.top + 6) + 'px';
+      popover.style.top = (chipBox.bottom - hostBox.top + 6) + 'px';
 
       chip.setAttribute('aria-expanded', 'true');
       openChip = chip;

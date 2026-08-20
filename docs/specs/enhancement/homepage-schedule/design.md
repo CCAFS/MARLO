@@ -25,7 +25,7 @@ dashboard.ftl                           ▼
   ├─ derives phase status from `editable` + dates; keeps open + not-started only
   ├─ renders the shell: header, legend, zoom control, section headers,
   │  label column (name, dates, countdown pill), lane labels, footer templates
-  └─ emits ONE payload:  data-schedule="{today, months[], phases[], activities[]}"
+  └─ emits ONE payload:  data-schedule="{today, months[], activities[]}"
                                         │
 schedule.js (ES5 IIFE, DOMContentLoaded)▼
   ├─ measures trackWidth = scroll.clientWidth − var(--sched-label)
@@ -34,7 +34,7 @@ schedule.js (ES5 IIFE, DOMContentLoaded)▼
   └─ paints axis ticks, gridlines, today line, bars, pills, chips, counts, footer
 ```
 
-Consequence: all 43 user-facing strings stay in `global.properties`. JavaScript receives only
+Consequence: all 38 user-facing strings stay in `global.properties`. JavaScript receives only
 `{0}`-style templates through `data-*` attributes, the idiom already used at `dashboard.ftl` →
 `dashboard.js`.
 
@@ -53,7 +53,7 @@ Consequence: all 43 user-facing strings stay in `global.properties`. JavaScript 
   injected; `loadScheduleActivities()`; `getScheduleActivities()`.
 - **Modified:** `webapp/crp/js/home/dashboard.js` — `initReportTimeline()` and its call removed.
 - **Modified:** `resources/global.properties` — `dashboard.reportingTimeline.*` (17 keys) replaced by
-  `dashboard.schedule.*` (43 keys); `timelineManagement.help` reworded.
+  `dashboard.schedule.*` (38 keys); `timelineManagement.help` reworded.
 
 ### marlo-data
 
@@ -91,22 +91,29 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
 
 ```
 .scheduleCard[data-schedule]
-├─ __head            title, subtitle, 4-item legend
-├─ __controls        4 zoom buttons (aria-pressed) + Jump to today
-├─ __frame           1px border, radius, overflow hidden, edge masks
-│                    (masks inset by --sched-hbar / --sched-vbar so they never
-│                     veil a scrollbar; schedule.js measures both)
-│  └─ __scroll       overflow auto, max-height 388px, tabindex=0, aria-label
-│     └─ __canvas    position relative, width max-content
-│        ├─ __gridLayer  z 0   absolute, left var(--sched-label)
-│        ├─ __nowLayer   z 2   the 2px today hairline
-│        ├─ __row--axis  z 4   sticky top; ticks + TODAY badge
-│        ├─ __row--section     REPORTING PHASES + count badge
-│        ├─ __row--phase  ×N   44px; label col + bar track
-│        ├─ __row--section     TIMELINE ACTIVITIES + count
-│        ├─ __row--lane   ×3   36px; label col + pill track
-│        └─ __row--overflow    32px; OVERFLOW + chip track
-└─ __foot            window/span (left), placed/hint (right)
+├─ __head               title, subtitle, 4-item legend
+└─ __layout             flex row; becomes display:block under 1300px
+   ├─ __main            the whole timeline. No border or padding of its own —
+   │  │                 __frame is already a bordered box. Also the positioning
+   │  │                 host for __popover, so the popover cannot drift over the
+   │  │                 panel beside it.
+   │  ├─ __controls     4 zoom buttons (aria-pressed) + Today
+   │  ├─ __frame        1px border, radius, overflow hidden, edge masks
+   │  │  │              (masks inset by --sched-hbar / --sched-vbar so they
+   │  │  │               never veil a scrollbar; schedule.js measures both)
+   │  │  └─ __scroll    overflow auto, max-height 388px, tabindex=0, aria-label
+   │  │     └─ __canvas position relative, width max-content
+   │  │        ├─ __gridLayer  z 0   absolute, left var(--sched-label)
+   │  │        ├─ __nowLayer   z 2   the 2px today hairline
+   │  │        ├─ __row--axis  z 4   sticky top; ticks + TODAY badge
+   │  │        ├─ __row--section     TIMELINE ACTIVITIES + count
+   │  │        ├─ __row--lane   ×3   36px; label col + pill track
+   │  │        └─ __row--overflow    32px; OVERFLOW + chip track
+   │  ├─ __foot         window/span (left), placed/hint (right)
+   │  └─ __popover      z 20, appended by schedule.js
+   └─ __next            300px aside, margin-top 44px so its top edge meets
+                        __frame's rather than the controls row's; next activity,
+                        else next phase, else absent
 ```
 
 **Stacking contract.** `.scheduleCard__canvas` is the only stacking context. Order: gridlines 0,
@@ -122,9 +129,10 @@ phase lanes.
 
 ### Height budget
 
-`3 × 44` phase + `3 × 36` lane + `32` overflow = **272px**, which is the number ENH-SCHED-NF-001 holds.
-Adding the 32px axis and two ~28px section headers gives 360px, inside the 388px `max-height`. A
-fourth phase lane takes it to 404px and the container scrolls vertically by design.
+`3 × 36` lane + `32` overflow = **140px**, which is the number ENH-SCHED-NF-001 holds. Adding the 32px
+axis and one ~28px section header gives ~200px, comfortably inside the 388px `max-height`, so the
+scroll container no longer scrolls vertically at all — the cap is now only a backstop. Measured card
+height: 375px side-by-side. (Was 272px / 535px while the three phase lanes existed.)
 
 ### Zoom and scale
 
@@ -135,7 +143,9 @@ clamped to today ±550 days so one outlier date cannot flatten the track.
 
 ### Packing
 
-Greedy first-fit over three lanes, iterating activities sorted by `(startDate, order, id)`. The only
+Greedy first-fit over three lanes, iterating activities sorted by `(startDate, order, id)`. Activities
+are the only thing plotted; the rendered span is derived from them alone, seeded with today so an
+empty list still produces a valid axis. The only
 absolute lengths are an 8px gutter, a 6px minimum width, 178px for a milestone capsule (shape only —
 `--milestone` must never set a colour, or it outranks the status rules that follow it) with 170px of
 reserved label room, and a 190px chip-merge threshold. Because those are pixel constants and the date
@@ -173,9 +183,8 @@ to be validated on write by `TimelineManagementValidator`, unchanged.
 ## 8. Permissions & Edit Gates
 
 No new gate. The card is visible to any user who can reach the homepage; it exposes only phase dates
-and platform-wide activity descriptions, neither of which is per-user or per-project data. The
-zero-state's "Browse closed phases" button opens the existing phase selector popover and therefore
-inherits its behaviour.
+and platform-wide activity descriptions, neither of which is per-user or per-project data. The card
+has no interactive affordance that reaches outside itself.
 
 ## 9. Specificity / Feature-Flag Strategy
 
@@ -187,10 +196,10 @@ simply does not get the card.
 
 ## 10. Integration Points
 
-No CLARISA, CGSpace, BI, AI-services, S3 or Pusher interaction. Two cross-component contracts:
+No CLARISA, CGSpace, BI, AI-services, S3 or Pusher interaction. One cross-component contract remains
+— the `#allPhasesToggle` dependency went with the "Browse closed phases" button:
 
-1. The zero-state button calls the phase selector's `#allPhasesToggle`, guarded by a null check.
-2. **jQuery UI's tooltip widget owns every `title` on the page.** `global.js` initialises it inside
+1. **jQuery UI's tooltip widget owns every `title` on the page.** `global.js` initialises it inside
    `$(document).ready`, so the widget element is `document` and every descendant carrying a `title`
    — including this card's phase bars and activity pills — is a *delegated* target. For delegated
    targets the widget tears an open tooltip down from a `remove` handler on the target, reached only

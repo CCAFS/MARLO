@@ -667,114 +667,25 @@ div#impactGraphic-fullscreen {
   }
 
   /* ---- Phase lanes ---- */
-  .scheduleCard__row--phase {
-    height: 44px;
-  }
 
-  .scheduleCard__row--phase + .scheduleCard__row--phase {
-    border-top: 1px solid var(--marlo-border-faint);
-  }
 
-  .scheduleCard__phaseLabel {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
 
-  .scheduleCard__phaseName {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    min-width: 0;
-  }
 
-  .scheduleCard__phaseName > span:first-child {
-    color: var(--marlo-ink);
-    font: 600 13.5px/1.25 var(--marlo-font-sans);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
-  .scheduleCard__row--notStarted .scheduleCard__phaseName > span:first-child {
-    color: var(--marlo-text-muted);
-    font-weight: 500;
-  }
 
-  .scheduleCard__phaseDates {
-    color: var(--marlo-text-muted);
-    font: 400 12px/1.25 var(--marlo-font-sans);
-    white-space: nowrap;
-  }
 
   /* Countdown lives in the label column, not at the bar's right edge, so it
      stays readable no matter how far the track is scrolled. */
-  .scheduleCard__count {
-    flex: none;
-    padding: 2px 7px;
-    border: 1px solid var(--marlo-neutral-border);
-    border-radius: var(--marlo-radius-sm);
-    background: var(--marlo-neutral-bg);
-    color: var(--marlo-neutral-text);
-    font: 600 12px/1.25 var(--marlo-font-sans);
-    white-space: nowrap;
-  }
 
-  .scheduleCard__count--urgent {
-    background: var(--marlo-danger-bg);
-    border-color: var(--marlo-danger-border);
-    color: var(--marlo-danger-text);
-    font-weight: 700;
-  }
 
-  .scheduleCard__bar {
-    position: absolute;
-    top: 10px;
-    z-index: 1;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 11px;
-    border-radius: 12px;
-    cursor: default;
-    overflow: hidden;
-  }
 
-  .scheduleCard__bar > span {
-    font: 600 12px/1 var(--marlo-font-sans);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
   /* A bar starting before the rendered range is cut square rather than drawn
      at a start date it does not have. */
-  .scheduleCard__bar--clipStart {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
 
-  .scheduleCard__bar--clipEnd {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
 
-  .scheduleCard__bar--inProgress {
-    background: var(--marlo-info-solid);
-    color: #fff;
-  }
 
-  .scheduleCard__bar--notStarted {
-    background: var(--marlo-warning);
-    color: var(--marlo-warning-ink);
-  }
 
-  .scheduleCard__bar--completed {
-    background: var(--marlo-success-solid);
-    color: #fff;
-  }
 
   /* ---- Activity lanes ---- */
   .scheduleCard__row--lane {
@@ -1005,58 +916,37 @@ div#impactGraphic-fullscreen {
   /* ---- Zero open phases ---- */
   /* A real state between reporting cycles, so it keeps the card shell and
      reads as a designed panel rather than a failure. */
-  .scheduleCard__empty {
+  /* Default layout: the timeline on the left, "what's next" on the right. The
+     product decision is that this composition is the card's normal state, not
+     just its empty one, so nothing here is conditional on phases being closed.
+
+     __main carries no border or padding of its own: the frame inside it is
+     already a bordered box, and nesting one in another reads as double chrome. */
+  .scheduleCard__layout {
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
     gap: 18px;
   }
 
-  .scheduleCard__emptyMain {
-    flex: 1;
+  .scheduleCard__main {
+    /* flex-basis auto, not 0: schedule.js measures this subtree to derive
+       pxPerDay, so its width has to come from the row, not from its content. */
+    flex: 1 1 auto;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 18px 20px;
-    border: 1px solid var(--marlo-border);
-    border-radius: var(--marlo-radius-lg);
-    background: #FAFCFD;
+    /* The overflow popover is positioned against this box, so it escapes the
+       frame's overflow: hidden while staying anchored to the timeline. */
+    position: relative;
   }
 
-  .scheduleCard__emptyTitle {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: var(--marlo-success-text);
-    font: 600 12px/1 var(--marlo-font-sans);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .scheduleCard__emptyMain p {
-    margin: 0;
-    max-width: 620px;
-    color: var(--marlo-ink);
-    font: 400 14px/1.55 var(--marlo-font-sans);
-  }
-
-  .scheduleCard__emptyBrowse {
-    align-self: flex-start;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--marlo-brand);
-    font: 600 13px/1.3 var(--marlo-font-sans);
-    cursor: pointer;
-  }
-
-  .scheduleCard__emptyBrowse:hover {
-    text-decoration: underline;
-  }
-
-  .scheduleCard__emptyNext {
-    width: 340px;
+  .scheduleCard__next {
+    width: 300px;
     flex: none;
+    /* Drops the panel to the top of __frame instead of the top of the column,
+       so its edge lines up with the timeline's rather than with the zoom
+       buttons'. 44px is exactly the controls row: 34px of button plus its 10px
+       margin-bottom, measured, not guessed. If that row ever changes height
+       this has to change with it — the stacked layout below overrides it. */
+    margin-top: 44px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -1066,24 +956,26 @@ div#impactGraphic-fullscreen {
     background: var(--marlo-brand-tint);
   }
 
-  .scheduleCard__emptyEyebrow {
+  .scheduleCard__nextEyebrow {
     color: var(--marlo-info-text);
     font: 700 12px/1 var(--marlo-font-sans);
     letter-spacing: 0.09em;
     text-transform: uppercase;
   }
 
-  .scheduleCard__emptyPhase {
+  .scheduleCard__nextName {
     color: var(--marlo-ink);
     font: 600 20px/1.25 var(--marlo-font-sans);
+    /* Activity descriptions are free text and much longer than a phase name. */
+    overflow-wrap: anywhere;
   }
 
-  .scheduleCard__emptyDates {
+  .scheduleCard__nextDates {
     color: var(--marlo-text);
     font: 400 13px/1.4 var(--marlo-font-sans);
   }
 
-  .scheduleCard__emptyChip {
+  .scheduleCard__nextChip {
     align-self: flex-start;
     margin-top: 4px;
     padding: 3px 9px;
@@ -1094,12 +986,17 @@ div#impactGraphic-fullscreen {
     font: 600 12px/1.3 var(--marlo-font-sans);
   }
 
-  @media (max-width: 860px) {
-    .scheduleCard__empty {
+  /* Stack below 1300px. Measured with 40 activities: a 340px panel beside the
+     track costs almost nothing at 1600px (28% -> 30% of activities pushed to
+     overflow) but is punishing at 1000px (40% -> 60%, track down to 200px,
+     where a 178px milestone capsule spans ~50 days of axis). 1300px is also
+     where global.css already drops .container to 95%. */
+  @media (max-width: 1299px) {
+    .scheduleCard__layout {
       display: block;
     }
 
-    .scheduleCard__emptyNext {
+    .scheduleCard__next {
       width: auto;
       margin-top: 12px;
     }

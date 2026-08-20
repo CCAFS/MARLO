@@ -22,6 +22,13 @@
 - Browser verification ran against a static harness that loads the **real** `dashboard.css` and the
   **real** `schedule.js` with fixture payloads, plus a FreeMarker 2.3.32 renderer driving the **real**
   template block. See Testing Plan.
+- **Two self-inflicted bugs caught before shipping, both by the harness rather than by reading.**
+  (1) Deleting the phase-normalisation block also deleted the `var i;` it happened to declare; the
+  file is `'use strict'`, so three later loops would have thrown `ReferenceError: i is not defined`
+  and the card would not have rendered at all. (2) Removing `,"phases":[...]` from the payload
+  expression left `'' ,"activities":[`, a stray comma inside the FreeMarker expression — a parse
+  error, i.e. the same class of 500 as the `?html` incident. The eight-scenario render caught it
+  immediately.
 - **Harness limitation, learned the hard way.** The verification browser pane does not deliver
   `ResizeObserver` or `requestAnimationFrame` callbacks — a plain observer attached by hand fired 0
   times while the observed element demonstrably resized, and `requestAnimationFrame` never ran, though
@@ -97,8 +104,15 @@ harness that skips this cannot reproduce ADR-7's parse error.
 | hostile descriptions (`<script>`, `"`, `'`, `<b>`, `&`, `\`, newline, tab, unicode) | valid JSON; raw attribute contains no literal `"` and no `<script` |
 | blank description / null dates | skipped, not rendered as empty pills |
 | `order` as `2.0` and `6.5` | serialized as `2` and `6.5`; JSON-parseable |
-| zero open phases | zero-state renders; `emptyNext` present, `browseClosed` present, no frame |
-| zero open **and** none not started | zero-state renders **without** the next-phase panel |
+| zero open phases | timeline still renders; panel names what is next; phases section kept only while a lane exists |
+| next panel picks the activity | future multi-day → `Next activity` / `Runs 05 Sep – 20 Sep 2026` / `Starts in 16 days`; single-day tomorrow → `Runs 21 Aug 2026` / `Starts tomorrow`; date beats the admin's `order` (9.0 chosen over 1.0); an activity starting **today** is correctly not "next" |
+| next panel falls back | no future activity → `Next phase` / `Opens 01 Oct 2026 · closes 15 Nov 2026` / `Opens in 42 days` |
+| overflow popover with the side panel | hosted by `__main`, stays inside it (right edge 1146 vs panel at 1184), never overlaps the panel |
+| stacking under 1300px | at 1200px `__layout` computes to `display: block`, panel full-width below, track 790px instead of 200px, overflow back to 30% |
+| lane region, activities only | exactly **140px** (`3 × 36` + `32`) at 2/4/8/16 wks; card 375px side-by-side. No vertical scrollbar at all now |
+| phase artefacts after removal | 0 `.scheduleCard__bar`, 0 `[data-phase-track]`, 0 `[data-section-track="phases"]` in the rendered card; payload keys are exactly `today`, `months`, `activities` |
+| 400 activities, side-by-side | all 400 accounted for, lane region 140px, card 375px, render 1.7–6.2ms, popover still opens from `__main`, no page h-scroll |
+| zero open **and** none not started | timeline renders, phases section omitted, panel absent |
 | countdown edges | `10 days left` URGENT · `42 days left` neutral · `Last day` URGENT · `Past its end date` URGENT · `Opens tomorrow` · `Opens in 43 days` |
 | "notify" anywhere in output | 0 occurrences |
 
@@ -165,7 +179,7 @@ scripted to perform were then run by hand instead, and all passed:
 
 - The bundle loads through `java.util.Properties`: 5897 keys, 44 under `dashboard.schedule.*`, and the
   `\u2013` / `\u2318` / `\u00b7` escapes decode to `–`, `⌘` and `·`.
-- 43 keys defined, 43 referenced — no unused key and no undefined reference. (`legend.upcoming`
+- 38 keys defined, 38 referenced — no unused key and no undefined reference. (`legend.upcoming`
   retired with the category; 6 render scenarios show zero `MISSING_KEY`.)
 - Placeholder arity matches the `[@s.param]` count at every call site.
 - Repo-wide grep for `reportTimeline`, `reportingTimeline` and `initReportTimeline`: no survivors.
