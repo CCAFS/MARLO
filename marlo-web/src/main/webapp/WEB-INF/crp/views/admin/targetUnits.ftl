@@ -122,6 +122,7 @@
     [#-- Name --]
     <span class="composedName"> ${(element.targetUnit.name)!}</span> <br />
     [#-- CRPs that allow this target --]
+    [#--
     <span class="crps" title="CRPs ">
       [#if element.targetUnit?? && element.targetUnit.crpTargetUnits?has_content]
         [#list element.targetUnit.crpTargetUnits as crpTargetUnit]
@@ -131,5 +132,6 @@
         [/#list] 
       [/#if]
     </span>
+    --]
   </li>
 [/#macro]

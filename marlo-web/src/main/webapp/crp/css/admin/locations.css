@@ -87,7 +87,6 @@ span.coordinates {
   flex: 1 1 calc(50% - 8px);
   min-width: 0;
   max-width: 100%;
-  min-height: 51px;
   height: auto;
   background: #fff !important;
   padding-right: 36px;
