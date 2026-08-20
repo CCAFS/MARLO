@@ -39,6 +39,13 @@ function attachEvents() {
 
 }
 
+/*
+ * NOTE (developers): this filter matches the RENDERED text of each row, and the key is rendered with the
+ * display-only 'crp_' -> 'system_' relabeling done in marloParameters.ftl. A parameter stored in the
+ * `parameters` table as 'crp_has_contact_point' is therefore found here by typing 'system_has_contact_point'.
+ * The stored key is unchanged: never reuse the text typed or shown here as a key for SQL queries,
+ * hasSpecificities()/specificityValue() calls or APConstants constants.
+ */
 function filterParametersBySearch() {
   var searchTerm = ($(this).val() || '').toLowerCase();
   var tableId = $(this).attr('data-target');
