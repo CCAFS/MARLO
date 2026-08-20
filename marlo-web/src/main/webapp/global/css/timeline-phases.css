@@ -1,6 +1,9 @@
-.example {
+:root {
   --phase-planning: #337ab7;
   --phase-reporting: #777;
+}
+
+.example {
   --ui-bg: #f5f5f5;
   --ui-surface: #f3f0f0;
   --ui-border: #d8d8d8;

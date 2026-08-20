@@ -2,7 +2,7 @@
 [#if phases??]
   [#if phases?size > 1]
     <div class="container hidden-print"> 
-      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/timeline-phases.css?20260619" />
+      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/timeline-phases.css?20260820" />
         
         [#-- Timeline Scroll --]
         <div id="timelineScroll" class="example pagespan">
