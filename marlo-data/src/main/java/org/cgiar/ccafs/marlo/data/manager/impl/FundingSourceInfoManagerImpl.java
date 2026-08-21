@@ -81,7 +81,15 @@ public class FundingSourceInfoManagerImpl implements FundingSourceInfoManager {
     return fundingSourceInfoDAO.find(fundingSourceInfoID);
   }
 
+  /**
+   * The save is transactional so the funding source changes are committed even when no other transactional manager
+   * takes part in the request. Without it the flushed statements were rolled back when the connection went back to the
+   * pool, and the only transactional participant of the funding source save chain was
+   * ProjectBudgetManagerImpl.saveProjectBudget, which only runs when the funding source has an active project budget
+   * in the current phase.
+   */
   @Override
+  @Transactional
   public FundingSourceInfo saveFundingSourceInfo(FundingSourceInfo fundingSourceInfo) {
 
     FundingSourceInfo sourceInfo = fundingSourceInfoDAO.save(fundingSourceInfo);
