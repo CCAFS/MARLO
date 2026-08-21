@@ -48,8 +48,12 @@
       [/#if]
     [/#list]
 
+    [#-- The phase manager link mirrors the admin entries of #superadminBlock:
+         only super admins and CRP admins get it. isVisibleTop() is not used
+         here because it also covers multi-global-unit users, who have no
+         rights on /admin. --]
     [#attempt]
-      [#assign canManagePhases = (action.canAcessCrpAdmin())!false /]
+      [#assign canManagePhases = (action.canAccessSuperAdmin() || action.canAcessCrpAdmin())!false /]
     [#recover]
       [#assign canManagePhases = false /]
     [/#attempt]
