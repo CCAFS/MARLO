@@ -12,86 +12,86 @@
 /************* DESIGN TOKENS ***************/
 :root {
   /* Typography */
-  --marlo-font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --marlo-font-sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --marlo-font-mono: ui-monospace, Menlo, Consolas, monospace;
 
   /* Brand */
-  --marlo-brand: #0277A2;
-  --marlo-brand-dark: #015C7D;
-  --marlo-brand-light: #33A0C6;
-  --marlo-brand-tint: #F2F9FC;
-  --marlo-brand-tint-hover: #E8F4F9;
-  --marlo-brand-tint-border: #BEDFEC;
+  --marlo-brand: #0277a2;
+  --marlo-brand-dark: #015c7d;
+  --marlo-brand-light: #33a0c6;
+  --marlo-brand-tint: #f2f9fc;
+  --marlo-brand-tint-hover: #e8f4f9;
+  --marlo-brand-tint-border: #bedfec;
 
   /* Neutrals — text */
-  --marlo-ink: #1F2A37;
-  --marlo-text: #4B5563;
-  --marlo-text-muted: #6B7280;
-  --marlo-text-subtle: #9AA3AE;
-  --marlo-text-disabled: #C0C7D0;
+  --marlo-ink: #1f2a37;
+  --marlo-text: #4b5563;
+  --marlo-text-muted: #6b7280;
+  --marlo-text-subtle: #9aa3ae;
+  --marlo-text-disabled: #c0c7d0;
 
   /* Neutrals — surfaces */
-  --marlo-surface: #FFFFFF;
-  --marlo-surface-alt: #FAFBFC;
-  --marlo-surface-sunken: #F5F7FA;
-  --marlo-surface-rail: #FCFDFE;
-  --marlo-surface-header: #EEF2F5;
+  --marlo-surface: #ffffff;
+  --marlo-surface-alt: #fafbfc;
+  --marlo-surface-sunken: #f5f7fa;
+  --marlo-surface-rail: #fcfdfe;
+  --marlo-surface-header: #eef2f5;
 
   /* Neutrals — borders */
-  --marlo-border-strong: #CBD5DE;
-  --marlo-border: #E5E9EF;
-  --marlo-border-soft: #EEF2F5;
-  --marlo-border-faint: #F4F6F9;
-  --marlo-border-table: #DFE5EB;
+  --marlo-border-strong: #cbd5de;
+  --marlo-border: #e5e9ef;
+  --marlo-border-soft: #eef2f5;
+  --marlo-border-faint: #f4f6f9;
+  --marlo-border-table: #dfe5eb;
 
   /* Top bar */
-  --marlo-topbar-bg: #2D3339;
+  --marlo-topbar-bg: #2d3339;
   --marlo-topbar-fg: rgba(255, 255, 255, 0.72);
-  --marlo-topbar-fg-strong: #FFFFFF;
+  --marlo-topbar-fg-strong: #ffffff;
   --marlo-topbar-hover-bg: rgba(255, 255, 255, 0.08);
   --marlo-topbar-pill-bg: rgba(255, 255, 255, 0.12);
   --marlo-topbar-pill-bg-hover: rgba(255, 255, 255, 0.2);
   --marlo-topbar-pill-border: rgba(255, 255, 255, 0.18);
 
   /* Status — success / open / completed */
-  --marlo-success: #5BB85C;
-  --marlo-success-bg: #EDF7ED;
-  --marlo-success-border: #BEE0BE;
-  --marlo-success-text: #2E6B2F;
+  --marlo-success: #5bb85c;
+  --marlo-success-bg: #edf7ed;
+  --marlo-success-border: #bee0be;
+  --marlo-success-text: #2e6b2f;
 
   /* Status — warning / not started / upcoming */
-  --marlo-warning: #F5A623;
-  --marlo-warning-bg: #FEF6E7;
-  --marlo-warning-border: #F3DCAE;
-  --marlo-warning-text: #8A5A00;
+  --marlo-warning: #f5a623;
+  --marlo-warning-bg: #fef6e7;
+  --marlo-warning-border: #f3dcae;
+  --marlo-warning-text: #8a5a00;
 
   /* Status — info / in progress */
-  --marlo-info: #3B9FD1;
-  --marlo-info-bg: #EAF5FB;
-  --marlo-info-border: #BEDFEC;
-  --marlo-info-text: #145E82;
+  --marlo-info: #3b9fd1;
+  --marlo-info-bg: #eaf5fb;
+  --marlo-info-border: #bedfec;
+  --marlo-info-text: #145e82;
 
   /* Status — danger / today / deadline */
-  --marlo-danger: #E4572E;
-  --marlo-danger-bg: #FDEEE8;
-  --marlo-danger-border: #F6C4B2;
-  --marlo-danger-text: #B03A18;
+  --marlo-danger: #e4572e;
+  --marlo-danger-bg: #fdeee8;
+  --marlo-danger-border: #f6c4b2;
+  --marlo-danger-text: #b03a18;
 
   /* Status — neutral / closed */
-  --marlo-neutral-bg: #F1F3F6;
-  --marlo-neutral-border: #E0E5EB;
-  --marlo-neutral-text: #6B7280;
+  --marlo-neutral-bg: #f1f3f6;
+  --marlo-neutral-border: #e0e5eb;
+  --marlo-neutral-text: #6b7280;
 
   /* Status — solid bars. The light hues above fail AA behind white text, so a
      bar that carries a label uses these instead; the light ones stay for the
      small status dots and legend swatches. */
-  --marlo-info-solid: #15719B;
-  --marlo-success-solid: #2E7D32;
-  --marlo-warning-ink: #4A3000;
+  --marlo-info-solid: #15719b;
+  --marlo-success-solid: #2e7d32;
+  --marlo-warning-ink: #4a3000;
 
   /* Today marker — darker than --marlo-danger so a 2px hairline still reads
      against white. */
-  --marlo-today-line: #C7401C;
+  --marlo-today-line: #c7401c;
 
   /* Radii */
   --marlo-radius-xs: 4px;
@@ -110,16 +110,16 @@
 }
 
 /************* 0. LAYOUT ***************/
-/* The design is full-width with 32px gutters instead of Bootstrap's 1170px
-   centred container. Bootstrap keeps 15px of inner padding on .container, so
-   the border box must be 34px narrower than the viewport for the content edge
-   to land at 32px — that reproduces the design's 1376px content width at a
-   1440px viewport exactly. global.css already renders every page at 95% below
-   1300px, so this width is proven across the app.
-   Specificity (0,2,0) beats Bootstrap's .container (0,1,0). */
+/* Every page is capped at a fixed 1400px and centred. Below the cap the
+   container keeps the design's 32px gutters: Bootstrap holds 15px of inner
+   padding on .container, so the border box must be 34px narrower than the
+   viewport for the content edge to land at 32px.
+   `width` needs !important because global.css declares `width: 95% !important`
+   on the same selector; the max-width only needs the (0,2,0) specificity that
+   already beats Bootstrap's .container (0,1,0). */
 .container:not(.loginPage) {
-  width: calc(100% - 34px);
-  max-width: none;
+  width: calc(100% - 34px) !important;
+  max-width: 1400px;
 }
 
 /************* 1. TOP BAR ***************/
@@ -706,7 +706,7 @@ header {
   margin-top: 8px;
   padding: 14px !important;
   background: var(--marlo-surface);
-  border: 1px solid #DCE2E9;
+  border: 1px solid #dce2e9;
   border-radius: var(--marlo-radius-xl);
   box-shadow: var(--marlo-shadow-popover);
   color: var(--marlo-ink);
@@ -823,6 +823,7 @@ header {
   flex-wrap: wrap;
   gap: 10px;
   font-family: var(--marlo-font-sans);
+  margin-bottom: 20px;
 }
 
 .phaseSelector__label {
@@ -954,7 +955,7 @@ header {
   gap: 8px;
   height: 44px;
   padding: 0 14px;
-  border: 1px dashed #B6C0CC;
+  border: 1px dashed #b6c0cc;
   border-radius: var(--marlo-radius-lg);
   background: var(--marlo-surface);
   color: var(--marlo-text);
@@ -967,7 +968,7 @@ header {
   color: var(--marlo-brand);
 }
 
-.phaseAllBtn[aria-expanded="true"] {
+.phaseAllBtn[aria-expanded='true'] {
   border-style: solid;
   border-color: var(--marlo-brand);
   background: var(--marlo-brand-tint);
@@ -978,7 +979,7 @@ header {
   transition: transform 0.15s ease;
 }
 
-.phaseAllBtn[aria-expanded="true"] .phaseAllBtn__caret {
+.phaseAllBtn[aria-expanded='true'] .phaseAllBtn__caret {
   transform: rotate(180deg);
 }
 
@@ -990,7 +991,7 @@ header {
   z-index: 40;
   width: 380px;
   background: var(--marlo-surface);
-  border: 1px solid #DCE2E9;
+  border: 1px solid #dce2e9;
   border-radius: var(--marlo-radius-xl);
   box-shadow: var(--marlo-shadow-popover);
   overflow: hidden;
@@ -1206,8 +1207,8 @@ header {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
-    "links links"
-    "copy  blog";
+    'links links'
+    'copy  blog';
   align-items: center;
   gap: 0 20px;
 }
@@ -1220,8 +1221,12 @@ header {
   margin: 0;
 }
 
-.footer .copyRight { grid-area: copy; }
-.footer .newsButton { grid-area: blog; }
+.footer .copyRight {
+  grid-area: copy;
+}
+.footer .newsButton {
+  grid-area: blog;
+}
 
 /* Both cells carry the rule so it reads as one line across the row. */
 .footer .copyRight,
@@ -1336,7 +1341,7 @@ header {
 }
 
 #guide-button.guide-button::after {
-  content: "?";
+  content: '?';
   color: #fff;
   font: 700 22px/1 var(--marlo-font-sans);
 }

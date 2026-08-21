@@ -75,13 +75,6 @@
 
       <div class="clusterBanner__content" id="clusterBannerContent">
         <p class="clusterBanner__text">[@s.text name="dashboard.cluster.description" /]</p>
-        <div class="clusterBanner__links">
-          <a class="clusterBanner__link" href="[@s.url namespace="/clusters" action='${(crpSession)!}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-            [@s.text name="dashboard.cluster.browse" /]
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-          <a class="clusterBanner__link clusterBanner__link--muted" target="_blank" rel="noreferrer noopener" href="[@s.url namespace="/" action='glossary'][/@s.url]">[@s.text name="dashboard.cluster.glossary" /]</a>
-        </div>
       </div>
     </div>
 

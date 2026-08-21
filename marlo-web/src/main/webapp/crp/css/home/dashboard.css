@@ -95,7 +95,6 @@ div#impactGraphic-fullscreen {
   .clusterBanner {
     display: flex;
     align-items: stretch;
-    margin-top: 16px;
     background: var(--marlo-brand-tint);
     border: 1px solid var(--marlo-brand-tint-border);
     border-radius: var(--marlo-radius-xl);
@@ -171,36 +170,6 @@ div#impactGraphic-fullscreen {
     font: 400 14px/1.65 var(--marlo-font-sans);
     text-align: left;
     text-wrap: pretty;
-  }
-
-  .clusterBanner__links {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 2px;
-  }
-
-  .clusterBanner__link {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--marlo-brand);
-    font: 600 13px/1 var(--marlo-font-sans);
-    text-decoration: none;
-  }
-
-  .clusterBanner__link:hover {
-    color: var(--marlo-brand);
-    text-decoration: underline;
-  }
-
-  .clusterBanner__link--muted {
-    color: var(--marlo-text);
-    font-weight: 500;
-  }
-
-  .clusterBanner__link--muted:hover {
-    color: var(--marlo-brand);
   }
 
   .clusterBanner__map {
