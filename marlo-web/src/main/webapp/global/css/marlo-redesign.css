@@ -1,0 +1,1342 @@
+/**
+ * MARLO redesign — design tokens and section styles.
+ *
+ * Source of truth: Claude Design project "MARLO homepage redesign"
+ * (MARLO Homepage.dc.html). Loaded after global.css so it overrides the
+ * legacy rules without editing them in place.
+ *
+ * Sections are added incrementally, top to bottom:
+ *   1. Top bar (#superadminBlock)
+ */
+
+/************* DESIGN TOKENS ***************/
+:root {
+  /* Typography */
+  --marlo-font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --marlo-font-mono: ui-monospace, Menlo, Consolas, monospace;
+
+  /* Brand */
+  --marlo-brand: #0277A2;
+  --marlo-brand-dark: #015C7D;
+  --marlo-brand-light: #33A0C6;
+  --marlo-brand-tint: #F2F9FC;
+  --marlo-brand-tint-hover: #E8F4F9;
+  --marlo-brand-tint-border: #BEDFEC;
+
+  /* Neutrals — text */
+  --marlo-ink: #1F2A37;
+  --marlo-text: #4B5563;
+  --marlo-text-muted: #6B7280;
+  --marlo-text-subtle: #9AA3AE;
+  --marlo-text-disabled: #C0C7D0;
+
+  /* Neutrals — surfaces */
+  --marlo-surface: #FFFFFF;
+  --marlo-surface-alt: #FAFBFC;
+  --marlo-surface-sunken: #F5F7FA;
+  --marlo-surface-rail: #FCFDFE;
+  --marlo-surface-header: #EEF2F5;
+
+  /* Neutrals — borders */
+  --marlo-border-strong: #CBD5DE;
+  --marlo-border: #E5E9EF;
+  --marlo-border-soft: #EEF2F5;
+  --marlo-border-faint: #F4F6F9;
+  --marlo-border-table: #DFE5EB;
+
+  /* Top bar */
+  --marlo-topbar-bg: #2D3339;
+  --marlo-topbar-fg: rgba(255, 255, 255, 0.72);
+  --marlo-topbar-fg-strong: #FFFFFF;
+  --marlo-topbar-hover-bg: rgba(255, 255, 255, 0.08);
+  --marlo-topbar-pill-bg: rgba(255, 255, 255, 0.12);
+  --marlo-topbar-pill-bg-hover: rgba(255, 255, 255, 0.2);
+  --marlo-topbar-pill-border: rgba(255, 255, 255, 0.18);
+
+  /* Status — success / open / completed */
+  --marlo-success: #5BB85C;
+  --marlo-success-bg: #EDF7ED;
+  --marlo-success-border: #BEE0BE;
+  --marlo-success-text: #2E6B2F;
+
+  /* Status — warning / not started / upcoming */
+  --marlo-warning: #F5A623;
+  --marlo-warning-bg: #FEF6E7;
+  --marlo-warning-border: #F3DCAE;
+  --marlo-warning-text: #8A5A00;
+
+  /* Status — info / in progress */
+  --marlo-info: #3B9FD1;
+  --marlo-info-bg: #EAF5FB;
+  --marlo-info-border: #BEDFEC;
+  --marlo-info-text: #145E82;
+
+  /* Status — danger / today / deadline */
+  --marlo-danger: #E4572E;
+  --marlo-danger-bg: #FDEEE8;
+  --marlo-danger-border: #F6C4B2;
+  --marlo-danger-text: #B03A18;
+
+  /* Status — neutral / closed */
+  --marlo-neutral-bg: #F1F3F6;
+  --marlo-neutral-border: #E0E5EB;
+  --marlo-neutral-text: #6B7280;
+
+  /* Status — solid bars. The light hues above fail AA behind white text, so a
+     bar that carries a label uses these instead; the light ones stay for the
+     small status dots and legend swatches. */
+  --marlo-info-solid: #15719B;
+  --marlo-success-solid: #2E7D32;
+  --marlo-warning-ink: #4A3000;
+
+  /* Today marker — darker than --marlo-danger so a 2px hairline still reads
+     against white. */
+  --marlo-today-line: #C7401C;
+
+  /* Radii */
+  --marlo-radius-xs: 4px;
+  --marlo-radius-sm: 6px;
+  --marlo-radius-md: 8px;
+  --marlo-radius-lg: 10px;
+  --marlo-radius-xl: 12px;
+  --marlo-radius-pill: 999px;
+
+  /* Elevation */
+  --marlo-shadow-card: 0 1px 3px rgba(31, 42, 55, 0.06);
+  --marlo-shadow-frame: 0 2px 10px rgba(31, 42, 55, 0.08);
+  --marlo-shadow-popover: 0 14px 36px rgba(31, 42, 55, 0.18);
+  --marlo-shadow-brand: 0 2px 6px rgba(2, 119, 162, 0.28);
+  --marlo-shadow-fab: 0 6px 18px rgba(2, 119, 162, 0.4);
+}
+
+/************* 0. LAYOUT ***************/
+/* The design is full-width with 32px gutters instead of Bootstrap's 1170px
+   centred container. Bootstrap keeps 15px of inner padding on .container, so
+   the border box must be 34px narrower than the viewport for the content edge
+   to land at 32px — that reproduces the design's 1376px content width at a
+   1440px viewport exactly. global.css already renders every page at 95% below
+   1300px, so this width is proven across the app.
+   Specificity (0,2,0) beats Bootstrap's .container (0,1,0). */
+.container:not(.loginPage) {
+  width: calc(100% - 34px);
+  max-width: none;
+}
+
+/************* 1. TOP BAR ***************/
+/* Selectors use direct children so nothing leaks into ul.subMenu, which is a
+   descendant of the same block and needs a completely different layout. */
+#superadminBlock {
+  height: 40px;
+  background: var(--marlo-topbar-bg);
+  box-shadow: none;
+  color: var(--marlo-topbar-fg);
+  font: 500 13px/1 var(--marlo-font-sans);
+}
+
+#superadminBlock > .container {
+  height: 100%;
+}
+
+#superadminBlock > .container > ul {
+  display: flex;
+  /* The template renders System Admin first and the global unit switcher last;
+     row-reverse restores the designed left-to-right order without reordering
+     the markup, and packs the group against the right edge. */
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#superadminBlock > .container > ul > .clearfix {
+  display: none;
+}
+
+#superadminBlock > .container > ul > li {
+  float: none;
+  display: flex;
+  align-items: center;
+  height: 28px;
+  border-radius: var(--marlo-radius-sm);
+  background: transparent;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+#superadminBlock > .container > ul > li.currentSection,
+#superadminBlock > .container > ul > li:hover {
+  background: var(--marlo-topbar-hover-bg);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+#superadminBlock > .container > ul > li > a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--marlo-radius-sm);
+  color: var(--marlo-topbar-fg);
+  font: 500 13px/1 var(--marlo-font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+#superadminBlock > .container > ul > li:hover > a,
+#superadminBlock > .container > ul > li.currentSection > a {
+  color: var(--marlo-topbar-fg-strong);
+}
+
+#superadminBlock > .container > ul > li > a .glyphicon {
+  top: 0;
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* --- Global unit switcher ---------------------------------------------- */
+/* The <li> is only a positioning anchor now; the pill lives on the trigger
+   button, so the generic li hover fill from global.css must be neutralised. */
+#superadminBlock > .container > ul > li#globalUnitSwitcher,
+#superadminBlock > .container > ul > li#globalUnitSwitcher:hover {
+  position: relative;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Trigger — solid pill with a live-session dot. */
+#superadminBlock .guSwitcher__trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--marlo-topbar-pill-border);
+  border-radius: var(--marlo-radius-sm);
+  background: var(--marlo-topbar-pill-bg);
+  color: var(--marlo-topbar-fg-strong);
+  font: 600 13px/1 var(--marlo-font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#superadminBlock .guSwitcher__trigger:hover,
+#superadminBlock #globalUnitSwitcher.is-open .guSwitcher__trigger {
+  background: var(--marlo-topbar-pill-bg-hover);
+}
+
+#superadminBlock .guSwitcher__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--marlo-success);
+}
+
+#superadminBlock .guSwitcher__caret {
+  flex: none;
+  opacity: 0.85;
+  transition: transform 0.15s ease;
+}
+
+#superadminBlock #globalUnitSwitcher.is-open .guSwitcher__caret {
+  transform: rotate(180deg);
+}
+
+/* Panel — light popover matching the redesign surfaces. */
+#superadminBlock .guPanel {
+  position: absolute;
+  z-index: 1200;
+  /* The trigger is 28px tall inside a 40px bar, so it ends 6px above the bar;
+     34px puts the panel 8px below it. The gap no longer matters for hover,
+     but it still has to clear the bar. */
+  top: 34px;
+  right: 0;
+  width: 340px;
+  padding: 14px 0 6px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-xl);
+  background: var(--marlo-surface);
+  box-shadow: var(--marlo-shadow-popover);
+  color: var(--marlo-ink);
+  font-family: var(--marlo-font-sans);
+  text-align: left;
+  cursor: default;
+}
+
+#superadminBlock .guPanel[hidden] {
+  display: none;
+}
+
+#superadminBlock .guPanel__label {
+  display: block;
+  padding: 0 18px;
+  color: var(--marlo-text-subtle);
+  font: 700 10px/1 var(--marlo-font-sans);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+/* Current portfolio block. */
+#superadminBlock .guPanel__current {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--marlo-border-soft);
+}
+
+#superadminBlock .guPanel__currentRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 18px 0;
+}
+
+#superadminBlock .guPanel__currentName {
+  color: var(--marlo-ink);
+  font: 700 18px/1.1 var(--marlo-font-sans);
+}
+
+#superadminBlock .guPanel__currentDesc {
+  margin: 3px 0 0;
+  padding: 0 18px;
+  color: var(--marlo-text-muted);
+  font: 400 12px/1.4 var(--marlo-font-sans);
+}
+
+#superadminBlock .guBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 19px;
+  padding: 0 8px;
+  border: 1px solid var(--marlo-success-border);
+  border-radius: var(--marlo-radius-xs);
+  background: var(--marlo-success-bg);
+  color: var(--marlo-success-text);
+  font: 700 10px/1 var(--marlo-font-sans);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Switch-to list. */
+#superadminBlock .guPanel__switch {
+  padding-top: 13px;
+}
+
+#superadminBlock .guPanel__list {
+  max-height: 268px;
+  margin-top: 7px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Only rendered when the user belongs to more than one global unit type. */
+#superadminBlock .guPanel__group {
+  display: block;
+  padding: 9px 18px 3px;
+  color: var(--marlo-text-subtle);
+  font: 600 10px/1.3 var(--marlo-font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#superadminBlock .guItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  border-left: 3px solid transparent;
+  color: var(--marlo-ink);
+  text-decoration: none;
+}
+
+#superadminBlock .guItem:hover,
+#superadminBlock .guItem:focus {
+  background: var(--marlo-surface-sunken);
+  color: var(--marlo-ink);
+  text-decoration: none;
+}
+
+#superadminBlock .guItem__text {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+#superadminBlock .guItem__name {
+  display: block;
+  font: 600 14px/1.25 var(--marlo-font-sans);
+}
+
+#superadminBlock .guItem__desc {
+  display: block;
+  margin-top: 1px;
+  color: var(--marlo-text-muted);
+  font: 400 12px/1.35 var(--marlo-font-sans);
+}
+
+#superadminBlock .guItem--current,
+#superadminBlock .guItem--current:hover {
+  border-left-color: var(--marlo-brand);
+  background: var(--marlo-brand-tint);
+}
+
+#superadminBlock .guItem--current .guItem__name {
+  color: var(--marlo-brand-dark);
+}
+
+#superadminBlock .guItem__check {
+  flex: none;
+  color: var(--marlo-brand);
+}
+
+/* Below the tablet breakpoint the trigger no longer sits near the right edge,
+   so anchoring the panel to it pushes half of the card off-screen. Detach it
+   from the trigger and pin it under the bar instead. */
+@media (max-width: 767px) {
+  #superadminBlock .guPanel {
+    position: fixed;
+    top: 46px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  #superadminBlock .guPanel__list {
+    max-height: 50vh;
+  }
+}
+
+#superadminBlock a:focus-visible,
+#superadminBlock button:focus-visible {
+  outline: 2px solid var(--marlo-brand-light);
+  outline-offset: -2px;
+}
+
+/************* 2. BRAND HEADER ***************/
+header {
+  background: var(--marlo-surface);
+  border-bottom: 1px solid var(--marlo-border);
+  font-family: var(--marlo-font-sans);
+}
+
+/* One centred row: wordmark + strapline on the left, global unit logo right.
+   Horizontal padding comes from the container gutters. */
+.marlo-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 80px;
+  padding: 18px 0;
+}
+
+.marlo-header > .clearfix {
+  display: none;
+}
+
+/* Rendered empty when the global unit is not closed. */
+.marlo-header > h4:empty {
+  display: none;
+}
+
+.marlo-header > h4 {
+  margin: 0;
+}
+
+#marlo-logo {
+  float: none;
+  width: auto;
+  min-width: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+#marlo-logo > a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+}
+
+#marlo-logo > a > .clearfix {
+  display: none;
+}
+
+#marlo-logo #title {
+  float: none;
+  color: var(--marlo-brand);
+  font: 700 30px/1 var(--marlo-font-sans);
+  letter-spacing: 0.02em;
+}
+
+#marlo-logo > a:hover #title {
+  color: var(--marlo-brand-dark);
+}
+
+#marlo-logo-divider {
+  width: 1px;
+  height: 34px;
+  flex: none;
+  background: var(--marlo-border);
+}
+
+#marlo-logo #subTitle {
+  float: none;
+  width: auto;
+  max-width: 230px;
+  margin: 0;
+  padding: 0;
+  color: var(--marlo-text-muted);
+  font: 400 13px/1.35 var(--marlo-font-sans);
+}
+
+/* Was absolutely positioned at 97px tall; the design sizes it into the row.
+   Bounds rather than fixed dimensions, so every global unit logo fits the
+   44px slot on whichever axis binds first instead of being distorted. */
+#crp-image {
+  position: static;
+  margin-left: auto;
+  width: auto;
+  height: auto;
+  max-width: 220px;
+  max-height: 44px;
+  object-fit: contain;
+}
+
+/************* 3. MAIN MENU ***************/
+/* The bar is pinned here, in CSS. global.js used to measure a scroll threshold
+   once on ready() and toggle .positionFixedTop to make .menuContent `fixed`;
+   that threshold went stale whenever the header above it reflowed, and the
+   bar detached 20px late because of a hardcoded offset.
+
+   `sticky` goes on the <nav>, not on .menuContent: a sticky child inside a
+   50px-tall parent has nowhere to travel. It also makes #mainMenu a positioned
+   element, which activates the `z-index: 5000` global.css declares here and
+   would lift the bar above modals (1050) and the pace bar (2000) — so the
+   z-index is pinned back to the 1001 the fixed bar used. */
+#mainMenu {
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  height: 50px;
+}
+
+#mainMenu .menuContent {
+  /* Replaces header-menu-bar.png with the flat brand fill. */
+  background-image: none;
+  background: var(--marlo-brand);
+  font-family: var(--marlo-font-sans);
+  font-size: 1em;
+}
+
+#mainMenu .menuContent > .container {
+  display: flex;
+  align-items: stretch;
+  min-height: 50px;
+}
+
+/* Bootstrap's visible-*-block forces `display: block !important`, so the row
+   can only become flex inside the breakpoint where it is actually shown.
+   Below 992px Bootstrap keeps it hidden and the hamburger takes over. */
+@media (min-width: 992px) {
+  #mainMenu .menuContent > .container > ul.visible-ul {
+    display: flex !important;
+    align-items: stretch;
+    gap: 2px;
+  }
+}
+
+/* Legacy nudge that compensated for the old floated layout. */
+@media screen and (max-width: 1335px) {
+  #mainMenu .menuContent .visible-ul {
+    margin-left: 0;
+  }
+}
+
+#mainMenu .menuContent > .container > ul > li {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  color: #fff;
+  font-size: 1em;
+}
+
+#mainMenu .menuContent > .container > ul > li:hover {
+  background: var(--marlo-brand-dark);
+}
+
+#mainMenu .menuContent > .container > ul > li.currentSection {
+  background: var(--marlo-brand-light);
+  box-shadow: none;
+  font-weight: 600;
+}
+
+#mainMenu .menuContent > .container > ul > li > a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 50px;
+  padding: 0 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font: 500 14px/1 var(--marlo-font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+#mainMenu .menuContent > .container > ul > li:hover > a,
+#mainMenu .menuContent > .container > ul > li.currentSection > a {
+  color: #fff;
+}
+
+/* The active item carries the icon and a slightly wider pad in the design. */
+#mainMenu .menuContent > .container > ul > li.currentSection > a {
+  padding: 0 16px;
+  font-weight: 600;
+}
+
+#mainMenu .menuContent > .container > ul > li > a .glyphicon {
+  top: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+#mainMenu .menuContent ul li a.disabled {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Sub menus keep the darker brand tone so they read as part of the bar. */
+#mainMenu .menuContent ul li:hover ul.subMenu {
+  top: 50px;
+  background: var(--marlo-brand-dark);
+  border-radius: 0 0 var(--marlo-radius-md) var(--marlo-radius-md);
+  box-shadow: var(--marlo-shadow-popover);
+  opacity: 1;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 13px;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li:first-child {
+  border-top: 0;
+}
+
+/* Stuck state: same 50px bar, only an added shadow. `sticky` has no selector
+   for "currently pinned", so global.js still toggles one class — but only for
+   this shadow, off `scrollTop > 0`, with no threshold to measure. */
+#mainMenu.is-stuck .menuContent {
+  box-shadow: 0 2px 8px rgba(31, 42, 55, 0.18);
+}
+
+#mainMenu .menuContent .avatar {
+  width: 32px;
+  height: 32px;
+  font: 700 12px/1 var(--marlo-font-sans);
+  letter-spacing: 0.02em;
+}
+
+/************* 3b. USER MENU ***************/
+#userInfo.userDropdown {
+  position: relative;
+  right: auto;
+  top: auto;
+  display: flex;
+  align-items: center;
+  /* global.css pads this 6px/18px, which stretched the whole bar to 74px. */
+  padding: 0;
+  height: auto;
+  margin-left: auto;
+  font-size: 1em;
+}
+
+#userInfo .userToggle {
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 8px 0 0;
+  border-radius: 0;
+  background: none;
+}
+
+#userInfo .userToggle:hover {
+  background: none;
+  opacity: 0.85;
+}
+
+#userInfo .userToggle:focus,
+#userInfo .userToggle:focus-visible {
+  box-shadow: none;
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: -4px;
+}
+
+#userInfo .avatar {
+  background-color: var(--marlo-surface);
+  color: var(--marlo-brand);
+  font: 700 12px/1 var(--marlo-font-sans);
+  letter-spacing: 0.02em;
+}
+
+#userInfo .userToggle:hover .avatar {
+  background-color: var(--marlo-surface);
+  color: var(--marlo-brand);
+  box-shadow: none;
+}
+
+/* The design uses a stroked chevron; the legacy caret is a filled triangle. */
+#userInfo .caret {
+  width: 10px;
+  height: 10px;
+  /* Bootstrap's .caret carries margin-left: 2px alongside the border trick. */
+  margin: 0;
+  border: 0;
+  background: no-repeat center / 10px 10px
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Realigned to the toggle and restyled as a light popover, matching the
+   "All phases" panel in the design rather than the legacy teal card. */
+#userInfo-drop {
+  top: 100%;
+  right: 0;
+  left: auto;
+  margin-top: 8px;
+  padding: 14px !important;
+  background: var(--marlo-surface);
+  border: 1px solid #DCE2E9;
+  border-radius: var(--marlo-radius-xl);
+  box-shadow: var(--marlo-shadow-popover);
+  color: var(--marlo-ink);
+  font-family: var(--marlo-font-sans);
+}
+
+#userInfo-drop:after {
+  right: 14px;
+  border-color: transparent transparent var(--marlo-surface) transparent;
+}
+
+#userInfo-drop .name {
+  color: var(--marlo-ink);
+  font: 600 14px/1.3 var(--marlo-font-sans);
+}
+
+#userInfo-drop .email {
+  margin: 6px 0 0;
+  color: var(--marlo-text-muted);
+  font: 400 13px/1.3 var(--marlo-font-sans);
+}
+
+#userInfo-drop .roles {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--marlo-border-soft);
+  color: var(--marlo-text-muted);
+  font: 400 12.5px/1.4 var(--marlo-font-sans);
+}
+
+#userInfo-drop .roles strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--marlo-text);
+  font: 700 11px/1 var(--marlo-font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+#userInfo-drop .roles span {
+  margin: 3px 4px 0 0;
+  background-color: var(--marlo-brand-tint);
+  border: 1px solid var(--marlo-brand-tint-border);
+  color: var(--marlo-brand-dark);
+  font-size: 12px;
+}
+
+/* global.css pins this to the top-right corner of the card as a teal pill;
+   the redesign puts it back in flow as a bordered button. */
+#userInfo-drop #userLogOut {
+  position: static;
+  top: auto;
+  right: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  width: auto;
+  min-width: 0;
+  height: 34px;
+  margin-top: 14px;
+  padding: 0 12px;
+  background: var(--marlo-surface);
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  box-shadow: none;
+  color: var(--marlo-text);
+  font: 600 13px/1 var(--marlo-font-sans);
+  text-decoration: none;
+}
+
+#userInfo-drop #userLogOut:hover,
+#userInfo-drop #userLogOut:focus {
+  background: var(--marlo-surface-sunken);
+  border-color: var(--marlo-brand);
+  color: var(--marlo-brand);
+}
+
+#userInfo-drop #userLogOut:active {
+  background: var(--marlo-brand-tint);
+  transform: none;
+  box-shadow: none;
+}
+
+/************* 3c. DEBUG PANEL (local only) ***************/
+/* footer.ftl renders #debugPanel only when config.debug is on outside
+   production. global.css positions it absolute with no z-index, which
+   happened to paint above the main menu only because the bar was an
+   unpositioned block — a positioned element paints above in-flow boxes. Now
+   that #mainMenu is sticky with z-index 1001 the bar covers the panel and
+   hides its "Form outputs" section, so the panel is lifted just above the bar
+   (and stays below modals at 1040/1050).
+
+   `fixed` replaces `absolute`: the panel was anchored to the document, not
+   the viewport, so it scrolled away with the page — useless for a debug
+   overlay. jQuery UI keeps it draggable either way (utils.js). This layer is
+   loaded last, so it is the override point for anything global.css sets. */
+#debugPanel {
+  position: fixed;
+  z-index: 1002;
+}
+
+/************* 4. PHASE SELECTOR ***************/
+.timeline-phases {
+  margin-bottom: 0;
+  padding-top: 20px;
+}
+
+.phaseSelector {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: var(--marlo-font-sans);
+}
+
+.phaseSelector__label {
+  margin-right: 2px;
+  color: var(--marlo-text-muted);
+  font: 600 11px/1 var(--marlo-font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- Open phase pills ---- */
+.phasePill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-surface);
+  cursor: pointer;
+}
+
+.phasePill:hover {
+  border-color: var(--marlo-brand);
+  background: var(--marlo-brand-tint);
+}
+
+.phasePill--current,
+.phasePill--current:hover {
+  border-color: var(--marlo-brand-dark);
+  background: var(--marlo-brand);
+  box-shadow: var(--marlo-shadow-brand);
+  cursor: default;
+  opacity: 1;
+}
+
+.phasePill__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.phasePill__name {
+  color: var(--marlo-ink);
+  font: 600 14px/1.2 var(--marlo-font-sans);
+  white-space: nowrap;
+}
+
+.phasePill__dates {
+  color: var(--marlo-text-muted);
+  font: 500 11px/1.2 var(--marlo-font-sans);
+  white-space: nowrap;
+}
+
+.phasePill--current .phasePill__name {
+  color: #fff;
+}
+
+.phasePill--current .phasePill__dates {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.phasePill__check {
+  flex: none;
+  color: #fff;
+}
+
+/* ---- Status badges ---- */
+.phaseBadge {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 2px 7px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font: 700 10px/1.4 var(--marlo-font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.phaseBadge--open {
+  background: var(--marlo-success-bg);
+  border-color: var(--marlo-success-border);
+  color: var(--marlo-success-text);
+}
+
+.phaseBadge--upcoming {
+  background: var(--marlo-warning-bg);
+  border-color: var(--marlo-warning-border);
+  color: var(--marlo-warning-text);
+}
+
+.phaseBadge--closed {
+  background: var(--marlo-neutral-bg);
+  border-color: var(--marlo-neutral-border);
+  color: var(--marlo-neutral-text);
+}
+
+/* Sits on the brand-filled pill, so it drops its border and inverts. */
+.phaseBadge--solid {
+  border-color: transparent;
+  color: #fff;
+}
+
+.phaseBadge--solid.phaseBadge--open {
+  background: var(--marlo-success);
+}
+
+.phaseBadge--solid.phaseBadge--upcoming {
+  background: var(--marlo-warning);
+  color: var(--marlo-warning-text);
+}
+
+.phaseBadge--solid.phaseBadge--closed {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ---- "All phases" trigger ---- */
+.phaseSelector__all {
+  position: relative;
+}
+
+.phaseAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px dashed #B6C0CC;
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-surface);
+  color: var(--marlo-text);
+  font: 600 13px/1 var(--marlo-font-sans);
+  cursor: pointer;
+}
+
+.phaseAllBtn:hover {
+  border-color: var(--marlo-brand);
+  color: var(--marlo-brand);
+}
+
+.phaseAllBtn[aria-expanded="true"] {
+  border-style: solid;
+  border-color: var(--marlo-brand);
+  background: var(--marlo-brand-tint);
+  color: var(--marlo-brand);
+}
+
+.phaseAllBtn__caret {
+  transition: transform 0.15s ease;
+}
+
+.phaseAllBtn[aria-expanded="true"] .phaseAllBtn__caret {
+  transform: rotate(180deg);
+}
+
+/* ---- "All phases" panel ---- */
+.phasePanel {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  z-index: 40;
+  width: 380px;
+  background: var(--marlo-surface);
+  border: 1px solid #DCE2E9;
+  border-radius: var(--marlo-radius-xl);
+  box-shadow: var(--marlo-shadow-popover);
+  overflow: hidden;
+}
+
+.phasePanel__search {
+  padding: 12px;
+  border-bottom: 1px solid var(--marlo-border-soft);
+}
+
+.phaseSearchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+  color: var(--marlo-text-muted);
+}
+
+.phaseSearchBox:focus-within {
+  border-color: var(--marlo-brand);
+  color: var(--marlo-brand);
+  box-shadow: inset 0 0 0 1px var(--marlo-brand);
+}
+
+.phaseSearchBox input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--marlo-ink);
+  font: 400 14px/1 var(--marlo-font-sans);
+}
+
+.phaseSearchBox input::placeholder {
+  color: var(--marlo-text-subtle);
+}
+
+.phasePanel__list {
+  max-height: 300px;
+  padding: 4px 0 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.phasePanel__year {
+  position: sticky;
+  top: 0;
+  padding: 8px 14px 4px;
+  background: var(--marlo-surface);
+  color: var(--marlo-text-subtle);
+  font: 700 11px/1.4 var(--marlo-font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.phaseRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 14px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.phaseRow:hover {
+  background: var(--marlo-surface-sunken);
+}
+
+.phaseRow__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.phaseRow__name {
+  color: var(--marlo-ink);
+  font: 600 14px/1.3 var(--marlo-font-sans);
+}
+
+.phaseRow__name em {
+  margin-left: 4px;
+  color: var(--marlo-brand);
+  font: 500 11px/1 var(--marlo-font-sans);
+  font-style: normal;
+}
+
+.phaseRow__dates {
+  color: var(--marlo-text-muted);
+  font: 400 12px/1.3 var(--marlo-font-sans);
+}
+
+.phaseRow--closed .phaseRow__name {
+  color: var(--marlo-text-muted);
+  font-weight: 500;
+}
+
+.phaseRow--closed .phaseRow__dates {
+  color: var(--marlo-text-subtle);
+}
+
+.phaseRow--current,
+.phaseRow--current:hover {
+  background: var(--marlo-brand-tint);
+  border-left-color: var(--marlo-brand);
+  cursor: default;
+  opacity: 1;
+}
+
+.phasePanel__empty {
+  margin: 0;
+  padding: 18px 14px;
+  color: var(--marlo-text-subtle);
+  font: 400 12.5px/1.5 var(--marlo-font-sans);
+  text-align: center;
+}
+
+/* The layout rules above would otherwise defeat the UA's [hidden] display. */
+.phasePanel[hidden],
+.phaseRow[hidden],
+.phasePanel__year[hidden],
+.phasePanel__empty[hidden] {
+  display: none;
+}
+
+.phasePanel__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--marlo-border-soft);
+  background: var(--marlo-surface-alt);
+}
+
+.phasePanel__summary {
+  color: var(--marlo-text-muted);
+  font: 400 12px/1.3 var(--marlo-font-sans);
+}
+
+.phasePanel__footer a {
+  color: var(--marlo-brand);
+  font: 600 12px/1.3 var(--marlo-font-sans);
+  text-decoration: none;
+}
+
+.phasePanel__footer a:hover {
+  color: var(--marlo-brand-dark);
+  text-decoration: underline;
+}
+
+/* ---- Floating phase tag (shown by global.js once the selector scrolls off) ---- */
+.phaseTag span,
+.phaseTag span.planning,
+.phaseTag span.reporting {
+  /* timeline-phases.css used to pin this tag; it is gone with the redesign, so
+     the rule is restored here. Without `fixed` the tag stayed in the flow and
+     scrolled off behind the stuck navbar, which is exactly what QA reported.
+     `top` matches the 50px height of the sticky #mainMenu, and the z-index
+     sits just under that bar (1001) but above page content. */
+  position: fixed;
+  top: 50px;
+  z-index: 1000;
+  padding: 4px 12px;
+  border-radius: 0 0 var(--marlo-radius-md) var(--marlo-radius-md);
+  background: var(--marlo-brand);
+  box-shadow: var(--marlo-shadow-card);
+  color: #fff;
+  font: 600 12px/1.4 var(--marlo-font-sans);
+}
+
+/************* 5. FOOTER ***************/
+.footer {
+  margin-top: 24px;
+  padding: 26px 0 64px;
+  /* Drops the tiled footerBackground.png for the flat brand fill. */
+  background: var(--marlo-brand);
+  font-family: var(--marlo-font-sans);
+}
+
+/* The tractor strip that sat above the footer is not part of the redesign. */
+.footer:before {
+  content: none;
+  display: none;
+}
+
+/* Bootstrap's clearfix pseudo-elements become grid items and steal cells, so
+   they are removed wherever the footer switches to grid. */
+.footer > .container::before,
+.footer > .container::after,
+.footer .row::before,
+.footer .row::after {
+  content: none;
+  display: none;
+}
+
+/* Link columns span the full width; copyright and the blog button share the
+   row beneath them, as in the design. */
+.footer > .container {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "links links"
+    "copy  blog";
+  align-items: center;
+  gap: 0 20px;
+}
+
+.footer .row {
+  grid-area: links;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin: 0;
+}
+
+.footer .copyRight { grid-area: copy; }
+.footer .newsButton { grid-area: blog; }
+
+/* Both cells carry the rule so it reads as one line across the row. */
+.footer .copyRight,
+.footer .newsButton {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.footer .newsButton {
+  justify-self: end;
+  text-align: right;
+}
+
+.footer .infoLinks {
+  width: auto;
+  float: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.footer .infoLinks strong {
+  color: rgba(255, 255, 255, 0.72);
+  font: 700 11px/1 var(--marlo-font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* The template puts a <br> after each heading; the grid gap handles spacing. */
+.footer .infoLinks > br {
+  display: none;
+}
+
+.footer ul li {
+  opacity: 1;
+  line-height: 1.6;
+}
+
+.footer .infoLinks a {
+  color: #fff;
+  font: 400 14px/1.6 var(--marlo-font-sans);
+  text-decoration: none;
+}
+
+.footer .infoLinks a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* No max-width here: this cell carries half the divider rule, so it has to
+   fill its grid column for the line to meet the one above the blog button. */
+.footer .copyRight {
+  color: rgba(255, 255, 255, 0.82);
+  font: 400 12.5px/1.5 var(--marlo-font-sans);
+}
+
+.footer .copyRight hr {
+  display: none;
+}
+
+.footer .newsButton a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--marlo-radius-md);
+  color: #fff;
+  font: 600 13px/1 var(--marlo-font-sans);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.footer .newsButton a:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer .newsButton a b {
+  font-weight: 600;
+}
+
+/************* 6. FLOATING HELP BUTTON ***************/
+/* The guide trigger becomes the circular action in the bottom-right corner.
+   The support chat opposite it is a Tawk.to iframe and is styled by Tawk. */
+#guide-button.guide-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--marlo-brand);
+  box-shadow: var(--marlo-shadow-fab);
+  cursor: pointer;
+}
+
+#guide-button.guide-button:hover {
+  background: var(--marlo-brand-dark);
+}
+
+#guide-button.guide-button img {
+  display: none;
+}
+
+#guide-button.guide-button::after {
+  content: "?";
+  color: #fff;
+  font: 700 22px/1 var(--marlo-font-sans);
+}

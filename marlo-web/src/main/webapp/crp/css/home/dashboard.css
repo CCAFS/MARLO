@@ -1,95 +1,4 @@
-#dashboardContent {
-  float: left;display: inline-block;
-  /* width: 58%; */
-  margin-left: 2%;
-}
 
-#dashboardContent li a{
-  background-color: white;
-  color: black;
-  border: 1px solid #dddddd;
-  /* top: 5px; */
-}
-
-#dashboardContent li a:hover{
-  /* background-color: #69aec8; */
-  color:white;
-}
-
-#dashboardContent li.active a{
-  /* background-color: rgb(17, 127, 168); */
-  color: #337ab7;
-  bottom: 0px;
-  height: 42px;
-}
-
-#timeline {
-    width: 100%;
-    margin: 10px 0 0 0;
-    overflow: hidden;
-    background: url('../../../global/images/backgroundTimeline.png') left 45px repeat-x;
-    background-size: 0.5% 0.5%;
-    height: 360px;
-}
-
-#dates {
-      width: 800px;
-      height: 70px;
-      overflow: hidden;
-    }
-
-#dates li {
-  background: url('../../../global/images/backgroundTimeline.png') center bottom no-repeat;
-  background-size: 16% 30%;
-  list-style: none;
-  float: left;
-  width: 100px;
-  height: 53px;
-  font-size: 14px;
-  text-align: center;
-}
-
-#dates a {
-  text-decoration: none;
-  line-height: 50px;
-  padding-bottom: 10px;
-}
-
-#dates .selected {
-  color:#117fa8;
-  font-size: 20px;
-  line-height: 41px;
-}
-
-#issues {
-  width: 100%;
-  height: 238px;
-  overflow: hidden;
-  padding: 0;
-}
-
-#issues li {
-  width: 350px;
-  /* height: 200px; */
-  list-style: none;
-  float: left;
-}
-
-#issues li h1 {
-  color:black;
-  font-size: 1.5em;
-  margin: 20px 0;
-  text-align:center;
-}
-
-#issues li p {
-  width: 100%;
-  font-size: 14px;
-  margin-right: 70px;
-  font-weight: normal;
-  line-height: 22px;
-  /* text-align: center; */
-}
 
 #infoRelations {
     display: none;
@@ -122,7 +31,6 @@
 }
 
 
-
 #shorcuts {
     width: 40%;
     float: left;
@@ -138,41 +46,9 @@
     height: 330px;
 }
 
-#myProjects {
-    padding: 15px;
-}
-
-#myDeliverables {
-    padding: 15px;
-}
-
-#myStudies {
-    padding: 15px;
-}
-
-#myInnovations {
-    padding: 15px;
-}
-
 
 #projects_wrapper {
     margin-bottom: 0;
-}
-
-#buttonShowAll {
-    position: absolute;
-    /* right: 2%; */
-    /* top: 16%; */
-    z-index: 100;
-    text-align: center;
-    /* width: 3%; */
-    background-color: #2BA6CB;
-    color: #fff;
-    border: 0;
-    padding: 3px 5px;
-    font-weight: bold;
-    border-bottom: 3px solid #1E94B8;
-    border-radius: 6px;
 }
 #controls {
     border: 1px solid #ddd;
@@ -191,7 +67,7 @@
     color: #2ba6cb;
 }
 
-#fullscreen{
+#fullscreen {
 	position: absolute;
     right: 4%;
     top: 14%;
@@ -210,1129 +86,1315 @@ div#impactGraphic-fullscreen {
     width: 100%;
     height: 100%;
 }
+  /*************** Cluster banner ********************/
+  /* Replaces .sectionMap: the full-bleed blue band with the wave divider is
+     now a card. The 12 map hotspots are kept, but positioned as a percentage
+     of the map image instead of fixed pixel offsets, so a single set of
+     coordinates works at every width. */
 
-  /*************** Timeline ********************/
-
-span.leftControl {
-    left: 5px;
-}
-
-span.rigthControl {
-    right: 5px;
-}
-
-span.timelineControl {
-    position: absolute;
-    cursor: pointer;
-    color: #0e697d;
-    top: 58px;
-}
-
-span.timelineControl:hover {
-    color: #117fa8;
-}
-
-.homeTitleTimeline {
+  .clusterBanner {
     display: flex;
-    justify-content: center;
-    font-size: 2.0em;
-    color: #333;
-    padding: 22px 30px 14px 14px;
-    width: 100%;
-    position: absolute;
+    align-items: stretch;
+    margin-top: 16px;
+    background: var(--marlo-brand-tint);
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: var(--marlo-radius-xl);
+    font-family: var(--marlo-font-sans);
+    /* Visible so map tooltips can escape the card; the map panel rounds its
+       own corners instead of relying on the card to clip them. */
+    overflow: visible;
   }
-  
-  .timeline{
-		position: static;
-    margin: 30px 0;
+
+  .clusterBanner__body {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    justify-content: center;
-    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
-    border-radius: 5px;
-  }
-
-  .porcentTimeLine {
-    height: 6px;
-    width: 70%;
-    background: #eb9d46;
-    position: absolute;
-    margin-top: -56px;
-    border-radius: 0 10px 10px 0;
-    max-width: 195px;
-  }
-  
-  .timeline-line{
-    height: 6px;
-    background: rgb(228, 228, 228);
-    width: 243px;
-    position: absolute;
-    margin-top: -56px;
-    border: none;
-    z-index: -1;
-  }
-  
-  .scroll-x-containerTimeline {
-    position: relative;
-    scroll-behavior: smooth;
-    overflow-x: scroll;
-    width: 85%;
-    margin-left: auto;
-    margin-right: auto;
-    margin: 0 auto;
-    display: flex;
-    margin-top: 63px;
-  }
-  
-  .scroll-x-containerTimeline::-webkit-scrollbar {
-    -webkit-appearance: none;
-  }
-  
-  
-  .timeline-innerline {
-    background-color: brown;
-  
-  }
-  
-  .containerTimeline {
-    width: 100%;
-    position: relative;
-  }
-  
-  .infTimelineTimeline {
-    min-width: 243px;
-    text-align: center;
-    position: relative;
-    cursor: default;
-  }
-  
-  .timeline-pointTimeline {
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    background: rgb(228, 228, 228);
-    max-width: 30px;
-    height: 30px;
-    position: absolute;
-    right: 0;
-    width: 30px;
-    bottom: 39px;
-    z-index: 1;
-  }
-  
-  .titleTimeline {
-    writing-mode: vertical-rl;
-    height: 204px;
-    -webkit-transform: rotate(270deg);
-    text-align: left;
-    color: #5f5e5e;
-    /* padding-left: -25px; */
-    /* font-weight: 500; */
-    /* margin-bottom: -70px; */
-    margin:  auto;
-  }
-  
-  .dateTimeline {
-    margin-right: -211px;
-    margin-top: -30px;
-  }
-  
-  .sideButtonTimeline {
-    background:rgba(133, 133, 133, 0.5);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 20px;
-    font-weight: bold;
-    font-family: monospace;
-    text-align: center;
-    cursor: pointer;
-  }
-  
-  .buttonLeftTimeline {
-    left: 39%;
-  }
-  
-  .buttonRightTimeline {
-    right: 39%;
-  }
-  
-  .timelineBackSuccess {
-    background: #8eaf92;
-  }
-  
-  .timelineBackAlert {
-    background: #eb9d46;
-  }
-  
-  .timelineColorSuccess {
-    color: #8eaf92;
-  }
-  
-  .timelineColorAlert {
-    color: #da9343;
-  }
-
-  .timelineAlert {
-    background-color: #ffde85;
-    height: auto;
-    width: 147px;
-    position: absolute;
-    right: 34px;
-    top: 325px;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 12%);
-    border-radius: 5px;
-    padding-top: 12px;
-  }
-  
-  .timelineAlertText {
-    font-weight: 600;
-    text-align: center;
-    /* margin: auto; */
-  }
-
-  .imgTimeline {
-    margin-top: 7px;
-  }
-
-  .timelineRefresh{
-    margin: 30px 0;
-    display: flex;
-    justify-content: center;
-    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
-    border-radius: 5px;
-    height: 297px;
-    background: #f5f5f5;
-  }
-
-  .timelineRefresh img{
-    width: 50px;
-    height: 50px;
-    align-self: center;
-  }
-  
-  #timelineContainer {
-	  position: relative;
-	  overflow-x: scroll;
-	  overflow-y: visible;
-	  height: 31.5vh;
-	  width: 95%;
-	  margin: 0 auto;
-	}
-
-  #timelineContainer::-webkit-scrollbar {
-    display: block;
-    height: 0;            
-    width: 0;      
-    padding-left: 6px;         
-  }
-
-  #timelineContainer::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  #timelineContainer::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    background-color: #2c3e50;
-  }
-
-  #timelineContainer::-webkit-scrollbar:vertical{
-    width: 9px;
-  }
-
-  #timelineContainer::-webkit-scrollbar-track-piece:end {
-    background: transparent;
-    margin-bottom: 20px; 
-}
-
-#timelineContainer::-webkit-scrollbar-track-piece:start {
-    background: transparent;
-    margin-top: 20px;
-}
-	
-	#timelineDescription{
-		display: flex;
-    padding: 18px 30px 18px 30px;
-    width: 100%;
-    align-items: end;
-	}
-
-  #timelineDescription > div{
-    width: 33.3%;
-  }
-	
-	#timelineDescription_title{
-    font-size: 2.0em;
-    color: #333;
-    text-align: center;
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    align-items: center;
-	}
-	
-	#timelineDescription_range{
-		font-size: 1.5rem;
-		
-	}
-
-  #timelineDescription_zoom{
-    display: flex;
-    gap: 1rem;
-  }
-
-  #timelineDescription_zoom_weeks{
-    font-size: 14px;
-    margin: 0;
-    line-height: 3rem;
-  }
-
-  .sideButtonZoom{
-    width: 36px;
-    height: 36px;
-    color: #545454;
-    background-color: transparent;
-    padding: 0;
-    font-size: 20px;
-    font-weight: bolder;
-    text-align: center;
-    line-height: 0;
-    padding-bottom: 3px;
-    cursor: pointer;
-    border-radius: 100%;
-    padding: 0.5rem;
-  }
-
-  .sideButtonZoom:hover{
-    background-color: #54545425;
-    opacity: 0.4;
-  }
-
-	#timeline_times {
-	  display: flex;
-	  width: max-content;
-	  padding: 5px 0;
-	  position: absolute;
-	  height: 100%;
-	}
-	
-	#timeline_activities {
-		position: relative;
-		font-size: 13.5px;
-	}
-	
-	@media only screen and (min-width:1545px){
-		#timeline_activities {
-			font-size: 19.5px;
-		}
-		
-		#timelineContainer{
-			height: 24vh;
-		}
-	}
-	
-	@media only screen and (min-width:2560px){
-		#timeline_activities {
-			font-size: 28px;
-		}
-	}
-	
-	#timeline_today {
-	  position: absolute;
-	  top: 0;
-	  left: 0;
-	  width: 0.25rem;
-	  height: 80%;
-    border: 2px dashed red;
-    border-width: 0.5px 1.5px;
-	}
-	
-	.timebox {
-	  height: 80%;
-	  position: relative;
-    text-align: center;
-    border-right: 1px dashed #CCCCCC;
-		border-left: 1px dashed #CCCCCC;
-	}
-
-  .timebox_information {
-    position: absolute;
-    top: -3px;
-    left: 6px;  
-  }
-	
-	.timeNumber{
-		margin: 1.5px;
-	}
-	
-	.activityCard {
-		position: relative;
-    top: 1.5em;
-    transition: all 0.25s ease-out;
-	}
-	
-	.activityCard_container{
-		position: absolute;
-		display: flex;
-		padding: 0.5rem;
-		flex-direction: column;
-		gap: 0.5rem;
-		flex-shrink: 0;
-		border-radius: 0.75rem;
-		background: #E8F4FF;
-		margin-bottom: 1rem;
-    z-index: 4;
-	}
-	
-	.activityCard_content{
-		display: inline-flex;
-		flex-direction: column;
-		gap: 0.25rem;
-    left: 0;
-    overflow: hidden;
-    padding: 4px 6px;
-    position: sticky;
-    max-width: max-content;
-    z-index: 8;
-	}
-	
-	.activityCard_description {
-		overflow: hidden;
-		color: #000;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		font-size: 1.4rem;
-		font-style: normal;
-		font-weight: 700;
-		margin: 0;
-		padding: 0;
-	}
-	
-	.activityCard_details{
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		max-width: max-content;
-		gap: 2rem;
-	}
-	
-	.activityCard_details div{
-		display: flex;
-    align-items: center;
-    gap: 0 0.5rem;
-    max-width: 33.3%;
-    flex-wrap: wrap;
-	}
-
-  .activityCard_details div b{
-    font-size: 1rem;
-    color: #000;
-    line-height: 1.2em;
-  }
-	
-	.activityCard_details p{
-		font-size: 1rem;
-		font-style: normal;
-		font-weight: 400;
-		line-height: 0.75rem;
-		margin: 0;
-		color: #000;
-	}
-
-  .activityCard_details--1{
-    display: flex;
-    max-width: max-content;
-    gap: 0.5rem;
     flex-direction: column;
-    z-index: 4;
+    gap: 8px;
+    padding: 16px 18px 16px 20px;
   }
 
-  .activityCard_details--1 div{
-		display: flex;
+  .clusterBanner__head {
+    display: flex;
     align-items: center;
-    gap: 0 0.5rem;
-    flex-wrap: wrap;
-	}
+    gap: 9px;
+  }
 
-  .activityCard_viewMore p{
-    font-size: 10px;
-    color: #000;
+  .clusterBanner__icon {
+    flex: none;
+    color: var(--marlo-brand-dark);
+  }
+
+  .clusterBanner__title {
+    margin: 0;
+    color: var(--marlo-brand-dark);
+    font: 600 18px/1.3 var(--marlo-font-sans);
+  }
+
+  .clusterBanner__toggle {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: 7px;
+    background: var(--marlo-surface);
+    color: var(--marlo-brand-dark);
+    font: 600 12.5px/1 var(--marlo-font-sans);
     cursor: pointer;
-    margin-top: 3px;
-    margin-bottom: 0;
   }
 
-  .activityCard_details--1 div b{
-    font-size: 1rem;
-    color: #000;
-    line-height: 1.2em;
-  }
-	
-	.activityCard_details--1 p{
-		font-size: 1rem;
-		font-style: normal;
-		font-weight: 400;
-		line-height: 0.75rem;
-		margin: 0;
-		color: #000;
-	}
-
-  .activityCard_container--zoom{
-    padding: 0.4rem;
+  .clusterBanner__toggle:hover {
+    background: var(--marlo-brand-tint-hover);
   }
 
-  .activityCard_container--zoom .activityCard_description{
-    font-size: 1.2rem;
+  .clusterBanner__toggle svg {
+    transition: transform 0.15s ease;
   }
 
-  .activityCard_container--zoom .activityCard_details div b{
-    font-size: 0.8rem;
+  .clusterBanner--collapsed .clusterBanner__toggle svg {
+    transform: rotate(180deg);
   }
 
-  .activityCard_container--zoom .activityCard_details p{
-    font-size: 0.8rem;
-  }
-
-  .activityCard_container--zoom .activityCard_details--1 div b{
-    font-size: 0.8rem;
-  }
-
-  .activityCard_container--zoom .activityCard_details--1 p{
-    font-size: 0.8rem;
-  } 
-
-  #timeline_activities .activityFlexTop--1{
-    top: 1.5em;
-  }
-
-  #timeline_activities .activityFlexTop--2{
-    top: 5.8em;
-  }
-
-  #timeline_activities .activityFlexTop--3{
-    top: 10.3em;
-  }
-
-  #timeline_activities .activityUnique{
-    top: 4.3em;
-  }
-	
-	#timelineAlert{
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-end;
-    gap: 0.5rem;
-    align-items: end;
-    padding-bottom: 6px;
-    right: 2.5%;
-    top: 10%;
-	}
-	
-	#timelineAlert_container{
-		display: flex;
-		flex-direction: row;
-		gap: 2rem;
-	}
-	
-	.timelineAlert_item{
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	
-	.timelineAlert_item p{
-		font-size: 10px;
-		margin: 0;
-	}
-	
-	.timelineAlert_item_color{
-		width: 10px;
-		height: 10px;
-		border-radius: 12.5px;
-		background-color: #0377a3;
-	}
-
-	.timelineAlert_item_color--1{
-		background-color: #F9C786;
-	}
-	
-	.timelineAlert_item_color--2{
-		background-color: #81B8C1;
-	}
-	
-	.timelineAlert_item_color--3{
-		background-color: #B5D08B;
-	}
-  /*************** sectionMap ********************/
-
-  .sectionMap{
-    width: 100%;
-    height: 210px;
-    background: #0478a3;
+  .clusterBanner__content {
     display: flex;
-    /* border-radius: 0 0 50% 50%; */
-    
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .containerMapsection{
+  .clusterBanner__text {
+    margin: 0;
+    max-width: 900px;
+    color: var(--marlo-ink);
+    font: 400 14px/1.65 var(--marlo-font-sans);
+    text-align: left;
+    text-wrap: pretty;
+  }
+
+  .clusterBanner__links {
     display: flex;
-    position: relative;
+    align-items: center;
+    gap: 16px;
+    margin-top: 2px;
   }
 
-  .borderMap{
-    width: 100%;
-    height: 100px;
-    background-image: url(../../../global/images/header.svg);
-    background-repeat: no-repeat;    
-    background-size: 100%;
-    margin-top: -1px;    
-    margin-bottom: -38px;
+  .clusterBanner__link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--marlo-brand);
+    font: 600 13px/1 var(--marlo-font-sans);
+    text-decoration: none;
   }
 
-  .containerTextMap{
-    width: 100%;
-    margin: 10px 240px 30px 40px;
-    color: #fff;
-    text-align: justify;
+  .clusterBanner__link:hover {
+    color: var(--marlo-brand);
+    text-decoration: underline;
   }
 
-
-  .containerTextMap .titleMap{
-    font-size: 2em;
-    font-weight: 700;
+  .clusterBanner__link--muted {
+    color: var(--marlo-text);
+    font-weight: 500;
   }
 
-  .containerTextMap .textMap{
-    font-size: 16px;
+  .clusterBanner__link--muted:hover {
+    color: var(--marlo-brand);
   }
 
-  .containerImgMap{
-    min-width: 400px;    
-    text-align: center;
-    position: relative;
-    float: left;
-  }
-  
-  .containerImgMap img{    
-    width: 200px;
-    margin-top: 17px;
-  }
-
-.circleMap{
-  width: 9px;
-  height: 9px;
-  background-color: #b3b3b3;
-  border-radius: 50%;
-  position: absolute;
-  cursor: pointer;
-}
-
-
-#cluster1{
-  top: 80px;
-  right: 273px;
-}
-#cluster2{
-  top: 117px;
-  right: 141px;
-}
-#cluster3{
-  top: 101px; 
-  right: 245px;
-}
-#cluster4{
-  bottom: 110px;
-  right: 147px;
-}
-#cluster5{
-  bottom: 32px;
-  right: 173px;
-}
-#cluster6{
-  top: 16px;
-  right: 207px;
-}
-#cluster7{
-  top: 37px;
-  right: 278px;
-}
-#cluster8{
-  top: 93px;
-  right: 290px;
-}
-#cluster9{
-  top: 147px;
-  right: 221px;
-}
-#cluster10{
-  bottom: 31px;
-  right: 132px;
-}
-#cluster11{
-  top: 65px;
-  right: 139px;
-}
-#cluster12{
-  top: 70px;
-  right: 248px;
-}
-
-.dialogMap{
-  position: absolute;
-  width: 200px;
-  min-height: 100px;
-  background: white;
-  border-radius: 6px;
-  text-align: initial;
-  padding: 10px;
-  -webkit-box-shadow:0px 0px 10px rgb(0 0 0 / 100%);
-  display: none;
-  z-index: 1;
-}
-
-.lineMap{
-  position: absolute;
-}
-
-.dialogMapTitle{
-  font-size: 17px;
-  font-weight: 500;
-}
-
-
-@media (max-width:1770px){
-  .containerTextMap {
-    margin: 10px 50px 30px 40px;
-  }
-}
-
-@media (max-width:1480px){
-  .containerTextMap {
-    margin: 10px -35px 30px 40px;
+  .clusterBanner__map {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 240px;
+    padding: 16px;
+    border-left: 1px solid #D5E8F1;
+    border-radius: 0 var(--marlo-radius-xl) var(--marlo-radius-xl) 0;
+    background: #0E79A4;
   }
 
-  .containerImgMap {
-    min-width: 350px;
-  }
-
-  .containerImgMap img {
-    margin-top: 8px;
-  }
-  
-  #cluster1{
-    top: 70px;
-    right: 249px;
-  }
-  #cluster2{
-    top: 107px;
-    right: 115px;
-  }
-  #cluster3{
-    top: 91px; 
-    right: 219px;
-  }
-  #cluster4{
-    bottom: 120px;
-    right: 122px;
-  }
-  #cluster5{
-    bottom: 40px;
-    right: 147px;
-  }
-  #cluster6{
-    top: 6px;
-    right: 185px;
-  }
-  #cluster7{
-    top: 27px;
-    right: 252px;
-  }
-  #cluster8{
-    top: 83px;
-    right: 264px;
-  }
-  #cluster9{
-    top: 137px;
-    right: 197px;
-  }
-  #cluster10{
-    bottom: 41px;
-    right: 108px;
-  }
-  #cluster11{
-    top: 55px;
-    right: 115px;
-  }
-  #cluster12{
-    top: 60px;
-    right: 223px;
-  }
-}
-
-@media (max-width:1000px){
-
-  .containerTextMap {
-    margin: 10px 35px 25px 40px;
-  }
-
-  .containerTextMap .titleMap {
-    font-size: 1.35em;
-  }
-
-  .containerTextMap .textMap {
-    font-size: 12px;
-  }
-
-  .containerImgMap {
-    min-width: 30%;
-    min-height: 200px;
-  }
-
-  .containerImgMap img {
-    width: 119px;
-    margin-top: 2rem;
-  }
-
-  .circleMap {
+  .clusterBanner--collapsed .clusterBanner__content, .clusterBanner--collapsed .clusterBanner__map {
     display: none;
   }
 
- }
+  /* Hugs the image exactly, so hotspot percentages resolve against the map. */
+  .clusterMap {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+  }
 
-  /**************** Content Items Table **************/
-  .containerTabletItems{
+  /* Map_africa.svg declares only a viewBox, no width/height, so it has no
+     intrinsic size — one axis must be given explicitly or the image collapses.
+     aspect-ratio pins the other axis to the viewBox proportions. */
+  .clusterMap img {
     display: block;
-    padding: 30px 0px 45px 0;
-    -webkit-box-shadow: 0px 0px 10px rgb(0 0 0 / 15%);
-    border-radius: 5px;
+    height: 190px;
+    width: auto;
+    max-width: 100%;
+    aspect-ratio: 197.24 / 210.88;
   }
 
-  .tableItemsTitle{
-    width: 100%;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1.4em;
-    color: #333;
-  }
-  
-  .containerSeccionItems {
-    display: flex   ;
+  .clusterMap__spot {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    /* left/top are the centre of the hotspot; pull back by half the dot. */
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    background-color: #b3b3b3;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .containerItems {
-    flex-wrap: wrap;
-    display: table-cell;
-    text-align: center;
-    margin-left: 4px;
+  .clusterMap__spot:hover, .clusterMap__spot:focus-visible {
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+    outline: none;
+  }
+
+  .clusterMap__tip {
+    position: absolute;
+    bottom: calc(100% + 9px);
+    left: 50%;
+    z-index: 5;
+    width: max-content;
+    max-width: 200px;
+    padding: 6px 9px;
+    transform: translateX(-50%);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-surface);
+    box-shadow: 0 6px 18px rgba(31, 42, 55, 0.25);
+    color: var(--marlo-ink);
+    font: 500 12px/1.35 var(--marlo-font-sans);
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .clusterMap__spot:hover .clusterMap__tip, .clusterMap__spot:focus-visible .clusterMap__tip {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (max-width: 1100px){
+    .clusterBanner__map {
+      width: 190px;
+      padding: 12px;
+    }
+
+    .clusterMap img {
+      height: 150px;
+    }
+  }
+
+  @media (max-width: 860px){
+    .clusterBanner {
+      flex-direction: column;
+    }
+
+    .clusterBanner__map {
+      width: 100%;
+      border-left: 0;
+      border-top: 1px solid #D5E8F1;
+      border-radius: 0 0 var(--marlo-radius-xl) var(--marlo-radius-xl);
+    }
+  }
+
+
+  /*************** Schedule ********************/
+  /* Vertically fixed, horizontally scrolled. The card holds three phase lanes,
+     three packed activity lanes and one overflow strip; adding activities
+     changes the chip counts, never the height.
+
+     Geometry is set by schedule.js, which is the only thing that knows
+     pixels-per-day: it measures the track and multiplies by the zoom stop.
+     This stylesheet owns the chrome and the two structural numbers the script
+     reads back out of it, --sched-label and --sched-axis. --sched-label is 0
+     since the label column was removed; the variable stays because schedule.js
+     subtracts it to get the track width, and a future inset would only need to
+     change this one value.
+
+     Stacking inside .scheduleCard__canvas, which is the only stacking context:
+       0  gridlines   (explicit z-index: 0, first in tree order)
+       1  pills
+       2  today line
+       4  sticky axis row
+     No row may carry a z-index of its own or the axis row stops winning. */
+
+  .scheduleCard {
+    --sched-label: 0px;
+    --sched-axis: 32px;
+    position: relative;
+    display: block;
+    margin-top: 16px;
+    padding: 18px 20px 16px;
+    background: var(--marlo-surface);
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-xl);
+    box-shadow: var(--marlo-shadow-card);
+    font-family: var(--marlo-font-sans);
+  }
+
+  /* ---- Header ---- */
+  .scheduleCard__head {
     display: flex;
-}
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
 
-  .itemsTablet{
-    height: 100px;
-    width: 100px;
-    -webkit-box-shadow: 1px 2px 8px rgb(0 0 0 / 25%);   
-    margin: 10px auto;
-    text-align: center;
+  .scheduleCard__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .scheduleCard__title {
+    margin: 0;
+    color: var(--marlo-ink);
+    font: 600 18px/1.3 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__subtitle {
+    color: var(--marlo-text-muted);
+    font: 400 13px/1.3 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .scheduleCard__key {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--marlo-text);
+    font: 500 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+  }
+
+  .scheduleCard__key::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    flex: none;
     border-radius: 2px;
-    text-align: center;
+  }
+
+  .scheduleCard__key--notStarted::before { background: var(--marlo-warning); }
+  .scheduleCard__key--inProgress::before { background: var(--marlo-info); }
+  .scheduleCard__key--completed::before { background: var(--marlo-success); }
+
+  .scheduleCard__key--today::before {
+    width: 2px;
+    height: 11px;
+    border-radius: 0;
+    background: var(--marlo-today-line);
+  }
+
+  /* ---- Zoom + jump controls ---- */
+  .scheduleCard__controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .scheduleCard__zoom {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-md);
+    background: var(--marlo-surface-sunken);
+  }
+
+  .scheduleCard__zoomBtn {
+    height: 26px;
+    padding: 0 11px;
+    border: 0;
+    border-radius: var(--marlo-radius-sm);
+    background: none;
+    color: var(--marlo-text);
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
     cursor: pointer;
   }
 
-  .itemsTablet:active{
-    background: #c3e0f9;
+  .scheduleCard__zoomBtn:hover {
+    color: var(--marlo-brand);
   }
 
-  .itemsActive{
-    background: #c3e0f9;
+  .scheduleCard__zoomBtn[aria-pressed="true"] {
+    background: var(--marlo-surface);
+    border: 1px solid var(--marlo-border);
+    color: var(--marlo-ink);
+    box-shadow: 0 1px 2px rgba(31, 42, 55, 0.08);
+    /* Keep the 26px outer height once the border appears. */
+    padding: 0 10px;
+    cursor: default;
   }
 
- .itemsTablet img{
-  margin-top: 10px;
-  width: 47px;
- }
-
- .itemsTablet p{
-  font-weight: 700;
-  font-size: 1.1em;
-  color: rgb(110, 110, 110);
- }
-
- .itemsTablet .textOICRs{
-  font-size: 1em;
- }
-
- .containerTabletItems .nav{
-  display: none;
- }
-
- .containerTabletItems .infTableItems{
-    border: #ebebeb solid 1px;
-    background: #E8F4FF;
-    padding: 7px 18px;
-    color: black;
- }
-
- .containerTabletItems .subHeader{
-  background-color: #0377a3;
-
- }
-
- .containerTabletItems #dashboardContent{
-  margin-top: 10px;
-  margin-left: 0px;
-  width: auto;
-  margin-right: 0px;
- }
-
- .sectionItems{
-  margin-left: 10px;
-  width: 240px;
-  max-width: 240px;
-  min-width: 240px;
-  margin-top: 30px;
- }
-
- @media (max-width:1020px){
-    .tableItemsTitle{
-      font-size: 1.1em;
-    }
-    
-   	.itemsTablet{
-    	width: 45%;
-		}
+  .scheduleCard__jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid var(--marlo-border-strong);
+    border-radius: 7px;
+    background: var(--marlo-surface);
+    color: var(--marlo-text);
+    font: 600 12.5px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    cursor: pointer;
   }
 
- @media (max-width:768px){
+  .scheduleCard__jump:hover {
+    border-color: var(--marlo-brand);
+    color: var(--marlo-brand);
+  }
 
-  .containerItems {
+  /* ---- Scroll frame ---- */
+  .scheduleCard__frame {
+    position: relative;
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-lg);
+    overflow: hidden;
+  }
+
+  /* Edge masks signalling more track in both directions. They start after the
+     label column so they never veil a lane name.
+
+     They are positioned on the frame, whose padding box extends under the
+     scroll container's scrollbars, so bottom/right must be inset by the
+     scrollbar thickness or the left mask paints a white notch across the
+     horizontal bar. The thickness is platform-dependent (0 for macOS overlay
+     bars, ~11-15px for classic ones), so schedule.js measures it into
+     --sched-hbar / --sched-vbar and these fall back to 0. */
+  .scheduleCard__frame::before,
+  .scheduleCard__frame::after {
+    content: "";
+    position: absolute;
+    top: var(--sched-axis);
+    bottom: var(--sched-hbar, 0px);
+    width: 22px;
+    z-index: 6;
+    pointer-events: none;
+  }
+
+  .scheduleCard__frame::before {
+    left: var(--sched-label);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .scheduleCard__frame::after {
+    right: var(--sched-vbar, 0px);
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
+  }
+
+  .scheduleCard__scroll {
+    max-height: 388px;
+    overflow: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .scheduleCard__canvas {
+    position: relative;
+    width: max-content;
+    min-width: 100%;
+    background: var(--marlo-surface);
+  }
+
+  /* ---- Overlay layers ---- */
+  .scheduleCard__gridLayer,
+  .scheduleCard__nowLayer {
+    position: absolute;
+    left: var(--sched-label);
+    right: 0;
+    top: var(--sched-axis);
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  .scheduleCard__gridLayer { z-index: 0; }
+  .scheduleCard__nowLayer { z-index: 2; }
+
+  .scheduleCard__gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--marlo-border-faint);
+  }
+
+  .scheduleCard__gridline--month {
+    background: var(--marlo-border-soft);
+  }
+
+  .scheduleCard__now {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--marlo-today-line);
+  }
+
+  /* ---- Rows ---- */
+  /* No z-index here: see the stacking note at the top of this section. */
+  .scheduleCard__row {
+    position: relative;
     display: flex;
-    justify-content: start;
-    margin-left: 0%;
-}
+    align-items: stretch;
+  }
 
-.sectionItems {
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
-}
+  .scheduleCard__cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
 
-  .containerSeccionItems {
+
+  /* flex-basis must stay auto: schedule.js sets an explicit width here and a
+     basis of 0 (which plain `flex: 1` implies) would make the browser ignore
+     it, collapsing the canvas that the sticky columns scroll inside. */
+  .scheduleCard__cell--track {
+    flex: 1 0 auto;
+    align-self: stretch;
+  }
+
+  /* ---- Axis ---- */
+  .scheduleCard__row--axis {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    height: var(--sched-axis);
+    background: var(--marlo-surface);
+    border-bottom: 1px solid var(--marlo-border);
+  }
+
+
+  .scheduleCard__tick {
+    position: absolute;
+    top: 11px;
+    color: var(--marlo-text-subtle);
+    font: 600 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transform: translateX(8px);
+  }
+
+  .scheduleCard__tick--month {
+    color: var(--marlo-text-muted);
+  }
+
+  .scheduleCard__todayTag {
+    position: absolute;
+    top: 6px;
+    padding: 2px 7px;
+    transform: translateX(-50%);
+    border-radius: var(--marlo-radius-xs);
+    background: var(--marlo-today-line);
+    color: #fff;
+    font: 700 12px/1.15 var(--marlo-font-sans);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ---- Activity lanes ---- */
+  .scheduleCard__row--lane {
+    height: 36px;
+  }
+
+  .scheduleCard__row--lane + .scheduleCard__row--lane {
+    border-top: 1px solid var(--marlo-border-faint);
+  }
+
+
+  /* Soft tint plus matching border and ink, never a saturated fill: a long
+     title has to stay readable inside the pill. */
+  .scheduleCard__pill {
+    position: absolute;
+    top: 5px;
+    z-index: 1;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px;
+    border: 1px solid transparent;
+    border-radius: var(--marlo-radius-md);
+    cursor: default;
+    overflow: hidden;
+  }
+
+  .scheduleCard__pill > span {
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scheduleCard__pill::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .scheduleCard__pill--completed {
+    background: var(--marlo-success-bg);
+    border-color: var(--marlo-success-border);
+    color: var(--marlo-success-text);
+  }
+
+  .scheduleCard__pill--completed::before { background: var(--marlo-success); }
+
+  .scheduleCard__pill--inProgress {
+    background: var(--marlo-info-bg);
+    border-color: var(--marlo-info-border);
+    color: var(--marlo-info-text);
+  }
+
+  .scheduleCard__pill--inProgress::before { background: var(--marlo-info); }
+
+  .scheduleCard__pill--notStarted {
+    background: var(--marlo-warning-bg);
+    border-color: var(--marlo-warning-border);
+    color: var(--marlo-warning-text);
+  }
+
+  .scheduleCard__pill--notStarted::before { background: var(--marlo-warning); }
+
+  /* Single-day activity: a capsule wide enough to read, not a zero-width
+     sliver. Shape only — the dashed edge is what says "one day"; the colour
+     still comes from the status class, which is why the pill carries both.
+     Setting a background, border-colour or text colour here would silently
+     outrank every status rule: same specificity, and this one comes later. */
+  .scheduleCard__pill--milestone {
+    border-style: dashed;
+  }
+
+  .scheduleCard__pill--clipStart {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .scheduleCard__pill--clipEnd {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  /* ---- Overflow strip ---- */
+  /* Chips get their own lane. A chip is positioned by the start date of the
+     activity it stands for, which is by definition inside the span of the pill
+     that displaced it — drawn in a packed lane it would always cover one. */
+  .scheduleCard__row--overflow {
+    height: 32px;
+    border-top: 1px solid var(--marlo-border-soft);
+    background: var(--marlo-surface-alt);
+  }
+
+
+  .scheduleCard__chip {
+    position: absolute;
+    top: 4px;
+    z-index: 1;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px dashed var(--marlo-border-strong);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-surface);
+    color: var(--marlo-text);
+    font: 600 12px/1 var(--marlo-font-sans);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .scheduleCard__chip:hover,
+  .scheduleCard__chip[aria-expanded="true"] {
+    border-color: var(--marlo-brand);
+    border-style: solid;
+    color: var(--marlo-brand);
+  }
+
+  .scheduleCard__popover {
+    position: absolute;
+    z-index: 20;
+    width: 300px;
+    max-height: 210px;
+    overflow-y: auto;
+    padding: 12px 14px;
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-md);
+    background: var(--marlo-surface);
+    box-shadow: var(--marlo-shadow-popover);
+    scrollbar-width: thin;
+  }
+
+  .scheduleCard__popover[hidden] {
+    display: none;
+  }
+
+  .scheduleCard__popoverTitle {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--marlo-text-muted);
+    font: 700 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scheduleCard__popoverList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .scheduleCard__popoverList li {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 5px 0;
+    color: var(--marlo-ink);
+    font: 500 12.5px/1.4 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__popoverList li + li {
+    border-top: 1px solid var(--marlo-border-faint);
+  }
+
+  .scheduleCard__popoverDot {
+    margin-top: 5px;
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+  }
+
+  .scheduleCard__popoverDot--completed { background: var(--marlo-success); }
+  .scheduleCard__popoverDot--inProgress { background: var(--marlo-info); }
+  .scheduleCard__popoverDot--notStarted { background: var(--marlo-warning); }
+
+  .scheduleCard__popoverDates {
+    display: block;
+    color: var(--marlo-text-muted);
+    font: 400 12px/1.35 var(--marlo-font-sans);
+  }
+
+  /* ---- Footer ---- */
+  .scheduleCard__foot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+    color: var(--marlo-text-muted);
+    font: 400 12px/1.4 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__foot > span:last-child {
+    text-align: right;
+  }
+
+  /* ---- Empty lane region: no activities configured ---- */
+  .scheduleCard__laneEmpty {
+    padding: 14px 16px;
+    color: var(--marlo-text-muted);
+    font: 400 13px/1.4 var(--marlo-font-sans);
+  }
+
+  /* ---- Zero open phases ---- */
+  /* A real state between reporting cycles, so it keeps the card shell and
+     reads as a designed panel rather than a failure. */
+  /* Default layout: the timeline on the left, "what's next" on the right. The
+     product decision is that this composition is the card's normal state, not
+     just its empty one, so nothing here is conditional on phases being closed.
+
+     __main carries no border or padding of its own: the frame inside it is
+     already a bordered box, and nesting one in another reads as double chrome. */
+  .scheduleCard__layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .scheduleCard__main {
+    /* flex-basis auto, not 0: schedule.js measures this subtree to derive
+       pxPerDay, so its width has to come from the row, not from its content. */
+    flex: 1 1 auto;
+    min-width: 0;
+    /* The overflow popover is positioned against this box, so it escapes the
+       frame's overflow: hidden while staying anchored to the timeline. */
+    position: relative;
+  }
+
+  .scheduleCard__next {
+    width: 300px;
+    flex: none;
+    /* Drops the panel to the top of __frame instead of the top of the column,
+       so its edge lines up with the timeline's rather than with the zoom
+       buttons'. 44px is exactly the controls row: 34px of button plus its 10px
+       margin-bottom, measured, not guessed. If that row ever changes height
+       this has to change with it — the stacked layout below overrides it. */
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: var(--marlo-radius-lg);
+    background: var(--marlo-brand-tint);
+  }
+
+  .scheduleCard__nextEyebrow {
+    color: var(--marlo-info-text);
+    font: 700 12px/1 var(--marlo-font-sans);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .scheduleCard__nextName {
+    color: var(--marlo-ink);
+    font: 600 20px/1.25 var(--marlo-font-sans);
+    /* Activity descriptions are free text and much longer than a phase name. */
+    overflow-wrap: anywhere;
+  }
+
+  .scheduleCard__nextDates {
+    color: var(--marlo-text);
+    font: 400 13px/1.4 var(--marlo-font-sans);
+  }
+
+  .scheduleCard__nextChip {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 3px 9px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: var(--marlo-radius-pill);
+    background: var(--marlo-surface);
+    color: var(--marlo-info-text);
+    font: 600 12px/1.3 var(--marlo-font-sans);
+  }
+
+  /* Stack at 1250px and below. The panel is a fixed 300px and every pixel it
+     takes comes off the track, so stacking early keeps the three lanes usable:
+     a narrow track packs fewer activities and pushes the rest into the overflow
+     strip. 1250px sits just under the 1300px where global.css already drops
+     .container to 95%, so the two thresholds do not fight each other. */
+  @media (max-width: 1250px) {
+    .scheduleCard__layout {
+      display: block;
+    }
+
+    .scheduleCard__next {
+      width: auto;
+      margin-top: 12px;
+    }
+  }
+
+  /* There is no print stylesheet in the app, and a scrolling track would print
+     clipped at whatever the scroll position happened to be. Unclamp it and drop
+     the controls so the whole span reaches paper. */
+  @media print {
+    .scheduleCard__controls {
+      display: none;
+    }
+
+    .scheduleCard__frame::before,
+    .scheduleCard__frame::after {
+      display: none;
+    }
+
+    .scheduleCard__scroll {
+      max-height: none;
+      overflow: visible;
+    }
+  }
+
+  /*************** Category browser + results ********************/
+  /* The rail replaces both the icon tiles and the bootstrap nav-tabs; the
+     tables themselves are untouched, only their DataTables chrome is restyled. */
+
+  .dashboardBrowse {
+    display: flex;
+    align-items: stretch;
+    margin-top: 16px;
+    background: var(--marlo-surface);
+    border: 1px solid var(--marlo-border);
+    border-radius: var(--marlo-radius-xl);
+    box-shadow: var(--marlo-shadow-card);
+    overflow: hidden;
+    font-family: var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__rail {
+    width: 260px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 16px;
+    border-right: 1px solid var(--marlo-border);
+    background: var(--marlo-surface-rail);
+  }
+
+  .dashboardBrowse__railTitle {
+    margin: 0;
+    color: var(--marlo-text-muted);
+    font: 600 11px/1.4 var(--marlo-font-sans);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .dashboardBrowse__cats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dashboardBrowse__cat {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 12px 0 9px;
+    border: 0;
+    border-radius: var(--marlo-radius-md);
+    background: transparent;
+    color: var(--marlo-text);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .dashboardBrowse__cat::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 2px;
+    background: transparent;
+  }
+
+  .dashboardBrowse__cat:hover {
+    filter: brightness(0.97);
+    background: var(--marlo-surface-sunken);
+  }
+
+  .dashboardBrowse__cat.is-active, .dashboardBrowse__cat.is-active:hover {
+    background: var(--marlo-brand);
+    color: #fff;
+    filter: none;
+  }
+
+  .dashboardBrowse__cat.is-active::before {
+    background: var(--marlo-warning);
+  }
+
+  /* The category icons are the platform's original raster pair: a still PNG
+     that swaps to an animated GIF on hover, restored at QA's request. Served
+     from the app's own /global/images, never from a remote host. */
+  .dashboardBrowse__catIcon {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    margin-left: 6px;
+    object-fit: contain;
+  }
+
+  /* Hidden until hover, and eagerly loaded — the same two-<img> swap the
+     platform used before the redesign (dashboard.js: updateGif / updateImg).
+     Deliberately NOT loading="lazy": with the still hidden on hover, a GIF that
+     has not arrived yet leaves an empty gap on first hover. The cost is that
+     the four GIFs (~1.6MB) load with the page; see the note in requirements.md
+     if that needs optimising. */
+  .dashboardBrowse__catIcon--anim {
+    display: none;
+  }
+
+  .dashboardBrowse__cat:hover .dashboardBrowse__catIcon,
+  .dashboardBrowse__cat:focus-visible .dashboardBrowse__catIcon {
+    display: none;
+  }
+
+  .dashboardBrowse__cat:hover .dashboardBrowse__catIcon--anim,
+  .dashboardBrowse__cat:focus-visible .dashboardBrowse__catIcon--anim {
     display: block;
   }
 
-  .itemsTablet {
-    height: 100px;
-    margin: 10px;
-    padding-top: 2rem;
+  /* On the selected row the artwork sits on --marlo-brand, where it was almost
+     unreadable: the dark strokes manage 3.59:1 but the teal accents only 1.65:1,
+     well under the 3:1 that WCAG 1.4.11 asks of a graphic. brightness(0) flattens
+     the icon to black and invert(1) lifts it to white — shape kept, 5.04:1, and
+     it matches the white label beside it. This is also what the outgoing inline
+     SVGs did, since they painted with currentColor. Applies to the GIF too, so a
+     hover on the active row stays consistent. */
+  .dashboardBrowse__cat.is-active .dashboardBrowse__catIcon {
+    filter: brightness(0) invert(1);
   }
 
-  .itemsTablet img {
-    margin-top: 0px;
-    width: 43px;
+  .dashboardBrowse__catLabel {
+    flex: 1;
+    min-width: 0;
+    font: 500 14px/1.3 var(--marlo-font-sans);
   }
 
-  .itemsTablet p {
-    font-size: 0.9em;
+  .dashboardBrowse__cat.is-active .dashboardBrowse__catLabel {
+    font-weight: 600;
   }
 
-  .containerTabletItems {
-    height: 1000px;
+  .dashboardBrowse__catCount {
+    min-width: 26px;
+    padding: 2px 7px;
+    border-radius: 11px;
+    background: var(--marlo-surface-header);
+    color: var(--marlo-text);
+    font: 700 12px/1.4 var(--marlo-font-sans);
+    text-align: center;
   }
 
-  .containerTabletItems .infTableItems {
-    font-size: 10px;
+  .dashboardBrowse__cat.is-active .dashboardBrowse__catCount {
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
   }
+
+  .dashboardBrowse__note {
+    margin: 6px 0 0;
+    color: var(--marlo-text-muted);
+    font: 400 12.5px/1.5 var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboardBrowse__scope {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 20px 0;
+  }
+
+  .dashboardBrowse__scopeLabel {
+    color: var(--marlo-text-muted);
+    font: 600 11px/1 var(--marlo-font-sans);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .dashboardBrowse__scopeChip {
+    padding: 4px 10px;
+    border: 1px solid var(--marlo-brand-tint-border);
+    border-radius: 7px;
+    background: var(--marlo-brand-tint);
+    color: var(--marlo-brand-dark);
+    font: 600 13px/1.3 var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: 7px;
+    font: 600 12px/1.3 var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__state--open {
+    background: var(--marlo-success-bg);
+    border: 1px solid var(--marlo-success-border);
+    color: var(--marlo-success-text);
+  }
+
+  .dashboardBrowse__state--locked {
+    background: var(--marlo-neutral-bg);
+    border: 1px solid var(--marlo-neutral-border);
+    color: var(--marlo-text);
+  }
+
+  .dashboardBrowse__panel .tab-content {
+    border: 0;
+  }
+
+  .dashboardBrowse__panel .tab-pane {
+    padding: 0;
+  }
+
+  /* ---- DataTables chrome ----
+     dataTables.net-bs wraps every control in .row > .col-sm-*, and the legacy
+     script used to pull the length column out of flow to place it. Laying the
+     two control rows out here instead keeps everything in normal flow, so
+     nothing can end up on top of the pagination. */
+  .dashboardBrowse__panel .dataTables_wrapper {
+    padding: 14px 0 0;
+  }
+
+  /* Only the two control rows are laid out here — the middle row holds the
+     table in a .col-sm-12 and must keep its full width. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+  }
+
+  /* Bootstrap's clearfix pseudo-elements would become flex items. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child::before,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child::after,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child::before,
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child::after {
+    content: none;
+  }
+
+  /* The search icon is a sibling of .dataTables_filter, prepended by
+     dashboard.js, so the column is the flex context that pairs them. */
+  .dashboardBrowse__panel .dataTables_wrapper > .row:first-child > [class^="col-"],
+  .dashboardBrowse__panel .dataTables_wrapper > .row:last-child > [class^="col-"] {
+    display: flex;
+    align-items: center;
+    float: none;
+    width: auto;
+  }
+
+  .dashboardBrowse__panel .dataTables_filter {
+    margin: 0;
+  }
+
+  .dashboardBrowse__panel .dataTables_filter label {
+    display: block;
+    margin: 0;
+  }
+
+  .dashboardBrowse__panel .dataTables_filter label input {
+    height: 36px !important;
+    margin: 0 !important;
+    padding: 0 11px;
+    border: 1px solid var(--marlo-border-strong);
+    border-right: 0;
+    border-radius: var(--marlo-radius-md) 0 0 var(--marlo-radius-md);
+    background: var(--marlo-surface);
+    color: var(--marlo-ink);
+    font: 400 14px/1 var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__panel .dataTables_filter label input:focus {
+    border-color: var(--marlo-brand);
+    outline: none;
+  }
+
+  .dashboardBrowse__panel .iconSearch {
+    position: static;
+    order: 2;
+    width: 40px;
+    height: 36px;
+    margin: 0;
+    flex: none;
+    background: var(--marlo-brand);
+    border-radius: 0 var(--marlo-radius-md) var(--marlo-radius-md) 0;
+  }
+
+  .dashboardBrowse__panel table.projectsList {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+  }
+
+  .dashboardBrowse__panel table.projectsList thead tr {
+    background: var(--marlo-surface-header);
+  }
+
+  .dashboardBrowse__panel table.projectsList thead th {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--marlo-border-table);
+    background: var(--marlo-surface-header);
+    color: var(--marlo-text);
+    font: 700 11px/1.4 var(--marlo-font-sans);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .dashboardBrowse__panel table.projectsList thead th:first-child { padding-left: 20px; }
+  .dashboardBrowse__panel table.projectsList thead th:last-child { padding-right: 20px; }
+
+  .dashboardBrowse__panel table.projectsList tbody tr {
+    border-bottom: 1px solid #F1F4F7;
+  }
+
+  .dashboardBrowse__panel table.projectsList tbody tr:hover {
+    background: #F7FAFC;
+  }
+
+  .dashboardBrowse__panel table.projectsList tbody td {
+    height: 50px;
+    padding: 0 12px;
+    border: 0;
+    color: var(--marlo-ink);
+    font: 400 14px/1.4 var(--marlo-font-sans);
+    vertical-align: middle;
+  }
+
+  .dashboardBrowse__panel table.projectsList tbody td:first-child { padding-left: 20px; }
+  .dashboardBrowse__panel table.projectsList tbody td:last-child { padding-right: 20px; }
+
+  .dashboardBrowse__panel table.projectsList tbody td a {
+    color: var(--marlo-brand);
+    text-decoration: none;
+  }
+
+  .dashboardBrowse__panel table.projectsList tbody td a:hover {
+    text-decoration: underline;
+  }
+
+  .dashboardBrowse__panel table.projectsList tbody td.projectId, .dashboardBrowse__panel table.projectsList tbody td.deliverableId {
+    color: var(--marlo-text-muted);
+    font: 500 13.5px/1.4 var(--marlo-font-mono);
+  }
+
+  .dashboardBrowse__panel .dataTables_info,
+  .dashboardBrowse__panel .dataTables_length,
+  .dashboardBrowse__panel .dataTables_paginate {
+    margin: 0;
+    padding: 12px 20px 16px 0px;
+    color: var(--marlo-text-muted);
+    font: 400 13px/1.4 var(--marlo-font-sans);
+  }
+
+  .dashboardBrowse__panel .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .dashboardBrowse__panel .dataTables_length select {
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--marlo-border-strong);
+    border-radius: var(--marlo-radius-sm);
+    background: var(--marlo-surface);
+    color: var(--marlo-ink);
+    font: 400 13px/1 var(--marlo-font-sans);
+  }
+
+  /* With the Bootstrap integration .paginate_button is the <li>; the <a>
+     inside is what DataTables binds the click to, so the button has to be
+     painted on the anchor or the visible control is not the clickable one. */
+  .dashboardBrowse__panel .dataTables_paginate .pagination {
+    display: flex;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > span {
+    display: block;
+    float: none;
+    height: 30px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid var(--marlo-border);
+    border-radius: 7px;
+    background: var(--marlo-surface);
+    color: var(--marlo-text);
+    font: 500 13px/28px var(--marlo-font-sans);
+    text-decoration: none;
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button > a:hover {
+    border-color: var(--marlo-brand-tint-border);
+    background: var(--marlo-brand-tint);
+    color: var(--marlo-brand-dark);
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.active > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.active > a:hover {
+    border-color: var(--marlo-brand);
+    background: var(--marlo-brand);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.disabled > a,
+  .dashboardBrowse__panel .dataTables_paginate .paginate_button.disabled > a:hover {
+    border-color: var(--marlo-border-soft);
+    background: var(--marlo-surface);
+    color: var(--marlo-text-disabled);
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 900px){
+    .dashboardBrowse {
+      flex-direction: column;
+    }
+
+    .dashboardBrowse__rail {
+      width: 100%;
+      border-right: 0;
+      border-bottom: 1px solid var(--marlo-border);
+    }
+  }
+
+ @media (max-width:768px){
 
   table.dataTable {
     font-size: 0.7em;
   }
   
-  #projects_filter{
+  #projects_filter {
 		width: 100%;
 	}
 	
-	#projects_filter label{
+	#projects_filter label {
 		width: 100%;
 	}
 	
-	.iconSearch{
+	.iconSearch {
 		right: 1.5rem;
 		margin-top: 0;
 	}
-  
-  	/*************** sectionMap ********************/
-  .containerTextMap{
-		margin: 10px 20px 25px 20px;
-	}
-  .containerTextMap .titleMap{
-		font-size: 1.35rem;
-	}
-	
-	.containerTextMap .textMap{
-		font-size: 1.1rem;
-	}
-	.containerImgMap{
-		min-width: 17%;
-		display:flex;
-  	flex-direction: column;
-  	justify-content: center;
-	}
-	
-	.containerImgMap img{
-		width: 75%;
-	}
-	
-	
-	/*************** timeline ********************/
-	.homeTitleTimeline{
-		font-size: 1.1em;
-	}
-	
-	  .buttonLeftTimeline {
-      left: 2rem;
-    }
-
-    .buttonRightTimeline {
-      right: 2rem;
-    }
-
-    .timelineAlert {
-      top: 325px !important;
-    }
-
-    .timelineAlertText {
-      font-size: 7px;
-    }
-
-    .infTimelineTimeline {
-      min-width: 180px;
-    }
-
-    .titleTimeline {
-      height: 142px;
-      font-size: 10px;
-    }
-
-    .timeline {
-      height: 200px;
-    }
-
-    .dateTimeline {
-      margin-right: -130px;
-      margin-top: -27px;
-      font-size: 13px;
-    }
-
-    
-    .timeline-line {
-      width: 180px;
-      margin-top: -48px;
-    }
-
-    .timeline-pointTimeline {      
-      bottom: 32px;
-    }
-
-    .sideButtonTimeline {      
-      width: 30px;
-      height: 30px;
-      font-size: 22px;
-    }
-
-    .porcentTimeLine {      
-      margin-top: -48px;
-      max-width: 143px;
-  }
-  
-  	.scroll-x-containerTimeline{
-			width: 80%;
-			margin-top: 3rem;
-		}
  }
 
 @media only screen and (max-width:440px){
 	
-	#dashboardContent{
-		display: contents;
-	}
-	
-	.containerTabletItems{
-		height: 100%;
-	}
-	
-	/**************** Content Items Table **************/
-	
-	.sectionItems{
-		margin-left: 0%;
-	}
-	
-	.containerItems{
-		justify-content: center;
-		
-	}
-	
-	.itemsTablet{
-		padding-top: 1.5rem;
-    width: 40%;
-	}
-
-	.containerTabletItems #dashboardContent{
-		width: 100%;
-    width: -moz-available;         
-    width: -webkit-fill-available;  
-    width: fill-available;
-	}
-	
-	.tab-content{
+	.tab-content {
 		width: auto;	
-	}
-	
-	/*************** sectionMap ********************/
-	
-	  .containerTextMap .titleMap{
-		font-size: 1.15em;
-	}
-	
-	.containerTextMap .textMap{
-		font-size: 0.95rem;
-	}
-	
-	.containerImgMap{
-		display: block;
-		position: absolute;
-		right: 10%;
-		top: 0;
-		width: 100%;
-		text-align: right;
-	}
-	
-	.containerImgMap img{
-		width: 8%;
-	}
-	
-	/*************** timeline ********************/
-	
-	.timeline{
-		position: relative;
-	}
-	
-	.timelineAlert{
-		bottom: 8px;
-		top: auto !important;
-		right: auto;
-	}
-	
-	.buttonRightTimeline{
-		right: 2rem;
-	}
-	
-	.buttonLeftTimeline{
-		left: 2rem;
-	}
-	
-	.scroll-x-containerTimeline{
-			width: 70%;
-			margin-top: 0;
 	}
 	
 }
@@ -1342,17 +1404,17 @@ span.timelineControl:hover {
   position: relative;
 }
 
-.dataTables_filter{
+.dataTables_filter {
   float: left !important;
 }
 
-.dataTables_filter label input{
+.dataTables_filter label input {
   height: 30px !important;
   width: 295px !important;
   margin-left: 0 !important;
 }
 
-.iconSearch{
+.iconSearch {
     background: #0b7ba6;
     height: 30px;
     width: 40px;
@@ -1361,7 +1423,7 @@ span.timelineControl:hover {
     border-radius: 0px 4px 4px 0px;
     display: flex;
 }
- #guide-button{
+ #guide-button {
   display: block;
 }
 

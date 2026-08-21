@@ -35,13 +35,24 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     
+    [#-- Redesign typeface --]
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
+
     [#-- Second, import global javascripts and templates. --]
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260819" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
     [/#if]
-    
+
+    [#-- Redesign layer: overrides global.css, must stay after it --]
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260819b" />
+    [#-- Top bar behaviour. Deferred so it runs after the markup is parsed;
+         it is plain DOM code and does not wait for the footer bundles. --]
+    <script defer src="${baseUrlCdn}/global/js/global-unit-switcher.js?20260814"></script>
+
     [#-- Import the custom CSS --]
     [#if customCSS??][#list customCSS as css]<link rel="stylesheet" type="text/css" href="${css}" />[/#list][/#if] 
     [/#compress]
@@ -190,7 +201,9 @@
             [#-- MARLO Title --]
             <div id="marlo-logo" class="animated fadeIn">
               <a href="${baseUrl}">
-               <div id="title" >MARLO</div>    
+               <div id="title" >MARLO</div>
+                [#-- Shares the subtitle's visibility classes so it disappears with it --]
+                <span id="marlo-logo-divider" class="visible-md-block visible-lg-block visible-xl-block"></span>
                 <div id="subTitle" class="visible-md-block visible-lg-block visible-xl-block">Managing Agricultural Research for Learning & Outcomes</div>
                 <div class="clearfix"></div>            
               </a>

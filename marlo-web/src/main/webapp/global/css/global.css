@@ -1969,94 +1969,6 @@ a#userLogOut:hover {
 	position: relative;
 }
 
-#mainMenu .menuContent.positionFixedTop {
-	z-index: 1001;
-	position: fixed;
-	top: 0;
-	height: 36px;
-	font-size: 1.1em;
-	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfoOld {															 
-	padding: 7px 22px 0px 20px;
-	border: 0;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* o space-between si necesitas separar cosas */
-  padding: 0px 22px 0px 20px;
-  border: 0;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo-drop {
-	top: 38px;
-  right: 0;
-  left: auto;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo-drop:after {
-	right: 12px;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo .userToggle {
-	min-height: 35px;
-  height: 35px;
-	padding: 0 8px;
-	box-sizing: border-box;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo .userToggle:focus,
-#mainMenu .menuContent.positionFixedTop #userInfo .userToggle:focus-visible {
-	box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.75);
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfoOld .userToggle {
-  height: 35px;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo .institution {
-	display: none;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfoOld .institution {
-	display: none;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo .avatar {
-  width: 28px;
-  height: 28px;
-  font-size: 0.9em;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfoOld .avatar {
-  width: 28px;
-  height: 28px;
-  font-size: 0.9em;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfoOld .roles {
-	display: none;
-}
-
-#mainMenu .menuContent.positionFixedTop #userInfo .roles {
-	display: block;
-}
-
-#mainMenu .menuContent.positionFixedTop ul {
-	list-style-type: none;
-}
-
-#mainMenu .menuContent.positionFixedTop ul li {
-	padding: 7px 0 6px 0;
-}
-
-#mainMenu .menuContent.positionFixedTop ul li ul.subMenu {
-	top: 36px !important;
-}
-
 #mainMenu .menuContent ul {
 	list-style-type: none;
 	padding: 0px 0px;
@@ -2341,12 +2253,6 @@ a#userLogOut:hover {
 	transform: translateY(1px);
 	box-shadow: 0 1px 2px rgba(15, 45, 55, 0.22);
 }
-
-/* Sticky top adjustment */
-#mainMenu .menuContent.positionFixedTop #userInfo .userMenu {
-  top: 32px;
-}
-
 
 @media screen and (max-width: 1335px) {
 
@@ -8223,12 +8129,6 @@ li.currentSection#bi::before {
 	color: #127fa8;
 }
 
-.menuContent.positionFixedTop #bi::before {
-	font-size: 5px;
-	padding: 0.3em 2.5em 0.3em 2.5em;
-	border-radius: 0em 0em 0.3em 0.3em;
-}
-
 .slo-contribution-section {
 	border: 1px solid #D1D1D1;
 	padding: 9px 22px 9px 22px;
@@ -9244,10 +9144,6 @@ img.qaOptionsComment {
 			padding-left: 2rem;
 		}
 		
-		#mainMenu .menuContent.positionFixedTop #userInfo{
-		padding: 0px 22px 0px 20px;
-		}
-	
 		a#userLogOut{
 		top: auto;
 		}
