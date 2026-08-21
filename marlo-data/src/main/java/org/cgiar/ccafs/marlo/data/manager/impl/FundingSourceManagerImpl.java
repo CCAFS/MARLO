@@ -176,7 +176,12 @@ public class FundingSourceManagerImpl implements FundingSourceManager {
     return fundingSourceDAO.save(fundingSource);
   }
 
+  /**
+   * Transactional for the same reason as FundingSourceInfoManagerImpl.saveFundingSourceInfo: this is the last write of
+   * the funding source save chain, so its commit has to cover everything the request flushed.
+   */
   @Override
+  @Transactional
   public FundingSource saveFundingSource(FundingSource fundingSource, String sectionName, List<String> relationsName,
     Phase phase) {
 
