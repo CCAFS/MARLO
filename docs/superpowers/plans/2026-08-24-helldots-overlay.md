@@ -43,17 +43,25 @@
 
 ## Pre-flight
 
-- [ ] **P1: Fix the local uploads folder**
+- [ ] **P1: Fix the local uploads folder** — DONE, with a finding
 
-`marlo-web/src/main/resources/config/marlo-dev.properties` (gitignored) has
-`file.uploads.baseFolder=C:/xampp/htdocs/marlo` — a Windows path on macOS. Uploads land in a literal `C:`
-directory at the repo root and are unreachable at `file.downloads=http://localhost:8080/marlo-web/data`.
+`marlo-web/src/main/resources/config/marlo-dev.properties` (gitignored) had
+`file.uploads.baseFolder=C:/xampp/htdocs/marlo` — a Windows path on macOS. It now points at
+`/Users/kevincollazos/marlo-uploads`, which exists. The file uses CRLF line endings; preserve them when editing.
 
-Point it at a real directory that the downloads URL maps to, for example the exploded webapp's `data` folder.
-Confirm the two agree: a file written under `file.uploads.baseFolder` must be fetchable under `file.downloads`.
+**The finding that changes Task 8.** `file.downloads` is `http://localhost:8080/marlo-web/data`, and
+`scripts/update-marlo-dev-java17.sh` rewrites it to exactly that on every run. But **nothing serves that
+path**: there is no `data/` directory in `marlo-web/src/main/webapp`, and no alias or context maps one. So
+"point uploads at a directory the downloads URL maps to" cannot be satisfied on this setup — the directory
+does not exist on either side.
 
-Verify with an existing feature before writing any code — upload a project highlight image and fetch its URL.
-Task 8 cannot pass until this is true.
+**Resolution:** HellDots screenshots are served by their own endpoint rather than as static files.
+`GET /api/helldots/screenshots/{fileName}` streams the file from `config.getUploadsBaseFolder()/helldots/`.
+This removes the dependence on static file serving entirely, keeps the upload directory outside the webroot
+(nothing writable is web-served), and works the same in every environment. Task 8 is written this way.
+
+`file.uploads.baseFolder` is shared with deliverables, highlights and case studies, so pointing it at a real
+directory fixes those locally too — they were writing into a literal `C:` folder at the repo root.
 
 - [ ] **P2: Confirm the branch**
 
@@ -725,7 +733,7 @@ git commit -m ":sparkles: feat(db): Add HellDots DAOs and managers"
 
 **Interfaces:**
 - Consumes: nothing — these are pure functions with no Spring, Hibernate or session dependency
-- Produces: `HelldotsProjection.actionFor(String eventType) → HelldotsProjection.Action` (enum `UPSERT`, `SOFT_DELETE`, `UNKNOWN`); `HelldotsProjection.commentIdOf(Map<String, Object> comment) → String`; `HelldotsProjection.stringField(Map<String, Object> comment, String key) → String`; `HelldotsProjection.intField(Map<String, Object> comment, String key) → Integer`; `HelldotsProjection.dateField(Map<String, Object> comment, String key) → Date`; `HelldotsProjection.pathOf(String page) → String`; `HelldotsProjection.STATUSES`, `TYPES`, `PRIORITIES` as `Set<String>`. `HelldotsUploadValidator.isAllowedContentType(String) → boolean`; `HelldotsUploadValidator.isWithinSize(long bytes, long maxBytes) → boolean`; `HelldotsUploadValidator.generateFileName(String contentType) → String`.
+- Produces: `HelldotsProjection.actionFor(String eventType) → HelldotsProjection.Action` (enum `UPSERT`, `SOFT_DELETE`, `UNKNOWN`); `HelldotsProjection.commentIdOf(Map<String, Object> comment) → String`; `HelldotsProjection.stringField(Map<String, Object> comment, String key) → String`; `HelldotsProjection.intField(Map<String, Object> comment, String key) → Integer`; `HelldotsProjection.dateField(Map<String, Object> comment, String key) → Date`; `HelldotsProjection.pathOf(String page) → String`; `HelldotsProjection.STATUSES`, `TYPES`, `PRIORITIES` as `Set<String>`. `HelldotsUploadValidator.isAllowedContentType(String) → boolean`; `HelldotsUploadValidator.isWithinSize(long bytes, long maxBytes) → boolean`; `HelldotsUploadValidator.generateFileName(String contentType) → String`; `HelldotsUploadValidator.isGeneratedFileName(String) → boolean`; `HelldotsUploadValidator.MAX_SCREENSHOT_BYTES`.
 
 This is the task where real tests are possible. No Mockito exists in this repo, so anything reachable only
 through a Spring controller cannot be unit tested — which is exactly why this logic lives here.
@@ -927,7 +935,7 @@ public final class HelldotsProjection {
 - [ ] **Step 4: Run the tests and confirm they pass**
 
 Run: `mvn test -pl marlo-web -Dtest=HelldotsProjectionTest`
-Expected: PASS, 6 tests.
+Expected: PASS, 8 tests.
 
 - [ ] **Step 5: Write the failing tests for `HelldotsUploadValidator`**
 
@@ -988,6 +996,22 @@ public class HelldotsUploadValidatorTest {
     assertEquals(-1, name.indexOf('\\'));
     assertEquals(-1, name.indexOf(".."));
   }
+
+  @Test
+  public void onlyGeneratedNamesAreServable() {
+    assertTrue(HelldotsUploadValidator.isGeneratedFileName(HelldotsUploadValidator.generateFileName("image/jpeg")));
+    assertTrue(HelldotsUploadValidator.isGeneratedFileName(HelldotsUploadValidator.generateFileName("image/png")));
+  }
+
+  @Test
+  public void traversalAndArbitraryNamesAreRejected() {
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName("../../marlo-dev.properties"));
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName("helldots-../x.jpg"));
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName("evil.jpg"));
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName("helldots-not-a-uuid.jpg"));
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName(null));
+    assertFalse(HelldotsUploadValidator.isGeneratedFileName(""));
+  }
 }
 ```
 
@@ -1004,6 +1028,7 @@ GPL header, then:
 package org.cgiar.ccafs.marlo.rest.helldots;
 
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Upload guards for HellDots screenshots. The generated name never derives from client input, so a
@@ -1021,6 +1046,10 @@ public final class HelldotsUploadValidator {
   private static final String JPEG = "image/jpeg";
   private static final String PNG = "image/png";
 
+  /** Exactly what generateFileName produces: the prefix, a canonical UUID, and one of the two extensions. */
+  private static final Pattern GENERATED_NAME =
+    Pattern.compile("^helldots-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png)$");
+
   public static String generateFileName(String contentType) {
     String extension = PNG.equals(contentType) ? ".png" : ".jpg";
     return "helldots-" + UUID.randomUUID().toString() + extension;
@@ -1028,6 +1057,17 @@ public final class HelldotsUploadValidator {
 
   public static boolean isAllowedContentType(String contentType) {
     return JPEG.equals(contentType) || PNG.equals(contentType);
+  }
+
+  /**
+   * Guards the serving endpoint: only a name this class generated can be read back, so no traversal
+   * sequence and no arbitrary path reaches the filesystem.
+   */
+  public static boolean isGeneratedFileName(String fileName) {
+    if (fileName == null || fileName.isEmpty()) {
+      return false;
+    }
+    return GENERATED_NAME.matcher(fileName).matches();
   }
 
   public static boolean isWithinSize(long bytes, long maxBytes) {
@@ -1042,12 +1082,12 @@ public final class HelldotsUploadValidator {
 - [ ] **Step 8: Run the tests and confirm they pass**
 
 Run: `mvn test -pl marlo-web -Dtest=HelldotsUploadValidatorTest`
-Expected: PASS, 6 tests.
+Expected: PASS, 8 tests.
 
 - [ ] **Step 9: Run both test classes together and checkstyle**
 
 Run: `mvn test -pl marlo-web -Dtest='Helldots*Test' && mvn checkstyle:check -pl marlo-web`
-Expected: 12 tests pass, no checkstyle violations.
+Expected: 14 tests pass, no checkstyle violations.
 
 - [ ] **Step 10: Commit**
 
@@ -1575,8 +1615,8 @@ git commit -m ":sparkles: feat(api): Add HellDots event upsert endpoint"
 - Modify: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java`
 
 **Interfaces:**
-- Consumes: `HelldotsUploadValidator` (Task 4, including `MAX_SCREENSHOT_BYTES`), `HelldotsScreenshotManager` (Task 3), `APConfig.getUploadsBaseFolder()` and `APConfig.getDownloadURL()` (injected in Task 6)
-- Produces: `POST /api/helldots/screenshots` returning `{"url":"…"}`. Task 9's `transformScreenshot` consumes it.
+- Consumes: `HelldotsUploadValidator` (Task 4, including `MAX_SCREENSHOT_BYTES` and `isGeneratedFileName`), `HelldotsScreenshotManager` (Task 3), `APConfig.getUploadsBaseFolder()` and `APConfig.getDownloadURL()` (injected in Task 6)
+- Produces: `POST /api/helldots/screenshots` returning `{"url":"…"}`, and `GET /api/helldots/screenshots/{fileName}` which serves the stored image. Task 9's `transformScreenshot` consumes the POST; the URL it returns points at the GET.
 
 Blocked on pre-flight P1 — with the Windows uploads path in place, files are written where nothing can serve
 them and this task cannot be verified.
@@ -1602,7 +1642,7 @@ Add imports:
 `org.cgiar.ccafs.marlo.data.model.HelldotsScreenshot`, `org.cgiar.ccafs.marlo.utils.APConfig`,
 `org.springframework.web.multipart.MultipartFile`,
 `org.springframework.web.bind.annotation.RequestPart`, `java.io.File`, `java.nio.file.Files`,
-`java.nio.file.Path`, `java.nio.file.Paths`.
+`java.nio.file.Path`, `java.nio.file.Paths`, `org.springframework.http.HttpHeaders`.
 
 - [ ] **Step 2: Add the endpoint**
 
@@ -1658,10 +1698,48 @@ Add imports:
     screenshot.setCreatedBy(currentUser);
     helldotsScreenshotManager.save(screenshot);
 
-    String url = config.getDownloadURL() + "/" + SCREENSHOT_FOLDER + "/" + fileName;
+    // Served by the GET below, not as a static file: nothing maps a URL onto the uploads directory,
+    // and keeping it outside the webroot means nothing writable is web-served.
+    String url = config.getBaseUrl() + "/api/helldots/screenshots/" + fileName;
     return new ResponseEntity<>("{\"url\":\"" + url + "\"}", HttpStatus.OK);
   }
 ```
+
+- [ ] **Step 2b: Add the serving endpoint**
+
+```java
+  @RequestMapping(value = "/screenshots/{fileName:.+}", method = RequestMethod.GET)
+  public ResponseEntity<byte[]> getScreenshot(@PathVariable("fileName") String fileName) {
+    if (this.isDisabled()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    if (!this.isAuthenticated()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    // Only names this application generated are servable, so no traversal or arbitrary read is reachable.
+    if (!HelldotsUploadValidator.isGeneratedFileName(fileName)) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    Path file = Paths.get(config.getUploadsBaseFolder(), SCREENSHOT_FOLDER, fileName);
+    if (!Files.isRegularFile(file)) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    try {
+      byte[] bytes = Files.readAllBytes(file);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(fileName.endsWith(".png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG);
+      headers.setCacheControl("private, max-age=86400");
+      return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    } catch (Exception e) {
+      LOG.error("Could not read HellDots screenshot {}", fileName, e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+```
+
+Add the import `org.springframework.http.HttpHeaders`. The `{fileName:.+}` regex is required — without it
+Spring truncates the extension at the last dot.
 
 `config.getUploadsBaseFolder()` and `config.getDownloadURL()` both exist on `APConfig`. The size cap comes from
 `HelldotsUploadValidator.MAX_SCREENSHOT_BYTES` rather than from `file.maxSizeAllowed.bytes`: no Java in this
@@ -1690,15 +1768,25 @@ The bean name must be exactly `multipartResolver` — Spring MVC looks it up by 
 curl -s -b "JSESSIONID=<id>" -F "file=@/path/to/small.jpg;type=image/jpeg" -F "kind=context" \
   http://localhost:8080/marlo-web/api/helldots/screenshots
 ```
-Expected: `{"url":"http://localhost:8080/marlo-web/data/helldots/helldots-<uuid>.jpg"}`
+Expected: `{"url":"http://localhost:8080/marlo-web/api/helldots/screenshots/helldots-<uuid>.jpg"}`
 
 - [ ] **Step 5: Verify the URL actually serves the file**
 
 ```bash
-curl -s -o /dev/null -w "%{http_code}\n" "<the url returned above>"
+curl -s -b "JSESSIONID=<id>" -o /dev/null -w "%{http_code} %{content_type}\n" "<the url returned above>"
+ls -la /Users/kevincollazos/marlo-uploads/helldots/
 ```
-Expected: `200`. A `404` means pre-flight P1 was not completed — the uploads folder and the downloads URL do
-not point at the same place.
+Expected: `200 image/jpeg`, and the file present on disk.
+
+Then confirm the traversal guard:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -b "JSESSIONID=<id>" \
+  "http://localhost:8080/marlo-web/api/helldots/screenshots/..%2F..%2Fmarlo-dev.properties"
+curl -s -o /dev/null -w "%{http_code}\n" -b "JSESSIONID=<id>" \
+  "http://localhost:8080/marlo-web/api/helldots/screenshots/evil.jpg"
+```
+Expected: `400` for both — neither matches the generated-name pattern.
 
 - [ ] **Step 6: Verify the rejections (AC-010)**
 
@@ -2046,7 +2134,7 @@ mvn test -pl marlo-web -Dtest='Helldots*Test'
 mvn checkstyle:check
 git status --short
 ```
-Expected: BUILD SUCCESS; 12 tests pass; no checkstyle violations; `git status` shows no
+Expected: BUILD SUCCESS; 14 tests pass; no checkstyle violations; `git status` shows no
 `marlo-dev.properties`, no `tomcat/context.xml`, and no `C:` directory.
 
 - [ ] **Step 8: Commit**
