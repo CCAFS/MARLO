@@ -131,7 +131,12 @@
           Only relabel here. Renaming a key for real means a Flyway migration plus both APConstants files
           plus every usage, and it is out of scope for this view.
         --]
-        [#local displayKey = (element.parameter.key?replace(r'^crp_', 'system_', 'r'))!'' ]
+        [#--
+          The 'crp' -> 'system' relabeling rule only covers the 'crp_' prefix. 'crp_email_pl_crpAdmin_fl'
+          also carries 'crpAdmin' in the middle of the key, which falls outside that rule, so it is
+          relabeled here explicitly. Display only: the stored key stays 'crp_email_pl_crpAdmin_fl'.
+        --]
+        [#local displayKey = (element.parameter.key?replace(r'^crp_', 'system_', 'r')?replace('crpAdmin', 'systemAdmin'))!'' ]
         [#local displayDescription = (element.parameter.description?replace('\n', '<br>')?replace(r'\bCRPs\b', 'Systems', 'ri')?replace(r'\bCRP\b', 'System', 'ri'))!'' ]
         <strong>${displayKey} </strong> <br /> <small><i>(${displayDescription})</i></small>
       [/#if]
