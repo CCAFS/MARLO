@@ -478,5 +478,7 @@
   <mapping resource="xmls/PRMSInnovations.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationPRMS.hbm.xml"/>
   <mapping resource="xmls/UserIdeas.hbm.xml"/>
+  <mapping resource="xmls/HelldotsComments.hbm.xml"/>
+  <mapping resource="xmls/HelldotsScreenshots.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>
