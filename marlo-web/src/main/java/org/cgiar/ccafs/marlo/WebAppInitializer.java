@@ -140,6 +140,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
       servletContext.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
       dispatcher.setLoadOnStartup(1);
       dispatcher.addMapping(REST_SWAGGER_REQUESTS);
+      dispatcher.addMapping(REST_API_REQUESTS);
 
     }
     // End Check Spring Profile filters
