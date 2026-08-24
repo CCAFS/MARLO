@@ -21,8 +21,12 @@
 - `mvn checkstyle:check` is known-broken in this checkout (`maven-checkstyle-plugin:2.9.1` →
   `NoSuchMethodError: Checker.setClassloader` under Java 17, on untouched modules too). Not a blocker here: this spec
   touches no Java. Style verified manually.
-- Local reproduction requires an empty `bi_reports` table. Use a throwaway local database and
-  `DELETE FROM bi_reports;` — never against a shared environment.
+- Local reproduction requires an empty `bi_reports` table. The local run connects to a **private local MySQL**
+  (`localhost:3306/aiccradb1`, per `marlo-web/src/main/resources/config/marlo-dev.properties`; the RDS entries in
+  that file are commented out). `marlo-web/tomcat/context.xml` is *not* the datasource for this run — that file
+  belongs to the tomcat7 plugin used by `run-marlo-java8.sh`, while `run-marlo-java17.sh` runs cargo/tomcat9x.
+  So `DELETE FROM bi_reports` is a local, private, reversible operation. Back it up first anyway:
+  no table references `bi_reports` by foreign key, so the delete neither cascades nor blocks.
 
 ## 2. Pre-flight Checklist
 
@@ -209,10 +213,87 @@ registration, 0 versus 4.
 | AC-007 (same copy for every role) | **Not verified** — true by construction, no role branching exists |
 
 **Why the rest is still open.** MARLO runs locally (Tomcat 9.0.80, `http://localhost:8080/marlo-web/`, login page
-200). The BI route sits behind `requireUser`, so rendering it needs an authenticated session. The agent doing this
-work does not enter credentials, so the remaining criteria need a human-driven login. The empty-state path
-additionally needs an instance whose `bi_reports` is empty; `marlo-web/tomcat/context.xml` points at the shared
-`aiccradb_icipe_test` RDS, and emptying that table there was ruled out (§1 Execution Context).
+200). The BI route sits behind `requireUser`, so rendering it needs an authenticated session, and the agent doing
+this work does not enter credentials. The empty-state path additionally needs `bi_reports` empty — see §1 for the
+datasource correction: the run uses a private local MySQL, so that is a safe local operation, but the agent's
+sandbox blocks destructive database writes, so the delete/restore has to be run by a developer.
 
 **Residual risk after this pass:** low for the FTL and JS logic, which now have direct evidence. Unmeasured: the
 placeholder's visual rendering and the browser-level regression of the four tab behaviours.
+
+### 2026-08-24 — in-browser verification (authenticated session, local instance)
+
+Local instance: Tomcat 9.0.80 embedded, `http://localhost:8080/marlo-web/`, against the **local** database
+`localhost:3306/aiccradb1`. Global unit AICCRA, phase AR-2026 (`AICCRA-bi-phase-431`). Login performed by the
+developer; the agent does not enter credentials.
+
+> Correction (2026-08-24): an earlier revision of this log named the shared `aiccradb_icipe_test` RDS as the
+> datasource, read from `marlo-web/tomcat/context.xml`. That was the wrong file — it configures the tomcat7 plugin,
+> not the cargo/tomcat9x run. The live JVM holds its connections to `127.0.0.1:3306`. Nothing here was ever run
+> against a shared environment.
+
+**This database has four BI reports configured, so this session exercised the regression scenario (AC-003), not the
+empty state.**
+
+| Observation | Value |
+|---|---|
+| `/bi/AICCRA/bi.do` response | Renders, title `MARLO BI` — **no FreeMarker 500** |
+| `biDashboard.js` requested | `?20260824` → 200 (not the cached `?20240727`) |
+| `biDashboard.css` requested | `?20251112` → 200, unchanged as designed |
+| Report tabs rendered | 4 |
+| Widget script emitted by the guard | `https://bi.prms.cgiar.org/widget/main.js`, `pbiwidget` defined |
+| Initial report load | `BIreport-7-contentOptions` gained `loaded`; `pbiwidget.init` requested `…/bi/aiccra-bi-module?reportName=aiccra-bi-module` — the `replace("BIreport-", "")` path end to end |
+| `setReportTitle()` on load | "Business Intelligence module" |
+| Tab switch to "QA process for PMC" | `current` moved to `BIreport-9`; second container lazily loaded; only it visible; second report requested (`aiccra_feedback_consolidation`); title updated |
+| Handlers bound | `.reportSection` click:1, `window` message:1 |
+| Unresolved i18n keys in the DOM | 0 |
+| Console errors | One 404 from a third-party asset (tawk.to / clarity / recaptcha / unpkg group). Count did not increase after the tab switch, and no BI request failed. Not attributable to this change. |
+
+**AC-003 verified in the browser.** The guard is transparent when reports exist: initial load, lazy tab loading,
+title updates, show/hide, and the widget script all behave as before.
+
+**AC-006 verified in the browser.** The page requests the bumped version string.
+
+**Still not verified:** AC-005, AC-007. AC-001 needs `bi_reports` empty and AC-005 needs
+`crp_bi_module_active=false`. Both are safe locally (see the correction above), but the agent's sandbox blocks
+destructive database writes, so a developer has to run the delete/restore and the flag flip. Note also that
+`BiReportsAction.prepare()` calls `findAll()` without a Global Unit filter (`requirements.md` §4), so *every*
+global unit in this database sees the same four reports — there is no already-empty global unit to test against.
+AC-007 needs no database change: no role branching exists in the view, so it holds by construction.
+
+**Pre-existing defect noticed, not in scope:** `$('.setFullScreen')` in `addEvents()` matches no element on the
+rendered page, so that binding is dead. The visible "Full Screen" button is wired elsewhere. The selector is
+untouched by this change; worth its own ticket.
+
+### 2026-08-24 — AC-001 verified in the browser (empty `bi_reports`)
+
+A developer emptied `bi_reports` on the local `aiccradb1` and the page was reloaded.
+
+| Observation | Value |
+|---|---|
+| Placeholder markup | `<div class="simpleBox emptyMessage text-center"><h4>BI dashboards coming soon</h4><p>Business Intelligence dashboards are not available for this instance yet. They will appear here once they are published.</p></div>` |
+| i18n keys resolved | Yes — no `biDashboard.comingSoon` literal anywhere in the rendered text |
+| `.reportSection` elements | 0 |
+| Uncaught exceptions | None |
+| `window` `message` handlers | 1 — **registered even with no reports**, which is exactly what the `TypeError` prevented before |
+| Widget `<script>` | Still emitted, correctly: the guard keys off the missing `bi_widget_url` parameter, not off empty reports |
+
+**AC-001 verified.** With AC-002, AC-003, AC-004 and AC-006, the only criteria left are AC-005 (needs the module
+flag flipped plus a logout/login cycle) and AC-007 (holds by construction — no role branching exists).
+
+**Incident during this step — data loss and full recovery.** The backup table was never created; only the
+`DELETE` ran, so four rows were deleted unprotected. Root cause in process, not in code: the instructions put
+`CREATE TABLE ... AS SELECT` and `DELETE` in one block with no confirmation step between them. Recovery was
+complete because the server runs `binlog_format=ROW` with `binlog_row_image=FULL`, so the `Delete_rows` event
+(`binlog.000016`, end_log_pos 61825) held the full before-image of every row. All four were restored exactly and
+the page was re-verified: four tabs in the original order (ids 7, 9, 8, 10 by `report_order` 5, 7, 10, 15), titles
+and flags matching the binlog, initial report loaded.
+
+A partial reconstruction assembled from prior queries and the DOM had been prepared as a fallback. Comparing it to
+the binlog afterwards, it would have been **wrong** in `has_filters` (0 vs the real 1), `report_order` (invented
+1/2/3/4 vs the real 5/7/10/15), `has_role_authorization` on id 9 (0 vs the real 1), and it lacked `embed_report`
+for id 10 entirely. Recorded here as a caution: reconstructed-from-observation data should never be treated as a
+restore.
+
+**Process fix for any future destructive step in this repo:** never issue a backup and a delete as one block.
+Require the backup row count to be checked against the source count before the delete runs.
