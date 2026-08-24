@@ -1018,24 +1018,29 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return true;
         }
 
+        /*
+         * The target unit catalog is shared by every global unit, so the usage is not scoped to the one in session.
+         * Closed global units do not reserve a catalog entry.
+         */
         if (targetUnit.getCrpProgramOutcomes().stream()
-          .filter(o -> o.isActive() && o.getCrpProgram().getCrp().getId().equals(this.getCrpID()))
-          .collect(Collectors.toList()).size() > 0) {
+          .anyMatch(o -> o.isActive() && o.getCrpProgram().getCrp().isActive())) {
           return false;
         }
 
         if (targetUnit.getCrpMilestones().stream()
-          .filter(
-            u -> u.isActive() && u.getCrpProgramOutcome().getCrpProgram().getCrp().getId().equals(this.getCrpID()))
-          .collect(Collectors.toList()).size() > 0) {
+          .anyMatch(u -> u.isActive() && u.getCrpProgramOutcome().getCrpProgram().getCrp().isActive())) {
           return false;
         }
       }
 
       if (clazz == LocElementType.class) {
         LocElementType locElementType = this.locElementTypeManager.getLocElementTypeById(id);
-        if (locElementType.getCrpLocElementTypes().stream().filter(o -> o.isActive()).collect(Collectors.toList())
-          .size() > 0) {
+        /*
+         * CrpLocElementType has no active flag, the relation is removed from the database when a global unit stops
+         * using the location level, so only the state of the global unit itself has to be checked here.
+         */
+        if (locElementType.getCrpLocElementTypes().stream()
+          .anyMatch(o -> o.getCrp() != null && o.getCrp().isActive())) {
           return false;
         }
 
