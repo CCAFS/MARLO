@@ -69,7 +69,9 @@ read.
   not reachable; the predicate is evaluated from the session user resolved via `APConstants.SESSION_USER`.
   The exact role predicate is fixed in task T06.
 - **ENH-HELLDOTS-NF-004** — Screenshot upload MUST validate MIME type against `{image/jpeg, image/png}`, enforce
-  `file.maxSizeAllowed.bytes`, and generate the stored filename server-side.
+  a 5 MB per-image cap, and generate the stored filename server-side. The cap is a HellDots-specific constant,
+  not `file.maxSizeAllowed.bytes`: no Java in this repository reads that property, so there is no getter to
+  call, and MARLO's general document cap is orders of magnitude larger than any capture the widget produces.
 - **ENH-HELLDOTS-NF-005** — The endpoints MUST refuse requests when the active Spring profile is production, as
   defence in depth beyond the DispatcherServlet not being registered there.
 - **ENH-HELLDOTS-NF-006** — User-supplied values MUST NOT be interpolated inside a `<script>` block in FTL.
@@ -120,7 +122,7 @@ read.
   processed, *then* the stored `author_user_id` is the session user's id.
 - **AC-009 (NF-003)** — *Given* user A's comment, *when* user B (non-admin) attempts to edit or delete it,
   *then* the request is rejected and the record is unchanged.
-- **AC-010 (NF-004)** — *Given* an upload whose content type is not JPEG or PNG, or which exceeds the size cap,
+- **AC-010 (NF-004)** — *Given* an upload whose content type is not JPEG or PNG, or which exceeds the 5 MB cap,
   *when* it is posted, *then* it is rejected; the widget falls back to the data URL and reports
   `onError(err, "transform")` without losing the comment.
 - **AC-011 (FN-008)** — *Given* a deleted comment, *when* the table is inspected, *then* the row is present with

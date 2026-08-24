@@ -274,8 +274,8 @@ per constitutional rule 4.
 
 ## 10. Integration Points
 
-- **FileManager / disk storage** — `FileManager.copyFile` under `config.getUploadsBaseFolder()`, served at
-  `config.getDownloadURL()`, the same pair used by project highlights and case studies.
+- **Disk storage** — written under `config.getUploadsBaseFolder()` and served at `config.getDownloadURL()`,
+  the same pair used by project highlights and case studies.
 - **Shiro** — session identity for every write.
 - **Google Fonts** — indirectly, via the `crossorigin` fix in `header.ftl`.
 - **S3** — deliberately not integrated. `transformScreenshot` is the seam if that changes.
@@ -314,8 +314,9 @@ entries. Every trust decision is the backend's:
   `author` in the payload.
 - Edit and delete verify session user == author, or an admin role on the session user (resolved from
   `APConstants.SESSION_USER`, not from `BaseAction`, which a Spring MVC controller cannot reach).
-- Uploads: content type restricted to `image/jpeg` and `image/png`, size capped by `file.maxSizeAllowed.bytes`,
-  **filename generated server-side** — a client-supplied name is never used in a path.
+- Uploads: content type restricted to `image/jpeg` and `image/png`, size capped at 5 MB by
+  `HelldotsUploadValidator.MAX_SCREENSHOT_BYTES`, **filename generated server-side** — a client-supplied name
+  is never used in a path.
 - `page`, `text`, `tags` and the payload are user-controlled: parameterised queries only, and a payload size cap.
 - Endpoints refuse when the active profile is production, independently of the DispatcherServlet not being
   registered there.

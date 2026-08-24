@@ -96,9 +96,9 @@ row carries the session user (AC-008). Attempt a cross-user edit and assert reje
 ### ENH-HELLDOTS-OVERLAY-001-T07 — Screenshot upload endpoint
 **Depends on:** T03, T04, PF-04
 **Do:** `POST /api/helldots/screenshots`. Validate MIME against `{image/jpeg, image/png}` and size against
-`file.maxSizeAllowed.bytes`; generate the filename server-side; write with `FileManager.copyFile` under
-`config.getUploadsBaseFolder()`; register a `helldots_screenshots` row; return `{ url }` built from
-`config.getDownloadURL()`.
+`HelldotsUploadValidator.MAX_SCREENSHOT_BYTES` (5 MB); generate the filename server-side; write the
+`MultipartFile` under `config.getUploadsBaseFolder()`; register a `helldots_screenshots` row; return `{ url }`
+built from `config.getDownloadURL()`.
 **Acceptance:** No client-supplied string reaches a filesystem path. Rejections return 4xx without a stack trace.
 **Verify:** Upload a JPEG and fetch the returned URL — it renders. Upload a PDF renamed `.jpg` and a
 20 MB file; both rejected (AC-010).
