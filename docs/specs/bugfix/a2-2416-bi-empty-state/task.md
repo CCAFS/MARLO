@@ -1,7 +1,7 @@
 # BI Module — Blank Page and JS TypeError When No Dashboards Are Configured — Tasks
 
 **Spec ID:** BUG-BI-EMPTY-001
-**Status:** Ready
+**Status:** In Progress
 **Owner:** IBD Team — Kevin Collazos
 **Reviewers:** PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-08-24
@@ -171,3 +171,48 @@ T04 ──────────┘       │          ├──> T09 ──> 
 - [ ] QA re-ran A2-2407-TC07 on FSRP after the flag flip and passed it.
 - [ ] Out-of-scope items of `requirements.md` §4 filed as their own tickets — in particular the unfiltered
       `findAll()` in `BiReportsAction`.
+
+---
+
+## 9. Verification Log
+
+### 2026-08-24 — offline verification (no browser session required)
+
+Harnesses written for this pass live in the session scratchpad (`FtlParseCheck.java`, `GuardEval.java`,
+`OldVsNew.java`, `guardTest.js`). Each carries a negative control, because a check that cannot fail proves nothing.
+
+| # | Check | Result |
+|---|---|---|
+| 1 | `biDashboard.ftl` parses under FreeMarker 2.3.32 (the version `marlo-parent/pom.xml` declares) | PASS — and a deliberately broken copy *does* fail, so the check is real |
+| 2 | `((biParameters)![])?filter(...)` across 5 states: absent, null, empty, no match, match | PASS in all 5 — emits the script only on a match |
+| 3 | Old vs new expression with `bi_widget_url` absent | Old raises `InvalidReferenceException` (= HTTP 500); new renders empty. **The latent 500 was real.** |
+| 4 | `node --check biDashboard.js` | PASS |
+| 5 | JS control flow, no reports configured | Before: **0** handlers + `TypeError: Cannot read properties of undefined (reading 'replace')` — the exact error A2-2416 reports. After: **4** handlers, no error, `pbiwidget.init` not called |
+| 6 | JS control flow, one report configured | Before and after identical: 4 handlers, `pbiwidget.init` called once |
+| 7 | i18n keys reach the build output | 2 matches each in `target/classes/global.properties`, `custom/aiccra3.properties`, `custom/aicrra.properties` |
+| 8 | Deployed FTL matches source | Identical in `target/marlo-web` and the cargo webapp |
+| 9 | Patched JS served over HTTP at the new version string | `GET /crp/js/bi/biDashboard.js?20260824` → 200, contains both guards |
+
+Check 5 supersedes the inference recorded in `design.md` §1 with measurement: the throw did abort handler
+registration, 0 versus 4.
+
+**Status against the acceptance criteria**
+
+| AC | State |
+|---|---|
+| AC-002 (no uncaught exception, handlers registered) | **Verified** — checks 5, 6 |
+| AC-004 (missing `bi_widget_url` → no 500) | **Verified** — checks 2, 3 |
+| AC-003 (no regression with reports) | **Partly** — JS control flow verified (check 6); tab switching, full screen and iframe auto-height still need a browser |
+| AC-006 (cache-busted script served) | **Partly** — the asset is served at `?20260824` (check 9); that the page requests it needs a rendered page |
+| AC-001 (placeholder renders with the right copy) | **Not verified** |
+| AC-005 (direct URL with the module disabled) | **Not verified** |
+| AC-007 (same copy for every role) | **Not verified** — true by construction, no role branching exists |
+
+**Why the rest is still open.** MARLO runs locally (Tomcat 9.0.80, `http://localhost:8080/marlo-web/`, login page
+200). The BI route sits behind `requireUser`, so rendering it needs an authenticated session. The agent doing this
+work does not enter credentials, so the remaining criteria need a human-driven login. The empty-state path
+additionally needs an instance whose `bi_reports` is empty; `marlo-web/tomcat/context.xml` points at the shared
+`aiccradb_icipe_test` RDS, and emptying that table there was ruled out (§1 Execution Context).
+
+**Residual risk after this pass:** low for the FTL and JS logic, which now have direct evidence. Unmeasured: the
+placeholder's visual rendering and the browser-level regression of the four tab behaviours.
