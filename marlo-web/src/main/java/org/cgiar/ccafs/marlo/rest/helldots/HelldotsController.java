@@ -17,13 +17,19 @@ package org.cgiar.ccafs.marlo.rest.helldots;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.HelldotsCommentManager;
+import org.cgiar.ccafs.marlo.data.manager.HelldotsScreenshotManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.HelldotsComment;
+import org.cgiar.ccafs.marlo.data.model.HelldotsScreenshot;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +44,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +52,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/helldots")
@@ -56,17 +65,20 @@ public class HelldotsController {
 
   private static final Logger LOG = LoggerFactory.getLogger(HelldotsController.class);
   private static final int MAX_PAYLOAD_CHARS = 200000;
+  private static final String SCREENSHOT_FOLDER = "helldots";
 
   private final HelldotsCommentManager helldotsCommentManager;
   private final UserManager userManager;
+  private final HelldotsScreenshotManager helldotsScreenshotManager;
   private final APConfig config;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Inject
   public HelldotsController(HelldotsCommentManager helldotsCommentManager, UserManager userManager,
-    APConfig config) {
+    HelldotsScreenshotManager helldotsScreenshotManager, APConfig config) {
     this.helldotsCommentManager = helldotsCommentManager;
     this.userManager = userManager;
+    this.helldotsScreenshotManager = helldotsScreenshotManager;
     this.config = config;
   }
 
@@ -102,6 +114,90 @@ public class HelldotsController {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     return new ResponseEntity<>(comment.getPayload(), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/screenshots", method = RequestMethod.POST,
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> postScreenshot(@RequestPart("file") MultipartFile file,
+    @RequestParam(value = "kind", required = false, defaultValue = "context") String kind,
+    @RequestParam(value = "commentId", required = false) String commentId) {
+    if (this.isDisabled()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    User currentUser = this.getCurrentUser();
+    if (currentUser == null) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    if (file == null || file.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    if (!HelldotsUploadValidator.isAllowedContentType(file.getContentType())) {
+      LOG.warn("Rejected HellDots upload with content type {}", file.getContentType());
+      return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    }
+    if (!HelldotsUploadValidator.isWithinSize(file.getSize(), HelldotsUploadValidator.MAX_SCREENSHOT_BYTES)) {
+      LOG.warn("Rejected HellDots upload of {} bytes", file.getSize());
+      return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
+    // NF-004: the stored name is generated here; nothing from the client reaches the path.
+    String fileName = HelldotsUploadValidator.generateFileName(file.getContentType());
+    String relativePath = SCREENSHOT_FOLDER + File.separator + fileName;
+
+    try {
+      Path folder = Paths.get(config.getUploadsBaseFolder(), SCREENSHOT_FOLDER);
+      Files.createDirectories(folder);
+      file.transferTo(folder.resolve(fileName).toFile());
+    } catch (Exception e) {
+      LOG.error("Could not store HellDots screenshot {}", fileName, e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    HelldotsScreenshot screenshot = new HelldotsScreenshot();
+    screenshot.setCommentId(commentId);
+    screenshot.setKind(kind);
+    screenshot.setFileName(fileName);
+    screenshot.setRelativePath(relativePath);
+    screenshot.setContentType(file.getContentType());
+    screenshot.setByteSize(Long.valueOf(file.getSize()));
+    screenshot.setActive(true);
+    screenshot.setActiveSince(new Date());
+    screenshot.setCreatedBy(currentUser);
+    helldotsScreenshotManager.save(screenshot);
+
+    // Served by the GET below, not as a static file: nothing maps a URL onto the uploads directory,
+    // and keeping it outside the webroot means nothing writable is web-served.
+    String url = config.getBaseUrl() + "/api/helldots/screenshots/" + fileName;
+    return new ResponseEntity<>("{\"url\":\"" + url + "\"}", HttpStatus.OK);
+  }
+
+  @RequestMapping(value = "/screenshots/{fileName:.+}", method = RequestMethod.GET)
+  public ResponseEntity<byte[]> getScreenshot(@PathVariable("fileName") String fileName) {
+    if (this.isDisabled()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    if (!this.isAuthenticated()) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    // Only names this application generated are servable, so no traversal or arbitrary read is reachable.
+    if (!HelldotsUploadValidator.isGeneratedFileName(fileName)) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    Path file = Paths.get(config.getUploadsBaseFolder(), SCREENSHOT_FOLDER, fileName);
+    if (!Files.isRegularFile(file)) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    try {
+      byte[] bytes = Files.readAllBytes(file);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(fileName.endsWith(".png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG);
+      headers.setCacheControl("private, max-age=86400");
+      return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    } catch (Exception e) {
+      LOG.error("Could not read HellDots screenshot {}", fileName, e);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,

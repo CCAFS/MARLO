@@ -30,6 +30,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -78,6 +79,17 @@ public class MarloRestApiConfig {
   @Bean
   public LoggingAspect loggingAspect() {
     return new LoggingAspect();
+  }
+
+  /**
+   * Required for {@code @RequestPart}/{@code MultipartFile} binding (HellDots screenshot upload). The bean
+   * name must be exactly {@code multipartResolver}: Spring MVC looks it up by that name.
+   */
+  @Bean(name = "multipartResolver")
+  public CommonsMultipartResolver multipartResolver() {
+    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+    resolver.setMaxUploadSize(20971520L);
+    return resolver;
   }
 
 }
