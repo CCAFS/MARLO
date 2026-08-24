@@ -127,11 +127,12 @@ public class HelldotsController {
       return this.softDelete(deletedId, currentUser);
     }
 
-    @SuppressWarnings("unchecked")
-    Map<String, Object> payload = (Map<String, Object>) event.get("comment");
-    if (payload == null) {
+    Object rawComment = event.get("comment");
+    if (!(rawComment instanceof Map)) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> payload = (Map<String, Object>) rawComment;
     return this.upsert(payload, currentUser);
   }
 
