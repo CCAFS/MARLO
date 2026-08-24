@@ -76,8 +76,11 @@ read.
   defence in depth beyond the DispatcherServlet not being registered there.
 - **ENH-HELLDOTS-NF-006** — User-supplied values MUST NOT be interpolated inside a `<script>` block in FTL.
   Auto-escaping is active under Struts 6.8, so an apostrophe in a display name would corrupt the JS literal.
-- **ENH-HELLDOTS-NF-007** — All new Java files carry the GPL header; code passes `mvn checkstyle:check`
-  (2-space indent, 120 columns, braces on same line).
+- **ENH-HELLDOTS-NF-007** — All new Java files carry the GPL header and follow MARLO style: 2-space indent,
+  120 columns, braces on the same line, max 3500 lines. **`mvn checkstyle:check` cannot run in this checkout**
+  — it fails with a `PluginContainerException` from a polluted plugin classpath in `marlo-parent/pom.xml`,
+  reproduced on a clean tree and therefore pre-existing. The mechanical rules are enforced by a substitute
+  script; the judgement-level rules are enforced at review.
 - **ENH-HELLDOTS-NF-008** — Schema changes ship as a Flyway migration under
   `marlo-web/src/main/resources/database/migrations/` with the mandated naming.
 
@@ -140,7 +143,7 @@ read.
 | 4. Specificities via `parameters` + `custom_parameters` | **Not applicable.** Gating is environment-based, not per global unit. No new specificity constant. |
 | 5. Flyway migrations | **Honored.** ENH-HELLDOTS-NF-008. |
 | 6. GPL header on new Java files | **Honored.** ENH-HELLDOTS-NF-007. |
-| 7. Code style / Checkstyle gate | **Honored.** ENH-HELLDOTS-NF-007. |
+| 7. Code style / Checkstyle gate | **Partially honored — pre-existing blocker.** Style rules are followed and mechanically verified, but `mvn checkstyle:check` is broken repo-wide (see ENH-HELLDOTS-NF-007 and OQ-004). |
 | 8. English only in code; i18n for user-facing strings | **Honored.** Widget strings belong to the library, not to `global.properties`; the widget is never seen by end users. |
 | 9. Branch from `staging`, never commit to `main` | **Honored.** See `task.md` front matter. |
 | 10. Java 17 run scripts | **Honored.** `scripts/run-marlo-java17.sh`. |
@@ -156,6 +159,11 @@ read.
 - **ENH-HELLDOTS-OQ-002** — `page` is `location.pathname` only. MARLO carries state in the query string
   (`?projectID=123&phaseID=4`), so every project shares one `page` value. Is per-pathname grouping acceptable
   for a QA tool, or does the inbox need query-aware grouping?
+- **ENH-HELLDOTS-OQ-004** — `mvn checkstyle:check` is broken repo-wide with a `PluginContainerException`
+  (a stray `springdoc-openapi-ui` on the checkstyle plugin's classpath in `marlo-parent/pom.xml`). It is
+  unrelated to this work and blocks constitutional rule 7 for every contributor, not just this spec. Worth
+  its own bugfix spec.
+
 - **ENH-HELLDOTS-OQ-003** — Retention. Nothing prunes comments or orphaned screenshot blobs today. Decide a
   policy before the corpus is large enough for it to matter.
 

@@ -13,7 +13,14 @@
 - **Spec:** `docs/specs/enhancement/helldots-overlay/` — ENH-HELLDOTS-OVERLAY-001. Requirement IDs referenced per task.
 - **Java level:** 17. Run with `scripts/run-marlo-java17.sh` (HTTP, `localhost:8080`, `cargo:run`). `run-marlo-java8.sh` fails with `invalid flag: --release` on this branch.
 - **Database:** local MySQL — `mysql.host=localhost`, `mysql.database=aiccradb1`, port 3306.
-- **Code style:** 2-space indent, 120-column limit, braces on the same line, mandatory blocks for `if/while/for/do`. `mvn checkstyle:check` is a gate.
+- **Code style:** 2-space indent, 120-column limit, braces on the same line, mandatory blocks for
+  `if/while/for/do`, max file length 3500 lines.
+  **Correction (found during execution):** `mvn checkstyle:check` CANNOT RUN in this checkout — it dies with a
+  `PluginContainerException` from a polluted plugin classpath in `marlo-parent/pom.xml`, and pom.xml changes
+  are out of scope. Reproduced on a clean tree, so it is pre-existing and unrelated to this work. Substitute:
+  run `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh <files...>`, which enforces the mechanical
+  rules (120 columns, 2-space indent, no tabs, GPL header, file length). Judgement-level rules — brace
+  placement, mandatory blocks, naming — are the reviewer's job.
 - **GPL header** verbatim at the top of every new `.java` file:
   ```text
   /*****************************************************************
@@ -33,7 +40,14 @@
   ```
 - **English only** in code, identifiers and comments.
 - **Migrations:** `marlo-web/src/main/resources/database/migrations/V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`. Additive only.
-- **Hibernate:** `hibernate.cfg.xml` sets `hbm2ddl.auto=validate`. Every new `.hbm.xml` MUST be registered with a `<mapping resource="xmls/X.hbm.xml"/>` line **and** must match the DDL exactly, or the app fails to start.
+- **Hibernate:** every new `.hbm.xml` MUST be registered with a `<mapping resource="xmls/X.hbm.xml"/>` line in
+  `hibernate.cfg.xml`, or the entity is invisible to Hibernate.
+  **Correction (found during execution):** `hbm2ddl.auto=validate` is NOT active — it sits inside an XML
+  comment at `hibernate.cfg.xml:16-21`, disabled deliberately because some legacy entities use INT primary
+  keys where the mapping says BIGINT. So a clean application start proves the mapping files are well-formed
+  and registered; it does **not** prove they agree with the database. Mapping/schema agreement is proven by
+  the first real query through the entity — Task 6, which inserts a row with SQL and reads it back through
+  the endpoint. Treat Task 6 as the mapping's acceptance test.
 - **No `pom.xml` changes.** The widget is a static asset, not a Maven dependency. No Mockito is available — tests are plain JUnit 4 against pure functions.
 - **No `?html` in any FreeMarker template** — it is a parse error under Struts 6.8. Auto-escaping is already on.
 - **Never commit** `marlo-dev.properties`, `tomcat/context.xml`, or a `C:` directory.
@@ -491,10 +505,10 @@ Run: `bash scripts/run-marlo-java17.sh`
 Expected: the app starts with no `SchemaManagementException` and no "missing table/column" error in the log.
 A mismatch between the `.hbm.xml` and the DDL surfaces here, not at compile time.
 
-- [ ] **Step 8: Checkstyle**
+- [ ] **Step 8: Style check**
 
-Run: `mvn checkstyle:check -pl marlo-data`
-Expected: no violations.
+Run `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh` over the new `.java` files.
+Expected: `STYLE OK`. (`mvn checkstyle:check` is broken in this checkout — see Global Constraints.)
 
 - [ ] **Step 9: Commit**
 
@@ -703,10 +717,12 @@ public class HelldotsCommentManagerImpl implements HelldotsCommentManager {
 
 `@Transactional` goes on writes only, matching `FeedbackStatusManagerImpl`.
 
-- [ ] **Step 6: Compile and checkstyle**
+- [ ] **Step 6: Compile and style check**
 
-Run: `mvn clean install -DskipTests -pl marlo-data -am && mvn checkstyle:check -pl marlo-data`
-Expected: BUILD SUCCESS, no violations.
+Run: `mvn install -DskipTests -pl marlo-data -am`
+Expected: BUILD SUCCESS.
+Then run `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh` over the new `.java` files.
+Expected: `STYLE OK`.
 
 - [ ] **Step 7: Verify the beans wire**
 
@@ -1084,10 +1100,12 @@ public final class HelldotsUploadValidator {
 Run: `mvn test -pl marlo-web -Dtest=HelldotsUploadValidatorTest`
 Expected: PASS, 8 tests.
 
-- [ ] **Step 9: Run both test classes together and checkstyle**
+- [ ] **Step 9: Run both test classes together and style check**
 
-Run: `mvn test -pl marlo-web -Dtest='Helldots*Test' && mvn checkstyle:check -pl marlo-web`
-Expected: 14 tests pass, no checkstyle violations.
+Run: `mvn test -pl marlo-web -Dtest='Helldots*Test'`
+Expected: 14 tests pass.
+Then run `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh` over the new `.java` files.
+Expected: `STYLE OK`.
 
 - [ ] **Step 10: Commit**
 
@@ -1337,7 +1355,7 @@ mysql -h localhost -u <user> -p aiccradb1 -e "DELETE FROM helldots_comments WHER
 - [ ] **Step 7: Checkstyle and commit**
 
 ```bash
-mvn checkstyle:check -pl marlo-web
+.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git add marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git commit -m ":sparkles: feat(api): Add HellDots comment read endpoints"
 ```
@@ -1597,11 +1615,11 @@ curl -s -o /dev/null -w "%{http_code}\n" -b "JSESSIONID=<id>" -H "Content-Type: 
 ```
 Expected: `400`.
 
-- [ ] **Step 10: Clean up, checkstyle, commit**
+- [ ] **Step 10: Clean up, style check, commit**
 
 ```bash
 mysql -h localhost -u <user> -p aiccradb1 -e "DELETE FROM helldots_comments WHERE comment_id LIKE 'e2e-%';"
-mvn checkstyle:check -pl marlo-web
+.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git add marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git commit -m ":sparkles: feat(api): Add HellDots event upsert endpoint"
 ```
@@ -1796,10 +1814,10 @@ curl -s -o /dev/null -w "%{http_code}\n" -b "JSESSIONID=<id>" \
 ```
 Expected: `415`. Then repeat with a file larger than 5 MB and expect `413`.
 
-- [ ] **Step 7: Checkstyle and commit**
+- [ ] **Step 7: Style check and commit**
 
 ```bash
-mvn checkstyle:check -pl marlo-web
+.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git add marlo-web/src/main/java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java
 git commit -m ":sparkles: feat(api): Add HellDots screenshot upload endpoint"
 ```
@@ -2129,12 +2147,12 @@ files only if every criterion passed.
 - [ ] **Step 7: Final gates**
 
 ```bash
-mvn clean install -DskipTests -pl marlo-web -am
+mvn install -DskipTests -pl marlo-web -am
 mvn test -pl marlo-web -Dtest='Helldots*Test'
-mvn checkstyle:check
+.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh $(git diff --name-only a7ada39174..HEAD -- '*.java')
 git status --short
 ```
-Expected: BUILD SUCCESS; 14 tests pass; no checkstyle violations; `git status` shows no
+Expected: BUILD SUCCESS; 14 tests pass; `STYLE OK`; `git status` shows no
 `marlo-dev.properties`, no `tomcat/context.xml`, and no `C:` directory.
 
 - [ ] **Step 8: Commit**
@@ -2173,9 +2191,9 @@ pure static functions. Everything else is verified by running the app and observ
 `mysql` commands in each task are the test suite for that task. Run them; do not assume.
 
 **The two things most likely to go wrong:**
-1. **Forgetting the `<mapping resource=…/>` lines** in `hibernate.cfg.xml` (Task 2, Step 5). With
-   `hbm2ddl.auto=validate`, a mapping mismatch or a missing registration stops the app at startup with an
-   error that does not obviously point at HellDots.
+1. **A mapping that disagrees with the DDL.** Hibernate does NOT validate mappings here (see Global
+   Constraints), so a wrong column name or type sails through startup and only fails when a query runs —
+   at Task 6. Compare each `.hbm.xml` property against the migration SQL by hand; do not rely on a clean boot.
 2. **The uploads path** (pre-flight P1). Uploads appear to succeed and the files are simply unreachable.
 
 **Where to check the library's real contract.** `dist/index.d.ts` in the published tarball is authoritative for

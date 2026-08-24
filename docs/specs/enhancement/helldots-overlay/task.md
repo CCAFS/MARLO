@@ -23,7 +23,7 @@ checkout is on `feedback-overlay`, which already carries the A2-2398 homepage re
 | Env flags | `marlo.production=false`, `marlo.debug=true` → the mount gate is open locally |
 | Base URL | `http://localhost:8080/marlo-web/` |
 | Flyway | `MarloFlywayConfiguration` runs `repair()` before every `migrate()` on startup |
-| Checkstyle | `mvn checkstyle:check` must pass before any commit |
+| Checkstyle | **Broken repo-wide** (`PluginContainerException`, pre-existing). Substitute: `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh` for the mechanical rules. See ENH-HELLDOTS-OQ-004. |
 
 Everything below is executed and verified against the local database. No shared environment is touched by
 this delivery.
@@ -151,9 +151,9 @@ reported orphaned rather than dropped when their element is genuinely gone.
 
 ### ENH-HELLDOTS-OVERLAY-001-T14 — Gates and commit
 **Depends on:** T12, T13
-**Do:** `mvn checkstyle:check`; confirm GPL headers; confirm no credential file staged; commit with the
+**Do:** run the substitute style check; confirm GPL headers; confirm no credential file staged; commit with the
 gitmoji/semantic convention.
-**Acceptance:** Checkstyle green. `git status` shows no `marlo-dev.properties`, no `context.xml`, no `C:` directory.
+**Acceptance:** Style check reports `STYLE OK`. `git status` shows no `marlo-dev.properties`, no `context.xml`, no `C:` directory.
 **Verify:** `git diff --stat` reviewed file by file before committing.
 
 ## 4. Dependency Graph
