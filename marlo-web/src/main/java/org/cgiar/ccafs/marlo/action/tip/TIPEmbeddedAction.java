@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
 import org.cgiar.ccafs.marlo.data.manager.BiReportsManager;
 import org.cgiar.ccafs.marlo.data.model.BiParameters;
 import org.cgiar.ccafs.marlo.data.model.BiReports;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.List;
@@ -63,8 +64,14 @@ public class TIPEmbeddedAction extends BaseAction {
 
   @Override
   public void prepare() {
-    biReports = biReportsManager.findAll();
-    biParameters = biParametersManager.findAll();
+    GlobalUnit loggedCrp = this.getCurrentCrp();
+    if (loggedCrp == null) {
+      LOG.warn("There is no global unit in the session, the BI reports and parameters can not be loaded.");
+      return;
+    }
+
+    biReports = biReportsManager.findAll(loggedCrp.getId());
+    biParameters = biParametersManager.findAll(loggedCrp.getId());
   }
 
 
