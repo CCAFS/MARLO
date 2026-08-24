@@ -85,7 +85,7 @@ login.do  →  LoginAction.login()
 | `true` | Authenticate against CGIAR Active Directory via LDAP/LDAPS — **the flow being migrated** |
 | `false` | Authenticate against `users.password` (MD5 hash) — **must remain byte-for-byte unchanged** |
 
-The two branches are cleanly separated behind the `Authenticator` interface. This is the single most favorable fact about this migration: the seam already exists.
+The two branches are cleanly separated inside `APCustomRealm`. **Note:** the `Authenticator` interface itself is `(String email, String password) → Map`, so it cannot carry a token-based assertion — see `auth-flow/design.md` DD-1, which drops the seam rather than widening a shared interface for one caller.
 
 ### Authorization is fully decoupled from authentication
 
@@ -103,10 +103,10 @@ The two branches are cleanly separated behind the `Authenticator` interface. Thi
 |---|---|
 | `marlo-data/.../security/APCustomRealm.java` | The selector (`isCgiarUser`), plus `getCgiarNickname()` which performs an **extra** LDAP lookup on every CGIAR login |
 | `marlo-data/.../security/authentication/LDAPAuthenticator.java` | `@Named("LDAP")` — wraps `LDAPService.authenticateUser()` → `ADConexion` |
-| `marlo-data/.../security/authentication/Authenticator.java` | The interface both flows implement — **the seam to reuse** |
+| `marlo-data/.../security/authentication/Authenticator.java` | The interface both password-based flows implement. **Not reusable for Cognito** (signature is `(String, String)`); left unmodified |
 | `marlo-data/.../MarloShiroConfiguration.java` | Wires realm, session manager (30 min), `JSESSIONID` cookie, `/api/**` → `authcBasic` |
 
-### Directory-search path (7 more call sites — in scope per your decision)
+### Directory-search path (8 more call sites — in scope per your decision)
 
 | File | What it does |
 |---|---|
@@ -124,7 +124,7 @@ The two branches are cleanly separated behind the `Authenticator` interface. Thi
 | Item | Value |
 |---|---|
 | Artifact | `org.cgiar.ciat.auth:adauth`, version property `ciat-adauth.version` = **`5.7`** (`marlo-parent/pom.xml:14`) |
-| Source | A **file-based Maven repo committed into the repo**: `marlo-data/src/main/resources/libs/` (16 versions, 1.1 → 5.7) |
+| Source | **Two file-based Maven repos committed into the repo**: `marlo-data/src/main/resources/libs/.../adauth/` (16 versions, 1.1 → 5.7) and `marlo-web/src/main/resources/libs/.../adauth/` (11 versions, 1.1 → 2.2) |
 | Consumers | `marlo-data/pom.xml:27`, `marlo-web/pom.xml:76` |
 
 > **Documentation drift:** `docs/trd/trd.md` §8.1 says `adauth-5.6.jar` under `marlo-web/src/main/resources/libs`. Both facts are wrong — the version is **5.7** and the repo lives in **`marlo-data`**. The TRD needs correcting regardless of whether this proposal is approved.
@@ -153,8 +153,8 @@ The two branches are cleanly separated behind the `Authenticator` interface. Thi
 
 1. Replace the CGIAR authentication branch with a Cognito-brokered OIDC flow.
 2. Add an OIDC callback endpoint and token validation; map the verified identity to the existing `users` row and issue the same Shiro session.
-3. Keep `Authenticator` as the seam; add a `@Named("COGNITO")` implementation alongside the untouched `@Named("DB")`.
-4. Migrate the 7 directory-search call sites off `adauth`.
+3. Dispatch on Shiro token type inside the single realm. `Authenticator.java`, `DBAuthenticator`, and `LDAPAuthenticator` are all left unmodified (see `auth-flow/design.md` DD-1).
+4. Migrate the 8 directory-search call sites off `adauth`.
 5. Remove the `adauth` dependency and its committed file-repo.
 6. Move all AD/Cognito configuration into `marlo-${profile}.properties`.
 7. Feature-flag the new flow via a **specificity** so rollout is per-Global-Unit and instantly reversible.
@@ -200,10 +200,10 @@ The two branches are cleanly separated behind the `Authenticator` interface. Thi
 - OIDC Authorization Code + PKCE flow: an authorize redirect and a callback endpoint.
 - ID-token validation: signature against the pool JWKS, plus `iss`, `aud`, `exp`, `nonce`.
 - Identity mapping from a verified token claim (email) to the local `users` row.
-- A `@Named("COGNITO")` `Authenticator` (or a Shiro `AuthenticationToken` subtype for the token-bearing case).
+- A Shiro `AuthenticationToken` subtype carrying a validated assertion, dispatched by token type in the realm.
 - A specificity flag gating the new flow per Global Unit.
 - Configuration keys in `marlo-${profile}.properties`.
-- Directory-search abstraction replacing `LDAPService` at 7 call sites.
+- Directory-search abstraction replacing `LDAPService` at 8 call sites.
 
 ### MODIFIED
 
@@ -217,7 +217,7 @@ The two branches are cleanly separated behind the `Authenticator` interface. Thi
 
 - `LDAPAuthenticator` and its `@Named("LDAP")` binding.
 - `APCustomRealm.getCgiarNickname()` (its username sync moves into claim mapping).
-- All 9 `org.cgiar.ciat.auth` imports.
+- All **18** `org.cgiar.ciat.auth` imports, across **10** files.
 - The `adauth` dependency and `marlo-data/src/main/resources/libs/org/cgiar/ciat/auth/`.
 - `GENERICUSER_AD`, `GENERICPASSWORD_AD`, `HOSTNAME_AD`, `PORT_AD` from both `APConstants.java`.
 
@@ -291,7 +291,7 @@ If you approve the split, `family.md` gets written in the parent folder **before
 | `marlo-data` security | New Cognito authenticator behind the existing `Authenticator` seam; realm routes the `isCgiarUser` branch to it |
 | `marlo-web` login | Callback action, state/nonce handling, session establishment, Global Unit selection after callback |
 | Session | Reuse the existing Shiro `DefaultWebSessionManager` (30 min, `JSESSIONID`, `httpOnly`). **No new session mechanism** |
-| Directory search | One interface replacing `LDAPService` at 7 call sites |
+| Directory search | One interface replacing `LDAPService` at 8 call sites |
 | Dependencies | Add AWS SDK v2 (`cognitoidentityprovider`) + a JWT library. Remove `adauth`. **No downgrades** below `marlo-parent/pom.xml` floors (hard rule 11) |
 | i18n | New keys in `global.properties` |
 

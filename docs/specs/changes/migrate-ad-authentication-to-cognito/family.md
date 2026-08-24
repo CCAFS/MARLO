@@ -31,26 +31,26 @@
 
 Replaces the CGIAR authentication branch (`users.is_cgiar_user = 1`) with Amazon Cognito.
 
-**Delivers:** the Cognito `Authenticator` implementation, the realm routing change, session
+**Delivers:** the Cognito token type and validator, the realm token-type dispatch, session
 establishment, ID-token validation, the specificity feature flag, configuration keys, and the
 login-page change.
 
-**Explicitly leaves to child 2:** the 7 directory-search call sites and the removal of the `adauth`
+**Explicitly leaves to child 2:** the 8 directory-search call sites and the removal of the `adauth`
 dependency.
 
-**Does not touch:** `DBAuthenticator`, `AuthenticationManager`, `MD5Convert`, `users.password`, or
-the `else` branch of `APCustomRealm.doGetAuthenticationInfo()`. The local login flow is a non-goal
+**Does not touch:** `Authenticator.java`, `DBAuthenticator`, `LDAPAuthenticator`, `AuthenticationManager`, `MD5Convert`, `users.password`, or
+the `UsernamePasswordToken` path through `APCustomRealm.doGetAuthenticationInfo()` (an `instanceof` guard is inserted *above* the existing cast; everything from the cast down is byte-for-byte preserved). The local login flow is a non-goal
 by construction, not by care.
 
 ### 2 — `directory-retirement`
 
 Removes `org.cgiar.ciat.auth` from the codebase entirely.
 
-**Delivers:** a directory-search abstraction replacing `LDAPService` at the 7 remaining call sites
+**Delivers:** a directory-search abstraction replacing `LDAPService` at the 8 remaining call sites
 (`BaseAction.getOutlookUser`, `CrpUsersAction`, both `ManageUsersAction` classes, `SearchUserAction`,
 `ContactPersonAction`, `GuestUsersValidator`, `searchUsersUtil`), deletion of the `adauth` dependency
 from `marlo-parent/pom.xml`, `marlo-data/pom.xml`, and `marlo-web/pom.xml`, and deletion of the
-committed file-repo at `marlo-data/src/main/resources/libs/org/cgiar/ciat/auth/` (16 versions).
+committed file-repos — `marlo-data/src/main/resources/libs/org/cgiar/ciat/auth/adauth/` (16 versions, 1.1 → 5.7) **and** `marlo-web/src/main/resources/libs/org/cgiar/ciat/auth/adauth/` (11 versions, 1.1 → 2.2). Both, plus the `adauth` dependency in `marlo-parent/pom.xml`, `marlo-data/pom.xml`, and `marlo-web/pom.xml`.
 
 **Depends on child 1** for a hard reason, not a soft one: `APCustomRealm.getCgiarNickname()` calls
 `LDAPService` on every CGIAR login. The jar cannot be deleted while that call site exists, and child
