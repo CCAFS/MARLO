@@ -951,7 +951,7 @@ public final class HelldotsProjection {
 - [ ] **Step 4: Run the tests and confirm they pass**
 
 Run: `mvn test -pl marlo-web -Dtest=HelldotsProjectionTest`
-Expected: PASS, 8 tests.
+Expected: PASS, 6 tests.
 
 - [ ] **Step 5: Write the failing tests for `HelldotsUploadValidator`**
 
