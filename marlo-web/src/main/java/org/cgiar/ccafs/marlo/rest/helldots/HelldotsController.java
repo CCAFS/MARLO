@@ -31,7 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +69,11 @@ public class HelldotsController {
   private static final Logger LOG = LoggerFactory.getLogger(HelldotsController.class);
   private static final int MAX_PAYLOAD_CHARS = 200000;
   private static final String SCREENSHOT_FOLDER = "helldots";
+  private static final int MAX_COMMENT_ID_LENGTH = 64;
+
+  /** The only two kinds the widget emits: an automatic capture, or something the user deliberately attached. */
+  private static final Set<String> SCREENSHOT_KINDS =
+    Collections.unmodifiableSet(new HashSet<>(Arrays.asList("context", "attachment")));
 
   private final HelldotsCommentManager helldotsCommentManager;
   private final UserManager userManager;
@@ -139,15 +147,26 @@ public class HelldotsController {
       LOG.warn("Rejected HellDots upload of {} bytes", file.getSize());
       return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
     }
+    // commentId is a nanoid; anything longer than the column is malformed rather than truncatable.
+    if (commentId != null && commentId.length() > MAX_COMMENT_ID_LENGTH) {
+      LOG.warn("Rejected HellDots upload with oversized commentId ({} chars)", commentId.length());
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
     // NF-004: the stored name is generated here; nothing from the client reaches the path.
     String fileName = HelldotsUploadValidator.generateFileName(file.getContentType());
     String relativePath = SCREENSHOT_FOLDER + File.separator + fileName;
+    // Column-safe: isAllowedContentType already required the raw header to normalise to one of these two
+    // values, so re-deriving from the extension it just produced yields the same value without persisting
+    // the unbounded raw header (which could carry trailing parameters past the column width).
+    String normalizedContentType = fileName.endsWith(".png") ? MediaType.IMAGE_PNG_VALUE : MediaType.IMAGE_JPEG_VALUE;
+    String validatedKind = this.validated(kind, SCREENSHOT_KINDS, "context");
 
+    Path folder = Paths.get(config.getUploadsBaseFolder(), SCREENSHOT_FOLDER);
+    Path storedFile = folder.resolve(fileName);
     try {
-      Path folder = Paths.get(config.getUploadsBaseFolder(), SCREENSHOT_FOLDER);
       Files.createDirectories(folder);
-      file.transferTo(folder.resolve(fileName).toFile());
+      file.transferTo(storedFile.toFile());
     } catch (Exception e) {
       LOG.error("Could not store HellDots screenshot {}", fileName, e);
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -155,15 +174,25 @@ public class HelldotsController {
 
     HelldotsScreenshot screenshot = new HelldotsScreenshot();
     screenshot.setCommentId(commentId);
-    screenshot.setKind(kind);
+    screenshot.setKind(validatedKind);
     screenshot.setFileName(fileName);
     screenshot.setRelativePath(relativePath);
-    screenshot.setContentType(file.getContentType());
+    screenshot.setContentType(normalizedContentType);
     screenshot.setByteSize(Long.valueOf(file.getSize()));
     screenshot.setActive(true);
     screenshot.setActiveSince(new Date());
     screenshot.setCreatedBy(currentUser);
-    helldotsScreenshotManager.save(screenshot);
+    try {
+      helldotsScreenshotManager.save(screenshot);
+    } catch (Exception e) {
+      LOG.error("Could not save HellDots screenshot record for {}; deleting orphaned file", fileName, e);
+      try {
+        Files.deleteIfExists(storedFile);
+      } catch (Exception deleteError) {
+        LOG.error("Could not delete orphaned HellDots screenshot file {}", fileName, deleteError);
+      }
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     // Served by the GET below, not as a static file: nothing maps a URL onto the uploads directory,
     // and keeping it outside the webroot means nothing writable is web-served.
