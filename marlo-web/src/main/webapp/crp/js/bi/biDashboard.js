@@ -8,10 +8,15 @@ function init() {
 }
 
 function addEvents() {
-  var idReport = $('.reportSection').children().first().attr('class');
-  var urlReport= $('.reportSection').children().first().attr('id');
+  var $firstReport = $('.reportSection').children().first();
+  var idReport = $firstReport.attr('class');
+  var urlReport = $firstReport.attr('id');
 
-  executePetition(idReport,urlReport);
+  // No .reportSection is rendered when the instance has no BI report configured. Skip the
+  // initial load in that case so the handlers below still get registered.
+  if (idReport && urlReport) {
+    executePetition(idReport, urlReport);
+  }
   $('.reportSection').on('click', function () {
     var idReport = $(this).children().first().attr('class');
     var urlReport= $(this).children().first().attr('id');
@@ -73,6 +78,9 @@ function fullScreenDashboard() {
 
 // get the embedUrl from the id to pass to the reportName in the widgetInit and reload the page with the information
 function executePetition(idReport, urlReport) {
+  if (!urlReport) {
+    return;
+  }
   var url = urlReport.replace("BIreport-", "");
   var inputsContainer = idReport + '-contentOptions';
 

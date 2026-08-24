@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "MARLO BI" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
-[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20240727" ] /]
+[#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20260824" ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/bi/biDashboard.css?20251112"
   ] 
@@ -83,12 +83,19 @@
           [/#list] 
         </div>
       </div>
+      [#else]
+      [#--  No BI report configured for this instance --]
+      <div class="simpleBox emptyMessage text-center">
+        <h4>[@s.text name="biDashboard.comingSoon.title" /]</h4>
+        <p>[@s.text name="biDashboard.comingSoon.description" /]</p>
+      </div>
       [/#if]
     </section>
 
-    [#assign BiAppURL = biParameters?filter(param -> param.parameterName = "bi_widget_url" )]
+    [#assign BiAppURL = ((biParameters)![])?filter(param -> param.parameterName = "bi_widget_url" )]
 
-
+    [#if BiAppURL?has_content]
     <script src="${BiAppURL[0].parameterValue}" charset="utf-8"></script>
+    [/#if]
 
 [#include "/WEB-INF/global/pages/footer.ftl"]
