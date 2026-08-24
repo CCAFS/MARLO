@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.rest.helldots;
 
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -39,12 +40,27 @@ public final class HelldotsUploadValidator {
     Pattern.compile("^helldots-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(jpg|png)$");
 
   public static String generateFileName(String contentType) {
-    String extension = PNG.equals(contentType) ? ".png" : ".jpg";
+    String extension = PNG.equals(normalise(contentType)) ? ".png" : ".jpg";
     return "helldots-" + UUID.randomUUID().toString() + extension;
   }
 
   public static boolean isAllowedContentType(String contentType) {
-    return JPEG.equals(contentType) || PNG.equals(contentType);
+    String normalised = normalise(contentType);
+    return JPEG.equals(normalised) || PNG.equals(normalised);
+  }
+
+  /**
+   * Strips any `; charset=...`-style parameter and normalises case, so a real `Content-Type` header
+   * (e.g. from `MultipartFile.getContentType()`) is compared on its media type alone, per RFC 9110
+   * (media types are case-insensitive).
+   */
+  private static String normalise(String contentType) {
+    if (contentType == null) {
+      return null;
+    }
+    int separator = contentType.indexOf(';');
+    String mediaType = separator >= 0 ? contentType.substring(0, separator) : contentType;
+    return mediaType.trim().toLowerCase(Locale.ROOT);
   }
 
   /**

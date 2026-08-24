@@ -39,6 +39,24 @@ public class HelldotsUploadValidatorTest {
   }
 
   @Test
+  public void acceptsRealHeadersWithParametersOrDifferentCase() {
+    assertTrue(HelldotsUploadValidator.isAllowedContentType("image/jpeg;charset=UTF-8"));
+    assertTrue(HelldotsUploadValidator.isAllowedContentType("image/png; charset=UTF-8"));
+    assertTrue(HelldotsUploadValidator.isAllowedContentType("IMAGE/JPEG"));
+    assertFalse(HelldotsUploadValidator.isAllowedContentType("application/pdf"));
+    assertFalse(HelldotsUploadValidator.isAllowedContentType("image/svg+xml"));
+    assertFalse(HelldotsUploadValidator.isAllowedContentType("text/html"));
+    assertFalse(HelldotsUploadValidator.isAllowedContentType(null));
+  }
+
+  @Test
+  public void generateFileNameNormalisesContentTypeParameters() {
+    String name = HelldotsUploadValidator.generateFileName("image/png;charset=UTF-8");
+    assertTrue(name.endsWith(".png"));
+    assertTrue(HelldotsUploadValidator.isGeneratedFileName(name));
+  }
+
+  @Test
   public void sizeBoundaryIsInclusive() {
     assertTrue(HelldotsUploadValidator.isWithinSize(100L, 100L));
     assertFalse(HelldotsUploadValidator.isWithinSize(101L, 100L));
