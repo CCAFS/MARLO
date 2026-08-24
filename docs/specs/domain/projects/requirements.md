@@ -6,8 +6,8 @@
 **Reviewers:** PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-07-29
 **Related PRD sections:** docs/prd.md §5.1, §6.1, §7.1
-**Related System Design sections:** docs/system-design/design.md §3.1, §4.4, §6.1, §6.3
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §2.1, §3.3, §4.2, §5.1
+**Related System Design sections:** docs/ux-ui/design.md §3.1, §4.4, §6.1, §6.3
+**Related Detailed Design sections:** docs/trd/trd.md §2.1, §3.3, §4.2, §5.1
 **Companion ai-context docs:** reports/ai-context/frontend-composition-map.md, reports/ai-context/save-validation-matrix.md, reports/ai-context/interceptor-validator-playbook.md, reports/ai-context/struts-critical-routing-catalog.md, reports/ai-context/persistence-replication-managerimpl.md
 
 ## 1. Overview

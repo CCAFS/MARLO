@@ -3,7 +3,7 @@
 **Status:** Living document. Version: 1.0 (Constitutional Baseline).
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT.
 **Last Updated:** 2026-04-30.
-**Related:** [docs/prd.md](../prd.md), [docs/system-design/design.md](../system-design/design.md), [AGENTS.md](../../AGENTS.md), [reports/ai-context/*](../../reports/ai-context/).
+**Related:** [docs/prd.md](../prd.md), [docs/ux-ui/design.md](../ux-ui/design.md), [AGENTS.md](../../AGENTS.md), [reports/ai-context/*](../../reports/ai-context/).
 
 > This document captures the *technical* shape of MARLO: modules, data, APIs, security, observability, and testing. It encodes the patterns the codebase already follows (see `AGENTS.md` and `reports/ai-context/*`) and the architectural commitments that future module specs MUST honor.
 
@@ -348,7 +348,7 @@ The constant value MUST equal the `parameters.key`. Both `APConstants.java` file
 
 ### 6.4 Reusable UI primitives
 
-See `docs/system-design/design.md` §8. Constitutional rule: extend existing macros before introducing new components.
+See `docs/ux-ui/design.md` §8. Constitutional rule: extend existing macros before introducing new components.
 
 ---
 
@@ -571,5 +571,5 @@ These are the decisions that shape MARLO at constitution time. Future ADRs SHOUL
 | ADR-8 | AWS Bedrock (Claude + Titan) + OpenSearch for AI services | Accepted | Multi-stage RAG pipelines; responses cite sources. |
 | ADR-9 | Jenkins-driven CI/CD with Slack notifications | Accepted | Triggered by GitHub Actions (`jenkins-trigger.yml`). |
 | ADR-10 | Dependency baseline follows the active POM | Accepted | Current floors and modernization exceptions are documented in §8.5. |
-| ADR-11 | Light theme only | Accepted | See `docs/system-design/design.md` §11. |
+| ADR-11 | Light theme only | Accepted | See `docs/ux-ui/design.md` §11. |
 | ADR-12 | No new Struts JSON paths beyond existing patterns | Accepted | Per `AGENTS.md` scope guardrails. |

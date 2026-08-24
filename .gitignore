@@ -26,3 +26,10 @@ marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/WelcomeEmail.java
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+# AKILI-SPECS — committed on purpose (the leading `.*` rule above would otherwise swallow them).
+# `.agents/` personas and `.claude/agents/` wrappers must be shared with the team; without this,
+# every teammate and every future session gets an empty multi-agent harness.
+!.agents/
+!.claude/
+.claude/*
+!.claude/agents/

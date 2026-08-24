@@ -68,7 +68,7 @@ For the full product framing, see [`docs/prd.md`](./docs/prd.md).
 | AI | AWS Bedrock (Claude, Titan), Amazon OpenSearch, AWS Lambda |
 | CI/CD | GitHub Actions → Jenkins; SonarCloud; Snyk |
 
-Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §8.5.
+Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/trd/trd.md`](./docs/trd/trd.md) §8.5.
 
 ---
 
@@ -82,17 +82,18 @@ MARLO/
 ├── marlo-data/          Domain layer: 540+ JPA entities, Manager/ManagerImpl, DAO/MySQLDAO, audit listeners
 ├── marlo-web/           Web tier: Struts actions, Spring REST controllers, FTL templates, validators,
 │                        interceptors, JS/CSS, SQL migrations
-├── docs/                Constitutional documents (PRD, system design, detailed design, spec templates)
+├── docs/                Constitutional documents (PRD, UX/UI design, TRD, infrastructure, spec templates)
 ├── reports/ai-context/  Operational runbooks for routing, save/validation, persistence, composition
 ├── scripts/             Run scripts (Java 8 and Java 17 variants), property updaters
 ├── configuration/       Code style, Checkstyle, formatter configs
 ├── .github/workflows/   GitHub Actions: Jenkins trigger, SonarCloud
+├── .agents/             AKILI multi-agent personas (leader, implementer, reviewer, tester)
 ├── AGENTS.md            Operational ground truth for AI/human contributors
 ├── CLAUDE.md            Entry point for AI assistants — points to AGENTS.md and docs/
 └── EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md  Debugging runbook for accordion-style UIs
 ```
 
-For the module breakdown in detail, see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §2.
+For the module breakdown in detail, see [`docs/trd/trd.md`](./docs/trd/trd.md) §2.
 
 ---
 
@@ -176,8 +177,8 @@ The repository follows a **Spec-Driven Development (SDD)** methodology. The docu
 - [`AGENTS.md`](./AGENTS.md) — operational ground truth: language rules, file headers, code style, Checkstyle, migration naming, specificity workflow, file organization, run scripts.
 - [`CLAUDE.md`](./CLAUDE.md) — entry point for AI assistants; lists the 12 hard rules and the doc-reading order.
 - [`docs/prd.md`](./docs/prd.md) — Product Requirements: problem, personas, goals, success metrics, scope, user stories, acceptance, assumptions, open questions.
-- [`docs/system-design/design.md`](./docs/system-design/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
-- [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
+- [`docs/ux-ui/design.md`](./docs/ux-ui/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
+- [`docs/trd/trd.md`](./docs/trd/trd.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
 
 ### Spec methodology and taxonomy
 
