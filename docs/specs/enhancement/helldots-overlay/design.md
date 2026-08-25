@@ -20,7 +20,7 @@ library's Shadow DOM, so MARLO's CSS and the widget's cannot reach each other.
 footer.ftl  [#if currentUser?? && !config.production]
    |
    +-- <div id="helldots-config" data-user-id data-user-name data-base-url>
-   +-- helldots-0.7.0.umd.js        (self-hosted, 180 KB / 52 KB gzip)
+   +-- helldots-0.9.1.umd.min.js    (self-hosted, 191 KB / 56 KB gzip)
    +-- helldots-init.js             (adapter)
             |
             |  onReady / onCommentRequested   -> GET  /api/helldots/comments...
@@ -40,7 +40,8 @@ subsequent mutation is pushed as a single event. Nothing is polled and nothing i
 
 ### marlo-web
 
-- New: `webapp/global/js/vendor/helldots-0.7.0.umd.min.js` — the published UMD bundle, unmodified.
+- New: `webapp/global/js/vendor/helldots-0.9.1.umd.min.js` — the published UMD bundle, unmodified.
+  The `.min.js` suffix is load-bearing: it is what the Closure plugin's exclude matches (see §14b.4).
 - New: `webapp/global/js/helldots-init.js` — adapter: reads config, builds the overlay, wires callbacks.
 - New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java`
 - New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsProjection.java` — pure payload/event translation, unit tested
@@ -175,7 +176,7 @@ and `AddSessionToRestRequestFilter`, both already mapped to `/api/*`.
        data-user-id="${currentUser.id?c}"
        data-user-name="${(currentUser.composedName)!'Unknown'}"
        data-base-url="${baseUrl}"></div>
-  <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.7.0.umd.js"></script>
+  <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.9.1.umd.min.js"></script>
   <script defer src="${baseUrlCdn}/global/js/helldots-init.js?20260824"></script>
 [/#if]
 ```
@@ -384,6 +385,20 @@ their DAOs call `session.flush()` explicitly instead. The reason is specific to 
 Caveat carried in the DAO comments: `session.flush()` flushes the whole persistence context, so these managers
 must not be called from inside a larger unit of work.
 
+## 14d. Library Version
+
+Pinned to **HellDots 0.9.1** (upgraded from 0.7.0). The upgrade is purely additive — `SerializedComment` and
+`ChangeEvent` are byte-for-byte identical between the two, so the schema, `HelldotsProjection` and the event
+endpoint needed no change. Three options were added (`fastCapture`, `skipIframeContent`, `captureTimeout`);
+all are left at their defaults, and the reasoning is recorded in the Decision Records below.
+
+What the upgrade fixes without any configuration: the capture no longer blocks the interaction. The marker and
+the comment box appear immediately and the render happens behind them, and the renderer hands the main thread
+back every 8 ms so the page keeps painting and accepting keystrokes. Both behaviours are always on.
+
+Note `modern-screenshot` became a *peer* dependency in 0.9.x. That affects bundler consumers only — the UMD
+build MARLO vendors still bundles it, verified in the artifact's banner and its 191 KB size.
+
 ## 15. Decision Records
 
 - **DR-001 — Self-host the UMD build rather than load from unpkg.** MARLO already loads Vue and PrimeVue from
@@ -395,6 +410,18 @@ must not be called from inside a larger unit of work.
 - **DR-005 — `data-*` attributes over `<script>` interpolation.** See requirements Decision Log (f).
 - **DR-006 — Fix the fonts link rather than enable `embedCrossOriginFonts`.** One attribute, no runtime cost,
   and the widget never fetches third-party stylesheets on a user's behalf.
+- **DR-008 — `fastCapture` left off.** It narrows the style read to a curated property list (~2.7x on the
+  phase that is ~91% of capture cost), but the library's author documents it as a fidelity contract: a
+  property the list does not name is simply absent from the image. It should be switched on only after
+  eyeballing a capture of a real MARLO reporting page, which is a judgement the QA team should make on their
+  own screens.
+- **DR-009 — `skipIframeContent` left off.** Measured: MARLO's iframes are all cross-origin — Google
+  Analytics, reCAPTCHA, Clarity, Tawk.to, and the `qa.cgiar.org` embed in `qualityAssessment.ftl`. The
+  renderer cannot read into a cross-origin frame, so they are already blank in the output and the option
+  would gain nothing. Revisit if MARLO ever embeds a same-origin document.
+- **DR-010 — `captureTimeout` left at 30000.** Lowering it trades a slow capture for a silently incomplete
+  one. MARLO's known missing assets (the absent global-unit logos) return 404 immediately rather than
+  hanging, so they do not trigger the timeout.
 - **DR-007 — `helldots_` table prefix.** MARLO already owns the word "feedback" for a different system
   (`feedback_qa_comments`, anchored to form fields, with its own role/permission matrix). The prefix keeps the
   two apart in schema, code and conversation.
