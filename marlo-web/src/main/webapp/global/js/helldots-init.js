@@ -55,9 +55,17 @@
     },
 
     onReady: function (instance) {
-      request("GET", api + "/comments?page=" + encodeURIComponent(window.location.pathname))
+      // Load the whole corpus, not just this page's comments. The widget classifies what it is given
+      // against the current URL by itself: comments for other pages come back as "inactive" and render no
+      // marker here, but they are what the inbox's "All pages" filter shows. Loading per page left that
+      // filter permanently empty. Affordable because transformScreenshot stores image URLs rather than
+      // base64, so a comment's payload is ~1.7 KB instead of ~33 KB.
+      request("GET", api + "/comments?all=true")
         .then(function (comments) {
-          instance.loadComments(comments || []);
+          var counts = instance.loadComments(comments || []);
+          if (counts) {
+            console.debug("[helldots] loaded", comments.length, "comment(s)", counts);
+          }
         })
         .catch(function (error) {
           console.warn("[helldots] could not load comments", error);
