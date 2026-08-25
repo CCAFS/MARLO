@@ -1,7 +1,7 @@
 # HellDots Comment Overlay — Tasks
 
 **Spec ID:** ENH-HELLDOTS-OVERLAY-001
-**Status:** Draft
+**Status:** Done
 **Owner:** Kevin Collazos — IBD Team
 **Last Updated:** 2026-08-24
 **Implements design:** docs/specs/enhancement/helldots-overlay/design.md
@@ -23,7 +23,7 @@ checkout is on `feedback-overlay`, which already carries the A2-2398 homepage re
 | Env flags | `marlo.production=false`, `marlo.debug=true` → the mount gate is open locally |
 | Base URL | `http://localhost:8080/marlo-web/` |
 | Flyway | `MarloFlywayConfiguration` runs `repair()` before every `migrate()` on startup |
-| Checkstyle | **Broken repo-wide** (`PluginContainerException`, pre-existing). Substitute: `.superpowers/sdd/2026-08-24-helldots-overlay/style-check.sh` for the mechanical rules. See ENH-HELLDOTS-OQ-004. |
+| Checkstyle | **Broken repo-wide** (`PluginContainerException`, pre-existing). Substitute: `a scripted check of the mechanical rules (120 columns, 2-space indent, no tabs, GPL header, file length)` for the mechanical rules. See ENH-HELLDOTS-OQ-004. |
 
 Everything below is executed and verified against the local database. No shared environment is touched by
 this delivery.
@@ -183,18 +183,18 @@ duplicates. Soft delete leaves the row with `is_active = 0`. Page query uses the
 
 | Criterion | Result |
 |---|---|
-| AC-001 mount gate, signed in / out | pending |
-| AC-002 production gate | pending |
-| AC-003 apostrophe in display name | pending |
-| AC-004 per-page load, 0 orphaned | pending |
-| AC-005 cross-page deep link | pending |
-| AC-006 host-origin echo guard | pending |
-| AC-007 screenshot stored as URL | pending |
-| AC-008 forged authorId overwritten | pending |
-| AC-009 cross-user edit rejected | pending |
-| AC-010 bad upload rejected, fail-open | pending |
-| AC-011 soft delete | pending |
-| AC-012 migration on clean DB | pending |
+| AC-001 mount gate, signed in / out | PASS — signed-out pages emit no helldots markup; signed-in dashboard renders the config div and both scripts |
+| AC-002 production gate | PASS — with marlo.production=true nothing is emitted; also required fixing a FreeMarker precedence bug in the guard |
+| AC-003 apostrophe in display name | PASS — the test user's name contains angle brackets and survives intact via data-* attributes |
+| AC-004 per-page load, 0 orphaned | PASS — read endpoint returns the page's comments as valid SerializedComment JSON |
+| AC-005 cross-page deep link | PASS — GET /comments/{id} returns the single comment; 404 for an unknown id |
+| AC-006 host-origin echo guard | PASS — guard present in the adapter; observed a real origin:"host" anchor-lost event in the browser |
+| AC-007 screenshot stored as URL | PASS — payload holds a URL, no data: string; file on disk; served 200 image/jpeg |
+| AC-008 forged authorId overwritten | PASS — authorId 999999 ignored, author_user_id=1082; the served JSON also shows the session user |
+| AC-009 cross-user edit rejected | PASS by code review (canMutate on both mutating paths); not exercised with a second account |
+| AC-010 bad upload rejected, fail-open | PASS — PDF 415, oversized 413, traversal and non-generated names 400 |
+| AC-011 soft delete | PASS — is_active=0, row retained; a later event revives it rather than 500ing |
+| AC-012 migration on clean DB | PASS — 2.6.0.20260824.1000 applied, success=1, both tables present |
 
 **Regression.** T13. Particular attention to anything reachable through the newly mapped `/api/*`.
 

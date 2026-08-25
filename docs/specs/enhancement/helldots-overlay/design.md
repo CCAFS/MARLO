@@ -1,7 +1,7 @@
 # HellDots Comment Overlay — Design
 
 **Spec ID:** ENH-HELLDOTS-OVERLAY-001
-**Status:** Draft
+**Status:** Implemented
 **Owner:** Kevin Collazos — IBD Team
 **Last Updated:** 2026-08-24
 **Implements requirements:** ENH-HELLDOTS-FN-001..009, ENH-HELLDOTS-NF-001..008
@@ -40,11 +40,11 @@ subsequent mutation is pushed as a single event. Nothing is polled and nothing i
 
 ### marlo-web
 
-- New: `webapp/global/js/vendor/helldots-0.7.0.umd.js` — the published UMD bundle, unmodified.
+- New: `webapp/global/js/vendor/helldots-0.7.0.umd.min.js` — the published UMD bundle, unmodified.
 - New: `webapp/global/js/helldots-init.js` — adapter: reads config, builds the overlay, wires callbacks.
-- New: `java/org/cgiar/ccafs/marlo/rest/controller/helldots/HelldotsController.java`
-- New: `java/org/cgiar/ccafs/marlo/rest/dto/helldots/HelldotsCommentDTO.java`
-- New: `java/org/cgiar/ccafs/marlo/rest/dto/helldots/HelldotsEventDTO.java`
+- New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java`
+- New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsProjection.java` — pure payload/event translation, unit tested
+- New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsUploadValidator.java` — pure upload guards, unit tested
 - New: `resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__CreateHelldotsTables.sql`
 - Modified: `webapp/WEB-INF/global/pages/footer.ftl` — the guarded mount block.
 - Modified: `webapp/WEB-INF/global/pages/header.ftl` — add `crossorigin` to the Google Fonts stylesheet link.
@@ -338,6 +338,51 @@ one line in `WebAppInitializer`. No existing table, action, view or endpoint cha
 directory at the repo root (already anticipated by `.gitignore:27`) and are not reachable at
 `file.downloads=http://localhost:8080/marlo-web/data`. It must be pointed at a real local directory that the
 downloads URL maps to before screenshot upload can work. The file is gitignored, so this is a local-only fix.
+
+## 14b. Shared-Infrastructure Changes Made During Implementation
+
+Six changes outside this feature's own files were required. Each was verified at runtime and each is
+independently justified; together they are the highest-risk part of the change.
+
+1. **`struts.xml`** — `struts.action.excludePattern` `/api/*` → `/api/.*`. Struts evaluates this as a regex
+   with fullmatch semantics, so `/api/*` meant "`/api` followed by zero or more slashes" and matched
+   essentially nothing. Struts was resolving every real `/api/...` request and falling through to
+   `default-action-ref name="login"`, redirecting to the dashboard. **The entire REST surface had been dead.**
+   Verified no live Struts action is lost: the only `/api` namespace action lives in `struts-api.xml`, which
+   nothing includes.
+2. **`WebAppInitializer.java`** — `dispatcher.addMapping(REST_API_REQUESTS)`, inside the existing
+   non-production guard. Without it `/api/*` reaches no servlet.
+3. **`AddSessionToRestRequestFilter.java`** — `helldots` added to the exclusion chain. That filter treats the
+   first path segment after `/api/` as a global-unit acronym; without the exclusion every HellDots request
+   flushed the Shiro authorisation cache, wrote a CLARISA monitoring row, and made a **blocking outbound HTTP
+   call to `checkip.amazonaws.com`**.
+4. **`marlo-web/pom.xml`** — merged two sibling `<excludes>` blocks in the Closure plugin config. They were
+   mutually clobbering, so `**/*.min.*` had never taken effect. Without this the build crashes on the
+   pre-minified vendor bundle.
+5. **`MarloRestApiConfig.java`** — added a `multipartResolver` bean (none existed). It applies to the whole
+   dispatcher context, so to `/api/*` and `/swagger/*`, not only the screenshot endpoint.
+6. **`ExceptionTranslator.java`** — added a `MaxUploadSizeExceededException` handler returning 413, because
+   that exception is thrown during multipart parsing before any controller validator runs.
+
+## 14c. Why the HellDots managers have no `@Transactional`
+
+MARLO's ~392 other `ManagerImpl` classes annotate their write methods `@Transactional`. These two do not, and
+their DAOs call `session.flush()` explicitly instead. The reason is specific to the `/api/*` path:
+
+- Spring's `OpenSessionInViewFilter` (registered on `/*` in `web.xml`) opens the session with
+  `FlushMode.MANUAL`.
+- `HibernateTransactionManager.doBegin()` flips a bound MANUAL session to `AUTO` for a non-read-only
+  transaction. **That flip is what makes every other MARLO manager work.**
+- `MARLOCustomPersistFilter` — mapped to `NON_STATIC_RESOURCE_REQUESTS`, which includes `/api/*` — opens a
+  Hibernate transaction *directly on the session*, where Spring's transaction manager cannot see it. So
+  `@Transactional` here throws `IllegalStateException: Transaction already active`; and with no `@Transactional`
+  nothing performs the MANUAL→AUTO flip, so a dirty update is never flushed and is silently discarded.
+- The collision is confined to `/api/*`: on a `*.do` request the Struts filter executes the action and never
+  calls `chain.doFilter`, so `MARLOCustomPersistFilter` never runs there. **There is no repo-wide data-loss
+  bug** — see `investigation-flushmode.md`.
+
+Caveat carried in the DAO comments: `session.flush()` flushes the whole persistence context, so these managers
+must not be called from inside a larger unit of work.
 
 ## 15. Decision Records
 

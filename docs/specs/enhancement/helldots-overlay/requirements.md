@@ -1,7 +1,7 @@
 # HellDots Comment Overlay — Requirements
 
 **Spec ID:** ENH-HELLDOTS-OVERLAY-001
-**Status:** Draft
+**Status:** Implemented
 **Owner:** Kevin Collazos — IBD Team
 **Reviewers:** Tech lead, QA lead
 **Last Updated:** 2026-08-24
