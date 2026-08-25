@@ -354,6 +354,29 @@ WHERE role_id IS NULL OR feedback_permission_id IS NULL;
 - **Note:** the defect is inferred from the migration chain, not from a database read. Confirm the live state
   first — the admin screen has been able to correct these rows by hand since 2025-06 (R-07).
 
+### DOMAIN-FEEDBACK-001-T22 — Fix the empty dropdowns on the first grant (FN-042, NF-012)
+
+- **Depends on:** T01
+- **Module:** marlo-data, marlo-web
+- **Files touched:**
+  - `data/dao/mysql/FeedbackRolesPermissionMySQLDAO.java` — `getFeedbackRolesPermissionByGlobalUnitID` returns
+    `Collections.emptyList()` instead of `null`
+  - `action/crp/admin/FeedbackRolesPermissionsManagementAction.java` — `prepare()` split into independent try
+    blocks, all four lists initialised, null guards on the current global unit and on the grant list, and every
+    `catch` now logs
+  - `data/dao/RoleDAO.java`, `data/dao/mysql/RoleMySQLDAO.java`, `data/manager/RoleManager.java`,
+    `data/manager/impl/RoleManagerImpl.java` — new `findAllByGlobalUnit(long)` (NF-012)
+  - `action/crp/admin/CrpUsersAction.java` — migrated to the scoped accessor; also drops an unguarded
+    `r.getCrp().getId()`
+- **Constitutional checks:** layered pattern preserved (Manager → ManagerImpl → DAO → MySQLDAO); bound parameter,
+  not string interpolation; no schema change; no new i18n strings.
+- **Acceptance:** AC-018 passes.
+- **Verification:** `marlo-data` and `marlo-web` compile. `roleListCRP` in `CrpUsersAction` is only read via
+  `.contains()`, so an immutable empty list is safe there. Pending: open the screen in `Alliance` (46) or
+  `AICCRA_III` (47) — both at zero grants — click *Add feedback Permission*, and confirm all three selects are
+  populated.
+- **Status:** Code done — 2026-08-25. **UI verification pending.**
+
 ### DOMAIN-FEEDBACK-001-T19 — Update the ai-context companions
 
 - **Depends on:** T12, T13, T16, T20
@@ -382,14 +405,15 @@ T01 (done)
  ├─ T04 ─── T15
  ├─ T06 ─── T07
  ├─ T08 ─── T18
- └─ T09
+ ├─ T09
+ └─ T22   (code done)
 
 T19 ← T12, T13, T16, T20
 ```
 
-Parallel-safe from day one: **T03, T04, T06→T07, T08, T09, T21**.
+Parallel-safe from day one: **T03, T04, T06→T07, T08, T09, T21, T22**.
 Blocked on T02: **T10, T12–T15, T17, T20**.
-Done: **T01, T16, T21**.
+Done: **T01, T16, T21**. Code done, UI check pending: **T22**.
 
 ## 5. Testing Plan
 

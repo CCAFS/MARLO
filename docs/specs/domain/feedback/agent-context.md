@@ -209,7 +209,14 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
     single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
     `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
     concluding the module is broken.
-13. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
+13. ~~Feedback Permissions Management could not create its first grant in an empty global unit.~~ **Fixed
+    2026-08-25.** `getFeedbackRolesPermissionByGlobalUnitID` returned `null` on no rows, `prepare()` streamed it
+    unguarded, and the resulting NPE was swallowed before the three dropdown catalogs loaded. If you see empty
+    selects on this screen again, check that `prepare()` still loads the catalogs in try blocks separate from
+    the grant list.
+14. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
+    still return `null` when empty.** Always null-check them; that pattern caused item 13.
+15. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
     configured sections are `deliverable`, `innovation`, `study` and `projectContributionCrp`. The slug
     mismatch in item 2 is therefore latent, not live.
 

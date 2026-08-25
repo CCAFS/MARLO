@@ -199,6 +199,22 @@ one code path and "cluster-agnostic only" in another.
   admin screen does not set that column. If phase 3 is meant to use feedback, its fields and grants MUST be
   configured; if not, the stray grant SHOULD be removed. This is also the first concrete evidence that the
   free-text `description` (FN-019) drifts from the row it labels.
+  **Re-checked later the same day:** grant id 39 no longer exists, so `AICCRA_III` is now at zero grants and
+  zero fields, as is `Alliance` (`global_unit_id = 46`). All 25 remaining grants belong to `AICCRA` (45).
+  Both empty global units are reachable through the admin menu, because `BaseAction.isAiccra()` is simply
+  `getCurrentCrp().getId() >= 45`.
+- **DOMAIN-FEEDBACK-001-FN-042 (GAP — FIXED 2026-08-25)** — Feedback Permissions Management could not create its
+  first grant in a global unit that had none: every dropdown rendered with no options until a row existed.
+  Root cause was a swallowed `NullPointerException`, not a frontend problem.
+  `FeedbackRolesPermissionMySQLDAO.getFeedbackRolesPermissionByGlobalUnitID` returned **`null`** instead of an
+  empty list when the global unit had no grants, and `prepare()` called `.stream()` on it directly. The NPE was
+  raised *before* the three catalog lists (`feedbackPermissionsList`, `roleList`, `clusterTypeList`) were
+  loaded, and the single surrounding `catch (Exception e)` set only `roleList` to empty and logged nothing — so
+  all three selects rendered empty and `clusterTypeList` was left `null`. Saving a first row made the table
+  non-empty, which is why the screen appeared to fix itself.
+  The DAO MUST honour its list contract, and `prepare()` MUST load the catalogs independently of the grant
+  list so a failure in one cannot blank the others.
+  **Affected:** every global unit with `id >= 45` and no grants — `Alliance` (46) and `AICCRA_III` (47) today.
 
 ### 3.5 Non-functional
 
@@ -226,6 +242,18 @@ one code path and "cluster-agnostic only" in another.
   with no `?YYYYMMDD` cache-buster. One MUST be added, and bumped on every edit.
 - **DOMAIN-FEEDBACK-001-NF-009** — Both admin menu entries currently render only in the `action.isAiccra()` branch
   of `menu-admin.ftl`. Any change to that visibility is a product decision, not a refactor.
+- **DOMAIN-FEEDBACK-001-NF-011 (GAP)** — Several DAOs in this area return **`null` instead of an empty list**
+  when a query matches nothing — the root cause of FN-042. `ClusterTypeMySQLDAO.findAll` and
+  `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit` still do; `FeedbackPermissionMySQLDAO.findAll`
+  and `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` already return `Collections.emptyList()`, so the
+  codebase is inconsistent with itself. Every list-returning DAO method in this area MUST return an empty list.
+- **DOMAIN-FEEDBACK-001-NF-012 (GAP — PARTIALLY FIXED 2026-08-25)** — Loading the roles of a global unit was done
+  as `roleManager.findAll()` filtered in Java, hydrating the entire `roles` table (**382 rows across 21 global
+  units**, verified 2026-08-25) to use the ~20 of one tenant, on every page load. `RoleManager` exposed no
+  scoped accessor. A `findAllByGlobalUnit(long)` was added across `RoleDAO` / `RoleMySQLDAO` / `RoleManager` /
+  `RoleManagerImpl` and both call sites were migrated. Note the HQL uses the property path `r.crp.id`, not the
+  raw column name `global_unit_id` that several sibling DAOs interpolate — `Role` has no such property, and the
+  property path is the only form guaranteed to parse.
 - **DOMAIN-FEEDBACK-001-NF-010** — All user-facing strings MUST stay i18n-keyed under `feedbackManagement.*`,
   `feedbackPermissions.*`, and `CRPAdmin.menu.feedback*`. The runtime JS currently hardcodes English prompt text
   (`"Reason for disagreement:"`, `"Where clarification is needed:"`, …) — see FN gap tracking in `task.md`.
@@ -296,6 +324,10 @@ one code path and "cluster-agnostic only" in another.
   compared against the live catalog, then the two agree. *(Currently fails: migrations produce `Flagship` for
   id 2 where the live database has `Theme`. The live grant data itself is consistent — verified 2026-08-25 —
   so this criterion is about environment reproducibility, not about production correctness.)*
+- **AC-018 (FN-042)** — Given a global unit with `id >= 45` and zero `feedback_roles_permissions` rows, when an
+  administrator opens Feedback Permissions Management and clicks *Add feedback Permission*, then the Permission
+  Name, User Role and Cluster Type selects are all populated. *(Failed before 2026-08-25: all three were empty
+  until a first row was saved.)*
 - **AC-017 (FN-041)** — Given `AICCRA_III` (`global_unit_id = 47`), when an administrator opens Feedback
   Permissions Management, then every listed grant's `description` matches its role, permission, and cluster
   scope. *(Currently fails: grant id 39 is `CL` / `can_leave_comments` / `Theme` but described as
@@ -369,6 +401,17 @@ one code path and "cluster-agnostic only" in another.
   "thematic clusters" rows resolve to `Theme` as intended. The original finding was derived from migration
   history alone and was wrong. FN-040 is narrowed to the real residue: the migration history no longer
   reproduces the database, and description-based `LIKE` backfill silently skips `'thematic'`.
+- 2026-08-25 — Fix FN-042. Chose to correct the DAO contract (return `Collections.emptyList()`) *and* restructure
+  `prepare()` into independent try blocks, rather than only null-guarding the call site: a single shared try block
+  is what turned one failed read into three empty dropdowns, and that shape would keep biting. Also added the
+  missing `logger` calls — the original `catch` swallowed the NPE silently, which is why nothing appeared in the
+  logs.
+- 2026-08-25 — Add `RoleManager.findAllByGlobalUnit` (NF-012) rather than keep `findAll()` + in-memory filter.
+  The repo idiom was the filter (`CrpUsersAction` did the same), but `roles` holds 382 rows across 21 global
+  units and the screen needs 20, so the scoped query is worth the four-layer addition. Wrote the HQL as
+  `r.crp.id = :globalUnitId`: several sibling DAOs interpolate the raw column name `global_unit_id`, which is not
+  a property of `Role`, and a query that fails to parse would have silently re-broken the very dropdown FN-042
+  was fixing.
 - 2026-08-25 — Apply the FN-030 / NF-003 / NF-004 fix to `FeedbackRolesPermissionMySQLDAO` ahead of the T02
   decision gate, on the grounds that the pre-flight proved it non-observable. Chose
   `AND r.global_unit_id = frp.global_unit_id` over a second `:globalUnitID` binding: transitively equivalent,
