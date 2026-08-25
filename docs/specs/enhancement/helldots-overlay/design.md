@@ -170,7 +170,7 @@ and `AddSessionToRestRequestFilter`, both already mapped to `/api/*`.
 **Mount point** — `footer.ftl`, after the existing script block, guarded exactly as the debug panel is:
 
 ```ftl
-[#if (currentUser??)!false && !config.production]
+[#if ((currentUser??)!false) && !config.production]
   <div id="helldots-config"
        data-user-id="${currentUser.id?c}"
        data-user-name="${(currentUser.composedName)!'Unknown'}"

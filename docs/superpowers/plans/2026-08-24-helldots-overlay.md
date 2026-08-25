@@ -1961,7 +1961,7 @@ Immediately before `[/#compress]`, add:
 
 ```ftl
     [#-- HellDots comment overlay: authenticated users, non-production only --]
-    [#if (currentUser??)!false && !config.production]
+    [#if ((currentUser??)!false) && !config.production]
       <div id="helldots-config"
            data-user-id="${currentUser.id?c}"
            data-user-name="${(currentUser.composedName)!'Unknown'}"
