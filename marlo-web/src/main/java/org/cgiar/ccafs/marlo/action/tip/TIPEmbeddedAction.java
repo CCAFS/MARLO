@@ -16,66 +16,17 @@
 package org.cgiar.ccafs.marlo.action.tip;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
-import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
-import org.cgiar.ccafs.marlo.data.manager.BiReportsManager;
-import org.cgiar.ccafs.marlo.data.model.BiParameters;
-import org.cgiar.ccafs.marlo.data.model.BiReports;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import java.util.List;
-
 import javax.inject.Inject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TIPEmbeddedAction extends BaseAction {
 
   private static final long serialVersionUID = 1329042468240291639L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(TIPEmbeddedAction.class);
-
-  // Managers
-  private BiReportsManager biReportsManager;
-  private BiParametersManager biParametersManager;
-
-  // Front-end
-  private List<BiReports> biReports;
-  private List<BiParameters> biParameters;
-
   @Inject
-  public TIPEmbeddedAction(APConfig config, BiReportsManager biReportsManager,
-    BiParametersManager biParametersManager) {
+  public TIPEmbeddedAction(APConfig config) {
     super(config);
-    this.biReportsManager = biReportsManager;
-    this.biParametersManager = biParametersManager;
   }
-
-  public List<BiParameters> getBiParameters() {
-    return biParameters;
-  }
-
-
-  public List<BiReports> getBiReports() {
-    return biReports;
-  }
-
-
-  @Override
-  public void prepare() {
-    biReports = biReportsManager.findAll();
-    biParameters = biParametersManager.findAll();
-  }
-
-
-  public void setBiParameters(List<BiParameters> biParameters) {
-    this.biParameters = biParameters;
-  }
-
-
-  public void setBiReports(List<BiReports> biReports) {
-    this.biReports = biReports;
-  }
-
 
 }
