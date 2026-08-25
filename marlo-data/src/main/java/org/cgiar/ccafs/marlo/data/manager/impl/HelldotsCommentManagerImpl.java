@@ -50,19 +50,24 @@ public class HelldotsCommentManagerImpl implements HelldotsCommentManager {
   }
 
   @Override
+  public HelldotsComment findByCommentIdIncludingInactive(String commentId) {
+    return helldotsCommentDAO.findByCommentIdIncludingInactive(commentId);
+  }
+
+  @Override
   public List<HelldotsComment> findByPage(String page) {
     return helldotsCommentDAO.findByPage(page);
   }
 
   /**
-   * Intentionally NOT annotated with {@code @Transactional}. Every request that reaches this manager is mapped
-   * under {@code NON_STATIC_RESOURCE_REQUESTS} in {@code WebAppInitializer} (which includes {@code /api/*}), and
-   * {@code MARLOCustomPersistFilter} already begins a Hibernate transaction directly on the current session
-   * before the filter chain runs, committing it after. Spring's {@code HibernateTransactionManager} has no
-   * synchronization registered for a transaction opened that way, so it cannot see it is already active. Adding
-   * {@code @Transactional} here makes Spring try to open a second transaction on the same session, which
-   * Hibernate rejects with {@code IllegalStateException: Transaction already active}. The filter is the real
-   * transaction boundary for this call path; do not re-add this annotation.
+   * Intentionally NOT annotated with {@code @Transactional}. Spring's {@code OpenSessionInViewFilter}
+   * (web.xml:28-40) opens the Hibernate session for {@code /api/*} with {@code FlushMode.MANUAL};
+   * {@code MARLOCustomPersistFilter} only begins and commits a raw transaction on that session and never
+   * touches flush mode. What flips a MANUAL session to AUTO for every other MARLO manager is
+   * {@code HibernateTransactionManager.doBegin()} on a non-read-only {@code @Transactional}. Adding
+   * {@code @Transactional} here would make Spring try to open a second transaction on a session that already
+   * has one active via the filter, which Hibernate rejects with {@code IllegalStateException}. The DAO flushes
+   * explicitly instead; do not re-add this annotation.
    */
   @Override
   public HelldotsComment save(HelldotsComment helldotsComment) {

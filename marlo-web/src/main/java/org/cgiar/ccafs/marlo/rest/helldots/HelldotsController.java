@@ -70,6 +70,17 @@ public class HelldotsController {
   private static final int MAX_PAYLOAD_CHARS = 200000;
   private static final String SCREENSHOT_FOLDER = "helldots";
   private static final int MAX_COMMENT_ID_LENGTH = 64;
+  // Matches the `page varchar(500) NOT NULL` column (see the Flyway migration and HelldotsComments.hbm.xml).
+  private static final int MAX_PAGE_CHARS = 500;
+  // Matches the `page_query varchar(1000)` column. Note the review that raised this fix stated the column
+  // is 500 chars; the migration and hbm.xml both define it as 1000, so this cap uses the actual column width.
+  private static final int MAX_PAGE_QUERY_CHARS = 1000;
+  // Tomcat's maxPostSize does not apply to application/json, so a large body is fully deserialized by Spring
+  // before any code here runs. This check cannot prevent that first pass, but it does short-circuit before
+  // the second materialization below (Jackson re-serializing the payload) and before any DB work. The factor
+  // of 2 over MAX_PAYLOAD_CHARS covers JSON envelope overhead (keys, punctuation) and multi-byte UTF-8
+  // (Content-Length counts bytes; MAX_PAYLOAD_CHARS counts chars).
+  private static final long MAX_REQUEST_BYTES = MAX_PAYLOAD_CHARS * 2L;
 
   /** The only two kinds the widget emits: an automatic capture, or something the user deliberately attached. */
   private static final Set<String> SCREENSHOT_KINDS =
@@ -98,6 +109,11 @@ public class HelldotsController {
     }
     if (!this.isAuthenticated()) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    // Neither a page to filter on nor an explicit request for the whole corpus is a caller bug, not an
+    // empty result: silently returning [] would hide it.
+    if (!all && (page == null || page.isEmpty())) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
     List<HelldotsComment> comments;
     if (all) {
@@ -232,6 +248,10 @@ public class HelldotsController {
   @RequestMapping(value = "/events", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> postEvent(@RequestBody Map<String, Object> event) {
+    if (this.declaredRequestTooLarge()) {
+      LOG.warn("Rejected HellDots event whose declared Content-Length exceeded {} bytes", MAX_REQUEST_BYTES);
+      return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
+    }
     if (this.isDisabled()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -275,6 +295,30 @@ public class HelldotsController {
     }
     Long principal = (Long) subject.getPrincipal();
     return userManager.getUser(principal);
+  }
+
+  /**
+   * ENH-HELLDOTS review fix: Tomcat's `maxPostSize` does not apply to `application/json`, so nothing else
+   * bounds the request body before Spring deserializes it. A missing or negative `Content-Length` (e.g.
+   * chunked transfer encoding) is deliberately not rejected here; the post-serialization size check in
+   * {@link #upsert(Map, User)} remains the backstop for that case.
+   */
+  private boolean declaredRequestTooLarge() {
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    if (attributes == null) {
+      return false;
+    }
+    String header = attributes.getRequest().getHeader(HttpHeaders.CONTENT_LENGTH);
+    if (header == null) {
+      return false;
+    }
+    long declaredLength;
+    try {
+      declaredLength = Long.parseLong(header.trim());
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return declaredLength >= 0 && declaredLength > MAX_REQUEST_BYTES;
   }
 
   private GlobalUnit getSessionGlobalUnit() {
@@ -353,6 +397,24 @@ public class HelldotsController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    // Every other projected column goes through validated(...) against an allow-list; `page` lands
+    // directly in a NOT NULL column, so it needs the same treatment: reject rather than 500 on a null or
+    // oversized value.
+    String page = HelldotsProjection.pathOf(HelldotsProjection.stringField(payload, "page"));
+    if (page == null || page.isEmpty() || page.length() > MAX_PAGE_CHARS) {
+      LOG.warn("Rejected HellDots comment {} with a missing or oversized page", commentId);
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    // NF-002: identity is never trusted from the client. The authoritative columns (author_user_id /
+    // author_name, set below) already come from the session; the payload is the widget's own rendering
+    // source, so its top-level author/authorId must be overwritten too, on every upsert (not only on
+    // create), or a forged value survives into what the inbox displays. This intentionally does NOT touch
+    // `author` inside payload's replies[] or history[]: those are the widget's append-only records of
+    // other participants and rewriting them would corrupt the audit trail.
+    payload.put("author", currentUser.getComposedName());
+    payload.put("authorId", String.valueOf(currentUser.getId()));
+
     String serialized;
     try {
       serialized = objectMapper.writeValueAsString(payload);
@@ -365,7 +427,10 @@ public class HelldotsController {
       return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
-    HelldotsComment comment = helldotsCommentManager.findByCommentId(commentId);
+    // Looked up including inactive rows (unlike every read endpoint, which stays on findByCommentId): a
+    // comment soft-deleted in one tab must resolve to its existing row here, not fall through to an
+    // INSERT that collides with the UNIQUE(comment_id) constraint and 500s.
+    HelldotsComment comment = helldotsCommentManager.findByCommentIdIncludingInactive(commentId);
     boolean isNew = comment == null;
     if (isNew) {
       comment = new HelldotsComment();
@@ -381,9 +446,15 @@ public class HelldotsController {
       // NF-003: only the author or an admin may change an existing comment.
       LOG.warn("User {} attempted to mutate comment {} owned by another user", currentUser.getId(), commentId);
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    } else if (!comment.isActive()) {
+      // Deliberate revival, not an oversight: a user editing or reacting to a soft-deleted comment is
+      // asserting it should exist. Without this, the same UNIQUE(comment_id) collision above would recur
+      // as a 500 on the next event for this id, and a soft-deleted comment could never come back.
+      comment.setActive(true);
     }
 
-    comment.setPage(HelldotsProjection.pathOf(HelldotsProjection.stringField(payload, "page")));
+    comment.setPage(page);
+    comment.setPageQuery(this.truncated(HelldotsProjection.queryOf(payload), MAX_PAGE_QUERY_CHARS));
     comment.setStatus(this.validated(HelldotsProjection.stringField(payload, "status"),
       HelldotsProjection.STATUSES, "open"));
     comment.setType(this.validated(HelldotsProjection.stringField(payload, "type"),
@@ -399,6 +470,16 @@ public class HelldotsController {
 
     helldotsCommentManager.save(comment);
     return new ResponseEntity<>(isNew ? HttpStatus.CREATED : HttpStatus.OK);
+  }
+
+  /**
+   * page_query is diagnostic data, not something worth failing a write over: truncate rather than reject.
+   */
+  private String truncated(String value, int maxLength) {
+    if (value == null || value.length() <= maxLength) {
+      return value;
+    }
+    return value.substring(0, maxLength);
   }
 
   private String validated(String value, Set<String> allowed, String fallback) {

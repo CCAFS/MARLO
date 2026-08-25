@@ -44,13 +44,16 @@ public class HelldotsScreenshotMySQLDAO extends AbstractMarloDAO<HelldotsScreens
     } else {
       helldotsScreenshot = super.update(helldotsScreenshot);
     }
-    // The session this request runs on carries FlushMode.MANUAL (set by MARLOCustomPersistFilter), so
-    // Transaction.commit() does not auto-flush. An update on an already-managed entity only registers as
-    // dirty in the persistence context; without an explicit flush here, that pending UPDATE is silently
-    // discarded when the session is cleared at commit and no SQL is ever sent. Flush explicitly so the write
-    // reaches the database regardless of the ambient flush mode. (The insert branch above is unaffected by
-    // this because the identity generator forces Hibernate to run the INSERT eagerly inside saveEntity() to
-    // obtain the generated key, independent of flush mode; the flush call is a harmless no-op in that case.)
+    // The session this request runs on carries FlushMode.MANUAL, set by Spring's OpenSessionInViewFilter
+    // (web.xml:28-40), not by MARLOCustomPersistFilter (which only begins/commits the raw transaction and
+    // never touches flush mode). Every other MARLO manager avoids this because HibernateTransactionManager
+    // .doBegin() flips a bound MANUAL session to AUTO for a non-read-only @Transactional; this manager has
+    // no @Transactional (see HelldotsScreenshotManagerImpl), so nothing performs that flip and a pending
+    // UPDATE would otherwise be discarded, unflushed, when the session clears at commit. Flush explicitly.
+    // (The insert branch above is unaffected: the identity generator forces Hibernate to run the INSERT
+    // eagerly inside saveEntity() to obtain the generated key, independent of flush mode.)
+    // Caution: session.flush() flushes the entire persistence context, not just this entity. Do not call
+    // this manager from inside a larger unit of work that has other pending changes on the same session.
     this.getSessionFactory().getCurrentSession().flush();
     return helldotsScreenshot;
   }

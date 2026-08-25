@@ -27,6 +27,13 @@ public interface HelldotsCommentDAO {
 
   public HelldotsComment findByCommentId(String commentId);
 
+  /**
+   * Same lookup as {@link #findByCommentId(String)} but without the {@code active = true} predicate, so a
+   * soft-deleted comment is still found. Used only where the caller needs to revive a soft-deleted row
+   * (upsert); every read path keeps using {@link #findByCommentId(String)}.
+   */
+  public HelldotsComment findByCommentIdIncludingInactive(String commentId);
+
   public List<HelldotsComment> findByPage(String page);
 
   public HelldotsComment save(HelldotsComment helldotsComment);

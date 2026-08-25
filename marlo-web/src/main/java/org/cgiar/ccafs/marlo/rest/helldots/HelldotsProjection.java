@@ -127,6 +127,33 @@ public final class HelldotsProjection {
     return String.valueOf(value);
   }
 
+  /**
+   * Reads the query string out of the nested {@code context.url} the widget attaches to every comment.
+   * {@link #stringField} only reaches top-level keys, so this class — the one place that knows the
+   * payload's shape — descends into {@code context} itself. Returns null when there is no {@code context},
+   * it is not a map, there is no {@code url}, or the URL carries no query string.
+   */
+  public static String queryOf(Map<String, Object> comment) {
+    if (comment == null) {
+      return null;
+    }
+    Object context = comment.get("context");
+    if (!(context instanceof Map)) {
+      return null;
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, Object> contextMap = (Map<String, Object>) context;
+    String url = stringField(contextMap, "url");
+    if (url == null) {
+      return null;
+    }
+    int query = url.indexOf('?');
+    if (query < 0 || query == url.length() - 1) {
+      return null;
+    }
+    return url.substring(query + 1);
+  }
+
   private HelldotsProjection() {
   }
 }

@@ -114,6 +114,44 @@ public class HelldotsProjectionTest {
   }
 
   @Test
+  public void queryOfReadsQueryStringFromNestedContextUrl() {
+    Map<String, Object> context = new HashMap<>();
+    context.put("url", "http://localhost:8080/marlo-web/AICCRA/crpDashboard.do?projectID=123&phaseID=4");
+    Map<String, Object> comment = new HashMap<>();
+    comment.put("context", context);
+
+    assertEquals("projectID=123&phaseID=4", HelldotsProjection.queryOf(comment));
+  }
+
+  @Test
+  public void queryOfReturnsNullWhenUrlHasNoQueryString() {
+    Map<String, Object> context = new HashMap<>();
+    context.put("url", "http://localhost:8080/marlo-web/AICCRA/crpDashboard.do");
+    Map<String, Object> comment = new HashMap<>();
+    comment.put("context", context);
+
+    assertNull(HelldotsProjection.queryOf(comment));
+  }
+
+  @Test
+  public void queryOfReturnsNullWhenContextIsMissing() {
+    Map<String, Object> comment = new HashMap<>();
+    assertNull(HelldotsProjection.queryOf(comment));
+  }
+
+  @Test
+  public void queryOfReturnsNullWhenContextIsNotAMap() {
+    Map<String, Object> comment = new HashMap<>();
+    comment.put("context", "not-a-map");
+    assertNull(HelldotsProjection.queryOf(comment));
+  }
+
+  @Test
+  public void queryOfReturnsNullForANullPayload() {
+    assertNull(HelldotsProjection.queryOf(null));
+  }
+
+  @Test
   public void enumerationsMatchTheLibrary() {
     assertTrue(HelldotsProjection.STATUSES.contains("in_review"));
     assertTrue(HelldotsProjection.TYPES.contains("improvement"));

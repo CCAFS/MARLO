@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly
@@ -126,6 +127,21 @@ public class ExceptionTranslator {
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   public ErrorDTO processMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
     return new ErrorDTO(ErrorConstants.ERR_METHOD_NOT_SUPPORTED, ErrorConstants.SEVERITY_ERROR, exception.getMessage());
+  }
+
+  /**
+   * A multipart body over the resolver's {@code setMaxUploadSize} (see {@code MarloRestApiConfig}) is
+   * rejected while Spring parses the request, before any handler method runs. That means a controller's own
+   * in-method size validator (e.g. {@code HelldotsUploadValidator}) never gets a chance to produce its usual
+   * clean 4xx for a file this large, and without this handler it falls through to the generic
+   * {@link #processRemainingExceptions(Exception)} 500 below. HellDots is the only multipart consumer under
+   * {@code org.cgiar.ccafs.marlo.rest} today, so this mapping is effectively scoped to its screenshot upload.
+   */
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+  @ResponseBody
+  public ErrorDTO processMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
+    return new ErrorDTO(ErrorConstants.ERR_VALIDATION, ErrorConstants.SEVERITY_ERROR, "File too large");
   }
 
   @ExceptionHandler(NotFoundException.class)
