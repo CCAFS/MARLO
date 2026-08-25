@@ -29,6 +29,13 @@
     user: { name: config.dataset.userName, id: config.dataset.userId },
     locale: "en",
 
+    // Read a curated list of style properties instead of all ~527 computed ones. That read is ~91% of a
+    // capture's cost, and MARLO is the shape of page it exists for: ~4000 CSS rules and reporting screens
+    // running to thousands of live nodes. The trade is fidelity — a property the curated list does not name
+    // is simply absent from the image — so if a capture ever comes back looking wrong, turn this off first
+    // and report the missing property upstream.
+    fastCapture: true,
+
     transformScreenshot: function (dataUrl, info) {
       return fetch(dataUrl)
         .then(function (response) { return response.blob(); })

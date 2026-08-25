@@ -410,11 +410,12 @@ build MARLO vendors still bundles it, verified in the artifact's banner and its 
 - **DR-005 — `data-*` attributes over `<script>` interpolation.** See requirements Decision Log (f).
 - **DR-006 — Fix the fonts link rather than enable `embedCrossOriginFonts`.** One attribute, no runtime cost,
   and the widget never fetches third-party stylesheets on a user's behalf.
-- **DR-008 — `fastCapture` left off.** It narrows the style read to a curated property list (~2.7x on the
-  phase that is ~91% of capture cost), but the library's author documents it as a fidelity contract: a
-  property the list does not name is simply absent from the image. It should be switched on only after
-  eyeballing a capture of a real MARLO reporting page, which is a judgement the QA team should make on their
-  own screens.
+- **DR-008 — `fastCapture` turned ON (2026-08-25).** It narrows the style read to a curated property list,
+  ~2.7x on the phase that is ~91% of a capture's cost. MARLO is the shape of page the option exists for:
+  ~4000 CSS rules and reporting screens running to thousands of live nodes. The trade is fidelity — a
+  property the curated list does not name is simply absent from the image — so it is a revert-first
+  suspect if a capture ever looks wrong. Flip it back in `helldots-init.js` and report the missing property
+  upstream.
 - **DR-009 — `skipIframeContent` left off.** Measured: MARLO's iframes are all cross-origin — Google
   Analytics, reCAPTCHA, Clarity, Tawk.to, and the `qa.cgiar.org` embed in `qualityAssessment.ftl`. The
   renderer cannot read into a cross-origin frame, so they are already blank in the output and the option
