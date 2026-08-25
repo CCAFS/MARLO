@@ -24,8 +24,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.springframework.transaction.annotation.Transactional;
-
 @Named
 public class HelldotsCommentManagerImpl implements HelldotsCommentManager {
 
@@ -56,8 +54,17 @@ public class HelldotsCommentManagerImpl implements HelldotsCommentManager {
     return helldotsCommentDAO.findByPage(page);
   }
 
+  /**
+   * Intentionally NOT annotated with {@code @Transactional}. Every request that reaches this manager is mapped
+   * under {@code NON_STATIC_RESOURCE_REQUESTS} in {@code WebAppInitializer} (which includes {@code /api/*}), and
+   * {@code MARLOCustomPersistFilter} already begins a Hibernate transaction directly on the current session
+   * before the filter chain runs, committing it after. Spring's {@code HibernateTransactionManager} has no
+   * synchronization registered for a transaction opened that way, so it cannot see it is already active. Adding
+   * {@code @Transactional} here makes Spring try to open a second transaction on the same session, which
+   * Hibernate rejects with {@code IllegalStateException: Transaction already active}. The filter is the real
+   * transaction boundary for this call path; do not re-add this annotation.
+   */
   @Override
-  @Transactional
   public HelldotsComment save(HelldotsComment helldotsComment) {
     return helldotsCommentDAO.save(helldotsComment);
   }
