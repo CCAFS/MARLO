@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 /**
  * @author Luis Benavides - CIAT/CCAFS
@@ -61,10 +62,13 @@ public class BiParametersMySQLDAO extends AbstractMarloDAO<BiParameters, Long> i
   }
 
   @Override
-  public List<BiParameters> findAll() {
-    String query = "from " + BiParameters.class.getName();
-    List<BiParameters> list = super.findAll(query);
-    if (list.size() > 0) {
+  public List<BiParameters> findAll(long globalUnitId) {
+    String query =
+      "from " + BiParameters.class.getName() + " where globalUnit.id = :globalUnitId or globalUnit is null";
+    Query<BiParameters> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("globalUnitId", globalUnitId);
+    List<BiParameters> list = super.findAll(createQuery);
+    if (list != null && !list.isEmpty()) {
       return list;
     }
     return null;
