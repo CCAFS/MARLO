@@ -79,6 +79,14 @@ public class HelldotsCommentMySQLDAO extends AbstractMarloDAO<HelldotsComment, L
     } else {
       helldotsComment = super.update(helldotsComment);
     }
+    // The session this request runs on carries FlushMode.MANUAL (set by MARLOCustomPersistFilter), so
+    // Transaction.commit() does not auto-flush. An update on an already-managed entity only registers as
+    // dirty in the persistence context; without an explicit flush here, that pending UPDATE is silently
+    // discarded when the session is cleared at commit and no SQL is ever sent. Flush explicitly so the write
+    // reaches the database regardless of the ambient flush mode. (The insert branch above is unaffected by
+    // this because the identity generator forces Hibernate to run the INSERT eagerly inside saveEntity() to
+    // obtain the generated key, independent of flush mode; the flush call is a harmless no-op in that case.)
+    this.getSessionFactory().getCurrentSession().flush();
     return helldotsComment;
   }
 }
