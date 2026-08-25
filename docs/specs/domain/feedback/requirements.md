@@ -75,6 +75,9 @@ one code path and "cluster-agnostic only" in another.
   `ON DELETE RESTRICT` constraint violation.
 - **DOMAIN-FEEDBACK-001-FN-011 (GAP)** — `sectionName` MUST be selected from the `ProjectSectionsEnum`-derived
   list the action already prepares (`projectSections`), not typed as free text.
+  **Verified against `aiccradb1` 2026-08-25:** safe to implement — all four configured slugs
+  (`deliverable`, `innovation`, `study`, `projectContributionCrp`) are valid `ProjectSectionsEnum` values, so
+  no existing value would be hidden by the select.
 - **DOMAIN-FEEDBACK-001-FN-012 (GAP)** — `parentFieldIdentifier` is persisted and exposed over JSON but read by
   no consumer. It MUST either be surfaced on the form with a documented purpose or be retired.
 - **DOMAIN-FEEDBACK-001-FN-013 (GAP)** — The five inputs MUST carry per-field help text stating, for each one,
@@ -101,6 +104,8 @@ one code path and "cluster-agnostic only" in another.
   and the column MUST be editable on the form.
 - **DOMAIN-FEEDBACK-001-FN-022 (GAP)** — Saving a row with a null `feedbackPermission` or null `role` is
   currently accepted (both FKs were relaxed to `NULL` in 2025). Both MUST be rejected server-side.
+  **Verified against `aiccradb1` 2026-08-25:** latent — zero rows currently have a null `role_id` or
+  `feedback_permission_id`. The validation is preventive.
 
 ### 3.3 Permission model
 
@@ -122,9 +127,21 @@ one code path and "cluster-agnostic only" in another.
 - **DOMAIN-FEEDBACK-001-FN-029** — Grant matching MUST resolve the project's cluster type from
   `ProjectInfo.clusterType` of the actual phase. With a resolved cluster type, rows with
   `cluster_type_id IS NULL OR = <id>` match; with no resolved cluster type, only `cluster_type_id IS NULL` matches.
-- **DOMAIN-FEEDBACK-001-FN-030 (GAP)** — Grant matching filters on `roles.global_unit_id` and ignores
-  `feedback_roles_permissions.global_unit_id`, so a grant stored under one global unit can be honoured through a
-  role belonging to another. Tenant scoping MUST be applied to the grant row.
+- **DOMAIN-FEEDBACK-001-FN-030 (GAP)** — Grant matching filters on `roles.global_unit_id` and never consults
+  `feedback_roles_permissions.global_unit_id`. Because `roles.global_unit_id` is `NOT NULL` and
+  `BaseAction.getRolesList()` already restricts the user's roles to the current CRP, that filter is redundant and
+  the grant row's own tenant column is unenforced. A row whose `global_unit_id` disagrees with its role's global
+  unit (or is `NULL`) is therefore **enforced for the role's tenant but unmanageable there**: it is absent from
+  that tenant's admin listing (`getFeedbackRolesPermissionByGlobalUnitID`), survives every save because the
+  delete pass iterates only rows of its own global unit, and is listed instead in the other tenant's screen,
+  where an administrator can delete or reassign it. Matching MUST also constrain
+  `feedback_roles_permissions.global_unit_id`. This is a data-integrity and manageability defect, not a
+  cross-tenant access-control breach: no user can match a role of another tenant.
+  **Verified against `aiccradb1` 2026-08-25:** latent. All 26 grant rows carry a non-null `global_unit_id`
+  (25 under AICCRA=45, 1 under AICCRA_III=47) equal to their role's `global_unit_id`; the pre-flight returned
+  zero mis-tenanted or orphan rows, and old-vs-new predicate divergence is zero for both global units. The fix
+  is therefore provably non-observable on this data. **Applied 2026-08-25 in commit `b576db30da`**, together with
+  NF-003 and NF-004 for the same file.
 - **DOMAIN-FEEDBACK-001-FN-031 (GAP)** — The `*Old()` gate variants (`canManageFeedbackOld`, `canApproveCommentsOld`,
   `canLeaveCommentsOld`, `canTrackCommentsOld`) are unreachable pre-database implementations and MUST be removed.
 
@@ -151,8 +168,37 @@ one code path and "cluster-agnostic only" in another.
   enum constant is `SAFEGUARDS("safeguards")`. `SaveFeedbackCommentsAction` performs
   `switch (ProjectSectionsEnum.getValue(sectionName))`, which throws `NullPointerException` on an unmatched slug.
   Page, enum, and configured data MUST be reconciled and the unmatched case MUST be handled.
+  **Verified against `aiccradb1` 2026-08-25:** unreachable today, because **no commentable field is configured
+  for any safeguard slug at all**. The only configured sections are `deliverable` (21 fields), `innovation`
+  (33), `study` (22) and `projectContributionCrp` (13). `safeguard.ftl` carries the feedback markers but the
+  section has no fields, so no icon renders and no comment can be created there. The NPE needs a configured
+  out-of-enum slug to fire. Priority drops to the null-guard (T11); the slug decision (T10) only matters if
+  someone configures safeguard fields.
 - **DOMAIN-FEEDBACK-001-FN-039 (GAP)** — `feedbackParent.do` (`FeedbackParentIdAction`) has no caller and MUST be
   retired or given a documented consumer.
+- **DOMAIN-FEEDBACK-001-FN-040 (GAP — RETRACTED as a data defect; narrowed to migration drift)** —
+  `V2_6_0_20210604_1444__UpdateClusterTypes.sql` sets `cluster_types` id 2 to `Flagship`, but the live database
+  holds `Theme` for that id. The rename happened outside Flyway, so **the migration history no longer
+  reproduces the database**: a fresh environment built from migrations gets `Flagship` where production has
+  `Theme`, and the two `can_react_comments` grants that target it would land on the wrong cluster type.
+  Additionally, `V2_6_0_20250618_1700` derives `cluster_type_id` by matching `cluster_types.name` inside
+  `description` with `LIKE`; `'thematic'` does not contain `'theme'`, so that migration silently skips the very
+  rows it looks like it covers. Both are latent traps for the next reseed, not live defects.
+  A migration MUST align `cluster_types` with the live catalog, and description-based backfill MUST NOT be used
+  again.
+  **Verified against `aiccradb1` 2026-08-25:** the live data is correct and self-consistent. Every grant's
+  resolved `cluster_types.name` matches its own `description`, including `FPL` and `FPM` `can_react_comments`
+  on `Theme`. My earlier claim that they sat on `Country` was wrong — it assumed the migration history matched
+  the database.
+- **DOMAIN-FEEDBACK-001-FN-041 (GAP)** — Feedback is effectively unconfigured for `AICCRA_III`
+  (`global_unit_id = 47`). **Verified against `aiccradb1` 2026-08-25:** that global unit has **zero**
+  `feedback_qa_commentable_fields` rows and exactly **one** grant (id 39: role `CL`, `can_leave_comments`,
+  cluster type `Theme`), whose `description` still reads `"PMU - can_write_comments on all clusters"` — copied
+  from the AICCRA row and now describing neither the right role, nor the right permission, nor the right cluster
+  scope. Its `requires_project_association` is `NULL`, unlike every migration-seeded row (`0`/`1`), because the
+  admin screen does not set that column. If phase 3 is meant to use feedback, its fields and grants MUST be
+  configured; if not, the stray grant SHOULD be removed. This is also the first concrete evidence that the
+  free-text `description` (FN-019) drifts from the row it labels.
 
 ### 3.5 Non-functional
 
@@ -232,8 +278,10 @@ one code path and "cluster-agnostic only" in another.
   active project-partner person with contact type `PL`/`PC` on that project, then reaction controls are disabled.
 - **AC-010 (FN-028)** — Given a super admin, when opening any instrumented section of any project, then all four
   capabilities are available regardless of `feedback_roles_permissions` content.
-- **AC-011 (FN-030)** — Given a grant row whose `global_unit_id` is A and whose role belongs to global unit B,
-  when a user of B is evaluated, then the grant does not apply. *(Currently fails: it applies.)*
+- **AC-011 (FN-030)** — Given a grant row whose `global_unit_id` is A and whose `role_id` references a role of
+  global unit B, when a user of B is evaluated, then the grant does not apply, and the row is listed and
+  deletable in exactly one tenant's admin screen. *(Cannot fail on current data: zero such rows exist in
+  `aiccradb1` as of 2026-08-25. Retained as a regression guard; re-run the T21 pre-flight before any reseed.)*
 - **AC-012 (FN-032)** — Given `feedback_active` false for the global unit, when a user opens a project, then the
   `Feedback` menu item is absent, no comment icons render, and `fieldsBySectionAndParent.do` returns an empty
   `fieldsMap`.
@@ -244,6 +292,14 @@ one code path and "cluster-agnostic only" in another.
   then the row is rejected with a field-level message. *(Currently fails: it is persisted.)*
 - **AC-015 (NF-002)** — Given rows at indexes 0..4, when index 2 is removed client-side, then the submitted
   parameters are contiguous 0..3 and all four rows persist.
+- **AC-016 (FN-040)** — Given a database built from the migration history alone, when `cluster_types` is
+  compared against the live catalog, then the two agree. *(Currently fails: migrations produce `Flagship` for
+  id 2 where the live database has `Theme`. The live grant data itself is consistent — verified 2026-08-25 —
+  so this criterion is about environment reproducibility, not about production correctness.)*
+- **AC-017 (FN-041)** — Given `AICCRA_III` (`global_unit_id = 47`), when an administrator opens Feedback
+  Permissions Management, then every listed grant's `description` matches its role, permission, and cluster
+  scope. *(Currently fails: grant id 39 is `CL` / `can_leave_comments` / `Theme` but described as
+  `"PMU - can_write_comments on all clusters"`.)*
 
 ## 7. Constitutional Compliance Checklist
 
@@ -277,6 +333,11 @@ one code path and "cluster-agnostic only" in another.
    a future section, or safe to retire?
 6. **OQ-006** — What is the correct Safeguard slug (FN-038): change the FTL to `safeguards`, add a
    `SAFEGUARD("safeguard")` enum constant, or migrate the configured data?
+7. **OQ-007** — For FN-040, is the intended fix to insert a `Theme` cluster type (which changes a catalog shared
+   with `projects_info.type_id` and every other cluster-type consumer), or to repoint the `FPL`/`FPM`
+   `can_react_comments` grants at the existing `Flagship` cluster type? The 2022 seed used
+   `cluster_type_id = 2` (`Flagship`) for a row it labelled "Theme Clusters", which suggests `Flagship` was the
+   original intent.
 
 ## 9. Decision Log
 
@@ -291,3 +352,26 @@ one code path and "cluster-agnostic only" in another.
 - 2026-08-25 — Keep `field_description` as the DOM join key in the documentation and treat the 2022 migration
   column comments as stale, since `CommentableFieldsBySectionNameAndParents` and
   `feedbackAutoImplementation.js` are the authoritative runtime behaviour.
+- 2026-08-25 — Downgrade FN-030 from "cross-tenant privilege escalation" to a data-integrity and manageability
+  defect, after confirming `roles.global_unit_id` is `NOT NULL` and that `BaseAction.getRolesList()` already
+  scopes the user's roles to the current CRP. A user can never match a role of another tenant, so the missing
+  `frp.global_unit_id` predicate cannot grant access across tenants; it only lets a mis-tenanted grant row become
+  invisible and undeletable in the tenant it actually affects. The fix stays in scope; the severity label does not.
+- 2026-08-25 — Verified the whole spec against `aiccradb1` (local dev copy, MySQL 8.0.43). Results:
+  FN-030 latent (0 mis-tenanted rows of 26; old-vs-new predicate divergence 0), FN-022 latent (0 incomplete
+  rows), FN-038 unreachable (no safeguard fields configured), FN-011 safe (all 4 configured slugs are valid
+  enum values). Module is in heavy use: 6992 comments, 5272 replies, 89 active commentable fields — which
+  raises the stakes on FN-010, since most fields now have comments and any deletion attempt will hit the
+  `ON DELETE RESTRICT` FK. **Caveat: this is a development database; `feedback_active` reads `false` for both
+  global units here, so per-tenant specificity values must be re-checked against production.**
+- 2026-08-25 — Retract FN-040 as a data defect. `cluster_types` id 2 is `Theme` in the live database, not
+  `Flagship` as `V2_6_0_20210604_1444` sets it, so the grants that target it are correct and the two
+  "thematic clusters" rows resolve to `Theme` as intended. The original finding was derived from migration
+  history alone and was wrong. FN-040 is narrowed to the real residue: the migration history no longer
+  reproduces the database, and description-based `LIKE` backfill silently skips `'thematic'`.
+- 2026-08-25 — Apply the FN-030 / NF-003 / NF-004 fix to `FeedbackRolesPermissionMySQLDAO` ahead of the T02
+  decision gate, on the grounds that the pre-flight proved it non-observable. Chose
+  `AND r.global_unit_id = frp.global_unit_id` over a second `:globalUnitID` binding: transitively equivalent,
+  keeps the parameter to a single occurrence (no repeated-named-parameter reliance, for which the repo has no
+  precedent), and states the intent directly — the grant belongs to this tenant, and the role to the same tenant
+  as the grant.

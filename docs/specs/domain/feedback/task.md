@@ -8,9 +8,9 @@
 **Branching:** feature branch from `staging`, named `feedback-module-hardening` (or `<TICKET-ID>-<Description>` once ticketed)
 **Target merge:** `staging` (then promoted to `main` per release process)
 
-> T01 is documentation only and is already complete. T02 is a decision gate: **T10–T16 must not start until the
-> open questions in `requirements.md` §8 are answered.** T03–T09 are behaviour-preserving and can proceed in
-> parallel with that gate.
+> T01 is documentation only and is already complete. T02 is a decision gate: **T10–T17 and T20 must not start
+> until the open questions in `requirements.md` §8 are answered.** T03–T09 are behaviour-preserving and can
+> proceed in parallel with that gate.
 
 ---
 
@@ -32,12 +32,13 @@
 ## 2. Pre-flight Checklist
 
 - [ ] `requirements.md` and `design.md` reviewed and moved to **Approved**.
-- [ ] `requirements.md` §8 open questions OQ-001 … OQ-006 answered and recorded in the Decision Log.
+- [ ] `requirements.md` §8 open questions OQ-001 … OQ-007 answered and recorded in the Decision Log.
 - [ ] `git checkout staging && git pull` then branch from `staging` (never from `main`, never commit to `main`).
 - [ ] Local instance runs and the two admin screens load for the AICCRA global unit.
 - [ ] Baseline capture: for the target database, export
       `feedback_qa_commentable_fields`, `feedback_roles_permissions`, and the `section_name` distribution —
-      needed for R-01, R-02, and R-03 in `design.md` §16.
+      needed for R-01, R-02, and R-03 in `design.md` §16. Also export `cluster_types` and each grant's
+      resolved cluster-type name beside its `description` — needed for R-07 / FN-040.
 - [ ] Confirm no other branch is mid-flight on `feedbackAutoImplementation.js`.
 
 ## 3. Task List
@@ -59,13 +60,13 @@
   Java or JS file.
 - **Status:** Done — 2026-08-25.
 
-### DOMAIN-FEEDBACK-001-T02 — Resolve open questions OQ-001 … OQ-006
+### DOMAIN-FEEDBACK-001-T02 — Resolve open questions OQ-001 … OQ-007
 
 - **Depends on:** T01
 - **Module:** docs
 - **Files touched:** `docs/specs/domain/feedback/requirements.md` (§8, §9)
 - **Constitutional checks:** each answer appended to the Decision Log as `YYYY-MM-DD — decision — rationale`.
-- **Acceptance:** all six questions answered; T10–T16 unblocked or explicitly deferred.
+- **Acceptance:** all seven questions answered; T10–T17 and T20 unblocked or explicitly deferred.
 - **Verification:** IBD team lead plus one of PMU lead / QA lead / Tech lead sign off.
 
 ### DOMAIN-FEEDBACK-001-T03 — Bind DAO query parameters (NF-003, NF-004)
@@ -249,21 +250,27 @@
 - **Verification:** capability matrix re-run with the flag set and cleared for a PL user on a project they are
   and are not associated with.
 
-### DOMAIN-FEEDBACK-001-T16 — Scope grant matching to the tenant (FN-030)
+### DOMAIN-FEEDBACK-001-T16 — Enforce the tenant column on grant matching (FN-030)
 
-- **Depends on:** T02 (and T03, so the query is already parameterised)
-- **Module:** marlo-data, marlo-web
+- **Depends on:** T21 (pre-flight). **No longer gated on T02** — the pre-flight proved the change non-observable.
+- **Status:** Done — 2026-08-25, commit `b576db30da` ("chore(admin): Parameterize feedback permission DAO queries").
+  Applied together with NF-003 and NF-004 in the same file.
+- **Module:** marlo-data
 - **Files touched:**
   - `data/dao/mysql/FeedbackRolesPermissionMySQLDAO.java` — add
-    `AND (frp.global_unit_id IS NULL OR frp.global_unit_id = :globalUnitID)` to
-    `existsByRoleIdsAndPermissionName`, and the same to `findRoleAcronymsByPermissionName` /
-    `findRoleIdsByPermissionName`
-  - a one-off pre-flight query (not committed) listing grants whose `global_unit_id` differs from their role's `crp`
-- **Constitutional checks:** this **revokes** capabilities that currently work via the leak — do not ship without
-  the pre-flight report and PMU/QA sign-off (R-01).
-- **Acceptance:** AC-011 passes; no tenant loses a capability that its own grant rows legitimately confer.
-- **Verification:** run the pre-flight report on a production-like dump; for every affected role, confirm an
-  equivalent grant exists under the correct global unit before deploying.
+    `AND frp.global_unit_id = :globalUnitID` to `existsByRoleIdsAndPermissionName`, and the same to
+    `findRoleAcronymsByPermissionName` / `findRoleIdsByPermissionName`. Decide explicitly whether legacy
+    `NULL` rows should still match (`OR frp.global_unit_id IS NULL`) — after
+    `V2_6_0_20250616_1420__DeleteFeedbackRolesPermissions.sql` there should be none, so prefer the strict form
+    and treat any surviving `NULL` as data to fix.
+  - a one-off pre-flight query (not committed) listing grants whose `global_unit_id` is `NULL` or differs from
+    their role's `crp`
+- **Constitutional checks:** this **revokes** exactly the mis-tenanted rows, which are the ones no admin screen
+  can currently manage. Intended, but still a live capability change — do not ship without the pre-flight report
+  and PMU/QA sign-off (R-01).
+- **Acceptance:** AC-011 passes; no tenant loses a capability that its own correctly scoped grant rows confer.
+- **Verification:** run the pre-flight report on a production-like dump; if it returns rows, insert the correctly
+  scoped equivalents (as a migration) **before** this task deploys.
 
 ### DOMAIN-FEEDBACK-001-T17 — Retire `parentFieldIdentifier` and `feedbackParent.do` (FN-012, FN-039)
 
@@ -294,9 +301,62 @@
 - **Acceptance:** no user-visible English literal remains in the feedback JS.
 - **Verification:** exercise all six statuses and confirm every prompt renders from `global.properties`.
 
+### DOMAIN-FEEDBACK-001-T21 — Pre-flight the grant data (FN-030, FN-022)
+
+- **Depends on:** T01
+- **Module:** none (read-only queries)
+- **Queries:**
+
+```sql
+-- 1. tenant distribution
+SELECT global_unit_id, COUNT(*) FROM feedback_roles_permissions GROUP BY global_unit_id;
+
+-- 2. FN-030: mis-tenanted or orphan grants (must return zero rows)
+SELECT frp.id, frp.global_unit_id AS grant_gu, r.id AS role_id, r.acronym,
+       r.global_unit_id AS role_gu, frp.description
+FROM feedback_roles_permissions frp
+LEFT JOIN roles r ON r.id = frp.role_id
+WHERE frp.global_unit_id IS NULL OR r.id IS NULL OR r.global_unit_id <> frp.global_unit_id;
+
+-- 3. FN-022: incomplete grants (must return zero)
+SELECT COUNT(*) FROM feedback_roles_permissions
+WHERE role_id IS NULL OR feedback_permission_id IS NULL;
+```
+
+- **Acceptance:** queries 2 and 3 return zero rows, confirming the T16 change is non-observable.
+- **Verification / result (`aiccradb1`, dev copy, 2026-08-25):** 26 grants — 25 under AICCRA (45), 1 under
+  AICCRA_III (47). Query 2: **0 rows.** Query 3: **0 rows.** Old-vs-new predicate divergence measured
+  independently: **0** for both global units. T16 cleared to ship.
+- **Status:** Done — 2026-08-25. **Re-run before any reseed of `feedback_roles_permissions`, and once against
+  production** — this result is from a development database.
+
+### DOMAIN-FEEDBACK-001-T20 — Reconcile the cluster-type catalog with the seeded grants (FN-040)
+
+- **Depends on:** T02 (OQ-007)
+- **Module:** marlo-web (migration)
+- **Reframed 2026-08-25 after reading `aiccradb1`:** the live data is **correct** — `cluster_types` id 2 is
+  `Theme` and every grant matches its description. The real defect is that the migration history produces
+  `Flagship` for id 2, so a fresh environment does not reproduce production. Scope is now: align the catalog
+  migration with the live values, and stop using description-based `LIKE` backfill (which silently skips
+  `'thematic'`). No production data change is needed.
+- **Files touched:**
+  - a read-only pre-flight query (not committed) joining `feedback_roles_permissions` to `cluster_types` and
+    listing each row's `description` beside the resolved `cluster_types.name`
+  - `resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__ReconcileFeedbackGrantClusterTypes.sql` —
+    per the OQ-007 answer, either insert the missing cluster type or repoint the `FPL`/`FPM`
+    `can_react_comments` grants, **scoped by explicit `id` list**, never by description matching
+- **Constitutional checks:** migration naming and location per constitutional rule 5; forward-only. If OQ-007
+  chooses to insert a `cluster_types` row, note that the catalog is shared with `projects_info.type_id` and every
+  other cluster-type consumer — that is a wider change than it looks and needs its own impact check.
+- **Acceptance:** AC-016 passes — every grant's resolved cluster-type name is consistent with its description.
+- **Verification:** re-run the pre-flight query; then re-run the capability matrix for `FPL` and `FPM` on
+  projects of each cluster type and confirm the reaction controls appear where intended and only there.
+- **Note:** the defect is inferred from the migration chain, not from a database read. Confirm the live state
+  first — the admin screen has been able to correct these rows by hand since 2025-06 (R-07).
+
 ### DOMAIN-FEEDBACK-001-T19 — Update the ai-context companions
 
-- **Depends on:** T12, T13, T16
+- **Depends on:** T12, T13, T16, T20
 - **Module:** docs
 - **Files touched:** `reports/ai-context/save-validation-matrix.md` (the two new validators),
   `reports/ai-context/struts-critical-routing-catalog.md` (if T17 removes a route),
@@ -315,19 +375,21 @@ T01 (done)
  │                         ├─ T12 ─ T13 ─┬─ T14   (also needs T10)
  │                         │             └─ T15   (also needs T04, OQ-004)
  │                         ├─ T16        (also needs T03)
- │                         └─ T17        (OQ-005)
- ├─ T03 ─┬─ T05
- │       └─ T16
+ │                         ├─ T17        (OQ-005)
+ │                         └─ T20        (OQ-007)
+ ├─ T03 ─── T05
+ ├─ T21 ─── T16   (done)
  ├─ T04 ─── T15
  ├─ T06 ─── T07
  ├─ T08 ─── T18
  └─ T09
 
-T19 ← T12, T13, T16
+T19 ← T12, T13, T16, T20
 ```
 
-Parallel-safe from day one: **T03, T04, T06→T07, T08, T09**.
-Blocked on T02: **T10–T17**.
+Parallel-safe from day one: **T03, T04, T06→T07, T08, T09, T21**.
+Blocked on T02: **T10, T12–T15, T17, T20**.
+Done: **T01, T16, T21**.
 
 ## 5. Testing Plan
 
@@ -400,10 +462,10 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 
 ## 8. Definition of Done
 
-- [ ] T01 and T02 complete; all six open questions answered and recorded in the Decision Log.
+- [ ] T01 and T02 complete; all seven open questions answered and recorded in the Decision Log.
 - [ ] Every task either merged to `staging` or explicitly deferred with a reason in `requirements.md` §9.
-- [ ] Every acceptance criterion AC-001 … AC-015 in `requirements.md` §6 verified, or recorded as deferred.
-- [ ] Capability matrix diffed against the baseline, with every intentional change traced to T15 or T16.
+- [ ] Every acceptance criterion AC-001 … AC-016 in `requirements.md` §6 verified, or recorded as deferred.
+- [ ] Capability matrix diffed against the baseline, with every intentional change traced to T15, T16, or T20.
 - [ ] Runtime regression passed on all five instrumented sections.
 - [ ] `mvn -q checkstyle:check` clean; no new Checkstyle suppressions.
 - [ ] Constitutional rule 2 deviation closed by T13, or the deviation re-affirmed with a new Decision Log entry.

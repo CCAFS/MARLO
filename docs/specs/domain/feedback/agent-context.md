@@ -180,13 +180,17 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
    Rows configured as `safeguard` return no fields from the enum-based paths; rows configured as `safeguards`
    never match the page. Verify the actual `section_name` data before touching this section.
 3. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
-   strings, and `existsByRoleIdsAndPermissionName` interpolates into native SQL. Do not extend that pattern.
-4. `existsByRoleIdsAndPermissionName` filters on `roles.global_unit_id`, ignoring
-   `feedback_roles_permissions.global_unit_id`; a grant row saved under one global unit can match through a role
-   that belongs to another.
-5. `findObjectsByRoleIdsAndPermissionName` emits `AND frp.cluster_type_id …` without ever aliasing
+   strings. Do not extend that pattern. (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on
+   2026-08-25.)
+4. ~~`existsByRoleIdsAndPermissionName` ignored `feedback_roles_permissions.global_unit_id`.~~ **Fixed
+   2026-08-25.** All three live queries now require `frp.global_unit_id = :globalUnitID` plus
+   `r.global_unit_id = frp.global_unit_id`. Verified non-observable first: 0 of 26 grants were mis-tenanted.
+5. ~~`findObjectsByRoleIdsAndPermissionName` emitted `AND frp.cluster_type_id …` without ever aliasing~~
+   **Fixed 2026-08-25** (alias declared; still has no caller). Original text: it emitted the predicate without aliasing
    `feedback_roles_permissions AS frp` — it would fail if called. No caller today.
-6. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing space.
+6. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing
+   space. Cosmetic in practice — MySQL tolerates the trailing whitespace in the generated SQL, and the admin
+   screen loads these rows fine. Still worth fixing.
 7. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
    `feedbackManagement.ftl` renders Section Name as a free-text `input` and never uses the list.
 8. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
@@ -194,6 +198,20 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
 9. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
    `addCrossCuttingIssue`, datepicker config) plus `console.log` calls.
 10. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
+11. **The migration history does not reproduce the database for `cluster_types`.**
+    `V2_6_0_20210604_1444` sets id 2 = `Flagship`; the live database has id 2 = `Theme` (renamed outside
+    Flyway). Live grant data is correct and self-consistent — `FPL`/`FPM` `can_react_comments` do sit on
+    `Theme` — but a fresh environment built from migrations gets `Flagship` there and those grants land wrong.
+    Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
+    `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
+    cover. Never backfill by description again.
+12. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
+    single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
+    `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
+    concluding the module is broken.
+13. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
+    configured sections are `deliverable`, `innovation`, `study` and `projectContributionCrp`. The slug
+    mismatch in item 2 is therefore latent, not live.
 
 ## Verification Shortlist
 
