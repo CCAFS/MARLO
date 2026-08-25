@@ -2,9 +2,15 @@
 [#assign title = "Feedback Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js?20260825"
+[#assign customJS = [
+  "${baseUrlMedia}/js/admin/feedbackManagement.js?20260829",
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
  ] /]
-[#-- assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /--]
+[#assign customCSS = [
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css",
+  "${baseUrlMedia}/css/admin/feedbackManagement.css?20260829"
+ ] /]
+[#import "/WEB-INF/crp/macros/feedbackFieldRelationsMacro.ftl" as fieldRelations /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "feedbackManagement" /]
 
@@ -81,15 +87,26 @@
 [#include "/WEB-INF/global/pages/footer.ftl" /]
 
 [#macro feedbackCommentFieldsMacro element name index isTemplate=false]
+  [#-- A field that already has comments cannot be deleted: feedback_qa_comments.field_id is ON DELETE RESTRICT --]
+  [#local inUse = !isTemplate && (element.id)?has_content && !action.canDeleteFeedbackField(element.id) /]
+
   <div id="srfSlo-${isTemplate?string('template',index)}" class="srfSlo borderBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Remove Button --]
-    <div class="remove-element removeElement sm" title="Remove"></div>
-    
-    [#-- SLO Title --]
+    [#-- Remove Button: disabled while the field is in use --]
+    [#if inUse]
+      <div class="removeElement disable sm" title="[@s.text name="feedbackManagement.delete.disabledTitle" /]"></div>
+    [#else]
+      <div class="remove-element removeElement sm" title="Remove"></div>
+    [/#if]
+
+    [#-- SLO Title, with the usage counter on the right of the text --]
     <div class="blockTitle closed">
+      [#if !isTemplate][@fieldRelations.feedbackFieldRelationsButton element=element labelText=true /][/#if]
       <strong>Feedback Field ${index+1}: </strong>${(element.sectionDescription)!''} - ${(element.fieldName[0..*200])!'Feeckback Fields'}
     </div>
-    
+
+    [#-- Where this field is being commented on. Outside the title so the accordion cannot swallow the modal. --]
+    [#if !isTemplate][@fieldRelations.feedbackFieldRelationsModal element=element /][/#if]
+
     <div class="blockContent" style="display:none">
       <hr />
       [#-- SLO ID  --]

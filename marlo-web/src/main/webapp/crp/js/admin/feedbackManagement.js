@@ -4,7 +4,9 @@ function init() {
 
   /* Declaring Events */
   attachEvents();
-  
+
+  initializeUsageTables();
+
   datePickerConfig({
       "startDate": ".startDate",
       "endDate": ".endDate",
@@ -25,6 +27,11 @@ function attachEvents() {
 
   $('.remove-element').on('click', removeElement);
 
+  /* The usage counter sits inside the title: its clicks open the modal and must not toggle the block. */
+  $('.blockTitle').on('click', '.elementRelations', function(e) {
+    e.stopPropagation();
+  });
+
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
@@ -33,11 +40,77 @@ function attachEvents() {
     } else {
       $(this).removeClass('opened').addClass('closed');
     }
-    $(this).next().slideToggle('slow', function() {
+    /*
+     * Not next(): the relations popup of feedbackFieldRelationsMacro sits between the title and .blockContent, so
+     * next() would toggle the popup block and leave the field collapsed on every field that has comments.
+     */
+    $(this).nextAll('.blockContent').first().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
     });
   });
 
+}
+
+/**
+ * Turns every field-usage table inside the relations modals into a sortable, searchable DataTable, following the
+ * same configuration used by projectContributionsCrpList.
+ */
+function initializeUsageTables() {
+  var $tables = $('table.feedbackUsageList');
+  if (!$tables.length || !$.fn.DataTable) return;
+
+  $tables.each(function() {
+    var $table = $(this);
+    if ($.fn.DataTable.isDataTable($table)) return;
+
+    var api = $table.DataTable({
+      "bPaginate": true,
+      "bLengthChange": true,
+      "bFilter": true,
+      "bSort": true,
+      "bAutoWidth": false,
+      "iDisplayLength": 25,
+      "language": {
+        searchPlaceholder: "Search..."
+      },
+      // Columns: 0 project, 1 phase, 2 comment count, 3 link.
+      // Comment count descending: the heaviest usage is what the administrator is looking for.
+      "order": [
+        [2, 'desc']
+      ],
+      aoColumnDefs: [
+        {
+          // The link column carries no text to sort by.
+          bSortable: false,
+          aTargets: [-1]
+        }
+      ]
+    });
+
+    /*
+     * container() returns the wrapper DataTables builds around the table, which is also where it puts
+     * .dataTables_filter. Going through the API instead of walking the DOM keeps this working regardless of how
+     * the table ends up nested inside the modal.
+     */
+    var $filter = $(api.table().container()).find('.dataTables_filter');
+    if ($filter.length) {
+      var iconSearch = $("<div></div>").addClass("iconSearch");
+      iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="" style="width: 24px; margin: auto;" >');
+      $filter.prepend(iconSearch);
+    }
+  });
+
+  /*
+   * A DataTable built inside a hidden modal measures its columns against a zero-width container, so the header and
+   * the body end up misaligned. Recomputing once the modal is visible is the documented workaround.
+   */
+  $('.modal').on('shown.bs.modal', function() {
+    $(this).find('table.feedbackUsageList').each(function() {
+      if ($.fn.DataTable.isDataTable(this)) {
+        $(this).DataTable().columns.adjust();
+      }
+    });
+  });
 }
 
 function addIdo() {
