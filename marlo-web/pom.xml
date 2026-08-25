@@ -592,8 +592,6 @@
 		            <!-- Exclude already minified files. -->
 		            <excludes>
 		              <exclude>**/*.min.*</exclude>
-		            </excludes>
-		            <excludes>
 		              <exclude>**/bower_components/**</exclude>
 		            </excludes>
 		            <closureCreateSourceMap>true</closureCreateSourceMap>

@@ -69,7 +69,7 @@
            data-user-id="${currentUser.id?c}"
            data-user-name="${(currentUser.composedName)!'Unknown'}"
            data-base-url="${baseUrl}"></div>
-      <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.7.0.umd.js"></script>
+      <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.7.0.umd.min.js"></script>
       <script defer src="${baseUrlCdn}/global/js/helldots-init.js?20260824"></script>
     [/#if]
 
