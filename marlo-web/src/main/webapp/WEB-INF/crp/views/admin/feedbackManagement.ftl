@@ -2,7 +2,7 @@
 [#assign title = "Feedback Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackManagement.js?20260825"
  ] /]
 [#-- assign customCSS = [ "${baseUrlCdn}/css/admin/crpUsers.css" ] /--]
 [#assign currentSection = "admin" /]

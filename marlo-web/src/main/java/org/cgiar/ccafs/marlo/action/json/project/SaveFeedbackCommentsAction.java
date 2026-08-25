@@ -177,32 +177,52 @@ public class SaveFeedbackCommentsAction extends BaseAction {
         FeedbackQACommentableFields field =
           feedbackQACommentableFieldsManager.getInternalQaCommentableFieldsById(fieldId);
 
-        if (field.getSectionName() != null && parentId != null) {
+        if (field != null && field.getSectionName() != null) {
           String sectionName = field.getSectionName();
 
-          switch (ProjectSectionsEnum.getValue(sectionName)) {
-            case OUTCOME:
-              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
-                + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              break;
-            case DELIVERABLE:
-              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
-                + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              isDeliverableSection = true;
-              break;
-            case EXPECTEDSTUDY:
-              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?" + "expectedID="
-                + parentId + "&phaseID=" + phaseId + "&edit=true";
-              break;
-            case INNOVATION:
-              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
-                + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              break;
-            default:
-              link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
-                + sectionName + "ID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
-              break;
+          /*
+           * The generic pattern is the starting point, so an unrecognised section_name still produces a link
+           * instead of failing the save. ProjectSectionsEnum.getValue returns null for any value outside the enum
+           * -- a commentable field configured with a slug the enum does not know, such as "safeguard" against
+           * SAFEGUARDS("safeguards") -- and switching on that null would throw.
+           */
+          link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
+            + sectionName + "ID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+
+          ProjectSectionsEnum section = ProjectSectionsEnum.getValue(sectionName);
+
+          if (section == null) {
+            logger.warn(
+              "Commentable field {} is configured with section name '{}', which is not a ProjectSectionsEnum "
+                + "value. Falling back to a generic link; review the feedback field configuration.",
+              fieldId, sectionName);
+          } else {
+            switch (section) {
+              case OUTCOME:
+                link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+                  + "projectOutcomeID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+                break;
+              case DELIVERABLE:
+                link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+                  + "deliverableID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+                isDeliverableSection = true;
+                break;
+              case EXPECTEDSTUDY:
+                link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
+                  + "expectedID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+                break;
+              case INNOVATION:
+                link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
+                  + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+                break;
+              default:
+                // The generic link built above already covers every remaining section.
+                break;
+            }
           }
+        } else {
+          logger.warn("Unable to resolve the commentable field {} or its section name; the comment will be saved "
+            + "without a link", fieldId);
         }
       }
 

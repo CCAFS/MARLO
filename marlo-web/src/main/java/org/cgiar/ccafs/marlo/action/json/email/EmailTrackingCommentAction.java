@@ -195,25 +195,33 @@ public class EmailTrackingCommentAction extends BaseAction {
     }
     if (sectionName != null && !sectionName.isEmpty()) {
 
-      switch (ProjectSectionsEnum.getValue(sectionName)) {
-        case OUTCOME:
-          sectionName = "Contribution To Performance Indicators";
-          break;
-        case DELIVERABLE:
-          sectionName = "Deliverables";
-          parentFieldDescription = "Deliverable " + parentFieldDescription;
-          break;
-        case EXPECTEDSTUDY:
-          sectionName = "OICRs";
-          parentFieldDescription = "OICR or MELIA " + parentFieldDescription;
-          break;
-        case INNOVATION:
-          sectionName = "Innovations";
-          parentFieldDescription = "Innovation " + parentFieldDescription;
-          break;
-        default:
-          parentFieldDescription = sectionName + " " + parentFieldDescription;
-          break;
+      // getValue returns null for any slug outside the enum, and switching on that null would throw.
+      ProjectSectionsEnum section = ProjectSectionsEnum.getValue(sectionName);
+
+      if (section == null) {
+        LOG.warn("Unknown section name '{}' while building the tracking email; using it verbatim", sectionName);
+        parentFieldDescription = sectionName + " " + parentFieldDescription;
+      } else {
+        switch (section) {
+          case OUTCOME:
+            sectionName = "Contribution To Performance Indicators";
+            break;
+          case DELIVERABLE:
+            sectionName = "Deliverables";
+            parentFieldDescription = "Deliverable " + parentFieldDescription;
+            break;
+          case EXPECTEDSTUDY:
+            sectionName = "OICRs";
+            parentFieldDescription = "OICR or MELIA " + parentFieldDescription;
+            break;
+          case INNOVATION:
+            sectionName = "Innovations";
+            parentFieldDescription = "Innovation " + parentFieldDescription;
+            break;
+          default:
+            parentFieldDescription = sectionName + " " + parentFieldDescription;
+            break;
+        }
       }
     }
 

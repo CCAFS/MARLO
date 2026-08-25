@@ -372,10 +372,23 @@ WHERE role_id IS NULL OR feedback_permission_id IS NULL;
   not string interpolation; no schema change; no new i18n strings.
 - **Acceptance:** AC-018 passes.
 - **Verification:** `marlo-data` and `marlo-web` compile. `roleListCRP` in `CrpUsersAction` is only read via
-  `.contains()`, so an immutable empty list is safe there. Pending: open the screen in `Alliance` (46) or
-  `AICCRA_III` (47) — both at zero grants — click *Add feedback Permission*, and confirm all three selects are
-  populated.
-- **Status:** Code done — 2026-08-25. **UI verification pending.**
+  `.contains()`, so an immutable empty list is safe there. **UI verified 2026-08-25:** the screen was opened in a
+  global unit with zero grants, *Add feedback Permission* was clicked, and all three selects came populated —
+  which also confirms the new `r.crp.id = :globalUnitId` HQL parses and executes.
+- **Status:** Done — 2026-08-25, commit `112888217b`.
+
+### DOMAIN-FEEDBACK-001-T23 — Add the missing capability markers to the study section (FN-043)
+
+- **Depends on:** T01
+- **Module:** marlo-web
+- **Files touched:** `webapp/WEB-INF/global/macros/studiesTemplates.ftl` — add `#userCanApproveFeedback` and
+  `#canTrackComments`, both defaulting to `"false"`, matching the block in `projectDeliverable.ftl`
+- **Constitutional checks:** FTL only, no JS or CSS touched, so no cache-buster bump is due; no i18n strings.
+- **Acceptance:** AC-019 passes.
+- **Verification:** measured before changing — 6 of 743 study comments are tracked and all 6 by holders of
+  `can_track_comments`; only 2 study comments are `Dismissed`. Impact is two rows, for non-approvers only.
+  Pending: open a study with a `PL`/`PC` user and confirm no tracking icon is offered on their own comment.
+- **Status:** Code done — 2026-08-25. UI spot-check pending.
 
 ### DOMAIN-FEEDBACK-001-T19 — Update the ai-context companions
 
@@ -413,7 +426,7 @@ T19 ← T12, T13, T16, T20
 
 Parallel-safe from day one: **T03, T04, T06→T07, T08, T09, T21, T22**.
 Blocked on T02: **T10, T12–T15, T17, T20**.
-Done: **T01, T16, T21**. Code done, UI check pending: **T22**.
+Done: **T01, T16, T21, T22**. Code done, UI spot-check pending: **T23**.
 
 ## 5. Testing Plan
 

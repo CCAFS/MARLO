@@ -215,6 +215,25 @@ one code path and "cluster-agnostic only" in another.
   The DAO MUST honour its list contract, and `prepare()` MUST load the catalogs independently of the grant
   list so a failure in one cannot blank the others.
   **Affected:** every global unit with `id >= 45` and no grants — `Alliance` (46) and `AICCRA_III` (47) today.
+  **Fixed and UI-verified 2026-08-25 in commit `112888217b`:** the screen now opens in an empty global unit with
+  all three selects populated.
+- **DOMAIN-FEEDBACK-001-FN-043 (GAP — FIXED 2026-08-25)** — The study section shipped without two of the four
+  capability markers. `global/macros/studiesTemplates.ftl` rendered only `#userCanManageFeedback` and
+  `#userCanLeaveComments`; `#userCanApproveFeedback` and `#canTrackComments` were absent, unlike the four
+  instrumented sections that carry all four. `feedbackAutoImplementation.js` reads them with
+  `$('#<id>').html()`, so both resolved to `undefined`, and its guards compare against the **string** `'false'`
+  (`usercanTrackComments == 'false'`, `userCanApproveFeedback == 'false'`). `undefined` matches neither, so the
+  guards never fired and both gates were simply absent on that screen: the tracking icon showed for any author
+  regardless of `can_track_comments`, and dismissed comments rendered to non-approvers as if they could approve.
+  Every section MUST publish all four markers, and each MUST default to `"false"` rather than to an empty value.
+  **Verified against `aiccradb1` before fixing:** impact was near zero. Of 743 study comments, 6 were tracked
+  and all 6 by users who do hold `can_track_comments` (one `FPM`, one `FPL`), so the missing gate was never used
+  to exceed a permission; and only 2 study comments are `Dismissed`, so the approval-rendering change touches
+  two rows, for non-approvers only, and aligns them with the other sections. The hole was open but never crossed.
+- **DOMAIN-FEEDBACK-001-NF-013 (GAP)** — `studiesTemplates.ftl` is a per-item macro, so the feedback markers it
+  renders are emitted **once per study in the list**, producing duplicate `id` attributes in the document.
+  `$('#<id>')` takes the first match and every copy carries the same value, so it works by accident. The markers
+  SHOULD be emitted once per page, outside the repeated macro.
 
 ### 3.5 Non-functional
 
@@ -327,7 +346,10 @@ one code path and "cluster-agnostic only" in another.
 - **AC-018 (FN-042)** — Given a global unit with `id >= 45` and zero `feedback_roles_permissions` rows, when an
   administrator opens Feedback Permissions Management and clicks *Add feedback Permission*, then the Permission
   Name, User Role and Cluster Type selects are all populated. *(Failed before 2026-08-25: all three were empty
-  until a first row was saved.)*
+  until a first row was saved. **Verified passing 2026-08-25.**)*
+- **AC-019 (FN-043)** — Given a user without `can_track_comments`, when they open a study section and view their
+  own comment, then no tracking icon is offered — the same as in the deliverable, innovation, outcome and
+  safeguard sections. *(Failed before 2026-08-25: the icon was offered to any comment author.)*
 - **AC-017 (FN-041)** — Given `AICCRA_III` (`global_unit_id = 47`), when an administrator opens Feedback
   Permissions Management, then every listed grant's `description` matches its role, permission, and cluster
   scope. *(Currently fails: grant id 39 is `CL` / `can_leave_comments` / `Theme` but described as
@@ -401,6 +423,11 @@ one code path and "cluster-agnostic only" in another.
   "thematic clusters" rows resolve to `Theme` as intended. The original finding was derived from migration
   history alone and was wrong. FN-040 is narrowed to the real residue: the migration history no longer
   reproduces the database, and description-based `LIKE` backfill silently skips `'thematic'`.
+- 2026-08-25 — Fix FN-043 by adding both missing markers, not just `#canTrackComments`. Measured each first:
+  the tracking gate is provably impact-free, and the approval gate touches 2 dismissed study comments for
+  non-approvers only. Adding one and leaving the other would have kept the same defect class alive in the same
+  file. Left NF-013 (duplicate ids from the per-item macro) untouched — it is a composition refactor, not part
+  of closing a permission gate.
 - 2026-08-25 — Fix FN-042. Chose to correct the DAO contract (return `Collections.emptyList()`) *and* restructure
   `prepare()` into independent try blocks, rather than only null-guarding the call site: a single shared try block
   is what turned one failed read into three empty dropdowns, and that shape would keep biting. Also added the
