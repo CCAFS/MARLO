@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/admin/feedbackManagement.js?20260829",
+  "${baseUrlMedia}/js/admin/feedbackManagement.js?20260831",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
  ] /]
 [#assign customCSS = [
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css",
-  "${baseUrlMedia}/css/admin/feedbackManagement.css?20260829"
+  "${baseUrlMedia}/css/admin/feedbackManagement.css?20260831"
  ] /]
 [#import "/WEB-INF/crp/macros/feedbackFieldRelationsMacro.ftl" as fieldRelations /]
 [#assign currentSection = "admin" /]

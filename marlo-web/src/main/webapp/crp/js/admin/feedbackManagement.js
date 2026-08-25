@@ -27,12 +27,16 @@ function attachEvents() {
 
   $('.remove-element').on('click', removeElement);
 
-  /* The usage counter sits inside the title: its clicks open the modal and must not toggle the block. */
-  $('.blockTitle').on('click', '.elementRelations', function(e) {
-    e.stopPropagation();
-  });
-
-  $('.blockTitle.closed').on('click', function() {
+  $('.blockTitle.closed').on('click', function(e) {
+    /*
+     * The usage counter sits inside the title, so ignore clicks coming from it: the block must not toggle when the
+     * modal is opened. It has to be filtered here and not with stopPropagation() on the counter, because Bootstrap
+     * opens modals from a handler delegated on document -- stopping the click would keep the modal from ever
+     * opening.
+     */
+    if ($(e.target).closest('.elementRelations').length) {
+      return;
+    }
     if($(this).hasClass('closed')) {
       $('.blockContent').slideUp();
       $('.blockTitle').removeClass('opened').addClass('closed');

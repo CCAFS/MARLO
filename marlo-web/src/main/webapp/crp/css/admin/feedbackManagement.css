@@ -8,6 +8,30 @@
  */
 
 /*
+ * The title row is what opens and closes the field: pointer plus the open/closed arrow. impactPathway/outcomes.css
+ * declares this for .srfSlo, but that stylesheet is not loaded on this page, so the same rules are repeated here.
+ * The image path is relative to this file and resolves to webapp/global/images.
+ */
+.srfSlo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+/*
+ * Only the arrow changes on open. outcomes.css also dims the whole title with opacity: 0.5, which here would fade
+ * the usage counter that now lives inside it and make a working button read as disabled.
+ */
+.srfSlo .blockTitle.opened {
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
+/*
  * Usage counter: it lives inside .blockTitle so it reads on the same line as the field name, floated to the right
  * edge. The title itself stays the accordion's click target -- feedbackManagement.js stops the click here so
  * opening the modal does not toggle the block.
