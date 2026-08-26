@@ -110,24 +110,23 @@ Views / assets
 ### Remediation footprint (proposed)
 
 #### marlo-web
-- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-010, FN-011)
+- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-010)
 - Modified: `action/crp/admin/FeedbackRolesPermissionsManagementAction.java` (FN-021, FN-022)
 - New: `validation/crp/admin/FeedbackManagementValidator.java` (NF-006)
 - New: `validation/crp/admin/FeedbackRolesPermissionsManagementValidator.java` (NF-006)
 - Modified: `action/BaseAction.java` (FN-021, FN-030, FN-031)
-- Modified: `action/json/project/SaveFeedbackCommentsAction.java` (FN-038 — null-safe section resolution)
-- Modified: `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (FN-011, FN-013, NF-008)
+- Modified: `action/json/project/SaveFeedbackCommentsAction.java` (null-safe section resolution; `SAFEGUARDS`
+  link case)
+- Modified: `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (FN-013)
 - Modified: `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` (FN-013, FN-021)
-- Modified: `webapp/WEB-INF/crp/views/projects/safeguard.ftl` (FN-038, pending OQ-006)
-- Modified: `webapp/crp/js/admin/feedbackManagement.js`, `feedbackRolesPermissionsManagement.js` (NF-007)
-- Modified: `webapp/crp/js/feedback/feedbackAutoImplementation.js` (NF-007, NF-010)
+- Modified: `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` (duplicated permission filter)
+- Modified: `webapp/crp/js/feedback/feedbackAutoImplementation.js` (NF-010)
 - Modified: `resources/global.properties` (help keys, validation messages, JS prompt keys)
 - Deleted: `action/json/project/FeedbackParentIdAction.java` + its `struts-json.xml` mapping (FN-039, pending OQ-005)
 
 #### marlo-data
 - Modified: `data/dao/mysql/FeedbackQACommentableFieldsMySQLDAO.java` (NF-003)
 - Modified: `data/dao/mysql/FeedbackRolesPermissionMySQLDAO.java` (NF-003, NF-004, FN-030)
-- Modified: `resources/xmls/FeedbackRolesPermissions.hbm.xml` (NF-005)
 
 #### marlo-core / marlo-utils
 - Not applicable.
@@ -215,14 +214,10 @@ Not editable from the UI.
 
 ### Proposed migrations
 
-Only one is required, and only if OQ-006 resolves to migrating data rather than changing the enum or the FTL:
+None. The safeguard slug was reconciled in the FTL, not in the data — no row was ever configured with either
+spelling, so there was nothing to normalise.
 
-```
-V2_6_0_<YYYYMMDD>_<HHMM>__NormalizeFeedbackSafeguardSectionName.sql
-  UPDATE feedback_qa_commentable_fields SET section_name = 'safeguards' WHERE section_name = 'safeguard';
-```
-
-FN-021 needs no migration — `requires_project_association` already exists. FN-030 and NF-003..NF-005 are
+FN-021 needs no migration — `requires_project_association` already exists. FN-030 and NF-003..NF-004 are
 code-only. FN-022 is validated in the application layer; the NOT NULL constraints are deliberately not
 reinstated because existing rows may violate them.
 
@@ -277,7 +272,7 @@ accordion list pattern in `EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md`.
 `feedbackManagement.ftl` — block title `Feedback Field <n>: <sectionDescription> - <fieldName>`; body is
 five `[@customForm.input]` controls (`sectionName`, `sectionDescription`, `fieldName`, `fieldDescription`,
 `parentFieldDescription`) plus a hidden `id`. `parentFieldIdentifier` is not rendered.
-`pageLibs = ["select2"]`, `customJS = ["js/admin/feedbackManagement.js"]` (no cache-buster — NF-008).
+`pageLibs = ["select2"]`, `customJS = ["js/admin/feedbackManagement.js?YYYYMMDD"]`.
 
 `feedbackRolesPermissionsManagement.ftl` — block title `Permission <n>: <description>` with a `New` badge when
 `recentlyCreated`; body is `description` input plus three `[@customForm.select]` controls
@@ -443,8 +438,6 @@ OQ-001 asks whether to switch it to `feedback_active`.
 - Actions log through SLF4J. `FeedbackRolesPermissionsManagementAction` logs per-row save and delete failures;
   `FeedbackManagementAction` has no logger at all and its binder swallows exceptions silently — the main
   observability gap on the admin side.
-- `feedbackAutoImplementation.js` `console.log`s all four capability flags plus `isSuperAdmin` on every page
-  load; useful in support, but it is production console noise and is scheduled for removal (NF-007).
 - Audit columns on `feedback_qa_comments` are rich and are the real audit trail: `user_id`, `user_editor_id`,
   `user_approval_id`, `draft_action_user_id`, `responsible_user_id`, `comment_date`, `edition_date`,
   `approval_date`, `draft_action_date`, `start_track_date`, `end_track_date`.
@@ -505,13 +498,11 @@ OQ-001 asks whether to switch it to `feedback_active`.
   - **Already shipped:** FN-030 (tenant predicate), NF-003 and NF-004 for
     `FeedbackRolesPermissionMySQLDAO` — verified non-observable by a pre-flight first.
   - **Behaviour-preserving, ship any time:** NF-003 for `FeedbackQACommentableFieldsMySQLDAO`,
-    NF-005 (hbm column name — cosmetic, MySQL tolerates the trailing space), NF-007 (dead JS),
-    NF-008 (cache-buster), FN-031 (`*Old()` removal), FN-013 (help text).
+    FN-031 (`*Old()` removal), FN-013 (help text).
   - **Behaviour-changing, needs QA sign-off:** FN-010 (delete semantics), NF-006 and FN-022
-    (validation can now reject saves that previously succeeded), FN-011 (free text → select; existing
-    out-of-enum values must be surfaced, not silently dropped).
+    (validation can now reject saves that previously succeeded).
   - **Behaviour-changing, needs a product decision first:** FN-030 (tenant scoping — will revoke mis-tenanted
-    grants that currently work), FN-021 (`requiresProjectAssociation`), FN-038 (safeguard slug),
+    grants that currently work), FN-021 (`requiresProjectAssociation`),
     FN-040 (cluster-type reconciliation), FN-012 / FN-039 (retirements), OQ-001 (admin visibility),
     OQ-003 (tracking cluster semantics).
 - Rollback: every code item is revertible by commit. The one candidate migration
@@ -560,9 +551,9 @@ OQ-001 asks whether to switch it to `feedback_active`.
 - **R-08** — The module carries real volume: 6992 comments and 5272 replies over 89 active fields. Most fields
   therefore have comments, so FN-010 is not a corner case — nearly any attempt to delete a commentable field
   will hit the `ON DELETE RESTRICT` FK. Treat T12 as the highest-value remediation task.
-- **R-02** — *Closed 2026-08-25.* All four configured slugs (`deliverable`, `innovation`, `study`,
-  `projectContributionCrp`) are valid `ProjectSectionsEnum` values, and no safeguard field is configured at all,
-  so FN-011 hides nothing and no longer depends on FN-038.
+- **R-02** — *Closed.* All four configured slugs (`deliverable`, `innovation`, `study`,
+  `projectContributionCrp`) are valid `ProjectSectionsEnum` values, and `safeguard.ftl` now publishes
+  `safeguards`, so the section select hides nothing.
 - **R-03** — Adding validation (NF-006, FN-022) can block a save that administrators have been completing for
   years with partially empty rows. Audit existing rows for null `role_id` / `feedback_permission_id` first.
 - **R-04** — `feedbackAutoImplementation.js` is ~1780 lines of DOM-index-coupled jQuery with no tests. Any edit

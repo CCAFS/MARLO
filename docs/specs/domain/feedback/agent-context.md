@@ -174,43 +174,60 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
 - Adding a new permission requires an insert into `feedback_permissions` (there is no UI for the catalog)
   **and** a new `FeedbackPermissionsEnum` constant **and** a gate method in `BaseAction`.
 - After editing `feedbackAutoImplementation.js` or either admin JS, bump the `?YYYYMMDD` cache-buster in every
-  FTL that references it. `feedbackManagement.ftl` currently has **no** cache-buster on its `customJS` entry.
+  FTL that references it.
 
 ## Known Defects / Traps (as-built)
-
-1. `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"`, but the enum constant is `SAFEGUARDS("safeguards")`.
-   Rows configured as `safeguard` return no fields from the enum-based paths; rows configured as `safeguards`
-   never match the page. Verify the actual `section_name` data before touching this section.
-2. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
-   strings. Do not extend that pattern. (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on
-   2026-08-25.)
-3. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing
-   space. Cosmetic in practice — MySQL tolerates the trailing whitespace in the generated SQL, and the admin
-   screen loads these rows fine. Still worth fixing.
-4. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
-   `feedbackManagement.ftl` renders Section Name as a free-text `input` and never uses the list.
-5. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
-   there is no server-side validation and no `Validator` class for either screen.
-6. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
-   `addCrossCuttingIssue`, datepicker config) plus `console.log` calls.
-7. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
-8. **The migration history does not reproduce the database for `cluster_types`.**
+1. `FeedbackQACommentableFieldsMySQLDAO` still interpolates into HQL: `findAllByGlobalUnit` concatenates the
+   numeric global unit id, and `findBySectionName` concatenates a caller-supplied `String`. The second one has
+   **no callers** — `CommentableFieldsBySectionNameAndParents` filters in memory instead — so it is dead code,
+   not a reachable injection. Do not extend the pattern; prefer deleting the dead method over converting it.
+   (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on 2026-08-25.)
+2. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
+   there is no server-side validation and no `Validator` class for either screen. Concretely: the Section Name
+   dropdown stops typos but a field saved with no section still persists `section_name = ''` and is silently
+   non-functional.
+3. **The migration history does not reproduce the database for `cluster_types`.**
     `V2_6_0_20210604_1444` sets id 2 = `Flagship`; the live database has id 2 = `Theme` (renamed outside
     Flyway). Live grant data is correct and self-consistent — `FPL`/`FPM` `can_react_comments` do sit on
     `Theme` — but a fresh environment built from migrations gets `Flagship` there and those grants land wrong.
     Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
     `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
     cover. Never backfill by description again.
-9. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
-    single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
-    `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
-    concluding the module is broken.
-10. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
-    still return `null` when empty.** Always null-check them; that pattern is what blanked every dropdown on
-    Feedback Permissions Management until the DAO contract was corrected.
-11. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
-    configured sections are `deliverable`, `innovation`, `study` and `projectContributionCrp`. The slug
-    mismatch in item 1 is therefore latent, not live.
+4. **`AICCRA_III` (global unit 47) has feedback entirely unconfigured:** zero commentable fields and
+    zero grants. Verified against `aiccradb1` on 2026-08-26 — all 25 rows of `feedback_roles_permissions`
+    are ids 14–38 and belong to global unit 45. Nobody in unit 47 holds any feedback capability at all, not
+    even leaving a comment. Check which global unit you are actually working in before concluding the module
+    is broken. It is also the tenant that exercises every empty-result path below.
+5. **The DAO list contract is split.** Corrected on 2026-08-26 to return `Collections.emptyList()`:
+    `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`, `ClusterTypeMySQLDAO.findAll`,
+    `FeedbackRolesPermissionMySQLDAO.findAll`. **Still returning `null` when empty:**
+    `FeedbackQACommentMySQLDAO.findAll` / `findAllByPhase` / `getFeedbackQACommentsByParentId`,
+    `FeedbackCommentMySQLDAO.findAll`, `FeedbackStatusMySQLDAO.findAll`. Null-check those; eleven callers in
+    this module chain `.stream()` straight onto a DAO result, and every one sits in a `try/catch(Exception)`
+    that only logs (`DeliverableAction:2461` has an empty catch body), so the NPE is swallowed and the block
+    stops halfway. That is what blanked every dropdown on Feedback Permissions Management.
+6. **Cross-tenant fallback in four JSON actions.** `FeedbackParentIdAction`,
+    `CommentableFieldsBySectionNameAndParents`, `FeedbackQACommentsAction` and
+    `FeedbackQACommentsMultipleAction` recover from a failed `findAllByGlobalUnit` by calling `findAll()`,
+    which filters on `is_active` only and carries **no `global_unit_id` predicate** — it returns every
+    tenant's field definitions. The empty-result trigger was closed by defect 5, but the fallback itself is
+    still there and will leak if `findAllByGlobalUnit` throws for any other reason. Do not copy this shape.
+7. **`commentManager.findAll()` loads the whole comments table.** `FeedbackQACommentsAction:101` and
+    `FeedbackQANumberCommentsAction:73` guard with `commentManager.findAll() != null`, inside the loop over
+    commentable fields — so `from FeedbackQAComment`, unfiltered by tenant, phase or project, runs once per
+    field on every `getCommentStatus.do` request, purely to test non-emptiness. The guard is redundant with
+    the `try/catch` inside it. The primary path (`getFeedbackQACommentsByPhaseAndParentId`) already returns
+    an empty list, so the `catch` fallbacks are not hit routinely.
+8. **Dead code that looks live.** `DeliverableListAction.getCommentStatusesOld` / `getCommentStatusesOld2`
+    (no callers; only `getCommentStatuses` at line 218 runs), `FeedbackQACommentableFieldsMySQLDAO
+    .findBySectionName`, `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its missing
+    `frp` alias was fixed, but nothing calls it) and the four `*Old()` capability methods in `BaseAction`.
+9. **Configured sections do not match the enum.** Verified against `aiccradb1` on 2026-08-26, global unit 45
+    has 91 active fields across `innovation` (34), `study` (22), `deliverable` (20), `projectContributionCrp`
+    (13), `contributionsCrpList` (1) and `test` (1). **`test` is not a `ProjectSectionsEnum` value**, so field
+    id 198 renders in the admin dropdown as a flagged "kept as stored" option — that row is the regression
+    case for the unknown-slug path. No `safeguards` field is configured; `safeguard.ftl` does publish the
+    matching marker, so the section is configurable, it simply has no rows yet.
 
 ## Verification Shortlist
 

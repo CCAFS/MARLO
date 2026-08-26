@@ -102,7 +102,7 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
 
   }
 
