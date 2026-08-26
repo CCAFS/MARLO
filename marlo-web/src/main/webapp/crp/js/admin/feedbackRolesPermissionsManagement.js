@@ -12,18 +12,6 @@ function init() {
 
 function attachEvents() {
 
-  $('#feedbackPermissionFilter').on('change', function () {
-    const selectedId = $(this).val();
-    $('.srfSlo').each(function () {
-      const permissionId = $(this).find('.feedbackPermission').val();
-      if (!selectedId || selectedId === permissionId) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
-  });
-  
   $('#clearFeedbackPermissionFilter').on('click', function () {
     $('#feedbackPermissionFilter').val(null).trigger('change');
   });
@@ -54,8 +42,7 @@ function attachEvents() {
   });
   
   $('#feedbackPermissionFilter').on('change', function () {
-  const selectedPermissionId = $(this).val();
-
+    const selectedPermissionId = $(this).val();
     $('.srfSlo').not('.is-template').each(function () {
       const itemPermissionId = $(this).data('permission-id') + "";
       const shouldShow = !selectedPermissionId || selectedPermissionId === itemPermissionId;
@@ -67,7 +54,7 @@ function attachEvents() {
 
 function addIdo() {
   var $itemsList = $(this).parent().find('.slos-list');
-  var $item = $("#srfSlo-template").clone(true).removeAttr("id");
+  var $item = $("#srfSlo-template").clone(true).removeAttr("id").removeClass("is-template");
   $item.find('.blockTitle').trigger('click');
   $itemsList.append($item);
   $item.slideDown('slow');

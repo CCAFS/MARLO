@@ -5,6 +5,8 @@ function init() {
   /* Declaring Events */
   attachEvents();
 
+  addSelect2();
+
   initializeUsageTables();
 
 }
@@ -60,7 +62,8 @@ function initializeUsageTables() {
       "bFilter": true,
       "bSort": true,
       "bAutoWidth": false,
-      "iDisplayLength": 25,
+      // First entry of the default length menu ([10, 25, 50, 100]), so the dropdown opens on 10.
+      "iDisplayLength": 10,
       "language": {
         searchPlaceholder: "Search..."
       },
@@ -109,9 +112,32 @@ function addIdo() {
   var $item = $("#srfSlo-template").clone(true).removeAttr("id");
   $item.find('.blockTitle').trigger('click');
   $itemsList.append($item);
+  // The clone comes from the untouched template, so its select is still a plain one: give it the search box too.
+  initSelect2Within($item);
   $item.slideDown('slow');
   updateIndexes();
   $item.trigger('addComponent');
+}
+
+/**
+ * Section Name is a slug picked from ProjectSectionsEnum, so it gets the same searchable dropdown used by the
+ * dropdowns of Feedback Roles Permissions. Scoped to `form select` because the hidden template row is rendered
+ * outside the form: select2 measures a hidden element as zero-width, and clone(true) would then copy a broken
+ * widget into every row added afterwards.
+ */
+function addSelect2() {
+  initSelect2Within($('form'));
+}
+
+// Initialize select2 only within a given block (used on load and after cloning the template).
+function initSelect2Within($ctx) {
+  $ctx.find('select.sectionName').each(function() {
+    var $select = $(this);
+    if ($select.data('select2')) {
+      try { $select.select2('destroy'); } catch (e) {}
+    }
+    $select.select2({ width: '100%' });
+  });
 }
 
 function removeElement() {

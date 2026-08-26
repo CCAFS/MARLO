@@ -2,7 +2,7 @@
 [#assign title = "Feedback Role Permissions Management" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js?20260826"
+[#assign customJS = [ "${baseUrlMedia}/js/admin/feedbackRolesPermissionsManagement.js?20260826v2"
  ] /]
 [#assign customCSS = [ "${baseUrlMedia}/css/admin/feedbackRolesPermissionsManagement.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
@@ -88,7 +88,7 @@
 [#macro feedbackCommentFieldsMacro element name index isTemplate=false]
 [#assign isNew = (element.id)?has_content?string('','new-entry')]
 <div id="srfSlo-${isTemplate?string('template',index)}"
-     class="srfSlo borderBox ${isNew}" ${isTemplate?string('is-template','')}"
+     class="srfSlo borderBox ${isNew} ${isTemplate?string('is-template','')}"
      data-id="${(element.id)!}"
      data-permission-id="${(element.feedbackPermission.id)!}"
      style="display:${isTemplate?string('none','block')}">
