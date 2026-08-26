@@ -193,10 +193,11 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
     Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
     `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
     cover. Never backfill by description again.
-4. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
-    single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
-    `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
-    concluding the module is broken. It is also the tenant that exercises every empty-result path below.
+4. **`AICCRA_III` (global unit 47) has feedback entirely unconfigured:** zero commentable fields and
+    zero grants. Verified against `aiccradb1` on 2026-08-26 — all 25 rows of `feedback_roles_permissions`
+    are ids 14–38 and belong to global unit 45. Nobody in unit 47 holds any feedback capability at all, not
+    even leaving a comment. Check which global unit you are actually working in before concluding the module
+    is broken. It is also the tenant that exercises every empty-result path below.
 5. **The DAO list contract is split.** Corrected on 2026-08-26 to return `Collections.emptyList()`:
     `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`, `ClusterTypeMySQLDAO.findAll`,
     `FeedbackRolesPermissionMySQLDAO.findAll`. **Still returning `null` when empty:**
