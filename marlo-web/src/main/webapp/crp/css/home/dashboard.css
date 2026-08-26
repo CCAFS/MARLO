@@ -276,9 +276,11 @@ div#impactGraphic-fullscreen {
 
 
   /*************** Schedule ********************/
-  /* Vertically fixed, horizontally scrolled. The card holds three phase lanes,
-     three packed activity lanes and one overflow strip; adding activities
-     changes the chip counts, never the height.
+  /* Vertically fixed, horizontally scrolled. The card holds four packed
+     activity lanes and one overflow strip; adding activities changes the chip
+     counts, never the height. The lane count lives in dashboard.ftl (the row
+     loop) and in schedule.js (LANES), not here: these rules are per-row, so
+     nothing in this stylesheet has to change when it does.
 
      Geometry is set by schedule.js, which is the only thing that knows
      pixels-per-day: it measures the track and multiplies by the zoom stop.
@@ -864,7 +866,7 @@ div#impactGraphic-fullscreen {
   }
 
   /* Stack at 1250px and below. The panel is a fixed 300px and every pixel it
-     takes comes off the track, so stacking early keeps the three lanes usable:
+     takes comes off the track, so stacking early keeps the lanes usable:
      a narrow track packs fewer activities and pushes the rest into the overflow
      strip. 1250px sits just under the 1300px where global.css already drops
      .container to 95%, so the two thresholds do not fight each other. */

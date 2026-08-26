@@ -4,7 +4,7 @@
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js?20260819",
-  "${baseUrlMedia}/js/home/schedule.js?20260826",
+  "${baseUrlMedia}/js/home/schedule.js?202608262",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
@@ -246,11 +246,13 @@
                   <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
                 </div>
 
-                [#-- Three reserved lanes and one overflow strip, whatever the
+                [#-- Four reserved lanes and one overflow strip, whatever the
                      activity count. A lane carries no meaning of its own: an
                      activity can change lane as the window changes, which is the
-                     price of a container that never grows. --]
-                [#list 0..2 as scLane]
+                     price of a container that never grows. The count is also
+                     LANES in schedule.js, which packs into these tracks and
+                     reports the total in the footer: the two must agree. --]
+                [#list 0..3 as scLane]
                   <div class="scheduleCard__row scheduleCard__row--lane">
                     <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
                   </div>

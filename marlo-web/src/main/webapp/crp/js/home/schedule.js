@@ -16,7 +16,9 @@
 
   var DAY = 86400000;
   var ZOOMS = [2, 4, 8, 16];
-  var LANES = 3;
+  /* Must match the row loop in dashboard.ftl: this is how many lane tracks
+     the packer expects to find, and the number the footer reports. */
+  var LANES = 4;
 
   /* Pixel constants. These are the only absolute lengths in the packer, which
      is why overflow grows as the window widens: a 16-week view compresses the
@@ -302,7 +304,7 @@
     }
 
     /* ---- Packing ---- */
-    /* Greedy first-fit over three lanes. Whatever does not fit becomes an
+    /* Greedy first-fit over the LANES lanes. Whatever does not fit becomes an
        overflow chip; the lane count never changes, so the card cannot grow. */
     function packLanes() {
       var lanes = [];
