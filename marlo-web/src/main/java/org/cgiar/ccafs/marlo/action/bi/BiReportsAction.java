@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.model.BiParameters;
 import org.cgiar.ccafs.marlo.data.model.BiReports;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -65,8 +66,12 @@ public class BiReportsAction extends BaseAction {
 
   @Override
   public void prepare() {
-    biReports = biReportsManager.findAll();
-    biParameters = biParametersManager.findAll();
+    // Both DAOs return null instead of an empty list when nothing is configured. Normalize here so the
+    // view and biDashboard.js always receive a list, rather than relying on FreeMarker tolerating null.
+    List<BiReports> reports = biReportsManager.findAll();
+    biReports = reports == null ? new ArrayList<>() : reports;
+    List<BiParameters> parameters = biParametersManager.findAll();
+    biParameters = parameters == null ? new ArrayList<>() : parameters;
   }
 
 

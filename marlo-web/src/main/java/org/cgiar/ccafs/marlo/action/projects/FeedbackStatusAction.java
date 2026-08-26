@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -120,8 +121,12 @@ public class FeedbackStatusAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     String reportName = this.getFeedbackBIReportName();
-    biReports = biReportsManager.findAll().stream()
-      .filter(bi -> bi != null && Objects.equals(bi.getReportName(), reportName)).collect(Collectors.toList());
+    // BiReportsMySQLDAO.findAll() returns null, not an empty list, when no BI report is configured, so
+    // streaming it directly threw a NullPointerException before the view could render (A2-2416 / A2-2428).
+    List<BiReports> allBiReports = biReportsManager.findAll();
+    biReports = allBiReports == null ? new ArrayList<>()
+      : allBiReports.stream().filter(bi -> bi != null && Objects.equals(bi.getReportName(), reportName))
+        .collect(Collectors.toList());
 
     biParameters = biParametersManager.findAll();
 
