@@ -297,3 +297,52 @@ restore.
 
 **Process fix for any future destructive step in this repo:** never issue a backup and a delete as one block.
 Require the backup row count to be checked against the source count before the delete runs.
+
+### 2026-08-26 — verification after merging aiccra-fsrp-improvements (A2-1664 global-unit scoping)
+
+Merging Kenji's branch changed how BI data is loaded: `findAll()` became `findAll(globalUnitId)`, and a new
+migration moved `bi_reports` and `bi_parameters` to global unit 45 (AICCRA). Everything below was re-verified on a
+local instance after the merge, because the earlier browser pass ran against the unscoped `findAll()`.
+
+| Check | Result |
+|---|---|
+| Flyway on startup | Applied **only** `AddGlobalUnitToBiParametersAndReports`; no older migration replayed |
+| `bi_reports.global_unit_id` | 1 → **45** on all four rows |
+| `bi_parameters` | `global_unit_id` column added, all three rows backfilled to 45 |
+| bi.do with data | Four dashboards in the original order, titles resolved, no `undefined` |
+| bi.do tab switch | `current` → `BIreport-9`, title updated, lazy load, only the active container visible |
+| A2-2428 live control | With one class appended after `current`, the old selector matches **0** elements and would paint `"undefined"`; the new one resolves the title |
+| feedback.do with data | Its filtered dashboard (id 8) loads, no error page, no `undefined` |
+| AC-001 empty state | **Verified** on bi.do under global unit AICCRA_III, which has no BI configuration — no database mutation needed |
+| AC-002 handlers | `window` `message` handler registered with zero reports |
+| AC-004 no 500 | **Verified in the browser for the first time.** Under AICCRA_III the `bi_widget_url` parameter belongs to global unit 45, so it does not resolve; the guard suppressed the `<script>` (no widget request). Before the fix this exact state was a FreeMarker 500 on `BiAppURL[0]`. The global-unit scoping turned a hypothetical case into a real one. |
+| A2-2428 structural | In the empty state the `headTitle` element is not rendered at all, so the literal `undefined` cannot appear there by any path |
+
+**AC-010 (feedback.do placeholder) is verified pre-merge only.** Reproducing it post-merge needs an authenticated
+session for a global unit with no BI configuration, and the session could not be established in the automation
+browser. The reasoning chain was closed by direct inspection instead, each link observed rather than assumed:
+Kenji's action normalizes null to an empty list; an empty list makes `biReports?has_content` false; that `[#if]`
+(feedbackStatus.ftl:49) is the one carrying this spec's `[#else]` (line 98, closing at 104); the `[#else]` holds the
+placeholder with keys that are known to resolve; and the template parses after the merge. The same mechanism, with
+the same keys and classes, was observed working on bi.do post-merge. Residual risk is low but it is inference, not
+measurement.
+
+**Hand to QA:** confirm AC-005 (module disabled plus direct URL) and AC-010 post-merge. Every other criterion is
+measured in a browser.
+
+### Local environment incidents during this pass (not defects in the change)
+
+Recorded so the next person does not mistake them for regressions:
+
+- **Flyway version collision.** A migration `V2_6_0_20260824_1000__CreateHelldotsTables.sql` had been applied to
+  the local database but exists in no branch, and it collides with Kenji's migration on version
+  `2.6.0.20260824.1000`. Flyway 4.0.1's `repair()` realigns checksums only, not descriptions, so validation failed
+  and the context would not start. **Whoever owns the helldots work must renumber their migration**, or the
+  collision will surface in a shared environment.
+- **Flyway history lost.** Clearing the phantom row went wrong and emptied `schema_version` (~1579 rows). Schema and
+  data were untouched — only the metadata. Recovered by re-baselining at `2.6.0.20260724.1433`, the last legitimately
+  applied migration, so Flyway skips the older ones and applies only what is newer. The audit trail of when each
+  migration ran is gone; restoring it faithfully from the ROW binlog remains possible.
+- **Root cause of both database mishaps was multi-line SQL.** Statements handed over across two lines were executed
+  partially by the SQL client, running a `DELETE` without its `WHERE`. This happened twice. Any destructive
+  statement must be given as a single line, one statement at a time, with a count check in between.
