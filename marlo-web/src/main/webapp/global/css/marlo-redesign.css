@@ -524,6 +524,22 @@ header {
   height: 50px;
 }
 
+/* The full-viewport loading overlay global.css paints on save and on navigation
+   is `position: fixed` with z-index 1001 -- the same layer the sticky bar above
+   now occupies. Equal z-index falls back to DOM order, and every page includes
+   main-menu.ftl *after* header.ftl has emitted .container_page_load, so the bar
+   painted on top of the dim and looked like it was floating over the spinner.
+   It only started happening with the redesign: before it, #mainMenu was an
+   unpositioned block, so the `z-index: 5000` global.css declares for it never
+   applied and the fixed overlay won by default.
+
+   An overlay that blocks the whole page has to be the topmost layer, so it goes
+   above the bar (1001), the debug panel (1002), Bootstrap's modal and backdrop
+   (1050/1040), the global unit panel (1200) and the pace bar (2000). */
+.page_load {
+  z-index: 2010;
+}
+
 #mainMenu .menuContent {
   /* Replaces header-menu-bar.png with the flat brand fill. */
   background-image: none;
