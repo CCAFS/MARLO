@@ -85,8 +85,9 @@ Note the constant name and the value disagree for `CAN_MANAGE_FEEDBACK` (`can_re
 `existsByRoleIdsAndPermissionName(roleIds, permissionName, globalUnitId, clusterTypeId)`:
 
 - Super admin (`canAccessSuperAdmin()`) short-circuits to `true` in all four gates.
-- Joins `feedback_roles_permissions → feedback_permissions → roles`, filters `roles.global_unit_id`
-  (**not** `feedback_roles_permissions.global_unit_id`).
+- Joins `feedback_roles_permissions → feedback_permissions → roles` and requires **both**
+  `frp.global_unit_id = :globalUnitID` and `r.global_unit_id = frp.global_unit_id`, so a grant and its role must
+  belong to the same tenant.
 - `clusterTypeId` comes from `getClusterTypeIDFromProject(projectID)` → `ProjectInfo.clusterType` of the actual phase.
 - `clusterTypeId == null` → matches **only** rows with `cluster_type_id IS NULL`.
   `clusterTypeId != null` → matches `cluster_type_id IS NULL OR = clusterTypeId`.
@@ -112,6 +113,10 @@ A page opts into feedback with these hidden markers (see `projectDeliverable.ftl
 ```
 
 plus `feedbackAutoImplementation.js` in `customJS` and `[@customForm.qaPopUpMultiple …]` for the popup templates.
+
+The JS guards compare against the **string** `'false'` (`usercanTrackComments == 'false'`), so a marker that is
+absent reads as `undefined`, matches neither branch and leaves the gate simply off. Always render all four spans
+and always default them to `"false"`.
 
 Sections currently instrumented: `projectDeliverable.ftl`, `projectInnovation.ftl`, `projectStudy.ftl`
 (via `studiesTemplates.ftl`), `projectContributionCrp.ftl`, `safeguard.ftl`.
@@ -173,55 +178,39 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
 
 ## Known Defects / Traps (as-built)
 
-1. `FeedbackManagementAction.save()` nests the delete loop inside `if (feedbackFields != null && !feedbackFields.isEmpty())`,
-   so removing **all** rows and saving deletes nothing. `FeedbackRolesPermissionsManagementAction` does not have
-   this bug (its delete loop is outside the guard).
-2. `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"`, but the enum constant is `SAFEGUARDS("safeguards")`.
+1. `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"`, but the enum constant is `SAFEGUARDS("safeguards")`.
    Rows configured as `safeguard` return no fields from the enum-based paths; rows configured as `safeguards`
    never match the page. Verify the actual `section_name` data before touching this section.
-3. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
+2. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
    strings. Do not extend that pattern. (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on
    2026-08-25.)
-4. ~~`existsByRoleIdsAndPermissionName` ignored `feedback_roles_permissions.global_unit_id`.~~ **Fixed
-   2026-08-25.** All three live queries now require `frp.global_unit_id = :globalUnitID` plus
-   `r.global_unit_id = frp.global_unit_id`. Verified non-observable first: 0 of 26 grants were mis-tenanted.
-5. ~~`findObjectsByRoleIdsAndPermissionName` emitted `AND frp.cluster_type_id …` without ever aliasing~~
-   **Fixed 2026-08-25** (alias declared; still has no caller). Original text: it emitted the predicate without aliasing
-   `feedback_roles_permissions AS frp` — it would fail if called. No caller today.
-6. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing
+3. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing
    space. Cosmetic in practice — MySQL tolerates the trailing whitespace in the generated SQL, and the admin
    screen loads these rows fine. Still worth fixing.
-7. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
+4. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
    `feedbackManagement.ftl` renders Section Name as a free-text `input` and never uses the list.
-8. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
+5. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
    there is no server-side validation and no `Validator` class for either screen.
-9. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
+6. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
    `addCrossCuttingIssue`, datepicker config) plus `console.log` calls.
-10. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
-11. **The migration history does not reproduce the database for `cluster_types`.**
+7. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
+8. **The migration history does not reproduce the database for `cluster_types`.**
     `V2_6_0_20210604_1444` sets id 2 = `Flagship`; the live database has id 2 = `Theme` (renamed outside
     Flyway). Live grant data is correct and self-consistent — `FPL`/`FPM` `can_react_comments` do sit on
     `Theme` — but a fresh environment built from migrations gets `Flagship` there and those grants land wrong.
     Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
     `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
     cover. Never backfill by description again.
-12. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
+9. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
     single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
     `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
     concluding the module is broken.
-13. ~~Feedback Permissions Management could not create its first grant in an empty global unit.~~ **Fixed
-    2026-08-25.** `getFeedbackRolesPermissionByGlobalUnitID` returned `null` on no rows, `prepare()` streamed it
-    unguarded, and the resulting NPE was swallowed before the three dropdown catalogs loaded. If you see empty
-    selects on this screen again, check that `prepare()` still loads the catalogs in try blocks separate from
-    the grant list.
-14. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
-    still return `null` when empty.** Always null-check them; that pattern caused item 13.
-15. ~~The study section was missing two of the four capability markers.~~ **Fixed 2026-08-25.**
-    `studiesTemplates.ftl` now renders all four. Note the JS guards compare against the **string** `'false'`, so
-    an absent marker reads as `undefined` and the guard never fires — always default these spans to `"false"`.
-16. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
+10. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
+    still return `null` when empty.** Always null-check them; that pattern is what blanked every dropdown on
+    Feedback Permissions Management until the DAO contract was corrected.
+11. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
     configured sections are `deliverable`, `innovation`, `study` and `projectContributionCrp`. The slug
-    mismatch in item 2 is therefore latent, not live.
+    mismatch in item 1 is therefore latent, not live.
 
 ## Verification Shortlist
 

@@ -351,14 +351,22 @@ public class FeedbackManagementAction extends BaseAction {
       // Manually bind feedback fields from request parameters
       bindFeedbackFieldsFromRequest();
 
-      if (feedbackFields != null && !feedbackFields.isEmpty()) {
-
-        List<Long> inputIds = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
+      /*
+       * The two lists below are resolved before the save loop and outside any emptiness guard. When the
+       * administrator removes every row, the bound list comes back empty and the deletion pass still has to run
+       * against what the database holds -- keeping that pass behind a non-empty form check was why clearing the
+       * whole section deleted nothing.
+       */
+      List<Long> inputIds = new ArrayList<>();
+      if (feedbackFields != null) {
+        inputIds = feedbackFields.stream().map(FeedbackQACommentableFields::getId).filter(Objects::nonNull)
           .collect(Collectors.toList());
-        List<FeedbackQACommentableFields> existingFieldsBeforeSave =
-          fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
+      }
+      List<FeedbackQACommentableFields> existingFieldsBeforeSave =
+        fieldsManager.findAllByGlobalUnit(this.getCurrentGlobalUnit().getId());
 
-        // FIRST: Save/update all feedback fields from the form
+      // FIRST: Save/update all feedback fields from the form
+      if (feedbackFields != null) {
         for (FeedbackQACommentableFields fields : feedbackFields) {
 
           // New Activity
@@ -395,35 +403,35 @@ public class FeedbackManagementAction extends BaseAction {
           fieldsManager.saveInternalQaCommentableFields(fieldSave);
 
         }
+      }
 
-        // THEN: Delete feedback fields not present in the form
-        if (existingFieldsBeforeSave != null && !existingFieldsBeforeSave.isEmpty()) {
-          for (FeedbackQACommentableFields activityDB : existingFieldsBeforeSave) {
-            if (activityDB.getId() != null && !inputIds.contains(activityDB.getId())) {
+      // THEN: Delete feedback fields not present in the form
+      if (existingFieldsBeforeSave != null && !existingFieldsBeforeSave.isEmpty()) {
+        for (FeedbackQACommentableFields activityDB : existingFieldsBeforeSave) {
+          if (activityDB.getId() != null && !inputIds.contains(activityDB.getId())) {
 
-              /*
-               * A field that already carries comments cannot be removed: feedback_qa_comments.field_id is
-               * ON DELETE RESTRICT, so the database would reject it and abort the whole save, losing the edits
-               * made to the other rows. Report it instead and keep the field.
-               */
-              long usage = this.getFieldUsageTotal(activityDB.getId());
-              if (usage > 0L) {
-                String label = activityDB.getFieldName() != null ? activityDB.getFieldName()
-                  : String.valueOf(activityDB.getId());
-                this.addActionMessage(
-                  this.getText("feedbackManagement.delete.inUse", new String[] {label, String.valueOf(usage)}));
-                LOG.warn("Refused to delete commentable field {} because it has {} comments", activityDB.getId(),
-                  usage);
-                continue;
-              }
+            /*
+             * A field that already carries comments cannot be removed: feedback_qa_comments.field_id is
+             * ON DELETE RESTRICT, so the database would reject it and abort the whole save, losing the edits
+             * made to the other rows. Report it instead and keep the field.
+             */
+            long usage = this.getFieldUsageTotal(activityDB.getId());
+            if (usage > 0L) {
+              String label = activityDB.getFieldName() != null ? activityDB.getFieldName()
+                : String.valueOf(activityDB.getId());
+              this.addActionMessage(
+                this.getText("feedbackManagement.delete.inUse", new String[] {label, String.valueOf(usage)}));
+              LOG.warn("Refused to delete commentable field {} because it has {} comments", activityDB.getId(),
+                usage);
+              continue;
+            }
 
-              try {
-                fieldsManager.deleteInternalQaCommentableFields(activityDB.getId());
-              } catch (Exception e) {
-                LOG.error("unable to delete the commentable field {}", activityDB.getId(), e);
-                this.addActionMessage(this.getText("feedbackManagement.delete.failed",
-                  new String[] {String.valueOf(activityDB.getId())}));
-              }
+            try {
+              fieldsManager.deleteInternalQaCommentableFields(activityDB.getId());
+            } catch (Exception e) {
+              LOG.error("unable to delete the commentable field {}", activityDB.getId(), e);
+              this.addActionMessage(this.getText("feedbackManagement.delete.failed",
+                new String[] {String.valueOf(activityDB.getId())}));
             }
           }
         }

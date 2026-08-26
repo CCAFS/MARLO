@@ -110,7 +110,7 @@ Views / assets
 ### Remediation footprint (proposed)
 
 #### marlo-web
-- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-009, FN-010, FN-011)
+- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-010, FN-011)
 - Modified: `action/crp/admin/FeedbackRolesPermissionsManagementAction.java` (FN-021, FN-022)
 - New: `validation/crp/admin/FeedbackManagementValidator.java` (NF-006)
 - New: `validation/crp/admin/FeedbackRolesPermissionsManagementValidator.java` (NF-006)
@@ -502,12 +502,12 @@ OQ-001 asks whether to switch it to `feedback_active`.
 
 - Everything in §1–13 is already in production for AICCRA; documenting it changes nothing.
 - The remediation items split cleanly by risk:
-  - **Shipped 2026-08-25 (commit `b576db30da`):** FN-030 (tenant predicate), NF-003 and NF-004 for
-    `FeedbackRolesPermissionMySQLDAO` — verified non-observable by T21 first.
+  - **Already shipped:** FN-030 (tenant predicate), NF-003 and NF-004 for
+    `FeedbackRolesPermissionMySQLDAO` — verified non-observable by a pre-flight first.
   - **Behaviour-preserving, ship any time:** NF-003 for `FeedbackQACommentableFieldsMySQLDAO`,
     NF-005 (hbm column name — cosmetic, MySQL tolerates the trailing space), NF-007 (dead JS),
     NF-008 (cache-buster), FN-031 (`*Old()` removal), FN-013 (help text).
-  - **Behaviour-changing, needs QA sign-off:** FN-009 and FN-010 (delete semantics), NF-006 and FN-022
+  - **Behaviour-changing, needs QA sign-off:** FN-010 (delete semantics), NF-006 and FN-022
     (validation can now reject saves that previously succeeded), FN-011 (free text → select; existing
     out-of-enum values must be surfaced, not silently dropped).
   - **Behaviour-changing, needs a product decision first:** FN-030 (tenant scoping — will revoke mis-tenanted
@@ -549,8 +549,8 @@ OQ-001 asks whether to switch it to `feedback_active`.
 
 ## 16. Open Risks
 
-- **R-01** — *Closed 2026-08-25.* The pre-flight (T21) returned zero mis-tenanted grants and zero old-vs-new
-  predicate divergence on `aiccradb1`, so the FN-030 fix revokes nothing. Re-run T21 before any reseed of
+- **R-01** — *Closed.* The cross-tenant grant pre-flight returned zero mis-tenanted grants and zero old-vs-new
+  predicate divergence, so the FN-030 fix revokes nothing. Re-run that pre-flight before any reseed of
   `feedback_roles_permissions`, and once against production — the measurement is from a dev database.
 - **R-07** — *Reframed 2026-08-25.* The live grant data is correct; `cluster_types` id 2 is `Theme`. The
   residual risk is environment reproducibility: a database built from migrations alone gets `Flagship` for id 2,

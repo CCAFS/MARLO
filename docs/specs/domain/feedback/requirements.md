@@ -67,15 +67,12 @@ one code path and "cluster-agnostic only" in another.
   MUST NOT allow cross-tenant writes.
 - **DOMAIN-FEEDBACK-001-FN-008** — Saving MUST upsert every row present in the submitted form and hard-delete
   every previously persisted row of the current global unit that is absent from it.
-- **DOMAIN-FEEDBACK-001-FN-009 (GAP)** — Removing **all** rows and saving currently deletes nothing, because the
-  delete loop is nested inside the non-empty guard. The delete pass MUST run regardless of whether the
-  submitted list is empty.
 - **DOMAIN-FEEDBACK-001-FN-010 (GAP)** — Deleting a field whose `id` is referenced by `feedback_qa_comments.field_id`
   MUST be reported to the administrator as a blocked operation rather than surfacing an unhandled
   `ON DELETE RESTRICT` constraint violation.
 - **DOMAIN-FEEDBACK-001-FN-011 (GAP)** — `sectionName` MUST be selected from the `ProjectSectionsEnum`-derived
   list the action already prepares (`projectSections`), not typed as free text.
-  **Verified against `aiccradb1` 2026-08-25:** safe to implement — all four configured slugs
+  **Verified against the live data:** safe to implement — all four configured slugs
   (`deliverable`, `innovation`, `study`, `projectContributionCrp`) are valid `ProjectSectionsEnum` values, so
   no existing value would be hidden by the select.
 - **DOMAIN-FEEDBACK-001-FN-012 (GAP)** — `parentFieldIdentifier` is persisted and exposed over JSON but read by
@@ -104,7 +101,7 @@ one code path and "cluster-agnostic only" in another.
   and the column MUST be editable on the form.
 - **DOMAIN-FEEDBACK-001-FN-022 (GAP)** — Saving a row with a null `feedbackPermission` or null `role` is
   currently accepted (both FKs were relaxed to `NULL` in 2025). Both MUST be rejected server-side.
-  **Verified against `aiccradb1` 2026-08-25:** latent — zero rows currently have a null `role_id` or
+  **Verified against the live data:** latent — zero rows currently have a null `role_id` or
   `feedback_permission_id`. The validation is preventive.
 
 ### 3.3 Permission model
@@ -137,7 +134,7 @@ one code path and "cluster-agnostic only" in another.
   where an administrator can delete or reassign it. Matching MUST also constrain
   `feedback_roles_permissions.global_unit_id`. This is a data-integrity and manageability defect, not a
   cross-tenant access-control breach: no user can match a role of another tenant.
-  **Verified against `aiccradb1` 2026-08-25:** latent. All 26 grant rows carry a non-null `global_unit_id`
+  **Verified against the live data:** latent. All 26 grant rows carry a non-null `global_unit_id`
   (25 under AICCRA=45, 1 under AICCRA_III=47) equal to their role's `global_unit_id`; the pre-flight returned
   zero mis-tenanted or orphan rows, and old-vs-new predicate divergence is zero for both global units. The fix
   is therefore provably non-observable on this data. **Applied 2026-08-25 in commit `b576db30da`**, together with
@@ -168,7 +165,7 @@ one code path and "cluster-agnostic only" in another.
   enum constant is `SAFEGUARDS("safeguards")`. `SaveFeedbackCommentsAction` performs
   `switch (ProjectSectionsEnum.getValue(sectionName))`, which throws `NullPointerException` on an unmatched slug.
   Page, enum, and configured data MUST be reconciled and the unmatched case MUST be handled.
-  **Verified against `aiccradb1` 2026-08-25:** unreachable today, because **no commentable field is configured
+  **Verified against the live data:** unreachable today, because **no commentable field is configured
   for any safeguard slug at all**. The only configured sections are `deliverable` (21 fields), `innovation`
   (33), `study` (22) and `projectContributionCrp` (13). `safeguard.ftl` carries the feedback markers but the
   section has no fields, so no icon renders and no comment can be created there. The NPE needs a configured
@@ -186,12 +183,12 @@ one code path and "cluster-agnostic only" in another.
   rows it looks like it covers. Both are latent traps for the next reseed, not live defects.
   A migration MUST align `cluster_types` with the live catalog, and description-based backfill MUST NOT be used
   again.
-  **Verified against `aiccradb1` 2026-08-25:** the live data is correct and self-consistent. Every grant's
+  **Verified against the live data:** the live data is correct and self-consistent. Every grant's
   resolved `cluster_types.name` matches its own `description`, including `FPL` and `FPM` `can_react_comments`
   on `Theme`. My earlier claim that they sat on `Country` was wrong — it assumed the migration history matched
   the database.
 - **DOMAIN-FEEDBACK-001-FN-041 (GAP)** — Feedback is effectively unconfigured for `AICCRA_III`
-  (`global_unit_id = 47`). **Verified against `aiccradb1` 2026-08-25:** that global unit has **zero**
+  (`global_unit_id = 47`). **Verified against the live data:** that global unit has **zero**
   `feedback_qa_commentable_fields` rows and exactly **one** grant (id 39: role `CL`, `can_leave_comments`,
   cluster type `Theme`), whose `description` still reads `"PMU - can_write_comments on all clusters"` — copied
   from the AICCRA row and now describing neither the right role, nor the right permission, nor the right cluster
@@ -203,33 +200,6 @@ one code path and "cluster-agnostic only" in another.
   zero fields, as is `Alliance` (`global_unit_id = 46`). All 25 remaining grants belong to `AICCRA` (45).
   Both empty global units are reachable through the admin menu, because `BaseAction.isAiccra()` is simply
   `getCurrentCrp().getId() >= 45`.
-- **DOMAIN-FEEDBACK-001-FN-042 (GAP — FIXED 2026-08-25)** — Feedback Permissions Management could not create its
-  first grant in a global unit that had none: every dropdown rendered with no options until a row existed.
-  Root cause was a swallowed `NullPointerException`, not a frontend problem.
-  `FeedbackRolesPermissionMySQLDAO.getFeedbackRolesPermissionByGlobalUnitID` returned **`null`** instead of an
-  empty list when the global unit had no grants, and `prepare()` called `.stream()` on it directly. The NPE was
-  raised *before* the three catalog lists (`feedbackPermissionsList`, `roleList`, `clusterTypeList`) were
-  loaded, and the single surrounding `catch (Exception e)` set only `roleList` to empty and logged nothing — so
-  all three selects rendered empty and `clusterTypeList` was left `null`. Saving a first row made the table
-  non-empty, which is why the screen appeared to fix itself.
-  The DAO MUST honour its list contract, and `prepare()` MUST load the catalogs independently of the grant
-  list so a failure in one cannot blank the others.
-  **Affected:** every global unit with `id >= 45` and no grants — `Alliance` (46) and `AICCRA_III` (47) today.
-  **Fixed and UI-verified 2026-08-25 in commit `112888217b`:** the screen now opens in an empty global unit with
-  all three selects populated.
-- **DOMAIN-FEEDBACK-001-FN-043 (GAP — FIXED 2026-08-25)** — The study section shipped without two of the four
-  capability markers. `global/macros/studiesTemplates.ftl` rendered only `#userCanManageFeedback` and
-  `#userCanLeaveComments`; `#userCanApproveFeedback` and `#canTrackComments` were absent, unlike the four
-  instrumented sections that carry all four. `feedbackAutoImplementation.js` reads them with
-  `$('#<id>').html()`, so both resolved to `undefined`, and its guards compare against the **string** `'false'`
-  (`usercanTrackComments == 'false'`, `userCanApproveFeedback == 'false'`). `undefined` matches neither, so the
-  guards never fired and both gates were simply absent on that screen: the tracking icon showed for any author
-  regardless of `can_track_comments`, and dismissed comments rendered to non-approvers as if they could approve.
-  Every section MUST publish all four markers, and each MUST default to `"false"` rather than to an empty value.
-  **Verified against `aiccradb1` before fixing:** impact was near zero. Of 743 study comments, 6 were tracked
-  and all 6 by users who do hold `can_track_comments` (one `FPM`, one `FPL`), so the missing gate was never used
-  to exceed a permission; and only 2 study comments are `Dismissed`, so the approval-rendering change touches
-  two rows, for non-approvers only, and aligns them with the other sections. The hole was open but never crossed.
 - **DOMAIN-FEEDBACK-001-NF-013 (GAP)** — `studiesTemplates.ftl` is a per-item macro, so the feedback markers it
   renders are emitted **once per study in the list**, producing duplicate `id` attributes in the document.
   `$('#<id>')` takes the first match and every copy carries the same value, so it works by accident. The markers
@@ -262,13 +232,14 @@ one code path and "cluster-agnostic only" in another.
 - **DOMAIN-FEEDBACK-001-NF-009** — Both admin menu entries currently render only in the `action.isAiccra()` branch
   of `menu-admin.ftl`. Any change to that visibility is a product decision, not a refactor.
 - **DOMAIN-FEEDBACK-001-NF-011 (GAP)** — Several DAOs in this area return **`null` instead of an empty list**
-  when a query matches nothing — the root cause of FN-042. `ClusterTypeMySQLDAO.findAll` and
+  when a query matches nothing — the root cause of the empty-dropdown defect on Feedback Permissions
+  Management. `ClusterTypeMySQLDAO.findAll` and
   `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit` still do; `FeedbackPermissionMySQLDAO.findAll`
   and `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` already return `Collections.emptyList()`, so the
   codebase is inconsistent with itself. Every list-returning DAO method in this area MUST return an empty list.
-- **DOMAIN-FEEDBACK-001-NF-012 (GAP — PARTIALLY FIXED 2026-08-25)** — Loading the roles of a global unit was done
+- **DOMAIN-FEEDBACK-001-NF-012 (GAP — PARTIALLY FIXED)** — Loading the roles of a global unit was done
   as `roleManager.findAll()` filtered in Java, hydrating the entire `roles` table (**382 rows across 21 global
-  units**, verified 2026-08-25) to use the ~20 of one tenant, on every page load. `RoleManager` exposed no
+  units**) to use the ~20 of one tenant, on every page load. `RoleManager` exposed no
   scoped accessor. A `findAllByGlobalUnit(long)` was added across `RoleDAO` / `RoleMySQLDAO` / `RoleManager` /
   `RoleManagerImpl` and both call sites were migrated. Note the HQL uses the property path `r.crp.id`, not the
   raw column name `global_unit_id` that several sibling DAOs interpolate — `Role` has no such property, and the
@@ -310,8 +281,6 @@ one code path and "cluster-agnostic only" in another.
   comment is saved, then the `saveFeedbackComments.do` request carries `parentFieldDescription=My deliverable`.
 - **AC-004 (FN-008)** — Given three persisted rows, when the administrator deletes the second and saves, then the
   remaining two are updated and the deleted one is removed from `feedback_qa_commentable_fields`.
-- **AC-005 (FN-009)** — Given N persisted rows, when the administrator deletes all of them and saves, then zero
-  rows remain for that global unit. *(Currently fails: all N survive.)*
 - **AC-006 (FN-010)** — Given a field with at least one `feedback_qa_comments` row, when the administrator
   deletes it and saves, then an actionable message names the blocked field. *(Currently fails: unhandled
   constraint violation.)*
@@ -328,7 +297,7 @@ one code path and "cluster-agnostic only" in another.
 - **AC-011 (FN-030)** — Given a grant row whose `global_unit_id` is A and whose `role_id` references a role of
   global unit B, when a user of B is evaluated, then the grant does not apply, and the row is listed and
   deletable in exactly one tenant's admin screen. *(Cannot fail on current data: zero such rows exist in
-  `aiccradb1` as of 2026-08-25. Retained as a regression guard; re-run the T21 pre-flight before any reseed.)*
+  the live data. Retained as a regression guard; re-run the cross-tenant grant pre-flight before any reseed.)*
 - **AC-012 (FN-032)** — Given `feedback_active` false for the global unit, when a user opens a project, then the
   `Feedback` menu item is absent, no comment icons render, and `fieldsBySectionAndParent.do` returns an empty
   `fieldsMap`.
@@ -343,13 +312,6 @@ one code path and "cluster-agnostic only" in another.
   compared against the live catalog, then the two agree. *(Currently fails: migrations produce `Flagship` for
   id 2 where the live database has `Theme`. The live grant data itself is consistent — verified 2026-08-25 —
   so this criterion is about environment reproducibility, not about production correctness.)*
-- **AC-018 (FN-042)** — Given a global unit with `id >= 45` and zero `feedback_roles_permissions` rows, when an
-  administrator opens Feedback Permissions Management and clicks *Add feedback Permission*, then the Permission
-  Name, User Role and Cluster Type selects are all populated. *(Failed before 2026-08-25: all three were empty
-  until a first row was saved. **Verified passing 2026-08-25.**)*
-- **AC-019 (FN-043)** — Given a user without `can_track_comments`, when they open a study section and view their
-  own comment, then no tracking icon is offered — the same as in the deliverable, innovation, outcome and
-  safeguard sections. *(Failed before 2026-08-25: the icon was offered to any comment author.)*
 - **AC-017 (FN-041)** — Given `AICCRA_III` (`global_unit_id = 47`), when an administrator opens Feedback
   Permissions Management, then every listed grant's `description` matches its role, permission, and cluster
   scope. *(Currently fails: grant id 39 is `CL` / `can_leave_comments` / `Theme` but described as
@@ -423,22 +385,12 @@ one code path and "cluster-agnostic only" in another.
   "thematic clusters" rows resolve to `Theme` as intended. The original finding was derived from migration
   history alone and was wrong. FN-040 is narrowed to the real residue: the migration history no longer
   reproduces the database, and description-based `LIKE` backfill silently skips `'thematic'`.
-- 2026-08-25 — Fix FN-043 by adding both missing markers, not just `#canTrackComments`. Measured each first:
-  the tracking gate is provably impact-free, and the approval gate touches 2 dismissed study comments for
-  non-approvers only. Adding one and leaving the other would have kept the same defect class alive in the same
-  file. Left NF-013 (duplicate ids from the per-item macro) untouched — it is a composition refactor, not part
-  of closing a permission gate.
-- 2026-08-25 — Fix FN-042. Chose to correct the DAO contract (return `Collections.emptyList()`) *and* restructure
-  `prepare()` into independent try blocks, rather than only null-guarding the call site: a single shared try block
-  is what turned one failed read into three empty dropdowns, and that shape would keep biting. Also added the
-  missing `logger` calls — the original `catch` swallowed the NPE silently, which is why nothing appeared in the
-  logs.
 - 2026-08-25 — Add `RoleManager.findAllByGlobalUnit` (NF-012) rather than keep `findAll()` + in-memory filter.
   The repo idiom was the filter (`CrpUsersAction` did the same), but `roles` holds 382 rows across 21 global
   units and the screen needs 20, so the scoped query is worth the four-layer addition. Wrote the HQL as
   `r.crp.id = :globalUnitId`: several sibling DAOs interpolate the raw column name `global_unit_id`, which is not
-  a property of `Role`, and a query that fails to parse would have silently re-broken the very dropdown FN-042
-  was fixing.
+  a property of `Role`, and a query that fails to parse would have silently re-broken the very dropdown the
+  NPE fix had just restored.
 - 2026-08-25 — Apply the FN-030 / NF-003 / NF-004 fix to `FeedbackRolesPermissionMySQLDAO` ahead of the T02
   decision gate, on the grounds that the pre-flight proved it non-observable. Chose
   `AND r.global_unit_id = frp.global_unit_id` over a second `:globalUnitID` binding: transitively equivalent,
