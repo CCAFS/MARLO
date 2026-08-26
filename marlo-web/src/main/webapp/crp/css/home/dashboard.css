@@ -817,15 +817,23 @@ div#impactGraphic-fullscreen {
     position: relative;
   }
 
-  .scheduleCard__next {
+  /* The column holding the panels: the soonest upcoming thing, and a compact
+     panel for the one after it when there is one. */
+  .scheduleCard__side {
     width: 300px;
     flex: none;
-    /* Drops the panel to the top of __frame instead of the top of the column,
-       so its edge lines up with the timeline's rather than with the zoom
-       buttons'. 44px is exactly the controls row: 34px of button plus its 10px
+    /* Drops the column to the top of __frame instead of the top of the row, so
+       its edge lines up with the timeline's rather than with the zoom buttons'.
+       44px is exactly the controls row: 34px of button plus its 10px
        margin-bottom, measured, not guessed. If that row ever changes height
        this has to change with it — the stacked layout below overrides it. */
     margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .scheduleCard__next {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -833,6 +841,16 @@ div#impactGraphic-fullscreen {
     border: 1px solid var(--marlo-brand-tint-border);
     border-radius: var(--marlo-radius-lg);
     background: var(--marlo-brand-tint);
+  }
+
+  /* Second in line. Demoted by ground as well as by scale: the plain surface
+     against the panel above it is what keeps the two from reading as equals,
+     which shrinking the type alone would not do. */
+  .scheduleCard__next--compact {
+    gap: 4px;
+    padding: 12px 14px;
+    border-color: var(--marlo-border);
+    background: var(--marlo-surface);
   }
 
   .scheduleCard__nextEyebrow {
@@ -865,9 +883,33 @@ div#impactGraphic-fullscreen {
     font: 600 12px/1.3 var(--marlo-font-sans);
   }
 
-  /* Stack at 1250px and below. The panel is a fixed 300px and every pixel it
-     takes comes off the track, so stacking early keeps the lanes usable:
-     a narrow track packs fewer activities and pushes the rest into the overflow
+  /* Two classes each, so these land after the `font` shorthands above rather
+     than being overwritten by them. */
+  .scheduleCard__next--compact .scheduleCard__nextEyebrow {
+    color: var(--marlo-text-muted);
+    font-size: 11px;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextName {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextDates {
+    font-size: 12px;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextChip {
+    margin-top: 2px;
+    padding: 2px 8px;
+    border-color: var(--marlo-border);
+    color: var(--marlo-text-muted);
+    font-size: 11px;
+  }
+
+  /* Stack at 1250px and below. The column is a fixed 300px and every pixel it
+     takes comes off the track, so stacking early keeps the lanes usable: a
+     narrow track packs fewer activities and pushes the rest into the overflow
      strip. 1250px sits just under the 1300px where global.css already drops
      .container to 95%, so the two thresholds do not fight each other. */
   @media (max-width: 1250px) {
@@ -875,9 +917,20 @@ div#impactGraphic-fullscreen {
       display: block;
     }
 
-    .scheduleCard__next {
+    /* Side by side under the timeline rather than stacked into a tower, which
+       would push the page down by the full height of both for information that
+       is secondary to the track. Row direction with a flex basis rather than two
+       grid columns, so a lone panel still fills the width instead of sitting in
+       half of it, and both wrap when the card gets narrow. */
+    .scheduleCard__side {
       width: auto;
       margin-top: 12px;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .scheduleCard__side > .scheduleCard__next {
+      flex: 1 1 260px;
     }
   }
 
