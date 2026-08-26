@@ -61,7 +61,10 @@ function reportsMenuToggle() {
 // Open dashboard in full screen
 function fullScreenDashboard() {
   // Get a reference to the embedded report HTML element
-  var currentID = $("div[class$='current']").attr("id");
+  var currentID = $('.reportSection.current').attr('id');
+  if (!currentID) {
+    return;
+  }
   var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
@@ -72,7 +75,7 @@ function fullScreenDashboard() {
       report.fullscreen();
     })
     .catch(function (error) {
-      console.log(errors);
+      console.log(error);
     });
 }
 
@@ -96,8 +99,12 @@ function executePetition(idReport, urlReport) {
 
 // Set the report title and description
 function setReportTitle() {
-  var reportTitle = $("div[class$='current']").attr("report-title");
-  $('.headTitle.text-left').text(reportTitle + '');
+  // Match the class itself rather than an attribute ending in "current": [class$='current']
+  // only matches while "current" is the last class in the attribute string, so any script that
+  // appends another class to the tab makes this miss. Combined with the old `reportTitle + ''`
+  // that rendered the literal string "undefined" on screen (A2-2428).
+  var reportTitle = $('.reportSection.current').attr('report-title');
+  $('.headTitle.text-left').text(reportTitle || '');
 }
 
 function selectBIReport(e) {
