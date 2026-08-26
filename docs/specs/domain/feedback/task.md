@@ -3,7 +3,7 @@
 **Spec ID:** DOMAIN-FEEDBACK-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-08-26
 **Implements design:** docs/specs/domain/feedback/design.md
 **Branching:** feature branch from `staging`, named `feedback-module-hardening` (or `<TICKET-ID>-<Description>` once ticketed)
 **Target merge:** `staging` (then promoted to `main` per release process)
@@ -63,6 +63,13 @@
   gates return identical results to the baseline.
 - **Verification:** capability matrix from the Testing Plan re-run and diffed against the pre-change run;
   `getAnsweredCommentByPhaseToStudy` / `getCommentStatusByPhaseToStudy` still return the same rows.
+- **Note (2026-08-26):** two of the four methods in scope turned out to be unreachable, which changes the
+  approach from convert to delete. `findBySectionName` has no callers — `CommentableFieldsBySectionNameAndParents`
+  filters in memory — so its `String` concatenation is not a reachable injection. `findObjectsByRoleIdsAndPermissionName`
+  already carries the `frp` alias the task asked for, and has no callers either. What remains is genuine but
+  numeric-only: `findAllByGlobalUnit` here and in `FeedbackQACommentMySQLDAO`. Separately, the null-on-empty
+  contract of this DAO was corrected on 2026-08-26; five methods in the comment/reply/status DAOs still return
+  `null` and are listed in `agent-context.md` defect 5.
 
 ### DOMAIN-FEEDBACK-001-T05 — Remove the dead `*Old()` capability methods (FN-031)
 
@@ -74,31 +81,6 @@
   `BaseAction.java` stays under the 3500-line cap.
 - **Acceptance:** `grep -rn "canManageFeedbackOld\|canApproveCommentsOld\|canLeaveCommentsOld\|canTrackCommentsOld" marlo-web/src marlo-data/src` returns nothing.
 - **Verification:** full compile; capability matrix unchanged.
-
-### DOMAIN-FEEDBACK-001-T06 — De-duplicate the permission filter handler
-
-- **Module:** marlo-web
-- **Files touched:**
-  - `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` — `#feedbackPermissionFilter` is bound twice,
-    with two different matching strategies: the first handler reads the `.feedbackPermission` select value and
-    calls `show()`/`hide()` over all `.srfSlo`; the second reads the `data-permission-id` attribute and calls
-    `toggle()` over `.srfSlo:not(.is-template)`. Both fire on every change; the second wins.
-  - `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` — line 91 closes the `class`
-    attribute early and leaves `is-template` as a bare attribute rather than a class:
-    `class="srfSlo borderBox ${isNew}" ${isTemplate?string('is-template','')}"`. The `.not('.is-template')`
-    guard therefore matches nothing, so the hidden template block is processed like a real row.
-- **Suspected effect (not reproduced):** filtering by a permission and then clearing the filter should leave
-  the template visible as an empty phantom block, because `toggle(true)` reaches it. If an administrator fills
-  it in and saves, the manual binder would take it as a real row. Reproduce before fixing.
-- **Constitutional checks:** `updateIndexes()` behaviour preserved exactly — the server-side manual binder
-  depends on contiguous indexes (NF-002, ADR-FB-002).
-- **Acceptance:** the filter works from a single handler; the template never becomes visible; add / edit /
-  remove / save round-trips unchanged.
-- **Verification:** filter by a permission, clear the filter, confirm no empty block appears; then create 5
-  blocks, remove the 3rd, save, reload, and confirm 4 rows persisted with the expected values.
-- **Note:** the dead-code half of this task (the SLO-copy handlers, `datePickerConfig` / `date`, and every
-  `console.log` in the three feedback JS files) shipped 2026-08-26, verified working on the app. Only the
-  filter de-duplication is left, because it is the one part that changes behaviour.
 
 ### DOMAIN-FEEDBACK-001-T09 — Add administrator help text to both screens (FN-013)
 
@@ -243,7 +225,6 @@ T02 ── decision gate ──┬─ T12 ─ T13 ─── T15   (also needs OQ
                        ├─ T17                 (OQ-005)
                        └─ T20                 (OQ-007)
 T03 ─── T05
-T06
 T18
 T09
 T23   (code done, UI spot-check pending)
@@ -251,7 +232,7 @@ T23   (code done, UI spot-check pending)
 T19 ← T12, T13, T20
 ```
 
-Parallel-safe from day one: **T03, T06, T09, T18**.
+Parallel-safe from day one: **T03, T09, T18**.
 Blocked on T02: **T12, T13, T15, T17, T20**.
 T12 is partly shipped: the delete semantics are closed; FN-010 and the per-row upsert `try/catch` are not.
 
