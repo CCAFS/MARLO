@@ -4,7 +4,7 @@
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js?20260819",
-  "${baseUrlMedia}/js/home/schedule.js?20260819",
+  "${baseUrlMedia}/js/home/schedule.js?20260826",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
@@ -220,6 +220,12 @@
                   aria-label="[@s.text name="dashboard.schedule.zoom.accessibleName"][@s.param]${scWeeks?c}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.zoom.weeks"][@s.param]${scWeeks?c}[/@s.param][/@s.text]</button>
               [/#list]
             </div>
+            [#-- Changing the zoom moves no focus and rewrites no text a screen
+                 reader is pointed at, so the resulting window is announced
+                 politely instead. Filled in by schedule.js, and left empty on
+                 load so nothing is read out at boot. --]
+            <span id="scheduleZoomStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"
+              data-announcement="[@s.text name="dashboard.schedule.zoom.announcement"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"></span>
             <button type="button" class="scheduleCard__jump" id="scheduleJump">
               <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
             </button>

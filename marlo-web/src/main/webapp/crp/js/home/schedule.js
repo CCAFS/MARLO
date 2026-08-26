@@ -124,6 +124,7 @@
     var footLeft = document.getElementById('scheduleFootLeft');
     var footRight = document.getElementById('scheduleFootRight');
     var viewLabel = document.getElementById('scheduleViewLabel');
+    var zoomStatus = document.getElementById('scheduleZoomStatus');
     var jump = document.getElementById('scheduleJump');
     /* The popover is positioned against the timeline column rather than the
        whole card: with the "what's next" panel beside it, the card is wider
@@ -665,6 +666,45 @@
       }
       syncZoomButtons();
       renderAnchored(anchorDay, offset);
+      announceWindow();
+    }
+
+    /* aria-pressed tells a screen reader which stop is selected, but only when
+       the user goes looking for it: the zoom changes no text and moves no focus,
+       so nothing is spoken and there is no confirmation that the visible window
+       changed. This pushes the window that resulted into a polite live region.
+
+       Debounced because Cmd/Ctrl + wheel walks the stops one notch per event.
+       Without the delay a single gesture queues an announcement per notch and
+       the user hears the windows they passed through rather than the one they
+       settled on. Clicks go through the same path, which also collapses a burst
+       of rapid clicks down to the stop that stuck. */
+    var ANNOUNCE_DELAY = 400;
+    var announceTimer = null;
+
+    function announceWindow() {
+      if (!zoomStatus) {
+        return;
+      }
+      if (announceTimer) {
+        window.clearTimeout(announceTimer);
+      }
+      announceTimer = window.setTimeout(function () {
+        announceTimer = null;
+        var lastDay = Math.max(0, totalDays - 1);
+        /* The visible track is exactly weeks * 7 days wide by construction --
+           pxPerDay is trackWidth / (weeks * 7) -- but it is clamped to the
+           rendered range: scrolled hard against either end the window is
+           shorter than the stop, and reporting the stop's own arithmetic would
+           name a date the track never shows. */
+        var fromDay = Math.min(lastDay, Math.max(0, Math.round(dayAtTrackOffset(0))));
+        var toDay = Math.min(lastDay, fromDay + weeks * 7 - 1);
+        zoomStatus.textContent = format(zoomStatus.getAttribute('data-announcement'), [
+          weeks,
+          formatDayYear(addDays(rangeStart, fromDay)),
+          formatDayYear(addDays(rangeStart, toDay))
+        ]);
+      }, ANNOUNCE_DELAY);
     }
 
     function syncZoomButtons() {
