@@ -85,7 +85,7 @@
       </div>
       [#else]
       [#--  No BI report configured for this instance --]
-      <div class="simpleBox emptyMessage text-center">
+      <div class="simpleBox emptyMessage text-center fullPageEmptyState">
         <h4>[@s.text name="biDashboard.comingSoon.title" /]</h4>
         <p>[@s.text name="biDashboard.comingSoon.description" /]</p>
       </div>
