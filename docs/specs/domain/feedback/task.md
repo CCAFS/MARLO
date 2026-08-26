@@ -9,7 +9,7 @@
 **Target merge:** `staging` (then promoted to `main` per release process)
 
 > Completed tasks are removed from this list once shipped; git history holds them. T02 is a decision gate:
-> **T10–T17 and T20 must not start until the open questions in `requirements.md` §8 are answered.** T03–T09 are
+> **T12–T17 and T20 must not start until the open questions in `requirements.md` §8 are answered.** T03–T09 are
 > behaviour-preserving and can proceed in parallel with that gate.
 
 ---
@@ -48,7 +48,7 @@
 - **Module:** docs
 - **Files touched:** `docs/specs/domain/feedback/requirements.md` (§8, §9)
 - **Constitutional checks:** each answer appended to the Decision Log as `YYYY-MM-DD — decision — rationale`.
-- **Acceptance:** all seven questions answered; T10–T17 and T20 unblocked or explicitly deferred.
+- **Acceptance:** all remaining questions answered; T12–T17 and T20 unblocked or explicitly deferred.
 - **Verification:** IBD team lead plus one of PMU lead / QA lead / Tech lead sign off.
 
 ### DOMAIN-FEEDBACK-001-T03 — Bind DAO query parameters (NF-003, NF-004)
@@ -64,15 +64,6 @@
 - **Verification:** capability matrix from the Testing Plan re-run and diffed against the pre-change run;
   `getAnsweredCommentByPhaseToStudy` / `getCommentStatusByPhaseToStudy` still return the same rows.
 
-### DOMAIN-FEEDBACK-001-T04 — Fix the HBM column name (NF-005)
-
-- **Module:** marlo-data
-- **Files touched:** `resources/xmls/FeedbackRolesPermissions.hbm.xml`
-- **Constitutional checks:** no schema change; mapping only.
-- **Acceptance:** `<column name="requires_project_association"/>` with no trailing space.
-- **Verification:** application boots; the Permissions screen lists rows; `requires_project_association`
-  round-trips through a read.
-
 ### DOMAIN-FEEDBACK-001-T05 — Remove the dead `*Old()` capability methods (FN-031)
 
 - **Depends on:** T03
@@ -84,45 +75,30 @@
 - **Acceptance:** `grep -rn "canManageFeedbackOld\|canApproveCommentsOld\|canLeaveCommentsOld\|canTrackCommentsOld" marlo-web/src marlo-data/src` returns nothing.
 - **Verification:** full compile; capability matrix unchanged.
 
-### DOMAIN-FEEDBACK-001-T06 — Clean the two admin JS files (NF-007)
+### DOMAIN-FEEDBACK-001-T06 — De-duplicate the permission filter handler
 
 - **Module:** marlo-web
 - **Files touched:**
-  - `webapp/crp/js/admin/feedbackManagement.js` — drop `addIndicator`, `addTargets`, `addCrossCuttingIssue`,
-    `datePickerConfig`, `date`, and the `console.log` calls; keep `addIdo`, `removeElement`, `updateIndexes`,
-    the accordion handler
-  - `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` — same removals; also de-duplicate the
-    `#feedbackPermissionFilter` change handler, which is bound twice with two different matching strategies
-    (`.feedbackPermission` value vs `data-permission-id`)
+  - `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` — `#feedbackPermissionFilter` is bound twice,
+    with two different matching strategies: the first handler reads the `.feedbackPermission` select value and
+    calls `show()`/`hide()` over all `.srfSlo`; the second reads the `data-permission-id` attribute and calls
+    `toggle()` over `.srfSlo:not(.is-template)`. Both fire on every change; the second wins.
+  - `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` — line 91 closes the `class`
+    attribute early and leaves `is-template` as a bare attribute rather than a class:
+    `class="srfSlo borderBox ${isNew}" ${isTemplate?string('is-template','')}"`. The `.not('.is-template')`
+    guard therefore matches nothing, so the hidden template block is processed like a real row.
+- **Suspected effect (not reproduced):** filtering by a permission and then clearing the filter should leave
+  the template visible as an empty phantom block, because `toggle(true)` reaches it. If an administrator fills
+  it in and saves, the manual binder would take it as a real row. Reproduce before fixing.
 - **Constitutional checks:** `updateIndexes()` behaviour preserved exactly — the server-side manual binder
   depends on contiguous indexes (NF-002, ADR-FB-002).
-- **Acceptance:** add / edit / remove / save round-trips on both screens with identical persisted results;
-  no console output; the permission filter works from a single handler.
-- **Verification:** on each screen, create 5 blocks, remove the 3rd, save, reload; confirm 4 rows persisted
-  with the expected values.
-
-### DOMAIN-FEEDBACK-001-T07 — Add the missing cache-buster (NF-008)
-
-- **Depends on:** T06
-- **Module:** marlo-web
-- **Files touched:** `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (add `?YYYYMMDD` to the
-  `js/admin/feedbackManagement.js` entry); bump `?YYYYMMDD` on
-  `feedbackRolesPermissionsManagement.ftl` and on every FTL referencing
-  `crp/js/feedback/feedbackAutoImplementation.js` (`projectDeliverable.ftl`, `projectInnovation.ftl`,
-  `projectStudy.ftl`, `projectContributionCrp.ftl`, `safeguard.ftl`)
-- **Constitutional checks:** repository convention — bump the `?YYYYMMDD` param whenever a CSS/JS asset changes.
-- **Acceptance:** every feedback JS reference carries a cache-buster matching the edit date.
-- **Verification:** hard-reload each page and confirm the browser requests the new query string.
-
-### DOMAIN-FEEDBACK-001-T08 — Silence the runtime permission logging (NF-007)
-
-- **Module:** marlo-web
-- **Files touched:** `webapp/crp/js/feedback/feedbackAutoImplementation.js` — remove the five
-  `console.log` calls for `userCanManageFeedback`, `userCanLeaveComments`, `userCanApproveFeedback`,
-  `usercanTrackComments`, `isSuperAdmin`
-- **Constitutional checks:** no behaviour change; cache-buster bump via T07.
-- **Acceptance:** clean console on an instrumented section page.
-- **Verification:** open a deliverable with feedback active; console shows no feedback output.
+- **Acceptance:** the filter works from a single handler; the template never becomes visible; add / edit /
+  remove / save round-trips unchanged.
+- **Verification:** filter by a permission, clear the filter, confirm no empty block appears; then create 5
+  blocks, remove the 3rd, save, reload, and confirm 4 rows persisted with the expected values.
+- **Note:** the dead-code half of this task (the SLO-copy handlers, `datePickerConfig` / `date`, and every
+  `console.log` in the three feedback JS files) shipped 2026-08-26, verified working on the app. Only the
+  filter de-duplication is left, because it is the one part that changes behaviour.
 
 ### DOMAIN-FEEDBACK-001-T09 — Add administrator help text to both screens (FN-013)
 
@@ -138,33 +114,6 @@
   **Field Name** is the label shown in the popup.
 - **Verification:** an administrator who has not read this spec configures one new commentable field correctly
   on the first attempt.
-
-### DOMAIN-FEEDBACK-001-T10 — Reconcile the Safeguard section slug (FN-038)
-
-- **Depends on:** T02 (OQ-006)
-- **Module:** marlo-web (+ marlo-web migrations if OQ-006 chooses the data path)
-- **Files touched:** depends on the OQ-006 answer —
-  (a) `webapp/WEB-INF/crp/views/projects/safeguard.ftl` (`sectionNameToFeedback` → `safeguards`), or
-  (b) `marlo-data/.../model/ProjectSectionsEnum.java` (add `SAFEGUARD("safeguard")`), or
-  (c) `resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__NormalizeFeedbackSafeguardSectionName.sql`
-- **Constitutional checks:** migration naming `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`
-  under `marlo-web/src/main/resources/database/migrations/`; forward-only.
-- **Acceptance:** the Safeguard section resolves its commentable fields, and saving a comment there persists
-  with a working deep link.
-- **Verification:** save a comment on a safeguard field; confirm the row in `feedback_qa_comments` and that its
-  `link` resolves back to the field.
-
-### DOMAIN-FEEDBACK-001-T11 — Make section resolution null-safe (FN-038)
-
-- **Depends on:** T10
-- **Module:** marlo-web
-- **Files touched:** `action/json/project/SaveFeedbackCommentsAction.java` — guard
-  `switch (ProjectSectionsEnum.getValue(sectionName))` against a `null` enum and fall through to the generic
-  link builder with a logged warning
-- **Constitutional checks:** no swallowed exception; log at WARN with the offending slug.
-- **Acceptance:** an unrecognised `section_name` produces a logged warning and a generic link, never a 500.
-- **Verification:** temporarily configure a field with a bogus slug, save a comment, confirm the warning and
-  a persisted comment.
 
 ### DOMAIN-FEEDBACK-001-T12 — Harden the save on Feedback Fields Management (FN-010)
 
@@ -198,22 +147,9 @@
 - **Verification:** submit each invalid combination and confirm a field-level message and no persisted row;
   submit a valid form and confirm it still saves.
 
-### DOMAIN-FEEDBACK-001-T14 — Turn Section Name into a select (FN-011)
-
-- **Depends on:** T10, T13
-- **Module:** marlo-web
-- **Files touched:** `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` — replace the
-  `sectionName` `[@customForm.input]` with a `[@customForm.select listName="projectSections"]` driven by the
-  list `FeedbackManagementAction.prepare()` already builds
-- **Constitutional checks:** must not silently drop a configured value outside `ProjectSectionsEnum` — render
-  any such value as a preserved, flagged option (see R-02).
-- **Acceptance:** administrators can only choose a valid section; pre-existing out-of-enum values remain visible
-  and are not lost on save.
-- **Verification:** run T10 first; confirm every existing row still round-trips with its section intact.
-
 ### DOMAIN-FEEDBACK-001-T15 — Honour `requiresProjectAssociation` (FN-021)
 
-- **Depends on:** T02 (OQ-004), T04, T13
+- **Depends on:** T02 (OQ-004), T13
 - **Module:** marlo-web, marlo-data
 - **Files touched:**
   - `action/BaseAction.java` — `canManageFeedback` reads the grant's `requiresProjectAssociation` instead of
@@ -246,7 +182,6 @@
 
 ### DOMAIN-FEEDBACK-001-T18 — i18n the runtime prompt strings (NF-010)
 
-- **Depends on:** T08
 - **Module:** marlo-web
 - **Files touched:** `webapp/crp/js/feedback/feedbackAutoImplementation.js` (read labels from a
   data-attribute or a JS i18n bundle instead of literals such as `"Reason for disagreement:"`,
@@ -304,23 +239,20 @@
 ## 4. Dependency Graph
 
 ```
-T02 ── decision gate ──┬─ T10 ─ T11
-                       ├─ T12 ─ T13 ─┬─ T14   (also needs T10)
-                       │             └─ T15   (also needs T04, OQ-004)
-                       ├─ T17        (OQ-005)
-                       └─ T20        (OQ-007)
+T02 ── decision gate ──┬─ T12 ─ T13 ─── T15   (also needs OQ-004)
+                       ├─ T17                 (OQ-005)
+                       └─ T20                 (OQ-007)
 T03 ─── T05
-T04 ─── T15
-T06 ─── T07
-T08 ─── T18
+T06
+T18
 T09
 T23   (code done, UI spot-check pending)
 
 T19 ← T12, T13, T20
 ```
 
-Parallel-safe from day one: **T03, T04, T06→T07, T08, T09**.
-Blocked on T02: **T10, T12–T15, T17, T20**.
+Parallel-safe from day one: **T03, T06, T09, T18**.
+Blocked on T02: **T12, T13, T15, T17, T20**.
 T12 is partly shipped: the delete semantics are closed; FN-010 and the per-row upsert `try/catch` are not.
 
 ## 5. Testing Plan
@@ -328,7 +260,7 @@ T12 is partly shipped: the delete semantics are closed; FN-010 and the per-row u
 ### Unit
 
 - New validators (T13): one test per rule, valid and invalid, including the uniqueness rules.
-- `ProjectSectionsEnum.getValue` null path used by T11.
+- `ProjectSectionsEnum.getValue` null path in the comment-link and tracking-email builders.
 - DAO parameter binding (T03): assert the four capability queries return identical results to the
   string-concatenated versions for a fixed fixture.
 
@@ -362,13 +294,12 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 ### Cross-cutting
 
 - `mvn -q checkstyle:check`.
-- Console clean on every instrumented page (T08).
-- Cache-busters bumped on every touched asset (T07).
+- Console clean on every instrumented page.
+- Cache-busters bumped on every touched asset.
 
 ## 6. Operational Steps
 
-- **Migrations:** at most one (T10 option c). Apply via the standard Flyway path on deploy; capture the
-  pre-change `section_name` distribution first.
+- **Migrations:** none.
 - **Specificities:** no new keys. Verify per-tenant `custom_parameters` values for `feedback_active`,
   `feedback_draft_active`, `feedback_clarification_needed_active`, `feedback_new_comment_field_active`, and
   `crp_cluster_bi_feedback_report_name` are unchanged after deploy.
@@ -379,9 +310,7 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 
 ## 7. Rollback Plan
 
-- Code: revert the feature branch merge commit. Every task is code-only except T10 option c.
-- T10 option c: reverse migration `UPDATE feedback_qa_commentable_fields SET section_name = 'safeguard'
-  WHERE section_name = 'safeguards'`, scoped by the captured pre-change id list.
+- Code: revert the feature branch merge commit. Every remaining task is code-only.
 - The tenant-scoping predicate on grant matching is the only shipped change that removes access. If a tenant
   reports lost capability, the mitigation is to insert the correctly scoped grant rows, not to revert the query.
 - T13 is the only task that can block a previously working save. If administrators are blocked, relax the

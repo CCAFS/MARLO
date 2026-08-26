@@ -215,6 +215,15 @@ public class SaveFeedbackCommentsAction extends BaseAction {
                 link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
                   + "innovationID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
                 break;
+              case SAFEGUARDS:
+                /*
+                 * Safeguards is keyed by project, not by a record of its own: safeguard.ftl publishes projectID
+                 * as #parentID. The generic pattern would emit safeguardsID, which SafeguardAction does not
+                 * read, so the link would open the section with no project selected.
+                 */
+                link = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/safeguards.do?"
+                  + "projectID=" + parentId + "&phaseID=" + phaseId + "&edit=true";
+                break;
               default:
                 // The generic link built above already covers every remaining section.
                 break;

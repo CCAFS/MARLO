@@ -38,12 +38,6 @@ function attachEvents() {
     
   $('.addSlo').on('click', addIdo);
 
-  $('.addIndicator').on('click', addIndicator);
-
-  $('.addTargets').on('click', addTargets);
-
-  $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
-
   $('.remove-element').on('click', removeElement);
 
   $('.blockTitle.closed').on('click', function() {
@@ -72,7 +66,6 @@ function attachEvents() {
 }
 
 function addIdo() {
-  console.log("add ido");
   var $itemsList = $(this).parent().find('.slos-list');
   var $item = $("#srfSlo-template").clone(true).removeAttr("id");
   $item.find('.blockTitle').trigger('click');
@@ -84,38 +77,6 @@ function addIdo() {
 
 
 
-
-function addIndicator() {
-  console.log("addIndicator");
-  var $itemsList = $(this).parent().parent().find('.srfIndicators-list');
-  var $item = $("#srfSloIndicator-template").clone(true).removeAttr("id");
-
-  $itemsList.append($item);
-  $item.slideDown('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
-
-function addTargets() {
-  console.log("addTargets");
-  var $itemsList = $(this).parent().parent().find('.targetsList');
-  var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
-  $itemsList.append($item);
-  $item.show('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
-
-function addCrossCuttingIssue() {
-  console.log("addCrossCuttingIssue");
-  var $itemsList = $(this).parent().find('.issues-list');
-  var $item = $("#srfCCIssue-template").clone(true).removeAttr("id");
-
-  $itemsList.append($item);
-  $item.slideDown('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
 
 function removeElement() {
   $item = $(this).parent();

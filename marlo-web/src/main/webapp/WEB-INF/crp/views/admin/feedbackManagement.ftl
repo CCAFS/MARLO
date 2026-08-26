@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/admin/feedbackManagement.js?20260831",
+  "${baseUrlMedia}/js/admin/feedbackManagement.js?20260826",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
  ] /]
 [#assign customCSS = [

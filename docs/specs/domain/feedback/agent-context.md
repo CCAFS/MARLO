@@ -174,43 +174,38 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
 - Adding a new permission requires an insert into `feedback_permissions` (there is no UI for the catalog)
   **and** a new `FeedbackPermissionsEnum` constant **and** a gate method in `BaseAction`.
 - After editing `feedbackAutoImplementation.js` or either admin JS, bump the `?YYYYMMDD` cache-buster in every
-  FTL that references it. `feedbackManagement.ftl` currently has **no** cache-buster on its `customJS` entry.
+  FTL that references it.
 
 ## Known Defects / Traps (as-built)
-
-1. `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"`, but the enum constant is `SAFEGUARDS("safeguards")`.
-   Rows configured as `safeguard` return no fields from the enum-based paths; rows configured as `safeguards`
-   never match the page. Verify the actual `section_name` data before touching this section.
-2. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
+1. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
    strings. Do not extend that pattern. (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on
    2026-08-25.)
-3. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing
-   space. Cosmetic in practice — MySQL tolerates the trailing whitespace in the generated SQL, and the admin
-   screen loads these rows fine. Still worth fixing.
-4. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
-   `feedbackManagement.ftl` renders Section Name as a free-text `input` and never uses the list.
-5. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
+2. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
    there is no server-side validation and no `Validator` class for either screen.
-6. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
-   `addCrossCuttingIssue`, datepicker config) plus `console.log` calls.
-7. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
-8. **The migration history does not reproduce the database for `cluster_types`.**
+3. **The migration history does not reproduce the database for `cluster_types`.**
     `V2_6_0_20210604_1444` sets id 2 = `Flagship`; the live database has id 2 = `Theme` (renamed outside
     Flyway). Live grant data is correct and self-consistent — `FPL`/`FPM` `can_react_comments` do sit on
     `Theme` — but a fresh environment built from migrations gets `Flagship` there and those grants land wrong.
     Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
     `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
     cover. Never backfill by description again.
-9. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
+4. **`AICCRA_III` (global unit 47) has feedback effectively unconfigured:** zero commentable fields and a
     single grant (id 39, `CL` / `can_leave_comments` / `Theme`) whose description still says
     `"PMU - can_write_comments on all clusters"`. Check which global unit you are actually working in before
     concluding the module is broken.
-10. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
+5. **`ClusterTypeMySQLDAO.findAll` and `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`
     still return `null` when empty.** Always null-check them; that pattern is what blanked every dropdown on
     Feedback Permissions Management until the DAO contract was corrected.
-11. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers, but the only
-    configured sections are `deliverable`, `innovation`, `study` and `projectContributionCrp`. The slug
-    mismatch in item 1 is therefore latent, not live.
+6. **No safeguard fields are configured.** `safeguard.ftl` carries the feedback markers and now publishes
+    `safeguards`, matching the enum, the Struts route and the admin dropdown — so the section is configurable.
+    It simply has no fields yet: the only configured sections are `deliverable`, `innovation`, `study` and
+    `projectContributionCrp`.
+
+7. **`#feedbackPermissionFilter` is bound twice** in `feedbackRolesPermissionsManagement.js`, with two
+    different matching strategies (`.feedbackPermission` value vs `data-permission-id`). Compounding it,
+    `feedbackRolesPermissionsManagement.ftl:91` closes `class` early and leaves `is-template` as a bare
+    attribute, so the `.not('.is-template')` guard matches nothing and the hidden template block is treated
+    as a real row. Suspected effect, not reproduced: clearing the filter makes an empty phantom block appear.
 
 ## Verification Shortlist
 

@@ -70,11 +70,6 @@ one code path and "cluster-agnostic only" in another.
 - **DOMAIN-FEEDBACK-001-FN-010 (GAP)** — Deleting a field whose `id` is referenced by `feedback_qa_comments.field_id`
   MUST be reported to the administrator as a blocked operation rather than surfacing an unhandled
   `ON DELETE RESTRICT` constraint violation.
-- **DOMAIN-FEEDBACK-001-FN-011 (GAP)** — `sectionName` MUST be selected from the `ProjectSectionsEnum`-derived
-  list the action already prepares (`projectSections`), not typed as free text.
-  **Verified against the live data:** safe to implement — all four configured slugs
-  (`deliverable`, `innovation`, `study`, `projectContributionCrp`) are valid `ProjectSectionsEnum` values, so
-  no existing value would be hidden by the select.
 - **DOMAIN-FEEDBACK-001-FN-012 (GAP)** — `parentFieldIdentifier` is persisted and exposed over JSON but read by
   no consumer. It MUST either be surfaced on the form with a documented purpose or be retired.
 - **DOMAIN-FEEDBACK-001-FN-013 (GAP)** — The five inputs MUST carry per-field help text stating, for each one,
@@ -161,16 +156,6 @@ one code path and "cluster-agnostic only" in another.
 - **DOMAIN-FEEDBACK-001-FN-037** — Tracking a comment MUST send notification email via
   `sendFeedbackActionEmail.do` / `sendFeedbackReactionEmail.do`, populated from the `feedback_assesor_*`,
   `feedback_replay_username`, `feedback_comment_reaction`, and `feedback_response` specificities.
-- **DOMAIN-FEEDBACK-001-FN-038 (GAP)** — `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"` while the
-  enum constant is `SAFEGUARDS("safeguards")`. `SaveFeedbackCommentsAction` performs
-  `switch (ProjectSectionsEnum.getValue(sectionName))`, which throws `NullPointerException` on an unmatched slug.
-  Page, enum, and configured data MUST be reconciled and the unmatched case MUST be handled.
-  **Verified against the live data:** unreachable today, because **no commentable field is configured
-  for any safeguard slug at all**. The only configured sections are `deliverable` (21 fields), `innovation`
-  (33), `study` (22) and `projectContributionCrp` (13). `safeguard.ftl` carries the feedback markers but the
-  section has no fields, so no icon renders and no comment can be created there. The NPE needs a configured
-  out-of-enum slug to fire. Priority drops to the null-guard (T11); the slug decision (T10) only matters if
-  someone configures safeguard fields.
 - **DOMAIN-FEEDBACK-001-FN-039 (GAP)** — `feedbackParent.do` (`FeedbackParentIdAction`) has no caller and MUST be
   retired or given a documented consumer.
 - **DOMAIN-FEEDBACK-001-FN-040 (GAP — RETRACTED as a data defect; narrowed to migration drift)** —
@@ -219,16 +204,9 @@ one code path and "cluster-agnostic only" in another.
 - **DOMAIN-FEEDBACK-001-NF-004 (GAP)** — `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName`
   references an alias `frp` that its `FROM` clause never declares; the statement would fail if invoked. It MUST be
   fixed or removed.
-- **DOMAIN-FEEDBACK-001-NF-005 (GAP)** — `FeedbackRolesPermissions.hbm.xml` maps
-  `<column name="requires_project_association " …>` with a trailing space. It MUST be corrected.
 - **DOMAIN-FEEDBACK-001-NF-006 (GAP)** — Neither admin screen has a `Validator` class; `validate()` is
   `if (save) { }` in both, so the FTL `required=true` markers are cosmetic. Server-side validation MUST be added
   per the constitutional save pipeline (`Action.validate()` guarded by `if (save)` → `Validator` → manager chain).
-- **DOMAIN-FEEDBACK-001-NF-007 (GAP)** — Both admin JS files are copies of the SLO admin script and retain dead
-  handlers (`addIndicator`, `addTargets`, `addCrossCuttingIssue`, datepicker configuration) and `console.log`
-  calls; `feedbackAutoImplementation.js` logs all four permission flags on every page load. All MUST be removed.
-- **DOMAIN-FEEDBACK-001-NF-008 (GAP)** — `feedbackManagement.ftl` references `js/admin/feedbackManagement.js`
-  with no `?YYYYMMDD` cache-buster. One MUST be added, and bumped on every edit.
 - **DOMAIN-FEEDBACK-001-NF-009** — Both admin menu entries currently render only in the `action.isAiccra()` branch
   of `menu-admin.ftl`. Any change to that visibility is a product decision, not a refactor.
 - **DOMAIN-FEEDBACK-001-NF-011 (GAP)** — Several DAOs in this area return **`null` instead of an empty list**
@@ -301,9 +279,6 @@ one code path and "cluster-agnostic only" in another.
 - **AC-012 (FN-032)** — Given `feedback_active` false for the global unit, when a user opens a project, then the
   `Feedback` menu item is absent, no comment icons render, and `fieldsBySectionAndParent.do` returns an empty
   `fieldsMap`.
-- **AC-013 (FN-038)** — Given the Safeguard section, when a user with `can_leave_comments` saves a comment, then
-  the comment persists and the stored deep link resolves back to the safeguard field. *(Currently at risk: slug
-  mismatch and `switch` on a `null` enum.)*
 - **AC-014 (FN-022)** — Given a permission block submitted with no Permission Name or no User Role, when saved,
   then the row is rejected with a field-level message. *(Currently fails: it is persisted.)*
 - **AC-015 (NF-002)** — Given rows at indexes 0..4, when index 2 is removed client-side, then the submitted
@@ -347,9 +322,7 @@ one code path and "cluster-agnostic only" in another.
    permissions, or only for `can_react_comments`?
 5. **OQ-005** — Is `parentFieldIdentifier` (FN-012) and `feedbackParent.do` (FN-039) recoverable design intent for
    a future section, or safe to retire?
-6. **OQ-006** — What is the correct Safeguard slug (FN-038): change the FTL to `safeguards`, add a
-   `SAFEGUARD("safeguard")` enum constant, or migrate the configured data?
-7. **OQ-007** — For FN-040, is the intended fix to insert a `Theme` cluster type (which changes a catalog shared
+6. **OQ-007** — For FN-040, is the intended fix to insert a `Theme` cluster type (which changes a catalog shared
    with `projects_info.type_id` and every other cluster-type consumer), or to repoint the `FPL`/`FPM`
    `can_react_comments` grants at the existing `Flagship` cluster type? The 2022 seed used
    `cluster_type_id = 2` (`Flagship`) for a row it labelled "Theme Clusters", which suggests `Flagship` was the
@@ -357,6 +330,15 @@ one code path and "cluster-agnostic only" in another.
 
 ## 9. Decision Log
 
+- 2026-08-26 — Close OQ-006 by aligning `safeguard.ftl` with the enum (`safeguards`), not by adding a
+  `SAFEGUARD("safeguard")` constant or migrating data. The Struts route is `{crp}/safeguards`, the enum is
+  `SAFEGUARDS("safeguards")`, the admin dropdown offers `safeguards`, and the page's own hidden input is already
+  `name="safeguardsID"` — the marker was the single outlier, and there was no configured data to migrate. A
+  second constant would have competed with the real route. Also added `case SAFEGUARDS` to
+  `SaveFeedbackCommentsAction`: the generic pattern emits `<section>ID`, but this section is keyed by project
+  (`#parentID` is the `projectID`) and `SafeguardAction` reads `projectID`, so the generic link would have opened
+  the page with no project selected. Note the section select had made this worse, not better: it offers only
+  `safeguards`, so after that change no selectable value could match the page's `safeguard` at all.
 - 2026-08-25 — Create `docs/specs/domain/feedback/` as a domain spec rather than an enhancement or bugfix spec —
   the module is a standing MARLO domain area with its own tables, admin screens, and permission model, and the
   identified defects are better tracked against a documented baseline than as isolated bugfix specs.
@@ -375,8 +357,8 @@ one code path and "cluster-agnostic only" in another.
   invisible and undeletable in the tenant it actually affects. The fix stays in scope; the severity label does not.
 - 2026-08-25 — Verified the whole spec against `aiccradb1` (local dev copy, MySQL 8.0.43). Results:
   FN-030 latent (0 mis-tenanted rows of 26; old-vs-new predicate divergence 0), FN-022 latent (0 incomplete
-  rows), FN-038 unreachable (no safeguard fields configured), FN-011 safe (all 4 configured slugs are valid
-  enum values). Module is in heavy use: 6992 comments, 5272 replies, 89 active commentable fields — which
+  rows), FN-038 unreachable (no safeguard fields configured). Module is in heavy use: 6992 comments,
+  5272 replies, 89 active commentable fields — which
   raises the stakes on FN-010, since most fields now have comments and any deletion attempt will hit the
   `ON DELETE RESTRICT` FK. **Caveat: this is a development database; `feedback_active` reads `false` for both
   global units here, so per-tenant specificity values must be re-checked against production.**
