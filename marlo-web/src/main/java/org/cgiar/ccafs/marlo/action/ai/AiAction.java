@@ -30,6 +30,26 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Backs the AI section (route {@code {crp}/ai}, view {@code crp/views/ai/aiDashboard.ftl}), gated by the
+ * {@code ai_section_active} specificity ({@link org.cgiar.ccafs.marlo.config.APConstants#AI_SECTION_ACTIVE}).
+ * <p>
+ * <b>This section is populated from the {@code ai_report_configuration} table.</b> Every AI tool card shown by the
+ * dashboard is one active row of that table, loaded here through {@link AiReportConfigurationManager#findAll()}; the
+ * row supplies the card title, description, button label and button link. Adding, re-describing, re-linking or
+ * retiring a tool is therefore a data change on that table (shipped as a Flyway migration) - not a change to this
+ * action, to the FTL, or to {@code global.properties}. The card text is stored as raw text and is not translatable.
+ * <p>
+ * Two behaviours worth knowing before touching this class:
+ * <ul>
+ * <li>{@code AiReportConfigurationMySQLDAO.findAll()} returns {@code null} (not an empty list) when no active row
+ * exists, so {@link #reportConfigurations} may be {@code null}; the view guards for it and renders an empty state.</li>
+ * <li>The {@code UserIdea} half of this action (the free-text box at the bottom of the page) is a leftover of the
+ * original feedback form and does not persist: the read is commented out below and
+ * {@code UserIdeaManagerImpl.saveUserIdea} is not transactional.</li>
+ * </ul>
+ * See {@code docs/specs/domain/ai-services/agent-context.md}.
+ */
 public class AiAction extends BaseAction {
 
   private static final long serialVersionUID = 1329042468240291639L;
@@ -45,6 +65,7 @@ public class AiAction extends BaseAction {
   private UserIdea userIdea;
   private String userEmail;
   private String username;
+  // One entry per active row of ai_report_configuration; drives the tool cards rendered by aiDashboard.ftl.
   private List<AiReportConfiguration> reportConfigurations;
 
   @Inject
@@ -90,6 +111,7 @@ public class AiAction extends BaseAction {
     }
 
     try {
+      // The AI tool cards are data driven: this is the only source of the section content. May return null.
       reportConfigurations = aiReportConfigurationManager.findAll();
     } catch (Exception e) {
       LOG.error("Error loading AI report configurations", e);
