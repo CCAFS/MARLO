@@ -153,7 +153,90 @@ carries no configuration detail, so it is safe for end users.
   flag returns to `true`, because the menu item stays hidden. Needs Kenji / Laura to action it after deployment.
   Tracked as an operational step in `task.md`, not a code change.
 
-## 9. Decision Log
+## 9. Scope Addition — A2-2428 and feedback.do (2026-08-24)
+
+QA review of the A2-2416 fix raised two follow-ups. Both land in this spec's PR because they touch the same files
+and the same defect family; split them into their own spec folder if formal per-ticket traceability is required.
+
+### A2-2428 — literal `undefined` rendered under the dashboard tabs
+
+- **BUG-BI-EMPTY-F-007** — No code path may render the literal string `undefined` on screen. When the current
+  tab's `report-title` does not resolve, the heading MUST be empty.
+- **Root cause, two defects compounding.** `setReportTitle()` selected the active tab with
+  `$("div[class$='current']")`, an attribute-ends-with match that only holds while `current` is the *last* class in
+  the attribute string — any script appending a class to the tab makes it miss. It then wrote
+  `text(reportTitle + '')`, and `undefined + ''` evaluates to the *string* `"undefined"`, which is what QA saw. The
+  first defect explains why it reproduced on the test environment but not on production; the second explains why the
+  failure was visible rather than silent.
+- **Fix.** Select on the class itself (`$('.reportSection.current')`) so class order stops mattering, and use
+  `reportTitle || ''` so a missing attribute yields an empty heading. Applied in `biDashboard.js` and
+  `feedbackStatus.js`, which carried identical code.
+- **AC-008** — Given a tab whose `report-title` does not resolve, when the title is set, then the heading is empty
+  and the string `undefined` appears nowhere in the rendered page.
+- **AC-009** — Given a tab whose `report-title` does resolve, when the title is set, then the heading shows it
+  unchanged.
+
+### feedback.do — the same empty state, and the same crash
+
+`feedbackStatus.ftl` (route `{crp}/feedback`) carries a near-duplicate of the BI block, and
+`feedbackStatus.js` is a near-duplicate of `biDashboard.js` — including the *same* unguarded initial
+`executePetition()` call. So QA's request to "add the same message" understated the problem: feedback.do had the
+A2-2416 crash too, not just the missing placeholder.
+
+- **BUG-BI-EMPTY-F-008** — feedback.do MUST render the same placeholder, from the same i18n keys, when `biReports`
+  is empty.
+- **BUG-BI-EMPTY-F-009** — `feedbackStatus.js` MUST carry the same guards as `biDashboard.js`.
+- **BUG-BI-EMPTY-F-010** — feedback.do's widget `<script>` MUST be guarded like bi.do's.
+- **AC-010** — Given feedback.do with no BI reports configured, when a user opens it, then the placeholder renders
+  and the console shows no uncaught exception.
+
+Note: feedback.do wraps its `headContainer` in `style="display: none;"`, so the `undefined` of A2-2428 was never
+visible there. The fix is applied anyway, since the code is shared in spirit and would surface if that block is
+ever shown.
+
+### The empty state was unreachable on feedback.do — `findAll()` returns null
+
+Found only by running the page with an empty `bi_reports`: the placeholder never rendered, the request returned
+HTTP 500, and the stack trace was
+
+```
+java.lang.NullPointerException: Cannot invoke "java.util.List.stream()" because the return value of
+BiReportsManager.findAll() is null
+  at FeedbackStatusAction.prepare(FeedbackStatusAction.java:123)
+```
+
+`BiReportsMySQLDAO.findAll()` **returns `null` rather than an empty list** when no row matches:
+
+```java
+List<BiReports> list = super.findAll(query);
+if (list.size() > 0) {
+  return list;
+}
+return null;
+```
+
+`FeedbackStatusAction.prepare()` streamed that value directly, so it threw in the action — before the template ran.
+bi.do escaped it only by accident: `BiReportsAction.prepare()` merely assigns the value, and FreeMarker's
+`?has_content` treats null and empty alike, so the `[#else]` branch rendered.
+
+- **BUG-BI-EMPTY-F-011** — `FeedbackStatusAction.prepare()` MUST tolerate a null result from `findAll()`.
+- **BUG-BI-EMPTY-F-012** — `BiReportsAction.prepare()` MUST normalize both `findAll()` results to a list, so the
+  view and the JS never depend on FreeMarker tolerating null.
+- **AC-011** — Given `bi_reports` empty, when feedback.do is requested, then it returns HTTP 200 with the
+  placeholder, not a 500.
+
+**Decision — guard at the call sites, not in the DAO.** Returning an empty list from
+`BiReportsMySQLDAO.findAll()` would be the better contract, but that method is shared and other callers may rely on
+the null. Changing it belongs in its own ticket, together with an audit of the same `return null` pattern across the
+other MARLO DAOs.
+
+### Also fixed in passing
+
+`console.log(errors)` in both files' `fullScreenDashboard()` catch block referenced an undeclared identifier, so
+the handler itself threw a `ReferenceError` and masked whatever error it was meant to report. Corrected to
+`console.log(error)`.
+
+## 10. Decision Log
 
 - 2026-08-24 — Treat this as a code defect, not a configuration gap — the reported cause ("no dashboard configured")
   is the trigger; the defect is an unguarded assumption in `biDashboard.js` that affects every instance.
