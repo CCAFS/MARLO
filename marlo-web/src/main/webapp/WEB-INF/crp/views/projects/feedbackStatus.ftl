@@ -2,7 +2,7 @@
 [#assign title = "Feedback Status" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/feedbackStatus.js?20230201"
+  "${baseUrlMedia}/js/projects/feedbackStatus.js?20260824"
   ]
 /]
 [#assign customCSS = [
@@ -95,6 +95,12 @@
                     [/#list] 
                   </div>
                 </div>
+              [#else]
+              [#--  No BI report configured for this instance --]
+              <div class="simpleBox emptyMessage text-center">
+                <h4>[@s.text name="biDashboard.comingSoon.title" /]</h4>
+                <p>[@s.text name="biDashboard.comingSoon.description" /]</p>
+              </div>
               [/#if]
              </section>
           </div>
