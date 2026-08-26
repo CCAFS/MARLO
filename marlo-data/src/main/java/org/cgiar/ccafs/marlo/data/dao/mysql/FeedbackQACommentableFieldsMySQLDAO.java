@@ -68,7 +68,7 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -79,7 +79,7 @@ public class FeedbackQACommentableFieldsMySQLDAO extends AbstractMarloDAO<Feedba
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
