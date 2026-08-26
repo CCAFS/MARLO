@@ -233,4 +233,11 @@
         <div class="clearfix"></div>
       </div>
     </div>
+
+    [#-- The growing middle of the body flex column, so the footer lands at the
+         bottom of the viewport instead of leaving a blank strip below it on a
+         page shorter than the screen. Closed by footer.ftl: every page that
+         includes this file includes that one, except partnersSave.ftl, which
+         closes the wrapper itself. --]
+    <div id="pageContent">
   

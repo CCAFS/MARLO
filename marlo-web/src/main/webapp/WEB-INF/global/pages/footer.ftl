@@ -2,6 +2,8 @@
     <!-- The errorTag is DEPRECIATED right now it's not being use -->
     <!-- <span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>-->
     <!-- ${actionName} Content end-->
+    [#-- Closes #pageContent, opened by header.ftl. --]
+    </div>
     [#if !(avoidFooter!false)]
     <footer class="footer">
       <div class="container">

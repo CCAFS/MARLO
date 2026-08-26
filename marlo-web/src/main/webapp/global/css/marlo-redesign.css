@@ -122,6 +122,38 @@
   max-width: 1400px;
 }
 
+/* Sticky footer. MARLO had no full-height chain and no page-level flex layout:
+   .footer carried a fixed margin-top and nothing else, so any page whose
+   content was shorter than the viewport ended part-way down the screen and left
+   a blank strip below the footer that reads as a broken layout.
+
+   The page shell is the only place this can be fixed once for every screen.
+   #pageContent is opened by header.ftl and closed by footer.ftl, so it wraps
+   whatever the page renders between them; the growth goes on that wrapper
+   rather than on `.footer { margin-top: auto }`, which would have swallowed the
+   footer's own 24px margin. This way the margin survives in both cases: the
+   footer is pushed to the bottom of a short page and still follows the content
+   of a long one, unchanged.
+
+   Screen only. There is no print stylesheet in MARLO and the summaries are
+   printed from the same pages; fragmentation inside a flex container is where
+   print support is thinnest, and a sticky footer means nothing on paper. */
+@media screen {
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* dvh tracks the collapsing mobile URL bar. vh is the fallback and stays
+       first: on its own it makes a short page scrollable by the height of that
+       bar. */
+    min-height: 100dvh;
+  }
+
+  #pageContent {
+    flex: 1 0 auto;
+  }
+}
+
 /************* 1. TOP BAR ***************/
 /* Selectors use direct children so nothing leaks into ul.subMenu, which is a
    descendant of the same block and needs a completely different layout. */
