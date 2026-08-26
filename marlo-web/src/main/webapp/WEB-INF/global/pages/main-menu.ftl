@@ -75,7 +75,7 @@
   [#-- TIP Module --]
   { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active'), 'active': true, 'beta': true }
   [#-- ia Module --]
-  { 'slug': 'ai', 'name': 'menu.ai',      'namespace': '/ai',       'action': '${(crpSession)!}/ai',    'visible': logged && action.hasSpecificities('user_idea_section_active'), 'active': true }
+  { 'slug': 'ai', 'name': 'menu.ai',      'namespace': '/ai',       'action': '${(crpSession)!}/ai',    'visible': logged && action.hasSpecificities('ai_section_active'), 'active': true }
 ]/]
 
 

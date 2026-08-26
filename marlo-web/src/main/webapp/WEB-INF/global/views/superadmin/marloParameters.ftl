@@ -77,7 +77,7 @@
           [#list parametersTypes as type]
             <div role="tabpanel" class="tab-pane ${type?is_first?string('active','')}" id="type-${type_index}-${element.id}">
               <div class="parameter-search-wrap">
-                <input type="text" class="form-control parameter-search" placeholder="Search..." data-target="table-${type_index}-${element.id}" />
+                <input type="text" class="form-control parameter-search" placeholder="Search parameter..." data-target="table-${type_index}-${element.id}" />
                 <div class="iconSearch parameter-search-icon">
                   <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </div>
