@@ -111,29 +111,51 @@
       <hr />
       [#-- SLO ID  --]
       <input type="hidden" name="${name}.id" value="${(element.id)!}"/>
-      [#-- Section name  --]
+      [#-- Section name: the slug has to be a ProjectSectionsEnum value, matching the page's
+           #sectionNameToFeedback marker, so it is picked from the list instead of typed.
+           The options are written here rather than through [@customForm.select] because that macro hands the
+           current value to [@s.select] as an OGNL expression, which never matches a string slug, and because a
+           stored slug outside the enum -- 'safeguard' for the safeguards page -- has to survive the save instead
+           of being silently reset to the placeholder. --]
+      [#local currentSection = (element.sectionName)!'' /]
       <div class="form-group">
-        [@customForm.input name="${name}.sectionName" i18nkey="feedbackManagement.sectionName" className="description limitWords-100" required=true /]
+        <div class="select fieldReference">
+          <label for="${name}.sectionName">
+            [@s.text name="feedbackManagement.sectionName" /]:[@customForm.req required=true /]
+            [@customForm.helpLabel name="feedbackManagement.sectionName.help" showIcon=false /]
+          </label>
+          <div class="selectList">
+            <select id="${name}.sectionName" name="${name}.sectionName" class="sectionName form-control input-sm">
+              <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+              [#list projectSections as section]
+                <option value="${section}"[#if section == currentSection] selected="selected"[/#if]>${section}</option>
+              [/#list]
+              [#if currentSection?has_content && !projectSections?seq_contains(currentSection)]
+                <option value="${currentSection}" selected="selected">${currentSection} [@s.text name="feedbackManagement.sectionName.unknown" /]</option>
+              [/#if]
+            </select>
+          </div>
+        </div>
       </div>
       <div class="clearfix"></div>
       [#-- Section description  --]
       <div class="form-group">
-        [@customForm.input name="${name}.sectionDescription" i18nkey="feedbackManagement.sectionDescription" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.sectionDescription" i18nkey="feedbackManagement.sectionDescription" help="feedbackManagement.sectionDescription.help" helpIcon=false className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>      
       [#-- field name  --]
       <div class="form-group">
-        [@customForm.input name="${name}.fieldName" i18nkey="feedbackManagement.fieldName" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.fieldName" i18nkey="feedbackManagement.fieldName" help="feedbackManagement.fieldName.help" helpIcon=false className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Field description  --]
       <div class="form-group">
-        [@customForm.input name="${name}.fieldDescription" i18nkey="feedbackManagement.fieldDescription" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.fieldDescription" i18nkey="feedbackManagement.fieldDescription" help="feedbackManagement.fieldDescription.help" helpIcon=false className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>
       [#-- Parent field description  --]
       <div class="form-group">
-        [@customForm.input name="${name}.parentFieldDescription" i18nkey="feedbackManagement.parentFieldDescription" className="description limitWords-100" required=true /]
+        [@customForm.input name="${name}.parentFieldDescription" i18nkey="feedbackManagement.parentFieldDescription" help="feedbackManagement.parentFieldDescription.help" helpIcon=false className="description limitWords-100" required=true /]
       </div>
       <div class="clearfix"></div>
         

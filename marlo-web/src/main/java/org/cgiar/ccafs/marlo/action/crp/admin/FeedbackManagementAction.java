@@ -285,6 +285,15 @@ public class FeedbackManagementAction extends BaseAction {
       String parentFieldIdentifierParam = this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldIdentifier");
       String parentFieldDescriptionParam = this.getRequest().getParameter("feedbackFields[" + index + "].parentFieldDescription");
 
+      /*
+       * The section is a dropdown, and its placeholder option posts "-1". Normalising it to an empty string keeps
+       * the untouched-row check below working -- a cloned row the administrator never filled would otherwise look
+       * like it had content -- and stops the placeholder from being persisted as a section slug.
+       */
+      if ("-1".equals(sectionNameParam)) {
+        sectionNameParam = "";
+      }
+
       boolean hasAnyContent = (idParam != null && !idParam.trim().isEmpty()) ||
         (fieldNameParam != null && !fieldNameParam.trim().isEmpty()) ||
         (fieldDescriptionParam != null && !fieldDescriptionParam.trim().isEmpty()) ||
