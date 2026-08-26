@@ -32,6 +32,13 @@ public class BiParameters extends MarloBaseEntity implements java.io.Serializabl
   @Expose
   private String parameterValue;
 
+  @Expose
+  private GlobalUnit globalUnit;
+
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
+  }
 
   @Override
   public String getLogDeatil() {
@@ -70,6 +77,10 @@ public class BiParameters extends MarloBaseEntity implements java.io.Serializabl
   @Override
   public boolean isActive() {
     return true;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   @Override

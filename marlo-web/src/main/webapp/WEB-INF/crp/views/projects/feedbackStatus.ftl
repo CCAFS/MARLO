@@ -111,7 +111,7 @@
 </section>
 [/#if]
 
-    [#assign BiAppURL = ((biParameters)![])?filter(param -> param.parameterName = "bi_widget_url" )]
+    [#assign BiAppURL = (biParameters![])?filter(param -> param.parameterName = "bi_widget_url" )]
 
     [#if BiAppURL?has_content]
     <script src="${BiAppURL[0].parameterValue}" charset="utf-8"></script>

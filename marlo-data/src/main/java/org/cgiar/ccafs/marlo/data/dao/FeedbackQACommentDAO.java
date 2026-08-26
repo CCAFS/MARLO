@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface FeedbackQACommentDAO {
@@ -77,6 +78,16 @@ public interface FeedbackQACommentDAO {
    * @return a list from FeedbackQAComment null if no exist records
    */
   public List<FeedbackQAComment> getFeedbackQACommentsByPhaseAndParentId(long phaseID, long parentID);
+
+  /**
+   * This method gets the comment usage of every commentable field of a global unit, grouped by field, project and
+   * phase. It is scoped to the global unit through the commentable field the comment points at.
+   *
+   * @param globalUnitID is the global unit identifier.
+   * @return a list of maps with keys field_id, project_id, phase_id, total and link; empty if no records exist
+   */
+  public List<Map<String, Object>> getUsageByCommentableFieldAndGlobalUnit(long globalUnitID);
+
 
   /**
    * This method saves the information of the given feedbackQAComment

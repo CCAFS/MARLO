@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
 import org.cgiar.ccafs.marlo.data.manager.BiReportsManager;
 import org.cgiar.ccafs.marlo.data.model.BiParameters;
 import org.cgiar.ccafs.marlo.data.model.BiReports;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
@@ -66,11 +67,17 @@ public class BiReportsAction extends BaseAction {
 
   @Override
   public void prepare() {
-    // Both DAOs return null instead of an empty list when nothing is configured. Normalize here so the
-    // view and biDashboard.js always receive a list, rather than relying on FreeMarker tolerating null.
-    List<BiReports> reports = biReportsManager.findAll();
+    GlobalUnit loggedCrp = this.getCurrentCrp();
+    if (loggedCrp == null) {
+      LOG.warn("There is no global unit in the session, the BI reports and parameters can not be loaded.");
+      return;
+    }
+
+    // Both DAOs still return null rather than an empty list when nothing matches the global unit, so
+    // normalize here and keep the view and biDashboard.js from depending on FreeMarker tolerating null.
+    List<BiReports> reports = biReportsManager.findAll(loggedCrp.getId());
     biReports = reports == null ? new ArrayList<>() : reports;
-    List<BiParameters> parameters = biParametersManager.findAll();
+    List<BiParameters> parameters = biParametersManager.findAll(loggedCrp.getId());
     biParameters = parameters == null ? new ArrayList<>() : parameters;
   }
 
