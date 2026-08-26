@@ -62,24 +62,28 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
       return false;
     }
 
-    String roleIdsStr = roleIds.toString().replace("[", "").replace("]", "");
-
-    String safePermissionName = permissionName.replace("'", "''");
-
     StringBuilder sql = new StringBuilder();
     sql.append("SELECT COUNT(frp.id) AS count ").append("FROM feedback_roles_permissions frp ")
       .append("JOIN feedback_permissions fp ON frp.feedback_permission_id = fp.id ")
-      .append("JOIN roles r ON frp.role_id = r.id ").append("WHERE frp.role_id IN (").append(roleIdsStr).append(") ")
-      .append("AND fp.name = '").append(safePermissionName).append("' ").append("AND r.global_unit_id = ")
-      .append(globalUnitID).append(" ");
+      .append("JOIN roles r ON frp.role_id = r.id ").append("WHERE frp.role_id IN (:roleIds) ")
+      .append("AND fp.name = :permissionName ").append("AND frp.global_unit_id = :globalUnitID ")
+      .append("AND r.global_unit_id = frp.global_unit_id ");
 
     if (clusterTypeId == null) {
       sql.append("AND frp.cluster_type_id IS NULL ");
     } else {
-      sql.append("AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = ").append(clusterTypeId).append(") ");
+      sql.append("AND (frp.cluster_type_id IS NULL OR frp.cluster_type_id = :clusterTypeId) ");
     }
 
-    Number count = (Number) this.getSessionFactory().getCurrentSession().createSQLQuery(sql.toString()).uniqueResult();
+    NativeQuery<?> query = this.getSessionFactory().getCurrentSession().createNativeQuery(sql.toString())
+      .setParameterList("roleIds", roleIds).setParameter("permissionName", permissionName)
+      .setParameter("globalUnitID", globalUnitID);
+
+    if (clusterTypeId != null) {
+      query.setParameter("clusterTypeId", clusterTypeId);
+    }
+
+    Number count = (Number) query.uniqueResult();
 
     return count != null && count.longValue() > 0;
   }
@@ -106,9 +110,9 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
   public List<FeedbackRolesPermission> findObjectsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName,
     Long globalUnitID, Long clusterTypeId) {
 
-    String sql = "SELECT * FROM feedback_roles_permissions " + "WHERE role_id IN (:roleIds) "
-      + "AND feedback_permission_id = (SELECT id FROM feedback_permissions WHERE name = :permissionName) "
-      + "AND global_unit_id = :globalUnitID ";
+    String sql = "SELECT frp.* FROM feedback_roles_permissions frp " + "WHERE frp.role_id IN (:roleIds) "
+      + "AND frp.feedback_permission_id = (SELECT id FROM feedback_permissions WHERE name = :permissionName) "
+      + "AND frp.global_unit_id = :globalUnitID ";
 
     if (clusterTypeId == null) {
       sql += "AND frp.cluster_type_id IS NULL ";
@@ -136,7 +140,8 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
 
     String sql = "SELECT DISTINCT r.acronym " + "FROM feedback_roles_permissions frp "
       + "JOIN roles r ON frp.role_id = r.id " + "JOIN feedback_permissions fp ON frp.feedback_permission_id = fp.id "
-      + "WHERE fp.name = :permissionName AND r.global_unit_id = :globalUnitID";
+      + "WHERE fp.name = :permissionName AND frp.global_unit_id = :globalUnitID "
+      + "AND r.global_unit_id = frp.global_unit_id";
 
     @SuppressWarnings("unchecked")
     List<String> acronyms = this.getSessionFactory().getCurrentSession().createNativeQuery(sql)
@@ -153,7 +158,8 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
 
     String sql = "SELECT r.id " + "FROM feedback_roles_permissions frp "
       + "JOIN feedback_permissions fp ON frp.feedback_permission_id = fp.id " + "JOIN roles r ON frp.role_id = r.id "
-      + "WHERE fp.name = :permissionName AND r.global_unit_id = :globalUnitID";
+      + "WHERE fp.name = :permissionName AND frp.global_unit_id = :globalUnitID "
+      + "AND r.global_unit_id = frp.global_unit_id";
 
     return this.getSessionFactory().getCurrentSession().createSQLQuery(sql)
       .addScalar("id", org.hibernate.type.LongType.INSTANCE).setParameter("permissionName", permissionName)
@@ -164,10 +170,10 @@ public class FeedbackRolesPermissionMySQLDAO extends AbstractMarloDAO<FeedbackRo
   public List<FeedbackRolesPermission> getFeedbackRolesPermissionByGlobalUnitID(long globalUnitID) {
     String query = "from " + FeedbackRolesPermission.class.getName() + " where global_unit_id=" + globalUnitID;
     List<FeedbackRolesPermission> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
+    if (list == null) {
+      return Collections.emptyList();
     }
-    return null;
+    return list;
   }
 
 
