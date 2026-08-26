@@ -125,7 +125,7 @@
       <div class="clearfix"></div>
       [#--  Cluster Type  --]
       <div class="form-group">
-        [@customForm.select name="${name}.clusterType.id" className="clusterType" i18nkey="feedbackPermissions.clusterType"  disabled=!editable  listName="clusterTypeList" keyFieldName="id"  displayFieldName="name" required=true editable=editable /]
+        [@customForm.select name="${name}.clusterType.id" className="clusterType" i18nkey="feedbackPermissions.clusterType"  disabled=!editable  listName="clusterTypeList" keyFieldName="id"  displayFieldName="name" required=false editable=editable /]
       </div>
       <div class="clearfix"></div>
         
