@@ -9,7 +9,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20260826",
+  "${baseUrlMedia}/css/home/dashboard.css?202608262",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -82,7 +82,14 @@
       <div class="clusterMap">
         <img src="${baseUrlCdn}/global/images/Map_africa.svg" alt="[@s.text name="dashboard.cluster.mapAlt" /]">
         [#list clusterHotspots as hotspot]
-          <a class="clusterMap__spot" style="left:${hotspot.x}%;top:${hotspot.y}%"
+          [#--
+            The tooltip is a laid-out box even while hidden, and the right edge of the map panel is also the right edge
+            of the page container, so a tooltip centred on a right-side dot widened the document and put a horizontal
+            scrollbar on the page below ~1457px without ever being seen. Dots past the middle of the map anchor their
+            tooltip to the dot instead of centring it on it, which is also what keeps it visible inside the card on
+            hover. Only the right band needs it: on the left the tooltip opens over the banner text, never off-page.
+          --]
+          <a class="clusterMap__spot[#if hotspot.x?number gte 60] clusterMap__spot--tipEnd[/#if]" style="left:${hotspot.x}%;top:${hotspot.y}%"
             href="[@s.url namespace="/clusters" action='${(crpSession)!}/description'][@s.param name='projectID']${hotspot.projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
             target="_blank" rel="noreferrer noopener" aria-label="${hotspot.label}">
             <span class="clusterMap__tip">${hotspot.label}</span>

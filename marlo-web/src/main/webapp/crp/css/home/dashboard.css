@@ -250,6 +250,16 @@ div#impactGraphic-fullscreen {
     visibility: visible;
   }
 
+  /* Edge collision. `visibility: hidden` still lays the box out, so a tooltip that spills past the map contributes to
+     the document's scrollable width whether or not anyone hovers it — and the panel's right edge is the container's,
+     so the spill lands outside the page. Right-band dots (the modifier is assigned in dashboard.ftl from the same
+     x that positions the dot) end their tooltip at the dot rather than centring it on it. */
+  .clusterMap__spot--tipEnd .clusterMap__tip {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
   @media (max-width: 1100px){
     .clusterBanner__map {
       width: 190px;
