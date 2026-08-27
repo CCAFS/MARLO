@@ -2,7 +2,7 @@
 
 **Purpose:** This file defines the *format and conventions* for `task.md` inside any module spec under `docs/specs/`. It is the executable plan that translates an approved `design.md` into ordered, testable steps.
 
-**Pairs with:** `requirements.md` and `design.md` in the same spec folder.
+**Pairs with:** `requirements.md` and `design.md` in the same spec folder — plus `family.md` when this spec is part of a spec family (template: `docs/specs/general-setup/family.md`).
 
 ---
 

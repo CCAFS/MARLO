@@ -213,7 +213,7 @@ the only record of it. There is no Jira issue.
 
 1. **`struts-ai.xml` is dead.** It declares package `ai` on namespace `/ai2` and is **not** included from `struts.xml`.
    The live mapping is in `struts-projects.xml`. Edit the wrong file and nothing happens.
-   (`docs/detailed-design/detailed-design.md` §Routing still lists `struts-ai.xml` among the active mapping files.)
+   (`docs/trd/trd.md` §Routing still lists `struts-ai.xml` among the active mapping files.)
 2. The view is loaded through the `input` result, and `success` redirects back to `{crp}/ai` with `edit=true`.
 3. `aiDashboard.ftl` pulls two **CDN stylesheets** (select2) directly. That conflicts with the offline/self-contained
    posture of the rest of the app; the page also declares `pageLibs = ["select2","flag-icon-css"]` without using them.

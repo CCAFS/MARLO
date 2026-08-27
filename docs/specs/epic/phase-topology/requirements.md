@@ -6,8 +6,8 @@
 **Reviewers:** IBD team lead, PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-08-24
 **Related PRD sections:** docs/prd.md — planning / reporting cycle management
-**Related System Design sections:** docs/system-design/design.md — CRP Admin screens, phase timeline switcher
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3 (data model), §5 (save pipeline)
+**Related UX/UI Design sections:** docs/ux-ui/design.md — CRP Admin screens, phase timeline switcher
+**Related TRD sections:** docs/trd/trd.md §3 (data model), §5 (save pipeline)
 **Companion ai-context docs:** reports/ai-context/persistence-replication-managerimpl.md, reports/ai-context/save-validation-matrix.md, reports/ai-context/interceptor-validator-playbook.md
 
 ---

@@ -6,8 +6,8 @@
 **Reviewers:** PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-08-25
 **Related PRD sections:** docs/prd.md — quality assurance / review workflows
-**Related System Design sections:** docs/system-design/design.md — project section layout, component inventory
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3 (data model), §5 (save pipeline), §security model
+**Related UX/UI Design sections:** docs/ux-ui/design.md — project section layout, component inventory
+**Related TRD sections:** docs/trd/trd.md §3 (data model), §5 (save pipeline), §security model
 **Companion ai-context docs:** reports/ai-context/frontend-composition-map.md, reports/ai-context/struts-critical-routing-catalog.md, reports/ai-context/save-validation-matrix.md
 
 ---

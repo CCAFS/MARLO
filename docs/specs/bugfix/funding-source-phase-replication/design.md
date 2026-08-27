@@ -5,7 +5,7 @@
 **Owner:** IBD Team — Kenji Tanaka
 **Reviewers:** PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-08-20
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3, §5
+**Related TRD sections:** docs/trd/trd.md §3, §5
 **Companion ai-context docs:** reports/ai-context/persistence-replication-managerimpl.md
 
 ---

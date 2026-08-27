@@ -7,8 +7,8 @@
 **Last Updated:** 2026-08-26
 **Jira:** A2-2433 (child of A2-2055 — Enhancements 2026)
 **Related PRD sections:** docs/prd.md §5 (Scope), §8 (Assumptions, Dependencies, & Constraints)
-**Related System Design sections:** docs/system-design/design.md §2 (Information Architecture), §4 (Screen Inventory), §5 (Navigation Model)
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3 (Data Model & Entities), §5 (Backend Workflows), §8 (Security & Authorization Model)
+**Related UX/UI Design sections:** docs/ux-ui/design.md §2 (Information Architecture), §4 (Screen Inventory), §5 (Navigation Model)
+**Related TRD sections:** docs/trd/trd.md §3 (Data Model & Entities), §5 (Backend Workflows), §8 (Security & Authorization Model)
 **Companion ai-context docs:** docs/specs/domain/ai-services/agent-context.md
 
 ## 1. Overview

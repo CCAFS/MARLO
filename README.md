@@ -68,7 +68,7 @@ For the full product framing, see [`docs/prd.md`](./docs/prd.md).
 | AI | AWS Bedrock (Claude, Titan), Amazon OpenSearch, AWS Lambda |
 | CI/CD | GitHub Actions → Jenkins; SonarCloud; Snyk |
 
-Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §8.5.
+Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/trd/trd.md`](./docs/trd/trd.md) §8.5.
 
 ---
 
@@ -92,7 +92,7 @@ MARLO/
 └── EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md  Debugging runbook for accordion-style UIs
 ```
 
-For the module breakdown in detail, see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §2.
+For the module breakdown in detail, see [`docs/trd/trd.md`](./docs/trd/trd.md) §2.
 
 ---
 
@@ -176,8 +176,10 @@ The repository follows a **Spec-Driven Development (SDD)** methodology. The docu
 - [`AGENTS.md`](./AGENTS.md) — operational ground truth: language rules, file headers, code style, Checkstyle, migration naming, specificity workflow, file organization, run scripts.
 - [`CLAUDE.md`](./CLAUDE.md) — entry point for AI assistants; lists the 12 hard rules and the doc-reading order.
 - [`docs/prd.md`](./docs/prd.md) — Product Requirements: problem, personas, goals, success metrics, scope, user stories, acceptance, assumptions, open questions.
-- [`docs/system-design/design.md`](./docs/system-design/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
-- [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
+- [`docs/ux-ui/design.md`](./docs/ux-ui/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
+- [`docs/trd/trd.md`](./docs/trd/trd.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
+- [`docs/infrastructure.md`](./docs/infrastructure.md) — environments blueprint: Test / Staging / Production topology, deployment pipeline, network & security, and the **Local Environment contract** (how to start the local stack).
+- [`.agents/`](./.agents/) — the AKILI multi-agent personas (Leader, Implementer, Reviewer, Tester) used by `/akili-execute` and `/akili-test`.
 
 ### Spec methodology and taxonomy
 
@@ -186,6 +188,7 @@ Every module spec under `docs/specs/` MUST follow these templates:
 - [`docs/specs/general-setup/requirements.md`](./docs/specs/general-setup/requirements.md)
 - [`docs/specs/general-setup/design.md`](./docs/specs/general-setup/design.md)
 - [`docs/specs/general-setup/task.md`](./docs/specs/general-setup/task.md)
+- [`docs/specs/general-setup/family.md`](./docs/specs/general-setup/family.md) — only when a spec was chunked into child specs (the spec-family manifest).
 
 Spec folders live under:
 

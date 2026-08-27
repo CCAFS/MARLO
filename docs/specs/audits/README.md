@@ -1,0 +1,1 @@
+Scaffolding only — one drift report per `/akili-audit` run lives here. This README is not an audit report; a "most recent report" read that finds only this file must conclude the directory holds none.
