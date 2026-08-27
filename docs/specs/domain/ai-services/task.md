@@ -1,7 +1,7 @@
 # AI Services — Per-Global-Unit Section Content — Tasks
 
 **Spec ID:** DOMAIN-AI-SERVICES-001
-**Status:** In Progress — T01..T07 implemented, T08 pending. See §9 for the open risks.
+**Status:** In Progress — T01..T07 implemented, T08 pending. See §9: R1 closed, R2-R4 are unexecuted verifications.
 **Owner:** IBD Team
 **Last Updated:** 2026-08-27
 **Implements design:** docs/specs/domain/ai-services/design.md
@@ -24,9 +24,8 @@
 - [x] **OQ-1 answered** — one Global Unit per row, no shared rows. Confirmed by the requester on 2026-08-27 when
       approving `NOT NULL`; **not** a PMU sign-off. Original text: confirm that a tool row belongs to exactly one Global Unit (no shared/global rows).
       If the answer is "shared rows are needed", stop: DA-003 and ADR-1 change, and T01 must be redesigned.
-- [ ] **OQ-2 NOT answered — open operational risk.** The query below was never run against production. If any
-      non-AICCRA Global Unit has `ai_section_active = true`, it will visibly lose its cards on deploy. **This must be
-      run and coordinated with PMU before merge.** Query:
+- [x] **OQ-2 — closed without running the query.** The requester accepted the empty state on 2026-08-27, on the
+      grounds that it now shows its own explanatory copy; see §9 R1. Query kept for the record:
       ```sql
       SELECT gu.id, gu.acronym, cp.value
       FROM custom_parameters cp
@@ -35,8 +34,9 @@
       WHERE p.`key` = 'ai_section_active' AND cp.is_active = 1;
       ```
       Any Global Unit other than AICCRA with `value = 'true'` will visibly lose its cards on deploy and must be told.
-- [ ] **Pre-flight data check NOT run** — no database was available. Mitigated in code instead: the migration guards
-      the backfill and removes rows it cannot attribute. Query:
+- [x] **Pre-flight data check — answered by the requester (2026-08-27): Global Unit 45 is the only one with rows in
+      `ai_report_configuration`.** So the backfill attributes every row and the migration's `DELETE` of unattributable
+      rows will not fire in production. Not re-verified against the database (R2). Query, for the record:
       ```sql
       SELECT COUNT(*) FROM ai_report_configuration;                          -- expect 3 in production
       SELECT COUNT(*) FROM ai_report_configuration WHERE is_active = 0;      -- expect 0
@@ -316,9 +316,9 @@ Strictly linear: the mapping needs the column, the DAO needs the mapping, and th
 
 - [ ] All acceptance criteria from requirements.md §6 verified. **Reasoned as satisfied by the code, none executed** —
       no database or running application was available.
-- [ ] OQ-1, OQ-2 and OQ-3 resolved and recorded in the Decision Log. **OQ-1 answered by the requester (not PMU);
-      OQ-2 still open and blocking (see Pre-flight); OQ-3 not addressed.**
-- [ ] Constitutional compliance checklist confirmed in the PR. **§9 lists the open risks; R1 is blocking.**
+- [x] OQ-1 and OQ-2 resolved by the requester (not PMU): one Global Unit per row, and the empty-state copy makes
+      pre-deploy notification unnecessary (§9 R1). **OQ-3 not addressed.**
+- [ ] Constitutional compliance checklist confirmed in the PR. **§9 lists the risks; R1 is closed, R2-R4 remain.**
 - [ ] `mvn checkstyle:check` passes. **Cannot run** — `maven-checkstyle-plugin` 2.9.1 against `checkstyle` 8.18 throws
       `NoSuchMethodError: Checker.setClassloader`, reproduced on clean `staging`. Pre-existing repo defect, not caused
       by this change. Style verified by hand.
@@ -341,12 +341,20 @@ Only items that can actually cause a problem. Cosmetic differences from this pla
 and choices that came out stricter than planned (empty list instead of `null`, no unscoped `findAll()`, guarded
 backfill, deterministic ordering) are not listed.
 
-### R1 — OQ-2 was never run. Blocking.
+### R1 — OQ-2 not run. CLOSED, accepted by the requester (2026-08-27).
 
-The pre-flight query identifying which Global Units have `ai_section_active = true` in production was not executed.
-**Any non-AICCRA Global Unit with the flag on will visibly lose its AI cards on deploy**, because the read is now
-scoped and only Global Unit 45 has rows. Run the query in §2 and coordinate with PMU before merge. If such a Global
-Unit exists, either insert its own rows or accept the empty state with its programme's agreement.
+**This was about the specificity flag, not the rows.** Global Unit 45 is confirmed as the only one with rows in
+`ai_report_configuration`; which Global Units have `ai_section_active = true` was never queried.
+
+**Decision: accepted without the query, no PMU coordination.** The empty state now carries its own i18n copy
+(`userIdea.noReportsConfigured`, `.noReportsConfiguredDescription`), so a Global Unit with the flag on and no rows of
+its own lands on a clear, self-explanatory message instead of something that reads as broken. That is what made the
+pre-deploy notification unnecessary.
+
+Residual, accepted: such a Global Unit does lose the AICCRA cards it had been seeing — content that was never its
+own, which is the bug this change fixes. The loss is real from the user's side, but graceful. To hide the section
+entirely for a Global Unit instead, set its `ai_section_active` to `false`; note that open sessions only pick that up
+after re-login or a `crp_refresh` cycle.
 
 ### R2 — The migration was never executed against a database.
 
