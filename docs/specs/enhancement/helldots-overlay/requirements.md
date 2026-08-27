@@ -166,6 +166,14 @@ read.
 
 - **ENH-HELLDOTS-OQ-003** — Retention. Nothing prunes comments or orphaned screenshot blobs today. Decide a
   policy before the corpus is large enough for it to matter.
+- **ENH-HELLDOTS-OQ-005** — MARLO's outside-click handlers are not Shadow-DOM aware. A click inside any shadow
+  root retargets to the host element, so `!panel.contains(event.target)` reads it as "outside" and closes the
+  panel. `timeline-phases.js:58` is the confirmed case: clicking into the HellDots comment box closed the phase
+  panel underneath. `global-unit-switcher.js:70` has the same symptom by a different route — it closes on any
+  document click and relies on a `stopPropagation` handler bound to its own panel, which a click landing in
+  another widget's shadow root never reaches. The fix for the containment style is `event.composedPath()`
+  instead of `event.target`. Out of scope here — 0.10.0 corrects the anchor regardless — but it is a general
+  MARLO bug and deserves its own bugfix spec.
 
 ## 9. Decision Log
 

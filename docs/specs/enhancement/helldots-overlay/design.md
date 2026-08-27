@@ -20,7 +20,7 @@ library's Shadow DOM, so MARLO's CSS and the widget's cannot reach each other.
 footer.ftl  [#if currentUser?? && !config.production]
    |
    +-- <div id="helldots-config" data-user-id data-user-name data-base-url>
-   +-- helldots-0.9.1.umd.min.js    (self-hosted, 191 KB / 56 KB gzip)
+   +-- helldots-0.10.0.umd.min.js   (self-hosted, 189 KB / 55 KB gzip)
    +-- helldots-init.js             (adapter)
             |
             |  onReady / onCommentRequested   -> GET  /api/helldots/comments...
@@ -40,7 +40,7 @@ subsequent mutation is pushed as a single event. Nothing is polled and nothing i
 
 ### marlo-web
 
-- New: `webapp/global/js/vendor/helldots-0.9.1.umd.min.js` — the published UMD bundle, unmodified.
+- New: `webapp/global/js/vendor/helldots-0.10.0.umd.min.js` — the published UMD bundle, unmodified.
   The `.min.js` suffix is load-bearing: it is what the Closure plugin's exclude matches (see §14b.4).
 - New: `webapp/global/js/helldots-init.js` — adapter: reads config, builds the overlay, wires callbacks.
 - New: `java/org/cgiar/ccafs/marlo/rest/helldots/HelldotsController.java`
@@ -141,8 +141,14 @@ forward-only replication rule does not apply to them.
 a reply attachment when the file is picked, not when the reply is sent — so a blob can be created that no
 record ever references. A row with `comment_id IS NULL` older than the retention window is a sweep candidate.
 
-**Migration:** single Flyway file, `V2_6_0_<YYYYMMDD>_<HHMM>__CreateHelldotsTables.sql`, additive only. It
+**Migration:** single Flyway file, `V2_6_0_20260826_2215__CreateHelldotsTables.sql`, additive only. It
 ships to every environment including production, where the tables stay empty because the widget never mounts.
+
+It was originally stamped `V2_6_0_20260824_1000`, which collided with `AddGlobalUnitToBiParametersAndReports`
+from commit `11b38b73bb` — same version, different description, so Flyway's validate fails and the whole
+Spring context refuses to start. That migration is on `dev` and `aiccra-fsrp-improvements` and is pushed;
+this one was unpushed, so this one moved. Anyone whose local database applied the old stamp needs the
+`schema_version` row reconciled, not a re-run — the tables are already there.
 
 ## 4. API / Action Surface
 
@@ -176,7 +182,7 @@ and `AddSessionToRestRequestFilter`, both already mapped to `/api/*`.
        data-user-id="${currentUser.id?c}"
        data-user-name="${(currentUser.composedName)!'Unknown'}"
        data-base-url="${baseUrl}"></div>
-  <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.9.1.umd.min.js"></script>
+  <script defer src="${baseUrlCdn}/global/js/vendor/helldots-0.10.0.umd.min.js"></script>
   <script defer src="${baseUrlCdn}/global/js/helldots-init.js?20260824"></script>
 [/#if]
 ```
@@ -387,17 +393,31 @@ must not be called from inside a larger unit of work.
 
 ## 14d. Library Version
 
-Pinned to **HellDots 0.9.1** (upgraded from 0.7.0). The upgrade is purely additive — `SerializedComment` and
-`ChangeEvent` are byte-for-byte identical between the two, so the schema, `HelldotsProjection` and the event
-endpoint needed no change. Three options were added (`fastCapture`, `skipIframeContent`, `captureTimeout`);
-all are left at their defaults, and the reasoning is recorded in the Decision Records below.
+Pinned to **HellDots 0.10.0** (0.7.0 → 0.9.1 → 0.10.0).
 
-What the upgrade fixes without any configuration: the capture no longer blocks the interaction. The marker and
-the comment box appear immediately and the render happens behind them, and the renderer hands the main thread
-back every 8 ms so the page keeps painting and accepting keystrokes. Both behaviours are always on.
+`0.9.1` made the capture non-blocking: the marker and the comment box appear immediately, the render happens
+behind them, and the renderer hands the main thread back every 8 ms so the page keeps painting and accepting
+keystrokes. Both behaviours are always on. It also added `fastCapture`, `skipIframeContent` and
+`captureTimeout`; the choices are in the Decision Records below.
 
-Note `modern-screenshot` became a *peer* dependency in 0.9.x. That affects bundler consumers only — the UMD
-build MARLO vendors still bundles it, verified in the artifact's banner and its 191 KB size.
+`0.10.0` is **internal only** — `dist/index.d.ts` and the README are byte-identical to 0.9.1, so no option, no
+callback and no payload shape moved, and the adapter needed no edit. Three behaviour changes, verified by
+diffing the sources the published sourcemap carries:
+
+- **Drag comments now anchor to the region, not to the mouse-up pixel.** `onDragEnd` places at the rectangle's
+  centre and passes the rectangle through; the new `_placeCommentAtPoint` region path picks the topmost
+  element in the hit-test stack whose overlap with the rectangle covers ≥60% of it. Overshoot by a few pixels
+  is tolerated; a floating panel hovering over part of the framed content is rejected. This is the fix for
+  ENH-HELLDOTS-BUG-001.
+- **Anchor resolution breaks exact ties toward the deepest candidate.** With the fingerprint's text snippet
+  truncated to 64 characters, a parent and its child score identically in nested markup, and document order
+  used to hand the match to the ancestor. Ties between unrelated elements still keep document order.
+- **New eye toggle in the toolbar** hides and shows the on-page marker layer. It is a viewer preference, kept
+  in `localStorage` under `helldots-markers-hidden`, independent of comment persistence, and it re-shows
+  itself when the viewer enters comment mode or jumps to a marker from the inbox. Nothing to configure.
+
+Note `modern-screenshot` is a *peer* dependency from 0.9.x on. That affects bundler consumers only — the UMD
+build MARLO vendors still inlines it, verified in the artifact's banner and its 189 KB size.
 
 ## 15. Decision Records
 
@@ -426,8 +446,32 @@ build MARLO vendors still bundles it, verified in the artifact's banner and its 
 - **DR-007 — `helldots_` table prefix.** MARLO already owns the word "feedback" for a different system
   (`feedback_qa_comments`, anchored to form fields, with its own role/permission matrix). The prefix keeps the
   two apart in schema, code and conversation.
+- **DR-011 — Upgrade to 0.10.0 rather than work around ENH-HELLDOTS-BUG-001 in MARLO (2026-08-26).** The
+  candidate MARLO-side workaround was to stop the phase panel from closing under the comment box, which would
+  have made the lost comment visible without making it correctly anchored. The library fix addresses the cause
+  for every popover in the app, not just this one. The MARLO-side shadow-DOM fix is still worth doing on its
+  own merits and is tracked as ENH-HELLDOTS-OQ-005.
 
-## 16. Open Risks
+## 16. Fixed Defects
+
+- **ENH-HELLDOTS-BUG-001 — A drag over the phase selector produced a comment that never appeared.** Fixed
+  upstream in 0.10.0; see §14d. Reported 2026-08-26 against 0.9.1, root-caused against the running app.
+
+  A drag anchored to the mouse-up pixel, not to the selected rectangle, so a region framing the whole phase
+  bar was reduced to whatever single element sat under the release point. With `#allPhasesPanel` open, that
+  was a node inside the panel, and `_isAnchorTargetVisible` hides a marker whose target measures 0×0 — which
+  a `display:none` panel does. Measured on the real DOM: `#phaseSearchInput` is `0x0` closed and `310x34`
+  open, and the same comment reports `kind: "hidden"` and `kind: "visible"` to match.
+
+  MARLO made it look like the panel had never been open. [`timeline-phases.js:58`][tp] closes the panel on any
+  document click outside it, and a click inside the HellDots shadow root retargets to `<helldots-root>` — so
+  clicking into the comment box to type the comment closed the panel underneath, before the comment was even
+  saved. Confirmed by dispatching a composed click at the shadow textarea: `panel.hidden` flips `false → true`.
+  The library fix makes the anchor correct regardless; the retargeting bug remains as ENH-HELLDOTS-OQ-005.
+
+[tp]: ../../../../marlo-web/src/main/webapp/global/js/timeline-phases.js
+
+## 17. Open Risks
 
 - **R-001 — Mapping `/api/*` widens the reachable surface.** The whole `org.cgiar.ccafs.marlo.rest` tree becomes
   addressable there in non-production. Blocked on ENH-HELLDOTS-OQ-001.
