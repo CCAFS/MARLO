@@ -853,14 +853,17 @@ div#impactGraphic-fullscreen {
     background: var(--marlo-brand-tint);
   }
 
-  /* Second in line. Demoted by ground as well as by scale: the plain surface
-     against the panel above it is what keeps the two from reading as equals,
-     which shrinking the type alone would not do. */
+  /* Second in line, on the same ground as the panel above it so the column
+     reads as one family instead of a card beside an empty box. Rank is carried
+     by the type scale and by the accent stripe, not by the background.
+
+     The amber of the "not started" legend was the other candidate, and was
+     rejected: both panels only ever hold items that have not started, so two
+     different grounds would assert a difference in status that is not there. */
   .scheduleCard__next--compact {
     gap: 4px;
     padding: 12px 14px;
-    border-color: var(--marlo-border);
-    background: var(--marlo-surface);
+    border-left: 3px solid var(--marlo-brand-light);
   }
 
   .scheduleCard__nextEyebrow {
@@ -894,9 +897,11 @@ div#impactGraphic-fullscreen {
   }
 
   /* Two classes each, so these land after the `font` shorthands above rather
-     than being overwritten by them. */
+     than being overwritten by them. Colour is deliberately not among them: the
+     eyebrow and chip keep the inherited --marlo-info-text, because the muted
+     grey they used to carry measures 4.54:1 against the tint -- over AA's 4.5
+     by nothing worth relying on. */
   .scheduleCard__next--compact .scheduleCard__nextEyebrow {
-    color: var(--marlo-text-muted);
     font-size: 11px;
   }
 
@@ -912,8 +917,6 @@ div#impactGraphic-fullscreen {
   .scheduleCard__next--compact .scheduleCard__nextChip {
     margin-top: 2px;
     padding: 2px 8px;
-    border-color: var(--marlo-border);
-    color: var(--marlo-text-muted);
     font-size: 11px;
   }
 
