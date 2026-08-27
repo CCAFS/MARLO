@@ -48,7 +48,7 @@
     [/#if]
 
     [#-- Redesign layer: overrides global.css, must stay after it --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260819b" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?202608262" />
     [#-- Top bar behaviour. Deferred so it runs after the markup is parsed;
          it is plain DOM code and does not wait for the footer bundles. --]
     <script defer src="${baseUrlCdn}/global/js/global-unit-switcher.js?20260814"></script>
@@ -233,4 +233,11 @@
         <div class="clearfix"></div>
       </div>
     </div>
+
+    [#-- The growing middle of the body flex column, so the footer lands at the
+         bottom of the viewport instead of leaving a blank strip below it on a
+         page shorter than the screen. Closed by footer.ftl: every page that
+         includes this file includes that one, except partnersSave.ftl, which
+         closes the wrapper itself. --]
+    <div id="pageContent">
   

@@ -118,4 +118,7 @@
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+[#-- Closes #pageContent, opened by header.ftl. This page does not include
+     footer.ftl, which is where every other page closes the wrapper. --]
+</div>
 </body>

@@ -250,6 +250,16 @@ div#impactGraphic-fullscreen {
     visibility: visible;
   }
 
+  /* Edge collision. `visibility: hidden` still lays the box out, so a tooltip that spills past the map contributes to
+     the document's scrollable width whether or not anyone hovers it — and the panel's right edge is the container's,
+     so the spill lands outside the page. Right-band dots (the modifier is assigned in dashboard.ftl from the same
+     x that positions the dot) end their tooltip at the dot rather than centring it on it. */
+  .clusterMap__spot--tipEnd .clusterMap__tip {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
   @media (max-width: 1100px){
     .clusterBanner__map {
       width: 190px;
@@ -276,9 +286,11 @@ div#impactGraphic-fullscreen {
 
 
   /*************** Schedule ********************/
-  /* Vertically fixed, horizontally scrolled. The card holds three phase lanes,
-     three packed activity lanes and one overflow strip; adding activities
-     changes the chip counts, never the height.
+  /* Vertically fixed, horizontally scrolled. The card holds four packed
+     activity lanes and one overflow strip; adding activities changes the chip
+     counts, never the height. The lane count lives in dashboard.ftl (the row
+     loop) and in schedule.js (LANES), not here: these rules are per-row, so
+     nothing in this stylesheet has to change when it does.
 
      Geometry is set by schedule.js, which is the only thing that knows
      pixels-per-day: it measures the track and multiplies by the zoom stop.
@@ -815,15 +827,23 @@ div#impactGraphic-fullscreen {
     position: relative;
   }
 
-  .scheduleCard__next {
+  /* The column holding the panels: the soonest upcoming thing, and a compact
+     panel for the one after it when there is one. */
+  .scheduleCard__side {
     width: 300px;
     flex: none;
-    /* Drops the panel to the top of __frame instead of the top of the column,
-       so its edge lines up with the timeline's rather than with the zoom
-       buttons'. 44px is exactly the controls row: 34px of button plus its 10px
+    /* Drops the column to the top of __frame instead of the top of the row, so
+       its edge lines up with the timeline's rather than with the zoom buttons'.
+       44px is exactly the controls row: 34px of button plus its 10px
        margin-bottom, measured, not guessed. If that row ever changes height
        this has to change with it — the stacked layout below overrides it. */
     margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .scheduleCard__next {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -831,6 +851,19 @@ div#impactGraphic-fullscreen {
     border: 1px solid var(--marlo-brand-tint-border);
     border-radius: var(--marlo-radius-lg);
     background: var(--marlo-brand-tint);
+  }
+
+  /* Second in line, on the same ground as the panel above it so the column
+     reads as one family instead of a card beside an empty box. Rank is carried
+     by the type scale and by the accent stripe, not by the background.
+
+     The amber of the "not started" legend was the other candidate, and was
+     rejected: both panels only ever hold items that have not started, so two
+     different grounds would assert a difference in status that is not there. */
+  .scheduleCard__next--compact {
+    gap: 4px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--marlo-brand-light);
   }
 
   .scheduleCard__nextEyebrow {
@@ -863,9 +896,33 @@ div#impactGraphic-fullscreen {
     font: 600 12px/1.3 var(--marlo-font-sans);
   }
 
-  /* Stack at 1250px and below. The panel is a fixed 300px and every pixel it
-     takes comes off the track, so stacking early keeps the three lanes usable:
-     a narrow track packs fewer activities and pushes the rest into the overflow
+  /* Two classes each, so these land after the `font` shorthands above rather
+     than being overwritten by them. Colour is deliberately not among them: the
+     eyebrow and chip keep the inherited --marlo-info-text, because the muted
+     grey they used to carry measures 4.54:1 against the tint -- over AA's 4.5
+     by nothing worth relying on. */
+  .scheduleCard__next--compact .scheduleCard__nextEyebrow {
+    font-size: 11px;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextName {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextDates {
+    font-size: 12px;
+  }
+
+  .scheduleCard__next--compact .scheduleCard__nextChip {
+    margin-top: 2px;
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+
+  /* Stack at 1250px and below. The column is a fixed 300px and every pixel it
+     takes comes off the track, so stacking early keeps the lanes usable: a
+     narrow track packs fewer activities and pushes the rest into the overflow
      strip. 1250px sits just under the 1300px where global.css already drops
      .container to 95%, so the two thresholds do not fight each other. */
   @media (max-width: 1250px) {
@@ -873,9 +930,20 @@ div#impactGraphic-fullscreen {
       display: block;
     }
 
-    .scheduleCard__next {
+    /* Side by side under the timeline rather than stacked into a tower, which
+       would push the page down by the full height of both for information that
+       is secondary to the track. Row direction with a flex basis rather than two
+       grid columns, so a lone panel still fills the width instead of sitting in
+       half of it, and both wrap when the card gets narrow. */
+    .scheduleCard__side {
       width: auto;
       margin-top: 12px;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .scheduleCard__side > .scheduleCard__next {
+      flex: 1 1 260px;
     }
   }
 

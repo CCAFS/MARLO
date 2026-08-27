@@ -4,12 +4,12 @@
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js?20260819",
-  "${baseUrlMedia}/js/home/schedule.js?20260819",
+  "${baseUrlMedia}/js/home/schedule.js?202608262",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20260819",
+  "${baseUrlMedia}/css/home/dashboard.css?202608263",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -82,7 +82,14 @@
       <div class="clusterMap">
         <img src="${baseUrlCdn}/global/images/Map_africa.svg" alt="[@s.text name="dashboard.cluster.mapAlt" /]">
         [#list clusterHotspots as hotspot]
-          <a class="clusterMap__spot" style="left:${hotspot.x}%;top:${hotspot.y}%"
+          [#--
+            The tooltip is a laid-out box even while hidden, and the right edge of the map panel is also the right edge
+            of the page container, so a tooltip centred on a right-side dot widened the document and put a horizontal
+            scrollbar on the page below ~1457px without ever being seen. Dots past the middle of the map anchor their
+            tooltip to the dot instead of centring it on it, which is also what keeps it visible inside the card on
+            hover. Only the right band needs it: on the left the tooltip opens over the banner text, never off-page.
+          --]
+          <a class="clusterMap__spot[#if hotspot.x?number gte 60] clusterMap__spot--tipEnd[/#if]" style="left:${hotspot.x}%;top:${hotspot.y}%"
             href="[@s.url namespace="/clusters" action='${(crpSession)!}/description'][@s.param name='projectID']${hotspot.projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
             target="_blank" rel="noreferrer noopener" aria-label="${hotspot.label}">
             <span class="clusterMap__tip">${hotspot.label}</span>
@@ -147,23 +154,36 @@
     [#assign scMonths = scMonths + [("2001-" + scMonthIndex?string("00") + "-01")?date("yyyy-MM-dd")?string("MMM")] /]
   [/#list]
 
-  [#-- The next activity is the soonest one that has not started yet; scItems is
-       ordered by the admin's `order`, not by date, so this has to scan. --]
+  [#-- The two soonest activities that have not started yet. scItems is ordered
+       by the admin's `order`, not by date, so this has to scan; one pass keeps
+       the winner and the runner-up, because the column below renders two
+       panels. ?sort_by is not an option: startDate is a date of unknown type to
+       FreeMarker -- which is why every read of it here goes through ?date --
+       and sorting would have to compare those unqualified. --]
   [#assign scNextItem = [] /]
+  [#assign scSecondItem = [] /]
   [#list scItems as activity]
     [#if activity.startDate?date gt scToday]
       [#if !scNextItem?has_content || activity.startDate?date lt scNextItem[0].startDate?date]
+        [#assign scSecondItem = scNextItem /]
         [#assign scNextItem = [activity] /]
+      [#elseif !scSecondItem?has_content || activity.startDate?date lt scSecondItem[0].startDate?date]
+        [#assign scSecondItem = [activity] /]
       [/#if]
     [/#if]
   [/#list]
 
-  [#-- Fallback when nothing is ahead in the timeline: the soonest phase still
-       to open. Used to be the zero-open-phases state's only content. --]
+  [#-- Fallback when the timeline runs out: the soonest phases still to open.
+       scNotStarted already holds only the datable ones, so the same one-pass
+       winner/runner-up scan applies. --]
   [#assign scNextPhase = [] /]
+  [#assign scSecondPhase = [] /]
   [#list scNotStarted as phase]
     [#if !scNextPhase?has_content || phase.startDate?date lt scNextPhase[0].startDate?date]
+      [#assign scSecondPhase = scNextPhase /]
       [#assign scNextPhase = [phase] /]
+    [#elseif !scSecondPhase?has_content || phase.startDate?date lt scSecondPhase[0].startDate?date]
+      [#assign scSecondPhase = [phase] /]
     [/#if]
   [/#list]
 
@@ -172,6 +192,42 @@
     [#assign scSame = activity.startDate?date?string("yyyy-MM-dd") == activity.endDate?date?string("yyyy-MM-dd") /]
     [#assign scItemJson = scItemJson + ['{"id":' + activity.id?c + ',"name":"' + ((activity.description)!'')?trim?json_string + '","start":"' + activity.startDate?date?string("yyyy-MM-dd") + '","end":"' + activity.endDate?date?string("yyyy-MM-dd") + '","dates":"' + scSame?then(activity.startDate?date?string("dd MMM yyyy"), activity.startDate?date?string("dd MMM") + ' \\u2013 ' + activity.endDate?date?string("dd MMM yyyy")) + '","order":' + ((activity.order)??)?then(((activity.order)!0)?c, 'null') + '}'] /]
   [/#list]
+
+  [#--
+    The "what's next" panels. Two are rendered -- the soonest upcoming thing and
+    the one after it -- and either can be an activity or a phase, so without
+    macros the same markup would exist four times over. `compact` is the whole
+    difference between the two sizes. The eyebrow key is passed in rather than
+    derived because it names both the position and the kind, and the kind is
+    something a screen reader cannot infer from the shape of the dates line.
+  --]
+  [#macro scNextActivityPanel activity eyebrowKey compact=false]
+    [#local scStart = activity.startDate?date /]
+    [#local scEnd = activity.endDate?date /]
+    [#local scDays = ((activity.startDate?long - scToday?long) / scDayMs)?round /]
+    <aside class="scheduleCard__next[#if compact] scheduleCard__next--compact[/#if]">
+      <span class="scheduleCard__nextEyebrow">[@s.text name="${eyebrowKey}" /]</span>
+      <span class="scheduleCard__nextName">${((activity.description)!'')?trim}</span>
+      <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.runs"][@s.param][#if scStart?string("yyyy-MM-dd") == scEnd?string("yyyy-MM-dd")]${scStart?string("dd MMM yyyy")}[#else]${scStart?string("dd MMM")} &ndash; ${scEnd?string("dd MMM yyyy")}[/#if][/@s.param][/@s.text]</span>
+      <span class="scheduleCard__nextChip">
+        [#if scDays lte 1][@s.text name="dashboard.schedule.next.startsTomorrow" /]
+        [#else][@s.text name="dashboard.schedule.next.startsIn"][@s.param]${scDays?c}[/@s.param][/@s.text][/#if]
+      </span>
+    </aside>
+  [/#macro]
+
+  [#macro scNextPhasePanel phase eyebrowKey compact=false]
+    [#local scDays = ((phase.startDate?long - scToday?long) / scDayMs)?round /]
+    <aside class="scheduleCard__next[#if compact] scheduleCard__next--compact[/#if]">
+      <span class="scheduleCard__nextEyebrow">[@s.text name="${eyebrowKey}" /]</span>
+      <span class="scheduleCard__nextName">${(phase.composedName)!}</span>
+      <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.phaseDates"][@s.param]${phase.startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${phase.endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
+      <span class="scheduleCard__nextChip">
+        [#if scDays lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
+        [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scDays?c}[/@s.param][/@s.text][/#if]
+      </span>
+    </aside>
+  [/#macro]
 
   <section class="scheduleCard" id="scheduleCard"
     [#-- One JSON payload. json_string covers the JSON layer; the attribute layer
@@ -220,6 +276,12 @@
                   aria-label="[@s.text name="dashboard.schedule.zoom.accessibleName"][@s.param]${scWeeks?c}[/@s.param][/@s.text]">[@s.text name="dashboard.schedule.zoom.weeks"][@s.param]${scWeeks?c}[/@s.param][/@s.text]</button>
               [/#list]
             </div>
+            [#-- Changing the zoom moves no focus and rewrites no text a screen
+                 reader is pointed at, so the resulting window is announced
+                 politely instead. Filled in by schedule.js, and left empty on
+                 load so nothing is read out at boot. --]
+            <span id="scheduleZoomStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"
+              data-announcement="[@s.text name="dashboard.schedule.zoom.announcement"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"></span>
             <button type="button" class="scheduleCard__jump" id="scheduleJump">
               <span>[@s.text name="dashboard.schedule.jumpToToday" /]</span>
             </button>
@@ -240,11 +302,13 @@
                   <div class="scheduleCard__cell scheduleCard__cell--track" id="scheduleAxis"></div>
                 </div>
 
-                [#-- Three reserved lanes and one overflow strip, whatever the
+                [#-- Four reserved lanes and one overflow strip, whatever the
                      activity count. A lane carries no meaning of its own: an
                      activity can change lane as the window changes, which is the
-                     price of a container that never grows. --]
-                [#list 0..2 as scLane]
+                     price of a container that never grows. The count is also
+                     LANES in schedule.js, which packs into these tracks and
+                     reports the total in the footer: the two must agree. --]
+                [#list 0..3 as scLane]
                   <div class="scheduleCard__row scheduleCard__row--lane">
                     <div class="scheduleCard__cell scheduleCard__cell--track" data-lane="${scLane?c}"></div>
                   </div>
@@ -274,33 +338,30 @@
           </div>
       </div>
 
-      [#-- "What's next" prefers the next activity and falls back to the next
-           phase, so the panel stays useful mid-cycle when every phase is
-           already open and only activities are still ahead. --]
-      [#if scNextItem?has_content]
-        [#assign scNextStart = scNextItem[0].startDate?date /]
-        [#assign scNextIn = ((scNextItem[0].startDate?long - scToday?long) / scDayMs)?round /]
-        [#assign scNextSame = scNextItem[0].startDate?date?string("yyyy-MM-dd") == scNextItem[0].endDate?date?string("yyyy-MM-dd") /]
-        <aside class="scheduleCard__next">
-          <span class="scheduleCard__nextEyebrow">[@s.text name="dashboard.schedule.next.activityEyebrow" /]</span>
-          <span class="scheduleCard__nextName">${((scNextItem[0].description)!'')?trim}</span>
-          <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.runs"][@s.param][#if scNextSame]${scNextStart?string("dd MMM yyyy")}[#else]${scNextStart?string("dd MMM")} &ndash; ${scNextItem[0].endDate?date?string("dd MMM yyyy")}[/#if][/@s.param][/@s.text]</span>
-          <span class="scheduleCard__nextChip">
-            [#if scNextIn lte 1][@s.text name="dashboard.schedule.next.startsTomorrow" /]
-            [#else][@s.text name="dashboard.schedule.next.startsIn"][@s.param]${scNextIn?c}[/@s.param][/@s.text][/#if]
-          </span>
-        </aside>
-      [#elseif scNextPhase?has_content]
-        [#assign scNextIn = ((scNextPhase[0].startDate?long - scToday?long) / scDayMs)?round /]
-        <aside class="scheduleCard__next">
-          <span class="scheduleCard__nextEyebrow">[@s.text name="dashboard.schedule.next.phaseEyebrow" /]</span>
-          <span class="scheduleCard__nextName">${(scNextPhase[0].composedName)!}</span>
-          <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.phaseDates"][@s.param]${scNextPhase[0].startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${scNextPhase[0].endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
-          <span class="scheduleCard__nextChip">
-            [#if scNextIn lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
-            [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scNextIn?c}[/@s.param][/@s.text][/#if]
-          </span>
-        </aside>
+      [#-- "What's next" prefers activities and falls back to phases, so the
+           column stays useful mid-cycle when every phase is already open and
+           only activities are still ahead. Read it as one ordered list --
+           upcoming activities by start date, then phases still to open: the top
+           entry fills the main panel and the one after it the compact panel
+           below. A single upcoming thing renders no second panel, and the
+           fallback crosses kinds, so one activity plus an unopened phase pairs
+           the two. --]
+      [#if scNextItem?has_content || scNextPhase?has_content]
+        <div class="scheduleCard__side">
+          [#if scNextItem?has_content]
+            [@scNextActivityPanel activity=scNextItem[0] eyebrowKey="dashboard.schedule.next.activityEyebrow" /]
+            [#if scSecondItem?has_content]
+              [@scNextActivityPanel activity=scSecondItem[0] eyebrowKey="dashboard.schedule.next.thenActivityEyebrow" compact=true /]
+            [#elseif scNextPhase?has_content]
+              [@scNextPhasePanel phase=scNextPhase[0] eyebrowKey="dashboard.schedule.next.thenPhaseEyebrow" compact=true /]
+            [/#if]
+          [#else]
+            [@scNextPhasePanel phase=scNextPhase[0] eyebrowKey="dashboard.schedule.next.phaseEyebrow" /]
+            [#if scSecondPhase?has_content]
+              [@scNextPhasePanel phase=scSecondPhase[0] eyebrowKey="dashboard.schedule.next.thenPhaseEyebrow" compact=true /]
+            [/#if]
+          [/#if]
+        </div>
       [/#if]
     </div>
   </section>
