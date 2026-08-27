@@ -57,9 +57,9 @@ public class AiReportConfigurationManagerImpl implements AiReportConfigurationMa
   }
 
   @Override
-  public List<AiReportConfiguration> findAll() {
+  public List<AiReportConfiguration> findAllByGlobalUnit(long globalUnitId) {
 
-    return aiReportConfigurationDAO.findAll();
+    return aiReportConfigurationDAO.findAllByGlobalUnit(globalUnitId);
 
   }
 
@@ -70,6 +70,7 @@ public class AiReportConfigurationManagerImpl implements AiReportConfigurationMa
   }
 
   @Override
+  @Transactional
   public AiReportConfiguration saveAiReportConfiguration(AiReportConfiguration aiReportConfiguration) {
 
     return aiReportConfigurationDAO.save(aiReportConfiguration);

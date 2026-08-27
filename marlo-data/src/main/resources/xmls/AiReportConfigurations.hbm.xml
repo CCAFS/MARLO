@@ -9,6 +9,10 @@
 			<column name="id" />
 			<generator class="identity" />
 		</id>
+		<!-- A2-2433: the section content is per Global Unit. Rows are scoped to their owner. -->
+		<many-to-one name="globalUnit" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+			<column name="global_unit_id" not-null="true" />
+		</many-to-one>
 		<property name="reportTitle" type="string">
 			<column name="report_title" sql-type="TEXT" />
 		</property>		
@@ -20,6 +24,26 @@
 		</property>
 		<property name="buttonLink" type="string">
 			<column name="button_link" sql-type="TEXT" />
+		</property>
+		<!--
+			A2-2433: the audit columns exist in the table but used to be unmapped. That made the soft delete a no-op
+			(the UPDATE never touched is_active) and made any INSERT fail, because AuditColumnHibernateListener can
+			only populate created_by / active_since / is_active for properties present in the entity metamodel.
+		-->
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select" update="false">
+			<column name="created_by" not-null="true" />
+		</many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+			<column name="modified_by" />
+		</many-to-one>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT" />
 		</property>
 	</class>
 </hibernate-mapping>

@@ -17,6 +17,9 @@ public class AiReportConfiguration extends MarloAuditableEntity implements java.
   private String buttonLabel;
   @Expose
   private String buttonLink;
+  /** Owner of this AI tool card. The section content is per Global Unit: a card is only rendered for its owner. */
+  @Expose
+  private GlobalUnit globalUnit;
 
   public AiReportConfiguration() {
   }
@@ -27,6 +30,10 @@ public class AiReportConfiguration extends MarloAuditableEntity implements java.
 
   public String getButtonLink() {
     return buttonLink;
+  }
+
+  public GlobalUnit getGlobalUnit() {
+    return globalUnit;
   }
 
   @Override
@@ -49,6 +56,10 @@ public class AiReportConfiguration extends MarloAuditableEntity implements java.
 
   public void setButtonLink(String buttonLink) {
     this.buttonLink = buttonLink;
+  }
+
+  public void setGlobalUnit(GlobalUnit globalUnit) {
+    this.globalUnit = globalUnit;
   }
 
   public void setReportDescription(String reportDescription) {

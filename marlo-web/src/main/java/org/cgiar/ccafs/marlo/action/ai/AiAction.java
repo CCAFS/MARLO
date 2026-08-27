@@ -35,15 +35,18 @@ import org.slf4j.LoggerFactory;
  * {@code ai_section_active} specificity ({@link org.cgiar.ccafs.marlo.config.APConstants#AI_SECTION_ACTIVE}).
  * <p>
  * <b>This section is populated from the {@code ai_report_configuration} table.</b> Every AI tool card shown by the
- * dashboard is one active row of that table, loaded here through {@link AiReportConfigurationManager#findAll()}; the
- * row supplies the card title, description, button label and button link. Adding, re-describing, re-linking or
- * retiring a tool is therefore a data change on that table (shipped as a Flyway migration) - not a change to this
- * action, to the FTL, or to {@code global.properties}. The card text is stored as raw text and is not translatable.
+ * dashboard is one active row of that table, loaded here through
+ * {@link AiReportConfigurationManager#findAllByGlobalUnit(long)}; the row supplies the card title, description, button
+ * label and button link. Adding, re-describing, re-linking or retiring a tool is therefore a data change on that table
+ * (shipped as a Flyway migration) - not a change to this action, to the FTL, or to {@code global.properties}. The card
+ * text is stored as raw text and is not translatable.
  * <p>
  * Two behaviours worth knowing before touching this class:
  * <ul>
- * <li>{@code AiReportConfigurationMySQLDAO.findAll()} returns {@code null} (not an empty list) when no active row
- * exists, so {@link #reportConfigurations} may be {@code null}; the view guards for it and renders an empty state.</li>
+ * <li><b>The content is per Global Unit.</b> Each row is owned by a Global Unit ({@code global_unit_id}) and the read
+ * is scoped to {@link #getCurrentCrp()}, so a Global Unit never sees another one's AI tools. The query returns an empty
+ * list - never {@code null} - when the current Global Unit has no active rows, and the view renders its empty
+ * state.</li>
  * <li>The {@code UserIdea} half of this action (the free-text box at the bottom of the page) is a leftover of the
  * original feedback form and does not persist: the read is commented out below and
  * {@code UserIdeaManagerImpl.saveUserIdea} is not transactional.</li>
@@ -111,8 +114,14 @@ public class AiAction extends BaseAction {
     }
 
     try {
-      // The AI tool cards are data driven: this is the only source of the section content. May return null.
-      reportConfigurations = aiReportConfigurationManager.findAll();
+      // The AI tool cards are data driven and scoped to the logged Global Unit: this is the only source of the
+      // section content. Empty when the current Global Unit has no active rows.
+      if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null) {
+        reportConfigurations = aiReportConfigurationManager.findAllByGlobalUnit(this.getCurrentCrp().getId());
+      } else {
+        LOG.warn("No Global Unit in session; the AI section cannot be scoped and will render its empty state");
+        reportConfigurations = new ArrayList<>();
+      }
     } catch (Exception e) {
       LOG.error("Error loading AI report configurations", e);
       reportConfigurations = new ArrayList<>();
