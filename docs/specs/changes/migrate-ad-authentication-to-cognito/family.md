@@ -76,7 +76,7 @@ blocker.
 Puts every corporate-user lookup behind one interface, **still implemented by `adauth`**.
 
 **Delivers:** `DirectoryPerson`, `DirectorySource`, `DirectoryService`, and `LdapDirectoryService`
-(which delegates to `adauth` verbatim); migration of the 6 `marlo-web` consumers off `LDAPUser`;
+(which delegates to `adauth` verbatim); migration of the 6 `marlo-web` consumers off `LDAPUser` (`searchUsersUtil` is a named exception);
 elimination of the reachable-but-unread `ADConexion` construction in `ContactPersonAction`; a reusable
 `DirectoryServiceContractTest`. Maps to **Checkpoints 2–3** of the execution plan (EXEC-030 … EXEC-053).
 

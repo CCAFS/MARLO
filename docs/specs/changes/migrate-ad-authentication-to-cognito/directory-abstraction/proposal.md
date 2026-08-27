@@ -51,27 +51,30 @@ capabilities**. This proposal concerns only the second.
 
 ### The concrete problem, in three facts
 
-**1. `LDAPUser` — a third-party AD type — is imported directly into six `marlo-web` business classes.**
-Verified on this checkout:
+**1. `adauth` types are imported directly into eight `marlo-web` classes.** Verified on this checkout
+2026-08-27. **Two distinct sets overlap here, and conflating them is easy** — a class can hold its own
+`new LDAPService()` call, or merely consume an `LDAPUser` someone else fetched, or both:
 
-| # | File | Line |
-|---|---|---|
-| 1 | `action/BaseAction.java` — `getOutlookUser(email)`, the shared helper | `:4803` |
-| 2 | `action/center/capdev/ContactPersonAction.java` | `:86` |
-| 3 | `action/center/json/global/ManageUsersAction.java` | `:249` |
-| 4 | `action/json/global/SearchUserAction.java` | `:193` |
-| 5 | `utils/searchUsersUtil.java` | `:14` |
-| 6 | `validation/superadmin/GuestUsersValidator.java` | `:37` |
+| # | File | Line | Reaches `adauth` how | Fate in this spec |
+|---|---|---|---|---|
+| 1 | `action/BaseAction.java` | `:4802`, imports `:103-104` | own `new LDAPService()` in `getOutlookUser()` | **method deleted** |
+| 2 | `action/crp/admin/CrpUsersAction.java` | `:630`, import `:48` | consumes `LDAPUser` via `this.getOutlookUser()` | **migrated** |
+| 3 | `action/json/global/ManageUsersAction.java` | `:151`, import `:24` | consumes `LDAPUser` via `this.getOutlookUser()` | **migrated** |
+| 4 | `validation/superadmin/GuestUsersValidator.java` | `:36` own copy, `:55` call, imports `:23-24` | **its own duplicate** of `getOutlookUser` (declared `public`) | **migrated**, duplicate deleted |
+| 5 | `action/json/global/SearchUserAction.java` | `:193`, imports `:30-31` | own `new LDAPService()` | **migrated** |
+| 6 | `action/center/json/global/ManageUsersAction.java` | `:249`, imports `:24-25` | own `new LDAPService()` | **migrated** |
+| 7 | `action/center/capdev/ContactPersonAction.java` | `:86`, `:93`, imports `:24-25` | own `new LDAPService()` **and** `new ADConexion()` | **deleted, not migrated** — never read (fact 2) |
+| 8 | `utils/searchUsersUtil.java` | `:14`, imports `:3-4` | own `new LDAPService()` | **left alone** — `main()`, no caller, and it reads `getAttributes()`, which `DirectoryPerson` does not carry. Deleted in child 3 |
 
-Plus three indirect callers of `BaseAction.getOutlookUser()`: `CrpUsersAction:630`,
-`json/global/ManageUsersAction:151`, `GuestUsersValidator:55`.
+**Six classes are migrated** (rows 1–6, tasks `EXEC-034` … `EXEC-039`). Row 7 has its AD code *deleted*
+in Checkpoint 3. Row 8 is a deliberate, named exception.
 
-**Nothing can be removed while a third-party type is in six business classes' import lists.** Every
-candidate replacement would have to touch all nine sites, and the diff would mix "change the provider"
-with "change the call shape" — the two things a review most needs to see separately.
+**Nothing can be removed while a third-party type sits in eight import lists.** Every candidate
+replacement would otherwise touch all eight sites, and the diff would mix "change the provider" with
+"change the call shape" — the two things a review most needs to see apart.
 
 **2. `ContactPersonAction` constructs AD objects on a reachable endpoint and never reads them.**
-`searchContact.do` **is registered** (`struts-json.xml:1042`), so `:86` (`new LDAPService()`) and `:93`
+`searchContact.do` **is registered** (`struts-json.xml:1041`), so `:86` (`new LDAPService()`) and `:93`
 (`new ADConexion(...)`) execute on every hit. The `adConection` variable is **never read**; the live
 search is `adUsermanager.searchUsers()` at `:99`; `getADFilter`'s only call site is **commented out**.
 
@@ -127,19 +130,26 @@ After this change:
 
 | Observable | Before | After |
 |---|---|---|
-| `marlo-web` classes importing `org.cgiar.ciat.auth` | 6 | **0** *(2 known exceptions below)* |
+| `marlo-web` classes importing `org.cgiar.ciat.auth` | **8** | **1** — only `utils/searchUsersUtil.java` (see below) |
 | Runtime `ADConexion` constructions | 1 (on every `searchContact.do` hit) | **0** |
-| Reachable Capability B paths | 6 direct + 3 indirect call sites | **1 interface, 1 implementation** |
+| Reachable Capability B paths | 5 direct `LDAPService` sites + 3 indirect `LDAPUser` consumers | **1 interface, 1 implementation** |
 | Swapping the Capability B provider costs | a refactor across 6 classes | **one `@Named` bean + one config value** |
 | User-visible behavior | — | **identical** |
 | `adauth` dependency | present in 3 POMs | **present in 3 POMs, unchanged** |
 
-**Two `marlo-web` exceptions remain by design, both deleted in child 3:**
-`utils/searchUsersUtil.java` (a `main()`, unreachable — `OQ-12`) and the new
-`LdapDirectoryService` in `marlo-data`, which is the one file permitted to import `adauth`.
+**Two `adauth` importers remain by design, in different modules:**
+
+| File | Module | Why it stays | Removed in |
+|---|---|---|---|
+| `utils/searchUsersUtil.java` | `marlo-web` | A `main()` with no caller. It also reads `LDAPUser.getAttributes()`, an attribute map `DirectoryPerson` deliberately does not carry | child 3 |
+| `security/directory/impl/LdapDirectoryService.java` | `marlo-data` | **The one file permitted to import `adauth`** — that is its whole purpose | child 3 |
+
+`LDAPAuthenticator.java` in `marlo-data` also keeps its `adauth` import: it is Capability A, owned by
+child 2, and protected here.
 
 **Behavior equivalence is the acceptance criterion, not a hope.** `LdapDirectoryService` reproduces
-`BaseAction.getOutlookUser()` (`:4803`) verbatim in behavior — `setInternalConnection(!config.isProduction())`,
+`BaseAction.getOutlookUser()` (`:4802`) verbatim in behavior — `setInternalConnection(!config.isProduction())`,
+`searchUserByEmail(email)`, `try/catch → null`. A test that can only pass by changing production
 `searchUserByEmail(email)`, `try/catch → null`. A test that can only pass by changing production
 behavior means the implementation is wrong, not the test.
 
@@ -158,7 +168,7 @@ behavior means the implementation is wrong, not the test.
 | `EXEC-034` | Migrate `BaseAction` — `getOutlookUser(String) → LDAPUser` becomes `findCorporateUser(String) → DirectoryPerson` |
 | `EXEC-035` | Migrate `CrpUsersAction` — preserve the `setCgiarUser(true)` / name / username assignments exactly |
 | `EXEC-036` | Migrate `json/global/ManageUsersAction` — widest surface, 15 FTL pages |
-| `EXEC-037` | Migrate `GuestUsersValidator` — delete its private copy of the helper; `found` replaces `LDAPUser != null` |
+| `EXEC-037` | Migrate `GuestUsersValidator` — delete its duplicate of the helper (declared `public`); `found` replaces `LDAPUser != null` |
 | `EXEC-038` | Migrate `SearchUserAction` — **do not delete the class**; `OQ-12` is unresolved and deletion is child 3 |
 | `EXEC-039` | Migrate `center/json/global/ManageUsersAction` — unreachable, but must still compile. **Migrate; do not delete** |
 | `EXEC-040` | Verify `marlo-web` is free of `adauth` types — the exit criterion, proven by `grep` |
@@ -209,7 +219,7 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 |---|---|
 | **End users** | **Not at all.** No user-visible change. This is the point |
 | Program / Super Admins | No change now. They are the users the Capability B *provider* decision will eventually affect (child 3) |
-| `marlo-web` | 7 files modified (6 consumers + `ContactPersonAction`) |
+| `marlo-web` | 7 files modified — 6 migrated consumers + `ContactPersonAction` (AD code deleted). `searchUsersUtil` deliberately untouched |
 | `marlo-data` | 4 new files under `security/directory/` and `security/directory/impl/` |
 | `marlo-utils`, `marlo-core`, `marlo-parent` | Untouched |
 | Database | **No schema change, no migration** |
@@ -246,8 +256,8 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 ### MODIFIED
 
 - `BaseAction.getOutlookUser(String) → LDAPUser` becomes `findCorporateUser(String) → DirectoryPerson`.
-  Wide caller set (9,748 LOC) — shared writer, serialize.
-- The 6 consumers consume `DirectoryPerson` instead of `LDAPUser`. **Field-for-field identical
+  Wide caller set (9,753 LOC) — shared writer, serialize.
+- The 6 migrated consumers consume `DirectoryPerson` instead of `LDAPUser`. **Field-for-field identical
   assignments.**
 - `ContactPersonAction.searchADUser()` stops constructing AD objects. Same JSON, same `ad_user` source.
 
@@ -256,7 +266,7 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 - `org.cgiar.ciat.auth` imports from 6 `marlo-web` classes.
 - The unread `LDAPService` / `ADConexion` construction and the four local constant reads in
   `ContactPersonAction`.
-- `GuestUsersValidator`'s private duplicate of `getOutlookUser`.
+- `GuestUsersValidator`'s duplicate of `getOutlookUser` (declared `public`, no external caller).
 
 **Nothing else. No dependency, no JAR, no constant, no class.**
 
@@ -266,7 +276,7 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 
 ### Option 1 — Build the seam now, `adauth` behind it *(recommended)*
 
-Create `DirectoryService` + `LdapDirectoryService`, migrate all 6 consumers, eliminate the
+Create `DirectoryService` + `LdapDirectoryService`, migrate the 6 consumers, eliminate the
 `ContactPersonAction` construction. Zero behavior change.
 
 | | |
@@ -278,7 +288,7 @@ Create `DirectoryService` + `LdapDirectoryService`, migrate all 6 consumers, eli
 | ✅ | Eliminates one runtime AD call site toward Gate 1, for free |
 | ✅ | Produces the contract test that covers the future swap |
 | ⚠️ | Adds a class that exists only to be deleted in child 3 |
-| ⚠️ | Touches `BaseAction` (9,748 LOC, wide caller set) |
+| ⚠️ | Touches `BaseAction` (9,753 LOC, wide caller set) |
 
 ### Option 2 — Wait for `DEC-002`, then do the seam and the provider together
 
@@ -338,10 +348,10 @@ so a later reader does not read it as a skipped checkpoint.**
 
 | # | Risk | Rating | Mitigation |
 |---|---|---|---|
-| **DA-1** | **`BaseAction` is a 9,748-LOC shared writer with a very wide caller set.** A signature change ripples | 🟠 High | `EXEC-034` is its own task and its own commit. Compile + Checkstyle + full `git diff` read. The 3 indirect callers (`CrpUsersAction:630`, `ManageUsersAction:151`, `GuestUsersValidator:55`) are migrated in their own tasks immediately after |
+| **DA-1** | **`BaseAction` is a 9,753-LOC shared writer with a very wide caller set.** A signature change ripples | 🟠 High | `EXEC-034` is its own task and its own commit. Compile + Checkstyle + full `git diff` read. The 3 indirect callers (`CrpUsersAction:630`, `ManageUsersAction:151`, `GuestUsersValidator:55`) are migrated in their own tasks immediately after |
 | **DA-2** | **A non-equivalent mapping.** `null` used to mean "not in AD"; if `found` is derived differently, a caller silently changes behavior | 🟠 High | `LdapDirectoryService` copies the existing body verbatim in behavior. `DirectoryServiceContractTest` asserts found/not-found, null and malformed input, and exception→`notFound`. **`EXEC-032`'s STOP rule: if a test can only pass by changing production behavior, fix the implementation, not the test** |
 | **DA-3** | **No mocking framework exists** (`DEC-005` `PENDING`). Assertions of the form *"this collaborator was never called"* need hand-rolled spies | 🟡 Medium | **This child does not need `DEC-005`.** A fake `DirectoryService` for contract tests is a class with one method. Collaborators are constructor-injected interfaces and the `BaseAction` hooks are `public` and non-final (§2.8). **Keeping `DEC-005` out also preserves parallel-safety with child 2** — it would otherwise collide on `marlo-parent/pom.xml` |
-| **DA-4** | **Line-number drift.** `BaseAction.getOutlookUser` moved from `:4797` to `:4803` | 🟡 Medium | `EXEC-003` drift probe is mandatory before any code change (session-start step S7). Drift is spot-checked in [`../analysis/README.md`](../analysis/README.md) |
+| **DA-4** | **Line-number drift.** `BaseAction.getOutlookUser` moved from `:4797` to `:4802` | 🟡 Medium | `EXEC-003` drift probe is mandatory before any code change (session-start step S7). Drift is spot-checked in [`../analysis/README.md`](../analysis/README.md) |
 | **DA-5** | **`OQ-12` — the convention plugin may expose `SearchUserAction` and `center/…/ManageUsersAction`**, neither of which is in any Struts XML | 🟡 Medium | **Migrate both, delete neither.** `EXEC-038` and `EXEC-039` say so explicitly. This child is safe either way; only child 3's deletion is gated on the probe |
 | **DA-6** | **`ExternalPostUtils` gets reused for a future directory client** — it installs a trust-all `X509TrustManager` and disables SNI (`R13`) | 🟡 Medium | Not reachable in this child (no HTTP client is written). Carry the prohibition forward into child 3's design |
 | **DA-7** | **`searchContact.do` behavior changes.** `EXEC-050` edits a live endpoint | 🟡 Medium | `:99` and everything below is **protected**. `EXEC-050`'s STOP rule: if `adUsermanager.searchUsers()` or any line below `:99` appears in the diff, halt. `EXEC-051` locks the JSON contract |
@@ -379,8 +389,8 @@ DA-OQ-3 is resolved by running Checkpoint 0; DA-OQ-4 is a records question.
 
 | # | Criterion | How it is verified |
 |---|---|---|
-| **SC-1** | `grep -rn "org.cgiar.ciat.auth" marlo-web/src --include="*.java"` returns **only** `utils/searchUsersUtil.java` | `EXEC-040` |
-| **SC-2** | `grep -rn "org.cgiar.ciat.auth" marlo-data/src --include="*.java"` returns **only** `LDAPAuthenticator.java` and `security/directory/impl/LdapDirectoryService.java` | `EXEC-040` |
+| **SC-1** | `grep -rn "^import org.cgiar.ciat.auth" marlo-web/src --include="*.java"` returns **only** `utils/searchUsersUtil.java` | `EXEC-040` |
+| **SC-2** | `grep -rn "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"` returns **exactly three**: `APCustomRealm.java` (Capability A, untouched), `LDAPAuthenticator.java` (Capability A, untouched), `security/directory/impl/LdapDirectoryService.java` (new) | `EXEC-040` |
 | **SC-3** | **Zero** runtime `ADConexion` constructions remain in the codebase | `EXEC-050`, `EXEC-052` |
 | **SC-4** | `mvn -q install -DskipTests -pl marlo-web -am` and `mvn -q checkstyle:check` both pass | every task |
 | **SC-5** | `DirectoryServiceContractTest` + `LdapDirectoryServiceTest` + `ContactPersonActionTest` pass via `mvn -q -pl marlo-web test` | `EXEC-033`, `EXEC-051` |

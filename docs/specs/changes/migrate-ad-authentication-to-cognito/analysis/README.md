@@ -40,7 +40,7 @@ The documents' line references were exact against `staging-cognito`. Verified 20
 
 | Reference in the documents | Actual here | Impact |
 |---|---|---|
-| `BaseAction.getOutlookUser()` at `:4797-4811`, imports `:103-104` | `new LDAPService()` at **`:4803`** | ~5 lines. `EXEC-034` must re-locate before editing |
+| `BaseAction.getOutlookUser()` at `:4797-4811`, imports `:103-104` | `new LDAPService()` at **`:4803`** (method declared at `:4802`) | ~5 lines. `EXEC-034` must re-locate before editing |
 | `ContactPersonAction` `new LDAPService()` at `:86` | `:86` ✅ | none |
 | `ContactPersonAction` `new ADConexion(...)` at `:93` | `:93` ✅ | none |
 | `ManageUsersAction` (center/json/global) at `:249` | `:249` ✅ | none |
