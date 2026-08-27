@@ -1,7 +1,8 @@
 # AI Services — Per-Global-Unit Section Content — Tasks
 
 **Spec ID:** DOMAIN-AI-SERVICES-001
-**Status:** In Progress — T01..T07 implemented, T08 pending. See §9: R1 closed, R2-R4 are unexecuted verifications.
+**Status:** In Progress — T01..T07 implemented, T08 pending. §9: R2 and R4 closed against a database, R1 answered
+(AICCRA_III is affected), R3 partially closed — no tests written.
 **Owner:** IBD Team
 **Last Updated:** 2026-08-27
 **Implements design:** docs/specs/domain/ai-services/design.md
@@ -318,12 +319,12 @@ Strictly linear: the mapping needs the column, the DAO needs the mapping, and th
       no database or running application was available.
 - [x] OQ-1 and OQ-2 resolved by the requester (not PMU): one Global Unit per row, and the empty-state copy makes
       pre-deploy notification unnecessary (§9 R1). **OQ-3 not addressed.**
-- [ ] Constitutional compliance checklist confirmed in the PR. **§9 lists the risks; R1 is closed, R2-R4 remain.**
+- [ ] Constitutional compliance checklist confirmed in the PR. **§9 carries the verification results.**
 - [ ] `mvn checkstyle:check` passes. **Cannot run** — `maven-checkstyle-plugin` 2.9.1 against `checkstyle` 8.18 throws
       `NoSuchMethodError: Checker.setClassloader`, reproduced on clean `staging`. Pre-existing repo defect, not caused
       by this change. Style verified by hand.
-- [ ] Application boots with `hbm2ddl.auto=validate` against the migrated schema. **Not done.** Substituted by an
-      offline build of the full Hibernate metadata (458 mappings) — necessary but not sufficient.
+- [x] Mapping validated against the migrated schema. `hbm2ddl.auto=validate` **cannot be enabled repo-wide** (see §9
+      R4); substituted by a column-by-column comparison against `SHOW CREATE TABLE` on the live dev database.
 - [ ] SonarCloud: no new blockers / critical issues. **Not run.**
 - [ ] Snyk: no new critical findings on changed paths. **Not run.**
 - [ ] QA pass complete; defects closed or accepted with PMU sign-off. **T08 not started.**
@@ -335,52 +336,94 @@ Strictly linear: the mapping needs the column, the DAO needs the mapping, and th
 - [ ] Merged to `staging`. **Not done** — commit `be714a066a` is local and unpushed.
 - [ ] Promoted to `main` via the release pipeline; production render verified for AICCRA and for one other Global Unit.
 
-## 9. Open Risks Before Merge (recorded 2026-08-27)
+## 9. Risks And Verification Results (updated 2026-08-27, verified against a database)
 
-Only items that can actually cause a problem. Cosmetic differences from this plan (branch name, migration filename)
-and choices that came out stricter than planned (empty list instead of `null`, no unscoped `findAll()`, guarded
-backfill, deterministic ordering) are not listed.
+Verified against the local dev database `aiccradb1` (MySQL 8.0.43) configured in
+`marlo-web/src/main/resources/config/marlo-dev.properties`, plus a throwaway schema for the migration runs. Cosmetic
+differences from this plan and choices that came out stricter than planned (empty list instead of `null`, no unscoped
+`findAll()`, guarded backfill, deterministic ordering) are not listed.
 
-### R1 — OQ-2 not run. CLOSED, accepted by the requester (2026-08-27).
+### R1 — OQ-2 answered. A second Global Unit IS affected.
 
-**This was about the specificity flag, not the rows.** Global Unit 45 is confirmed as the only one with rows in
-`ai_report_configuration`; which Global Units have `ai_section_active = true` was never queried.
+The query was run. **Two Global Units have `ai_section_active = true`:**
 
-**Decision: accepted without the query, no PMU coordination.** The empty state now carries its own i18n copy
-(`userIdea.noReportsConfigured`, `.noReportsConfiguredDescription`), so a Global Unit with the flag on and no rows of
-its own lands on a clear, self-explanatory message instead of something that reads as broken. That is what made the
-pre-deploy notification unnecessary.
+| id | acronym | flag |
+|---|---|---|
+| 45 | AICCRA | true |
+| 47 | AICCRA_III | true |
 
-Residual, accepted: such a Global Unit does lose the AICCRA cards it had been seeing — content that was never its
-own, which is the bug this change fixes. The loss is real from the user's side, but graceful. To hide the section
-entirely for a Global Unit instead, set its `ai_section_active` to `false`; note that open sessions only pick that up
-after re-login or a `crp_refresh` cycle.
+So the earlier decision to accept the empty state without running the query was made blind, and the affected programme
+has a name: **AICCRA_III**. In `aiccradb1` its rows already exist — ids 4, 5, 6, copies of the three AICCRA tools
+scoped to Global Unit 47 — but all three are `is_active = 0`, so the scoped read returns nothing and AICCRA_III
+renders the empty state. Confirmed by running the DAO's predicate directly:
 
-### R2 — The migration was never executed against a database.
-
-No database was available, so the SQL is unverified. The `NOT NULL` step is the only non-additive change in it. Apply
-it to a restore of a production-like schema before merge and confirm:
-
-```sql
-SELECT COUNT(*) FROM ai_report_configuration WHERE global_unit_id IS NULL;  -- expect 0
-SHOW CREATE TABLE ai_report_configuration;                                 -- NOT NULL, FK, index present
+```
+WHERE global_unit_id=45 AND is_active=1  ->  3 rows
+WHERE global_unit_id=47 AND is_active=1  ->  0 rows
 ```
 
-### R3 — Tenant isolation and the soft-delete fix are asserted by construction, not demonstrated.
+**Decision stands** (accept the empty state; it now carries its own explanatory copy), but two things follow:
 
-No unit or integration test was written. Both behaviours follow from the code, but neither has been observed:
+1. If AICCRA_III should see the tools, no code or migration is needed — just
+   `UPDATE ai_report_configuration SET is_active = 1 WHERE id IN (4,5,6);` in the target database.
+2. **This was the dev database, not production.** The production flag set may differ. Re-run the §2 query against
+   production before deploy; the outcome is now cheap to act on either way.
 
-- **Isolation:** the HQL was compiled against the real mappings and emits `where global_unit_id=? and is_active=1`, so
-  the filter is provably in the SQL. What is untested is the end-to-end path — that a user of Global Unit A sees only
-  A's cards.
-- **Soft delete:** `deleteAiReportConfiguration` now reaches `is_active` only because `active` became a mapped
-  property. That the `UPDATE` really writes `is_active = 0` has not been checked against a row.
+### R2 — CLOSED. The migration was executed, in all four scenarios.
 
-### R4 — The application was never started against the migrated schema.
+Run against a throwaway schema seeded with the original pre-migration table shape. All four complete, and in every
+case the column ends `NOT NULL` with the foreign key created:
 
-`hbm2ddl.auto=validate` was not run. A mapping/schema mismatch fails startup, so this is the cheapest remaining
-gate. The full Hibernate metadata (458 mappings) was built offline and resolves, with `global_unit_id` bound as
-non-optional — necessary, but it does not prove the mapping matches the migrated table.
+| Scenario | Result |
+|---|---|
+| Global Unit 45 exists + 3 rows (production case) | OK — 3 rows, all `global_unit_id = 45`, 0 orphans |
+| Global Unit 45 absent + 3 rows | OK — the 3 unattributable rows deleted, 0 remaining |
+| Global Unit 45 exists + empty table | OK |
+| Global Unit 45 absent + empty table | OK |
+
+**The guard was also shown to be necessary, not theoretical.** The same scenario 2 run against the pre-fix version of
+the migration (unguarded `UPDATE`, no `DELETE`) fails exactly as predicted:
+
+```
+ERROR 1452 (23000) at line 27: Cannot add or update a child row: a foreign key constraint fails
+  (CONSTRAINT `ai_report_configuration_global_units_FK` ...)
+```
+
+and leaves the schema **half applied** — `global_unit_id` already `NOT NULL`, foreign key not created — confirming
+that MySQL DDL is not transactional here and that Flyway would have halted with the table in an intermediate state.
+
+Note: `aiccradb1` already has this migration applied, by hand rather than by Flyway — the constraint and index carry
+the names from this migration file, and the database has no `flyway_schema_history` table at all.
+
+### R3 — Tenant isolation CLOSED. Tests and the soft delete still open.
+
+**Isolation is demonstrated against real data**, not just reasoned: the scoped predicate returns AICCRA's three cards
+for Global Unit 45 and nothing for Global Unit 47, which is both the isolation guarantee and the empty-state path.
+
+Still open:
+- **No unit or integration tests were written** (the plan asked for 3 + 3 + 2). The isolation behaviour is now
+  evidenced, but nothing guards it against regression.
+- **The soft delete is still only established by construction.** Mapping `active` is what lets
+  `deleteAiReportConfiguration` reach `is_active`, but the `UPDATE` writing `is_active = 0` was never observed, since
+  that path runs through Hibernate rather than SQL.
+
+### R4 — CLOSED, by a different check than the plan specified.
+
+`hibernate.hbm2ddl.auto=validate` **cannot be enabled**: it is commented out in `hibernate.cfg.xml`, and the comment
+explains why — some entities use MySQL `INT` primary keys where the mapping expects `BIGINT`, so validation fails
+repo-wide. That is pre-existing and unrelated to this change, so the Definition of Done item as written is not
+achievable.
+
+Substituted with a direct comparison of `SHOW CREATE TABLE ai_report_configuration` against the mapping. Every mapped
+property matches the live column, including nullability:
+
+`global_unit_id bigint NOT NULL` + FK to `global_units` + index `ai_report_configuration_global_unit_id_IDX`;
+`is_active tinyint(1) NOT NULL`; `active_since timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP`;
+`created_by bigint NOT NULL` FK to `users`; `modified_by bigint NULL` FK to `users`; `modification_justification text`.
+
+One pre-existing inconsistency noticed and **not** introduced by this change: the mapping declares
+`<column name="button_label" sql-type="TEXT" />` while the column is `varchar(100)`. `sql-type` only affects schema
+generation, so it is inert at runtime, but a `buttonLabel` longer than 100 characters would fail at the database.
 
 ### R5 — AC "rendered HTML byte-identical for AICCRA" (NF-002) will fail as written.
 
