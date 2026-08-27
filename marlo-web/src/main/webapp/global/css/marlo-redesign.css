@@ -673,6 +673,60 @@ header {
   border-top: 0;
 }
 
+/* Sub menu items are laid out like bar items: the row is the hit area, the 14px inset matches `> li > a`, and the
+   highlight reaches both edges of the panel (global.css inset each row by a 2px margin, so it did not). */
+#mainMenu .menuContent ul li ul.subMenu li {
+  margin: 0;
+  padding: 0;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li > a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font: 500 13px/1.25 var(--marlo-font-sans);
+}
+
+/* The bar states never reached the panel: global.css paints hover and the current section with black overlays meant
+   for the old textured bar, so the same item read one colour in the bar and another in the hamburger menu. The panel
+   already sits on brand-dark, so hover lifts to brand and the current section keeps the bar's brand-light. */
+#mainMenu .menuContent ul li ul.subMenu li:hover {
+  background: var(--marlo-brand);
+}
+
+#mainMenu .menuContent ul li ul.subMenu li:hover > a {
+  color: #fff;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li.currentSection {
+  background: var(--marlo-brand-light);
+  box-shadow: none;
+}
+
+#mainMenu .menuContent ul li ul.subMenu li.currentSection > a {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* The class sits on the <li> in main-menu.ftl, never on the anchor, so the redesign's `a.disabled` rule never matched
+   and disabled items kept global.css's #c7c7c7 — a grey that belongs on white, not on the brand fill. */
+#mainMenu .menuContent ul li.disabled > a {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* The BETA flag is absolutely positioned at the top of its item, which reads as a tab above a bar item but lands on
+   top of the label once the same item is a row in the hamburger panel. In the panel it becomes a trailing pill. */
+#mainMenu .menuContent ul li ul.subMenu li.beta::before {
+  top: 50%;
+  right: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
 /* Stuck state: same 50px bar, only an added shadow. `sticky` has no selector
    for "currently pinned", so global.js still toggles one class — but only for
    this shadow, off `scrollTop > 0`, with no threshold to measure. */
@@ -687,6 +741,58 @@ header {
   letter-spacing: 0.02em;
 }
 
+/************* 3a. MAIN MENU — HAMBURGER (below 992px) ***************/
+/* The hamburger row is the one item in the bar with no anchor: main-menu.ftl builds its trigger out of two bare
+   spans. Everything that gives a bar item its height and centring lives on `> li > a`, so the trigger collapsed to
+   the 20px of its own text and sat against the top edge of a 50px bar, with the icon and the label touching. The
+   geometry is repeated here on the <li> itself, with the same 50px height, 14px inset and 7px icon gap. */
+#mainMenu .menuContent > .container > ul.hidden-md > li {
+  align-items: center;
+  gap: 7px;
+  min-height: 50px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+#mainMenu .menuContent > .container > ul.hidden-md > li > .glyphicon-menu-hamburger {
+  top: 0;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* global.css drops the label below 440px, which left an unlabelled icon and made the trigger change shape halfway
+   down the breakpoint range. It fits at 320px next to the avatar, so it stays. */
+#mainMenu .menuContent > .container > ul.hidden-md .menuContentTitle {
+  display: inline;
+  font: 500 14px/1 var(--marlo-font-sans);
+}
+
+/* The panel opens on `:hover` alone, which no keyboard can produce — and its links are `display: none` until then, so
+   below 992px the whole main menu was outside the tab order. main-menu.ftl makes the row focusable; focus-within
+   opens the panel and holds it open while the links inside are tabbed through. A full disclosure button
+   (aria-expanded, Escape to close) needs script and is left for the menu's own pass. */
+#mainMenu .menuContent > .container > ul.hidden-md > li:focus-within {
+  background: var(--marlo-brand-dark);
+}
+
+#mainMenu .menuContent > .container > ul.hidden-md > li:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: -4px;
+}
+
+#mainMenu .menuContent > .container > ul.hidden-md > li:focus-within > ul.subMenu {
+  z-index: 10;
+  display: block;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 200px;
+  padding: 6px 0;
+  background: var(--marlo-brand-dark);
+  border-radius: 0 0 var(--marlo-radius-md) var(--marlo-radius-md);
+  box-shadow: var(--marlo-shadow-popover);
+}
+
 /************* 3b. USER MENU ***************/
 #userInfo.userDropdown {
   position: relative;
@@ -699,6 +805,10 @@ header {
   height: auto;
   margin-left: auto;
   font-size: 1em;
+  /* Below 440px global.css still paints the pre-redesign teal card behind the avatar (#57A7B5 with a 6px #4C8D99
+     bottom border), which showed as a lighter block on the flat brand bar and stretched the bar to 56px on phones. */
+  background: none;
+  border-bottom: 0;
 }
 
 #userInfo .userToggle {
