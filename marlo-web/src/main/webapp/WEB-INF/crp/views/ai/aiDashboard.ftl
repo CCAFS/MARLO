@@ -8,9 +8,10 @@
 [#assign currentSection = "ai" /]
 [#assign currentStage = "description" /]
 
+[#-- Single entry: this is a landing page, not a sub-section. The old second entry read "AICHAT BOT" and the first one
+     linked back to this same page. --]
 [#assign breadCrumb = [
-  {"label":"ai", "nameSpace":"${currentSection}", "action":"${(crpSession)!}/ai", "param": "edit=true&phaseID=${(actualPhase.id)!}"},
-  {"label":"userIdea", "nameSpace":"/monitoring", "action":""}
+  {"label":"ai", "nameSpace":"${currentSection}", "action":""}
 ] /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]

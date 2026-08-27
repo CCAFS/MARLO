@@ -1,22 +1,29 @@
 # AI Services (AI-CCRA section) — Agent Context
 
 Read this before changing anything in the MARLO **AI section** (the `AI-CCRA` main-menu entry, route `{crp}/ai`).
-This is a compact, as-built operational guide. Inspect the target source files after reading it. There is no
-`requirements.md` / `design.md` / `task.md` in this folder yet — create the full spec set only when the work is broad,
-architectural, or needs formal traceability.
+This is a compact, as-built operational guide. Inspect the target source files after reading it.
+
+**This folder also holds a full spec set — `requirements.md`, `design.md`, `task.md` (spec ID
+`DOMAIN-AI-SERVICES-001`, Jira A2-2433).** Read them for anything beyond a routine tweak: `design.md` §15 carries ADRs
+that constrain the DAO contract and the template, and `task.md` §9 lists the open risks on the as-built code. Trust
+the directory listing over this paragraph — it has been wrong about which spec files exist.
 
 ## The One Thing To Know First
 
-**The section is data driven. Every AI tool card rendered on the dashboard is one row of the `ai_report_configuration`
-table.** The row supplies the card title, the card description, the button label and the button URL. Nothing about the
-cards is hardcoded in `AiAction.java`, in `aiDashboard.ftl`, or in `global.properties`.
+**The section is data driven and scoped per Global Unit. Every AI tool card rendered on the dashboard is one row of
+the `ai_report_configuration` table owned by the logged Global Unit.** The row supplies the card title, the card
+description, the button label and the button URL. Nothing about the cards is hardcoded in `AiAction.java`, in
+`aiDashboard.ftl`, or in `global.properties`.
 
 Consequences, and they are the most common source of confusion in this module:
 
 - To **add, rename, re-describe, re-link or retire a tool**, ship a Flyway migration that writes to
-  `ai_report_configuration`. Do **not** add markup to the FTL and do **not** add i18n keys for card text.
+  `ai_report_configuration`, always setting `global_unit_id`. Do **not** add markup to the FTL and do **not** add i18n
+  keys for card text.
+- A row belongs to exactly one Global Unit. To offer the same tool to two programs, insert one row per Global Unit.
 - The card copy is **not translatable**. It is stored as raw text (emoji included) in the table and printed verbatim.
-- If the table has no active row, the dashboard renders a "no tools configured" fallback block instead of cards.
+- If the **logged Global Unit** has no active row, the dashboard renders a "no tools configured" fallback block
+  instead of cards. Another Global Unit's rows are never rendered.
 - The `userIdea.reportGeneratorNarrative`, `userIdea.ChatbotNarrative` and `userIdea.innovationGenerator` keys in
   `global.properties` are **stale leftovers** from before the table existed. They duplicate the current card text but
   are no longer read by any template. Do not edit them expecting the UI to change.
@@ -67,6 +74,14 @@ AWS Lambda function URLs).
 | `V2_6_0_20250905_1607__CreateSpecifiyToAIModule.sql` | Seeded the flag for global unit types 1, 3, 4 as `user_idea_section_active`, default `false`. |
 | `V2_6_0_20260826_1000__RenameUserIdeaSectionActiveParameter.sql` | Renamed key/description to `ai_section_active` / `Activate the AI section`. |
 
+### Schema history
+
+| Migration | What it did |
+|---|---|
+| `V2_6_0_20251107_1400__CreateReportsTableConfiguration.sql` | Created `ai_report_configuration`. |
+| `V2_6_0_20251113_1400__UpdateAITable.sql` | Seeded the three AICCRA tools. |
+| `V2_6_0_20260827_0747__AddGlobalUnitToAiReportConfiguration.sql` | **A2-2433:** added `global_unit_id` (`NOT NULL`, FK, indexed) and backfilled the existing rows to Global Unit 45 (AICCRA). |
+
 Constant: `APConstants.AI_SECTION_ACTIVE` in **both** `marlo-data` and `marlo-web` (value must equal `parameters.key`).
 Per-global-unit values live in `custom_parameters` and are keyed by `parameter_id`, so the rename preserved them.
 The flag reaches the session through `ValidSessionCrpInterceptor` / `InternationalitazionFileInterceptor`, which put
@@ -74,53 +89,74 @@ every `parameters.key` into the session map; `BaseAction.hasSpecificities(key)` 
 
 ## `ai_report_configuration` — What Each Column Means
 
-One row = one card. Seeded by `V2_6_0_20251107_1400__CreateReportsTableConfiguration.sql` (DDL) and
-`V2_6_0_20251113_1400__UpdateAITable.sql` (the three AICCRA tools).
+One row = one card, owned by one Global Unit. Seeded by
+`V2_6_0_20251107_1400__CreateReportsTableConfiguration.sql` (DDL) and `V2_6_0_20251113_1400__UpdateAITable.sql` (the
+three AICCRA tools); made per-tenant by `V2_6_0_20260827_0747__AddGlobalUnitToAiReportConfiguration.sql` (A2-2433).
 
 | Column | Entity property | Mapped in HBM | What it does |
 |---|---|---|---|
 | `id` | `id` | yes | PK. |
+| `global_unit_id` | `globalUnit` | yes | **Owner of the card.** `NOT NULL`, FK to `global_units`, indexed. The read is filtered by it, so a card is only ever rendered for its own Global Unit. |
 | `report_title` | `reportTitle` | yes | Card heading, printed verbatim (leading emoji is part of the stored value). Rendered only when non-empty. |
 | `report_description` | `reportDescription` | yes | Card body text, printed verbatim. Rendered only when non-empty. |
 | `button_label` | `buttonLabel` | yes | Button caption. Falls back to `reportTitle` when empty. |
 | `button_link` | `buttonLink` | yes | Target URL. **No button is rendered at all when this is empty.** See link handling below. |
-| `is_active` | `active` (inherited) | **no** | Filters the query (`where is_active=1`), but is never loaded into the entity. |
-| `active_since` | `activeSince` (inherited) | **no** | DB default only. |
-| `created_by` | `createdBy` (inherited) | **no** | `NOT NULL` + FK to `users`. Not written by the entity. |
-| `modified_by`, `modification_justification` | inherited | **no** | Not written by the entity. |
+| `is_active` | `active` (inherited) | yes | Soft-delete flag. Filters the query (`arc.active = TRUE`). |
+| `active_since` | `activeSince` (inherited) | yes | Set by `AuditColumnHibernateListener` on insert; `update="false"`. |
+| `created_by` | `createdBy` (inherited) | yes | `NOT NULL` + FK to `users`. Set by `AuditColumnHibernateListener` on insert; `update="false"`. |
+| `modified_by` | `modifiedBy` (inherited) | yes | Set by `AuditColumnHibernateListener` on update. |
+| `modification_justification` | inherited | yes | |
 
-**The tenant caveat:** the table has **no `global_unit_id`**. Every global unit with the flag on sees the *same* cards.
-The current rows are AICCRA-specific. Making the section multi-tenant requires a schema change, not a config change.
+### Tenancy: the content is per Global Unit
 
-### Why the `is_active` filter works even though it is unmapped
+Each row belongs to exactly one Global Unit through `global_unit_id`, and
+`AiReportConfigurationDAO.findAllByGlobalUnit(long)` is the only read path:
 
-`AiReportConfigurationMySQLDAO.findAll()` runs the HQL `from AiReportConfiguration where is_active=1`. `is_active` is
-not a mapped property, but Hibernate 5.6 passes an unresolved identifier in the `WHERE` clause through to SQL verbatim,
-so the emitted statement really is `... from ai_report_configuration aireportco0_ where is_active=1`. The filter is
-correct. (Verified by compiling the query plan against this checkout's mappings.) The same idiom appears in ~250 MARLO
-DAOs, so do not "fix" it in isolation.
+```sql
+SELECT arc FROM AiReportConfiguration arc
+WHERE arc.globalUnit.id = :globalUnitId AND arc.active = TRUE ORDER BY arc.id
+```
 
-What does **not** work as a consequence of the unmapped columns:
+`AiAction.prepare()` passes `this.getCurrentCrp().getId()`, so a Global Unit never sees another one's tools. Two rules
+follow:
 
-- `AiReportConfigurationMySQLDAO.deleteAiReportConfiguration()` calls `setActive(false)` and updates. Because `active`
-  is unmapped, the generated `UPDATE` touches only the four text columns — **the soft delete is a no-op.** Deactivate a
-  card with SQL (`UPDATE ai_report_configuration SET is_active = 0 WHERE id = ?`) in a migration.
-- `saveAiReportConfiguration()` on a new row would emit an `INSERT` without `created_by`, which is `NOT NULL` with an FK
-  to `users` and no default — the insert fails. Combined with the point below, creating rows through the manager is not
-  a viable path today.
-- `AiReportConfigurationManagerImpl.saveAiReportConfiguration()` carries **no `@Transactional`** (only
-  `deleteAiReportConfiguration` does), so any write through it would be rolled back by the pool anyway.
-- Entities loaded from this table always report `isActive() == true` in memory, whatever the DB says.
+- **There is deliberately no unscoped `findAll()`** on the DAO or the manager. It was removed in A2-2433 precisely so
+  the tenancy filter cannot be forgotten. Do not reintroduce one.
+- **`global_unit_id` is `NOT NULL` on purpose.** A row with no owner would be unreachable by the query — invisible to
+  everyone, with no error and no log. `NULL` is *not* a "shared across all Global Units" marker; to offer one tool to
+  two programs, insert one row per Global Unit.
 
-**Net effect: rows are managed by migrations / DBA action, not from the application.** There is no admin screen for
-this table, and `AiReportConfigurationManager` has exactly one caller — `AiAction`.
+The section *visibility* is a separate, older mechanism: the `ai_section_active` specificity in `custom_parameters`
+(see *Route And Gates*). Visibility and content are both per Global Unit now, but they are configured independently —
+a Global Unit can have the flag on and no rows, which renders the empty state.
 
-### `findAll()` returns `null`, not an empty list
+### Persistence: what the A2-2433 mapping fixed
 
-`AiAction.prepare()` assigns the result straight to `reportConfigurations`, so the field is `null` when no active row
-exists. The view guards with `[#if reportConfigurations?? && reportConfigurations?has_content]`. Keep that guard if you
-touch the template. `prepare()` also wraps the call in `try/catch` and logs `"Error loading AI report configurations"`
-— if the cards vanish in an environment, grep the logs for that line before suspecting the flag.
+The audit columns (`is_active`, `active_since`, `created_by`, `modified_by`, `modification_justification`) exist in the
+table but used to be **absent from the HBM**. `AuditColumnHibernateListener` populates them by looking the property up
+in the entity metamodel (`ArrayUtils.indexOf(propertyNames, "createdBy")`), so an unmapped property meant the listener
+logged `Field 'createdBy' not found on entity …` and wrote nothing. Consequences, now resolved:
+
+- `deleteAiReportConfiguration()` calls `setActive(false)` and updates. With `active` unmapped the generated `UPDATE`
+  touched only the four text columns — **the soft delete was a no-op.** It now really writes `is_active = 0`.
+- `saveAiReportConfiguration()` on a new row emitted an `INSERT` without `created_by`, which is `NOT NULL` with an FK to
+  `users` and no default, so the insert failed. The listener now fills `created_by`, `active_since` and `is_active`.
+- `saveAiReportConfiguration()` carried **no `@Transactional`**, so any write would have been rolled back by the pool.
+  It has one now.
+- Entities loaded from this table used to report `isActive() == true` in memory whatever the DB said. They no longer do.
+
+**Rows are still managed by migrations / DBA action.** There is no admin screen for this table (explicitly out of scope
+in A2-2433), and `AiReportConfigurationManager` has exactly one caller — `AiAction`. The write path merely works now if
+something ever needs it; a caller creating a row must set `globalUnit` itself.
+
+### The read returns an empty list, never `null`
+
+`findAllByGlobalUnit` returns an empty list when the Global Unit has no active rows — the pre-A2-2433 `findAll()`
+returned `null` instead. `AiAction.prepare()` also falls back to an empty list when there is no Global Unit in session
+(logging `"No Global Unit in session…"`) or when the query throws (logging `"Error loading AI report
+configurations"`). The view still guards with `[#if reportConfigurations?? && reportConfigurations?has_content]`; keep
+that guard if you touch the template. If the cards vanish in an environment, grep the logs for those two lines before
+suspecting the specificity flag.
 
 ## How A Card Link Is Built
 
@@ -161,13 +197,17 @@ validator, a read-back list), not a tweak — and the naming should move away fr
 | `userIdea.disclaimer` | yes (warning box) | |
 | `userIdea.question.default` | yes (info box) | |
 | `userIdea.answer` | yes (textarea label) | |
-| `userIdea.noReportsConfigured` / `.noReportsConfiguredDescription` | yes (empty-state) | **Missing from `global.properties`** — the template supplies an English `default=` literal. Add the keys if the empty state must be translatable. |
-| `breadCrumb.menu.userIdea` | yes (breadcrumb) | Reads `AICHAT BOT`. |
+| `userIdea.noReportsConfigured` / `.noReportsConfiguredDescription` | yes (empty-state) | Both added to `global.properties` in A2-2433, so the `default=` literals in the template are no longer what renders. Not in any `custom/*.properties` — the global fallback covers every program. |
+| `breadCrumb.menu.ai` | yes (breadcrumb) | Reads `AI-CCRA`. The breadcrumb is a **single** entry: A2-2433 dropped the stale second one (`breadCrumb.menu.userIdea`, `AICHAT BOT`) that duplicated a link to this same page. |
+| `breadCrumb.menu.userIdea` | **no** | Dead since A2-2433. Still present in `global.properties` and `custom/test.properties`; removing it belongs to the `userIdea.*` rename cleanup. |
 | `userIdea.reportGeneratorNarrative`, `userIdea.ChatbotNarrative`, `userIdea.innovationGenerator` (+ `.readText`) | **no** | Stale duplicates of the DB card text. Dead. |
 | `userIdea.title`, `userIdea.Description`, `userIdea.question*` | **no** | Dead. |
 
 Note the whole key family is still prefixed `userIdea.` even though the section is now the AI dashboard. Renaming the
 keys is a separate, mechanical cleanup (touch `global.properties`, every `custom/*.properties`, and the FTL together).
+
+**The section label is still AICCRA-specific and is not per Global Unit** — see *Known Gaps And Traps* #7, which is
+the only record of it. There is no Jira issue.
 
 ## Known Gaps And Traps
 
@@ -182,22 +222,46 @@ keys is a separate, mechanical cleanup (touch `global.properties`, every `custom
 5. `currentSectionString` in the template is built as `project-…-phase-…` — this page is not a project section; the
    value exists only to satisfy shared includes.
 6. Emoji live inside the DB values (`🧾`, `💬`, `🧠`); the table is `utf8mb4`. Keep any new migration `utf8mb4`-safe.
+7. **The section label is AICCRA-specific while the content is per Global Unit.** A2-2433 made the cards per tenant but
+   deliberately left the label alone, so a non-AICCRA program now sees *its own* cards under an `AI-CCRA` heading. Four
+   places hold the literal:
+   - `global.properties` / `custom/test.properties` → `menu.ai=AI-CCRA` (main-menu entry)
+   - `global.properties` / `custom/test.properties` → `breadCrumb.menu.ai=AI-CCRA` (breadcrumb)
+   - `aiDashboard.ftl` → `[#assign title = "AI-CCRA" /]`
+   - `aiDashboard.ftl` → the page `<h4>AI-CCRA</h4>`
+
+   The fix, when someone picks it up: make `menu.ai` and `breadCrumb.menu.ai` generic in `global.properties`, add an
+   `AI-CCRA` override in `custom/aicrra.properties` and `custom/aiccra3.properties`, and replace both FTL literals with
+   `[@s.text name="menu.ai" /]` so AICCRA keeps rendering exactly as it does today. **No Jira issue was raised — this
+   entry is the record.**
 
 ## Change Recipes
 
-**Add / change / retire an AI tool** → Flyway migration only:
+**Add / change / retire an AI tool** → Flyway migration only. `global_unit_id` decides which program sees the card, so
+it is never optional:
 
 ```sql
--- add
-INSERT INTO ai_report_configuration (report_title, report_description, button_label, button_link, created_by)
-VALUES ('🧠 New Tool', 'What it does…', 'Go to New Tool', 'https://…', 1);
+-- add (global_unit_id is NOT NULL: name the owner explicitly)
+INSERT INTO ai_report_configuration
+  (global_unit_id, report_title, report_description, button_label, button_link, created_by)
+VALUES (45, '🧠 New Tool', 'What it does…', 'Go to New Tool', 'https://…', 1);
 
 -- change copy or destination
 UPDATE ai_report_configuration SET report_description = '…', button_link = '…' WHERE id = ?;
 
--- retire (the DAO soft delete does not work — see above)
+-- give another program the same tool: one row per Global Unit, never a shared row
+INSERT INTO ai_report_configuration
+  (global_unit_id, report_title, report_description, button_label, button_link, created_by)
+SELECT <other_global_unit_id>, report_title, report_description, button_label, button_link, 1
+FROM ai_report_configuration WHERE id = ?;
+
+-- retire
 UPDATE ai_report_configuration SET is_active = 0 WHERE id = ?;
 ```
+
+**Onboard a new program's AI tools** → two independent steps, both required: set `ai_section_active` to `true` for the
+Global Unit (menu visibility) *and* insert its `ai_report_configuration` rows (content). Only the first one is
+reversible from the Super Admin UI.
 
 **Enable the section for a global unit** → set the `ai_section_active` custom parameter to `true` for that global unit
 (Super Admin → CRP parameters, or a `custom_parameters` migration). Users must re-login for the session map to pick it
