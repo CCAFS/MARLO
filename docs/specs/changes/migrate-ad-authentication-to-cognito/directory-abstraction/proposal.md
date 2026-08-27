@@ -106,15 +106,22 @@ serve:
 **This is settled empirically, not by argument.** See `OQ-21` in [`../family.md`](../family.md): once
 the pool is federated to CGIAR AD, call `ListUsers` with `filter=email="<someone>@cgiar.org"` for a
 person who has **never** signed in to MARLO through Cognito, on a pool with no pre-provisioned users.
-One API call decides it. If it returns the person, candidate 1 wins on cost and OQ-3b/OQ-15 stop
-mattering for Capability B — a material saving against the 27–36 day Bucket B estimate.
+One API call decides it, and **both outcomes leave this child untouched**:
+
+| `OQ-21` resolves | Consequence for Capability B | Consequence for `DirectoryService` |
+|---|---|---|
+| **Yes** — a never-signed-in federated person is returned | Cognito becomes a viable candidate 1 provider; OQ-3b and OQ-15 stop mattering for Capability B, and Bucket B's 27–36 day estimate drops materially | **None.** A `CognitoDirectoryService` slots in behind the same interface |
+| **No** — the pool returns nothing | Another provider is selected from the remaining candidates | **None.** Whichever wins slots in behind the same interface |
+
+**Neither outcome is a decision this child makes.** `DEC-002` stays `PENDING`, Protected Action `P12`
+still forbids an agent from selecting a provider, and nothing here presumes an answer.
 
 ### Why that third fact is the reason this proposal exists
 
 **The abstraction is identical under all candidates — including a Cognito-backed one — so this child's
 scope does not change whichever way `OQ-21` resolves** (analysis §4.5).
 
-The seam already anticipates it: `DirectorySource` carries **`COGNITO_CLAIMS`** as one of its seven
+The seam already anticipates it: `DirectorySource` carries **`COGNITO_CLAIMS`** as one of its eight
 values, so a `CognitoDirectoryService` slots in behind the same interface as any other candidate, with
 no change to a single consumer.
 
@@ -147,11 +154,27 @@ After this change:
 `LDAPAuthenticator.java` in `marlo-data` also keeps its `adauth` import: it is Capability A, owned by
 child 2, and protected here.
 
-**Behavior equivalence is the acceptance criterion, not a hope.** `LdapDirectoryService` reproduces
-`BaseAction.getOutlookUser()` (`:4802`) verbatim in behavior — `setInternalConnection(!config.isProduction())`,
-`searchUserByEmail(email)`, `try/catch → null`. A test that can only pass by changing production
-`searchUserByEmail(email)`, `try/catch → null`. A test that can only pass by changing production
-behavior means the implementation is wrong, not the test.
+**Behavior equivalence is the acceptance criterion — stated as *observable* equivalence, not as
+byte-identity.** `LdapDirectoryService` reproduces `BaseAction.getOutlookUser()` (`:4802`) step for
+step: `setInternalConnection(!config.isProduction())`, then `searchUserByEmail(email)`, and a caught
+exception yielding a not-found result rather than propagating.
+
+**One thing changes internally, on purpose.** Where `getOutlookUser` collapsed a caught exception into
+the same `null` it returned for a genuine miss, `LdapDirectoryService` distinguishes them in
+`DirectoryPerson.source`:
+
+| Condition | `found` | `source` |
+|---|---|---|
+| The directory returned a person | `true` | `LDAP` |
+| The directory answered; the person is absent | `false` | `NOT_FOUND` |
+| The lookup failed — unreachable, timeout, exception | `false` | **`ERROR`** |
+
+That distinction is **invisible to the five consumers that read only `found`** — for them `ERROR` and
+`NOT_FOUND` are both `found == false`, exactly as `null` was. It is **load-bearing for the one
+consumer that historically did not collapse them** (see § *Requirement Delta Preview* → ADDED).
+
+A test that can only pass by changing a consumer's **observable** behavior means the implementation is
+wrong, not the test.
 
 ---
 
@@ -161,11 +184,11 @@ behavior means the implementation is wrong, not the test.
 
 | Task | What |
 |---|---|
-| `EXEC-030` | `DirectoryPerson` (immutable: `found`, `email`, `login`, `firstName`, `lastName`, `source`, with a `notFound(email)` factory) and `DirectorySource` enum (`LDAP, DIRECTORY_API, CLARISA, COGNITO_CLAIMS, AD_MIRROR, INVITATION, NOT_FOUND`) |
-| `EXEC-031` | `DirectoryService` interface — one method, `DirectoryPerson findByEmail(String)`. Contract: null/blank/malformed email → `notFound`, **never throws**; backend failure → `notFound`, **never throws**; `source` always populated |
+| `EXEC-030` | `DirectoryPerson` (immutable: `found`, `email`, `login`, `firstName`, `lastName`, `source`, with a `notFound(email, source)` factory), the `DirectorySource` enum (`LDAP, NOT_FOUND, ERROR, DIRECTORY_API, CLARISA, COGNITO_CLAIMS, AD_MIRROR, INVITATION` — **8 values**; `ERROR` added by `design.md` DD-3) and `DirectoryLookupException` (unchecked; `design.md` DD-3a) |
+| `EXEC-031` | `DirectoryService` interface — one method, `DirectoryPerson findByEmail(String)`. Contract: **the service never propagates a backend exception.** Null / blank / malformed email → `found=false`, `source=NOT_FOUND`. Directory answered and person absent → `found=false`, `source=NOT_FOUND`. Lookup failed → `found=false`, **`source=ERROR`**, logged at `error`. `source` always populated; never returns `null` |
 | `EXEC-032` | `LdapDirectoryService` — the `adauth`-backed implementation, `@Named` bean following the existing `@Named("LDAP")` pattern. **The only file in the new package permitted to import `org.cgiar.ciat`** |
 | `EXEC-033` | `DirectoryServiceContractTest` (abstract, reusable) + `LdapDirectoryServiceTest` |
-| `EXEC-034` | Migrate `BaseAction` — `getOutlookUser(String) → LDAPUser` becomes `findCorporateUser(String) → DirectoryPerson` |
+| `EXEC-034` | **Delete** `BaseAction.getOutlookUser` (`:4802-4816`) and its two `org.cgiar.ciat` imports (`:103-104`). **`BaseAction` receives no `DirectoryService` and gains no dependency** — its two callers inject the seam themselves. See `design.md` **DD-2**, which deviates from the original `EXEC-034` wording |
 | `EXEC-035` | Migrate `CrpUsersAction` — preserve the `setCgiarUser(true)` / name / username assignments exactly |
 | `EXEC-036` | Migrate `json/global/ManageUsersAction` — widest surface, 15 FTL pages |
 | `EXEC-037` | Migrate `GuestUsersValidator` — delete its duplicate of the helper (declared `public`); `found` replaces `LDAPUser != null` |
@@ -220,7 +243,7 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 | **End users** | **Not at all.** No user-visible change. This is the point |
 | Program / Super Admins | No change now. They are the users the Capability B *provider* decision will eventually affect (child 3) |
 | `marlo-web` | 7 files modified — 6 migrated consumers + `ContactPersonAction` (AD code deleted). `searchUsersUtil` deliberately untouched |
-| `marlo-data` | 4 new files under `security/directory/` and `security/directory/impl/` |
+| `marlo-data` | **5** new files: `DirectoryPerson`, `DirectorySource`, `DirectoryService`, `DirectoryLookupException` under `security/directory/`, and `LdapDirectoryService` under `security/directory/impl/` |
 | `marlo-utils`, `marlo-core`, `marlo-parent` | Untouched |
 | Database | **No schema change, no migration** |
 | Specs | [`../family.md`](../family.md) child 1 · unblocks child 3's provider swap · **no dependency on child 2** |
@@ -244,21 +267,44 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 ### ADDED
 
 - `DirectoryService.findByEmail(String) → DirectoryPerson` as the single seam for corporate-user
-  lookup, with an explicit **never-throws** contract: invalid input and backend failure both return
-  `notFound`, so callers degrade rather than fail (pre-empts `R7`).
-- `DirectoryPerson.source` as part of the contract — a caller, a log line, and a support ticket can
-  tell *"the corporate directory confirmed this person"* apart from *"we assumed it from the email
-  domain."*
+  lookup. **The service never propagates a backend exception and never returns `null`** — every
+  condition comes back as a `DirectoryPerson`.
+- **`DirectorySource` distinguishes three outcomes** where `getOutlookUser` had one. `NOT_FOUND` means
+  *the directory answered and the person is not there*; **`ERROR`** means *the lookup failed and
+  nothing is known about the person* (unreachable, timeout, exception). `LDAP` means the directory
+  confirmed them. A caller, a log line and a support ticket can now tell *"the directory confirmed
+  this"* apart from *"we could not ask."*
+- **`DirectoryLookupException`** (unchecked) — the type a *consumer* throws when it reads
+  `source == ERROR` and must not degrade. **The service does not throw it; the consumer chooses to.**
+  The separation matters:
+
+  | Layer | On a backend failure |
+  |---|---|
+  | `DirectoryService` / `LdapDirectoryService` | returns `DirectoryPerson(found=false, source=ERROR)` and logs at `error`. **Throws nothing** |
+  | The five consumers that read only `found` | behave exactly as today — `ERROR` and `NOT_FOUND` are both `found == false`, as `null` was |
+  | `center/json/global/ManageUsersAction.validateOutlookUser` | reads `source == ERROR` and **throws `DirectoryLookupException`**, preserving the propagation it has today (`:255` has no `try/catch`) |
+
+  Without this, a directory outage would reach an administrator as
+  `manageUsers.email.doesNotExist` — *"this email does not exist in the Active Directory"* — for a
+  person who does exist. **A directory outage must never be reported as "user does not exist."**
+  See `design.md` **DD-3** and **DD-3a**.
 - `DirectoryServiceContractTest`, reusable by every future implementation — so child 3's provider swap
   is **covered by construction** rather than needing new tests.
 - MARLO's **first authentication-adjacent tests** (currently zero exist).
 
 ### MODIFIED
 
-- `BaseAction.getOutlookUser(String) → LDAPUser` becomes `findCorporateUser(String) → DirectoryPerson`.
-  Wide caller set (9,753 LOC) — shared writer, serialize.
-- The 6 migrated consumers consume `DirectoryPerson` instead of `LDAPUser`. **Field-for-field identical
-  assignments.**
+- **`BaseAction.getOutlookUser` is deleted, not renamed.** `BaseAction` receives no `DirectoryService`
+  and gains no dependency; its two callers (`CrpUsersAction:630`,
+  `json/global/ManageUsersAction:151`) inject the seam into their own existing `@Inject` constructors.
+  A 9,753-line shared file gets **smaller**. (`design.md` **DD-2** — a documented deviation from
+  `EXEC-034`.)
+- The **6 migrated consumers** consume `DirectoryPerson` instead of `LDAPUser`, with the **same field
+  assignments** and each keeping its own `.toLowerCase()` at the call site.
+- **`center/json/global/ManageUsersAction.validateOutlookUser` gains an `ERROR` branch.** It still
+  returns `null` on a genuine `NOT_FOUND` — which `create():128` handles as
+  `manageUsers.email.doesNotExist` — and now throws on `ERROR` instead of silently reporting the same
+  message.
 - `ContactPersonAction.searchADUser()` stops constructing AD objects. Same JSON, same `ad_user` source.
 
 ### REMOVED
@@ -268,7 +314,8 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
   `ContactPersonAction`.
 - `GuestUsersValidator`'s duplicate of `getOutlookUser` (declared `public`, no external caller).
 
-**Nothing else. No dependency, no JAR, no constant, no class.**
+**Nothing else. No dependency, no JAR, no constant, no class** — `getADFilter`, the four global
+`APConstants.*_AD` constants, `utils/searchUsersUtil.java` and `adauth` itself all survive this child.
 
 ---
 
@@ -277,7 +324,8 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
 ### Option 1 — Build the seam now, `adauth` behind it *(recommended)*
 
 Create `DirectoryService` + `LdapDirectoryService`, migrate the 6 consumers, eliminate the
-`ContactPersonAction` construction. Zero behavior change.
+`ContactPersonAction` construction. **Every consumer keeps its observable behavior for the same
+inputs**; internally, a genuine `NOT_FOUND` becomes distinguishable from a backend `ERROR`.
 
 | | |
 |---|---|
@@ -349,7 +397,7 @@ so a later reader does not read it as a skipped checkpoint.**
 | # | Risk | Rating | Mitigation |
 |---|---|---|---|
 | **DA-1** | **`BaseAction` is a 9,753-LOC shared writer with a very wide caller set.** A signature change ripples | 🟠 High | `EXEC-034` is its own task and its own commit. Compile + Checkstyle + full `git diff` read. The 3 indirect callers (`CrpUsersAction:630`, `ManageUsersAction:151`, `GuestUsersValidator:55`) are migrated in their own tasks immediately after |
-| **DA-2** | **A non-equivalent mapping.** `null` used to mean "not in AD"; if `found` is derived differently, a caller silently changes behavior | 🟠 High | `LdapDirectoryService` copies the existing body verbatim in behavior. `DirectoryServiceContractTest` asserts found/not-found, null and malformed input, and exception→`notFound`. **`EXEC-032`'s STOP rule: if a test can only pass by changing production behavior, fix the implementation, not the test** |
+| **DA-2** | **A non-equivalent mapping.** `null` used to mean *"not in AD"*; if `found` is derived differently, a caller silently changes behavior | 🟠 High | `LdapDirectoryService` reproduces the existing body step for step, adding only the `NOT_FOUND` / `ERROR` distinction in `source`. `DirectoryServiceContractTest` asserts found / not-found, null and malformed input, and **a thrown backend exception surfacing as `found=false` with `source=ERROR`** — not as `NOT_FOUND`. **`EXEC-032` STOP rule: if a test can only pass by changing a consumer's observable behavior, fix the implementation, not the test** |
 | **DA-3** | **No mocking framework exists** (`DEC-005` `PENDING`). Assertions of the form *"this collaborator was never called"* need hand-rolled spies | 🟡 Medium | **This child does not need `DEC-005`.** A fake `DirectoryService` for contract tests is a class with one method. Collaborators are constructor-injected interfaces and the `BaseAction` hooks are `public` and non-final (§2.8). **Keeping `DEC-005` out also preserves parallel-safety with child 2** — it would otherwise collide on `marlo-parent/pom.xml` |
 | **DA-4** | **Line-number drift.** `BaseAction.getOutlookUser` moved from `:4797` to `:4802` | 🟡 Medium | `EXEC-003` drift probe is mandatory before any code change (session-start step S7). Drift is spot-checked in [`../analysis/README.md`](../analysis/README.md) |
 | **DA-5** | **`OQ-12` — the convention plugin may expose `SearchUserAction` and `center/…/ManageUsersAction`**, neither of which is in any Struts XML | 🟡 Medium | **Migrate both, delete neither.** `EXEC-038` and `EXEC-039` say so explicitly. This child is safe either way; only child 3's deletion is gated on the probe |
@@ -376,7 +424,7 @@ so a later reader does not read it as a skipped checkpoint.**
 | # | Question | Blocks | Owner |
 |---|---|---|---|
 | **DA-OQ-1** | Should `DirectoryService` live in `marlo-data` (as the execution plan specifies) or `marlo-core`? The plan says `marlo-data/.../security/directory/`, consistent with `LDAPAuthenticator`'s package | Design phase only | Tech lead — **`/akili-specify` can resolve from the existing pattern** |
-| **DA-OQ-2** | Does `findCorporateUser` keep `getOutlookUser` as a deprecated delegating alias for one release, or is the rename hard? A hard rename is a wider diff; an alias leaves a second path to the same call | `EXEC-034` | Tech lead |
+| ~~**DA-OQ-2**~~ | ~~Does `findCorporateUser` keep `getOutlookUser` as a deprecated alias?~~ → **CLOSED 2026-08-27: moot.** `design.md` **DD-2** deletes the method outright rather than renaming it, so there is no alias question. Verified: exactly 2 callers, zero template / JS / XML references | — | — |
 | **DA-OQ-3** | `EXEC-052` expects exactly **3** live `adauth` call sites after this child. Is that number accepted as the checkpoint exit criterion, given `EXEC-005`'s baseline has not been captured yet? | `EXEC-052` | IBD Team lead |
 | **DA-OQ-4** | Has the parent `proposal.md` on `staging-cognito` (approved 2026-08-24) been superseded by anything, or does its approval still stand for this branch? | Nothing technical; traceability | IBD Team lead |
 
@@ -394,11 +442,14 @@ DA-OQ-3 is resolved by running Checkpoint 0; DA-OQ-4 is a records question.
 | **SC-3** | **Zero** runtime `ADConexion` constructions remain in the codebase | `EXEC-050`, `EXEC-052` |
 | **SC-4** | `mvn -q install -DskipTests -pl marlo-web -am` and `mvn -q checkstyle:check` both pass | every task |
 | **SC-5** | `DirectoryServiceContractTest` + `LdapDirectoryServiceTest` + `ContactPersonActionTest` pass via `mvn -q -pl marlo-web test` | `EXEC-033`, `EXEC-051` |
-| **SC-6** | **Behavior equivalence.** Every consumer's field assignments are byte-equivalent to before; no protected file appears in any diff | per-task `git diff` review + Reviewer audit |
+| **SC-6** | **Observable behavior equivalence.** For the same inputs, every consumer produces the same observable outcome as before — the same field assignments, the same JSON, the same messages, the same propagation. No protected file appears in any diff | per-task `git diff` review + the per-consumer tests + Reviewer audit |
+| **SC-6a** | **The `NOT_FOUND` / `ERROR` distinction is real and correctly consumed.** A stub that throws yields `found=false` with `source=ERROR` (never `NOT_FOUND`); the five `found`-only consumers behave identically for both; `center/json/global/ManageUsersAction` throws `DirectoryLookupException` on `ERROR` and returns `null` on `NOT_FOUND` | `DirectoryServiceContractTest` + `CenterManageUsersActionDirectoryTest` |
+| **SC-6b** | **A directory outage is never reported as "user does not exist."** With the directory unavailable, `center/json/global/ManageUsersAction.create()` does **not** produce `manageUsers.email.doesNotExist` | `CenterManageUsersActionDirectoryTest` |
 | **SC-7** | `searchContact.do` returns the same JSON, from `ad_user`, constructing no AD object | `EXEC-051` |
 | **SC-8** | `EXEC-052`'s re-inventory shows exactly **3** live `adauth` call sites, reconciled against `EXEC-005` | `EXEC-052` |
 | **SC-9** | Every new `.java` file carries the **GPL header**, 2-space indent, ≤120-char lines | `mvn -q checkstyle:check` + Reviewer audit item 6 |
 | **SC-10** | Swapping the provider is demonstrably one `@Named` bean plus one config value | design review, `/akili-validate` |
+| **SC-11** | **The seam is provider-agnostic.** `security/directory/` contains no reference to Cognito, CLARISA, Microsoft Graph, `ad_user`, or any other candidate provider — only `LdapDirectoryService` names a backend, and it is the one file allowed to | Reviewer audit + `grep` over the new package |
 
 **SC-6 is the one that matters.** Everything else can pass while a mapping is subtly wrong.
 
@@ -425,3 +476,29 @@ Specify should:
 5. Add **Checkpoint 0** (`EXEC-001` … `EXEC-006`) as task 0 if it has not been run.
 
 **Before implementation:** run the `EXEC-003` drift probe. `BaseAction` has already moved ~5 lines.
+
+---
+
+## Reconciliation record — 2026-08-27
+
+This proposal was **reconciled against the later decisions in `requirements.md` and `design.md`**, both
+of which post-date it. No scope changed, no code was written, no provider was selected. Where the two
+later documents held a better-founded decision, this one was updated to match — never the reverse.
+
+| # | Was | Now | Authority |
+|---|---|---|---|
+| 1 | `DirectorySource` listed 7 values; backend failure → `notFound` | 8 values incl. **`ERROR`**; a lookup failure is distinguishable from a confirmed absence | `design.md` **DD-3** |
+| 2 | The never-throws contract was described without the consumer-side branch | The split is explicit: **the service returns `found=false, source=ERROR` and throws nothing**; one consumer reads `ERROR` and throws `DirectoryLookupException` | `design.md` **DD-3a** |
+| 3 | *"verbatim in behavior"*, *"try/catch → null"*, *"zero behavior change"*, *"byte-equivalent"* | **Observable** equivalence for the same inputs, with the internal `NOT_FOUND` / `ERROR` distinction stated | `requirements.md` `DIRABS-FN-006` |
+| 4 | `EXEC-034` described renaming `getOutlookUser` to `findCorporateUser` inside `BaseAction` | **The method is deleted. `BaseAction` receives no `DirectoryService`.** The two callers inject the seam themselves | `design.md` **DD-2** |
+| 5 | — | Inventory kept as corrected: **8 importers**, **6 migrated**, `ContactPersonAction` deleted-not-migrated, `searchUsersUtil` explicitly untouched. The *constructs `LDAPService`* and *consumes `LDAPUser`* sets are labelled separately | verified in the checkout |
+| 6 | — | `ContactPersonAction` requirements unchanged and confirmed complete | verified |
+| 7 | `marlo-data`: 4 new files | **5** new files (`DirectoryLookupException` added by DD-3a) | `design.md` **DD-3a** |
+| 8 | `OQ-21` open, one branch described | Both branches stated, and **neither changes `DirectoryService`**. `DEC-002` stays `PENDING`; `P12` still forbids an agent selecting a provider | `family.md` `OQ-21` |
+| 9 | `SC-6` expected byte-equivalence | `SC-6` is observable equivalence; **`SC-6a`** asserts the `ERROR` / `NOT_FOUND` semantics, **`SC-6b`** asserts an outage is never reported as *"user does not exist"*, **`SC-11`** asserts the seam is provider-agnostic | this reconciliation |
+| — | `DA-OQ-2` asked about a `findCorporateUser` alias | **Closed as moot** — DD-2 deletes the method, so there is no alias question | `design.md` **DD-2** |
+
+**A duplicated line** left by an earlier edit (§ *Proposed Outcome*) was also removed.
+
+**Unchanged by this reconciliation:** the scope, the task set, every `EXEC-*` / `DIRABS-*` / `DD-*` ID,
+`adauth` itself, `auth-flow`, and the dependency set. `tasks.md` does not exist and was not created.

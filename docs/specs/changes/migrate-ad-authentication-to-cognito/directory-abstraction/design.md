@@ -329,13 +329,13 @@ information to escalate, not a failure to hide.
 
 | Metric | Expected | Notes |
 |---|---|---|
-| **Tasks** | **16** | 14 implementation + 2 checkpoint reports. Plus 6 Checkpoint-0 tasks if `EXEC-001`…`006` have not run |
+| **Tasks** | **17** + `T00` | 14 implementation + 2 checkpoint reports + **`T12`, the Spring-context smoke check** — added at Phase 3 because `D8` has no automated gate and the runbook has no task for it. Checkpoint 0 (`EXEC-001`…`006`) is collapsed into the single precondition task `T00`, so the original *"plus 6 CP0 tasks"* note is superseded |
 | **LOC — production** | **~280 net** | ~215 added in `marlo-data` (5 files, incl. `DirectoryLookupException` ~30); ~65 net in `marlo-web` (deletions offset additions: `BaseAction` −16, `GuestUsersValidator` −15, `ContactPersonAction` −10) |
 | **LOC — tests** | **~400** | 9 new test classes. Larger than the production change, deliberately: the dominant defect class has no other gate |
 | **LOC — total** | **~700** | Revised from ~650 by Judgment Day JD-7 (`DirectoryLookupException` + its branch test) |
-| **Review rounds** | **~19** | 16 first-pass reviews + ~3 rework rounds. Equivalence review is line-by-line, so budget more FAILs than a normal refactor |
+| **Review rounds** | **~20** | 17 first-pass reviews + ~3 rework rounds. Equivalence review is line-by-line, so budget more FAILs than a normal refactor |
 
-**Depth re-check against the design: Standard holds.** 16 tasks and ~700 LOC is squarely
+**Depth re-check against the design: Standard holds.** 17 tasks and ~700 LOC is squarely
 Standard-sized — well above `/akili-quick` or Lite, and it does not need Full, because the risk
 register, rollback and STOP conditions live in the execution plan rather than needing derivation here.
 
@@ -648,7 +648,7 @@ not an unacknowledged gap. Closing it properly is `docs/trd/trd.md` §14.9 item 
 | 2026-08-27 | No attribute map on `DirectoryPerson` (DD-6) | Its only reader is an unreachable `main()`. Carrying it would export `adauth`'s vocabulary into MARLO's own type |
 | 2026-08-27 | Reversion challenges run **inline**, not delegated | Standing session instruction not to spawn subagents. Recorded so the absence of a delegated reviewer is visible rather than inferred |
 | 2026-08-27 | Accept `D8` with a manual app-start substitute (DD-10) | A Spring context test needs `DEC-005` + a `pom.xml` edit, which would break parallel-safety with `auth-flow` |
-| 2026-08-27 | Budget: 16 tasks / ~700 LOC / ~19 review rounds | Estimated from the finished design, revised from ~650 by Judgment Day JD-7. Exceeds ~400 LOC, so `tasks.md` carries a 3-PR recommendation |
+| 2026-08-27 | Budget: **17** tasks (+`T00`) / ~700 LOC / ~20 review rounds — revised at Phase 3 | Estimated from the finished design, revised from ~650 by Judgment Day JD-7. Exceeds ~400 LOC, so `tasks.md` carries a 3-PR recommendation |
 | 2026-08-27 | **Judgment Day round 1 — 5 findings confirmed by both judges, applied; 4 single-judge findings applied on recommendation. No scoped re-judgment** (user chose *Fix only*) | Ledger: [`judgment.md`](./judgment.md). Neither judge challenged the architecture — DD-1, DD-2, DD-3, DD-5, DD-6, DD-9 and DD-10 all survived, with both judges independently confirming DD-2's and DD-3's premises against the code. The defects were bookkeeping plus one unspecified mechanism |
 | 2026-08-27 | **`DirectoryLookupException` added (DD-3a)** — closes JD-7 | DD-3 said the consumer "propagates" without naming what. It must be unchecked (`validateOutlookUser:248` has no `throws` clause), must not extend `AuthorizationException` (`struts.xml:543-545` maps that to 403 instead of 500), and makes the branch assertable by type in JUnit 4. Replaces the unearned claim "preserving today's outcome exactly" with the verified boundary: same handling, different subtype |
 | 2026-08-27 | **`D4` gate re-scoped to `^import org.cgiar.ciat.auth`; expected lists corrected** — closes JD-1 | The spec's only "genuinely falsifiable" gate reported **failure on a correct implementation**, twice over: it omitted `APCustomRealm` from the `marlo-data` count (2 → 3 files) and its unscoped pattern matched `WSMarlo.java`'s `org.cgiar.ciat.abw` string literals. The first defect is inherited from `EXEC-040` and is flagged for the execution plan at archive time |

@@ -112,7 +112,7 @@ every candidate, and `DirectorySource` reserves `COGNITO_CLAIMS` for a Cognito-b
 
 ### In scope
 
-`marlo-data`: a new `security/directory/` package (**4** types, incl. `DirectoryLookupException`) and `security/directory/impl/` (1 type).
+`marlo-data`: a new `security/directory/` package (**4** types: `DirectoryPerson`, `DirectorySource`, `DirectoryService`, `DirectoryLookupException`) and `security/directory/impl/` (**1** type: `LdapDirectoryService`) — **5 new files** in total.
 `marlo-web`: 7 files modified. Execution-plan tasks `EXEC-030` … `EXEC-053`.
 
 ### Out of scope
@@ -288,7 +288,10 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 
 ### DIRABS-FN-006 — Consumer behavior preserved, per consumer
 
-Each migrated consumer **MUST** produce byte-identical observable output for the same input.
+Each migrated consumer **MUST** preserve its **observable behavior for the same inputs** — the same
+field assignments, the same JSON keys and values, the same messages, the same propagation. Internally,
+a genuine `NOT_FOUND` becomes distinguishable from a backend `ERROR`; that distinction is invisible to
+the five consumers that read only `found`, and is the point for the sixth.
 
 #### Scenario: `CrpUsersAction` (`:630-657`)
 
@@ -535,7 +538,7 @@ those need the value-asserting tests above. A task whose only verification is th
 - [x] **Specificity:** Not applicable — no feature flag. `directory.source` belongs to child 3.
 - [x] **Migrations:** Not applicable — `DIRABS-NF-005`, no schema change.
 - [x] **i18n:** No new or changed user-facing string. `DIRABS-NF-008`.
-- [x] **License header:** `DIRABS-NF-006` — GPL header on all 4 new files.
+- [x] **License header:** `DIRABS-NF-006` — GPL header on all **5** new files.
 - [x] **Code style:** `DIRABS-NF-006` — `mvn -q checkstyle:check` is a hard gate.
 - [x] **REST:** Not applicable — no `/api/*` endpoint. `SearchUserAction` and both `ManageUsersAction`
       classes are Struts JSON actions, and no new `*.json` path is introduced.
