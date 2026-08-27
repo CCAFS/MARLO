@@ -165,6 +165,8 @@ SonarCloud and Snyk run automatically on push / PR via GitHub Actions.
 
 CI/CD: a push to any branch triggers the Jenkins job `marlo-<branch-suffix>`. Slack receives success/failure notifications.
 
+Before promoting a release, work through [`reports/ai-context/deployment-checklist.md`](./reports/ai-context/deployment-checklist.md). The rule that most often bites: **any change to `global.properties` or `custom/*.properties` requires an application restart after deploy** — Struts caches resource bundles with `devMode=false`, so without a restart users see raw i18n key names instead of labels. A browser refresh does not help.
+
 ---
 
 ## Documentation map
@@ -203,6 +205,7 @@ The `reports/ai-context/` folder holds authoritative operational guides for the 
 - [`persistence-replication-managerimpl.md`](./reports/ai-context/persistence-replication-managerimpl.md) — phase replication contract in `ManagerImpl` save / delete chains.
 - [`struts-critical-routing-catalog.md`](./reports/ai-context/struts-critical-routing-catalog.md) — Struts routing catalog with action classes and view results.
 - [`interceptor-validator-playbook.md`](./reports/ai-context/interceptor-validator-playbook.md) — interceptor stacks and `Action.validate()` patterns.
+- [`deployment-checklist.md`](./reports/ai-context/deployment-checklist.md) — pre-deploy / deploy / post-deploy checklist, including the mandatory application restart for i18n changes.
 - [`EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md`](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md) — debugging accordion-style list UIs.
 
 ---
