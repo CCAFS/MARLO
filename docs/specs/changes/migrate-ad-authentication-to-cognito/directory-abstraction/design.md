@@ -287,7 +287,7 @@ one — taking it would edit `marlo-parent/pom.xml` and break parallel-safety wi
 | Test | Shape | Catches |
 |---|---|---|
 | `FakeDirectoryService` | A hand-written implementation with settable canned responses **and a call recorder** (email received, invocation count) | Enables every assertion below |
-| `DirectoryServiceContractTest` | **Abstract**, one abstract factory method. Encodes all six rows of §5.1 plus the three invariants | `D2`, `D3`. **Reused verbatim by child 3's provider** — the swap arrives pre-covered |
+| `DirectoryServiceContractTest` | **Abstract**, one abstract factory method. Encodes all five rows of §5.1's table, plus the three invariants and the no-network-call clause | `D2`, `D3`. **Reused verbatim by child 3's provider** — the swap arrives pre-covered |
 | `LdapDirectoryServiceTest` | Extends the contract test | `D2`, `D3` for the LDAP implementation |
 | 5 × `…DirectoryTest` (one per migrated consumer) | Drive the consumer with a `FakeDirectoryService` returning a person whose `login` is **`"JSmith"`**, and assert the **exact** value written | **`D1`** — the dominant defect class. Asserting *"a value was written"* would not catch it; asserting *`"jsmith"`* does |
 | `ContactPersonActionTest` | Stubbed `AdUserManager` returning 2 `AdUser` rows; assert 2 maps with matching keys and values | `D7` (partially — not the real `ad_user` query) |

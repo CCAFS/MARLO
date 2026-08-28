@@ -488,3 +488,244 @@ Checkstyle."*** Both of those gates are unavailable (EB-1, EB-2) and neither is 
 Review rounds consumed: **1 of the ~20 budgeted.**
 
 ---
+
+### `DIRABS-T02` (EXEC-031) — the `DirectoryService` interface
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 2** (of a 3-attempt ceiling) |
+| **Date** | 2026-08-28 |
+| **Module** | `marlo-data` |
+| **Skills assigned** | `error-handling-patterns` — concurred with `tasks.md`. The whole artifact is a never-throws contract plus the `NOT_FOUND` / `ERROR` discrimination; the skill is load-bearing here, not ceremony |
+| **Effort** | attempt 1 `medium` → attempt 2 **`high`** (rework rule: bump one level per retry) |
+
+#### 🔧 SPEC DEFECT found and corrected during this task — `tasks.md` miscounted §5.1
+
+The Implementer reported that `tasks.md` T02 demanded *"all six rows of design §5.1"* while §5.1's
+table has only **five** rows. **Verified at the source by the Leader, and independently re-verified by
+the Reviewer** (`design.md:218-224` = 5 rows · `:226` = the invariants line · `:228` = a separate
+no-network-call clause).
+
+This is a **documentation off-by-one in `tasks.md`, not a design error** — §5.1's content is complete
+and correct; only the count describing it was wrong. It is therefore a correction, **not a Pivot**: no
+requirement or design decision is overturned, and no scope changes.
+
+**Two-direction sweep per the Correction Closure rule — the miscount was at FOUR sites, not one:**
+
+| Site | Was | Now |
+|---|---|---|
+| `tasks.md:144` (T02) | "all six rows of design §5.1" | "all five rows of design §5.1's table, plus the three invariants and the no-network-call clause" |
+| `tasks.md:196` (**T04**) | "Encodes all six rows of design §5.1" | "all five rows of design §5.1's table, the three invariants, and the no-network-call clause" |
+| `tasks.md:532` (Testing Plan) | "All six §5.1 rows" | "All five §5.1 table rows, the three invariants, the no-network-call clause" |
+| `design.md:290` | "Encodes all six rows of §5.1" | "all five rows of §5.1's table, plus the three invariants and the no-network-call clause" |
+
+**The three sites beyond the one reported are the whole justification for the sweep.** Correcting only
+the cited site would have left **T04** — the contract test, this spec's dominant gate — demanding a
+sixth row that does not exist, and that error would have surfaced as a wasted review round two tasks
+later. Post-sweep grep for `six rows|six §5` across the spec folder returns **empty**.
+
+Not touched: the `six` in `family.md` and `analysis/**` refers to the **six Capability B candidates**, a
+different and correct count.
+
+#### ⚠️ Leader-caused defect — recorded against the Leader, not the Implementer
+
+**The Leader's attempt-1 brief passed down the wrong count.** The Implementer, given "six rows" against
+a five-row source, resolved the conflict by promoting the no-network-call clause to a sixth numbered
+*outcome*. That produced the exact defect the Reviewer then failed the task on. The Implementer's
+handling was correct in every respect available to it: it detected the discrepancy, stated its reading
+explicitly in `Not Done / Assumptions`, and flagged it for adjudication rather than silently choosing.
+
+**This FAIL is attributable to the Leader's brief.** It is recorded here because a rework attempt
+charged to an Implementer that did the right thing would misrepresent the run — and because the
+attempt-2 brief must therefore carry the *corrected* count rather than ask the worker to re-derive it.
+
+The Reviewer was told, at dispatch, that the Leader had caused the framing and was instructed **not to
+soften its verdict for that reason**. It did not. That is the `author ≠ auditor` gate working as
+designed: independence that survives the orchestrator's own admission of error is worth more than
+independence that has never been tested against it.
+
+#### Attempt 1 — verification evidence
+
+| Gate | Result |
+|---|---|
+| Compile | **DEFERRED — EB-1.** Not run, not claimed |
+| Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed. Known blocker was passed *into* the brief so the Implementer would not spend a second task rediscovering it |
+| Isolation | `grep "org.cgiar.ciat"` → **EMPTY** ✅ |
+| Scope | `git status --short` → **exactly 1 new file** ✅ (the 2 modified spec docs are the Leader's correction sweep) |
+| Line length | `awk 'length>120'` → **EMPTY** ✅ (Reviewer measured the longest at ~106) |
+
+#### Attempt 1 — Reviewer verdict: `STATUS: FAIL`, 1 issue (recorded verbatim)
+
+> **1. Discovered Issue:** The type-level Javadoc asserts *"`findByEmail` resolves to exactly one of
+> the following six outcomes"* over a six-item `<ol>` in which **item 6 is not an outcome**. It is a
+> constraint on item 1, and its own text says so — *"Outcome 1 (a `null` or blank `email`) is reached
+> with **no network call**"*. Because items 1 and 6 necessarily co-occur, *"exactly one of the
+> following six"* is a false mutual-exclusivity claim: on the `null`-email path two of the six
+> enumerated items hold simultaneously, and item 6 can never hold alone. The available misreading is
+> concrete and damaging — a reader can conclude the contract defines **two distinct** `null`-email
+> outcomes, one that makes a network call and one that does not, when §5.1 defines one outcome and
+> forbids the call unconditionally. The method-level Javadoc propagates the error and adds a second
+> inaccuracy, referring readers to *"the full six-outcome **table**"* when the type-level construct is
+> an ordered list, not a table (the only table is §5.1's, and it has five rows). This is not cosmetic
+> here: `design.md:254` makes this Javadoc *"the contract"*, `DirectoryServiceContractTest` (T04)
+> enumerates its cases from §5.1, and child 3's provider inherits this file verbatim — a wrong
+> cardinality in a contract outlives the task that wrote it.
+>
+> **Violated Rule:** `design.md` §5.1 (`:218-228`) and §6.1 (`:254`) — *"`DirectoryService` |
+> interface, 1 method | Javadoc **is** the contract (§5.1). Every clause of §5.1 stated explicitly."* A
+> contract whose enumeration contradicts itself does not state §5.1's structure; it restates it with a
+> false quantifier.
+>
+> **Remediation Suggestion:** Purely local to the Javadoc; no signature, structure or member change.
+> (a) Make the `<ol>` **five** items — the five §5.1 rows, which items 1-5 already mirror exactly — and
+> change the lead-in to *"resolves to exactly one of the following five outcomes."* (b) Delete item 6
+> and re-state it as its own clause after the invariants paragraph, mirroring §5.1's own shape. (c) In
+> the method Javadoc, replace *"the full six-outcome table"* with *"the full five-outcome contract"*.
+> Keep the `NOT_FOUND` / `ERROR` paragraph and the invariants paragraph exactly as written.
+
+**Leader adjudication: FAIL upheld, in scope, rework warranted.** The finding is a genuine §5.1/§6.1
+conformance violation rather than a style preference, because §6.1 makes this Javadoc *the contract*
+and T04 plus child 3 both inherit it. The remediation is local to prose in one file — cheap to apply
+and expensive to leave.
+
+#### Attempt 1 — what the Reviewer confirmed clean
+
+Recorded so attempt 2 does not disturb work that already passed: exactly one method with the mandated
+`DirectoryPerson findByEmail(String email)` signature · **no `throws` clause** · no annotation, constant
+or default method · no `org.cgiar.ciat` import (same-package types need none) · GPL header
+byte-consistent with `AGENTS.md:40-53` *including that template's own `at your option)` typo* · all
+`@link` targets resolve · all HTML tags balanced · every active Checkstyle module satisfied · **the
+`NOT_FOUND` / `ERROR` paragraph, which the Reviewer called "the strongest part of the file"** — it
+states the asymmetry *and* why collapsing it yields a false statement, which is exactly what T10
+depends on.
+
+Assumption 1 (**no `@author` tag**) was audited and resolved as **correct**: `marlo-checkstyle.xml` has
+no `JavadocType`/`authorFormat` module, `AGENTS.md`'s template carries no `@author`, and three siblings
+in the same new package have none — in-package precedent rightly beat a single older cross-package
+exemplar.
+
+#### `ADVISORY` findings from attempt 1 — recorded, non-gating, and they die here
+
+Neither may be folded into attempt 2; the Reviewer explicitly scoped the invariants paragraph out of
+the fix, and an advisory may not widen a task.
+
+1. **READABILITY —** `{@link DirectoryPerson#found}` / `#notFound` carry no parameter list, and
+   `DirectoryPerson` has both a private `boolean found` field and a static `found(...)` factory, so bare
+   `#found` is ambiguous and may bind to the field. **Pre-existing precedent, not new drift** — the
+   committed T01 sibling uses the same bare form (`DirectoryPerson.java:26`), and no `maven-javadoc-plugin`
+   exists in any POM, so no gate evaluates it.
+2. **READABILITY —** *"Invariants … with no exception"* uses "exception" in its English sense two words
+   from a never-throws contract. §5.1's own *"on every path"* avoids the collision.
+
+#### Attempt 2 — the fix
+
+Effort bumped `medium` → **`high`** per the rework rule. The Reviewer's FAIL report was passed
+**verbatim**, with an Attempt History line (*"attempt 1 promoted the no-network-call clause to a sixth
+outcome — do not repeat"*), the **corrected** row count so the worker did not re-derive it, and an
+explicit DO-NOT-TOUCH list covering everything attempt 1 had already passed.
+
+Three edits, exactly as the remediation specified, and nothing else:
+
+| | Attempt 1 | Attempt 2 |
+|---|---|---|
+| **(a)** lead-in + list | *"exactly one of the following **six** outcomes"*, `<ol>` of 6 | *"…**five** outcomes"*, `<ol>` of 5 |
+| **(b)** no-network-call | Item 6 **inside** the enumeration | Its own paragraph **after** the invariants: *"**Outcome 1 makes no network call.** A `null` or blank `email` must fail fast, before any bind or connection to the backend."* |
+| **(c)** method Javadoc | *"the full six-outcome **table**"* | *"the full five-outcome **contract**"* |
+
+The Javadoc now **mirrors §5.1's own structure and ordering** — five-row table, then invariants, then
+the no-network-call clause. The Reviewer called this *"a structural improvement over attempt 1, not
+merely a deletion."*
+
+Implementer's `Not Done / Assumptions`: **none.**
+
+#### Attempt 2 — verification evidence
+
+| Gate | Result |
+|---|---|
+| Compile | **DEFERRED — EB-1.** Not run, not claimed |
+| Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed |
+| Isolation | `grep "org.cgiar.ciat"` → **EMPTY** ✅ (no imports at all; the linked types are same-package) |
+| Scope | `git status --short` → **1 new source file** ✅ |
+| Line length | `awk 'length>120'` → **EMPTY** ✅ (Reviewer measured longest at ~105) |
+| HTML balance | `ol` 1/1 · `li` 5/5 · `b` 4/4 · `em` 2/2 · 6 conventional unclosed `<p>` ✅ — independently re-counted by the Reviewer |
+
+#### Attempt 2 — Reviewer verdict: `STATUS: PASS`
+
+> The false quantifier is resolved — the enumeration now states design §5.1's five table rows as five
+> mutually-exclusive outcomes, with the no-network-call constraint moved out of the list into its own
+> paragraph in §5.1's own order, and the method Javadoc updated to match. Every DO-NOT-TOUCH item
+> verified intact at the source, all STOP conditions hold, and reading-based compile and style checks
+> are clean.
+
+The Reviewer was asked three ordered questions and answered all three: **(1)** FAIL resolved — yes;
+**(2)** no regression, each DO-NOT-TOUCH item *verified at the source rather than accepted on the
+Implementer's word*; **(3)** no new defect from the relocated prose — and it noted the relocation is a
+**precision gain**, because scoping the guarantee to outcome 1 matches `requirements.md:187` and
+`design.md:228` exactly and avoids over-promising no-network behavior for a *malformed* email.
+
+#### ⚠️ Reviewer-to-Leader handoff — a verification the Reviewer could not perform, and did not fake
+
+The Reviewer stated plainly:
+
+> *"**Caveat on method:** with no `Bash` I verified this by content coherence and `@link` resolution,
+> not by `git diff` — a byte-identity claim is the Leader's to confirm."*
+
+This is the `tools: Read, Grep, Glob` allowlist working as designed: the Reviewer has no `Bash`
+precisely so it cannot mutate what it audits, and the honest consequence is that byte-identity is
+outside its reach. **It flagged the limit instead of asserting a check it could not run.**
+
+**Leader confirmation, run inline:**
+
+```
+$ git diff 6342520abf -- .../DirectoryPerson.java .../DirectorySource.java .../DirectoryLookupException.java
+(no output)
+```
+
+**Empty → the three T01 files are byte-identical to their commit `6342520`.** Confirmed.
+
+Full file set touched since the approval commit `4b0bf72`: 3 spec documents + the 4 `.java` files of the
+new `security/directory/` package. **No protected file (§3.2) appears anywhere** — no `pom.xml`, no
+`APConstants.java`, no `global.properties`, no `struts*.xml`, no migration.
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `DIRABS-FN-001` *"exactly one method"* | One abstract method, `DirectoryPerson findByEmail(String email)`. No default method, no constant, no annotation |
+| `DIRABS-FN-002` *"**MUST NOT** propagate an exception under any input or backend condition"* | No `throws` clause — the contract is enforced at type level, not merely documented. Javadoc states *never throws* explicitly |
+| `DIRABS-FN-002` *"must **NOT** throw, and must **NOT** return `null`"* | Both stated in the type-level invariants paragraph and restated on the method |
+| `DIRABS-FN-002` no-network-call clause | Its own paragraph, scoped to outcome 1 only |
+| `DIRABS-FN-003` *"`source` must **NOT** be `null` on any path"* | Stated in the invariants and in the `@return` tag |
+| **The `NOT_FOUND` / `ERROR` distinction** (an explicit STOP condition) | A dedicated paragraph the Reviewer called *"the strongest part of the file"* in attempt 1 and confirmed intact in attempt 2. States the asymmetry — `NOT_FOUND` **asserts knowledge**, `ERROR` **asserts the absence of knowledge** — and why collapsing them produces a false statement. T10 is the sole consumer that reads `source` and depends on this |
+| `DIRABS-NF-006` / `NF-008` | GPL header matching `AGENTS.md:40-53` including the template's inherited `at your option)` typo (deliberately not "fixed" — matching precedent beats correcting it unilaterally). English only. Clean against every applicable Checkstyle module |
+| `DIRABS-ARCH-001` | The seam that makes a provider swap *one bean + one value*; §6.1 designates this Javadoc as **the contract** future providers inherit |
+
+#### `ADVISORY` from attempt 2 — recorded, non-gating, dies here
+
+**READABILITY —** the relocated clause refers into the `<ol>` **positionally** (*"**Outcome 1** makes no
+network call"*). Since this Javadoc *is* the contract (`design.md:254`), a future reorder of the list
+would silently falsify the clause; a self-describing lead-in (*"A `null` or blank `email` (outcome 1)
+makes no network call"*) would survive reordering. The Reviewer explicitly judged it **"not worth a
+third attempt — record only,"** and the Leader concurs: spending the last of three attempts on a
+robustness-to-hypothetical-edit preference would be exactly the misuse the attempt ceiling guards
+against.
+
+#### Decisions made
+
+| Decision | Rationale |
+|---|---|
+| Corrected the §5.1 row count in the **spec** rather than bending the code to `tasks.md`'s wrong number | The design was right and the task file miscounted it. Fixing the count at all four sites is cheaper than propagating a wrong contract into T04 and child 3 |
+| Treated it as a **correction, not a Pivot** | No requirement or design decision is overturned and no scope changes — §5.1's content was always complete. A Pivot Record would overstate what happened |
+| Charged the attempt-1 FAIL to the **Leader's brief**, not the Implementer | The Implementer detected the discrepancy, declared it, and escalated rather than silently choosing. Recording it otherwise would misrepresent the run |
+| Declined the attempt-2 advisory | Reviewer's own recommendation, and correct on the attempt budget |
+
+#### Final verification result
+
+**PASS on attempt 2.** Same honest qualifier as every task in this run: this means *"spec-conformant on
+independent source review, in scope, and style-clean by reading."* It does **not** mean *"compiles"* or
+*"passed Checkstyle"* — both gates are unavailable (EB-1, EB-2) and neither is claimed.
+
+Review rounds consumed: **3 of the ~20 budgeted** (T01: 1 · T02: 2). On track — `design.md` §9
+deliberately budgeted extra FAILs because equivalence review here is line-by-line.
+
+---

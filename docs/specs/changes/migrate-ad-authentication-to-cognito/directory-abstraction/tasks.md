@@ -137,11 +137,11 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T02 (EXEC-031) — `DirectoryService` interface
 
-- **Status:** `[ ]`
+- **Status:** `[x]` — PASS 2026-08-28, attempt 2 of 3 (attempt 1 FAILed on a Javadoc cardinality defect traced to the Leader's brief). Compile + checkstyle gates unavailable (EB-1, EB-2); see `execution.md`
 - **Depends on:** T01 · **Module:** `marlo-data` · **Size:** S · **Skills:** `error-handling-patterns`
 - **Design:** §5.1, §6.1 · **Requirements:** `DIRABS-FN-001`, `DIRABS-FN-002`, `DIRABS-FN-003`
 - **Files touched (new):** `security/directory/DirectoryService.java`
-- **Scope:** one method — `DirectoryPerson findByEmail(String email)`. **The Javadoc *is* the contract**, and must state all six rows of design §5.1 plus the three invariants explicitly: never throws · never returns `null` · `source` never `null`. It must state that `NOT_FOUND` asserts knowledge (*the directory answered*) and `ERROR` asserts the absence of knowledge (*the lookup failed*).
+- **Scope:** one method — `DirectoryPerson findByEmail(String email)`. **The Javadoc *is* the contract**, and must state all five rows of design §5.1's table, plus the three invariants and the no-network-call clause, explicitly: never throws · never returns `null` · `source` never `null`. It must state that `NOT_FOUND` asserts knowledge (*the directory answered*) and `ERROR` asserts the absence of knowledge (*the lookup failed*).
 - **Requirements covered — clause level:**
   - `FN-001` *"exactly one method"*
   - `FN-002` *"**MUST NOT** propagate an exception under any input or backend condition"*
@@ -193,7 +193,7 @@ Three fields appear in every task and mean the same thing throughout:
 - **Files touched (new):** `marlo-web/src/test/java/.../security/directory/{FakeDirectoryService,DirectoryServiceContractTest,LdapDirectoryServiceTest}.java`
 - **Scope:**
   - `FakeDirectoryService`: hand-rolled, settable canned responses **plus a call recorder** (email received, invocation count). **No mocking framework** — `DEC-005` is `PENDING` and this spec deliberately does not request it (taking it would edit `marlo-parent/pom.xml` and break parallel-safety with `auth-flow`).
-  - `DirectoryServiceContractTest`: **abstract**, one abstract factory method. Encodes all six rows of design §5.1 and the three invariants. **Reused verbatim by child 3's provider** — DD-9.
+  - `DirectoryServiceContractTest`: **abstract**, one abstract factory method. Encodes all five rows of design §5.1's table, the three invariants, and the no-network-call clause. **Reused verbatim by child 3's provider** — DD-9.
   - `LdapDirectoryServiceTest extends DirectoryServiceContractTest`.
   - Tests live in `marlo-web/src/test` even for `marlo-data` types: `marlo-data` has **no test source root**, and creating one is out of scope (`DIRABS-NF-004`).
 - **Requirements covered — clause level:** every `FN-002` clause; `FN-003` *"**BUT** `source` must **NOT** be `null` on any path"*; `FN-005` *Not found* *"**AND IT MUST** leave `login`, `firstName`, `lastName` null rather than empty strings"*.
@@ -529,7 +529,7 @@ in one checkout they serialize on `target/`. T05+T06+T07 are one atomic unit (se
 
 | Layer | Coverage | Reality check |
 |---|---|---|
-| **Unit — contract** | `DirectoryServiceContractTest` (abstract) + `LdapDirectoryServiceTest`. All six §5.1 rows, three invariants, the `NOT_FOUND` / `ERROR` split | MARLO's **first** authentication-adjacent tests. Reused verbatim by child 3 |
+| **Unit — contract** | `DirectoryServiceContractTest` (abstract) + `LdapDirectoryServiceTest`. All five §5.1 table rows, the three invariants, the no-network-call clause, and the `NOT_FOUND` / `ERROR` split | MARLO's **first** authentication-adjacent tests. Reused verbatim by child 3 |
 | **Unit — per consumer** | 5 classes, one per migrated consumer. Every assertion names the **exact** expected value | The only gate for `D1`, the dominant defect class |
 | **Unit — endpoint** | `ContactPersonActionTest` with a stubbed `AdUserManager` | Does **not** cover the real `ad_user` query |
 | **Integration** | **None.** No harness exists | Gap, recorded — not silently claimed |
