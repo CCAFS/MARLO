@@ -4,10 +4,10 @@
 **Requirement prefix:** `DIRABS`
 **Depth:** **Standard**
 **Type:** Change · **Approval Mode:** `gated`
-**Status:** Draft
+**Status:** **Approved** — 2026-08-28, approved by the user acting as Tech lead at the `/akili-execute` gate
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
 **Reviewers:** Tech lead, IBD Team lead
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-08-28
 **Parent Spec:** [`../family.md`](../family.md) — child row 1
 **Proposal:** [`proposal.md`](./proposal.md)
 **Related PRD sections:** `docs/prd.md` §4.1 goal 4 (multi-program flexibility), §4.1 goal 7 (self-hostable)
@@ -577,12 +577,13 @@ those need the value-asserting tests above. A task whose only verification is th
 | **DIRABS-OQ-1** | Does `DirectoryPerson` need an `attributes` map to eventually absorb `searchUsersUtil`'s `userAccountControl` read, or is that read abandoned with the file in child 3? | Nothing here — `DIRABS-FN-009` defers it | Tech lead |
 | ~~**DIRABS-OQ-2**~~ | ~~Is DEV-1 accepted?~~ → **CLOSED 2026-08-27: moot.** `design.md` DD-3 preserves the propagation, so there is no deviation to accept | — | — |
 | ~~**DIRABS-OQ-3**~~ | ~~Should `DirectorySource` gain an `ERROR` value?~~ → **CLOSED 2026-08-27: yes, in this spec.** `design.md` DD-3. Equivalence turned out to *require* it, not merely permit it. Analysis risk `R7` is partially pre-answered; child 3 inherits the distinction for free | — | — |
-| **DIRABS-OQ-4** | Is **DEV-2** (delete `getOutlookUser` rather than rewire it, deviating from `EXEC-034`) approved? | `EXEC-034` | Tech lead |
-| **DIRABS-OQ-5** | `LDAPUser.getLogin()` returning null on a *found* person would NPE at every consumer's `.toLowerCase()` **today**. Equivalence requires preserving that NPE. Confirm it is preserved rather than "fixed" | `EXEC-035` … `EXEC-039` | Tech lead |
+| ~~**DIRABS-OQ-4**~~ | ~~Is **DEV-2** (delete `getOutlookUser` rather than rewire it, deviating from `EXEC-034`) approved?~~ → **CLOSED 2026-08-28: approved.** Closed by this document's approval, exactly as the note below this table specifies. `EXEC-034` is superseded by DD-2 for this spec; do not "restore" the rewire | — | — |
+| ~~**DIRABS-OQ-5**~~ | ~~`LDAPUser.getLogin()` returning null on a *found* person would NPE at every consumer's `.toLowerCase()` **today**. Equivalence requires preserving that NPE.~~ → **CONFIRMED 2026-08-28: the NPE is preserved, not "fixed."** The conservative default the requirements already state is the approved behavior. A consumer migration that adds a null guard at `.toLowerCase()` is a **defect**, not a hardening | — | — |
 
-**None of the remaining questions blocks starting.** `-OQ-4` is answered at this document’s approval;
-`-OQ-1` is a child-3 question (`-OQ-2` and `-OQ-3` are closed); `-OQ-5` is a confirmation, and the conservative default
-(preserve the NPE) is already what the requirements state.
+**Every question that gates this spec is closed as of 2026-08-28.** `-OQ-4` closed at this document's
+approval; `-OQ-5` confirmed in the conservative direction (the NPE is preserved). `-OQ-2` and `-OQ-3`
+were already closed. **`-OQ-1` remains open and is a child-3 question** — `DIRABS-FN-009` defers it,
+and nothing in this spec depends on its answer.
 
 ---
 
@@ -599,4 +600,7 @@ those need the value-asserting tests above. A task whose only verification is th
 | 2026-08-27 | **D8 (Spring wiring) recorded as an accepted risk with a manual substitute** | MARLO has no Spring context test and adding one requires `DEC-005` and a `marlo-parent/pom.xml` edit, which would break this child's parallel-safety with `auth-flow`. A one-time app-start check at the HITL pause is the honest substitute |
 | 2026-08-27 | **Judgment Day round 1 — 5 findings confirmed by both judges, applied; 4 single-judge findings applied on recommendation. No scoped re-judgment** (user chose *Fix only*) | Ledger: [`judgment.md`](./judgment.md). Neither judge challenged the architecture — DD-1, DD-2, DD-3, DD-5, DD-6, DD-9 and DD-10 all survived, with both judges independently confirming DD-2's and DD-3's premises against the code. The defects were bookkeeping plus one unspecified mechanism |
 | 2026-08-27 | **`DirectoryLookupException` added (DD-3a)** — closes JD-7 | DD-3 said the consumer "propagates" without naming what. It must be unchecked (`validateOutlookUser:248` has no `throws` clause), must not extend `AuthorizationException` (`struts.xml:543-545` maps that to 403 instead of 500), and makes the branch assertable by type in JUnit 4. Replaces the unearned claim "preserving today's outcome exactly" with the verified boundary: same handling, different subtype |
+| 2026-08-28 | **Approved for execution; `OQ-4` closed, `OQ-5` confirmed** | The user, acting as Tech lead at the `/akili-execute` approval gate, approved `requirements.md` and `design.md`. `OQ-4` closes by its own terms (*"answered at this document's approval"*). `OQ-5` is confirmed in the conservative direction: the `getLogin()` NPE is **preserved**. Recorded explicitly so no later reviewer reads a preserved NPE as an overlooked bug and "fixes" it |
+| 2026-08-28 | **Toolchain finding at `T00`: `JAVA_HOME` pointed at JDK 8** | `mvn -v` reported `1.8.0_202` against `marlo-parent/pom.xml`'s `<release>17</release>` — `DIRABS-T00`'s STOP condition. Resolved per-command with `JAVA_HOME=C:/Program Files/Java/jdk-17` (Maven then reports 17.0.12) rather than by mutating machine configuration. **Every verification command in this spec must export it**, or the compile gate fails for a reason unrelated to the change under review |
+| 2026-08-28 | **`tasks.md` §4 gained per-task status markers** | The approved task list shipped with no `[ ]` / `[~]` / `[x]` markers, so `/akili-execute` had nowhere to record progress and no basis for task selection. Adding them is mechanical bookkeeping, not a scope change: no task text was altered |
 | 2026-08-27 | **`D4` gate re-scoped to `^import org.cgiar.ciat.auth`; expected lists corrected** — closes JD-1 | The spec's only "genuinely falsifiable" gate reported **failure on a correct implementation**, twice over: it omitted `APCustomRealm` from the `marlo-data` count (2 → 3 files) and its unscoped pattern matched `WSMarlo.java`'s `org.cgiar.ciat.abw` string literals. The first defect is inherited from `EXEC-040` and is flagged for the execution plan at archive time |

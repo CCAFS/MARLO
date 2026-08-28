@@ -2,9 +2,9 @@
 
 **Spec ID:** `CHG-COGNITO-DIRABS-001`
 **Depth:** Standard
-**Status:** Draft
+**Status:** **Approved** — 2026-08-28, approved by the user acting as Tech lead at the `/akili-execute` gate
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-08-28
 **Implements requirements:** `DIRABS-FN-001` … `FN-009`, `NF-001` … `NF-008`, `SEC-001`, `OPS-001`, `ARCH-001`
 **Touches modules:** `marlo-data` (**5** new files), `marlo-web` (7 files modified)
 **Pairs with:** [`requirements.md`](./requirements.md) · [`tasks.md`](./tasks.md) · [`../family.md`](../family.md)

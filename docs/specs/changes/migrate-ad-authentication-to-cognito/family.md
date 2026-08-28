@@ -55,7 +55,7 @@ call against the real federated pool settles it** (OQ-21). Until then, no candid
 
 | # | Spec Path | Depends on | Parallel-safe | Status |
 |---|---|---|---|---|
-| 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | `pending` |
+| 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | `in-progress` — approved and executing since 2026-08-28 |
 | 2 | `changes/migrate-ad-authentication-to-cognito/auth-flow` | none | **yes** | `pending` |
 | 3 | `changes/migrate-ad-authentication-to-cognito/directory-retirement` | `directory-abstraction`, `auth-flow` | no | `pending` |
 
