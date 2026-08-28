@@ -335,7 +335,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T10 (EXEC-039) — Migrate `center/json/global/ManageUsersAction` *(the `ERROR` branch)*
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 2 of 3 (attempt 1 FAILed on a comment asserting a falsified mechanism). Both gates green, 33 tests. The ERROR branch is mutation-proven two-sided: it goes red when removed, AND the NOT_FOUND message test wrongly passes. See `execution.md`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M · **Skills:** `error-handling-patterns`
 - **Design:** §5.2, §6.2, **DD-3**, **DD-3a** · **Requirements:** `FN-001`, `FN-002` *A caller that must not silently degrade*, `FN-006` *center/json/global/ManageUsersAction*
 - **Files touched:** `action/center/json/global/ManageUsersAction.java` · `.../CenterManageUsersActionDirectoryTest.java` *(new)*

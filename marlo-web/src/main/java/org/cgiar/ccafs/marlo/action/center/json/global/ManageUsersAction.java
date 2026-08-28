@@ -19,10 +19,11 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryLookupException;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
+import org.cgiar.ccafs.marlo.security.directory.DirectorySource;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-
-import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,10 +66,13 @@ public class ManageUsersAction extends BaseAction {
   private User newUser;
   private String message;
 
+  private final DirectoryService directoryService;
+
   @Inject
-  public ManageUsersAction(APConfig config, UserManager userManager) {
+  public ManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService) {
     super(config);
     this.userManager = userManager;
+    this.directoryService = directoryService;
   }
 
   /**
@@ -241,23 +245,26 @@ public class ManageUsersAction extends BaseAction {
 
   /**
    * Validate if a given user exists in the Outlook Active Directory .
-   * 
+   *
    * @param email is the CGIAR email.
    * @return a populated user with all the information that is coming from the OAD, or null if the email does not exist.
+   * @throws DirectoryLookupException if the directory lookup itself failed (source == ERROR) rather than answering
+   *         that the person does not exist. This consumer is the only one that reads {@code source}: it must not
+   *         report {@code manageUsers.email.doesNotExist} for a backend failure, so it propagates instead of
+   *         silently degrading to a not-found result.
    */
   private User validateOutlookUser(String email) {
-    LDAPService service = new LDAPService();
-    if (config.isProduction()) {
-      service.setInternalConnection(false);
-    } else {
-      service.setInternalConnection(true);
-    }
-    LDAPUser user = service.searchUserByEmail(email);
-    if (user != null) {
-      newUser.setFirstName(user.getFirstName());
-      newUser.setLastName(user.getLastName());
-      newUser.setUsername(user.getLogin().toLowerCase());
+    DirectoryPerson person = this.directoryService.findByEmail(email);
+    if (person.isFound()) {
+      newUser.setFirstName(person.getFirstName());
+      newUser.setLastName(person.getLastName());
+      newUser.setUsername(person.getLogin().toLowerCase());
       return newUser;
+    }
+    if (person.getSource() == DirectorySource.ERROR) {
+      // The service never throws; DirectoryPerson carries no cause on an ERROR result (LdapDirectoryService
+      // logs it and returns notFound(email, ERROR)), so there is nothing to wrap here.
+      throw new DirectoryLookupException(email, null);
     }
     return null;
   }

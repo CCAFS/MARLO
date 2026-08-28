@@ -1855,3 +1855,217 @@ Review rounds consumed: **9 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 ·
 T08: 2 · T09: 1).
 
 ---
+
+### `DIRABS-T10` (EXEC-039) — `center/json/global/ManageUsersAction`, the `ERROR` branch
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 2** (of a 3-attempt ceiling) |
+| **Date** | 2026-08-28 |
+| **Effort** | `xhigh`, held on retry (`max` forbidden on T2) · **Skills** `error-handling-patterns` |
+| **Gates** | `INSTALL_EXIT=0` · `TEST_EXIT=0` · **33 tests** (28 → 33), Leader-verified. **Zero retries** |
+
+#### Why this consumer is unlike the other five — confirmed at the source
+
+`:255` had **no `try/catch`**. Every other migrated consumer swallowed its `adauth` exception; **this one
+never did** — a failure propagated through `create()` and Struts to a 500. That is the concrete reason
+`DirectorySource.ERROR` exists: `findByEmail` never throws, so without an explicit re-raise an AD outage
+would silently become `null` and `create()` would report `manageUsers.email.doesNotExist` — **telling an
+administrator that a real CGIAR employee does not exist.**
+
+#### The production change — Reviewer-verified as correct and total
+
+```java
+DirectoryPerson person = this.directoryService.findByEmail(email);
+if (person.isFound()) { ...mutate the newUser FIELD...; return newUser; }
+if (person.getSource() == DirectorySource.ERROR) {
+  // The service never throws; DirectoryPerson carries no cause on an ERROR result.
+  throw new DirectoryLookupException(email, null);
+}
+return null;
+```
+
+**Branch-order totality, verified rather than assumed.** The Leader asked whether `isFound()` first could
+mask the `ERROR` branch. The Reviewer traced it to the factories: `DirectoryPerson` has only `found(...)`
+and `notFound(email, source)`, private constructor, `source` non-null; `LdapDirectoryService` produces
+`found` **only** with `LDAP` and `ERROR` **only** via `notFound(email, ERROR)`; `FakeDirectoryService`
+likewise. **A `found` person carrying `ERROR` is not producible**, and is excluded semantically by
+`DirectorySource`'s own Javadoc (`ERROR` = *"Nothing is known about the person"*). `return null` is
+reachable only for a non-`ERROR` not-found — in the shipped tree, exactly `NOT_FOUND`. All three paths
+return or throw.
+
+Leader-verified: **`create()` does not appear in the diff** (T10's STOP condition) · `org.cgiar.ciat`
+count **0** · class not deleted · `DirectoryLookupException.java` untouched (the T01 ruling against a
+convenience constructor was honored) · no other consumer touched.
+
+#### 🎯 The falsifiability demonstration — the strongest evidence produced in this run
+
+The Implementer mutated the `ERROR` branch to `return null;` and produced **two-sided** evidence:
+
+| Leg | Observation |
+|---|---|
+| **RED** | `Tests run: 6, Failures: 2, Errors: 0` — both `ERROR` tests failed with type-specific messages |
+| **WRONGLY-PASSES** | A temporary 6th test feeding an `ERROR` input into the same assertion the `NOT_FOUND` test uses was **absent from the failures list — it passed**, reproducing exactly the false *"email does not exist"* message DD-3 exists to prevent |
+| **REVERTED-GREEN** | No mutation marker in the production file; 33/33; both gates green |
+
+**Why the second leg is the one that matters.** Showing a test go red proves the *test* works. Showing a
+*different* test **pass when it should not** proves the **defect is real and silent** — which was DD-3's
+entire argument, and until now existed only as reasoning in a design document. It is now a reproducible
+observation.
+
+**The Reviewer audited all three legs and all hold**, including a corroboration technique first used at
+T09: under the mutation, JUnit 4's `ExpectException` throws a bare `AssertionError`, and test 3b's
+`fail(...)` also throws `AssertionError` — which its `catch (DirectoryLookupException expected)` clause
+**cannot swallow**. Two `AssertionError`s = **`Failures: 2, Errors: 0`**, exactly as reported.
+*"A narrated mutation would have had no reason to get that classification right."*
+
+#### Assertion strength — Reviewer's findings
+
+Test 1 is the strong form: `assertSame` compares against the value read **back out of the `newUser`
+field by reflection after `create()`**, and `FakeUserManager.saveUser` returns the same instance it
+receives, so a `validateOutlookUser` that built a *new* `User` would redden it. The `"JSmith"` → `"jsmith"`
+fixture is genuinely mixed-case. And `getUsers().size() == 1` independently proves `addUser()` ran —
+**which also closes a loophole where a non-matching suffix would have made `assertSame` pass vacuously.**
+No test catches a broad `Exception` or `Throwable` anywhere.
+
+#### Attempt 1 — Reviewer verdict: `STATUS: FAIL`, 1 issue. **Leader adjudication: upheld.**
+
+**The new test file states the FALSIFIED Surefire mechanism as established fact.**
+`CenterManageUsersActionDirectoryTest.java:65-70` asserts the scanner *"resolves declared-method parameter
+types on this outer test class while probing for `@Test` methods"* — precisely the mechanism the record
+already falsified. The symptom half is hedged, but **the cause is asserted, the `n=1` scoping is absent,
+the *"or return type"* half was never observed at all**, and the cross-reference points at
+`CrpUsersActionDirectoryTest` — *the file that carries the wrong mechanism* — rather than at the
+corrected note.
+
+> **Violated:** `tasks.md` §3.3 *Cannot prove* / *Disqualifies the evidence*. **And this is the same
+> defect already upheld as T08 Issue 2**, whose remediation was recorded verbatim as *"the conservative
+> rule to carry to T09/T10/T15."*
+
+**Why it is a FAIL and not an advisory, in the Reviewer's words:** *"T10 is the first file authored after
+that correction that needed the note, so it sets the pattern the remaining tasks copy."* T15 is still to
+come.
+
+#### ⚖️ Attribution — and it is split, not simply the worker's fault
+
+**The T10 brief did carry the corrected framing**, explicitly: *"Symptom reproducible, cause UNVERIFIED —
+the mechanism written at T06 was later falsified by the record"*, with observed-unsafe at `n=1`,
+observed-safe at `n=2`, and nested+subclass marked untested. The Implementer had it and wrote a different,
+falsified account into the file, **and did not declare the divergence in `Not Done / Assumptions`.**
+
+**But the brief supplied that framing as *context for the Implementer's own decisions* — "ignore its
+causal explanation and use the scoping above" — and never stated an obligation to reproduce it in
+authored documentation.** A worker could reasonably read it as guidance for what to avoid rather than
+text to carry into a Javadoc.
+
+**So: worker non-compliance on the substance, Leader imprecision on the instruction.** Recorded split
+rather than assigned wholly to either, because the fix differs — the attempt-2 brief now says *explicitly*
+that any Surefire note authored in a new file must use the corrected framing.
+
+#### `ADVISORY` from attempt 1 — recorded, non-gating
+
+1. **READABILITY —** `FakeDirectoryService.java:19` scopes itself to *"consumer tests (DIRABS-T06 .. T09)"*,
+   which **no longer covers its consumer set** now that T10 uses it. The Implementer was **right** not to
+   touch it (existing test file, protected by constraint). Recorded as a **pending doc touch-up for T15 or
+   archive** so it is not lost.
+2. **RISK —** `directoryLookupExceptionDoesNotExtendAuthorizationException` is a tautology against the
+   current tree — nothing in this spec edits `DirectoryLookupException`, and changing its superclass is a
+   compile-visible edit. **But the Reviewer distinguished it from the decorative T08 assertion it failed
+   earlier:** `tasks.md` T10's *Verification* **mandates this exact check** and names it under *Falsifying
+   input*, and it is the cheapest durable pin on DD-3a against the plausible future refactor — *"make it
+   an `AuthorizationException` so Shiro handles it"* — that would silently turn a **500 into a 403**. Kept.
+   Noted only that it asserts a hierarchy fact about a `marlo-data` type from a `marlo-web` test; if a
+   `DirectoryLookupException` unit test ever exists in `marlo-data`, that is its natural home.
+3. **READABILITY —** the one declared cosmetic (`* ` → `*`, a trailing space on the Javadoc line being
+   rewrapped to add `@throws`) is **acceptable**, and the Reviewer noted approvingly that the other
+   trailing-space Javadoc lines in the same file were **left alone rather than opportunistically cleaned.**
+
+#### Attempt 2 — the fix, and a chain of copied claims that ends here
+
+Comment-only. The `inject` Javadoc rewritten to the conservative framing; **nothing else touched.** Gates
+re-verified: `TEST_EXIT=0`, **33 tests — count unchanged**, which is the expected signature of a
+comment-only edit and itself weak evidence no code moved. `awk 'length>120'` empty. **No retries.**
+
+**The Implementer did better than the remediation asked.** It was told to drop or hedge the unobserved
+*"or return type"* claim. It **kept it and marked it unobserved** — *"(whether a `BaseAction` subclass
+return type has the same effect is unobserved)"*. The Reviewer's judgment on that choice is worth
+recording:
+
+> *"Silent deletion would have erased a plausible second unsafe shape from the record, and a T15 author
+> writing a helper that **returns** a `BaseAction` subclass would read the note's silence as clearance.
+> Keeping the hazard while stripping its evidentiary status is strictly more informative than dropping
+> it. The Implementer chose the stronger fix over the one I asked for."*
+
+#### 🔗 THE CHAIN — an unverified claim propagated four times by copying, and each link is instructive
+
+This is the most transferable finding of the run, and it is not about any one file:
+
+| Link | What happened |
+|---|---|
+| **T06** | Wrote down a *causal mechanism* for the Surefire crash, inferred from one failure |
+| **T08** | Correctly identified the mechanism as falsified and rewrote the note — **but carried one half of it forward**, still asserting *"parameter **or return type**"* as observed when the return-type case was never observed at all |
+| **T10 attempt 1** | Copied from T06's file (the nearest exemplar) and restated the **fully falsified** mechanism as fact |
+| **Leader** | Routed T10 to cite T08's note as canonical — **without reading it.** It contained the smaller defect |
+| **T10 attempt 2** | Now the **most precise** statement in the spec, and more precise than the file it cites |
+
+**The Reviewer owned its link without prompting:** its attempt-1 remediation designated
+`GuestUsersValidatorDirectoryTest` canonical *"without reading its wording — which my own contract §1
+forbids ('read the pointed-at sections at the source, never a recollection')."* It also noted the line
+range the Implementer cited (`:53-64`) is **exactly correct** — *"the citation is precise even though the
+target is not."*
+
+**The pattern, stated so it survives this spec:** the failure was never that someone asserted something
+false. It is that **an unverified claim propagated by copying while nobody re-read the source being
+copied.** Every link had the correct instinct — infer, correct, follow the exemplar, cite the corrected
+note — and every link skipped the same step. The gate caught it each time the file was actually in front
+of a reader.
+
+#### Resolution on the T08 residual — Leader proposal, Reviewer-sharpened, adopted
+
+1. **No file edits.** `GuestUsersValidatorDirectoryTest` is a committed T08 test file, and an advisory may
+   not mint a task.
+2. **Re-point the routing: T15 and any later brief cite T10's note, not T08's.** The Reviewer sharpened
+   the *reason*, and it is the better one: T08 presents outer-vs-nested as *"what the evidence actually
+   supports"*, while **only T10 names that inference `unlicensed`. T10 is canonical on the epistemics, not
+   merely on the return-type detail.**
+3. **Queue the T08 one-line edit** (`"parameter or return type"` → `"parameter type"`) on the **pending
+   doc touch-up list** that already holds the stale `FakeDirectoryService` scoping — applied on `staging`
+   per the Shared-File Write Discipline. A recorded pending item, not a minted task.
+
+The Reviewer's closing judgment on proportionality: T08's defect is *"superseded with the correction
+adjacent in the same test package, not unmitigated, and a dedicated task for four words of comment would
+cost more than the defect."*
+
+#### 📋 PENDING DOC TOUCH-UPS — carried to T15 / archive, applied on `staging`
+
+| Item | Where |
+|---|---|
+| `"parameter or return type"` → `"parameter type"` | `GuestUsersValidatorDirectoryTest.java:61-62` (T08) |
+| Scope note *"consumer tests (DIRABS-T06 .. T09)"* no longer covers its consumer set — T10 uses it too | `FakeDirectoryService.java:19` (T04) |
+| The falsified mechanism still stated as fact | `CrpUsersActionDirectoryTest.java:78-85` (T06) — deliberately unedited; correct rule routed through briefs instead |
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `FN-002` *"MUST throw `DirectoryLookupException` … rather than return `null`"* | `throw` on `source == ERROR`; `@Test(expected = DirectoryLookupException.class)` with the **specific** class |
+| `FN-002` *"**AND** it **MUST** still return `null` on a genuine `NOT_FOUND`"* | `return null` as the final branch; asserted via `create()`'s `manageUsers.email.doesNotExist` |
+| `FN-002` *"**BUT** it must **NOT** report `manageUsers.email.doesNotExist` for a backend failure"* | `assertNull(action.getMessage())` after catching the exception — **and the mutation proved the inverse fails** |
+| `FN-002` *"**AND IT MUST** be the **only** caller that reads `source`"* | Only this file calls `getSource()`; no other consumer touched |
+| `FN-006` *"MUST set … on the `newUser` **field** and return it"* | `assertSame` against the field read back by reflection after `create()` — instance identity, not equality |
+| `FN-006` *"**BUT** the class must **NOT** be deleted"* | Present; `create()` absent from the diff |
+| **DD-3a** — must not extend `AuthorizationException` | `assertFalse(AuthorizationException.class.isAssignableFrom(...))`. A tautology against the current tree, **but mandated by `tasks.md` T10's Verification** and the cheapest durable pin against the plausible *"make it an `AuthorizationException` so Shiro handles it"* refactor that would silently turn a **500 into a 403** |
+| `FN-004` | `.toLowerCase()` kept at the call site; `"JSmith"` → `"jsmith"` asserted |
+
+#### Final verification result
+
+**PASS on attempt 2.** Both gates green, Leader-verified.
+
+> The rewritten Javadoc is honest on every axis the attempt-1 FAIL named … and the note is now the most
+> precise statement of the Surefire rule in the spec — **more precise than the T08 file my own attempt-1
+> remediation wrongly designated canonical.**
+
+Review rounds consumed: **11 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1 ·
+T08: 2 · T09: 1 · T10: 2).
+
+---
