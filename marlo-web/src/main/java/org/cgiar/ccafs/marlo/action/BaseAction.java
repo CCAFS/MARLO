@@ -100,9 +100,6 @@ import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 
-import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -4790,29 +4787,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     return openDeliverables;
 
-  }
-
-  /**
-   * Validate if a given user exists in the Outlook Active Directory .
-   *
-   * @param email is the CGIAR email.
-   * @return a populated user with all the information that is coming from the
-   *         OAD, or null if the email does not exist.
-   */
-  public LDAPUser getOutlookUser(String email) {
-    LDAPService service = new LDAPService();
-    if (this.config.isProduction()) {
-      service.setInternalConnection(false);
-    } else {
-      service.setInternalConnection(true);
-    }
-    LDAPUser user = null;
-    try {
-      user = service.searchUserByEmail(email);
-    } catch (Exception e) {
-      user = null;
-    }
-    return user;
   }
 
   public Map<String, Parameter> getParameters() {

@@ -41,11 +41,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
-
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -110,6 +110,7 @@ public class CrpUsersAction extends BaseAction {
   private boolean isCGIARUser;
   private List<UserRole> users;
   private List<Role> rolesCrp;
+  private final DirectoryService directoryService;
 
 
   private List<GlobalUnit> crps;
@@ -117,7 +118,8 @@ public class CrpUsersAction extends BaseAction {
   @Inject
   public CrpUsersAction(APConfig config, GlobalUnitManager globalUnitManager, CrpUserManager crpUserManager,
     UserManager userManager, ProjectManager projectManager, PhaseManager phaseManager, RoleManager roleManager,
-    UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator) {
+    UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator,
+    DirectoryService directoryService) {
     super(config);
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
@@ -129,6 +131,7 @@ public class CrpUsersAction extends BaseAction {
     this.sendMailS = sendMailS;
     this.globalUnitManager = globalUnitManager;
     this.crpUserManager = crpUserManager;
+    this.directoryService = directoryService;
   }
 
   public String getEmailSend() {
@@ -627,15 +630,15 @@ public class CrpUsersAction extends BaseAction {
             newUser.setActive(true);
 
             // Get the user if it is a CGIAR email.
-            LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+            DirectoryPerson person = this.directoryService.findByEmail(newUser.getEmail());
 
             String password = this.getText("email.outlookPassword");
-            if (LDAPUser != null) {
+            if (person.isFound()) {
               // CGIAR user
               isCGIARUser = true;
-              newUser.setFirstName(LDAPUser.getFirstName());
-              newUser.setLastName(LDAPUser.getLastName());
-              newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+              newUser.setFirstName(person.getFirstName());
+              newUser.setLastName(person.getLastName());
+              newUser.setUsername(person.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
               message = this.getText("saving.saved.guestRole");

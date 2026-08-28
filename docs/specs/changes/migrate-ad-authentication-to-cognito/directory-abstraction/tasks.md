@@ -226,7 +226,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T05 (EXEC-034) — Delete `BaseAction.getOutlookUser` *(DD-2 — deviates from the runbook)*
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 1, atomic with T05+T06+T07 (option (a)). Both gates green: install exit 0, 20 tests. See `execution.md`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** S
 - **Design:** **DD-2**, §10.0 **C-1** · **Requirements:** `DIRABS-FN-007`
 - **Files touched:** `action/BaseAction.java` — **deletions only**
@@ -256,7 +256,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T06 (EXEC-035) — Migrate `CrpUsersAction`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 1, atomic with T05+T06+T07 (option (a)). Both gates green: install exit 0, 20 tests. See `execution.md`
 - **Depends on:** T04, T05 · **Module:** `marlo-web` · **Size:** M
 - **Design:** §4.3, §6.2, **DD-4** · **Requirements:** `FN-001`, `FN-004`, `FN-006` *CrpUsersAction*
 - **Files touched:** `action/crp/admin/CrpUsersAction.java` · `marlo-web/src/test/java/.../CrpUsersActionDirectoryTest.java` *(new)*
@@ -279,7 +279,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T07 (EXEC-036) — Migrate `json/global/ManageUsersAction`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 1, atomic with T05+T06+T07 (option (a)). Both gates green: install exit 0, 20 tests. See `execution.md`
 - **Depends on:** T04, T05 · **Module:** `marlo-web` · **Size:** M
 - **Requirements:** `FN-001`, `FN-004`, `FN-006` *json/global/ManageUsersAction*
 - **Files touched:** `action/json/global/ManageUsersAction.java` · `.../ManageUsersActionDirectoryTest.java` *(new)*

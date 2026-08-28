@@ -19,9 +19,9 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,10 +79,13 @@ public class ManageUsersAction extends BaseAction {
 
   private boolean showInputs;
 
+  private final DirectoryService directoryService;
+
   @Inject
-  public ManageUsersAction(APConfig config, UserManager userManager) {
+  public ManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService) {
     super(config);
     this.userManager = userManager;
+    this.directoryService = directoryService;
   }
 
   /**
@@ -148,12 +151,12 @@ public class ManageUsersAction extends BaseAction {
 
 
         // Get the user if it is a CGIAR email.
-        LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+        DirectoryPerson person = this.directoryService.findByEmail(newUser.getEmail());
 
-        if (LDAPUser != null) {
-          newUser.setFirstName(LDAPUser.getFirstName());
-          newUser.setLastName(LDAPUser.getLastName());
-          newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+        if (person.isFound()) {
+          newUser.setFirstName(person.getFirstName());
+          newUser.setLastName(person.getLastName());
+          newUser.setUsername(person.getLogin().toLowerCase());
           newUser.setCgiarUser(true); // marking it as CGIAR user.
           this.addUser();
         } else {

@@ -353,6 +353,44 @@ decompiling the jar). Both cost real evidence quality while they stood. `.agents
 *Deferring a check (test the assumption first)* exists precisely for this, and twice it was applied only
 after the fact. **Flagged for Kaizen.**
 
+#### ✅ EB-1 FULLY CLOSED at T05–T07 — the lock released and the WAR builds
+
+**2026-08-28, during T05–T07: the file lock released on its own.** The VS Code Java language server let go
+of `marlo-web/target/classes/**` (most likely after its indexing settled), and the blocked phase started
+working. Leader-verified before relying on it:
+
+```
+$ [System.IO.File]::Open('...\AiAction.class','Open','ReadWrite','None')
+WRITABLE - lock RELEASED
+$ ls -la marlo-web/target/*.war
+-rw-r--r-- 270737187  Aug 28 11:15  marlo-web/target/marlo-web.war
+```
+
+**Both required gates then run green. Leader-run independently, not taken on the Implementer's report:**
+
+```
+$ export JAVA_HOME="C:/Program Files/Java/jdk-17"
+$ mvn -q install -DskipTests -pl marlo-web -am     → INSTALL_EXIT=0     ← the WAR packages
+$ mvn -q -pl marlo-web -am test                    → TEST_EXIT=0
+                                                      Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+```
+
+| Gate | Status as of 2026-08-28 |
+|---|---|
+| `mvn -q install -DskipTests -pl marlo-web -am` | ✅ **AVAILABLE and GREEN** — `tasks.md` §10's Definition of Done box is now tickable |
+| `mvn -q -pl marlo-web -am test` | ✅ **AVAILABLE and GREEN** — 20 tests |
+| `mvn -q checkstyle:check` | ❌ Still unrunnable — **EB-2, a different and unrelated defect** |
+| `DIRABS-T12` (Spring context smoke check) | ✅ **NOW REACHABLE** — needs a WAR + `run-marlo-java17.sh`; both available |
+
+**The lock may return.** It is a property of the editor session, not of the repository, and nothing this
+spec did released it. Every subsequent task should run the install gate while it is available and record
+the result, rather than assuming it will hold.
+
+**Net correction to this section's history:** EB-1 was recorded too broadly (all compilation deferred),
+then narrowed at T04 (only packaging blocked), and is now **closed** (nothing blocked). Each step was a
+tightening toward what was always true. The original entries for T01–T04 keep their contemporaneous
+wording; **this block is the current state.**
+
 ### EB-2 — The Checkstyle gate cannot execute, and would be weak even if it could
 
 Discovered at `T01`. Two independent defects, both **pre-existing repo drift** and both outside this
@@ -1154,9 +1192,7 @@ because test 7's `ERROR` outcome is reachable solely via the throw in the same s
 increments. **Deleting `invocationCount++` from `ThrowingLdapService` would silently make the
 zero-invocation assertions vacuous and nothing would go red.** One line closes it — a positive control
 `assertEquals(1, this.failingServiceInvocationCount())` in test 7 — which would also document the seam
-for child 3. **Not applied:** an advisory may neither gate nor widen an approved task, and this concerns
-the integrity of the spec's only executable gate, so it is **surfaced to the user** rather than absorbed
-quietly.
+for child 3. **Not applied.** An advisory may neither gate nor widen an approved task. Surfaced to the user at the T04 gate; **user decision 2026-08-28: record and proceed.** It dies here. If it later matters it returns as its own proposal, not as scope smuggled into this spec.
 
 **2. RELIABILITY — `FN-004`'s email clause is ungated anywhere in the spec.** Assertion 6 does not assert
 `getEmail()`. The Reviewer is right that this is not a T04 gate failure — T04's clause-level set names
@@ -1165,7 +1201,7 @@ lowercase … `login` or `email`"* is covered for `login` and **not for `email`*
 better than a plain assertion: have the backend return a **differently-cased** email than the one looked
 up (`"Jane.Smith@cgiar.org"` for a `"jane.smith@cgiar.org"` lookup) and assert the backend's value —
 proving simultaneously that the impl reads `user.getEmail()` rather than echoing the request, **and** that
-it does not case-fold it. **Surfaced to the user.**
+it does not case-fold it. **Surfaced to the user at the T04 gate; user decision 2026-08-28: record and proceed.** Recorded here as a known, named coverage gap in `FN-004`: the `login` half is gated by assertion 6, the `email` half is gated nowhere in this spec.
 
 **3. READABILITY —** `appliesInternalConnectionFromConfigBeforeSearching` proves the *value* received,
 not the *ordering* its name claims (`FN-005`: *"MUST be applied before the search"*). Either record
@@ -1197,5 +1233,181 @@ The Reviewer's summary:
 > is real executable evidence for `D1` and the sole DD-11 gate, **not a green tautology.**
 
 Review rounds consumed: **5 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1).
+
+---
+
+### `DIRABS-T05` + `T06` + `T07` (EXEC-034 / 035 / 036) — one atomic unit
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 1** — all three |
+| **Date** | 2026-08-28 |
+| **Sequencing** | **Option (a)** — one atomic commit, as `tasks.md` T05 requires be recorded. Pre-registered at T00, confirmed at the T04 gate. Compilation is never broken and `NF-007` holds for the trio as a single revertible unit |
+| **Skills** | `error-handling-patterns` |
+| **Effort** | `xhigh` |
+| **Review rounds** | **1** |
+
+#### Both required gates green — Leader-verified independently
+
+```
+$ export JAVA_HOME="C:/Program Files/Java/jdk-17"
+$ mvn -q install -DskipTests -pl marlo-web -am     → INSTALL_EXIT=0
+$ mvn -q -pl marlo-web -am test                    → TEST_EXIT=0
+                                                      Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
+```
+
+13 → **20 tests**. The 7 new ones are 3 (`CrpUsersActionDirectoryTest`) + 4
+(`ManageUsersActionDirectoryTest`). The Reviewer corroborated the arithmetic — 3 + 4 = 7 exactly —
+confirming **neither new class was silently dropped from Surefire's scan**, which matters given the
+scanner quirk below.
+
+#### T05 — deletions only, verified three ways
+
+| Check | Result |
+|---|---|
+| Diff content | **Only deletions**: imports `:103-104` and `getOutlookUser` with its Javadoc. Nothing added |
+| `grep "org.cgiar.ciat\|DirectoryService" BaseAction.java` | **EMPTY** — satisfies `FN-007`'s *"must **NOT** declare, inject, or reference `DirectoryService` in any form"* |
+| Constructors | Bodies **byte-identical**. Reviewer noted they shifted from `:613`/`:620` to `:610`/`:617` — **exactly 3 lines: the 2 imports plus one blank. Nothing else moved.** That arithmetic is itself proof the change is deletions-only |
+| Surviving `getOutlookUser` in `src/main` | Only `GuestUsersValidator:36,55` — **its own duplicate, T08's, correctly untouched** — plus one Javadoc mention |
+| Third caller (the STOP condition) | **None appeared.** C-1's premise held |
+
+**DD-2 delivered as designed:** MARLO's widest shared class got *smaller* and gained **no** new
+dependency. `EXEC-034`'s rewire was correctly **not** restored (DEV-2 / `OQ-4`).
+
+#### T06 / T07 — equivalence verified against the files, not the diff
+
+The Reviewer read both migrated actions in full rather than judging from the diff, and confirmed
+**verbatim preservation** of everything the diff does not show:
+
+- `ManageUsersAction:162-178` — the four-part `!= null && trim().length() > 0` guard, both i18n keys
+  (`manageUsers.email.notAdded`, `manageUsers.email.validation`), `emailStatus.put("status", true)`, both
+  `return SUCCESS`.
+- `CrpUsersAction:646-661` — the **redundant second `isCGIARUser = false`**, `RandomStringUtils.randomNumeric(6)`,
+  the **duplicate `setModificationJustification`**, and the **silent no-op when the form has no names**.
+- `String password = this.getText("email.outlookPassword")` still assigned **before** the branch (`:635`).
+- **No null guard at either `.toLowerCase()`** — `DIRABS-OQ-5`'s preserved NPE is intact at both sites.
+
+**Scope, measured:** `DirectoryService|DirectoryPerson` across all of `marlo-web/src` matches exactly
+**7 files** — the 2 consumers, the 2 new tests, and the 3 unmodified T04 test files. Nothing under
+`action/center/**`, no §3.2 protected file, no Mockito, GPL headers present, longest line 117 chars.
+
+#### The 611-line test — audited for honesty, and it is honest
+
+The Leader flagged the size (611 lines to exercise a ~25-line branch) as the run's main risk: at that
+scale a test can end up asserting its own scaffolding. The Reviewer answered all four questions
+directly, and the answers are worth recording because they will govern T09/T10/T15:
+
+| Question | Finding |
+|---|---|
+| Is the asserted code **production** code? | **Yes. Every override is inert with respect to every assertion.** `save()` is not overridden; the branch at `:633-661` runs unmodified — the field assignments, `isCGIARUser = true`, `userManager.saveUser`, `randomNumeric(6)` and `person.getLogin().toLowerCase()` are all real. **And more production code runs than was claimed:** `notifyRoleAssigned` is **`private`** and therefore cannot be overridden, so it executes for real on both paths |
+| Does overriding `getText(...)` make the i18n assertions circular? | **No.** `CrpUsersActionDirectoryTest` has **zero** message assertions, so the concern does not arise there. In `ManageUsersActionDirectoryTest:125,150` the pattern is `assertEquals(action.getText(K), action.getMessage())` with `getText` overridden to the **identity** function — and identity is **injective**, so the assertion reads *"production called `getText` with exactly key K."* A different key in production returns a different string and the assertion fails. **Sound observability, not a test asserting its own map** |
+| Does `canAcessCrpAdmin() → true` mask a defect? | **No — it is required, not permissive.** It is the outermost gate at `:609`; without it `save()` returns `NOT_AUTHORIZED` and the migrated branch is unreachable. Nothing in `:633-661` reads authorization state |
+| Is the scaffolding **falsifiable**? | **Yes, and this is the real test of it.** `sendMailNewUser` is no-oped but **captures the `password` argument production computed**. If the not-found branch stopped generating one, the captured value would be `"email.outlookPassword"` (from the identity `getText`) and fail the `\d{6}` regex. Both suites carry the mandatory mixed-case `"JSmith"` → `"jsmith"` fixture, so **`D1` is genuinely covered, not tautologically passed** |
+
+#### 📌 A `FakeDirectoryService` javadoc imprecision, corrected here
+
+`FakeDirectoryService`'s javadoc (a T04 artifact) says T06 must prove **zero invocations**. **It does not,
+and it must not.** `ManageUsersAction`'s trim-and-length guard sits **after** `findByEmail` (`:154`, then
+`:164`), so the invocation count is legitimately **1**; the correct instrument for the short-circuit is
+`saveUserCallCount == 0`, which is what the Implementer used.
+
+**The zero-invocation assertion belongs to `T09`**, where the `APConstants.OUTLOOK_EMAIL` suffix guard
+sits *before* the lookup. The Implementer picked the right instrument; the T04 javadoc is the imprecise
+artifact. Recorded rather than edited — the file is committed T04 work and this is a doc nuance, not a
+defect.
+
+#### `ADVISORY` findings — one is a hard forward pointer that WILL break T08
+
+**1. ⏭ RISK → MANDATORY FORWARD POINTER FOR `DIRABS-T08`. This is not optional advice.**
+
+`CrpUsersActionDirectoryTest:109` passes **`new GuestUsersValidator()`**. **T08 adds an `@Inject`
+constructor taking `DirectoryService` to that class** (`design.md` §6.2, DD-8) — and under JSR-330 the
+implicit no-arg constructor at `GuestUsersValidator:33` is normally dropped when an explicit one is
+declared. **At that moment this test stops compiling and T08's build breaks.**
+
+`save()` never touches `validator` — the argument is **pure constructor filler**. Cheapest fix is `null`
+in its place.
+
+**Ruling: fold the fix into T08, not a rework of T06.** It is a one-token change, T08 already owns the
+consequences of that constructor, and reworking a PASSed task for a defect that only manifests inside a
+later task would split the change from its cause. **T08's brief MUST carry this**, or T08's first
+`mvn test` fails for a reason its Implementer cannot diagnose from its own scope.
+
+**2. ⚠️ RELIABILITY → ESCALATED TO THE USER. A Leader decision is owed before T09/T10/T15.**
+
+**`struts2-junit-plugin` is ALREADY a test-scope dependency** (`marlo-parent/pom.xml:253`,
+`marlo-web/pom.xml:73`), so `StrutsJUnit4TestCase` / `StrutsSpringJUnit4TestCase` are on the classpath
+**today**. A real `ActionContext` would **remove the `getText` and `getActionName` overrides outright.**
+
+The Implementer's *"MARLO has no action-test precedent"* is true of **precedent** but not of
+**capability** — and the distinction has 3× leverage, because T09, T10 and T15 are all action tests that
+would otherwise replicate the hand-rolled pattern three more times. Pairs with advisory 3.
+
+**3. READABILITY —** ~**360 of the 611 lines** are five full no-op manager implementations, and the two
+suites each hand-roll a *differently-behaving* `FakeUserManager` **under the same simple name**. These
+break on any interface method addition, and `RoleManager`'s `cloneRolePermissionsByAcronym` /
+`ensureSuperAdminRoleAndPermissions` are evidence these interfaces do churn. A shared test-support
+package would repay itself across T09/T10/T15. **Correctly NOT done here** — it would add a file outside
+T06/T07's declared *Files touched*.
+
+**4. RELIABILITY —** T06's clause list names `saving.saved.guestRole` on both branches but **no assertion
+covers it**. Satisfied by *diff absence* (`CrpUsersAction:644-645, 658-659` untouched), which is
+legitimate evidence for a preservation clause, and `tasks.md` T06's *Tests:* line does not require it —
+but the identity `getText` makes it a one-line assertion and **T07 does exactly that**, so the asymmetry
+is gratuitous. Neither suite asserts `getLastEmailReceived()`; low value here, **mandatory in T09** where
+the lowercased-email clause lives.
+
+**5. ⏭ SURFACE → carry the RULE forward, NOT the explanation.**
+
+The Implementer reported that `maven-surefire-plugin:2.12.4` crashes the whole test fork
+(`NoClassDefFoundError: CrpUsersAction`, zero tests run) when an **outer** test class declares a private
+helper whose **parameter type** is a `BaseAction` subclass, and fixed it by typing two reflection helpers
+as `Object`.
+
+**Version identification confirmed:** no `maven-surefire-plugin` is declared in either POM, so Maven 3's
+default **2.12.4** is in force. Eager parameter-type resolution during scanning is a real and documented
+old-Surefire failure mode.
+
+**But the stated mechanism is not internally consistent, and the Reviewer caught it:** `CrpUsersAction`
+is *demonstrably loadable* in the test JVM — the nested `TestableCrpUsersAction extends CrpUsersAction`
+and the tests pass. So *"resolving `CrpUsersAction` crashes the fork"* cannot be literally true of the
+execution classloader; the failure is a **scanner-classloader or ordering artifact**, not a missing
+class.
+
+**Recorded as: reproducible symptom, unverified mechanism.** T09/T10/T15 inherit **the rule** — *no
+`BaseAction` subclass in an outer test-class method signature* — and must **not** inherit the
+explanation as settled fact.
+
+**And the workaround is the only in-scope option regardless:** `tasks.md` §3.2 protects **every
+`pom.xml`**, so pinning Surefire 2.22.2/3.x — the obvious real fix — is out of scope for this spec **by
+construction**. The type-safety cost is near zero: both helpers are `private static`, three lines, and
+immediately drop into untyped reflection (`field.set(...)`), which throws `IllegalArgumentException` on a
+wrong-typed argument anyway.
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `FN-007` — *"`getOutlookUser` **MUST** be gone"* | Deleted. Both constructors byte-identical. `BaseAction` references neither `adauth` nor `DirectoryService`. Verified no FTL/JS/XML/properties reference |
+| `FN-006` *CrpUsersAction* — every clause | Found branch asserted (`"JSmith"` → `"jsmith"`, `setCgiarUser(true)`, `isCGIARUser`); non-resolving branch preserved by diff absence and asserted (`\d{6}` password, form names, `setCgiarUser(false)`); `ERROR ≡ NOT_FOUND` asserted |
+| `FN-006` *json/global/ManageUsersAction* — every clause | Found branch asserted incl. `addUser()`; guard preserved and asserted against whitespace-only names; **both** i18n keys asserted via the injective identity `getText`; `ERROR ≡ NOT_FOUND` asserted |
+| `FN-001` | Both consumers receive `DirectoryService` by **constructor injection**; neither constructs `LDAPService` |
+| `FN-004` | Both keep their own `.toLowerCase()` at their own call site; the abstraction transforms nothing |
+| `OQ-5` | **No null guard added at either `.toLowerCase()`.** The NPE is preserved, as confirmed |
+| `NF-007` | One atomic commit for the trio — a single revert restores all three |
+
+#### Final verification result
+
+**PASS on attempt 1 for all three tasks**, with **both** required gates green and independently
+re-verified by the Leader. The Reviewer's summary:
+
+> T05 is deletions-only with both `BaseAction` constructors byte-identical and zero surviving references;
+> T06/T07 are one-to-one lookup substitutions with every `else` branch, i18n key, transformation and
+> preserved NPE intact, and scope confined to exactly the four named files. **The 611-line test is
+> honest:** every override is inert with respect to every assertion, the mixed-case `"JSmith"` → `"jsmith"`
+> and `\d{6}` password assertions are genuinely falsifiable, and the identity `getText` makes the
+> i18n-key assertions sound rather than circular.
+
+Review rounds consumed: **6 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1).
 
 ---
