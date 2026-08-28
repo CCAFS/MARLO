@@ -158,15 +158,16 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T03 (EXEC-032) — `LdapDirectoryService`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` — PASS 2026-08-28, attempt 2 of 3 (attempt 1 unreviewed; stopped on the FN-002 spec gap now closed as DD-11). **On inspection only** — behavioral equivalence unproven pending T04. See `execution.md`
 - **Depends on:** T02 · **Module:** `marlo-data` · **Size:** M · **Skills:** `error-handling-patterns`
-- **Design:** §4.3, §6.1, **DD-3**, **DD-4** · **Requirements:** `DIRABS-FN-005`, `FN-004`, `FN-002`, `FN-003`
+- **Design:** §4.3, §6.1, **DD-3**, **DD-4**, **DD-11** · **Requirements:** `DIRABS-FN-005`, `FN-004`, `FN-002`, `FN-003`
 - **Files touched (new):** `security/directory/impl/LdapDirectoryService.java`
 - **Files PROTECTED (beyond §3.2):** `LDAPAuthenticator.java` — same shape, different class. Do not edit it.
 - **Scope:** `@Named` (**no qualifier value** — DD-5), `@Inject` constructor taking `APConfig`, mirroring `LDAPAuthenticator:38,47-51`. Reproduce `BaseAction.getOutlookUser` (`:4802-4816`) step for step: `new LDAPService()`, `setInternalConnection(!config.isProduction())`, `searchUserByEmail(email)`.
   - Found → `found(...)` with `source = LDAP`, **every field raw** (DD-4).
   - `null` return → `notFound(email, NOT_FOUND)`.
-  - Caught exception → `notFound(email, **ERROR**)` **and a log at `error`** with the email and cause. Today the exception is swallowed with no log at all.
+  - Caught exception → **discriminate per DD-11**: if the email is well-formed → `notFound(email, **ERROR**)` **and a log at `error`** with the email and cause (today the exception is swallowed with no log at all); if the email is **malformed** → `notFound(email, **NOT_FOUND**)` **and no `error` log** — invalid input is not a backend failure (`FN-002` *Invalid input*).
+  - `isWellFormed` is a **minimal** check per DD-11: one `@`, non-empty local part, domain containing at least one `.`. **Not RFC 5322.** It is consulted **only** on the failure path, never before the lookup.
   - `null`/blank email → `notFound(email, NOT_FOUND)` **with no network call**.
   - **The only file in `security/directory/**` permitted to import `org.cgiar.ciat`.**
 - **Requirements covered — clause level:**
@@ -200,14 +201,16 @@ Three fields appear in every task and mean the same thing throughout:
 - **Tests — the required assertions:**
   - `null`, blank and malformed email → `found == false`, `source == NOT_FOUND`, **no throw**, **not null**.
   - Directory answered, absent → `source == NOT_FOUND`.
-  - **Backend throws → `found == false` AND `source == ERROR`.**
+  - **Backend throws on a WELL-FORMED email → `found == false` AND `source == ERROR`.**
+  - **Backend throws on a MALFORMED email → `found == false` AND `source == NOT_FOUND`, NOT `ERROR`** (DD-11). **Mandatory.** This branch is the only gate on DD-11, and it is the branch whose absence would let an admin typo surface as a 500 through T10.
   - Not-found result → `assertNull(login)`, `assertNull(firstName)`, `assertNull(lastName)` — **not `""`**.
   - `source` non-null on every path.
 - **Verification:** `mvn -q -pl marlo-web test`
 - **Falsifying input — named per assertion, because this is the spec's dominant gate:**
   | Assertion | Input that makes it FAIL |
   |---|---|
-  | exception → `ERROR` | an implementation that returns `NOT_FOUND` on the exception path |
+  | exception on a well-formed email → `ERROR` | an implementation that returns `NOT_FOUND` on that path |
+  | exception on a malformed email → `NOT_FOUND` | an implementation that returns `ERROR` for it — which is exactly what T03's first attempt did, and what DD-11 exists to prevent |
   | not-found → null fields | an implementation defaulting to `""` |
   | never throws | an implementation that lets the backend exception escape |
   | no network call on blank | a fake counting invocations, asserting zero |

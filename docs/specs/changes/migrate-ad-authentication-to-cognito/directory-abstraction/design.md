@@ -218,7 +218,7 @@ implementation inherits:
 | Input / condition | Returns | `source` |
 |---|---|---|
 | `null` or blank email | `notFound` | `NOT_FOUND` |
-| Malformed email | `notFound` | `NOT_FOUND` |
+| Malformed email | `notFound` | `NOT_FOUND` — reached by discriminating **inside the catch**, see **DD-11** |
 | Well-formed email, person present | `found(...)` | `LDAP` |
 | Well-formed email, person absent | `notFound` | `NOT_FOUND` |
 | Backend unreachable / timeout / throws | `notFound` | **`ERROR`** |
@@ -636,6 +636,54 @@ not an unacknowledged gap. Closing it properly is `docs/trd/trd.md` §14.9 item 
 
 ---
 
+### DD-11 — A malformed email is discriminated **inside the catch**, not validated before the lookup *(added 2026-08-28; closes a gap surfaced by `T03`)*
+
+**The gap.** `FN-002` *Invalid input* and §5.1 row 2 both assert that a malformed email yields
+`NOT_FOUND`. Neither defined **"malformed"**, and neither said how the outcome is reached. `T03`'s first
+implementation therefore let a malformed email fall through to `LDAPService.searchUserByEmail` — which
+produces `ERROR` if `adauth` throws.
+
+**Why that is a regression, not just a gap.** `ERROR` is the one value `center/…/ManageUsersAction`
+reads (DD-3, DD-3a): on `ERROR` it throws `DirectoryLookupException`, which surfaces as a **500**. Today
+that same admin typo is caught and reported as `manageUsers.email.doesNotExist`. So the fall-through
+turns a clear message into a server error — the *opposite* direction from this spec's equivalence goal.
+
+**Decision.** Keep the lookup, discriminate on the failure path:
+
+```java
+try {
+  user = service.searchUserByEmail(email);
+} catch (Exception e) {
+  if (isWellFormed(email)) {
+    LOG.error("Directory lookup failed for '{}'", email, e);
+    return DirectoryPerson.notFound(email, DirectorySource.ERROR);
+  }
+  return DirectoryPerson.notFound(email, DirectorySource.NOT_FOUND);  // invalid input is not a backend failure
+}
+```
+
+**"Malformed" is defined minimally:** a single `@`, a non-empty local part, and a domain part containing
+at least one `.`. **Deliberately not RFC 5322** — an over-strict predicate would reject
+unusual-but-valid corporate addresses that resolve today, which is the failure mode DD-4 warns about in
+a different guise.
+
+**Why inside the catch and not before the call.**
+
+| Reason | |
+|---|---|
+| §5.1's no-network-call guarantee is scoped to `null`/blank **only** | Which means a malformed email is *expected* to reach the backend. Pre-validating would deviate from the spec's own scoping |
+| A flawed predicate cannot do damage here | On the success path the predicate is never consulted, so a valid-but-unusual address that **resolves** is unaffected. Pre-validation would let a too-strict predicate reject it outright |
+| It preserves the baseline's network behavior exactly | `getOutlookUser` calls unconditionally; so does this |
+
+**Also decided:** the `error` log fires **only** on the well-formed branch. Logging admin typos at
+`error` would bury real outages in noise — and the log exists precisely so an outage is observable.
+
+**Implications:** `T03` implements the predicate; `T04` gains a mandatory assertion for the branch
+(malformed + backend throws → `NOT_FOUND`, **not** `ERROR`); `T10` is unchanged but its `ERROR` branch
+is now *more* precisely true — it fires only for a well-formed email's genuine backend failure.
+
+---
+
 ## 11. Decision Log
 
 | Date | Decision | Rationale |
@@ -648,6 +696,7 @@ not an unacknowledged gap. Closing it properly is `docs/trd/trd.md` §14.9 item 
 | 2026-08-27 | No attribute map on `DirectoryPerson` (DD-6) | Its only reader is an unreachable `main()`. Carrying it would export `adauth`'s vocabulary into MARLO's own type |
 | 2026-08-27 | Reversion challenges run **inline**, not delegated | Standing session instruction not to spawn subagents. Recorded so the absence of a delegated reviewer is visible rather than inferred |
 | 2026-08-27 | Accept `D8` with a manual app-start substitute (DD-10) | A Spring context test needs `DEC-005` + a `pom.xml` edit, which would break parallel-safety with `auth-flow` |
+| 2026-08-28 | **DD-11 added** — a malformed email is discriminated inside the catch, and "malformed" is defined minimally | `T03`'s Implementer surfaced that §5.1 row 2 asserted an outcome with no definition and no mechanism. The fall-through it produced would turn an admin typo into a 500 via T10's `ERROR` branch, where today it is a clear message. Resolved at the HITL gate; `T04` gains a mandatory assertion for the branch |
 | 2026-08-27 | Budget: **17** tasks (+`T00`) / ~700 LOC / ~20 review rounds — revised at Phase 3 | Estimated from the finished design, revised from ~650 by Judgment Day JD-7. Exceeds ~400 LOC, so `tasks.md` carries a 3-PR recommendation |
 | 2026-08-27 | **Judgment Day round 1 — 5 findings confirmed by both judges, applied; 4 single-judge findings applied on recommendation. No scoped re-judgment** (user chose *Fix only*) | Ledger: [`judgment.md`](./judgment.md). Neither judge challenged the architecture — DD-1, DD-2, DD-3, DD-5, DD-6, DD-9 and DD-10 all survived, with both judges independently confirming DD-2's and DD-3's premises against the code. The defects were bookkeeping plus one unspecified mechanism |
 | 2026-08-27 | **`DirectoryLookupException` added (DD-3a)** — closes JD-7 | DD-3 said the consumer "propagates" without naming what. It must be unchecked (`validateOutlookUser:248` has no `throws` clause), must not extend `AuthorizationException` (`struts.xml:543-545` maps that to 403 instead of 500), and makes the branch assertable by type in JUnit 4. Replaces the unearned claim "preserving today's outcome exactly" with the verified boundary: same handling, different subtype |

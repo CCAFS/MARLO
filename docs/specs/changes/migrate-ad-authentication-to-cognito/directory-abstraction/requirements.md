@@ -185,6 +185,17 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 - **AND** `source` **MUST** be `NOT_FOUND` — invalid input is not a backend failure
 - **BUT** it must **NOT** throw, and must **NOT** return `null`
 - **AND IT MUST** make no network call for a `null` or blank email
+- **AND** *(clarified 2026-08-28 — see Decision Log)* **"malformed" is defined as: not `null`, not blank,
+  but failing a minimal well-formedness check — a single `@` with a non-empty local part and a domain
+  part containing at least one `.`.** It is deliberately **not** a full RFC 5322 validation: an
+  over-strict predicate would reject unusual-but-valid corporate addresses that resolve today.
+- **AND** the `NOT_FOUND` outcome for a malformed email **MUST** be reached by **discriminating inside
+  the exception handler**, not by validating before the lookup. A malformed email **is** passed to the
+  backend, exactly as today; if the backend then throws, the implementation checks well-formedness and
+  returns `NOT_FOUND` for a malformed input and `ERROR` only for a well-formed one. Rationale: the
+  no-network-call guarantee above is scoped to `null`/blank alone, which means a malformed email is
+  **expected** to reach the backend; and confining the predicate to the failure path makes a mistake in
+  it unable to produce a spurious `NOT_FOUND` for a valid address that would otherwise have resolved.
 
 #### Scenario: The directory answers, and the person is absent
 
@@ -202,6 +213,9 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 - **AND** `source` **MUST** be **`ERROR`**, never `NOT_FOUND`
 - **AND** the failure **MUST** be logged at `error` with the email and the cause — today it is
   swallowed with no log at all, which is unobservable
+- **AND** *(clarified 2026-08-28)* the `error` log **MUST NOT** be emitted when the thrown failure is
+  attributable to a malformed email — that path is `NOT_FOUND` per the *Invalid input* scenario, and
+  logging it at `error` would fill the log with admin typos while burying real outages
 - **BUT** it must **NOT** throw — the *contract* never throws; a caller may choose to
 - **AND IT MUST** leave a caller that reads only `found` behaving **exactly** as today: `ERROR` and
   `NOT_FOUND` are both `found == false`, so the five callers that ignore `source` are unaffected
@@ -600,6 +614,7 @@ and nothing in this spec depends on its answer.
 | 2026-08-27 | **D8 (Spring wiring) recorded as an accepted risk with a manual substitute** | MARLO has no Spring context test and adding one requires `DEC-005` and a `marlo-parent/pom.xml` edit, which would break this child's parallel-safety with `auth-flow`. A one-time app-start check at the HITL pause is the honest substitute |
 | 2026-08-27 | **Judgment Day round 1 — 5 findings confirmed by both judges, applied; 4 single-judge findings applied on recommendation. No scoped re-judgment** (user chose *Fix only*) | Ledger: [`judgment.md`](./judgment.md). Neither judge challenged the architecture — DD-1, DD-2, DD-3, DD-5, DD-6, DD-9 and DD-10 all survived, with both judges independently confirming DD-2's and DD-3's premises against the code. The defects were bookkeeping plus one unspecified mechanism |
 | 2026-08-27 | **`DirectoryLookupException` added (DD-3a)** — closes JD-7 | DD-3 said the consumer "propagates" without naming what. It must be unchecked (`validateOutlookUser:248` has no `throws` clause), must not extend `AuthorizationException` (`struts.xml:543-545` maps that to 403 instead of 500), and makes the branch assertable by type in JUnit 4. Replaces the unearned claim "preserving today's outcome exactly" with the verified boundary: same handling, different subtype |
+| 2026-08-28 | **"Malformed" defined, and the malformed→`NOT_FOUND` mechanism specified — closes a gap surfaced by `T03`'s Implementer** | `FN-002` *Invalid input* asserted the **outcome** (`malformed → NOT_FOUND`) but never defined "malformed" or said how to reach it, so `T03`'s first implementation let a malformed email fall through to `adauth` — which yields `ERROR` if the library throws. That violates *Invalid input* and has a concrete consequence: `T10` discriminates on `ERROR` and throws `DirectoryLookupException`, so an admin's typo would produce a **500 page instead of the "does not exist" message it produces today** — a regression, not merely a gap. Resolved at the HITL gate by **discriminating inside the catch**: the lookup still happens (the no-network-call guarantee is scoped to `null`/blank only, so a malformed email is *expected* to reach the backend), and on a thrown failure well-formedness decides `ERROR` vs `NOT_FOUND`. Confining the predicate to the failure path means a flawed predicate cannot produce a spurious `NOT_FOUND` for a valid address that would have resolved. Rejected alternatives: pre-call validation (deviates from the no-network-call scoping, and an over-strict predicate would reject unusual-but-valid corporate addresses); leave-and-record (`T04` could not then test §5.1 row 2 deterministically, and the `T10` 500 risk would ship uncovered) |
 | 2026-08-28 | **Approved for execution; `OQ-4` closed, `OQ-5` confirmed** | The user, acting as Tech lead at the `/akili-execute` approval gate, approved `requirements.md` and `design.md`. `OQ-4` closes by its own terms (*"answered at this document's approval"*). `OQ-5` is confirmed in the conservative direction: the `getLogin()` NPE is **preserved**. Recorded explicitly so no later reviewer reads a preserved NPE as an overlooked bug and "fixes" it |
 | 2026-08-28 | **Toolchain finding at `T00`: `JAVA_HOME` pointed at JDK 8** | `mvn -v` reported `1.8.0_202` against `marlo-parent/pom.xml`'s `<release>17</release>` — `DIRABS-T00`'s STOP condition. Resolved per-command with `JAVA_HOME=C:/Program Files/Java/jdk-17` (Maven then reports 17.0.12) rather than by mutating machine configuration. **Every verification command in this spec must export it**, or the compile gate fails for a reason unrelated to the change under review |
 | 2026-08-28 | **`tasks.md` §4 gained per-task status markers** | The approved task list shipped with no `[ ]` / `[~]` / `[x]` markers, so `/akili-execute` had nowhere to record progress and no basis for task selection. Adding them is mechanical bookkeeping, not a scope change: no task text was altered |

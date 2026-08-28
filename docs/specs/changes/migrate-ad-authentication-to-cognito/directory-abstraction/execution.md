@@ -729,3 +729,171 @@ Review rounds consumed: **3 of the ~20 budgeted** (T01: 1 · T02: 2). On track �
 deliberately budgeted extra FAILs because equivalence review here is line-by-line.
 
 ---
+
+### `DIRABS-T03` (EXEC-032) — `LdapDirectoryService`
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 2** — *on inspection only; see the qualifier below* |
+| **Date** | 2026-08-28 |
+| **Module** | `marlo-data` · **File:** `security/directory/impl/LdapDirectoryService.java` (new, 103 lines) |
+| **Skills** | `error-handling-patterns` — concurred; this is a never-throws contract with a two-way failure discrimination and a conditional log |
+| **Effort** | `xhigh` on **both** attempts. **Deliberately not bumped on retry:** the rework rule says raise one level, but the next level is `max` and the tier rule forbids `max` on a T2 tier. `xhigh` is the ceiling there — needing more would mean escalating the *tier*, not the dial |
+| **Review rounds** | **1** (attempt 1 was never reviewed — see below) |
+
+#### 🔧 SPEC GAP found and closed mid-task — `FN-002` asserted an outcome with no definition and no mechanism
+
+**Attempt 1 was never sent to the Reviewer.** Its `Not Done / Assumptions` surfaced that `FN-002`
+*Invalid input* required `malformed → NOT_FOUND` while **never defining "malformed"** and never naming a
+mechanism. Its implementation therefore let a malformed email fall through to
+`LDAPService.searchUserByEmail`, which yields **`ERROR`** if `adauth` throws.
+
+**Why that was a regression rather than a mere gap.** `ERROR` is the one value
+`center/…/ManageUsersAction` reads (DD-3 / DD-3a): on `ERROR` it throws `DirectoryLookupException`,
+surfacing as a **500**. Today the same admin typo is caught and reported as
+`manageUsers.email.doesNotExist`. The fall-through would have turned a clear message into a server
+error — the *opposite* direction from this spec's equivalence goal, and invisible until someone typed a
+bad address in production.
+
+**Why the loop was stopped instead of consuming a review round.** The command's Pivot/error handling is
+explicit: evidence that the spec itself is wrong or unviable stops the loop, and rework attempts are
+not spent on a broken spec. A Reviewer would have returned a correct FAIL against a requirement **no
+implementation could satisfy without a human decision**. Escalated to the HITL gate instead.
+
+**Resolution — new `design.md` **DD-11**, approved 2026-08-28.** Keep the lookup; discriminate inside
+the catch. `isWellFormed` is minimal by design (one `@`, non-empty local part, domain containing a `.`;
+explicitly **not** RFC 5322). Rejected alternatives are recorded in DD-11 and in `requirements.md` §13.
+
+**Amendment sweep — five sites:**
+
+| Site | Change |
+|---|---|
+| `requirements.md` `FN-002` *Invalid input* | Defines "malformed"; specifies the catch-discrimination mechanism and why not pre-validation |
+| `requirements.md` `FN-002` *Backend failure* | The `error` log **must not** fire for a malformed-email failure |
+| `design.md` §5.1 row 2 | Annotated: reached by discriminating inside the catch, see DD-11 |
+| `design.md` **DD-11** (new) | Full decision, code, rejected alternatives, implications for T03/T04/T10 |
+| `tasks.md` T03 scope | The two-branch catch + the `isWellFormed` bounds |
+| `tasks.md` **T04** | **A mandatory new assertion** — malformed + backend throws → `NOT_FOUND`, **not** `ERROR` |
+
+**The T04 row is the one that matters most.** Without it DD-11 would have had **no gate at all**. T04's
+*falsifying input* table now names the defect explicitly: an implementation returning `ERROR` for a
+malformed email must FAIL — *"which is exactly what T03's first attempt did, and what DD-11 exists to
+prevent."* The defect is now converted into a test that catches its return.
+
+#### ⚠️ Second Leader-caused brief defect — recorded
+
+**The gap was reachable because the Leader's attempt-1 brief pointed at §4.3, DD-3 and DD-4 but never
+quoted `FN-002`'s *Invalid input* scenario**, which resolves the question outright. The Implementer's
+own reasoning was sound — it declined to *"invent validation semantics `adauth` doesn't have"*, which is
+DD-4's logic applied correctly — and it was incomplete only because the governing text was not in front
+of it.
+
+This is the **second** brief defect in this run (T02's was the §5.1 row miscount). Both were caught by
+an Implementer that declared its reading rather than choosing silently. **Pattern worth naming for
+Kaizen: the Leader's pointer briefs have twice omitted the requirements scenario that settles the
+task's central ambiguity, while including the design sections.** Design tells the worker *how*;
+requirements tell it *what must be true*. Pointing at only the former is what produced both defects.
+
+#### Attempt 2 — verification evidence
+
+| Gate | Result |
+|---|---|
+| Compile | **DEFERRED — EB-1.** Not run, not claimed |
+| Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed |
+| Isolation | `grep -rln "org.cgiar.ciat" security/directory/` → **exactly one file**, `impl/LdapDirectoryService.java` ✅ — independently re-run by the Reviewer, which also confirmed that under JD-1's `^import` gate it is exactly one |
+| Scope | `git status --short` → **1 new source file** ✅ |
+| Line length | Reviewer independently ran `^.{121,}$` across the whole package → **no matches** ✅ (verified, not accepted on report) |
+| Committed siblings | Leader-run `git diff e8d5d9e -- <4 files>` → **empty** ✅ all four T01/T02 files byte-identical |
+| Full change set since `4b0bf72` | 4 spec docs + 5 `.java` files in the new package. **No protected file (§3.2) anywhere** ✅ |
+
+#### Attempt 2 — Reviewer verdict: `STATUS: PASS`
+
+> The field mapping is a faithful, transformation-free transcription of §4.3,
+> `setInternalConnection(!config.isProduction())` is exactly equivalent to the baseline's if/else, and
+> all four DD-11 clauses hold — the lookup stays unconditional, discrimination lives inside the catch,
+> `isWellFormed` is consulted only on the failure path and is unreachable with `null`, and the `error`
+> log fires only on the well-formed branch. **This PASS means the mapping is correct on inspection, not
+> that it was executed.**
+
+**Verification the Reviewer performed independently rather than accepting on report** — worth recording,
+because with both automated gates down this is what carries the task: it resolved
+`APConfig.isProduction()` at `marlo-utils/.../APConfig.java:849` to a **primitive `boolean`**, proving
+`!this.config.isProduction()` carries no unboxing NPE and reads the flag exactly once as the baseline
+does; confirmed `DirectoryPerson.found(...)`'s **positional argument order** against the call site;
+confirmed every `LDAPUser` getter resolves against live usage at `SearchUserAction:211-214`; and swept
+`isWellFormed`'s boundary cases (`"@x.org"`, `"a@@b.c"`, `"a@b"` → false; `"a@b.c"`, leading/trailing
+space → true).
+
+**On the damaging-misclassification risk the brief asked it to hunt:** it found **none from an
+implementation defect.** The only inputs yielding `NOT_FOUND` on a genuine outage are single-label-domain
+addresses (`user@intranet`) — and that is DD-11's own minimal definition as adjudicated at the gate, not
+a coding choice. The predicate is a faithful transcription of it, and its errors lean toward `true`,
+which is the safe direction. It also confirmed `isWellFormed` is **unreachable with `null`** (line 61
+returns before the `try`), so its `@param` contract is honored rather than merely asserted.
+
+It ruled the class-level Javadoc edit **in scope, not drift**: the file is new so there is no prior text
+to drift from, and after DD-11 a class doc describing only the `ERROR` addition would be *inaccurate*.
+
+#### ⚠️ Reviewer-to-Leader handoff — again declared, not faked
+
+> *"I have no `Bash`, so `git status` is not independently reproducible by me … 'unmodified since
+> commit' rests on the Leader's `git status --short`."*
+
+Second time this run the Reviewer has named a limit of its `Read, Grep, Glob` allowlist instead of
+asserting a check it could not run. **Leader confirmation is recorded in the evidence table above** —
+`git diff e8d5d9e` over all four committed siblings returned empty.
+
+#### `ADVISORY` findings — recorded, non-gating. Two are consequential and are promoted to forward pointers.
+
+**1. RELIABILITY → ⏭ FORWARD POINTER, must be copied into the `DIRABS-T04` brief.**
+`new LDAPService()` (line 65) and `setInternalConnection(...)` (line 66) sit **outside** the `try` —
+exactly where DD-11's authoritative snippet and the baseline put them. So an exception thrown by either
+**escapes `findByEmail`**, breaching the unconditional *never throws* invariant in `DirectoryService`'s
+Javadoc.
+
+**This is a genuine `FN-002` / `NF-001` tension, and it is recorded as an accepted limit rather than
+fixed.** `FN-002` demands the seam never throw; `NF-001` demands observable equivalence. The baseline
+propagates in this case too, so equivalence and the never-throws invariant **cannot both hold here**.
+The Reviewer's instruction is explicit and the Leader concurs: **do NOT widen the `try`** — that would
+convert today's propagated 500 into a silent `found == false` for the five `found`-only consumers,
+buying the invariant by breaking equivalence, which is the wrong trade in a spec whose acceptance
+criterion *is* equivalence.
+
+**The actionable consequence is for T04:** `LdapDirectoryServiceTest` constructs a **real**
+`LDAPService`. If that constructor throws in a CI or dev environment with no AD configuration, the
+contract test **errors out** rather than reporting `ERROR`/`NOT_FOUND`. **Decide this deliberately when
+briefing T04 rather than discovering it as a confusing test error.**
+
+**2. RISK → PENDING DECISION, raised to the user at this gate.**
+`DirectoryService`'s **committed** Javadoc still lists outcome 2 (*malformed → `NOT_FOUND`*) and outcome
+5 (*backend throws → `ERROR`*) as flat alternatives, with **nothing stating that outcome 2 wins when
+both apply**. DD-11 invented that precedence and its *Implications* names T03, T04 and T10 — **but not
+T02.**
+
+**This is an incompleteness in the Leader's own DD-11 sweep.** The Correction Closure rule requires
+grepping references *to* the corrected section; §6.1 designates `DirectoryService`'s Javadoc as **the
+contract**, so amending §5.1 row 2 should have flagged it. The Reviewer correctly notes the Implementer
+was right to leave it alone — modifying a committed sibling is a T03 STOP condition. Not fixed
+unilaterally, because editing a T02 deliverable outside T02 is a boundary the Leader should not cross on
+its own judgment. **Presented to the user for a decision.**
+
+**3. READABILITY —** line 85 uses Markdown `**only**` inside Javadoc where the package convention (and
+every sibling) is HTML; it renders as literal asterisks. Cosmetic; no Checkstyle module inspects Javadoc.
+
+**4. READABILITY —** the class Javadoc's *"reproduces `getOutlookUser`'s observable behavior exactly,
+with **one** deliberate addition"* undercounts: there are **three** divergences — the `ERROR` + log path,
+the malformed → `NOT_FOUND` branch, and the **null/blank fail-fast with no network call**, which the
+baseline lacked and the doc never mentions. The Reviewer notes DD-3a already corrected this same unearned
+*"exactly"* in `design.md`, and this phrasing reintroduces it in miniature.
+
+#### Final verification result
+
+**PASS on attempt 2 — on inspection, not on execution.** The strongest qualifier of any task so far, and
+it is the spec's own: `tasks.md` T03 states *"compile + checkstyle passing says **nothing** about the
+mapping. This task's real gate is T04, and it must not be reported verified before T04 runs."* Both
+gates are additionally unavailable (EB-1, EB-2). **T03 is not behaviorally verified and must not be
+reported as such until T04 executes against it.**
+
+Review rounds consumed: **4 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1).
+
+---
