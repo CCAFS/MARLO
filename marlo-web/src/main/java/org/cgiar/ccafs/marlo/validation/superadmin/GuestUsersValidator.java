@@ -17,43 +17,32 @@ package org.cgiar.ccafs.marlo.validation.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
-import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
-
 import java.util.HashMap;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
 public class GuestUsersValidator extends BaseValidator {
 
-  public GuestUsersValidator() {
-  }
+  private final DirectoryService directoryService;
 
-  public LDAPUser getOutlookUser(String email) {
-    LDAPService service = new LDAPService();
-    if (config.isProduction()) {
-      service.setInternalConnection(false);
-    } else {
-      service.setInternalConnection(true);
-    }
-    LDAPUser user = null;
-    try {
-      user = service.searchUserByEmail(email);
-    } catch (Exception e) {
-      user = null;
-    }
-    return user;
+  @Inject
+  public GuestUsersValidator(DirectoryService directoryService) {
+    super();
+    this.directoryService = directoryService;
   }
 
   public void validate(BaseAction action, User user, String selectedGlobalUnitAcronym, boolean isCGIARUser,
     boolean saving) {
     action.setInvalidFields(new HashMap<>());
-    LDAPUser LDAPUser = this.getOutlookUser(user.getEmail());
-    if (LDAPUser != null) {
+    DirectoryPerson person = this.directoryService.findByEmail(user.getEmail());
+    if (person.isFound()) {
       isCGIARUser = true;
     } else {
       isCGIARUser = false;

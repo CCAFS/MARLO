@@ -1343,6 +1343,14 @@ The Implementer's *"MARLO has no action-test precedent"* is true of **precedent*
 **capability** — and the distinction has 3× leverage, because T09, T10 and T15 are all action tests that
 would otherwise replicate the hand-rolled pattern three more times. Pairs with advisory 3.
 
+**→ LEADER DECISION on advisories 2 and 3, taken at the T05–T07 gate (2026-08-28):** put to the user with
+the `struts2-junit-plugin` finding in hand. **Decision: T09/T10/T15 keep the hand-rolled pattern.**
+Rationale: it is already green, already reviewed in depth, and the approved spec does not ask for a
+Struts test harness — introducing one mid-spec would put an unreviewed test architecture underneath the
+only executable gate the spec has. The duplication cost (advisory 3) is accepted as a known price.
+**Both advisories are recorded and die here**; neither becomes a task nor widens one. `struts2-junit-plugin`
+being already available is worth a *future* proposal, not a mid-flight change.
+
 **3. READABILITY —** ~**360 of the 611 lines** are five full no-op manager implementations, and the two
 suites each hand-roll a *differently-behaving* `FakeUserManager` **under the same simple name**. These
 break on any interface method addition, and `RoleManager`'s `cloneRolePermissionsByAcronym` /
@@ -1409,5 +1417,272 @@ re-verified by the Leader. The Reviewer's summary:
 > i18n-key assertions sound rather than circular.
 
 Review rounds consumed: **6 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1).
+
+---
+
+### `DIRABS-T08` (EXEC-037) — Migrate `GuestUsersValidator`
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 2** (of a 3-attempt ceiling) |
+| **Date** | 2026-08-28 |
+| **Effort** | `xhigh` on both attempts — **not bumped**, same reason as T03: the next level is `max` and the tier rule forbids it on T2 |
+| **Skills** | `error-handling-patterns` |
+
+#### 🏁 Milestone reached: no `getOutlookUser` implementation remains in MARLO
+
+Leader-verified and independently re-verified by the Reviewer: a repo-wide grep over `**/src/main/**/*.java`
+returns **exactly one hit — a Javadoc line in `LdapDirectoryService.java:34`.** T05 removed `BaseAction`'s
+copy; this task removed the `GuestUsersValidator` duplicate. The helper is gone from the codebase.
+
+#### Attempt 1 — what was right
+
+Both gates green, **Leader-verified independently**: `INSTALL_EXIT=0` · `TEST_EXIT=0` ·
+**24 tests** (20 baseline + 4 new).
+
+The production diff is minimal and the Reviewer confirmed at the source that everything `tasks.md` T08
+protects is **byte-identical**: the `validateGuestUsers(...)` call, the field-error block, and the whole
+`validateGuestUsers` method. The `isCGIARUser` reassignment is preserved. `@Named` keeps no qualifier
+value. `super()` resolves against the real `BaseValidator()` at `:63`. The deleted method was confirmed
+**`public`** (C-3). And `DirectoryService.findByEmail` contracts never-null, so the unguarded
+`person.isFound()` is **correct rather than lucky** — a distinction worth recording.
+
+The Reviewer also verified the parts the Leader could not: the spy captures **all four** arguments and
+asserts them with `assertSame` on the object identities (the strong form, not `equals`), satisfying
+`tasks.md` T08's *"same arguments"* clause; and `errorBehavesIdenticallyToNotFound` genuinely exercises
+`Mode.ERROR` → `found == false, source == ERROR`, which is exactly `FN-002`'s *"leave a caller that reads
+only `found` behaving exactly as today."*
+
+#### Attempt 1 — Reviewer verdict: `STATUS: FAIL`, 3 issues. Leader adjudication: **all three upheld.**
+
+**Issue 1 — an assertion that cannot fail on the property it claims.**
+`configFieldIsNotShadowedByTheNewConstructor` obtains `BaseValidator.class.getDeclaredField("config")`.
+**A `Field` from `getDeclaredField` is bound to that declaring class's slot and is immune to shadowing by
+construction.** If someone added `private APConfig config;` to `GuestUsersValidator` tomorrow, the write
+and the read would both hit the *base* slot and `assertSame` would stay green. The only things that could
+redden it — `config` renamed off `BaseValidator`, or the subclass ceasing to extend it — are compile
+errors, not shadowing. The Javadoc further claims the field *"remains the **single** field of that name
+reachable"*, and **singleness is never checked.**
+
+> **Violated:** `tasks.md` §3.3 *Falsifying input* — *"A check nothing can fail is not evidence, however
+> green it reports."*
+
+**Leader note on why this one matters most.** The Implementer was **genuinely honest about the Spring
+limitation** — it said plainly that `new` bypasses the container and attributed the clause to T12. But it
+then substituted a *different* structural claim that is **also** unfalsifiable, and recorded that one as
+proven. Honest framing around an unfalsifiable core is harder to catch than a plain overclaim, and it is
+exactly what the Reviewer is for.
+
+**Issue 2 — an unverified causal mechanism written into a source file as established fact.**
+The test's Javadoc asserts Surefire crashes *"if the **outer test class itself** declares a method whose
+parameter or return type is a `BaseAction` subclass"* and that the nested spy *"is not reached by the
+outer-class scan."*
+
+**The Reviewer found the confound, and it is decisive:** T06's crashing signature took a `BaseAction`
+**subclass**, while T08's non-crashing spy override takes **`BaseAction` itself** — a type this file
+already loads freely as a local variable and a field type. So the single non-failing case varies **two
+variables at once** (outer-vs-nested declaration site **and** subclass-vs-base parameter type). One case
+moving two variables cannot license the exclusive claim *"specifically outer-class, not nested-class."*
+And the record already establishes the stated mechanism is inconsistent with observed behavior.
+
+> **Violated:** `tasks.md` §3.3 *Cannot prove* and *Disqualifies the evidence* — an inconclusive result
+> must be reported as inconclusive, never collapsed into a certainty.
+
+**The conservative rule to carry to T09/T10/T15 instead:** symptom reproducible, **cause unverified**.
+Observed-safe = a **nested** class taking **`BaseAction` itself** (n=1). Observed-unsafe = an **outer**
+test-class method taking a **`BaseAction` subclass** (n=1). A nested signature taking a `BaseAction`
+*subclass* is **untested** — avoid it until a case exists.
+
+**Issue 3 — `null` where a real instance costs the same. This one is a correction to the Leader.**
+The Leader verified `null` was **safe** (`validator` is referenced only at `CrpUsersAction:983`, inside
+`validate()`, not `save()` — the Reviewer independently confirmed the method boundaries at `:981` and
+`:604`). **But safe is not the same as best, and the Leader did not ask the second question.**
+`this.directoryService` is already in scope two lines above, so
+`new GuestUsersValidator(this.directoryService)` is the **same token count**, compiles, carries no
+Surefire exposure, and removes the trap outright. As written, the first time that test grows to exercise
+`validate()` it dies on a bare NPE with no diagnostic.
+
+> **Violated:** `.agents/reviewer.md` §2 *Stability & Integrity* — a latent NPE was introduced into a file
+> that previously had none, when a strictly better substitute existed.
+
+#### 📌 EB-2 CORRECTED — it is now *unverifiable*, not merely differently-symptomatic
+
+The Implementer reported Checkstyle failing with a **`PluginContainerException`** (*"Number of foreign
+imports: 1"*) rather than EB-2's recorded `NoSuchMethodError`, and **verified it is pre-existing** by
+stashing its diff and reproducing the failure on the unmodified `e21a57a` tree. Correct methodology; the
+diff is conclusively cleared.
+
+**But the Reviewer's reading of the symptom change is the important part:** the two failures sit at
+**different depths**. `NoSuchMethodError` is a *runtime* incompatibility reached **after** the plugin
+loaded and began executing. `PluginContainerException` is a **classloader-realm construction failure** —
+the plugin **never ran at all**. So the new failure **masks** the old one.
+
+> **The correct entry is not "EB-2's symptom changed" but: EB-2 is now UNVERIFIABLE, not resolved. A
+> second, earlier blocker is stacked in front of it.** Anyone who later fixes the realm error should
+> expect the `NoSuchMethodError` to still be waiting behind it.
+
+Likely trigger is local `~/.m2` state or a Maven/JDK difference between the two recorded runs — **not the
+repository.** Still out of scope: `pom.xml` is protected.
+
+#### ⏭ FORWARD POINTER for `DIRABS-T12` — the `config` clause may now be vacuous
+
+The Leader found that `config`'s only use was inside the deleted method, so **this class references
+`config` nowhere.** The Reviewer drew the consequence the Leader had not:
+
+> **`FN-006`'s `config` clause is now *vacuously satisfiable* for this class.** If Spring's field
+> injection silently failed here, **nothing would break**, because no code path reads it.
+
+So T12's app-start check will prove the context starts and that `DirectoryService` resolves into the new
+constructor — both real and worth having — **but it will not prove `config` is populated on this bean, and
+must not be recorded as though it did.**
+
+Two honest options, to be decided when T12 is briefed:
+1. Gate the clause with the falsifiable structural check from remediation 1 (no subclass field named
+   `config`; the inherited field is still `protected` and still `@Inject`-annotated), or
+2. Mark the clause **explicitly not applicable to `GuestUsersValidator` after T08**, since the dependency
+   it protects no longer exists.
+
+#### Undeclared items the Reviewer identified — none fatal, all worth recording
+
+1. **A substituted test was not declared.** `tasks.md` T08 says *"assert `config` is non-null after
+   construction"*; the Implementer wrote a shadowing check instead. **That was the right call** — the
+   literal instruction contradicts the task's own disqualifier — but *resolving a spec self-contradiction
+   is precisely what belongs in `Not Done / Assumptions`.*
+2. **No test executes the real `validateGuestUsers` or the post-call field-error block.** All three
+   behavioral tests use the spy. `tasks.md` gates those by diff inspection, so it is legitimate — but it
+   is a coverage boundary that should be stated rather than left for the Reviewer to find.
+3. The `null` tradeoff was **hedged** (*"in the paths this test exercises"*) rather than declared as a
+   known limitation with the constraint that makes it true.
+4. **`config` is referenced nowhere in the class** — the single most consequential fact about the clause,
+   and the Implementer's report did not surface it.
+
+#### `ADVISORY` — recorded, non-gating
+
+- **READABILITY —** the new test's `Does not prove` paragraph is *unusually good*, and the Reviewer's
+  framing is worth keeping: it is **the model the three issues should be raised to, not lowered from.**
+  Fixed, this file becomes the reference for how the remaining consumer migrations document their seams.
+- **RISK —** `BaseValidator` and `GuestUsersValidator` are **both `@Named`**, with the latter extending the
+  former, so a `BaseValidator`-typed injection point has two candidates. **Pre-existing, unchanged by this
+  diff, out of scope** — flagged only so T12 does not misattribute it to this task if the context start
+  surfaces it.
+
+#### Attempt 2 — the fix, and the falsifiability demonstration
+
+Effort **held at `xhigh`** (next level is `max`, forbidden on T2). All three remediations applied, nothing
+else touched. The production file was **out of rework scope** and stayed so.
+
+| | Attempt 1 | Attempt 2 |
+|---|---|---|
+| **1** `config` check | `assertSame` roundtrip through `BaseValidator.class.getDeclaredField` — **immune to shadowing by construction** | Loop over `GuestUsersValidator.class.getDeclaredFields()` asserting **none is named `config`**, plus `@Inject`/`protected` checks on the inherited handle |
+| **2** Surefire note | Stated an unverified mechanism **as fact** | Symptom / cause separated; both observed cases scoped **n=1**; the third marked **untested** |
+| **3** `CrpUsersActionDirectoryTest:109` | `null` — a latent NPE | `new GuestUsersValidator(this.directoryService)` — same token count, trap gone |
+
+**The falsifiability demonstration — by A/B mutation, the standard this run set at T04:** the Implementer
+temporarily added `private APConfig config;` to `GuestUsersValidator`, rebuilt clean, and observed:
+
+```
+Tests run: 4, Failures: 1, Errors: 0, Skipped: 0
+configFieldIsNotShadowedByTheNewConstructor  <<< FAILURE!
+java.lang.AssertionError: GuestUsersValidator must not declare its own field named config: doing so
+would shadow BaseValidator's inherited field
+	at ...GuestUsersValidatorDirectoryTest.configFieldIsNotShadowedByTheNewConstructor(...:167)
+```
+
+**Only the target assertion failed — the other three stayed green**, which is what proves *specificity*,
+not merely falsifiability. Then reverted, zero residual diff, 24 green.
+
+**Reviewer corroboration of the evidence's internal consistency** (a nice touch, since a fabricated
+mutation report is otherwise hard to detect): the file contains exactly **4** `@Test` methods, matching
+the reported `Tests run: 4, Failures: 1`, and the failing line `:167` is the loop's `assertFalse`.
+
+#### ⚖️ The Leader pressed the Reviewer on whether the fix was partial — and it was, in a bounded way
+
+The Leader asked specifically whether the two accompanying `assertTrue`s (`@Inject` present, `protected`)
+are falsifiable or *"decoration riding along with a now-genuine first assertion"*, warning that recording
+a partial improvement as complete is the same failure mode caught in attempt 1.
+
+**The Reviewer answered plainly: they are riding along.** A subclass's `@Inject` constructor **cannot**
+change a superclass field's annotations or modifiers, so neither assertion can fail as a consequence of
+the change under review. It went further and checked the spec: **`design.md` §6.2 lists seven modified
+`marlo-web` files and `BaseValidator.java` is not among them** — so they are not even an in-spec
+tripwire, and their value is limited to a refactor outside this spec.
+
+**Why this is nonetheless a PASS and not a partial fix waved through:** the clause's *actual* subject — no
+subclass shadowing — **is** now guarded by a genuinely falsifiable, A/B-demonstrated check. The two extra
+assertions are **described accurately rather than overclaimed**, and they are exactly what the Reviewer's
+own attempt-1 remediation prescribed. That makes them **advisory polish**, and spending attempt 3 on them
+would be the misuse the attempt ceiling guards against.
+
+#### Attempt 2 — verification
+
+| Gate | Result |
+|---|---|
+| `mvn -q install -DskipTests -pl marlo-web -am` | **`INSTALL_EXIT=0`** — Leader-verified independently |
+| `mvn -q -pl marlo-web -am test` | **`TEST_EXIT=0` · 24 tests** — unchanged count, as expected for a rework that only hardened assertions |
+| Zero mutation residue | **Verified positively, not accepted:** the Reviewer ran `rg "config\|APConfig\|org\.cgiar\.ciat"` over `GuestUsersValidator.java` → **no matches**, which simultaneously proves the A/B field left nothing behind *and* satisfies T08's own isolation grep |
+| Import churn | Correct — every import used; `APConfig`'s removal was **required**, not optional |
+| Checkstyle | Not run. **EB-2 remains unverifiable** (see the correction above) |
+
+**Reviewer's stated verification limit, again declared rather than faked:** *"I have `Read`/`Grep`/`Glob`
+only, so 'unchanged' is established by content and by the unchanged 24-test count, not by a byte diff."*
+The Leader's byte-level confirmation is in the table above.
+
+#### `ADVISORY` from attempt 2 — recorded, non-gating
+
+**1. ⏭ READABILITY → routed by the Leader, not left to chance.**
+`CrpUsersActionDirectoryTest:78-85` **still states the falsified Surefire mechanism as fact**, while the
+new `GuestUsersValidatorDirectoryTest:56-58` now says the record refutes it. **A T09/T10/T15 author who
+opens the T06 file first extracts the wrong causal model.** Fixing it was outside the three remediations
+and no remaining task legitimately touches that file.
+
+> **Leader ruling:** do **not** open a passing file to edit a comment, and do **not** mint a task for it.
+> Instead, **the conservative rule is carried directly in the T09, T10 and T15 briefs** — the brief is the
+> transmission mechanism and the Leader controls it, which neutralises the harm without touching the
+> file. The inconsistency is recorded here as a known doc defect for archive time.
+
+**2. READABILITY —** the two `BaseValidator` assertions are inert with respect to this change (analysed
+above). Also `:156-157` attributes Spring's ability to populate the field to `@Inject` **and** `protected`
+visibility; **strictly only `@Inject` is the enabler — Spring injects private fields too.** The wording
+faithfully echoes `FN-006`'s literal text, so this is imprecision rather than a false claim.
+
+**3. 📌 CORRECTION to the recorded coverage boundary — matters for T12's gap list.**
+Declaration #2 was imprecise *in the conservative direction*: the post-call block at
+`GuestUsersValidator:51-56` **is** executed by all four tests (the spy inherits `validate`). What no test
+exercises is **either branch body** — no `addActionError`, no `addActionMessage` path. Understating
+coverage is the safe error, but the boundary is recorded correctly as **"neither branch taken,"** not
+*"block never runs."*
+
+**4. ⚠️ RISK — ADOPTED AS AN OPERATIONAL PROTOCOL, not merely recorded.**
+**Two independent transient Windows file-lock build failures have now occurred:** T04's `testCompile` and
+T08's `maven-resources-plugin` file-copy. Both cleared on a bare retry with no code change. With
+Checkstyle down and the root guides warning that a green test run is weak evidence in this repository,
+**`mvn install` is this spec's only meaningful gate — so flakiness in it is a risk to every remaining
+task.**
+
+> **Protocol adopted for T09 → T17, and to be carried in every remaining brief:**
+> **one bare retry is permitted; every retry MUST be reported.** Never silently absorbed — *silent
+> absorption is how a genuine compile failure gets misread as a flake.*
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `FN-006` *"`isCGIARUser` **MUST** derive from `DirectoryPerson.found`"* | `if (person.isFound())`; asserted on both the found and not-found paths |
+| `FN-006` *"its duplicate … **MUST** be deleted"* | Deleted. **No `getOutlookUser` implementation remains anywhere in `src/main`** |
+| `FN-006` *"**BUT** the call to `validateGuestUsers(...)` and the field-error handling below it must **NOT** change"* | Byte-identical, verified at the source by the Reviewer. Absent from the diff |
+| `FN-006` *"**AND IT MUST** keep receiving `config` through the inherited field"* | **Structurally guarded** (no subclass shadowing — falsifiable and A/B-demonstrated). **Spring field injection itself is NOT covered here** — see the T12 forward pointer above, including that the clause is now *vacuously satisfiable* for this class |
+| `FN-001` | `DirectoryService` by constructor injection; no `LDAPService` constructed |
+| `FN-002` *"a caller that reads only `found` behaves exactly as today"* | `errorBehavesIdenticallyToNotFound` — genuinely exercises `Mode.ERROR` → `found == false, source == ERROR` |
+
+#### Final verification result
+
+**PASS on attempt 2.** Both required gates green and Leader-verified. The Reviewer's summary:
+
+> All three attempt-1 issues are resolved — the `config` assertion is now falsifiable and
+> A/B-demonstrated, the Surefire note separates symptom from cause with `n=1` scoping and an explicitly
+> untested third case, and the `null` argument is replaced by a field assigned earlier in `setUp()`.
+> Nothing that passed regressed: the production file carries zero mutation residue.
+
+Review rounds consumed: **8 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1 · T08: 2).
 
 ---

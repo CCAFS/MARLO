@@ -106,7 +106,8 @@ public class CrpUsersActionDirectoryTest {
 
     this.action = new TestableCrpUsersAction(config, new TestGlobalUnitManager(), new NoOpCrpUserManager(),
       this.userManager, new NoOpProjectManager(), new NoOpPhaseManager(), new NoOpRoleManager(),
-      new NoOpUserRoleManager(), noOpSendMailS, new GuestUsersValidator(), this.directoryService);
+      new NoOpUserRoleManager(), noOpSendMailS, new GuestUsersValidator(this.directoryService),
+      this.directoryService);
     this.action.setInvalidFields(new HashMap<String, String>());
     setSelectedGlobalUnitAcronym(this.action, "TESTCRP");
   }

@@ -296,7 +296,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T08 (EXEC-037) — Migrate `GuestUsersValidator`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 2 of 3 (attempt 1 FAILed: an unfalsifiable config assertion, an unverified Surefire mechanism stated as fact, and a latent NPE). Both gates green. No getOutlookUser implementation remains in the repo. See `execution.md`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M
 - **Design:** §6.2, **DD-8**, §10.0 **C-3** · **Requirements:** `FN-001`, `FN-006` *GuestUsersValidator*
 - **Files touched:** `validation/superadmin/GuestUsersValidator.java` · `.../GuestUsersValidatorDirectoryTest.java` *(new)*
