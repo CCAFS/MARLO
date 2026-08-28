@@ -454,12 +454,31 @@ Unit's parameters inside a single form with one save button, so saving it rewrit
 parameters for every unit. That blast radius is not warranted for toggling one flag, and any value that
 did not round-trip cleanly would silently alter another unit's configuration.
 
-**Still not verified**
+**OPS-001, the unwritable uploads folder — verified**
 
-- OPS-001, the unwritable uploads folder. Reaching it means breaking the folder on purpose; the store
-  returns `UPLOADS_NOT_WRITABLE` for that case under unit test, and the action maps it to
-  `homepageBannerManagement.error.uploadsNotWritable` while still saving the text, but the end-to-end
-  path was not exercised.
+Provoked by `chmod 000` on `<uploads>/homepageBanners`, then saving the section on AICCRA with a
+changed title and a valid PNG attached:
+
+- The section re-rendered with the i18n error "The uploads folder is not writable on this server, so
+  the image could not be saved. The title and description were saved."
+- The text **did** save: the probe title landed in the row and the 517-character description was
+  untouched, while `image_file_name` still pointed at the previous `AICCRA.svg` — a broken uploads
+  folder costs the administrator the upload, never their typing, which is the whole requirement.
+- Two ERROR lines were logged, both naming the resolved absolute path:
+  `HomepageBannerImageStore: ... is not a writable directory` and
+  `HomepageBannerManagementAction: could not store the image for AICCRA, status UPLOADS_NOT_WRITABLE`.
+- Nothing new was written to the folder.
+
+Permissions and the probe title were restored afterwards; the image route is back to 200.
+
+One wording defect surfaced while the folder was unreadable: `DownloadHomepageBannerImageAction`
+logged "AICCRA names AICCRA.svg but it is not on disk" when the file was in fact present but
+unreachable, because `resolve` cannot tell a missing file from an unreadable directory. Harmless to
+behaviour — the route 302s either way — but the message would send someone hunting for a deleted file
+when the real cause is permissions. Left as-is rather than fixed, and recorded here so the next reader
+is not misled by it.
+
+**Everything in this spec is now verified.** Nothing outstanding.
 - Nothing else. FN-004 and the empty-insert fix were both closed in the follow-up pass recorded above.
 
 ## 4. Dependency Graph
