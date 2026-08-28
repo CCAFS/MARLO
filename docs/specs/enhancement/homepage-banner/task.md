@@ -423,16 +423,43 @@ and a Global Unit switch made elsewhere in the browser silently redirects the sa
 produced the misattributed FN-004 observation above; every later write in this log was preceded by
 reading the acronym off the header logo URL.
 
+**FN-006, the specificity override — verified**
+
+Activated for AICCRA by inserting a `custom_parameters` row (parameter 387 — the three rows sharing
+the `homepage_hide_section_map` key map to Global Unit types, and AICCRA consistently uses the middle
+one, the same way it uses 89 for `crp_refresh` and 288 for `homepage_timeline_active`), then setting
+`crp_refresh` to `true` so `InternationalitazionFileInterceptor` reloads the specificities into the
+session.
+
+- With the flag on and the banner fully populated, `crpDashboard.do` rendered no banner: zero
+  `[class*=homepageBanner]` elements, Schedule card first. The row still held the title, the
+  517-character description and `AICCRA.svg` throughout, so the banner was hidden by the flag and not
+  by absent content — which is the whole point of keeping the override.
+- `crp_refresh` auto-reset itself to `false`, confirming the reload actually ran rather than the page
+  happening to render from a stale session.
+- Reverting the value to `false` (plus another `crp_refresh`) brought the banner back intact: title,
+  description, image loaded, no horizontal overflow.
+
+Worth recording rather than leaving implicit: `/data/homepageBannerImage.do` keeps returning 200 while
+the flag hides the banner. The specificity is a rendering switch, not access control, and the image is
+public-facing homepage artwork, so this is the designed behaviour (SEC-005) and not a leak — but anyone
+who assumes the flag makes the image unreachable would be wrong.
+
+The `custom_parameters` row was left in place with `value = 'false'`, which behaves identically to no
+row. It also closes a small inconsistency noticed on the way: AICCRA showed 115 parameters in the PTF
+Parameters screen where every other Global Unit showed 116, precisely because this key had no row.
+
+Note on why the PTF Parameters admin screen was not used to flip the flag: it renders every Global
+Unit's parameters inside a single form with one save button, so saving it rewrites roughly 116
+parameters for every unit. That blast radius is not warranted for toggling one flag, and any value that
+did not round-trip cleanly would silently alter another unit's configuration.
+
 **Still not verified**
 
 - OPS-001, the unwritable uploads folder. Reaching it means breaking the folder on purpose; the store
   returns `UPLOADS_NOT_WRITABLE` for that case under unit test, and the action maps it to
   `homepageBannerManagement.error.uploadsNotWritable` while still saving the text, but the end-to-end
   path was not exercised.
-- FN-006, the `homepage_hide_section_map` override with content present. AICCRA has no
-  `custom_parameters` row for that key, and creating one is a database write that was out of scope
-  for this pass. The FTL condition is unchanged from the code that shipped it, but that is an
-  argument, not a verification.
 - Nothing else. FN-004 and the empty-insert fix were both closed in the follow-up pass recorded above.
 
 ## 4. Dependency Graph
