@@ -287,9 +287,9 @@ one — taking it would edit `marlo-parent/pom.xml` and break parallel-safety wi
 | Test | Shape | Catches |
 |---|---|---|
 | `FakeDirectoryService` | A hand-written implementation with settable canned responses **and a call recorder** (email received, invocation count) | Enables every assertion below |
-| `DirectoryServiceContractTest` | **Abstract**, one abstract factory method. Encodes all five rows of §5.1's table, plus the three invariants and the no-network-call clause | `D2`, `D3`. **Reused verbatim by child 3's provider** — the swap arrives pre-covered |
+| `DirectoryServiceContractTest` | **Abstract**, with **five abstract seams** (`createServiceWithNoMatch`, `createServiceWithFoundPerson`, `foundSource`, `createFailingService`, `failingServiceInvocationCount`)  -- revised at T04 from "one abstract factory method", which cannot express *no-match*, *found* and *failing* separately. Encodes all five rows of §5.1's table, plus the three invariants and the no-network-call clause | `D2`, `D3`. **Reused verbatim by child 3's provider** — the swap arrives pre-covered |
 | `LdapDirectoryServiceTest` | Extends the contract test | `D2`, `D3` for the LDAP implementation |
-| 5 × `…DirectoryTest` (one per migrated consumer) | Drive the consumer with a `FakeDirectoryService` returning a person whose `login` is **`"JSmith"`**, and assert the **exact** value written | **`D1`** — the dominant defect class. Asserting *"a value was written"* would not catch it; asserting *`"jsmith"`* does |
+| 5 � -- `…DirectoryTest` (one per migrated consumer) | Drive the consumer with a `FakeDirectoryService` returning a person whose `login` is **`"JSmith"`**, and assert the **exact** value written | **`D1`** — the dominant defect class. Asserting *"a value was written"* would not catch it; asserting *`"jsmith"`* does |
 | `ContactPersonActionTest` | Stubbed `AdUserManager` returning 2 `AdUser` rows; assert 2 maps with matching keys and values | `D7` (partially — not the real `ad_user` query) |
 
 **Why `login = "JSmith"` specifically.** A fake returning an already-lowercase login makes the test
@@ -609,6 +609,14 @@ disturbing it — Spring processes both. `DIRABS-FN-006` asserts `config` still 
 
 ### DD-9 — The contract test is abstract and reusable
 
+> **Revised 2026-08-28 at `T04`:** where this decision and §6.3 say *"one abstract factory method"*, the
+> delivered and reviewed shape is **five abstract seams** — `createServiceWithNoMatch()`,
+> `createServiceWithFoundPerson(email, login, firstName, lastName)`, `foundSource()`,
+> `createFailingService()` and `failingServiceInvocationCount()`. A single factory cannot express the
+> *no-match*, *found* and *failing* backends the five §5.1 rows require, and **DD-12 already
+> presupposes the richer shape.** The T04 Reviewer confirmed the seams are provider-clean and correctly
+> shaped, so this is a correction to the description, not a deviation from the intent.
+
 **Decision:** `DirectoryServiceContractTest` is abstract with one factory method; `LdapDirectoryServiceTest`
 extends it.
 
@@ -682,6 +690,81 @@ a different guise.
 (malformed + backend throws → `NOT_FOUND`, **not** `ERROR`); `T10` is unchanged but its `ERROR` branch
 is now *more* precisely true — it fires only for a well-formed email's genuine backend failure.
 
+**`T02` is also implicated — added 2026-08-28 after the first sweep missed it.** `DirectoryService`'s
+Javadoc is *the contract* (§6.1), and it lists outcome 2 (*malformed → `NOT_FOUND`*) and outcome 5
+(*backend throws → `ERROR`*) as flat alternatives with **nothing stating that outcome 2 wins when both
+apply**. Precedence is precisely what DD-11 had to invent, and child 3's provider author reads that
+interface — not this decision — as the contract. **The Javadoc must state the precedence explicitly.**
+Assigned to `T04`, where the contract test encodes the same precedence, so the assertion and the prose
+it documents land in one commit. Recorded as an incompleteness in this decision's own correction sweep,
+not as a new discovery.
+
+---
+
+### DD-12 — A `protected` factory seam for the `LDAPService`, so the contract test exercises the real mapping *(added 2026-08-28)*
+
+**The problem.** `LdapDirectoryService.findByEmail` constructs `LDAPService` internally, so
+`LdapDirectoryServiceTest` cannot substitute the backend. Without a seam, the contract test can only run
+against real `adauth` — which covers the `ERROR` branch by accident (an unreachable AD throws) and leaves
+*found*, *null-return*, and the DD-11 *malformed* branch untestable. Since T04 is this spec's dominant
+gate, that is not an acceptable coverage floor.
+
+**The probe that shaped this decision.** The T03 Reviewer raised a concern that `new LDAPService()` might
+throw in an environment without AD configuration, implying a `FN-002` / `NF-001` tension and a fragile
+test harness. **Decompiling the shipped jar falsified it:**
+
+```
+$ javap -c -p -cp marlo-data/src/main/resources/libs/.../adauth-5.7.jar org.cgiar.ciat.auth.LDAPService
+
+public LDAPService();                      public void setInternalConnection(boolean);
+  0: aload_0                                 0: aload_0
+  1: invokespecial Object."<init>"            1: iload_1
+  4: aload_0                                  2: putfield internalConnection:Z
+  5: iconst_1                                 5: return
+  6: putfield internalConnection:Z
+  9: return
+```
+
+`private boolean internalConnection` is the class's only field, and there is **no static initializer**.
+So:
+
+| Fact established by the probe | Consequence |
+|---|---|
+| The constructor **cannot throw** — `super()` plus one boolean write, no config read, no I/O | There is **no** `FN-002`/`NF-001` tension. `findByEmail`'s never-throws invariant holds unconditionally as written |
+| `setInternalConnection` **cannot throw** — one `putfield` | Same |
+| `LDAPService` is **not `final`**; `searchUserByEmail(String)` is **public and non-final** | A test subclass can override the lookup, and `super()` is provably safe |
+| The constructor's position relative to the `try` is **semantically irrelevant** | A seam can be introduced with no equivalence argument to answer |
+
+**Decision.** Extract construction to a `protected` factory on `LdapDirectoryService`:
+
+```java
+protected LDAPService newLdapService() {
+  return new LDAPService();
+}
+```
+
+`findByEmail` calls `this.newLdapService()` **in the same position, still outside the `try`**.
+`LdapDirectoryServiceTest` defines a test-local subclass overriding it to return a stub that
+`extends LDAPService` with `searchUserByEmail` overridden to return canned values or throw.
+
+**Why this shape over the alternatives.**
+
+| Alternative | Rejected because |
+|---|---|
+| No seam; run the test against real `adauth` | Only the `ERROR` branch is reachable, and only by accident. *Found*, *null-return* and DD-11's *malformed* branch — the branch DD-11 exists to protect — would all be untestable |
+| Override `findByEmail` itself in a test subclass | Then the test does not exercise the **real mapping**, which is the only thing T04 is for |
+| A second constructor taking a `Supplier<LDAPService>` | Adds public/package surface to a class DD-5 deliberately kept minimal, for no gain over three lines |
+
+**Why the test subclass exercises the right thing.** Everything under review stays production code: the
+null/blank fail-fast, `setInternalConnection(!isProduction())`, the raw field mapping, the DD-11 catch
+discrimination, and `isWellFormed`. Only the *backend call* is substituted — which is the one thing that
+cannot be executed in this repository at all.
+
+**Implications:** `T04` owns the three-line production edit to `LdapDirectoryService` (a T03 file) and the
+`DirectoryService` Javadoc precedence sentence (a T02 file). **Both are deliberate, HITL-approved
+widenings of T04's file set**, recorded here because `tasks.md` T03's STOP conditions otherwise protect
+those files. Reverting T04 correctly reverts the seam with the tests that need it.
+
 ---
 
 ## 11. Decision Log
@@ -696,6 +779,7 @@ is now *more* precisely true — it fires only for a well-formed email's genuine
 | 2026-08-27 | No attribute map on `DirectoryPerson` (DD-6) | Its only reader is an unreachable `main()`. Carrying it would export `adauth`'s vocabulary into MARLO's own type |
 | 2026-08-27 | Reversion challenges run **inline**, not delegated | Standing session instruction not to spawn subagents. Recorded so the absence of a delegated reviewer is visible rather than inferred |
 | 2026-08-27 | Accept `D8` with a manual app-start substitute (DD-10) | A Spring context test needs `DEC-005` + a `pom.xml` edit, which would break parallel-safety with `auth-flow` |
+| 2026-08-28 | **DD-12 added** — a `protected` factory seam so T04's contract test exercises the real mapping; T04 also fixes the `DirectoryService` Javadoc precedence gap DD-11's first sweep missed | Decompiling `adauth-5.7.jar` falsified the premise that `new LDAPService()` could throw (`super()` + one boolean write, no static init), so there is no `FN-002`/`NF-001` tension and no equivalence objection to a seam. Without one, only the `ERROR` branch of T04 would be reachable, including a blind spot on the very DD-11 branch. Both edits are HITL-approved widenings of T04's file set |
 | 2026-08-28 | **DD-11 added** — a malformed email is discriminated inside the catch, and "malformed" is defined minimally | `T03`'s Implementer surfaced that §5.1 row 2 asserted an outcome with no definition and no mechanism. The fall-through it produced would turn an admin typo into a 500 via T10's `ERROR` branch, where today it is a clear message. Resolved at the HITL gate; `T04` gains a mandatory assertion for the branch |
 | 2026-08-27 | Budget: **17** tasks (+`T00`) / ~700 LOC / ~20 review rounds — revised at Phase 3 | Estimated from the finished design, revised from ~650 by Judgment Day JD-7. Exceeds ~400 LOC, so `tasks.md` carries a 3-PR recommendation |
 | 2026-08-27 | **Judgment Day round 1 — 5 findings confirmed by both judges, applied; 4 single-judge findings applied on recommendation. No scoped re-judgment** (user chose *Fix only*) | Ledger: [`judgment.md`](./judgment.md). Neither judge challenged the architecture — DD-1, DD-2, DD-3, DD-5, DD-6, DD-9 and DD-10 all survived, with both judges independently confirming DD-2's and DD-3's premises against the code. The defects were bookkeeping plus one unspecified mechanism |

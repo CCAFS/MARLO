@@ -39,6 +39,11 @@ package org.cgiar.ccafs.marlo.security.directory;
  * {@code source == }{@link DirectorySource#ERROR}.</li>
  * </ol>
  * <p>
+ * <b>Outcome 2 takes precedence over outcome 5 when both apply.</b> A malformed email that also causes
+ * the backend to throw resolves to outcome 2 ({@code NOT_FOUND}), never outcome 5 ({@code ERROR}): the
+ * failure is attributable to the invalid input, not to the backend, so it must not be reported as a
+ * backend failure.
+ * <p>
  * <b>Invariants, on every one of the outcomes above, with no exception:</b> {@code findByEmail}
  * never throws; it never returns {@code null}; and the returned person's
  * {@link DirectoryPerson#getSource()} is never {@code null}.

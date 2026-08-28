@@ -300,10 +300,58 @@ cannot be ticked from this run's evidence.
 
 Recorded once here; every task entry references this section rather than restating it.
 
-### EB-1 — The compile gate is deferred (user decision)
+### EB-1 — ~~The compile gate is deferred~~ → **SUPERSEDED at `T04`. Compilation IS available.**
 
-See §1.3 and the `T00.5` entry above. `mvn install` is not run in this spec run. **No task may be
-reported as compile-verified.**
+> **CORRECTED 2026-08-28 at `T04`. The original text below was too broad and under-claimed the
+> available evidence for four tasks. Read the correction first.**
+
+**What was recorded:** *"`mvn install` is not run in this spec run. No task may be reported as
+compile-verified."* That framing was derived from the `T00.5` baseline failure and the user's decision to
+defer rather than resolve the file lock.
+
+**What is actually true.** The lock only ever blocked the **`maven-war-plugin` packaging step**;
+compilation itself succeeded even in the failed baseline run. `mvn test` does not package a WAR. At `T04`
+this was tested rather than assumed:
+
+```
+$ export JAVA_HOME="C:/Program Files/Java/jdk-17"
+$ mvn -q -pl marlo-web -am test
+Results : Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
+MVN_EXIT=0
+```
+
+Run **twice** — by the `T04` Implementer and independently by the Leader. `-am` builds
+`marlo-utils` → `marlo-data` → `marlo-web`.
+
+| Maven phase | Status | Why |
+|---|---|---|
+| `compile` / `test-compile` | ✅ **AVAILABLE** | Writes `target/classes`; the JDT lock does not prevent javac from writing the files it needs |
+| `test` | ✅ **AVAILABLE** | No packaging involved |
+| `package` / `install` (the WAR) | ❌ **BLOCKED** | `maven-war-plugin` cannot re-archive `AiAction.class` while the language server holds it |
+
+#### Retroactive consequence — T01, T02 and T03 ARE compile-verified
+
+The green run compiled **every production file this spec has added**: `DirectoryPerson`,
+`DirectorySource`, `DirectoryLookupException`, `DirectoryService`, `LdapDirectoryService`. So the
+qualifier attached to the T01/T02/T03 entries — *"does not mean it compiles"* — **is lifted as of
+2026-08-28.** Those entries retain their original wording as the honest record of what was known when
+they were written; this section is the correction, and it is the one to believe.
+
+**What remains genuinely blocked, and it is exactly one thing:** `DIRABS-T12`, the Spring context smoke
+check. It needs a deployable WAR *and* `scripts/run-marlo-java17.sh`, which deletes
+`marlo-{utils,data,web}/target` before building — both blocked by the same lock. T12 is the **only**
+evidence for `D8` (Spring wiring), so this remains a real gap; it is now a narrow one rather than a
+spec-wide one.
+
+**`tasks.md` §10's Definition of Done still cannot be fully ticked** — it names
+`mvn -q install -DskipTests -pl marlo-web -am`, and `install` is the blocked phase. Closing it needs the
+lock released (reload the VS Code window with the Java extension disabled, or stop the language server).
+
+**Leader process note.** This is the second assumption in this run recorded as a standing limit without
+being probed (the first was T03's *"the `LDAPService` constructor might throw"*, falsified by
+decompiling the jar). Both cost real evidence quality while they stood. `.agents/leader.md` →
+*Deferring a check (test the assumption first)* exists precisely for this, and twice it was applied only
+after the fact. **Flagged for Kaizen.**
 
 ### EB-2 — The Checkstyle gate cannot execute, and would be weak even if it could
 
@@ -845,24 +893,64 @@ asserting a check it could not run. **Leader confirmation is recorded in the evi
 
 #### `ADVISORY` findings — recorded, non-gating. Two are consequential and are promoted to forward pointers.
 
-**1. RELIABILITY → ⏭ FORWARD POINTER, must be copied into the `DIRABS-T04` brief.**
-`new LDAPService()` (line 65) and `setInternalConnection(...)` (line 66) sit **outside** the `try` —
-exactly where DD-11's authoritative snippet and the baseline put them. So an exception thrown by either
-**escapes `findByEmail`**, breaching the unconditional *never throws* invariant in `DirectoryService`'s
-Javadoc.
+**1. RELIABILITY → ⚠️ RAISED, THEN FALSIFIED BY PROBE. NOT a defect and NOT a limit. Corrected below.**
 
-**This is a genuine `FN-002` / `NF-001` tension, and it is recorded as an accepted limit rather than
-fixed.** `FN-002` demands the seam never throw; `NF-001` demands observable equivalence. The baseline
-propagates in this case too, so equivalence and the never-throws invariant **cannot both hold here**.
-The Reviewer's instruction is explicit and the Leader concurs: **do NOT widen the `try`** — that would
-convert today's propagated 500 into a silent `found == false` for the five `found`-only consumers,
-buying the invariant by breaking equivalence, which is the wrong trade in a spec whose acceptance
-criterion *is* equivalence.
+**What the Reviewer raised.** `new LDAPService()` (line 65) and `setInternalConnection(...)` (line 66)
+sit **outside** the `try` — where DD-11's snippet and the baseline put them — so an exception from either
+would **escape `findByEmail`**, breaching the unconditional *never throws* invariant. The Reviewer
+inferred a `FN-002` / `NF-001` tension (never-throws vs. observable equivalence) and a consequence for
+T04: that `LdapDirectoryServiceTest`, constructing a **real** `LDAPService`, would **error out** in a CI
+or dev environment lacking AD configuration.
 
-**The actionable consequence is for T04:** `LdapDirectoryServiceTest` constructs a **real**
-`LDAPService`. If that constructor throws in a CI or dev environment with no AD configuration, the
-contract test **errors out** rather than reporting `ERROR`/`NOT_FOUND`. **Decide this deliberately when
-briefing T04 rather than discovering it as a confusing test error.**
+**The Leader initially recorded that as an accepted limit. That was wrong, and it was wrong for a
+diagnosable reason: the premise was never tested.** `.agents/leader.md` → *Deferring a check (test the
+assumption first)* requires one bounded probe before recording any assumption-based deferral. Applied
+late, it took two minutes:
+
+```
+$ javap -c -p -cp adauth-5.7.jar org.cgiar.ciat.auth.LDAPService
+
+public org.cgiar.ciat.auth.LDAPService();
+  0: aload_0
+  1: invokespecial  java/lang/Object."<init>":()V
+  4: aload_0
+  5: iconst_1
+  6: putfield       internalConnection:Z
+  9: return
+
+public void setInternalConnection(boolean);
+  0: aload_0
+  1: iload_1
+  2: putfield       internalConnection:Z
+  5: return
+```
+
+Plus: **no static initializer** (`static {}` count = 0), and `private boolean internalConnection` is the
+class's only field.
+
+**Findings, all three of which change the conclusion:**
+
+| Claim | Verdict |
+|---|---|
+| `new LDAPService()` can throw | **FALSE.** `super()` plus one boolean field write. No config read, no network, no I/O, no class-load work that could fail |
+| `setInternalConnection(boolean)` can throw | **FALSE.** A single `putfield` |
+| A `FN-002` / `NF-001` tension exists here | **FALSE — there is nothing to trade.** Nothing before the `try` can throw, so `findByEmail`'s never-throws invariant **holds unconditionally as written.** T03 is *stronger* than the advisory suggested, not weaker |
+
+**Corrected record: there is no accepted limit, no deviation, and nothing for a reader to be warned
+about.** The earlier "accepted tension" text was a Leader error and is struck. The Reviewer's caution was
+reasonable from the diff alone — it has no `Bash` and could not decompile the jar — and raising it was
+right; the failure to probe it before recording it as a standing limit was the Leader's.
+
+**What survives for T04, on a different and simpler basis.** A test still cannot substitute the backend,
+because `findByEmail` constructs `LDAPService` internally — but the reason is plain injectability, **not**
+a throwing constructor. And the probe removes the design constraint that made this awkward:
+
+- `LDAPService` is **not `final`**; `searchUserByEmail(String)` and `setInternalConnection(boolean)` are
+  **public and non-final** → a test subclass can override them, and `super()` is provably safe.
+- Because the constructor cannot throw, **its position relative to the `try` is semantically
+  irrelevant** — so a seam may be introduced without any equivalence argument to answer.
+
+Recorded as a forward pointer to T04 on that corrected basis. See the T04 entry for the decided design.
 
 **2. RISK → PENDING DECISION, raised to the user at this gate.**
 `DirectoryService`'s **committed** Javadoc still lists outcome 2 (*malformed → `NOT_FOUND`*) and outcome
@@ -895,5 +983,219 @@ gates are additionally unavailable (EB-1, EB-2). **T03 is not behaviorally verif
 reported as such until T04 executes against it.**
 
 Review rounds consumed: **4 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1).
+
+---
+
+### `DIRABS-T04` (EXEC-033) — Contract test, fake, and LDAP implementation test
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 1** |
+| **Date** | 2026-08-28 |
+| **Module** | `marlo-web` (test) + two approved edits in `marlo-data` |
+| **Skills** | `error-handling-patterns`, `tdd` — both per `tasks.md`; concurred |
+| **Effort** | `xhigh`. Not `max`: the tier rule forbids it on T2, and escalating the tier would put the Implementer on the Reviewer's model and collapse `author ≠ auditor` |
+| **Significance** | **This task produced the spec's first executable evidence.** T01–T03 were PASSed on inspection only |
+
+#### 🟢 THE HEADLINE — `mvn test` runs green, and it was run twice
+
+```
+$ export JAVA_HOME="C:/Program Files/Java/jdk-17"
+$ mvn -q -pl marlo-web -am test
+
+Running org.cgiar.ccafs.marlo.data.model.ProjectPartnerTest          Tests run: 1,  Failures: 0, Errors: 0
+Running org.cgiar.ccafs.marlo.rest...projectPage.ProjectPageItemTest  Tests run: 1,  Failures: 0, Errors: 0
+Running org.cgiar.ccafs.marlo.security.directory.LdapDirectoryServiceTest
+                                                                     Tests run: 8,  Failures: 0, Errors: 0
+Running org.cgiar.ccafs.marlo.utils.URLShortenerTest                 Tests run: 3,  Failures: 0, Errors: 0
+
+Results : Tests run: 13, Failures: 0, Errors: 0, Skipped: 0
+MVN_EXIT=0
+```
+
+Run by the Implementer and **independently re-run by the Leader** in the quiet window after the worker
+reported. Both green. **This also supersedes EB-1** — see §3, EB-1, corrected.
+
+MARLO had **3** test files before this task, one with its only test body commented out. It now has 6, and
+**8 of the 13 tests are this spec's.**
+
+#### Files
+
+**New — 3 test classes in `marlo-web/src/test/java/.../security/directory/`:**
+
+```
+DirectoryServiceContractTest.java   195 lines  (abstract, provider-agnostic, reused verbatim by child 3)
+LdapDirectoryServiceTest.java       159 lines  (extends it; supplies the LDAP stubs)
+FakeDirectoryService.java           105 lines  (hand-rolled DirectoryService double for T06–T10)
+```
+
+**Modified — the two HITL-approved widenings** (`design.md` DD-12 and DD-11 *Implications*; T03's STOP
+conditions would otherwise forbid both). Reviewer confirmed each is exactly minimal:
+
+| File | Edit |
+|---|---|
+| `impl/LdapDirectoryService.java` | `new LDAPService()` → `this.newLdapService()`, plus the 3-line `protected` factory. **The call stayed at line 65, outside the `try` that opens at 68** — same position as before |
+| `DirectoryService.java` | One Javadoc paragraph: outcome 2 (malformed) **takes precedence over** outcome 5 (backend throws) when both apply |
+
+Reviewer verified byte-for-byte that the null/blank fail-fast, `setInternalConnection(!isProduction())`,
+the raw `found(...)` mapping, the DD-11 catch discrimination and `isWellFormed` are all intact.
+
+#### ✅ The disqualifier was met by mutation, not by argument
+
+`tasks.md` T04's disqualifier: *"a green suite that never exercised the exception path [is disqualified].
+**The contract test must be able to fail** — if every assertion passes against a deliberately broken
+stub, the test is tautological and proves nothing."*
+
+**The Implementer broke production code, observed red, and reverted with a verified zero-diff:**
+
+| Mutation applied to `LdapDirectoryService` | Observed |
+|---|---|
+| Well-formed exception branch returns `NOT_FOUND` instead of `ERROR` | `AssertionError: expected:<ERROR> but was:<NOT_FOUND>` — 1 failure, rest green |
+| `isWellFormed` check removed; catch always returns `ERROR` — **T03's original bug restored** | `AssertionError: DD-11: malformed input wins over a backend failure expected:<NOT_FOUND> but was:<ERROR>` — exactly 1 failure |
+
+**The Reviewer did not accept this on report.** It traced all 7 contract tests against
+`LdapDirectoryService`'s actual control flow and **independently derived both mutation outcomes**,
+confirming the counts match exactly ("1 failure, rest green" / "exactly 1 failure").
+
+**Consequence that matters beyond this task: DD-11 now has a proven gate.** The defect discovered at T03
+— and the 500-instead-of-a-message regression it would have caused through T10 — is now caught by a test
+that demonstrably goes red when it returns.
+
+**Assertions the two mutations did not cover, which the Reviewer checked by construction instead:**
+
+- **Fail-fast (assertions 1/2/4):** remove the null/blank guard and `findByEmail("   ")` reaches the
+  throwing stub → counter becomes 1 → `assertEquals(0, …)` fails; `findByEmail(null)` NPEs inside
+  `isWellFormed` and escapes → test errors. **Red either way.**
+- **The counter is wired to the real path** — `LdapDirectoryService` calls `searchUserByEmail` on the
+  stub, and `createFailingService()` resets the count per test.
+- **Raw fields (assertion 6):** `"JSmith"` / `"Jane"` / `"Smith"` are three **distinct** values asserted
+  with exact `assertEquals`, so a lowercasing **or a slot-swapping** mapping fails. Satisfies §6.3's
+  *"why `login = "JSmith"` specifically"*.
+
+#### ⚠️ Finding worth carrying forward: one required assertion is structurally unfailable
+
+**Assertion 10 (`assertNotNull(person.getSource())`) cannot fail.** `DirectoryPerson`'s private
+constructor already performs `Objects.requireNonNull(source, …)` (`DirectoryPerson.java:85`), so an
+instance with a null source is unconstructible. The assertion is mandated verbatim by `tasks.md` T04 and
+is harmless, but the record should be accurate:
+
+> **`DIRABS-FN-003`'s real gate is the T01 type's `requireNonNull`, not these seven assertions.**
+
+That is the stronger guarantee — enforced by the type system rather than by test coverage — but the
+coverage matrix should not read as though the tests are what secure it. *(The Reviewer attributed the
+`requireNonNull` to T02; it is in fact T01's `DirectoryPerson`. The substance is unaffected.)*
+
+#### DD-9 — reusability audited on shape, not just on absence
+
+The Leader verified mechanically that the abstract class's only `org.cgiar.ciat` occurrence is a Javadoc
+line *asserting its own absence*, with the two real imports confined to `LdapDirectoryServiceTest`. **The
+Reviewer went further and audited whether the seam *shapes* leak**, which is the question that decides
+whether child 3 inherits or rewrites:
+
+- All five seams are expressed in `DirectoryPerson`'s own vocabulary plus a `DirectorySource` hook. **No
+  leak found.** A Cognito- or CLARISA-backed provider satisfies them by stubbing its own client.
+- Two details make it *genuinely* rather than accidentally reusable: `failingServiceInvocationCount()`'s
+  Javadoc pins the per-factory-call reset semantics (the subtle part a child would get wrong), and **the
+  contract does not assume a malformed email reaches the backend** — a provider that pre-validates to
+  `NOT_FOUND` still passes, while one that pre-validates to `ERROR` fails. That is exactly the right
+  discrimination to inherit.
+- `appliesInternalConnectionFromConfigBeforeSearching` was **correctly pushed down** into the LDAP
+  subclass; `setInternalConnection` is an LDAP-only concept with no place in a provider-agnostic class.
+  The Reviewer verified the test's premise at source: `APConfig` has a public no-arg constructor with no
+  I/O and `isProduction()` returns `false` when `PRODUCTION` is null (`APConfig.java:849-855`), so the
+  expectation is grounded rather than lucky.
+
+#### 📄 Documentation drift corrected by the Leader
+
+`design.md` §6.3, `design.md` DD-9 and `tasks.md` T04 all described the contract test as having **"one
+abstract factory method."** The delivered shape has **five abstract seams** — and that is the *better*
+design, since one factory cannot express the *no-match*, *found* and *failing* backends the five §5.1
+rows require. **DD-12 already presupposed the richer shape.**
+
+Corrected at all three sites, with a revision note under DD-9. The Implementer correctly did **not** touch
+`design.md` beyond its two approved widenings — spec maintenance is the Leader's, and this is a correction
+to a *description*, not a deviation from intent.
+
+#### Checkstyle scoping finding — EB-2 costs this task nothing
+
+The Reviewer established that `configuration/marlo-checkstyle.xml` is a 9-module config at
+`severity=warning` and **the plugin does not set `includeTestSourceDirectory`** — so **test sources are
+outside Checkstyle's scope entirely.** EB-2's unrunnable gate therefore removes no coverage from a
+test-only task. Recorded because it also means a future repaired Checkstyle would still not inspect these
+files.
+
+#### Constraint sweep — all clean
+
+JUnit 4 only ✅ · **zero mocking-framework imports** ✅ (`DEC-005` respected — hand-rolled fakes) · GPL
+header on all three, matching the repo template ✅ · import layout, indent and wrapping match
+`URLShortenerTest.java`'s idiom ✅ · English only ✅ · no §3.2 protected file in the diff ✅ ·
+`DirectoryPerson` unmodified, **with no test seam or widened visibility** ✅ · exactly 3 new files under
+the test package, no stray scratch tests ✅ · `awk 'length>120'` empty ✅.
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `FN-002` *Invalid input* | Assertions 1, 2, 3 + the zero-invocation check (4) |
+| `FN-002` *Directory answers, absent* | Assertion 5 |
+| `FN-002` *Backend failure* | Assertion 7 — **and its DD-11 counterpart, 8** |
+| `FN-002` never throws / never null | Assertion 11, exercised on all 7 rows including both backend-throws rows |
+| `FN-003` | Assertion 10 — **but see the finding above: the type's `requireNonNull` is the real gate** |
+| `FN-005` *Found person* | Assertion 6, with three distinct mixed-case values |
+| `FN-005` *Not found* | Assertion 9 — `assertNull` on login/firstName/lastName, **not `""`** |
+| **DD-11** | **Assertion 8, mutation-proven** |
+| **DD-9 / `ARCH-001`** | The abstract class is provider-clean and its seams audited for leakage |
+| `NF-006` | GPL headers; style matches the repo idiom (Checkstyle out of scope for tests) |
+
+#### `ADVISORY` findings — recorded, non-gating. Two are consequential and are surfaced to the user.
+
+**1. RELIABILITY — assertion 4's counter is live only *transitively*.** It is non-vacuous today only
+because test 7's `ERROR` outcome is reachable solely via the throw in the same stub method that
+increments. **Deleting `invocationCount++` from `ThrowingLdapService` would silently make the
+zero-invocation assertions vacuous and nothing would go red.** One line closes it — a positive control
+`assertEquals(1, this.failingServiceInvocationCount())` in test 7 — which would also document the seam
+for child 3. **Not applied:** an advisory may neither gate nor widen an approved task, and this concerns
+the integrity of the spec's only executable gate, so it is **surfaced to the user** rather than absorbed
+quietly.
+
+**2. RELIABILITY — `FN-004`'s email clause is ungated anywhere in the spec.** Assertion 6 does not assert
+`getEmail()`. The Reviewer is right that this is not a T04 gate failure — T04's clause-level set names
+only `FN-002`, `FN-003` and `FN-005` *Not found* — but the consequence stands: `FN-004`'s *"must **NOT**
+lowercase … `login` or `email`"* is covered for `login` and **not for `email`**. The proposed test is
+better than a plain assertion: have the backend return a **differently-cased** email than the one looked
+up (`"Jane.Smith@cgiar.org"` for a `"jane.smith@cgiar.org"` lookup) and assert the backend's value —
+proving simultaneously that the impl reads `user.getEmail()` rather than echoing the request, **and** that
+it does not case-fold it. **Surfaced to the user.**
+
+**3. READABILITY —** `appliesInternalConnectionFromConfigBeforeSearching` proves the *value* received,
+not the *ordering* its name claims (`FN-005`: *"MUST be applied before the search"*). Either record
+`searchAlreadyCalled` when the setter fires, or rename to `…AppliesInternalConnectionFromConfig`.
+
+**4. DD-9 wording, for archive-time —** `createFailingService()`'s Javadoc says *"any backend call
+**throws**"*, which is exception-flavored wording in a provider-agnostic file that **child 3 inherits
+verbatim**. The contract only needs *"the backend call fails."*
+
+**5. RISK — the transient `testCompile` failure.** The Implementer reported, rather than hid, one
+`testCompile` failure mid-session on **pre-existing unrelated files**
+(`ProjectPage`/`ProjectPageItem`/`web.filter` symbols not found) that did not recur across four
+subsequent runs. The Reviewer corroborated it as not attributable to this diff and named the likely
+cause: `CLAUDE.md` *Concurrency* — *"a build taken beside an active agent is wrong rather than merely
+slow."* The Implementer was running builds in rapid succession while copying production files for its
+mutation testing. **Mitigation actually available:** two independent clean green runs have since been
+observed (the Implementer's final run and the Leader's confirmation run). A from-scratch `clean` run is
+**not** available — `mvn clean` on `marlo-web` would need to delete the locked `target/classes`. Recorded
+as a residual risk, watched at each subsequent task.
+
+#### Final verification result
+
+**PASS on attempt 1 — and for the first time in this run, without an "on inspection only" qualifier.**
+The suite compiles, executes, and is **demonstrably falsifiable** on its two most important assertions.
+The Reviewer's summary:
+
+> All 11 required assertions are present and genuinely falsifiable — I independently derived both
+> mutation outcomes from the control flow and they match the Implementer's report exactly, so this suite
+> is real executable evidence for `D1` and the sole DD-11 gate, **not a green tautology.**
+
+Review rounds consumed: **5 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1).
 
 ---

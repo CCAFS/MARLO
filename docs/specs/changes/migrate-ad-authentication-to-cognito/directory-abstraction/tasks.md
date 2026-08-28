@@ -188,13 +188,16 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T04 (EXEC-033) — Contract test, fake, and LDAP implementation test
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 1. **First executable evidence of the spec:** `mvn -q -pl marlo-web -am test` green (13 tests, run twice), and assertions 7-8 mutation-proven falsifiable. See `execution.md`
 - **Depends on:** T03 · **Module:** `marlo-web` (test) · **Size:** M · **Skills:** `error-handling-patterns`, `tdd`
 - **Design:** §6.3, **DD-9** · **Requirements:** `FN-002`, `FN-003`, `FN-005`, `DIRABS-NF-006`
 - **Files touched (new):** `marlo-web/src/test/java/.../security/directory/{FakeDirectoryService,DirectoryServiceContractTest,LdapDirectoryServiceTest}.java`
+- **Files touched (modified) — HITL-approved widening, 2026-08-28, see **DD-12** and DD-11 *Implications*:**
+  - `marlo-data/./security/directory/impl/LdapDirectoryService.java` — extract `protected LDAPService newLdapService()`; `findByEmail` calls `this.newLdapService()` **in the same position, still outside the `try`**. Three lines. Normally a T03 file protected by T03's STOP conditions.
+  - `marlo-data/./security/directory/DirectoryService.java` — add one sentence to the Javadoc stating that **outcome 2 (malformed) takes precedence over outcome 5 (backend throws) when both apply** (DD-11). Normally a T02 file. It lands here because the contract test encodes the same precedence, so the assertion and the prose ship together.
 - **Scope:**
   - `FakeDirectoryService`: hand-rolled, settable canned responses **plus a call recorder** (email received, invocation count). **No mocking framework** — `DEC-005` is `PENDING` and this spec deliberately does not request it (taking it would edit `marlo-parent/pom.xml` and break parallel-safety with `auth-flow`).
-  - `DirectoryServiceContractTest`: **abstract**, one abstract factory method. Encodes all five rows of design §5.1's table, the three invariants, and the no-network-call clause. **Reused verbatim by child 3's provider** — DD-9.
+  - `DirectoryServiceContractTest`: **abstract**, with **five abstract seams** (revised at T04 from "one abstract factory method"  -- one factory cannot express *no-match*, *found* and *failing*). Encodes all five rows of design §5.1's table, the three invariants, and the no-network-call clause. **Reused verbatim by child 3's provider** — DD-9.
   - `LdapDirectoryServiceTest extends DirectoryServiceContractTest`.
   - Tests live in `marlo-web/src/test` even for `marlo-data` types: `marlo-data` has **no test source root**, and creating one is out of scope (`DIRABS-NF-004`).
 - **Requirements covered — clause level:** every `FN-002` clause; `FN-003` *"**BUT** `source` must **NOT** be `null` on any path"*; `FN-005` *Not found* *"**AND IT MUST** leave `login`, `firstName`, `lastName` null rather than empty strings"*.
@@ -479,7 +482,7 @@ Three fields appear in every task and mean the same thing throughout:
   | `LDAPAuthenticator:61` | **Live** — Capability A, child 2 |
   | `LdapDirectoryService` *(new)* | **Live** — the single Capability B site, swapped in child 3 |
   | `BaseAction` | **Deleted** |
-  | `CrpUsersAction`, `ManageUsersAction` ×2, `SearchUserAction`, `GuestUsersValidator` | **Migrated** |
+  | `CrpUsersAction`, `ManageUsersAction` � --2, `SearchUserAction`, `GuestUsersValidator` | **Migrated** |
   | `ContactPersonAction` | **Eliminated** |
   | `searchUsersUtil` | Unreachable (`main()`) — child 3 |
 - **Verification:** `grep -rn "new LDAPService()\|new ADConexion" marlo-web/src marlo-data/src --include="*.java"` reconciles with the table and with T00's baseline.
@@ -505,7 +508,7 @@ T00 (baseline + drift probe)
  └── T01 (value types + exception)
       └── T02 (DirectoryService interface)
            └── T03 (LdapDirectoryService)
-                └── T04 (contract test + fake + LDAP test)   ◄── the gate for D1/D2/D3
+                └── T04 (contract test + fake + LDAP test)   � --�── the gate for D1/D2/D3
                      │
                      ├── T05 (delete BaseAction.getOutlookUser)
                      │    ├── T06 (CrpUsersAction)        ── atomic with T05, see T05 note (a)
@@ -515,7 +518,7 @@ T00 (baseline + drift probe)
                      └── T10 (center/…/ManageUsersAction)  ── independent of T05, owns the ERROR branch
                           │
                           └── T11 (isolation gate — corrected grep)
-                               └── T12 (Spring context smoke check)   ◄── the only D8 evidence
+                               └── T12 (Spring context smoke check)   � --�── the only D8 evidence
                                     └── T13 (CP2 report)
                                          └── T14 (ContactPersonAction deletions)
                                               └── T15 (ContactPersonActionTest)

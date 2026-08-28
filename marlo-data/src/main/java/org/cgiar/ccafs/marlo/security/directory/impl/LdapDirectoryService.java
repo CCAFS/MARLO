@@ -62,7 +62,7 @@ public class LdapDirectoryService implements DirectoryService {
       return DirectoryPerson.notFound(email, DirectorySource.NOT_FOUND);
     }
 
-    LDAPService service = new LDAPService();
+    LDAPService service = this.newLdapService();
     service.setInternalConnection(!this.config.isProduction());
 
     try {
@@ -79,6 +79,17 @@ public class LdapDirectoryService implements DirectoryService {
       }
       return DirectoryPerson.notFound(email, DirectorySource.NOT_FOUND);
     }
+  }
+
+  /**
+   * Factory seam (DD-12) so a test can substitute the backend without touching the mapping logic
+   * above. Overridden only by {@code LdapDirectoryServiceTest}'s test-local subclass; production
+   * always takes this default.
+   *
+   * @return a new {@link LDAPService}
+   */
+  protected LDAPService newLdapService() {
+    return new LDAPService();
   }
 
   /**
