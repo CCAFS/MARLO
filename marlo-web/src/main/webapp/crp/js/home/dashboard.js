@@ -1,7 +1,7 @@
 $(document).ready(initDashboard);
 
 function initDashboard() {
-  initClusterBanner();
+  initHomepageBanner();
   initBrowseByCategory();
 
   $('#newProject').on('click', function (e) {
@@ -21,21 +21,22 @@ function initBrowseByCategory() {
 }
 
 /**
- * Collapse/expand the "What is a Cluster?" banner. The choice is remembered so
- * a user who hides it does not have to hide it again on every page load.
+ * Collapse/expand the homepage banner. Its content is administrator-entered, so
+ * nothing here knows what the banner says. The choice is remembered so a user
+ * who hides it does not have to hide it again on every page load.
  */
-function initClusterBanner() {
-  var toggle = document.getElementById('clusterBannerToggle');
-  var banner = document.getElementById('clusterBanner');
+function initHomepageBanner() {
+  var toggle = document.getElementById('homepageBannerToggle');
+  var banner = document.getElementById('homepageBanner');
   if (!toggle || !banner) {
     return;
   }
 
-  var STORAGE_KEY = 'marlo.clusterBanner.collapsed';
+  var STORAGE_KEY = 'marlo.homepageBanner.collapsed';
   var label = toggle.querySelector('span');
 
   function render(collapsed) {
-    banner.classList.toggle('clusterBanner--collapsed', collapsed);
+    banner.classList.toggle('homepageBanner--collapsed', collapsed);
     toggle.setAttribute('aria-expanded', String(!collapsed));
     label.textContent = collapsed
       ? toggle.getAttribute('data-label-show')

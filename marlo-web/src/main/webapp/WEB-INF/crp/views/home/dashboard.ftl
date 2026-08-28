@@ -3,13 +3,13 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","cytoscape-qtip","qtip2","datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/home/dashboard.js?20260819",
+  "${baseUrlMedia}/js/home/dashboard.js?20260828",
   "${baseUrlMedia}/js/home/schedule.js?202608262",
   "${baseUrlCdn}/global/js/impactGraphic.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?202608263",
+  "${baseUrlMedia}/css/home/dashboard.css?20260828",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -36,67 +36,49 @@
     [#-- What do you want to do --]
 
   <section class="marlo-content">
-  [#-- Hide map section only when this specificity is active --]
-  [#if !action.hasSpecificities('homepage_hide_section_map')]
   [#--
-    Cluster banner. The 12 map hotspots keep project id and label together so
-    they cannot drift apart the way they did when the ids lived here and the
-    labels lived in dashboard.js. Coordinates are the percentage of the map
-    image at which each dot is centred, measured from the previous layout.
+    Homepage banner. Title, description and image are administrator-entered content, one banner per Global Unit,
+    edited under /admin -> Homepage Banner. The action hands us nothing at all when the three fields are empty, so
+    an empty banner renders no markup: clearing the fields is how an administrator hides it.
+
+    The specificity below is kept as a hard override so a Global Unit can be switched off without losing its stored
+    content. Its key still says "map" because it predates this component: the banner used to hold an interactive map
+    of Africa. Renaming the key would mean a parameters migration plus custom_parameters data movement for no
+    functional gain (ENH-HOMEPAGE-BANNER-001, ADR-4).
   --]
-  [#assign clusterHotspots = [
-    {"projectID": 102076, "label": "Senegal: Activities led by ILRI",                              "x": "11.25", "y": "31.57"},
-    {"projectID": 102088, "label": "Ethiopia: Activities led by ILRI",                             "x": "77.25", "y": "48.87"},
-    {"projectID": 102081, "label": "Ghana: Activities led by IITA",                                "x": "25.25", "y": "41.39"},
-    {"projectID": 102085, "label": "Kenya: Activities led by ILRI",                                "x": "74.25", "y": "36.71"},
-    {"projectID": 102082, "label": "Zambia: Activities led by IWMI",                               "x": "61.25", "y": "73.19"},
-    {"projectID": 102084, "label": "Theme 1: Activities led by ILRI",                              "x": "44.25", "y": "1.64"},
-    {"projectID": 102077, "label": "Theme 2: Activities led by the Alliance",                      "x": "8.75",  "y": "11.46"},
-    {"projectID": 102086, "label": "West Africa",                                                  "x": "2.75",  "y": "37.65"},
-    {"projectID": 102087, "label": "Theme 4: Activities led by Alliance",                          "x": "37.25", "y": "62.90"},
-    {"projectID": 102090, "label": "Theme 3: Gender and Social Inclusion Leader (Lead by ILRI)",   "x": "81.75", "y": "73.66"},
-    {"projectID": 102080, "label": "East and Southern Africa",                                     "x": "78.25", "y": "24.55"},
-    {"projectID": 102083, "label": "Mali: Activities led by AfricaRice",                           "x": "23.75", "y": "26.89"}
-  ]/]
-
-  <section class="clusterBanner" id="clusterBanner">
-    <div class="clusterBanner__body">
-      <div class="clusterBanner__head">
-        <svg class="clusterBanner__icon" width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.1v4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="5.6" r="1" fill="currentColor"/></svg>
-        <h2 class="clusterBanner__title">[@s.text name="dashboard.cluster.title" /]</h2>
-        <button type="button" class="clusterBanner__toggle" id="clusterBannerToggle"
-          aria-expanded="true" aria-controls="clusterBannerContent"
-          data-label-hide="[@s.text name="dashboard.cluster.hide" /]"
-          data-label-show="[@s.text name="dashboard.cluster.show" /]">
-          <span>[@s.text name="dashboard.cluster.hide" /]</span>
-          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+  [#if !action.hasSpecificities('homepage_hide_section_map') && homepageBanner??]
+  <section class="homepageBanner" id="homepageBanner">
+    <div class="homepageBanner__body">
+      <div class="homepageBanner__head">
+        <svg class="homepageBanner__icon" width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.1v4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="5.6" r="1" fill="currentColor"/></svg>
+        [#if (homepageBanner.title)?has_content]
+          <h2 class="homepageBanner__title">${homepageBanner.title}</h2>
+        [/#if]
+        [#-- Nothing to collapse without a description, so the toggle only exists when there is one. --]
+        [#if (homepageBanner.description)?has_content]
+          <button type="button" class="homepageBanner__toggle" id="homepageBannerToggle"
+            aria-expanded="true" aria-controls="homepageBannerContent"
+            data-label-hide="[@s.text name="dashboard.banner.hide" /]"
+            data-label-show="[@s.text name="dashboard.banner.show" /]">
+            <span>[@s.text name="dashboard.banner.hide" /]</span>
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        [/#if]
       </div>
 
-      <div class="clusterBanner__content" id="clusterBannerContent">
-        <p class="clusterBanner__text">[@s.text name="dashboard.cluster.description" /]</p>
-      </div>
+      [#if (homepageBanner.description)?has_content]
+        <div class="homepageBanner__content" id="homepageBannerContent">
+          <p class="homepageBanner__text">${homepageBanner.description}</p>
+        </div>
+      [/#if]
     </div>
 
-    <div class="clusterBanner__map" id="clusterBannerMap">
-      <div class="clusterMap">
-        <img src="${baseUrlCdn}/global/images/Map_africa.svg" alt="[@s.text name="dashboard.cluster.mapAlt" /]">
-        [#list clusterHotspots as hotspot]
-          [#--
-            The tooltip is a laid-out box even while hidden, and the right edge of the map panel is also the right edge
-            of the page container, so a tooltip centred on a right-side dot widened the document and put a horizontal
-            scrollbar on the page below ~1457px without ever being seen. Dots past the middle of the map anchor their
-            tooltip to the dot instead of centring it on it, which is also what keeps it visible inside the card on
-            hover. Only the right band needs it: on the left the tooltip opens over the banner text, never off-page.
-          --]
-          <a class="clusterMap__spot[#if hotspot.x?number gte 60] clusterMap__spot--tipEnd[/#if]" style="left:${hotspot.x}%;top:${hotspot.y}%"
-            href="[@s.url namespace="/clusters" action='${(crpSession)!}/description'][@s.param name='projectID']${hotspot.projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
-            target="_blank" rel="noreferrer noopener" aria-label="${hotspot.label}">
-            <span class="clusterMap__tip">${hotspot.label}</span>
-          </a>
-        [/#list]
+    [#if (homepageBanner.imageFileName)?has_content]
+      <div class="homepageBanner__image">
+        <img src="${baseUrl}/data/homepageBannerImage.do?acronym=${(crpSession)!}"
+          alt="[#if (homepageBanner.title)?has_content]${homepageBanner.title}[/#if]">
       </div>
-    </div>
+    [/#if]
   </section>
   [/#if]
 
@@ -549,8 +531,8 @@
     [#-- Shorcuts --]
     <div id="shorcuts"  class="col-md-5">
 
-        [#-- The AICCRA cluster copy now lives in the banner at the top of the
-             page (dashboard.cluster.* in the properties files). --]
+        [#-- The explanatory copy that used to sit here now lives in the homepage banner at the top of
+             the page, entered per Global Unit under /admin -> Homepage Banner. --]
         [#if !aiccra]
             [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
             <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
