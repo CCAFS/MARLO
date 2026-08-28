@@ -125,9 +125,9 @@
   [#local customName = "${name}[${index}]" /]
   [#-- Clusters(projects) that are using this activity, only to feed the informative popup below --]
   [#if template]
-    [#local relatedClusterActivities = [] /]
+    [#local clusterRelations = [] /]
   [#else]
-    [#local relatedClusterActivities = (action.getActivityTitleRelations(element.id))![] /]
+    [#local clusterRelations = (action.getActivityTitleRelations(element.id))![] /]
   [/#if]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
@@ -149,7 +149,7 @@
       </div>
     </div>
     [#-- Clusters relation popup: shows which clusters are using this activity --]
-    [#if !template][@popUps.activityTitleRelationsMacro element=element activities=relatedClusterActivities labelText=true /][/#if]
+    [#if !template][@popUps.activityTitleRelationsMacro element=element relations=clusterRelations labelText=true /][/#if]
     [#-- Hidden inputs  --]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
   </li>

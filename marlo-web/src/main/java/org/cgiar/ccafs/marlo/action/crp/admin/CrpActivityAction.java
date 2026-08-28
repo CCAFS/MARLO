@@ -20,9 +20,9 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
-import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 
@@ -31,9 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -71,6 +74,8 @@ public class CrpActivityAction extends BaseAction {
   private ActivityTitleManager activityTitleManager;
   private ActivityManager activityManager;
   private List<ActivityTitle> activities;
+  /** Clusters using each activity title, keyed by activity title id. Loaded once per request, on first use. */
+  private Map<Long, List<ActivityTitleRelation>> relationsByTitle;
 
   @Inject
   public CrpActivityAction(APConfig config, ActivityTitleManager activityTitleManager,
@@ -85,25 +90,137 @@ public class CrpActivityAction extends BaseAction {
   }
 
   /**
-   * Gets every activity linked to the given activity title, with no phase, year or status restriction. The
-   * activities are returned ordered by cluster(project), and each one carries its own cluster, phase and active
-   * flag, so the view can show which clusters are using the activity title.
+   * Gets the logical activities that are using the given activity title, one per cluster(project) and composedId,
+   * with no phase or year restriction. The whole page is resolved with a single query the first time this is called.
    * This method is read only: it reports the relation, it does not decide whether the activity title can be
    * deleted. That rule lives in BaseAction.canBeDeleted(long, String).
    * 
    * @param activityTitleID is the activity title identifier.
-   * @return a list of Activity, empty when no cluster is using the activity title.
+   * @return a list of relations ordered by cluster, empty when no cluster is using the activity title.
    */
-  public List<Activity> getActivityTitleRelations(long activityTitleID) {
-    try {
-      List<Activity> relations = activityManager.getActivitiesByActivityTitle(activityTitleID);
-      if (relations == null) {
-        return new ArrayList<>();
+  public List<ActivityTitleRelation> getActivityTitleRelations(long activityTitleID) {
+    if (relationsByTitle == null) {
+      relationsByTitle = this.loadActivityTitleRelations();
+    }
+    List<ActivityTitleRelation> relations = relationsByTitle.get(activityTitleID);
+    if (relations == null) {
+      return Collections.emptyList();
+    }
+    return relations;
+  }
+
+  /**
+   * Collapses the projected relation rows into one entry per cluster and composedId. Activities replicate forward,
+   * so the rows of a group only differ by phase: the group keeps every phase it appears in, in chronological order,
+   * plus the description and status of the phase the user is looking at.
+   * Package private and static so the grouping can be unit tested without a database.
+   * 
+   * @param rows the projected rows, ordered by cluster, composedId and phase.
+   * @param currentPhaseId the phase the user is looking at.
+   * @return the relations keyed by activity title id.
+   */
+  static Map<Long, List<ActivityTitleRelation>> groupRelations(List<Map<String, Object>> rows, long currentPhaseId) {
+    Map<Long, List<ActivityTitleRelation>> result = new LinkedHashMap<>();
+    if (rows == null) {
+      return result;
+    }
+
+    Map<String, ActivityTitleRelation> groups = new LinkedHashMap<>();
+    for (Map<String, Object> row : rows) {
+      if (row == null) {
+        continue;
       }
-      return relations;
+      Long titleId = asLong(row.get("titleId"));
+      Long clusterId = asLong(row.get("clusterId"));
+      if (titleId == null || clusterId == null) {
+        continue;
+      }
+      String composedId = asString(row.get("composedId"));
+      // Legacy records may have no composedId: treat each one as its own activity
+      String activityId = asString(row.get("activityId"));
+      String groupKey =
+        titleId + "|" + clusterId + "|" + (composedId.isEmpty() ? "activity-" + activityId : composedId);
+
+      // Space, not a dash: the label is composed again when the view lists the phases
+      String phaseLabel = (asString(row.get("phaseName")) + " " + asString(row.get("phaseYear"))).trim();
+      Long rowPhaseId = asLong(row.get("phaseId"));
+      boolean isCurrentPhase = rowPhaseId != null && rowPhaseId.longValue() == currentPhaseId;
+      String description = asString(row.get("activityDescription"));
+
+      ActivityTitleRelation relation = groups.get(groupKey);
+      if (relation == null) {
+        relation = new ActivityTitleRelation();
+        relation.setClusterId(clusterId.longValue());
+        relation.setClusterTitle(asString(row.get("clusterTitle")));
+        relation.setComposedId(composedId);
+        groups.put(groupKey, relation);
+        result.computeIfAbsent(titleId, key -> new ArrayList<>()).add(relation);
+      }
+      // Rows arrive in chronological order, so the list keeps that order
+      relation.addPhaseLabel(phaseLabel);
+      // The description of the phase being looked at wins, otherwise the latest one seen
+      if (isCurrentPhase || relation.getActivityDescription() == null
+        || relation.getActivityDescription().isEmpty()) {
+        relation.setActivityDescription(description);
+      }
+      if (isCurrentPhase) {
+        relation.setReportedInCurrentPhase(asBoolean(row.get("activityActive")));
+      }
+    }
+    return result;
+  }
+
+  private static boolean asBoolean(Object value) {
+    if (value == null) {
+      return false;
+    }
+    if (value instanceof Boolean) {
+      return ((Boolean) value).booleanValue();
+    }
+    if (value instanceof Number) {
+      return ((Number) value).intValue() != 0;
+    }
+    return "1".equals(value.toString()) || "true".equalsIgnoreCase(value.toString());
+  }
+
+  private static Long asLong(Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (value instanceof Number) {
+      return Long.valueOf(((Number) value).longValue());
+    }
+    try {
+      return Long.valueOf(value.toString().trim());
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  private static String asString(Object value) {
+    if (value == null) {
+      return "";
+    }
+    return value.toString().trim();
+  }
+
+  /**
+   * Runs the relation query for the current global unit and phase, and groups the result.
+   * 
+   * @return the relations of every activity title of the current global unit, keyed by activity title id.
+   */
+  private Map<Long, List<ActivityTitleRelation>> loadActivityTitleRelations() {
+    try {
+      GlobalUnit globalUnit = this.getCurrentGlobalUnit();
+      Phase phase = this.getActualPhase();
+      if (globalUnit == null || globalUnit.getId() == null || phase == null) {
+        return new LinkedHashMap<>();
+      }
+      return groupRelations(activityManager.getActivityTitleRelations(globalUnit.getId(), phase.getId()),
+        phase.getId().longValue());
     } catch (Exception e) {
-      LOG.error("Error getting the clusters related to the activity title " + activityTitleID, e);
-      return new ArrayList<>();
+      LOG.error("Error getting the clusters related to the activity titles", e);
+      return new LinkedHashMap<>();
     }
   }
 

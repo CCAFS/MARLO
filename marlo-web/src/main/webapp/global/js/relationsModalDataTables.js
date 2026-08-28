@@ -22,6 +22,9 @@ $(function() {
    *   <div class="relationsModalFilters" data-filter-columns="3,4" data-label-all="All"></div>
    * One select is built per listed column, offering the distinct values found in that column and labelled with the
    * column header, so no label has to be duplicated in the markup. Modals without the container are untouched.
+   * A filtered column must hold the plain value and nothing else: DataTables filters against the raw cell content,
+   * so nested markup or extra text (a badge, a counter) would split one value into several filter options. Put that
+   * kind of decoration in a cell attribute such as title instead.
    */
   function buildColumnFilters($table) {
     var $container = $table.closest('.modal-body').find('.relationsModalFilters').first();

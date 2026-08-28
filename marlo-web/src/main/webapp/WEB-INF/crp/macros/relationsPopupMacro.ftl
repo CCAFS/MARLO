@@ -457,23 +457,23 @@
 [/#macro]
 
 [#-- 
-  Activity titles (admin > activities management): informative popup that lists the clusters(projects) using an
-  activity title, with no phase, year or status restriction, so the admin can see where the activity is reported.
+  Activity titles (admin > activities management): informative popup listing the clusters(projects) that are using an
+  activity title, with no phase or year restriction, so the admin can see where the activity is reported.
   It only displays information, it does not decide whether the activity title can be deleted.
+  One row per logical activity: activities replicate forward, so the phases of a same activity are collapsed into a
+  span instead of repeating the row once per phase.
   @param element the ActivityTitle being rendered.
-  @param activities the list returned by action.getActivityTitleRelations(element.id).
+  @param relations the list returned by action.getActivityTitleRelations(element.id).
 --]
-[#macro activityTitleRelationsMacro element activities labelText=true]
-  [#if activities?has_content]
+[#macro activityTitleRelationsMacro element relations labelText=true]
+  [#if relations?has_content]
     [#local composedID = "ActivityTitle-${(element.id)!}" /]
-    [#local currentPhase = action.getActualPhase() /]
     [#local activityTitle = (element.title)!'' /]
-    [#-- Distinct clusters, only used to label the button --]
+    [#-- Distinct clusters, so the button count and the table agree on what is being counted --]
     [#local clusterIds = [] /]
-    [#list activities as activity]
-      [#local clusterId = (activity.project.id)!0 /]
-      [#if clusterId != 0 && !clusterIds?seq_contains(clusterId)]
-        [#local clusterIds = clusterIds + [clusterId] /]
+    [#list relations as relation]
+      [#if !clusterIds?seq_contains(relation.clusterId)]
+        [#local clusterIds = clusterIds + [relation.clusterId] /]
       [/#if]
     [/#list]
 
@@ -502,57 +502,72 @@
                 listed column, labelling it with that column header, so nothing has to be repeated here.
               --]
               [#assign labelAll][@s.text name="activityManagement.relations.filter.all" /][/#assign]
-              <div class="relationsModalFilters" data-filter-columns="3,4" data-label-all="${labelAll}"></div>
-              [#-- Clusters table --]
-              <table class="table table-striped table-hover activityClustersList" width="100%" data-page-length="10">
+              <div class="relationsModalFilters" data-filter-columns="1,4" data-label-all="${labelAll}"></div>
+              [#-- 
+                Clusters table. data-order and data-page-length are read natively by DataTables, which merges the
+                table data attributes over the shared init options, so the list opens grouped by cluster.
+              --]
+              <table class="table table-striped table-hover activityClustersList" width="100%"
+                data-page-length="10" data-order='[[0, "asc"]]'>
                 <thead>
                   <tr>
                     <th>[@s.text name="projectsList.projectids" /]</th>
                     <th>[@s.text name="projectsList.projectTitles" /]</th>
                     <th>[@s.text name="activityManagement.relations.column.activity" /]</th>
-                    <th>[@s.text name="activityManagement.relations.column.phase" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.phases" /]</th>
                     <th>[@s.text name="activityManagement.relations.column.status" /]</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  [#list activities as activity]
-                    [#local clusterId = (activity.project.id)!0 /]
-                    [#if clusterId != 0]
-                      [#-- Cluster name: the actual phase first, then any phase where the cluster was described --]
-                      [#local clusterName = (activity.project.getProjecInfoPhase(currentPhase).title)!'' /]
-                      [#if !clusterName?has_content]
-                        [#list (activity.project.projectInfos)![] as clusterInfo]
-                          [#if !clusterName?has_content]
-                            [#local clusterName = (clusterInfo.title)!'' /]
-                          [/#if]
-                        [/#list]
-                      [/#if]
-                      [#local activityName = (activity.title)!'' /]
-                      [#if !activityName?has_content]
-                        [#local activityName = activityTitle /]
-                      [/#if]
-                      [#local clusterUrl][@s.url namespace="/clusters" action="${(crpSession)!}/activities"][@s.param name='projectID']${clusterId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-                      <tr>
-                        <th scope="row">C${clusterId?c}</th>
-                        <td>[#if clusterName?has_content]${clusterName}[#else][@s.text name="projectsList.title.none" /][/#if]</td>
-                        <td>[#if (activity.composeID)?has_content]<strong>${activity.composeID}</strong> - [/#if]${activityName}</td>
-                        <td>${(activity.phase.composedName)!'-'}</td>
-                        [#-- 
-                          Plain text on purpose: this column is filtered, and DataTables filters against the raw cell
-                          content, so any markup here would break an exact match. The badge look comes from the class.
-                        --]
-                        [#if (activity.active)!false]
-                          [#local statusClass = "is-reported" /]
-                          [#assign statusLabel][@s.text name="activityManagement.relations.status.reported" /][/#assign]
-                        [#else]
-                          [#local statusClass = "is-removed" /]
-                          [#assign statusLabel][@s.text name="activityManagement.relations.status.removed" /][/#assign]
-                        [/#if]
-                        <td class="relationsStatus ${statusClass}">${statusLabel}</td>
-                        <td><a href="${clusterUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a></td>
-                      </tr>
+                  [#list relations as relation]
+                    [#local clusterUrl][@s.url namespace="/clusters" action="${(crpSession)!}/activities"][@s.param name='projectID']${relation.clusterId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#-- 
+                      The activity own title is a copy of the activity title for AICCRA, so showing it would just
+                      repeat the modal header. The description is what the cluster actually reported.
+                    --]
+                    [#local description = (relation.activityDescription)!'' /]
+                    [#if description?length > 160]
+                      [#local description = description?substring(0, 160) + "..." /]
                     [/#if]
+                    [#if relation.reportedInCurrentPhase]
+                      [#local statusClass = "is-reported" /]
+                      [#assign statusLabel][@s.text name="activityManagement.relations.status.reported" /][/#assign]
+                    [#else]
+                      [#local statusClass = "is-removed" /]
+                      [#assign statusLabel][@s.text name="activityManagement.relations.status.removed" /][/#assign]
+                    [/#if]
+                    <tr>
+                      <th scope="row">C${relation.clusterId?c}</th>
+                      [#-- 
+                        Filtered column: plain text only, so the select offers one option per cluster.
+                      --]
+                      <td>[#if (relation.clusterTitle)?has_content]${relation.clusterTitle}[#else][@s.text name="projectsList.title.none" /][/#if]</td>
+                      <td>
+                        [#if (relation.composedId)?has_content]<strong>${relation.composedId}</strong>[/#if]
+                        [#if description?has_content]<br /><span class="activityDescriptionText">${description}</span>[/#if]
+                      </td>
+                      [#-- 
+                        Every phase the activity lives in, listed explicitly so gaps are visible. Not a filtered
+                        column: each combination would be its own filter option. Long lists are trimmed and the
+                        full list stays in the tooltip.
+                      --]
+                      [#local shownPhases = relation.phaseLabels /]
+                      [#local hiddenPhases = 0 /]
+                      [#if shownPhases?size > 4]
+                        [#local hiddenPhases = shownPhases?size - 4 /]
+                        [#local shownPhases = shownPhases[0..3] /]
+                      [/#if]
+                      <td title="${relation.phaseLabels?join(', ')}">
+                        ${shownPhases?join(', ')}[#if hiddenPhases > 0] <span class="phasesMore">+${hiddenPhases} [@s.text name="activityManagement.relations.phasesMore" /]</span>[/#if]
+                      </td>
+                      [#-- 
+                        Plain text on purpose: this column is filtered, and DataTables filters against the raw cell
+                        content, so any markup here would break an exact match.
+                      --]
+                      <td class="relationsStatus ${statusClass}">${statusLabel}</td>
+                      <td><a href="${clusterUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a></td>
+                    </tr>
                   [/#list]
                 </tbody>
               </table>
