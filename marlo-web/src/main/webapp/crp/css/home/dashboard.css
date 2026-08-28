@@ -86,13 +86,13 @@ div#impactGraphic-fullscreen {
     width: 100%;
     height: 100%;
 }
-  /*************** Cluster banner ********************/
+  /*************** Homepage banner ********************/
   /* Replaces .sectionMap: the full-bleed blue band with the wave divider is
-     now a card. The 12 map hotspots are kept, but positioned as a percentage
-     of the map image instead of fixed pixel offsets, so a single set of
-     coordinates works at every width. */
+     now a card. Title, description and image are administrator-entered per
+     Global Unit, so nothing in here may assume a particular image, aspect
+     ratio or copy length. */
 
-  .clusterBanner {
+  .homepageBanner {
     display: flex;
     align-items: stretch;
     background: var(--marlo-brand-tint);
@@ -104,7 +104,7 @@ div#impactGraphic-fullscreen {
     overflow: visible;
   }
 
-  .clusterBanner__body {
+  .homepageBanner__body {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -113,24 +113,24 @@ div#impactGraphic-fullscreen {
     padding: 16px 18px 16px 20px;
   }
 
-  .clusterBanner__head {
+  .homepageBanner__head {
     display: flex;
     align-items: center;
     gap: 9px;
   }
 
-  .clusterBanner__icon {
+  .homepageBanner__icon {
     flex: none;
     color: var(--marlo-brand-dark);
   }
 
-  .clusterBanner__title {
+  .homepageBanner__title {
     margin: 0;
     color: var(--marlo-brand-dark);
     font: 600 18px/1.3 var(--marlo-font-sans);
   }
 
-  .clusterBanner__toggle {
+  .homepageBanner__toggle {
     margin-left: auto;
     display: flex;
     align-items: center;
@@ -145,25 +145,25 @@ div#impactGraphic-fullscreen {
     cursor: pointer;
   }
 
-  .clusterBanner__toggle:hover {
+  .homepageBanner__toggle:hover {
     background: var(--marlo-brand-tint-hover);
   }
 
-  .clusterBanner__toggle svg {
+  .homepageBanner__toggle svg {
     transition: transform 0.15s ease;
   }
 
-  .clusterBanner--collapsed .clusterBanner__toggle svg {
+  .homepageBanner--collapsed .homepageBanner__toggle svg {
     transform: rotate(180deg);
   }
 
-  .clusterBanner__content {
+  .homepageBanner__content {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  .clusterBanner__text {
+  .homepageBanner__text {
     margin: 0;
     max-width: 900px;
     color: var(--marlo-ink);
@@ -172,7 +172,7 @@ div#impactGraphic-fullscreen {
     text-wrap: pretty;
   }
 
-  .clusterBanner__map {
+  .homepageBanner__image {
     flex: none;
     display: flex;
     align-items: center;
@@ -184,99 +184,37 @@ div#impactGraphic-fullscreen {
     background: #0E79A4;
   }
 
-  .clusterBanner--collapsed .clusterBanner__content, .clusterBanner--collapsed .clusterBanner__map {
+  .homepageBanner--collapsed .homepageBanner__content, .homepageBanner--collapsed .homepageBanner__image {
     display: none;
   }
 
-  /* Hugs the image exactly, so hotspot percentages resolve against the map. */
-  .clusterMap {
-    position: relative;
-    display: inline-block;
-    line-height: 0;
-  }
-
-  /* Map_africa.svg declares only a viewBox, no width/height, so it has no
-     intrinsic size — one axis must be given explicitly or the image collapses.
-     aspect-ratio pins the other axis to the viewBox proportions. */
-  .clusterMap img {
+  /* The uploaded image can be a PNG, a JPEG or an SVG, and an SVG that declares only a viewBox has no
+     intrinsic size — one axis has to be given explicitly or the image collapses. Fixing the height and
+     letting the width follow keeps every image at the same visual weight and preserves its own ratio. */
+  .homepageBanner__image img {
     display: block;
     height: 190px;
     width: auto;
     max-width: 100%;
-    aspect-ratio: 197.24 / 210.88;
-  }
-
-  .clusterMap__spot {
-    position: absolute;
-    width: 9px;
-    height: 9px;
-    /* left/top are the centre of the hotspot; pull back by half the dot. */
-    margin: -4.5px 0 0 -4.5px;
-    border-radius: 50%;
-    background-color: #b3b3b3;
-    cursor: pointer;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .clusterMap__spot:hover, .clusterMap__spot:focus-visible {
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
-    outline: none;
-  }
-
-  .clusterMap__tip {
-    position: absolute;
-    bottom: calc(100% + 9px);
-    left: 50%;
-    z-index: 5;
-    width: max-content;
-    max-width: 200px;
-    padding: 6px 9px;
-    transform: translateX(-50%);
-    border-radius: var(--marlo-radius-sm);
-    background: var(--marlo-surface);
-    box-shadow: 0 6px 18px rgba(31, 42, 55, 0.25);
-    color: var(--marlo-ink);
-    font: 500 12px/1.35 var(--marlo-font-sans);
-    text-align: left;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-  }
-
-  .clusterMap__spot:hover .clusterMap__tip, .clusterMap__spot:focus-visible .clusterMap__tip {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  /* Edge collision. `visibility: hidden` still lays the box out, so a tooltip that spills past the map contributes to
-     the document's scrollable width whether or not anyone hovers it — and the panel's right edge is the container's,
-     so the spill lands outside the page. Right-band dots (the modifier is assigned in dashboard.ftl from the same
-     x that positions the dot) end their tooltip at the dot rather than centring it on it. */
-  .clusterMap__spot--tipEnd .clusterMap__tip {
-    left: auto;
-    right: 0;
-    transform: none;
   }
 
   @media (max-width: 1100px){
-    .clusterBanner__map {
+    .homepageBanner__image {
       width: 190px;
       padding: 12px;
     }
 
-    .clusterMap img {
+    .homepageBanner__image img {
       height: 150px;
     }
   }
 
   @media (max-width: 860px){
-    .clusterBanner {
+    .homepageBanner {
       flex-direction: column;
     }
 
-    .clusterBanner__map {
+    .homepageBanner__image {
       width: 100%;
       border-left: 0;
       border-top: 1px solid #D5E8F1;
