@@ -368,9 +368,13 @@ local MySQL 8 `aiccradb1`, uploads at `/Users/kevincollazos/marlo-uploads`).
   `image/png`.
 - FN-007 — ticking remove-image set the column to NULL, emptied the folder, returned the route to a
   302, and left the title and description unchanged.
-- FN-004 in situ — clearing all three fields removed the banner from `crpDashboard.do` entirely:
-  `getElementById('homepageBanner')` null, zero `[class*=homepageBanner]` elements, and the Schedule
-  card became the first section.
+- FN-004 in situ, **with a correction** — an empty banner does render nothing on `crpDashboard.do`:
+  `getElementById('homepageBanner')` null, zero `[class*=homepageBanner]` elements, the Schedule card
+  first. But the log shows the session had been switched to the `AICCRA_III` Global Unit at that
+  moment (a Global Unit switch made in the browser, not by the save), so what was observed was a
+  *newly created empty row* for `AICCRA_III`, not AICCRA's populated row being cleared. The
+  "empty means no markup" half is verified; "clearing a populated banner hides it" is **not**, and is
+  listed below.
 - T09, T10 in situ — with all three fields set, the real dashboard renders the title, the
   517-character description, the toggle and the image panel; `alt` equals the title; the image loads
   at 178x190; `aria-controls` matches the content id; zero `clusterBanner`/`clusterMap` elements; no
@@ -379,6 +383,24 @@ local MySQL 8 `aiccradb1`, uploads at `/Users/kevincollazos/marlo-uploads`).
 
 The environment was left in the intended end state: the seeded title and description restored and
 `Map_africa.svg` uploaded as the banner image.
+
+**Defect found during that pass, and fixed**
+
+That stray `AICCRA_III` row is not just an artefact of a Global Unit switch — it exposed a real bug in
+`HomepageBannerManagementAction.save()`, which persisted unconditionally. A Global Unit with no banner
+whose administrator merely opened the section and pressed save got an all-NULL row inserted. Harmless
+to render (`isEmpty()` treats it as absent, so no banner appears) but junk data, one row per Global
+Unit anybody visits.
+
+Fixed by skipping the insert when the row is new *and* the incoming content is empty: an absent row and
+an all-empty row mean the same thing to the homepage. An existing row is still updated, so clearing the
+three fields on a populated banner still empties it rather than being silently ignored.
+
+`HomepageBannerTest` now covers `isEmpty()` — the predicate both the fix and the homepage condition
+lean on — including whitespace-only input. Those six tests passed on first run: they are characterisation
+coverage of an existing method, not a red-green cycle, and are recorded as such rather than as evidence
+that the fix works. The action-level wiring has no unit test, because the repository has no Action test
+harness; it needs the manual case listed below.
 
 **Still not verified**
 
@@ -390,6 +412,11 @@ The environment was left in the intended end state: the seeded title and descrip
   `custom_parameters` row for that key, and creating one is a database write that was out of scope
   for this pass. The FTL condition is unchanged from the code that shipped it, but that is an
   argument, not a verification.
+- FN-004 proper: clearing the three fields on a Global Unit whose banner is populated, and confirming
+  the row is emptied rather than skipped.
+- The empty-insert fix end to end: on a Global Unit with no row, save the section with nothing filled
+  in and confirm no row is inserted. This needs the leftover `AICCRA_III` row deleted first, since a
+  row already exists there.
 
 ## 4. Dependency Graph
 

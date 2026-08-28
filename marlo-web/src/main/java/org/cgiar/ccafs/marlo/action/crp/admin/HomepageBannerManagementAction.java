@@ -129,9 +129,16 @@ public class HomepageBannerManagementAction extends BaseAction {
     // unusable the administrator must still keep the text they typed, with an explicit error explaining the rest.
     this.applyImageChange(bannerToSave, globalUnit.getAcronym());
 
-    bannerToSave.setModifiedBy(this.getCurrentUser());
-    bannerToSave.setModificationJustification("");
-    homepageBannerManager.saveHomepageBanner(bannerToSave);
+    // A Global Unit that never had a banner and is saved with nothing in it needs no row at all: an absent row and an
+    // all-empty row mean exactly the same thing to the homepage, so inserting one would leave a junk row behind for
+    // every administrator who opens this section and presses save without typing anything.
+    if (isNew && bannerToSave.isEmpty()) {
+      LOG.debug("homepageBannerManagement: nothing to store for {}, no row inserted", globalUnit.getAcronym());
+    } else {
+      bannerToSave.setModifiedBy(this.getCurrentUser());
+      bannerToSave.setModificationJustification("");
+      homepageBannerManager.saveHomepageBanner(bannerToSave);
+    }
 
     if (this.getUrl() == null || this.getUrl().isEmpty()) {
       if (!this.getActionErrors().isEmpty()) {
