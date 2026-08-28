@@ -455,3 +455,114 @@
 
   </div>
 [/#macro]
+
+[#-- 
+  Activity titles (admin > activities management): informative popup that lists the clusters(projects) using an
+  activity title, with no phase, year or status restriction, so the admin can see where the activity is reported.
+  It only displays information, it does not decide whether the activity title can be deleted.
+  @param element the ActivityTitle being rendered.
+  @param activities the list returned by action.getActivityTitleRelations(element.id).
+--]
+[#macro activityTitleRelationsMacro element activities labelText=true]
+  [#if activities?has_content]
+    [#local composedID = "ActivityTitle-${(element.id)!}" /]
+    [#local currentPhase = action.getActualPhase() /]
+    [#local activityTitle = (element.title)!'' /]
+    [#-- Distinct clusters, only used to label the button --]
+    [#local clusterIds = [] /]
+    [#list activities as activity]
+      [#local clusterId = (activity.project.id)!0 /]
+      [#if clusterId != 0 && !clusterIds?seq_contains(clusterId)]
+        [#local clusterIds = clusterIds + [clusterId] /]
+      [/#if]
+    [/#list]
+
+    <div id="${composedID}" class="form-group elementRelations ActivityTitle">
+      [#-- Button --]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-clusters-${composedID}">
+        <span class="icon-20 project"></span> <strong>${clusterIds?size}</strong> [#if labelText][@s.text name="activityManagement.relations.button" /][/#if]
+      </button>
+
+      [#-- Modal --]
+      <div class="modal fade" id="modal-clusters-${composedID}" tabindex="-1" role="dialog" aria-labelledby="label-clusters-${composedID}">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="label-clusters-${composedID}">
+                [@s.text name="activityManagement.relations.title" /]
+                <br />
+                <small>${activityTitle}</small>
+              </h4>
+            </div>
+            <div class="modal-body">
+              <p class="infoText">[@s.text name="activityManagement.relations.help" /]</p>
+              [#-- 
+                Per column filters. relationsModalDataTables.js reads data-filter-columns and builds one select per
+                listed column, labelling it with that column header, so nothing has to be repeated here.
+              --]
+              [#assign labelAll][@s.text name="activityManagement.relations.filter.all" /][/#assign]
+              <div class="relationsModalFilters" data-filter-columns="3,4" data-label-all="${labelAll}"></div>
+              [#-- Clusters table --]
+              <table class="table table-striped table-hover activityClustersList" width="100%" data-page-length="10">
+                <thead>
+                  <tr>
+                    <th>[@s.text name="projectsList.projectids" /]</th>
+                    <th>[@s.text name="projectsList.projectTitles" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.activity" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.phase" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.status" /]</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list activities as activity]
+                    [#local clusterId = (activity.project.id)!0 /]
+                    [#if clusterId != 0]
+                      [#-- Cluster name: the actual phase first, then any phase where the cluster was described --]
+                      [#local clusterName = (activity.project.getProjecInfoPhase(currentPhase).title)!'' /]
+                      [#if !clusterName?has_content]
+                        [#list (activity.project.projectInfos)![] as clusterInfo]
+                          [#if !clusterName?has_content]
+                            [#local clusterName = (clusterInfo.title)!'' /]
+                          [/#if]
+                        [/#list]
+                      [/#if]
+                      [#local activityName = (activity.title)!'' /]
+                      [#if !activityName?has_content]
+                        [#local activityName = activityTitle /]
+                      [/#if]
+                      [#local clusterUrl][@s.url namespace="/clusters" action="${(crpSession)!}/activities"][@s.param name='projectID']${clusterId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                      <tr>
+                        <th scope="row">C${clusterId?c}</th>
+                        <td>[#if clusterName?has_content]${clusterName}[#else][@s.text name="projectsList.title.none" /][/#if]</td>
+                        <td>[#if (activity.composeID)?has_content]<strong>${activity.composeID}</strong> - [/#if]${activityName}</td>
+                        <td>${(activity.phase.composedName)!'-'}</td>
+                        [#-- 
+                          Plain text on purpose: this column is filtered, and DataTables filters against the raw cell
+                          content, so any markup here would break an exact match. The badge look comes from the class.
+                        --]
+                        [#if (activity.active)!false]
+                          [#local statusClass = "is-reported" /]
+                          [#assign statusLabel][@s.text name="activityManagement.relations.status.reported" /][/#assign]
+                        [#else]
+                          [#local statusClass = "is-removed" /]
+                          [#assign statusLabel][@s.text name="activityManagement.relations.status.removed" /][/#assign]
+                        [/#if]
+                        <td class="relationsStatus ${statusClass}">${statusLabel}</td>
+                        <td><a href="${clusterUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a></td>
+                      </tr>
+                    [/#if]
+                  [/#list]
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">[@s.text name="form.buttons.close" /]</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  [/#if]
+[/#macro]

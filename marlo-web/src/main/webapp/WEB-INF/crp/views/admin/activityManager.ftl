@@ -4,8 +4,15 @@
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js", 
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js",
+  "${baseUrlCdn}/global/js/relationsModalDataTables.js?20260828",
   "${baseUrlMedia}/js/admin/activity.js" ,
   "${baseUrlCdn}/global/js/fieldsValidation.js"
+  ] 
+/]
+[#assign customCSS = [
+  "${baseUrlMedia}/css/admin/relationsModalTables.css?20260828",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] 
 /]
 [#assign currentSection = "admin" /]
@@ -18,6 +25,8 @@
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
+
+[#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 
 [#assign isCenter = (isCenterGlobalUnit)!false /]
 
@@ -114,6 +123,12 @@
 
 [#macro activityItem2 element index name template=false]
   [#local customName = "${name}[${index}]" /]
+  [#-- Clusters(projects) that are using this activity, only to feed the informative popup below --]
+  [#if template]
+    [#local relatedClusterActivities = [] /]
+  [#else]
+    [#local relatedClusterActivities = (action.getActivityTitleRelations(element.id))![] /]
+  [/#if]
   <li id="program-${template?string('template',index)}" class="program borderBox" style="display:${template?string('none','block')}">
     [#-- Remove Button  --]
     [#if editable]
@@ -133,6 +148,8 @@
         <div class="col-sm-9">[@customForm.input name="${customName}.title" type="text"  i18nkey="activityManagement.inputName" placeholder="activityManagement.activity.placeholder" className="title" required=true editable=editable /]</div>
       </div>
     </div>
+    [#-- Clusters relation popup: shows which clusters are using this activity --]
+    [#if !template][@popUps.activityTitleRelationsMacro element=element activities=relatedClusterActivities labelText=true /][/#if]
     [#-- Hidden inputs  --]
     <input class="id" type="hidden" name="${customName}.id" value="${(element.id)!}"/>
   </li>

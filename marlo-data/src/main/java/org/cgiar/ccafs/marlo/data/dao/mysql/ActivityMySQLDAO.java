@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,26 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
       return list;
     }
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<Activity> getActivitiesByActivityTitle(long activityTitleId) {
+    StringBuilder query = new StringBuilder();
+    query.append("select a.id as activityId from activities a");
+    query.append(" where a.title_id = " + activityTitleId);
+    query.append(" order by a.project_id asc, a.id asc");
+
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+    List<Activity> activities = new ArrayList<>();
+    if (list != null) {
+      for (Map<String, Object> map : list) {
+        Activity activity = this.find(Long.parseLong(map.get("activityId").toString()));
+        if (activity != null) {
+          activities.add(activity);
+        }
+      }
+    }
+    return activities;
   }
 
   @Override

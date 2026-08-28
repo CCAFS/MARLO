@@ -66,6 +66,15 @@ public interface ActivityManager {
   public List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
 
   /**
+   * This method gets every activity linked to a given activity title, with no phase, year or status restriction, so
+   * the caller can report which clusters(projects) are using the activity title.
+   * 
+   * @param activityTitleId is the activity title identifier.
+   * @return a list from Activity ordered by cluster, empty if no exist records
+   */
+  public List<Activity> getActivitiesByActivityTitle(long activityTitleId);
+
+  /**
    * This method gets activities by a given activity composedID and phase.
    * 
    * @param composedID is the composed identifier.

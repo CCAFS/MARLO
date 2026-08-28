@@ -18,7 +18,9 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.ActivityTitleManager;
+import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.ActivityTitle;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -36,10 +38,15 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class CrpActivityAction extends BaseAction {
 
   private static final long serialVersionUID = 3355662668874414548L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(CrpActivityAction.class);
 
 
   /**
@@ -62,16 +69,42 @@ public class CrpActivityAction extends BaseAction {
 
   // GlobalUnit Manager
   private ActivityTitleManager activityTitleManager;
+  private ActivityManager activityManager;
   private List<ActivityTitle> activities;
 
   @Inject
-  public CrpActivityAction(APConfig config, ActivityTitleManager activityTitleManager) {
+  public CrpActivityAction(APConfig config, ActivityTitleManager activityTitleManager,
+    ActivityManager activityManager) {
     super(config);
     this.activityTitleManager = activityTitleManager;
+    this.activityManager = activityManager;
   }
 
   public List<ActivityTitle> getActivities() {
     return activities;
+  }
+
+  /**
+   * Gets every activity linked to the given activity title, with no phase, year or status restriction. The
+   * activities are returned ordered by cluster(project), and each one carries its own cluster, phase and active
+   * flag, so the view can show which clusters are using the activity title.
+   * This method is read only: it reports the relation, it does not decide whether the activity title can be
+   * deleted. That rule lives in BaseAction.canBeDeleted(long, String).
+   * 
+   * @param activityTitleID is the activity title identifier.
+   * @return a list of Activity, empty when no cluster is using the activity title.
+   */
+  public List<Activity> getActivityTitleRelations(long activityTitleID) {
+    try {
+      List<Activity> relations = activityManager.getActivitiesByActivityTitle(activityTitleID);
+      if (relations == null) {
+        return new ArrayList<>();
+      }
+      return relations;
+    } catch (Exception e) {
+      LOG.error("Error getting the clusters related to the activity title " + activityTitleID, e);
+      return new ArrayList<>();
+    }
   }
 
   @Override
