@@ -438,27 +438,24 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
    * This is required by Hibernate listeners (AuditColumnHibernateListener) before save operations.
    */
   private void ensureAuditLogContext() {
-    try {
-      AuditLogContextProvider.getAuditLogContext();
-      // Context already exists, nothing to do
-    } catch (RuntimeException e) {
-      // Context doesn't exist, create a minimal one
-      AuditLogContext context = new AuditLogContext();
-      // Try to get userId from Shiro if available
-      try {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject != null && subject.getPrincipal() != null) {
-          Long userId = (Long) subject.getPrincipal();
-          context.setCurrentUserId(userId);
-          LOG.debug("Set userId {} from Shiro in AuditLogContext", userId);
-        }
-      } catch (Exception ex) {
-        // Shiro not available, use default userId or leave null
-        LOG.debug("Could not get userId from Shiro: {}", ex.getMessage());
-      }
-      AuditLogContextProvider.push(context);
-      LOG.debug("Created minimal AuditLogContext for save operation");
+    if (AuditLogContextProvider.hasAuditLogContext()) {
+      return;
     }
+    AuditLogContext context = new AuditLogContext();
+    // Try to get userId from Shiro if available
+    try {
+      Subject subject = SecurityUtils.getSubject();
+      if (subject != null && subject.getPrincipal() != null) {
+        Long userId = (Long) subject.getPrincipal();
+        context.setCurrentUserId(userId);
+        LOG.debug("Set userId {} from Shiro in AuditLogContext", userId);
+      }
+    } catch (Exception e) {
+      // Shiro not available, use default userId or leave null
+      LOG.debug("Could not get userId from Shiro: {}", e.getMessage());
+    }
+    AuditLogContextProvider.push(context);
+    LOG.debug("Created minimal AuditLogContext for save operation");
   }
 
   /**
