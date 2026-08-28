@@ -1,9 +1,9 @@
 # Directory Abstraction — Tasks
 
 **Spec ID:** `CHG-COGNITO-DIRABS-001`
-**Status:** Draft — awaiting approval
+**Status:** **Approved** — 2026-08-28, approved by the user acting as Tech lead at the `/akili-execute` gate
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-08-28
 **Implements design:** [`design.md`](./design.md) · **Requirements:** [`requirements.md`](./requirements.md) · **Review:** [`judgment.md`](./judgment.md)
 **Parent:** [`../family.md`](../family.md) child 1 · **Runbook:** [`../analysis/adauth-retirement-execution-plan.md`](../analysis/adauth-retirement-execution-plan.md) CP2–CP3
 **Branching:** working branch `staging-cognito-impl`. **Target merge:** `staging` (then `main` by merge only, per `CLAUDE.md` Hard rule 9).
@@ -39,12 +39,12 @@
 
 ## 2. Pre-flight Checklist
 
-- [ ] `requirements.md` and `design.md` approved by the Tech lead.
-- [ ] `DIRABS-OQ-4` answered (DEV-2 — deleting `getOutlookUser` rather than rewiring it).
-- [ ] `DIRABS-OQ-5` answered (the `getLogin()` NPE is **preserved**, not "fixed").
-- [ ] `git status --short` is clean, or every pre-existing change is recorded and left alone (runbook step **S3** — *"the one most likely to be skipped and the one that causes the worst damage"*).
-- [ ] Working branch is `staging-cognito-impl`.
-- [ ] `DIRABS-T00` complete (baseline + drift probe).
+- [x] `requirements.md` and `design.md` approved by the Tech lead. — **2026-08-28**, user acting as Tech lead at the `/akili-execute` gate.
+- [x] `DIRABS-OQ-4` answered (DEV-2 — deleting `getOutlookUser` rather than rewiring it). — **approved**; closed by the approval above.
+- [x] `DIRABS-OQ-5` answered (the `getLogin()` NPE is **preserved**, not "fixed"). — **confirmed**; a null guard added at `.toLowerCase()` is a defect, not a hardening.
+- [x] `git status --short` is clean, or every pre-existing change is recorded and left alone (runbook step **S3** — *"the one most likely to be skipped and the one that causes the worst damage"*).
+- [x] Working branch is `staging-cognito-impl`.
+- [x] `DIRABS-T00` complete (baseline + drift probe). — **zero drift**; evidence in `execution.md` §2.
 
 ---
 
@@ -91,6 +91,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T00 (EXEC-001 … EXEC-006) — Baseline and drift probe
 
+- **Status:** `[x]` — PASS 2026-08-28, Leader-inline (read-only, no diff). Zero drift; see `execution.md` §2
 - **Depends on:** none · **Module:** none (read-only) · **Size:** S
 - **Requirements covered:** none directly — it is the precondition that makes every later line reference trustworthy.
 - **Scope:** record the Java 17 toolchain; capture the baseline commit; run the **drift probe** against every `file:line` this spec cites; record the runtime `adauth` call-site inventory that `DIRABS-T16` reconciles against.
@@ -110,6 +111,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T01 (EXEC-030) — Value types: `DirectoryPerson`, `DirectorySource`, `DirectoryLookupException`
 
+- **Status:** `[x]` — PASS 2026-08-28, attempt 1, Reviewer PASS. Compile + checkstyle gates unavailable (EB-1, EB-2); see `execution.md`
 - **Depends on:** T00 · **Module:** `marlo-data` · **Size:** S · **Skills:** —
 - **Design:** §4.1, §4.2, §6.1, **DD-3**, **DD-3a**, **DD-6**
 - **Requirements covered:**
@@ -135,6 +137,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T02 (EXEC-031) — `DirectoryService` interface
 
+- **Status:** `[ ]`
 - **Depends on:** T01 · **Module:** `marlo-data` · **Size:** S · **Skills:** `error-handling-patterns`
 - **Design:** §5.1, §6.1 · **Requirements:** `DIRABS-FN-001`, `DIRABS-FN-002`, `DIRABS-FN-003`
 - **Files touched (new):** `security/directory/DirectoryService.java`
@@ -155,6 +158,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T03 (EXEC-032) — `LdapDirectoryService`
 
+- **Status:** `[ ]`
 - **Depends on:** T02 · **Module:** `marlo-data` · **Size:** M · **Skills:** `error-handling-patterns`
 - **Design:** §4.3, §6.1, **DD-3**, **DD-4** · **Requirements:** `DIRABS-FN-005`, `FN-004`, `FN-002`, `FN-003`
 - **Files touched (new):** `security/directory/impl/LdapDirectoryService.java`
@@ -183,6 +187,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T04 (EXEC-033) — Contract test, fake, and LDAP implementation test
 
+- **Status:** `[ ]`
 - **Depends on:** T03 · **Module:** `marlo-web` (test) · **Size:** M · **Skills:** `error-handling-patterns`, `tdd`
 - **Design:** §6.3, **DD-9** · **Requirements:** `FN-002`, `FN-003`, `FN-005`, `DIRABS-NF-006`
 - **Files touched (new):** `marlo-web/src/test/java/.../security/directory/{FakeDirectoryService,DirectoryServiceContractTest,LdapDirectoryServiceTest}.java`
@@ -215,6 +220,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T05 (EXEC-034) — Delete `BaseAction.getOutlookUser` *(DD-2 — deviates from the runbook)*
 
+- **Status:** `[ ]`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** S
 - **Design:** **DD-2**, §10.0 **C-1** · **Requirements:** `DIRABS-FN-007`
 - **Files touched:** `action/BaseAction.java` — **deletions only**
@@ -244,6 +250,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T06 (EXEC-035) — Migrate `CrpUsersAction`
 
+- **Status:** `[ ]`
 - **Depends on:** T04, T05 · **Module:** `marlo-web` · **Size:** M
 - **Design:** §4.3, §6.2, **DD-4** · **Requirements:** `FN-001`, `FN-004`, `FN-006` *CrpUsersAction*
 - **Files touched:** `action/crp/admin/CrpUsersAction.java` · `marlo-web/src/test/java/.../CrpUsersActionDirectoryTest.java` *(new)*
@@ -266,6 +273,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T07 (EXEC-036) — Migrate `json/global/ManageUsersAction`
 
+- **Status:** `[ ]`
 - **Depends on:** T04, T05 · **Module:** `marlo-web` · **Size:** M
 - **Requirements:** `FN-001`, `FN-004`, `FN-006` *json/global/ManageUsersAction*
 - **Files touched:** `action/json/global/ManageUsersAction.java` · `.../ManageUsersActionDirectoryTest.java` *(new)*
@@ -282,6 +290,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T08 (EXEC-037) — Migrate `GuestUsersValidator`
 
+- **Status:** `[ ]`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M
 - **Design:** §6.2, **DD-8**, §10.0 **C-3** · **Requirements:** `FN-001`, `FN-006` *GuestUsersValidator*
 - **Files touched:** `validation/superadmin/GuestUsersValidator.java` · `.../GuestUsersValidatorDirectoryTest.java` *(new)*
@@ -301,6 +310,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T09 (EXEC-038) — Migrate `SearchUserAction`
 
+- **Status:** `[ ]`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M
 - **Requirements:** `FN-001`, `FN-004`, `FN-006` *SearchUserAction*
 - **Files touched:** `action/json/global/SearchUserAction.java` · `.../SearchUserActionDirectoryTest.java` *(new)*
@@ -319,6 +329,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T10 (EXEC-039) — Migrate `center/json/global/ManageUsersAction` *(the `ERROR` branch)*
 
+- **Status:** `[ ]`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M · **Skills:** `error-handling-patterns`
 - **Design:** §5.2, §6.2, **DD-3**, **DD-3a** · **Requirements:** `FN-001`, `FN-002` *A caller that must not silently degrade*, `FN-006` *center/json/global/ManageUsersAction*
 - **Files touched:** `action/center/json/global/ManageUsersAction.java` · `.../CenterManageUsersActionDirectoryTest.java` *(new)*
@@ -344,6 +355,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T11 (EXEC-040) — Isolation gate *(corrected pattern)*
 
+- **Status:** `[ ]`
 - **Depends on:** T05–T10 · **Module:** none (read-only) · **Size:** S
 - **Requirements:** `DIRABS-NF-002`, `DIRABS-FN-009` · **Review:** `judgment.md` **JD-1**
 - **Scope:** prove `marlo-web` business code no longer knows about `adauth` types.
@@ -375,6 +387,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T12 — Spring context smoke check *(spec-added; no `EXEC-` equivalent)*
 
+- **Status:** `[ ]`
 - **Depends on:** T11 · **Module:** none · **Size:** S
 - **Design:** **DD-10** · **Requirements:** the `D8` substitute in `requirements.md` §9; the field-injection clause of `FN-006` *GuestUsersValidator*
 - **Why this task exists:** MARLO has **no Spring context test**. A missing or ambiguous `@Named` bean **compiles, passes checkstyle, and passes `mvn test`**, failing only at Tomcat startup — which CI never exercises (`Dockerfile` builds with `-Dmaven.test.skip=true`). This is the spec's largest blind spot, and this manual check is its only available substitute. **It is a task rather than a footnote so it cannot be skipped silently.**
@@ -397,6 +410,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T13 (EXEC-041) — Checkpoint 2 report
 
+- **Status:** `[ ]`
 - **Depends on:** T12 · **Size:** S
 - **Scope:** emit the `CHECKPOINT RESULT` for CP2. **State explicitly: `adauth` is still the implementation. Nothing was removed. Observable behavior is unchanged.** Record which T05 sequencing option (a or b) was taken. Update the runbook's `Execution State` block and commit it with the task.
 - **Verification:** the report exists, names every task's evidence, and the `Execution State` block is internally consistent.
@@ -406,6 +420,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T14 (EXEC-050) — Eliminate the AD construction in `ContactPersonAction`
 
+- **Status:** `[ ]`
 - **Depends on:** T13 · **Module:** `marlo-web` · **Size:** S
 - **Design:** §6.2, **DD-7**, §10.0 **C-2** · **Requirements:** `DIRABS-FN-008`
 - **Files touched:** `action/center/capdev/ContactPersonAction.java` — **deletions only**
@@ -435,6 +450,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T15 (EXEC-051) — `ContactPersonActionTest`
 
+- **Status:** `[ ]`
 - **Depends on:** T14 · **Module:** `marlo-web` (test) · **Size:** M
 - **Requirements:** `DIRABS-FN-008` *"the returned `users` list **MUST** have the same map keys and values as today, sourced from `adUsermanager.searchUsers(queryParameter)`"*
 - **Files touched (new):** `marlo-web/src/test/java/.../ContactPersonActionTest.java`
@@ -450,6 +466,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T16 (EXEC-052) — Re-inventory the runtime call sites
 
+- **Status:** `[ ]`
 - **Depends on:** T15 · **Module:** none (read-only) · **Size:** S
 - **Requirements:** `DIRABS-FN-008`, and the `SC-8` count
 - **Scope:** reproduce `DIRABS-T00`'s inventory with a *"still reachable?"* column. **Expected end state — exactly 3 live `adauth` call sites:**
@@ -471,6 +488,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T17 (EXEC-053) — Checkpoint 3 report
 
+- **Status:** `[ ]`
 - **Depends on:** T16 · **Size:** S
 - **Scope:** emit `CHECKPOINT RESULT` for CP3, including T16's table and its reconciliation with T00. Update the runbook `Execution State`. **State explicitly that Gate 1 is NOT reached** — two Capability A sites remain live, and reaching zero is child 2's and child 3's work.
 - **Verification:** the report reconciles; the `Execution State` block is consistent.
