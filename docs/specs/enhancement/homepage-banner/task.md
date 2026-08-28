@@ -400,7 +400,28 @@ three fields on a populated banner still empties it rather than being silently i
 lean on — including whitespace-only input. Those six tests passed on first run: they are characterisation
 coverage of an existing method, not a red-green cycle, and are recorded as such rather than as evidence
 that the fix works. The action-level wiring has no unit test, because the repository has no Action test
-harness; it needs the manual case listed below.
+harness, so it was verified manually instead:
+
+- The running build was confirmed to carry the fix (`javap` shows the `HomepageBanner.isEmpty`
+  invocation and the skip's log literal in the compiled action).
+- On `AICCRA_III`, which had no row, saving the section with all three fields empty inserted **nothing**:
+  the table stayed at one row, the log recorded the skip once, and zero `insert into homepage_banners`
+  statements were issued since the restart. The administrator still gets the ordinary "saved"
+  confirmation — having nothing to store is not an error.
+- On AICCRA, whose row was populated, clearing the title, the description and the image **emptied the
+  existing row** (id 1 still present, three columns NULL, `modified_by` set) rather than skipping the
+  write, deleted the file from the uploads folder, and returned the image route to a 302. This is the
+  boundary that matters: had the condition been `isEmpty()` alone rather than `isNew && isEmpty()`,
+  this save would have been silently ignored and the banner would have stayed on the homepage.
+- FN-004 then re-verified properly on AICCRA: with the row emptied, `crpDashboard.do` rendered no
+  banner element at all and the Schedule card became the first section. Content and image were restored
+  afterwards, with the session confirmed to be on AICCRA before each write.
+
+One process note for whoever verifies this section next: check which Global Unit the session is on
+before every write. The admin URL carries an acronym, but `getCurrentGlobalUnit()` reads the session,
+and a Global Unit switch made elsewhere in the browser silently redirects the save. That is what
+produced the misattributed FN-004 observation above; every later write in this log was preceded by
+reading the acronym off the header logo URL.
 
 **Still not verified**
 
@@ -412,11 +433,7 @@ harness; it needs the manual case listed below.
   `custom_parameters` row for that key, and creating one is a database write that was out of scope
   for this pass. The FTL condition is unchanged from the code that shipped it, but that is an
   argument, not a verification.
-- FN-004 proper: clearing the three fields on a Global Unit whose banner is populated, and confirming
-  the row is emptied rather than skipped.
-- The empty-insert fix end to end: on a Global Unit with no row, save the section with nothing filled
-  in and confirm no row is inserted. This needs the leftover `AICCRA_III` row deleted first, since a
-  row already exists there.
+- Nothing else. FN-004 and the empty-insert fix were both closed in the follow-up pass recorded above.
 
 ## 4. Dependency Graph
 
