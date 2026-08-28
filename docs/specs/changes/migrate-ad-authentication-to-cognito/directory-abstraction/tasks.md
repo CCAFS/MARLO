@@ -316,19 +316,19 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T09 (EXEC-038) — Migrate `SearchUserAction`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-28, attempt 1. Both gates green, 28 tests. Zero-invocation assertion mutation-proven. Closes FN-004's previously ungated email clause. See `execution.md`
 - **Depends on:** T04 · **Module:** `marlo-web` · **Size:** M
 - **Requirements:** `FN-001`, `FN-004`, `FN-006` *SearchUserAction*
 - **Files touched:** `action/json/global/SearchUserAction.java` · `.../SearchUserActionDirectoryTest.java` *(new)*
 - **Scope:** add `DirectoryService` to the `@Inject` constructor. Replace `:193-205` (including its own `try/catch → null`) with one call, **still passing the lowercased email** as `:202` does. Delete imports `:30-31`. **Keep `.toLowerCase()` at `:213` and `:214`.** **Do not delete the class** — `OQ-12` is unresolved and deletion is child 3.
 - **Requirements covered — clause level:**
-  - `FN-006` *"`userFound` **MUST** contain `newUser=true`, `id=-1`, `name`, `lastName`, `username`, `email`, `cgiar=true`, `active=false`, `autosave=false` — same keys, same values, same order of insertion"*
+  - `FN-006` *"`userFound` **MUST** contain `newUser=true`, `id=-1`, `name`, `lastName`, `username`, `email`, `cgiar=true`, `active=false`, `autosave=false` — same keys, same values"* *(order clause dropped 2026-08-28 — `userFound` is a `HashMap`; see `requirements.md` §13)*
   - *"**AND** the lookup **MUST** still be given the lowercased email, as `:202` does today"*
   - *"**BUT** the not-found branch must **NOT** change: `newUser=false`, `cgiar=false`, `cgiarNoExist=true`"*
   - *"**AND IT MUST** preserve the `APConstants.OUTLOOK_EMAIL` suffix guard at `:191`"*
-- **Tests:** assert all **9** keys, their values **and their insertion order**; assert the 3-key not-found shape; assert a non-`@cgiar.org` email **never reaches** `findByEmail` (the fake's call recorder must show zero invocations); `"JSmith"` → `"jsmith"`.
-- **Falsifying input:** a `LinkedHashMap` replaced by a `HashMap` breaks the insertion-order assertion; a lost suffix guard makes the zero-invocation assertion FAIL.
-- **Disqualifies the evidence:** asserting key **presence** without values and order. The order clause is explicit in the requirement and needs an ordered comparison, not `containsKey`.
+- **Tests:** assert all **9** keys **and their exact values** (a `size() == 9` check plus a per-key `assertEquals`; **no order assertion** — see the 2026-08-28 correction); assert the 3-key not-found shape; assert a non-`@cgiar.org` email **never reaches** `findByEmail` (the fake's call recorder must show zero invocations); `"JSmith"` → `"jsmith"`.
+- **Falsifying input:** a lost, renamed or mis-valued key breaks the per-key `assertEquals`; a dropped key breaks the `size() == 9` check; a lost suffix guard makes the zero-invocation assertion FAIL. *(The original text named "a `LinkedHashMap` replaced by a `HashMap`" — an impossible mutation: the map is already a `HashMap`. Corrected 2026-08-28.)*
+- **Disqualifies the evidence:** asserting key **presence** without values -- a `containsKey` sweep would pass against a mapping that lost a value, swapped `name` for `lastName`, or dropped a `.toLowerCase()`. Every key needs an `assertEquals` on its exact value. *(The original text also demanded an ordered comparison; that clause was dropped 2026-08-28 -- see the correction at the Tests and Falsifying-input lines above and `requirements.md` §13.)*
 - **STOP if:** the class is deleted, or the suffix guard is moved.
 
 ---

@@ -1686,3 +1686,172 @@ task.**
 Review rounds consumed: **8 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1 · T08: 2).
 
 ---
+
+### `DIRABS-T09` (EXEC-038) — Migrate `SearchUserAction`
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS on attempt 1** |
+| **Date** | 2026-08-28 |
+| **Effort** | `xhigh` · **Skills** `error-handling-patterns` · **Review rounds** 1 |
+| **Gates** | `INSTALL_EXIT=0` · `TEST_EXIT=0` · **28 tests** (24 → 28). Leader-verified independently. **Zero retries needed** |
+
+#### 🔧 SPEC DEFECT found and corrected BEFORE dispatch — the insertion-order clause
+
+`FN-006` *SearchUserAction* required asserting the nine `userFound` keys **"in insertion order"**, and
+`tasks.md` T09 named *"a `LinkedHashMap` replaced by a `HashMap`"* as the falsifying mutation. **Both
+rested on a misreading of the code, found by the Leader while preparing the brief:**
+
+- `userFound` is **already a `HashMap`** (`SearchUserAction:60,75`) — the named mutation is **impossible**.
+- A `HashMap` does **not** preserve insertion order. Its iteration order is a function of the **key set
+  alone**, so inserting the same nine keys already yields the same order.
+- **The order clause was therefore subsumed by the key clause** and could add nothing falsifiable about
+  the defect that actually matters: a lost, renamed or mis-valued key.
+
+**Resolved at the HITL gate: the order clause is dropped.** Corrected at four sites (`requirements.md`
+`FN-006`; `tasks.md` T09's requirements-covered line, Tests line, and Falsifying-input line) with a
+Decision Log entry recording **both rejected alternatives:**
+
+| Rejected | Why |
+|---|---|
+| Keep an order assertion as a guard against a future map-type swap | Falsifiable but **fragile** — `HashMap` iteration order can change between JVM releases, breaking the test with no MARLO change |
+| Switch the map to `LinkedHashMap` so the clause becomes true | Would **change the JSON key order `searchUsers.do` returns today**, violating `NF-001` equivalence — the spec's own acceptance criterion — to satisfy a mis-written clause |
+
+**⚠️ And the Leader's sweep missed a fifth site.** The T09 Reviewer found `tasks.md:331` still reading
+*"asserting key presence without values **and order** … needs an ordered comparison"*. **Cause: the
+Leader's grep pattern was `order of insertion|insertion order|LinkedHashMap|their order`, and the bare
+phrase `"and order"` matches none of them.** Fixed on the spot, and re-swept with a sharper `\border\b`
+pattern that returns only the corrections themselves plus two legitimate *"reverse order"* rollback
+references.
+
+> **Third recurrence of the same Leader pattern in this run** (after the §5.1 row miscount and the
+> `FN-002` *Invalid input* omission): **the sweep is only as good as the pattern, and a phrase-specific
+> grep misses paraphrases of the same claim.** Flagged for Kaizen alongside the other two.
+
+#### The production change
+
+```
+- LDAPService service = new LDAPService();  +  setInternalConnection if/else  +  its OWN try/catch
++ DirectoryPerson person = this.directoryService.findByEmail(userEmail.toLowerCase());
+```
+
+`if (userLDAP != null)` → `if (person.isFound())`; the four getters re-pointed. **Nothing else.**
+
+Leader-verified: the `APConstants.OUTLOOK_EMAIL` suffix guard is **unmoved and byte-identical at `:193`**;
+`grep "org.cgiar.ciat"` → **empty**; the class was **not** deleted (`OQ-12` unresolved — deletion is
+child 3's); the 3-key not-found and 4-key non-`cgiar.org` branches are absent from the diff.
+
+**The removed `try/catch` — Reviewer-verified as safe, with the propagation surface unchanged
+byte-for-byte.** The old catch wrapped **only** `service.searchUserByEmail(...)`. That call now sits
+inside `LdapDirectoryService.findByEmail`'s own `catch (Exception e)`, which maps every throw to
+`notFound(..., ERROR)`. What the old code left *outside* its try — `new LDAPService()`,
+`setInternalConnection`, `config.isProduction()` — is the same set that remains outside a catch today,
+now living inside `LdapDirectoryService`. **Nothing previously swallowed can now propagate.** And
+`person.isFound()` cannot NPE: the contract forbids a null return and the only implementation returns
+non-null on all five paths.
+
+#### 🎯 The two assertions this task existed to establish
+
+**Assertion 5 — ZERO INVOCATIONS, and T09 is the first task where it is the correct instrument.** The
+guard at `:193` sits **before** `findByEmail` at `:195`. (T07's guard sits *after*, so its count is
+legitimately 1 — `FakeDirectoryService`'s Javadoc is imprecise on this and the Implementer was warned in
+the brief.)
+
+**The Reviewer established the assertion is not redundant with the shape assertion**, which is the real
+question: *a mutation that **hoists** `findByEmail` above the guard while preserving the branch structure
+would leave the 4-key shape intact and redden **only** the invocation count.* That is exactly the
+T07-shaped pattern this task exists to exclude, so the assertion carries value no other assertion
+supplies.
+
+**Demonstrated by mutation** — guard changed to `if (true)` → `Tests run: 28, Failures: 1`, the single
+failure being `nonCgiarEmailNeverReachesTheDirectoryLookup`. Reverted with a verified clean diff, green
+again.
+
+**Reviewer corroboration worth recording as a technique:** it noted the Implementer reported
+**`Failures: 1`, not `Errors: 1`.** An `AssertionError` is what the predicted path produces; had the
+mutation instead driven an NPE, Surefire would have classed it as an **Error**. *The reported
+classification matches the predicted mechanism* — weak but real evidence the mutation was **executed
+rather than narrated.**
+
+**Assertion 3 — `FN-004`'s `email` half is now gated, closing a gap the T04 Reviewer had identified and
+that had no owner.** The `login` half was covered from T04; the `email` half was **ungated anywhere in the
+spec**.
+
+The Implementer declared a judgment call: it fed a mixed-case **email** (`"Jane.Smith@CGIAR.org"`) in
+addition to the mandated mixed-case **login** (`"JSmith"`), reasoning that an already-lowercase fixture
+would make the assertion trivially true. **The Reviewer verified the whole chain rather than the
+assertion:**
+
+- `DirectoryPerson.found()` stores **raw** values, and says so in its class Javadoc.
+- `FakeDirectoryService.findByEmail` returns `this.response` **verbatim** in `FOUND` mode — it does **not**
+  synthesize a person from the received email.
+- Therefore `person.getEmail()` is exactly `"Jane.Smith@CGIAR.org"`, and **only the consumer's
+  `.toLowerCase()` at `:204`** can produce the asserted `"jane.smith@cgiar.org"`.
+
+That distinguishes *"the consumer lowercased it"* from *"the consumer echoed a value that was already
+lowercase"* — the precise failure mode the brief asked it to rule out. The mixed-case email also does
+independent work the login could not: **it is what makes the `getLastEmailReceived()` assertion
+non-trivial**, gating `FN-006`'s *"the lookup MUST still be given the lowercased email"*.
+
+**And the Reviewer's ruling on whether this was scope creep is worth quoting:** the reasoning *"is not an
+invention — it is `design.md` §6.3's own stated rationale applied to the field the spec left ungated.
+Extending a spec's rationale to close a gap the spec identified is **conformance, not deviation**."*
+
+#### Falsifiability of the remaining assertions — the Reviewer pressed each, none is decoration
+
+| Assertion | What reddens it |
+|---|---|
+| **1** (9 keys + values) | A dropped/added key (`size()`), a `name`/`lastName` swap, a lost `.toLowerCase()` on either field, any flipped boolean. The `invocationCount == 1` check additionally catches a refactor that looks up **twice** |
+| **4** (3-key not-found) | **The single most likely wrong implementation of this whole migration: `person != null` instead of `person.isFound()`.** Since the seam never returns null, that mutation enters the *found* branch and NPEs on `person.getLogin().toLowerCase()`. **This assertion is what pins the null-check → `isFound()` translation** — and the same hazard applies to T10 |
+| **6** (`ERROR` ≡ `NOT_FOUND`) | Any consumer-side read of `source` — **notably a copy of T10's `throw new DirectoryLookupException` on `ERROR`, a live copy-paste hazard since T10 is the adjacent task doing exactly that.** It pins that `SearchUserAction` is *not* the source-reading consumer. Thin, but not empty |
+
+#### Surefire landmine — not hit, and the reason is materially cleaner than T06's
+
+Verified rather than assumed: `SearchUserAction`'s public API (`setUserEmail:257`, `getUserFound:237`)
+plus the constructor **fully drive `execute()`**, so **no reflection helper was needed at all** — the risky
+signature shape never arose. The only nested type is `FakeUserManager`, whose methods take
+`Long`/`String`/`User`. **Neither the observed-unsafe nor the untested pattern occurs.**
+
+#### Transient-lock protocol — third data point, and the first clean one
+
+**Zero retries needed.** Now 2 of 4 recent tasks affected, 0 here — consistent with the lock being
+**sporadic rather than progressive**. Recorded because a pattern that only counts failures is not a
+pattern.
+
+#### `ADVISORY` — recorded, non-gating, they die here
+
+1. **READABILITY —** `SearchUserActionDirectoryTest:32-33` statically imports `assertFalse` and
+   `assertTrue`; **neither is used** (all 24 assertions are `assertEquals`). Outside Checkstyle's scope
+   (no `includeTestSourceDirectory`), but two dead imports in a brand-new file.
+2. **READABILITY —** `SearchUserAction:53` declares the injected field **non-`final`**, while
+   `CrpUsersAction` and `json/global/ManageUsersAction` declared theirs `final`. The Reviewer checked: no
+   spec or Checkstyle rule requires it (`design.md`'s finality mandates govern `DirectoryPerson` only) and
+   it **matches the non-final `userManager` in this very class** — so it is consistency-across-consumers,
+   not a defect. *"Not worth a rework cycle; worth one keystroke if the file is reopened."*
+3. **The `tasks.md:331` doc defect** — raised by the Reviewer and **already fixed by the Leader**, as
+   described above. Not deferred.
+
+#### Requirements covered
+
+| Requirement | How |
+|---|---|
+| `FN-006` — the 9 keys and values | `size() == 9` + a per-key `assertEquals`. **No order assertion** (clause dropped) |
+| `FN-006` — *"the lookup MUST still be given the lowercased email"* | `findByEmail(userEmail.toLowerCase())` at `:195`; gated by `getLastEmailReceived()` against a **mixed-case** input |
+| `FN-006` — *"**BUT** the not-found branch must **NOT** change"* | Absent from the diff; asserted as the exact 3-key shape |
+| `FN-006` — *"**AND IT MUST** preserve the `OUTLOOK_EMAIL` suffix guard"* | Unmoved and byte-identical at `:193`; gated by the **zero-invocation** assertion |
+| `FN-004` | **Both** output `.toLowerCase()` calls survive (`username` `:203`, `email` `:204`), and **both are now gated** — the `email` half for the first time in this spec |
+| `FN-001` | `DirectoryService` by constructor injection; no `LDAPService` constructed |
+| `FN-002` | `ERROR ≡ NOT_FOUND` asserted; the redundant `try/catch` removed with the propagation surface unchanged |
+
+#### Final verification result
+
+**PASS on attempt 1.** Both gates green and Leader-verified.
+
+> The production change is a faithful, behavior-preserving swap onto the seam — all four `FN-006`
+> *SearchUserAction* clauses hold — **and all four new tests are genuinely falsifiable, including the two
+> the spec was relying on this task to establish.**
+
+Review rounds consumed: **9 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1 ·
+T08: 2 · T09: 1).
+
+---
