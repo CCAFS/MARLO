@@ -233,7 +233,7 @@ DD-3 — both audited their premises against the code and confirmed them. The co
 
 | # | Finding | Confirmed by | Applied |
 |---|---|---|---|
-| JD-1 | Broken `NF-002` / `D4` gate | both judges | ✅ Pattern scoped to `^import org.cgiar.ciat.auth`; `marlo-web` → 1 file, `marlo-data` → **3** files. A box in `requirements.md` §9 records both failure modes and flags the inherited `EXEC-040` defect |
+| JD-1 | Broken `NF-002` / `D4` gate | both judges | ✅ Pattern scoped to `^import org.cgiar.ciat.auth`; `marlo-web` → 1 file, `marlo-data` → **3** files. A box in `requirements.md` §9 records both failure modes and flags the inherited `EXEC-040` defect. **⚠️ The `marlo-web → 1` count is superseded as of 2026-08-28 — see `requirements.md` §13.** A *third* failure mode of the same gate was found at `DIRABS-T11`: the count was re-scoped to `src/main` + `src/test` (the latter legitimately holds one importer under **DD-12**) and re-timed to `T16`, because `T11` runs before `T14` removes `ContactPersonAction`'s imports. This row is left as the round-1 record; it is history, not the current expectation |
 | JD-2 | Line-number regressions | both judges | ✅ `:98`→`:99`, `:56-70`→`:58-71`, `:248-262`→`:248-263`, in both documents |
 | JD-3 | `BaseAction` 9,748 → **9,753** | both judges | ✅ corrected in all four family documents |
 | JD-4 | "private duplicate" → `public` | both judges | ✅ corrected in `design.md` §3/§6.2, `requirements.md`, `proposal.md` |

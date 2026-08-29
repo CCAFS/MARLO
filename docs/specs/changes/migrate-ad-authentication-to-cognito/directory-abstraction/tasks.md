@@ -52,13 +52,25 @@
 
 Defined once; every task inherits them rather than restating them.
 
+### 3.0 Environment preconditions — **binding on every command in this spec**
+
+*(Added 2026-08-28. Both were recorded in `requirements.md` §13 and `execution.md` as "binding on every task", and **neither appeared anywhere in this document** — the one that actually issues the commands. §3 is the declared single source of shared conventions, so this is where they belong.)*
+
+| Precondition | Why it binds |
+|---|---|
+| **`export JAVA_HOME="C:/Program Files/Java/jdk-17"`** must prefix **every** Maven command | This shell defaults to **JDK 1.8.0_202** while `marlo-parent/pom.xml` declares `<release>17</release>`. Without the export the compile gate fails **for a reason unrelated to the change under review** — `DIRABS-T00`'s STOP condition fired on this spec's own first command for exactly this reason. **A verification run without the export is *disqualified evidence*, not a failure** (`execution.md` §1.3) |
+| **Transient-lock retry protocol:** one bare retry is permitted; **every retry MUST be reported** | Two transient Windows file-lock build failures occurred (T04 `testCompile`, T08 `maven-resources-plugin`), both clearing on a bare retry with no code change. **Never absorb one silently — silent absorption is how a genuine compile failure gets misread as a flake.** Binds T09 → T17 (`execution.md`, adopted at T08) |
+| **Exit-code integrity:** a piped verification command MUST use `set -o pipefail` and report `${PIPESTATUS[0]}`, **or not pipe at all** | A pipe reports the **last** command's status, not Maven's. **This spec already recorded one false green from it:** `mvn … \| tail -60; echo "EXIT=$?"` made the harness record **exit 0 on a build that had failed**, and it was caught only because build *artifacts* were checked instead of the exit code (`execution.md` §2, *Leader process defect*). **An exit code laundered through a pipe is not evidence.** This is the one precondition whose violation lets a **failed** gate be recorded as **passed** — the other two only cause a failure to be reported on correct code |
+
 ### 3.1 Verification commands
+
+**Every command below assumes §3.0's `JAVA_HOME` export.**
 
 | Gate | Command |
 |---|---|
-| Compile | `mvn -q install -DskipTests -pl marlo-web -am` |
-| Style | `mvn -q checkstyle:check` |
-| Tests | `mvn -q -pl marlo-web test` |
+| Compile | `export JAVA_HOME="C:/Program Files/Java/jdk-17"; mvn -q install -DskipTests -pl marlo-web -am` |
+| Style | ⚠️ **`mvn -q checkstyle:check` is UNVERIFIABLE in this checkout — do not run it, and never record it as passed or failed.** See `execution.md` **EB-2**: `maven-checkstyle-plugin:2.9.1` against a forced `checkstyle:8.18`, with a `PluginContainerException` (classloader-realm) now masking the older `NoSuchMethodError`. `pom.xml` is §3.2-protected, so repair is **out of scope by construction**. Even repaired it would not cover **9 of this child's new `.java` files** — the plugin sets no `includeTestSourceDirectory`, so test sources are outside its scope. **Substitute actually used, per task:** `awk 'length>120'` on every touched file **plus** the Reviewer reading the GPL header and style at the source. *(Corrected 2026-08-28 — this row is inherited by every task, which is why it is the most important of the checkstyle loci.)* |
+| Tests | `export JAVA_HOME="C:/Program Files/Java/jdk-17"; mvn -q -pl marlo-web -am test` |
 | Scope | `git diff --stat` reviewed against § 3.2 |
 
 **`-q` suppresses passing noise only. A failure prints complete and verbatim** — never truncated,
@@ -125,8 +137,9 @@ Three fields appear in every task and mean the same thing throughout:
   - `equals`/`hashCode` on all fields. **`toString` must not print `login` or `email` in full** — corporate personnel data that will reach log lines.
   - `DirectoryLookupException extends RuntimeException`, carrying the requested email and the cause.
 - **Tests:** none yet — nothing consumes these.
-- **Verification:** compile · checkstyle · `grep -rn "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **empty** · `git diff --stat` → exactly 3 new files.
-- **Falsifying input:** a `.java` file without the GPL header (checkstyle FAILs); a 121-char line; an `org.cgiar.ciat` import in any of the three (the grep FAILs).
+- **Verification:** compile · *(checkstyle: see §3.1 — UNVERIFIABLE, EB-2)* · `grep -rl "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **empty at T01 only** · `git diff --stat` → exactly 3 new files.
+  > ⏱ **This expectation is time-scoped, and it expires at T03.** *"Empty"* is correct **only while T01 is the newest task**: `DIRABS-T03` creates `impl/LdapDirectoryService.java` **inside this same package**, and that file imports `adauth` **by mandate** (`FN-005` — it is the one file permitted to). From T03 onward the correct expectation is **exactly one file, `impl/LdapDirectoryService.java`** — which is what T03's own verification asserts. **Re-running T01's grep today returns 2 lines and that is correct, not a regression.** *(Time-scoping added 2026-08-28 — a reader who took this as a standing expectation would read a legitimate result as a failure, which is `DIRABS-T11`'s "Disqualifies the evidence" hazard.)*
+- **Falsifying input:** a `.java` file without the GPL header (**the Reviewer's source read catches it — not checkstyle, which is UNVERIFIABLE per §3.1**); a 121-char line (`awk 'length>120'` FAILs); an `org.cgiar.ciat` import in any of the three (the grep FAILs). *(Corrected 2026-08-28: this line claimed "checkstyle FAILs" two lines below the same task's own UNVERIFIABLE annotation — an internal contradiction, and a falsifying-input claim that only makes sense if the gate runs.)*
 - **Disqualifies the evidence:** a compile that succeeds only because the files are unreferenced proves they **parse**, not that they model the contract correctly. That is T04's job.
 - **Cannot prove:** that `toString` actually masks the fields — checkstyle cannot see it. **Reviewer must read it.**
 - **Done when:** 3 compiling files, 8 enum constants, `notFound` requires a `source` argument.
@@ -148,7 +161,7 @@ Three fields appear in every task and mean the same thing throughout:
   - `FN-002` *"must **NOT** throw, and must **NOT** return `null`"*
   - `FN-003` *"`source` must **NOT** be `null` on any path"*
 - **Tests:** none — interfaces have no behavior. T04 encodes the contract.
-- **Verification:** compile · checkstyle · `git diff --stat` → 1 new file.
+- **Verification:** compile · *(checkstyle: §3.1 — UNVERIFIABLE, EB-2; substitute is `awk length>120` + Reviewer read)* · `git diff --stat` → 1 new file.
 - **Falsifying input:** a signature other than `findByEmail(String) → DirectoryPerson`; a `throws` clause on the method.
 - **Cannot prove:** **nothing about behavior.** An interface plus Javadoc is a *presence assertion* — the contract is only real once T04 executes it.
 - **Done when:** the interface compiles and every §5.1 row appears in the Javadoc.
@@ -177,9 +190,9 @@ Three fields appear in every task and mean the same thing throughout:
   - `FN-002` *Backend failure*: *"`source` **MUST** be **`ERROR`**, never `NOT_FOUND`"*; *"the failure **MUST** be logged at `error`"*
   - `FN-003` *"**MUST** set `source == LDAP` on a found person"*
 - **Tests:** T04.
-- **Verification:** compile · checkstyle · `grep -rln "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **exactly** `impl/LdapDirectoryService.java`.
+- **Verification:** compile · *(checkstyle: §3.1 — UNVERIFIABLE, EB-2; substitute is `awk length>120` + Reviewer read)* · `grep -rln "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **exactly** `impl/LdapDirectoryService.java`.
 - **Falsifying input:** an `org.cgiar.ciat` import appearing in any other file of the new package.
-- **Disqualifies the evidence:** compile + checkstyle passing says **nothing** about the mapping. This task's real gate is T04, and it must not be reported verified before T04 runs.
+- **Disqualifies the evidence:** a passing compile says **nothing** about the mapping (and checkstyle is UNVERIFIABLE here anyway — §3.1). This task's real gate is T04, and it must not be reported verified before T04 runs.
 - **Cannot prove:** equivalence. That is T04 (contract) and T06–T10 (per consumer).
 - **Done when:** the class compiles and no consumer uses it yet.
 - **STOP if:** the mapping changes semantics — lower-casing a field `getOutlookUser` did not lower-case; returning `""` where `null` was returned; using `NOT_FOUND` on the exception path. **Equivalence is the whole point.**
@@ -268,7 +281,7 @@ Three fields appear in every task and mean the same thing throughout:
   - `FN-001` *"**AND IT MUST** receive `DirectoryService` through constructor injection"*; *"must **NOT** construct `LDAPService` … directly"*
   - `FN-004` *"**AND** each consumer **MUST** keep its own existing `.toLowerCase()` call"*
 - **Tests:** `CrpUsersActionDirectoryTest` — drive with `FakeDirectoryService` returning `login = "JSmith"` and assert `newUser.getUsername()` **equals `"jsmith"`**; assert `setCgiarUser(true)`; assert the not-found branch's password generation and `setCgiarUser(false)`; assert `ERROR` behaves identically to `NOT_FOUND` here.
-- **Verification:** compile · checkstyle · `mvn -q -pl marlo-web test` · `grep -n "org.cgiar.ciat" <file>` → empty · `git diff --stat` → 1 source + 1 test.
+- **Verification:** compile · *(checkstyle: §3.1 — UNVERIFIABLE, EB-2; substitute is `awk length>120` + Reviewer read)* · `mvn -q -pl marlo-web test` · `grep -n "org.cgiar.ciat" <file>` → empty · `git diff --stat` → 1 source + 1 test.
 - **Falsifying input:** the fake returns `"JSmith"`; a version that stopped lowercasing writes `"JSmith"` and the assertion FAILs. **An already-lowercase fixture would pass either way and prove nothing** — that is why the mixed case is mandatory.
 - **Disqualifies the evidence:** asserting only *that a username was written* rather than *which*. A test of that shape is worthless for `D1`, the dominant defect class.
 - **Cannot prove:** the real AD returns what the fake returns. No task in this spec can — there is no integration harness.
@@ -306,9 +319,10 @@ Three fields appear in every task and mean the same thing throughout:
   - *"**BUT** the call to `validateGuestUsers(...)` and the field-error handling below it must **NOT** change"*
   - *"**AND IT MUST** keep receiving `config` through the inherited `@Inject protected APConfig config` field on `BaseValidator:52-53` — adding an `@Inject` constructor must not break field injection"*
 - **Tests:** assert `isCGIARUser` true/false from `found`; assert `validateGuestUsers` still invoked with the same arguments; **assert `config` is non-null after construction** — the field-injection clause has no other gate.
-- **Verification:** compile · checkstyle · tests · `grep -n "org.cgiar.ciat" <file>` → empty.
+- **Verification:** compile · *(checkstyle: §3.1 — UNVERIFIABLE, EB-2; substitute is `awk length>120` + Reviewer read)* · tests · `grep -n "org.cgiar.ciat" <file>` → empty.
 - **Falsifying input:** a constructor that shadows or reassigns `config` — the non-null assertion FAILs.
-- **Disqualifies the evidence:** a unit test that constructs the validator with `new` bypasses Spring entirely, so it **cannot** prove field injection still works. The `config` assertion is only meaningful under a Spring-managed instance — which MARLO cannot test (`D8`). **Report this clause as covered by `DIRABS-T12`'s app-start check, not by this test.**
+- **Disqualifies the evidence:** a unit test that constructs the validator with `new` bypasses Spring entirely, so it **cannot** prove field injection still works. The `config` assertion is only meaningful under a Spring-managed instance — which MARLO cannot test (`D8`).
+  > ⚠️ **CORRECTED 2026-08-28 — this line previously said "Report this clause as covered by `DIRABS-T12`'s app-start check." T12 CANNOT cover it either.** After T08 deletes `getOutlookUser`, **`GuestUsersValidator` references `config` nowhere at all** — its only use was inside the deleted method. So if Spring's field injection silently failed on this bean, **nothing would break**, and a successful app start certifies a **no-op**. T12 proves the context starts and that `DirectoryService` resolves into the new constructor — both real — but it is **not** evidence for this clause and must not be recorded as such. **What actually gates it:** T08's falsifiable structural check (no subclass field named `config`; the inherited `BaseValidator` field still `@Inject`-annotated and `protected`), which was A/B-demonstrated by adding a shadowing field and watching the test go red. See `execution.md`'s T08 entry and its `⏭ FORWARD POINTER for DIRABS-T12`.
 - **Cannot prove:** Spring wiring. See T12.
 - **STOP if:** `validateGuestUsers` or the field-error handling appears changed in the diff.
 
@@ -351,7 +365,7 @@ Three fields appear in every task and mean the same thing throughout:
   1. `found` → field mutated, instance returned, `"JSmith"` → `"jsmith"`.
   2. `NOT_FOUND` → returns `null`; `create()` produces `manageUsers.email.doesNotExist`.
   3. **`ERROR` → `@Test(expected = DirectoryLookupException.class)`**, and `create()` does **not** produce `manageUsers.email.doesNotExist`.
-- **Verification:** compile · checkstyle · tests · `grep -n "org.cgiar.ciat" <file>` → empty · **`DirectoryLookupException` must not extend `org.apache.shiro.authz.AuthorizationException`** — `struts.xml:543-545` maps that to **403**, not the 500 today's exception produces.
+- **Verification:** compile · *(checkstyle: §3.1 — UNVERIFIABLE, EB-2; substitute is `awk length>120` + Reviewer read)* · tests · `grep -n "org.cgiar.ciat" <file>` → empty · **`DirectoryLookupException` must not extend `org.apache.shiro.authz.AuthorizationException`** — `struts.xml:543-545` maps that to **403**, not the 500 today's exception produces.
 - **Falsifying input:** branch 3 FAILs against any implementation that returns `null` on `ERROR` — which is exactly the behavior `judgment.md` JD-7 / DD-3a exist to prevent. A version extending `AuthorizationException` FAILs the class-hierarchy check.
 - **Disqualifies the evidence:** asserting *"an exception was thrown"* without the type. `@Test(expected = ...)` with a specific class is required; a broad `Exception` assertion would pass for the wrong reason.
 - **Cannot prove:** whether this class is reachable at all. `OQ-12` is unresolved, and the convention-plugin configuration (`struts.xml:25-28`, no locator restriction) suggests it **is** — which is why this branch is implemented rather than dismissed.
@@ -361,32 +375,57 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T11 (EXEC-040) — Isolation gate *(corrected pattern)*
 
-- **Status:** `[ ]`
+- **Status:** `[x]` — **PASS 2026-08-28.** Gate verified independently **five times**: `src/main` 2 · `src/test` 1 · `marlo-data` 3, and the six previously-affected production files at **0**. **No code changed — T11 is read-only.** Reached the 3-attempt ceiling on *documentation consistency*, never on the gate; the user authorised a scoped spec-wide doc sweep, which corrected **23 loci across 4 defect classes** (2 of them absence-defects no presence-grep reaches). **Two residual doc items are named as pending for `/akili-validate`** — see `execution.md`. Automatic Rollback deliberately not run: no code, and it would have reinstated known defects
 - **Depends on:** T05–T10 · **Module:** none (read-only) · **Size:** S
 - **Requirements:** `DIRABS-NF-002`, `DIRABS-FN-009` · **Review:** `judgment.md` **JD-1**
 - **Scope:** prove `marlo-web` business code no longer knows about `adauth` types.
-- **Verification — use this exact pattern; the unscoped one is broken:**
+- **Verification — use this exact pattern; the unscoped one is broken. Expectations corrected 2026-08-28 for the *pre-T14* state.**
   ```
-  grep -rn "^import org.cgiar.ciat.auth" marlo-web/src  --include="*.java"
-  # EXPECTED, exactly one file:
-  #   utils/searchUsersUtil.java          (main(), unreachable - deleted in child 3)
+  grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/main --include="*.java"
+  # EXPECTED AT T11, exactly TWO files:
+  #   utils/searchUsersUtil.java                        (main(), unreachable - deleted in child 3)
+  #   action/center/capdev/ContactPersonAction.java     (PENDING DIRABS-T14, which deletes these imports)
 
-  grep -rn "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"
-  # EXPECTED, exactly three files:
-  #   security/APCustomRealm.java                      (Capability A - untouched, child 2)
-  #   security/authentication/LDAPAuthenticator.java   (Capability A - untouched, child 2)
+  grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/test --include="*.java"
+  # EXPECTED, exactly ONE file:
+  #   security/directory/LdapDirectoryServiceTest.java  (permitted by DD-12 - it stubs LDAPService)
+
+  grep -rl "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"
+  # EXPECTED, exactly THREE files:
+  #   security/APCustomRealm.java                       (Capability A - untouched, child 2)
+  #   security/authentication/LDAPAuthenticator.java    (Capability A - untouched, child 2)
   #   security/directory/impl/LdapDirectoryService.java (this spec)
   ```
+  > **Why the expectations changed on 2026-08-28.** The original block expected **one** `marlo-web/src`
+  > file and therefore **failed against a correct implementation**, for two independent reasons.
+  > **(1) It stated a post-T14 end state at a pre-T14 checkpoint.** `DIRABS-T14` deletes
+  > `ContactPersonAction`'s imports, and T14 runs *after* T11 (T11 → T12 → T13 → T14), so those imports
+  > are **legitimately present here**; naming the file makes its presence read as a sequencing fact
+  > rather than a missed consumer. **(2) It scoped to `marlo-web/src`, which includes `src/test`**, where
+  > `LdapDirectoryServiceTest` imports `adauth` **by design** under **DD-12** to stub `LDAPService` — a
+  > file that did not exist when the expectation was written. `DIRABS-NF-002` says *"after completion"*
+  > and was always right: the defect was **T11 applying its end-state list mid-spec**, not NF-002 itself.
+  >
+  > **This is the same class of defect as `judgment.md` JD-1** (whose `marlo-data` expectation omitted
+  > `APCustomRealm`): an expected-output list that omits a legitimate importer and so reports failure on
+  > correct code. **Two independent instances now, in the same block.**
+  >
   > **Why `^import` and not the bare string.** `judgment.md` **JD-1**, confirmed by both judges:
-  > `ocs/ws/client/WSMarlo.java` contains `org.cgiar.ciat.abw.control.logic` in **annotation string
-  > literals** with no import at all. The unscoped pattern matched it and reported 9 `marlo-web` files.
-  > **And the original `marlo-data` expectation of 2 files omitted `APCustomRealm`** — that defect is
-  > inherited from `EXEC-040` itself and is flagged for the runbook at archive time.
-- **Requirements covered — clause level:** `FN-009` *"this file **MUST** be the **only** remaining `org.cgiar.ciat` importer in `marlo-web/src`"*; *"it **MUST NOT** be migrated"*; *"**BUT** it must **NOT** be deleted here"*; *"**AND IT MUST** be named in the verification's expected output, so its presence reads as a decision rather than a missed consumer"*.
-- **Falsifying input:** any file in either output that is not on the expected list.
+  > `ocs/ws/client/WSMarlo.java` carries `org.cgiar.ciat.abw.control.logic` in Javadoc and **JAX-WS
+  > annotation string literals** with no import at all. The unscoped pattern matched it and reported 9
+  > `marlo-web` files. **And this spec has since created a second false positive of the same kind:**
+  > `DirectoryServiceContractTest.java:31`, whose Javadoc *asserts that it never imports
+  > `org.cgiar.ciat`* — caught by the unscoped grep for saying so. **The unscoped pattern therefore gets
+  > monotonically worse as the spec documents the isolation it achieves.**
+  >
+  > **The loop is closed at `DIRABS-T16`**, which re-runs all three roots after T14 and requires
+  > `src/main` to fall to **one** file. Without that, no task ever verified `ContactPersonAction`'s
+  > imports were actually gone — only its *construction sites*, which is a different thing.
+- **Requirements covered — clause level:** `FN-009` *"this file **MUST** be the **only** remaining `org.cgiar.ciat` importer in `marlo-web/src/main` **once `DIRABS-T14` has removed `ContactPersonAction`'s imports**"* — **quote updated 2026-08-28 to match the corrected requirement; the `T14` post-condition is discharged at T16, not here**; *"it **MUST NOT** be migrated"*; *"**BUT** it must **NOT** be deleted here"*; *"**AND IT MUST** be named in the verification's expected output, so its presence reads as a decision rather than a missed consumer"*.
+- **Falsifying input:** any file in **any of the three outputs** that is not on the expected list. *(Was "either output" -- corrected 2026-08-28 when the block went from two greps to three.)*
 - **Disqualifies the evidence:** running the **unscoped** pattern. It produces a number that looks like a failure and is not — and a reviewer who "fixes" the expectation to match it destroys the gate.
 - **Cannot prove — state this in the task report:** this grep proves **isolation, not equivalence.** It says the import is gone; it says nothing about whether the replacement behaves the same. That is T04 and T06–T10.
-- **Done when:** both outputs match exactly.
+- **Done when:** **all three outputs** match exactly. *(Was "both outputs" -- corrected 2026-08-28. This is the TASK-level done-when, which is what a closer reads when closing T11; "both" is satisfiable by checking src/main and src/test and never opening marlo-data -- the root JD-1 was raised about.)*
 - **STOP if:** an unexpected file appears — a consumer was missed.
 
 ---
@@ -395,8 +434,8 @@ Three fields appear in every task and mean the same thing throughout:
 
 - **Status:** `[ ]`
 - **Depends on:** T11 · **Module:** none · **Size:** S
-- **Design:** **DD-10** · **Requirements:** the `D8` substitute in `requirements.md` §9; the field-injection clause of `FN-006` *GuestUsersValidator*
-- **Why this task exists:** MARLO has **no Spring context test**. A missing or ambiguous `@Named` bean **compiles, passes checkstyle, and passes `mvn test`**, failing only at Tomcat startup — which CI never exercises (`Dockerfile` builds with `-Dmaven.test.skip=true`). This is the spec's largest blind spot, and this manual check is its only available substitute. **It is a task rather than a footnote so it cannot be skipped silently.**
+- **Design:** **DD-10** · **Requirements:** the `D8` substitute in `requirements.md` §9. ⚠️ **NOT the field-injection clause of `FN-006` *GuestUsersValidator*** — corrected 2026-08-28: after T08, that class references `config` nowhere, so a successful start certifies a no-op and cannot be evidence for the clause. It is gated by T08's structural check instead. See this task's *Cannot prove* below.
+- **Why this task exists:** MARLO has **no Spring context test**. A missing or ambiguous `@Named` bean **compiles and passes `mvn test`** (checkstyle would not catch it either, and is UNVERIFIABLE here — §3.1), failing only at Tomcat startup — which CI never exercises (`Dockerfile` builds with `-Dmaven.test.skip=true`). This is the spec's largest blind spot, and this manual check is its only available substitute. **It is a task rather than a footnote so it cannot be skipped silently.**
 - **Scope:** start the application once and confirm it serves a page and that a `DirectoryService`-dependent flow constructs.
 - **Verification:**
   ```
@@ -408,6 +447,7 @@ Three fields appear in every task and mean the same thing throughout:
 - **⚠️ Concurrency — mandatory.** `run-marlo-java17.sh` **kills any `cargo:run` process, deletes `marlo-{utils,data,web}/target`, and rewrites `marlo-dev.properties`** before building. **Never run it while another agent is working in this checkout.** If `auth-flow` is running in parallel, it is in its own worktree and this is safe; otherwise wait for the worker to report.
 - **Falsifying input:** a missing `@Named` on `LdapDirectoryService`, or a second implementation making the injection ambiguous — the context fails to start and the `curl` never returns 2xx.
 - **Disqualifies the evidence:** a `curl` that returns 2xx from a **stale WAR**. Confirm the build in this run actually compiled the new classes before trusting the response. A 2xx after a failed build is worthless.
+- **Cannot prove — added 2026-08-28:** **that `config` is populated on `GuestUsersValidator`.** After T08 that class references `config` nowhere, so the clause is **vacuously satisfiable** and a successful start certifies a no-op. Do **not** tick `FN-006`'s field-injection clause on this task's evidence — T08's structural check gates it.
 - **Cannot prove:** anything about a multi-instance environment. Local runs use a single Cargo instance with **no memcached**, so kryo session-serialization defects (`TS-3`) remain undetectable here. Out of scope; recorded.
 - **Done when:** the app boots, serves a page, and an admin user screen renders.
 - **STOP if:** the context fails to start. That is a wiring defect, and it is exactly what this task exists to catch.
@@ -439,7 +479,7 @@ Three fields appear in every task and mean the same thing throughout:
   - *"**AND IT MUST** remain true that the four `APConstants.*_AD` constants still exist"*
 - **Verification:**
   ```
-  mvn -q install -DskipTests -pl marlo-web -am && mvn -q checkstyle:check
+  mvn -q install -DskipTests -pl marlo-web -am     # checkstyle:check OMITTED - UNVERIFIABLE, see 3.1
   git diff marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/center/capdev/ContactPersonAction.java
   grep -n "ADConexion\|LDAPService" <file>          # expect empty
   grep -n "adUsermanager.searchUsers" <file>        # expect present, at :99 area
@@ -482,10 +522,36 @@ Three fields appear in every task and mean the same thing throughout:
   | `LDAPAuthenticator:61` | **Live** — Capability A, child 2 |
   | `LdapDirectoryService` *(new)* | **Live** — the single Capability B site, swapped in child 3 |
   | `BaseAction` | **Deleted** |
-  | `CrpUsersAction`, `ManageUsersAction` � --2, `SearchUserAction`, `GuestUsersValidator` | **Migrated** |
+  | `CrpUsersAction`, `ManageUsersAction` ×2, `SearchUserAction`, `GuestUsersValidator` | **Migrated** |
   | `ContactPersonAction` | **Eliminated** |
   | `searchUsersUtil` | Unreachable (`main()`) — child 3 |
 - **Verification:** `grep -rn "new LDAPService()\|new ADConexion" marlo-web/src marlo-data/src --include="*.java"` reconciles with the table and with T00's baseline.
+- **AND the import gate, re-run post-T14 across ALL THREE roots — added 2026-08-28. This is the step that closes `DIRABS-T11`'s loop:**
+  ```
+  grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/main --include="*.java"
+  # EXPECTED NOW, exactly ONE file:
+  #   utils/searchUsersUtil.java                        (main(), unreachable - deleted in child 3)
+  #   <ContactPersonAction MUST be gone - T14 deleted its imports>
+
+  grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/test --include="*.java"
+  # EXPECTED, exactly ONE file:
+  #   security/directory/LdapDirectoryServiceTest.java  (DD-12)
+  #   <T15's new ContactPersonActionTest MUST NOT appear>
+
+  grep -rl "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"
+  # EXPECTED, exactly THREE files (unchanged from T11)
+  ```
+  > **Why this is here and not only at T11.** T11 runs **before** T14, so its `src/main` expectation is
+  > legitimately **two** files. Nothing in the original plan re-ran the import gate afterwards, so
+  > `ContactPersonAction`'s imports would never have been verified as removed — only its *construction
+  > sites*, via the `new LDAPService()` grep above. **Imports and constructions are different things: a
+  > file can drop the construction and keep the import.** Only here does `DIRABS-NF-002`'s *"after
+  > completion"* end-state list become the correct expectation.
+  >
+  > **All three roots are re-run, not just `src/main`.** `src/test` is included because **T15 adds
+  > `ContactPersonActionTest`**; if that new test imported an `adauth` type, `src/test` would rise to 2
+  > and no other task would catch it. T15's scope forbids it (*"assert no `adauth` type is
+  > instantiated"*), so the exposure is small — but re-running the root costs nothing and closes it.
 - **Falsifying input:** a fourth live site, or a site the analysis called unreachable turning out to be reachable.
 - **Disqualifies the evidence:** a count that does not reconcile against T00. Without the baseline the number is unanchored — **report it as inconclusive rather than as 3.**
 - **STOP if:** the count is not 3, or reconciliation fails.
@@ -508,7 +574,7 @@ T00 (baseline + drift probe)
  └── T01 (value types + exception)
       └── T02 (DirectoryService interface)
            └── T03 (LdapDirectoryService)
-                └── T04 (contract test + fake + LDAP test)   � --�── the gate for D1/D2/D3
+                └── T04 (contract test + fake + LDAP test)   ◄── the gate for D1/D2/D3
                      │
                      ├── T05 (delete BaseAction.getOutlookUser)
                      │    ├── T06 (CrpUsersAction)        ── atomic with T05, see T05 note (a)
@@ -518,7 +584,7 @@ T00 (baseline + drift probe)
                      └── T10 (center/…/ManageUsersAction)  ── independent of T05, owns the ERROR branch
                           │
                           └── T11 (isolation gate — corrected grep)
-                               └── T12 (Spring context smoke check)   � --�── the only D8 evidence
+                               └── T12 (Spring context smoke check)   ◄── the only D8 evidence
                                     └── T13 (CP2 report)
                                          └── T14 (ContactPersonAction deletions)
                                               └── T15 (ContactPersonActionTest)
@@ -544,8 +610,13 @@ in one checkout they serialize on `target/`. T05+T06+T07 are one atomic unit (se
 | **Mocking framework** | **None** — hand-rolled fakes. `DEC-005` deliberately not requested | Taking it would edit `marlo-parent/pom.xml` and break parallel-safety with `auth-flow` |
 
 **A green suite is not sufficient evidence in this repository.** Before this spec there were 3 test
-files, one with its body commented out. The gates that carry weight here are compile, checkstyle, the
-per-task `git diff` review, and T12's manual start.
+files, one with its body commented out. The gates that carry weight here are compile, **the per-task
+`git diff` review, `awk 'length>120'` plus the Reviewer reading header and style at the source**, and
+T12's manual start. **Checkstyle is NOT among them — it is UNVERIFIABLE in this checkout (EB-2, §3.1)
+and out of scope to repair.** *(Corrected 2026-08-28: this sentence is §6's **definitional** statement
+of what verification means in this spec, and it is the first thing a closer, QA lead or
+`/akili-validate` pass reads — it previously named checkstyle and so contradicted §3.1, §9's `NF-006`
+row and the §10 Definition of Done.)*
 
 ---
 
@@ -597,16 +668,16 @@ requirements = 59 items.**
 | `FN-006` | `center/json/global/ManageUsersAction` | **T10** |
 | `FN-007` | BaseAction shrinks, no new dependency | **T05** |
 | `FN-008` | The endpoint is behaviorally identical | **T14** (deletions) + **T15** (output) |
-| `FN-009` | The exception is explicit, not an oversight | **T11** |
+| `FN-009` | The exception is explicit, not an oversight | **T11** (pre-T14 checkpoint) + **T16** (end-state gate, added 2026-08-28) |
 
 | Non-functional | Owning task(s) |
 |---|---|
 | `NF-001` observable equivalence | T04, T06–T10, T15 + per-task `git diff` |
-| `NF-002` import-scoped isolation counts | **T11** |
+| `NF-002` import-scoped isolation counts | **T11** (pre-T14 checkpoint) + **T16** (the *"after completion"* end-state list, added 2026-08-28) |
 | `NF-003` no new configuration | every task's `git diff` (`APConfig.java` must not appear) |
 | `NF-004` no dependency change | every task's `git diff` (no `pom.xml`) |
 | `NF-005` no schema change | every task's `git diff` (no migration) |
-| `NF-006` GPL header + style | T01–T04, T15 · `mvn -q checkstyle:check` |
+| `NF-006` GPL header + style | T01–T04, T15 · **NOT checkstyle** — UNVERIFIABLE (EB-2) and out of scope to repair. Carried by `awk 'length>120'` per task **plus** the Reviewer reading header and style at the source |
 | `NF-007` independent revertibility | § 3.4 + T05's sequencing note |
 | `NF-008` English only, no new user-facing string | Reviewer audit, every task |
 | `SEC-001` no credential-handling change | **T14** (the `*_AD` constants survive) + `APConstants.java` protected everywhere |
@@ -617,7 +688,7 @@ requirements = 59 items.**
 
 | Clause | Owner | What is genuinely uncovered |
 |---|---|---|
-| `FN-006` *GuestUsersValidator* — *"**AND IT MUST** keep receiving `config` through the inherited field"* | T08 + T12 | A unit test using `new` bypasses Spring, so only T12's app start is real evidence |
+| `FN-006` *GuestUsersValidator* — *"**AND IT MUST** keep receiving `config` through the inherited field"* | **T08 only** | ⚠️ **Corrected 2026-08-28. This row previously read "T08 + T12 … only T12's app start is real evidence" — T12 cannot cover it either.** After T08, `GuestUsersValidator` references `config` **nowhere**, so a successful app start certifies a **no-op** and is not evidence. **Genuinely uncovered:** that Spring populates the field. **Gated instead by** T08's falsifiable structural check — no subclass field named `config`, and the inherited `BaseValidator` field still `@Inject`-annotated and `protected` — A/B-demonstrated by adding a shadowing field and observing red |
 | `FN-006` *json/global/ManageUsersAction* — the 15 FTL pages | T07 | The JSON shape is asserted; **the rendering is not.** No automated gate exists |
 | `FN-008` — *"sourced from `adUsermanager.searchUsers`"* | T15 | The manager is stubbed; **the real `ad_user` query is untested** |
 | `FN-005` *Found person* — the real AD's return values | T04 | The backend is faked; **no integration harness exists** |
@@ -631,9 +702,12 @@ requirements = 59 items.**
 
 - [ ] T00 … T17 complete, each with its verification evidence in `execution.md`.
 - [ ] `SC-1` … `SC-11` in [`proposal.md`](./proposal.md) all satisfied.
-- [ ] The isolation gate (T11) returns **exactly** 1 file for `marlo-web` and **3** for `marlo-data`.
+- [ ] **T11's** isolation gate returned its *pre-T14* expectation: `marlo-web/src/main` **2** (`searchUsersUtil` — child 3; `ContactPersonAction` — pending T14), `marlo-web/src/test` **1** (`LdapDirectoryServiceTest` — DD-12), `marlo-data/src` **3**. Every file named with its reason.
+- [ ] **T16's** post-T14 re-run returned the `DIRABS-NF-002` end state: `marlo-web/src/main` **exactly 1**, `marlo-web/src/test` **1**, `marlo-data/src` **3**.
+  > *Corrected 2026-08-28. This line previously read "the isolation gate (T11) returns **exactly** 1 file for `marlo-web` and **3** for `marlo-data`" — **wrong at every point in time**: T11 is legitimately **2** pre-T14, and unqualified `marlo-web/src` is **2** even at completion (`searchUsersUtil` + `LdapDirectoryServiceTest`), never 1. Whoever closed this spec against the old line would have measured 2 or 3 and **reported failure on correct code** — JD-1's defect reproduced in the one place the end state is formally accepted.*
 - [ ] Exactly **3** live `adauth` call sites remain (T16), reconciled against T00.
-- [ ] `mvn -q install -DskipTests -pl marlo-web -am` and `mvn -q checkstyle:check` green.
+- [ ] `mvn -q install -DskipTests -pl marlo-web -am` green.
+- [ ] **`mvn -q checkstyle:check` is NOT part of this Definition of Done.** It is **UNVERIFIABLE (EB-2)** and `pom.xml` is §3.2-protected, so this spec is **forbidden to repair it**. Tick this box on the substitute that was actually used: `awk 'length>120'` per task plus the Reviewer reading header and style at the source. *(Split 2026-08-28. The single line this replaces read "`mvn -q install …` **and** `mvn -q checkstyle:check` green" — an independent DoD checkbox that a closer working §10 top-to-bottom would reach **without ever reading `SC-4`'s annotation**, run, and record as a failure. That is the exact harm the `SC-4` note was written to prevent, and annotating `proposal.md` alone did not prevent it.)*
 - [ ] `mvn -q -pl marlo-web test` green, with **9 new test classes** present.
 - [ ] T12's app-start check performed and recorded.
 - [ ] No protected file (§ 3.2) appears in any diff.

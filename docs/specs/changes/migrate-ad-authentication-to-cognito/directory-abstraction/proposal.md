@@ -137,22 +137,27 @@ After this change:
 
 | Observable | Before | After |
 |---|---|---|
-| `marlo-web` classes importing `org.cgiar.ciat.auth` | **8** | **1** — only `utils/searchUsersUtil.java` (see below) |
-| Runtime `ADConexion` constructions | 1 (on every `searchContact.do` hit) | **0** |
+| `marlo-web` **production** classes importing `org.cgiar.ciat.auth` | **8** | **1** — only `utils/searchUsersUtil.java` (see below). *(Scope clarified 2026-08-28: this row counts `src/main` only. `src/test` legitimately holds one importer, `LdapDirectoryServiceTest`, authorised by **DD-12** to stub `LDAPService` — see `requirements.md` §13.)* |
+| `new ADConexion` constructions **in MARLO source** | 1 (executing on every `searchContact.do` hit) | **0** |
+| Runtime `ADConexion` instantiations **inside `adauth` itself** | 1 per Capability A login (`LDAPAuthenticator:67`) | **unchanged — child 2's path, protected here.** *(Row split 2026-08-28: the single "runtime" row overstated the outcome, since `adauth` is a JAR and this spec greps source. DoD "Gate 1 explicitly NOT claimed" is the corresponding honest statement.)* |
 | Reachable Capability B paths | 5 direct `LDAPService` sites + 3 indirect `LDAPUser` consumers | **1 interface, 1 implementation** |
 | Swapping the Capability B provider costs | a refactor across 6 classes | **one `@Named` bean + one config value** |
 | User-visible behavior | — | **identical** |
 | `adauth` dependency | present in 3 POMs | **present in 3 POMs, unchanged** |
 
-**Two `adauth` importers remain by design, in different modules:**
+**Four `adauth` importers remain in production code by design, across two modules — plus one in test source.**
+*(Count corrected 2026-08-28: this block previously said "Two", listed two, and added a third in prose, while **`APCustomRealm` was absent entirely** — literally the omission `judgment.md` **JD-1** was raised to fix. See `requirements.md` §13.)*
 
-| File | Module | Why it stays | Removed in |
+| File | Module · root | Why it stays | Removed in |
 |---|---|---|---|
-| `utils/searchUsersUtil.java` | `marlo-web` | A `main()` with no caller. It also reads `LDAPUser.getAttributes()`, an attribute map `DirectoryPerson` deliberately does not carry | child 3 |
-| `security/directory/impl/LdapDirectoryService.java` | `marlo-data` | **The one file permitted to import `adauth`** — that is its whole purpose | child 3 |
+| `utils/searchUsersUtil.java` | `marlo-web` · `src/main` | A `main()` with no caller. It also reads `LDAPUser.getAttributes()`, an attribute map `DirectoryPerson` deliberately does not carry | child 3 |
+| `security/directory/impl/LdapDirectoryService.java` | `marlo-data` · `src/main` | **The one file permitted to import `adauth`** — that is its whole purpose | child 3 (swapped behind the seam) |
+| `security/authentication/LDAPAuthenticator.java` | `marlo-data` · `src/main` | **Capability A** — owned by child 2, protected here | child 2 |
+| `security/APCustomRealm.java` | `marlo-data` · `src/main` | **Capability A**, including its own `LDAPService` call at `:287` — owned by child 2, protected here | child 2 |
+| `security/directory/LdapDirectoryServiceTest.java` | `marlo-web` · **`src/test`** | Authorised by **DD-12** to stub `LDAPService`, so the contract test exercises the real mapping without AD | child 3 |
 
-`LDAPAuthenticator.java` in `marlo-data` also keeps its `adauth` import: it is Capability A, owned by
-child 2, and protected here.
+**These are the `DIRABS-NF-002` counts**, stated the same way there and in `SC-1`/`SC-2`: at completion
+`marlo-web/src/main` **1** · `marlo-web/src/test` **1** · `marlo-data/src` **3**.
 
 **Behavior equivalence is the acceptance criterion — stated as *observable* equivalence, not as
 byte-identity.** `LdapDirectoryService` reproduces `BaseAction.getOutlookUser()` (`:4802`) step for
@@ -437,19 +442,19 @@ DA-OQ-3 is resolved by running Checkpoint 0; DA-OQ-4 is a records question.
 
 | # | Criterion | How it is verified |
 |---|---|---|
-| **SC-1** | `grep -rn "^import org.cgiar.ciat.auth" marlo-web/src --include="*.java"` returns **only** `utils/searchUsersUtil.java` | `EXEC-040` |
-| **SC-2** | `grep -rn "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"` returns **exactly three**: `APCustomRealm.java` (Capability A, untouched), `LDAPAuthenticator.java` (Capability A, untouched), `security/directory/impl/LdapDirectoryService.java` (new) | `EXEC-040` |
-| **SC-3** | **Zero** runtime `ADConexion` constructions remain in the codebase | `EXEC-050`, `EXEC-052` |
-| **SC-4** | `mvn -q install -DskipTests -pl marlo-web -am` and `mvn -q checkstyle:check` both pass | every task |
+| **SC-1** | `grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/main --include="*.java"` returns **only** `utils/searchUsersUtil.java`; and `grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/test --include="*.java"` returns **only** `security/directory/LdapDirectoryServiceTest.java` (authorised by **DD-12** to stub `LDAPService`). *(**Corrected 2026-08-28** — see `requirements.md` §13. The original criterion scoped to `marlo-web/src` unqualified and demanded **one** file, which is **unsatisfiable**: `src/test` legitimately holds a second importer, so the criterion returned **2** and would have reported failure on a correct implementation. It also **contradicted `SC-5`**, which requires the very file that made `SC-1` false to exist and pass. Verified at `DIRABS-T16`, not `T11` — T11 runs before `T14` removes `ContactPersonAction`'s imports.)* | `EXEC-040` |
+| **SC-2** | `grep -rl "^import org.cgiar.ciat.auth" marlo-data/src --include="*.java"` returns **exactly three**: `APCustomRealm.java` (Capability A, untouched), `LDAPAuthenticator.java` (Capability A, untouched), `security/directory/impl/LdapDirectoryService.java` (new) | `EXEC-040` |
+| **SC-3** | **Zero `new ADConexion` constructions remain in MARLO source.** *(Wording corrected 2026-08-28: this read "**runtime** `ADConexion` constructions", while its named verification is a **source** grep and `adauth` ships as a JAR — so a closer greps 0, ticks the box, and records a **runtime** claim that is false on every Capability A login, where `adauth` still instantiates an `ADConexion` internally at `LDAPAuthenticator:67`. That path is child 2's and is protected here; DoD "Gate 1 explicitly NOT claimed" covers the gap, but prose and evidence now agree.)* | `EXEC-050`, `EXEC-052` |
+| **SC-4** | `mvn -q install -DskipTests -pl marlo-web -am` passes. **`mvn -q checkstyle:check` is ENVIRONMENTALLY UNRUNNABLE in this checkout and is recorded as *unverifiable*, not as passed or failed** — see `execution.md` **EB-2**: `marlo-parent/pom.xml:827-833` pins `maven-checkstyle-plugin:2.9.1` against a forced `checkstyle:8.18`, and a `PluginContainerException` (classloader-realm construction) now masks the older `NoSuchMethodError`. `pom.xml` is a §3.2 protected file, so repairing it is **out of scope by construction**. *(Annotated 2026-08-28 — this criterion is DoD-gated, so without this note whoever closes the spec would record a failure for a defect the spec is forbidden to fix.)* | every task |
 | **SC-5** | `DirectoryServiceContractTest` + `LdapDirectoryServiceTest` + `ContactPersonActionTest` pass via `mvn -q -pl marlo-web test` | `EXEC-033`, `EXEC-051` |
 | **SC-6** | **Observable behavior equivalence.** For the same inputs, every consumer produces the same observable outcome as before — the same field assignments, the same JSON, the same messages, the same propagation. No protected file appears in any diff | per-task `git diff` review + the per-consumer tests + Reviewer audit |
 | **SC-6a** | **The `NOT_FOUND` / `ERROR` distinction is real and correctly consumed.** A stub that throws yields `found=false` with `source=ERROR` (never `NOT_FOUND`); the five `found`-only consumers behave identically for both; `center/json/global/ManageUsersAction` throws `DirectoryLookupException` on `ERROR` and returns `null` on `NOT_FOUND` | `DirectoryServiceContractTest` + `CenterManageUsersActionDirectoryTest` |
 | **SC-6b** | **A directory outage is never reported as "user does not exist."** With the directory unavailable, `center/json/global/ManageUsersAction.create()` does **not** produce `manageUsers.email.doesNotExist` | `CenterManageUsersActionDirectoryTest` |
 | **SC-7** | `searchContact.do` returns the same JSON, from `ad_user`, constructing no AD object | `EXEC-051` |
 | **SC-8** | `EXEC-052`'s re-inventory shows exactly **3** live `adauth` call sites, reconciled against `EXEC-005` | `EXEC-052` |
-| **SC-9** | Every new `.java` file carries the **GPL header**, 2-space indent, ≤120-char lines | `mvn -q checkstyle:check` + Reviewer audit item 6 |
+| **SC-9** | Every new `.java` file carries the **GPL header**, 2-space indent, ≤120-char lines | **NOT `mvn -q checkstyle:check`** — that gate is unrunnable (EB-2, see `SC-4`), **and even repaired it would not cover most of the new files**: the **`maven-checkstyle-plugin`** does not set `includeTestSourceDirectory` (a **plugin** parameter, settable only in the POM -- `configuration/marlo-checkstyle.xml` is a Checker ruleset and could never carry it; `marlo-parent/pom.xml` sets only `configLocation`), so **test sources are outside its scope entirely** — and 9 of this child's new `.java` files are tests. Actually verified per task by **`awk 'length>120'`** on every touched file plus the **Reviewer reading the header and style at the source**, recorded task by task in `execution.md`. *(Corrected 2026-08-28: the original named a verification that is doubly wrong — the tool cannot run, and its scope excludes the files it was cited to check. The "Reviewer audit item 6" half was always sound and is what carried this criterion.)* |
 | **SC-10** | Swapping the provider is demonstrably one `@Named` bean plus one config value | design review, `/akili-validate` |
-| **SC-11** | **The seam is provider-agnostic.** `security/directory/` contains no reference to Cognito, CLARISA, Microsoft Graph, `ad_user`, or any other candidate provider — only `LdapDirectoryService` names a backend, and it is the one file allowed to | Reviewer audit + `grep` over the new package |
+| **SC-11** | **The seam is provider-agnostic** — meaning it carries no provider-specific **import, dependency, or logic**. `grep -rn "^import" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory` shows **no provider SDK outside `impl/LdapDirectoryService.java`**, which is the only file permitted to name a backend. **`DirectorySource`'s reserved values (`CLARISA`, `COGNITO_CLAIMS`, `AD_MIRROR`, `DIRECTORY_API`) are *vocabulary, not coupling*:** `design.md` §4.2 and `EXEC-030` **require** them, and **no implementation in this child produces any of them**. *(**Corrected 2026-08-28** — see `requirements.md` §13. The original criterion asserted the package *"contains no reference to Cognito, CLARISA, Microsoft Graph, `ad_user`"*, verified by a bare package `grep`. That is **unsatisfiable against the approved design**: `DirectorySource.java` names all four by mandate. Worse than a false alarm — the obvious way to make the old criterion pass is to **delete four values from an 8-value enum that child 3 inherits**, which is `tasks.md` T11's "reviewer who fixes the expectation to match" hazard aimed at production code. `DIRABS-ARCH-001` states the same intent soundly at requirement level and needed no change.)* | Reviewer audit + the **import-scoped** `grep` above |
 
 **SC-6 is the one that matters.** Everything else can pass while a mapping is subtly wrong.
 

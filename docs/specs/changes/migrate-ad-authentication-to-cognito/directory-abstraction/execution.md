@@ -466,7 +466,7 @@ marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/DirectoryLooku
 |---|---|---|
 | Compile | *(not run)* | **DEFERRED — EB-1.** No compile claim is made for this task |
 | Checkstyle | `mvn -q checkstyle:check` | **UNRUNNABLE — EB-2.** `NoSuchMethodError` before scanning any file. Reported as *inconclusive*, not as a pass |
-| Isolation | `grep -rn "org.cgiar.ciat" .../security/directory/` | **EMPTY** ✅ — the new package does not know AD exists |
+| Isolation | `grep -rl "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` | **EMPTY** ✅ — ⏱ **correct at T01 only.** T03 adds `impl/LdapDirectoryService.java` to this same package and it imports `adauth` **by mandate** (`FN-005`); from T03 the right expectation is **exactly one file**. *(Root, `-rl` and time-scope added 2026-08-28 — this is T01's own row and the previous sweep annotated T02's by mistake.)* — the new package does not know AD exists |
 | Scope | `git status --short` / `git diff --stat` | **Exactly 3 new `.java` files in one new directory** ✅. No protected file (§3.2) present |
 | Line length | `awk 'length>120'` (Leader-run) | **EMPTY** ✅. Reviewer measured the longest line at ~103 chars |
 
@@ -636,7 +636,7 @@ independence that has never been tested against it.
 |---|---|
 | Compile | **DEFERRED — EB-1.** Not run, not claimed |
 | Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed. Known blocker was passed *into* the brief so the Implementer would not spend a second task rediscovering it |
-| Isolation | `grep "org.cgiar.ciat"` → **EMPTY** ✅ |
+| Isolation | `grep -rl "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **EMPTY** ✅ — ⏱ **correct at T02 only**, for the reason given in **T01's evidence row above**: T03 adds `impl/LdapDirectoryService.java` to this package and it imports `adauth` by mandate, so from T03 the expectation is exactly one file. *(Root and time-scope added 2026-08-28; **label corrected from "T01 only" — this is T02's row**, mislabelled by the previous sweep.)* |
 | Scope | `git status --short` → **exactly 1 new file** ✅ (the 2 modified spec docs are the Leader's correction sweep) |
 | Line length | `awk 'length>120'` → **EMPTY** ✅ (Reviewer measured the longest at ~106) |
 
@@ -730,7 +730,7 @@ Implementer's `Not Done / Assumptions`: **none.**
 |---|---|
 | Compile | **DEFERRED — EB-1.** Not run, not claimed |
 | Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed |
-| Isolation | `grep "org.cgiar.ciat"` → **EMPTY** ✅ (no imports at all; the linked types are same-package) |
+| Isolation | `grep -rl "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **EMPTY** ✅ (no imports at all; the linked types are same-package) — ⏱ **correct at T02 only**, for the reason given in the T01 entry: from T03 the expectation is exactly one file. *(Root and time-scope added 2026-08-28.)* |
 | Scope | `git status --short` → **1 new source file** ✅ |
 | Line length | `awk 'length>120'` → **EMPTY** ✅ (Reviewer measured longest at ~105) |
 | HTML balance | `ol` 1/1 · `li` 5/5 · `b` 4/4 · `em` 2/2 · 6 conventional unclosed `<p>` ✅ — independently re-counted by the Reviewer |
@@ -886,7 +886,7 @@ requirements tell it *what must be true*. Pointing at only the former is what pr
 |---|---|
 | Compile | **DEFERRED — EB-1.** Not run, not claimed |
 | Checkstyle | **UNRUNNABLE — EB-2.** Not run, not claimed |
-| Isolation | `grep -rln "org.cgiar.ciat" security/directory/` → **exactly one file**, `impl/LdapDirectoryService.java` ✅ — independently re-run by the Reviewer, which also confirmed that under JD-1's `^import` gate it is exactly one |
+| Isolation | `grep -rln "org.cgiar.ciat" marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/directory/` → **exactly one file**, `impl/LdapDirectoryService.java` *(root added 2026-08-28: the original record omitted it, and the command became root-dependent once T04 created `marlo-web/src/test/.../security/directory/LdapDirectoryServiceTest`, which imports `adauth` by design under DD-12)* ✅ — independently re-run by the Reviewer, which also confirmed that under JD-1's `^import` gate it is exactly one |
 | Scope | `git status --short` → **1 new source file** ✅ |
 | Line length | Reviewer independently ran `^.{121,}$` across the whole package → **no matches** ✅ (verified, not accepted on report) |
 | Committed siblings | Leader-run `git diff e8d5d9e -- <4 files>` → **empty** ✅ all four T01/T02 files byte-identical |
@@ -2067,5 +2067,206 @@ cost more than the defect."*
 
 Review rounds consumed: **11 of the ~20 budgeted** (T01: 1 · T02: 2 · T03: 1 · T04: 1 · T05–T07: 1 ·
 T08: 2 · T09: 1 · T10: 2).
+
+---
+
+## HALT: `DIRABS-T11` (EXEC-040) — Isolation gate
+
+| Field | Value |
+|---|---|
+| **Status** | **`[~]` HALTED** — 3-attempt ceiling reached, all three FAILs on documentation consistency |
+| **Date** | 2026-08-28 |
+| **Code changed by this task** | **NONE.** T11 is read-only (`Module: none`) |
+| **Substantive claim** | ✅ **VERIFIED, and re-verified independently at all three attempts** |
+| **Review rounds** | **3** → running total **14 of ~20** |
+
+### The substantive result is not in doubt
+
+Independently re-run by the Reviewer at every attempt, with exact filename matches:
+
+```
+marlo-web/src/main  → 2   utils/searchUsersUtil.java  ·  action/center/capdev/ContactPersonAction.java
+marlo-web/src/test  → 1   security/directory/LdapDirectoryServiceTest.java
+marlo-data/src      → 3   APCustomRealm  ·  LDAPAuthenticator  ·  impl/LdapDirectoryService
+```
+
+**The six previously-affected `marlo-web` production files are at 0** — `BaseAction` plus all five migrated
+consumers. `DIRABS-NF-002`'s isolation goal is met. **Nothing about the code is blocked.**
+
+### Delegation deviation
+
+Executed **Leader-inline, no Implementer** — three greps and a reconciliation is inline work under the
+Delegation Ceiling. **A Reviewer was spawned at every attempt**, exactly as recorded at T00 (*"the T00
+inline exception does not extend to T11/T13/T16/T17"*).
+
+### Attempt history — a converging sequence, not a stuck loop
+
+| Attempt | Reviewer verdict | What it found |
+|---|---|---|
+| **1** | FAIL, **4 issues** | The Definition of Done, T11's clause-level `FN-009` quote, the §8 traceability matrix, and one genuinely invalid byte |
+| **2** | FAIL, **2 issues** | A duplicated paragraph (revert-and-redo residue) and **`proposal.md`'s `SC-1`** — normative and DoD-gated |
+| **3** | FAIL, **1 issue** | **`proposal.md`'s `SC-11`** — normative, DoD-gated, and with a *destructive* remediation path |
+
+**4 → 2 → 1.** Each attempt fixed everything found and the Reviewer located new instances of the *same
+pattern* in places the previous sweep had not reached. That is progress, not thrash — but the ceiling is
+the ceiling, and it is reached.
+
+### 🔴 The blocking issue — `SC-11`, and why it is worse than `SC-1` was
+
+`proposal.md:452`, `SC-11`, asserts that `security/directory/` *"contains no reference to Cognito,
+CLARISA, Microsoft Graph, `ad_user`, or any other candidate provider — only `LdapDirectoryService` names a
+backend"*, verified by *"`grep` over the new package."*
+
+**But `DirectorySource.java` is in that package and names all of them**, because `design.md` §4.2 and
+`EXEC-030` **require** it to:
+
+```
+:41,:73  CLARISA           :42,:78  COGNITO_CLAIMS
+:43,:84  AD_MIRROR / ad_user        DIRECTORY_API
+```
+
+**Why this is more dangerous than `SC-1`, in the Reviewer's framing:** *"`SC-1` failing produced a false
+alarm. `SC-11` failing has a plausible, destructive remediation: an agent or closer trusting the criterion
+over the design **deletes `CLARISA`, `COGNITO_CLAIMS`, `AD_MIRROR` and `DIRECTORY_API` from an approved
+8-value enum that child 3 inherits** — the 'reviewer who fixes the expectation to match' hazard
+`tasks.md:412` warns about, pointed at **production code** instead of a comment."*
+
+`SC-11` also self-contradicts its own document: `proposal.md:187`, `proposal.md:124`, `design.md` §4.2,
+`tasks.md:123` and `requirements.md:94` all mandate the literals it forbids.
+
+**`DIRABS-ARCH-001` is the sound requirement-level statement of the same intent and needs no change** — it
+is verified by design review, not by a package grep. Only `SC-11`'s grep formulation is broken, and it is
+the **sole locus**; no other document restates it.
+
+### ⛔ Automatic Rollback deliberately NOT performed — and this is a judgment call, recorded
+
+`/akili-execute` Step 4 says a HALT runs `git restore .` and `git clean -fd` so as not to *"leave broken
+code for the user to clean up."* **Applying it here would cause the damage it exists to prevent:**
+
+1. **No code changed in this task.** There is no broken code to revert. The Reviewer confirmed it.
+2. The uncommitted working tree is **entirely spec-documentation corrections** — T11's and T16's
+   expectations, `SC-1`, the D4 box, the JD-1 supersession pointer, the inventory scoping.
+3. A rollback would therefore **restore the defective, DoD-gated `SC-1` and the defective T11
+   expectations** — reinstating known defects that would report failure on correct code.
+
+The rule's purpose is to protect the user from a half-finished code change. **Here it would delete six
+rounds of verified correction and reinstate a defect.** Rolling back is recorded as *inapplicable*, not
+skipped.
+
+### Leader hypothesis on the root cause
+
+**Not spec ambiguity and not a worker failure. It is a Leader sweep-methodology defect, now diagnosed
+across six instances in this run:**
+
+> **When I correct a definition, I sweep the documents that *contain* it and miss the documents that
+> *quote, index, or gate* it.**
+
+The refinement each instance added:
+
+| # | Where the miss was | What it taught |
+|---|---|---|
+| 1 | `tasks.md` T04's row count | Correct every site, not the one that was reported |
+| 2 | `FN-002`'s *Invalid input* scenario | Brief the **requirements**, not only the design |
+| 3 | `tasks.md:331`'s *"and order"* | A phrase-specific grep misses **paraphrases** |
+| 4 | DoD + coverage matrix + clause quote | Sweep what **indexes** the definition |
+| 5 | `proposal.md`'s `SC-1` | Sweep what **gates** the definition, not just what contains it |
+| 6 | `proposal.md`'s `SC-11` | **Prose statements of the rule name no path, no count and no literal — no grep I wrote could reach them** |
+
+Instance 6 is the one no pattern-based sweep can close. It requires reading the success-criteria table
+**as prose, in full**, whenever a scoping rule changes.
+
+### Also recorded from attempt 3 — encoding, resolved
+
+All seven family files are **valid UTF-8**, independently confirmed by the Reviewer via four byte-level
+tests (mojibake markers, malformed lead bytes, orphan continuations, illegal ranges) — the perl
+`Wide character` warnings did **not** produce double-encoding this time. Repaired glyphs are semantically
+correct (`×`, `◄──`), and the arrow idiom matches `analysis/adauth-retirement-analysis.md`.
+
+**The earlier damage, and its cause, for the record:** a `perl -pi -e 's/\x97/ --/g'` several tasks back
+ate the **middle byte of valid multi-byte characters** (`×` = `0xC3 0x97`, `◄` = `0xE2 0x97 0x84`), leaving
+orphaned lead bytes — some of which reached commits. A later `perl -0pi` with `\x{2014}` and no `-CSD`
+double-encoded **192 lines** of `tasks.md`, recovered by reverting to `f6d1822` and redoing the edits with
+the `Edit` tool. **And the detection method was itself the root cause of the confusion:** scanning
+`[\x80-\x9f]` flags the continuation bytes of every legitimate em-dash, which is why "318 / 1748 / 998 bad
+bytes" was reported and was almost entirely false. **`iconv -f UTF-8 -t UTF-8` is the authoritative check**
+and is now the one in use.
+
+### `ADVISORY` from attempt 3 — recorded, non-gating
+
+1. **`proposal.md:147-155`** — *"Two `adauth` importers remain by design"* lists two, prose adds
+   `LDAPAuthenticator` for three; **the end state is four — `APCustomRealm` is absent.** *Literally JD-1's
+   omission, in a document corrected twice for it.* Not a FAIL: it is a rationale table with no grep
+   attached, and both normative loci (`SC-2`, `NF-002`) name `APCustomRealm` correctly.
+2. **`execution.md:889`** — T03's evidence line records `grep … security/directory/` → *"exactly one file"*
+   **with no root**. True when T03 ran; now root-dependent, since `marlo-web/src/test/.../security/directory/`
+   holds `LdapDirectoryServiceTest`. A past-tense evidence record, not a forward expectation, so it gates
+   nothing — but any restatement must be rooted explicitly.
+3. The `requirements.md` §9 `D4` box now advertises **three** failure modes against a **two-row** table.
+   Making it three rows would keep the box the index it claims to be.
+
+### Resolution — the HALT was lifted into a scoped spec-wide documentation sweep
+
+**User decision, 2026-08-28:** stop treating this as T11 rework and treat it as what it was — *a
+spec-wide documentation-consistency audit that T11 surfaced.* **T11 is `[x]`:** its gate was verified
+independently **five times**, no code ever changed, and the residue is documentation.
+
+#### The methodology change, which is the transferable finding
+
+Nine consecutive misses had one cause: **I fixed the sites a reviewer reported.** The fix was to change
+the *unit* of the sweep:
+
+> **Enumerate every locus of a defect *class* mechanically → fix → verify the class greps empty.**
+
+It justified itself immediately. Class A had **13** loci; the reviewer's slice showed 4 and my first
+enumeration found 7. Among the ones only a class derivation reached: **`tasks.md` §3.1 — the shared
+verification-commands table every task inherits.** No findings list contained it.
+
+#### The four classes — and two of them are *absence* defects
+
+| Class | Shape | Loci | Why a presence-grep misses it |
+|---|---|---|---|
+| **A** | `checkstyle` asserted as a working gate | 13 | Needs *token **unaccompanied by** its annotation* — a token grep returns 30 hits and cannot separate the 13 dangerous from the 17 benign |
+| **B** | normative `grep -rn` stating **file** counts | 4 | Literal execution returns 6 where the text says 3 |
+| **C** | grep expectations true only at one task | 4 | *"EMPTY"* is correct at T01 and false from T03 |
+| **D** | preconditions declared *"binding on every task"* and **absent from the document that issues the commands** | 3 | **Pure absence.** `JAVA_HOME`: 9 occurrences in `execution.md`, **0 in `tasks.md`.** No presence-grep can ever reach this |
+
+**Class D carried the highest harm.** Without it a closer runs §3.1's compile row verbatim, hits JDK 8
+against `<release>17</release>`, and records **FAIL on correct code** — on the spec's only meaningful
+gate. Its third instance, the `pipefail` protocol, is worse still: it is the one precondition whose
+violation lets a **failed** gate be recorded as **passed**, and this run already produced exactly that
+false green (see §2's Leader process defect).
+
+**And a fifth class, found only because it was asked for as a class:** *a finding recorded here about a
+`[ ]` task, where `tasks.md`'s entry is not silent but **contradictory**.* `tasks.md` was instructing
+T12's closer, at three loci, to record the `config` clause as covered by the app start — which this log
+says **must not be recorded**, because after T08 the class references `config` nowhere and a green start
+certifies a no-op. Corrected at all three, plus a new *Cannot prove* on T12.
+
+#### Two more things learned, both about the *shape* of a partial fix
+
+1. **A partial annotation is worse than none.** Annotating T01 and T14 made the *absence* of an
+   annotation at T02/T03/T06/T08/T10 read as confirmation that checkstyle runs there.
+2. **A case-sensitive sweep of this spec is structurally incomplete** — it spells the tool both
+   `checkstyle` and `Checkstyle`. Six loci survived on that alone, including two **verbatim siblings** of
+   a sentence already annotated.
+
+#### 📋 PENDING for `/akili-validate` — named, not silently dropped
+
+Both are documentation-only; neither blocks code, and the substantive gate is verified.
+
+| Item | Where |
+|---|---|
+| Residual `Checkstyle`-as-working-gate prose in blindness claims | `requirements.md` §9 opening · `design.md:401` — the reviewer judged these acceptable as *blindness* claims |
+| Asymmetric supersession: `execution.md` §2's gate table says checkstyle *"Runs"* **upstream** of EB-2, which says the plugin cannot execute | `execution.md:282`. Generalisable check: for every `SUPERSEDED`/`CORRECTED` marker, look for a locus stating the pre-correction fact **earlier in reading order** — no grep expresses that |
+
+#### Leader tooling failure — three times in this one task, same cause
+
+`perl` byte/delimiter manipulation on UTF-8 markdown damaged files three times, worst of all
+**prepending `X` to 2210 of `execution.md`'s 2212 lines** — this file, the run's whole audit trail. Each
+was detected and reverted exactly (verified against the committed version, which has zero such lines).
+**Rule, no longer hedged: UTF-8 markdown is edited with the `Edit` tool. `perl`/`sed` only for pure
+ASCII with non-colliding delimiters.** And the detection method mattered as much as the fix:
+`[\x80-\x9f]` byte scans flag the continuation bytes of every legitimate em-dash — **`iconv -f UTF-8 -t
+UTF-8` is the authoritative validity check**, with line and column.
 
 ---

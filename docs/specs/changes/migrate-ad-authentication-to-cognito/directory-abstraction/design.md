@@ -289,7 +289,7 @@ one — taking it would edit `marlo-parent/pom.xml` and break parallel-safety wi
 | `FakeDirectoryService` | A hand-written implementation with settable canned responses **and a call recorder** (email received, invocation count) | Enables every assertion below |
 | `DirectoryServiceContractTest` | **Abstract**, with **five abstract seams** (`createServiceWithNoMatch`, `createServiceWithFoundPerson`, `foundSource`, `createFailingService`, `failingServiceInvocationCount`)  -- revised at T04 from "one abstract factory method", which cannot express *no-match*, *found* and *failing* separately. Encodes all five rows of §5.1's table, plus the three invariants and the no-network-call clause | `D2`, `D3`. **Reused verbatim by child 3's provider** — the swap arrives pre-covered |
 | `LdapDirectoryServiceTest` | Extends the contract test | `D2`, `D3` for the LDAP implementation |
-| 5 � -- `…DirectoryTest` (one per migrated consumer) | Drive the consumer with a `FakeDirectoryService` returning a person whose `login` is **`"JSmith"`**, and assert the **exact** value written | **`D1`** — the dominant defect class. Asserting *"a value was written"* would not catch it; asserting *`"jsmith"`* does |
+| 5 × `…DirectoryTest` (one per migrated consumer) | Drive the consumer with a `FakeDirectoryService` returning a person whose `login` is **`"JSmith"`**, and assert the **exact** value written | **`D1`** — the dominant defect class. Asserting *"a value was written"* would not catch it; asserting *`"jsmith"`* does |
 | `ContactPersonActionTest` | Stubbed `AdUserManager` returning 2 `AdUser` rows; assert 2 maps with matching keys and values | `D7` (partially — not the real `ad_user` query) |
 
 **Why `login = "JSmith"` specifically.** A fake returning an already-lowercase login makes the test
@@ -633,7 +633,7 @@ test artifact in the spec.
 HITL pause instead.
 
 **Argument:** MARLO has 3 test files and no context test (`docs/trd/trd.md` §10, `TS-2`). A missing or
-ambiguous `@Named` bean compiles, passes Checkstyle and passes `mvn test`, failing only at Tomcat
+ambiguous `@Named` bean compiles and passes `mvn test` (Checkstyle would not catch it either, and is **UNVERIFIABLE** here — EB-2), failing only at Tomcat
 startup — which CI never exercises (`Dockerfile` uses `-Dmaven.test.skip=true`). Adding a context test
 needs `DEC-005` and a `marlo-parent/pom.xml` edit, which would break this child's parallel-safety with
 `auth-flow`.
