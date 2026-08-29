@@ -375,7 +375,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T11 (EXEC-040) — Isolation gate *(corrected pattern)*
 
-- **Status:** `[x]` — **PASS 2026-08-28.** Gate verified independently **five times**: `src/main` 2 · `src/test` 1 · `marlo-data` 3, and the six previously-affected production files at **0**. **No code changed — T11 is read-only.** Reached the 3-attempt ceiling on *documentation consistency*, never on the gate; the user authorised a scoped spec-wide doc sweep, which corrected **23 loci across 4 defect classes** (2 of them absence-defects no presence-grep reaches). **Two residual doc items are named as pending for `/akili-validate`** — see `execution.md`. Automatic Rollback deliberately not run: no code, and it would have reinstated known defects
+- **Status:** `[x]` — **PASS 2026-08-28.** Gate verified independently at each of the three attempts, plus the Leader's own run: `src/main` 2 · `src/test` 1 · `marlo-data` 3, and the six previously-affected production files at **0**. **No code changed — T11 is read-only.** Reached the 3-attempt ceiling on *documentation consistency*, never on the gate; the user authorised a scoped spec-wide doc sweep, which corrected **23 loci across 4 defect classes** (2 of them absence-defects no presence-grep reaches). **Two residual doc items are named as pending for `/akili-validate`** — see `execution.md`. Automatic Rollback deliberately not run: no code, and it would have reinstated known defects
 - **Depends on:** T05–T10 · **Module:** none (read-only) · **Size:** S
 - **Requirements:** `DIRABS-NF-002`, `DIRABS-FN-009` · **Review:** `judgment.md` **JD-1**
 - **Scope:** prove `marlo-web` business code no longer knows about `adauth` types.
@@ -456,7 +456,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T13 (EXEC-041) — Checkpoint 2 report
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-29, attempt 2 (attempt 1 FAILed audit on 6 issues, incl. a stale test-file count copied from T04 and a CP0 overclaim child 2 would have inherited). CP2 COMPLETE: adauth still the implementation, nothing removed, behavior unchanged. Gate 1 NOT claimed. See the CHECKPOINT RESULT in `execution.md`
 - **Depends on:** T12 · **Size:** S
 - **Scope:** emit the `CHECKPOINT RESULT` for CP2. **State explicitly: `adauth` is still the implementation. Nothing was removed. Observable behavior is unchanged.** Record which T05 sequencing option (a or b) was taken. Update the runbook's `Execution State` block and commit it with the task.
 - **Verification:** the report exists, names every task's evidence, and the `Execution State` block is internally consistent.

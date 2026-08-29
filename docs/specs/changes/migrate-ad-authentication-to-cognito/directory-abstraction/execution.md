@@ -1856,6 +1856,112 @@ T08: 2 · T09: 1).
 
 ---
 
+### `DIRABS-T13` (EXEC-041) — **CHECKPOINT 2 REPORT**
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS** |
+| **Date** | 2026-08-29 |
+| **Executed by** | Leader inline (synthesis of this audit trail); **audited by an independent Reviewer** |
+| **Checkpoint** | **CP2 — "Isolate `adauth`" → COMPLETE** |
+
+---
+
+## ✅ CHECKPOINT RESULT — CP2
+
+### The three statements `tasks.md` T13 requires, stated first and plainly
+
+> **1. `adauth` is still the implementation.** `LdapDirectoryService` calls
+> `LDAPService.searchUserByEmail()` exactly as `BaseAction.getOutlookUser` did. Every lookup in MARLO
+> still reaches CGIAR AD through `org.cgiar.ciat.auth`.
+>
+> **2. Nothing was removed.** `adauth` 5.7 remains in all three POMs and on the classpath. Its JARs are
+> untouched under `marlo-data/src/main/resources/libs/`. No dependency, no **committed** configuration, no schema,
+> no i18n key changed.
+>
+> **3. Observable behavior is unchanged.** This checkpoint delivers **no user-visible change**. Its whole
+> value is structural: `marlo-web` business code no longer names an AD type.
+
+**Gate 1 is explicitly NOT reached and NOT claimed.** Two Capability A call sites remain live by design
+(`APCustomRealm:287`, `LDAPAuthenticator:61`) — they belong to **child 2**. Reaching zero runtime `adauth`
+usage is child 2's and child 3's work.
+
+### T05 sequencing — the choice this report must record
+
+**Option (a) was taken: T05 + T06 + T07 landed as ONE atomic commit** (`e21a57a`). Deleting
+`BaseAction.getOutlookUser` breaks compilation at both callers, so the three shipped together —
+compilation was never broken, and `DIRABS-NF-007`'s independent revertibility holds for the trio as a
+single revertible unit. Pre-registered at T00, confirmed at the T04 gate.
+
+### Per-task evidence — command and outcome for every line
+
+*Per T13's disqualifier — "a report claiming a verification that was never run" — no row below states a
+result that was not observed. Where a gate was unavailable, the row says so instead of omitting it.*
+
+| Task | Command | Outcome |
+|---|---|---|
+| **T00** | `mvn -v` · `git rev-parse HEAD` · `grep -rn "^import org.cgiar.ciat"` · `grep -rn "new LDAPService()\|new ADConexion"` | Baseline `8f88e78`; **zero drift across all 19 cited `file:line` refs**; 14 import lines / 8 files in `marlo-web`, 4 / 2 in `marlo-data`; 9 construction sites. **STOP hit:** `mvn -v` reported JDK 1.8 → resolved per-command with `JAVA_HOME` |
+| **T01** | `awk 'length>120'` · `grep -rl "org.cgiar.ciat" …/security/directory/` | Empty · empty *(correct at T01 only — T03 later adds the one permitted importer)*. Reviewer PASS attempt 1 |
+| **T02** | same, + Reviewer source read | Empty · 1 new file. **PASS attempt 2** — attempt 1 FAILed on a Javadoc cardinality defect traced to the Leader's brief |
+| **T03** | `grep -rln "org.cgiar.ciat" …/security/directory/` | **Exactly one file**, `impl/LdapDirectoryService.java`. **PASS attempt 2** — attempt 1 stopped on the `FN-002` spec gap, closed as **DD-11** |
+| **T04** | `mvn -q -pl marlo-web -am test` | **`Tests run: 13, Failures: 0` — the spec's first executable evidence.** Assertions 7 and 8 **mutation-proven**: breaking each branch produced exactly the predicted red |
+| **T05+T06+T07** | `mvn install -DskipTests` · `mvn test` | `INSTALL_EXIT=0` · **`Tests run: 20, Failures: 0`**. `BaseAction` grep for `org.cgiar.ciat\|DirectoryService` → **empty**; both constructors byte-identical |
+| **T08** | same | `INSTALL_EXIT=0` · **`Tests run: 24`**. **No `getOutlookUser` implementation remains anywhere in `src/main`.** PASS attempt 2 — the `config` assertion was rebuilt to be falsifiable and **A/B-demonstrated** |
+| **T09** | same | `INSTALL_EXIT=0` · **`Tests run: 28`**, no retry. Zero-invocation assertion **mutation-proven**; closed `FN-004`'s previously ungated `email` clause |
+| **T10** | same | `INSTALL_EXIT=0` · **`Tests run: 33`**, no retry. **PASS attempt 2** -- attempt 1 FAILed on the same falsified-mechanism comment defect as T08. The `ERROR` branch is **two-sided mutation-proven**: removing the throw turns both `ERROR` tests red **and** makes the `NOT_FOUND` message test wrongly pass |
+| **T11** | `grep -rl "^import org.cgiar.ciat.auth" <3 roots>` | `src/main` **2** · `src/test` **1** · `marlo-data` **3** — independently re-run by the Reviewer at each of the **three** T11 attempts, plus the Leader's own run, plus a fourth Reviewer re-run during the T13 audit. The six previously-affected production files at **0**. **Reached the 3-attempt HALT ceiling on documentation consistency** (never on the gate) and was lifted by user decision into a scoped spec-wide doc sweep |
+| **T12** | `scripts/run-marlo-java17.sh` · `curl` · log search | **`BUILD SUCCESS`**; WAR @ 08:31 after `target/` deletion; five new classes in the **deployed** jar; **`HTTP 302`** root, **`HTTP 200`** on `crpUsers.do`; **0** occurrences of the four bean-exception types |
+
+### Gates — honest status
+
+| Gate | Status |
+|---|---|
+| `mvn -q install -DskipTests -pl marlo-web -am` | ✅ **GREEN**, Leader-verified independently |
+| `mvn -q -pl marlo-web -am test` | ✅ **GREEN — 33 tests, 0 failures.** MARLO had **3** test files before this spec, one with its only body commented out |
+| `mvn -q checkstyle:check` | ❌ **UNVERIFIABLE, not passed and not failed** — **EB-2**. `maven-checkstyle-plugin:2.9.1` vs a forced `checkstyle:8.18`; `pom.xml` is §3.2-protected so repair is out of scope. Substitute: `awk 'length>120'` per task + Reviewer source read |
+| **D8** (Spring wiring) | ✅ **Substitute evidence obtained by T12** — **`D8` remains an *accepted risk*, not a closed gate.** `requirements.md` §9 is explicit: closing it properly needs a Spring context test and is **not in this spec's scope**. T12's check is **manual, one-time and not repeatable in CI**. It was, however, **demonstrated falsifiable** — red in run #2 on an unresolvable dependency, green in run #3. A real context test is `docs/trd/trd.md` §14.9 item 8. *(Corrected 2026-08-29: this row read "CLOSED by T12", which escalated a one-time manual substitute into a closed gate and contradicted `requirements.md:492` and `:528-531`.)* |
+
+### What CP2 delivered
+
+| | Before | After |
+|---|---|---|
+| `marlo-web` production classes importing `adauth` | **8** | **2** — `searchUsersUtil` (`main()`, child 3) and `ContactPersonAction` (**T14 removes it, this checkpoint's successor**) |
+| `getOutlookUser` implementations | **2** (`BaseAction` + the `GuestUsersValidator` duplicate) | **0** |
+| Consumers behind the seam | 0 | **5** |
+| Tests in the repository | **3** files | **10 test files** (11 under `src/test` incl. `FakeDirectoryService`), **33 tests** |
+| Provider swap cost | a refactor across six classes | **one `@Named` bean + one config value** |
+
+### Deviations from the runbook, both approved and recorded
+
+- **DEV-2 / `OQ-4`** — `EXEC-034` said to *rewire* `BaseAction.getOutlookUser`; **DD-2 deletes it** instead. Approved at the `/akili-execute` gate. `BaseAction` gained no dependency and got smaller.
+- **`OQ-5`** — the `getLogin()` NPE on a found person is **preserved, not "fixed."** A null guard at any `.toLowerCase()` is a defect in this spec.
+- **`DIRABS-T12` has no `EXEC-` equivalent** — added by this spec because `D8` had no gate in the runbook.
+
+### Defects found in the approved runbook, flagged for archive time
+
+1. **`EXEC-040`'s `marlo-data` expected output omits `APCustomRealm`** — inherited by this spec and corrected here (`judgment.md` **JD-1**).
+2. **`EXEC-040`'s `marlo-web` expectation is unsatisfiable as written** — it demands one importer at a checkpoint that legitimately has more, and scopes to `marlo-web/src`, sweeping in the test source root. Corrected here; the `=1` end state was **relocated to T16, not removed**.
+
+### Known gaps at CP2 — named, not hidden
+
+| Gap | Status |
+|---|---|
+| Checkstyle | **Unverifiable** (EB-2). Out of scope to repair |
+| `json/global/ManageUsersAction`'s **15 FTL pages** | JSON shape asserted; **rendering is not.** No automated gate exists |
+| The real `ad_user` query | Stubbed in tests; untested against the database |
+| Real AD return values | Faked; **no integration harness exists** |
+| Multi-instance behavior | Single Cargo instance, **no memcached** — `TS-3` kryo defects undetectable locally |
+| **`D8` itself** | **Not closed** — an *accepted risk* with a one-time manual substitute (T12). A repeatable Spring context test is `trd.md` §14.9 item 8, out of scope |
+| **Open documentation debt — CP2 ships with this** | **2 items pending `/akili-validate`** (residual `Checkstyle`-as-working-gate prose in `requirements.md` §9 and `design.md:401`; the asymmetric supersession at `execution.md`'s §2 gate table) **+ 3 comment touch-ups in shipped test files** — **one of which, `CrpUsersActionDirectoryTest.java:78-85`, still states a falsified Surefire mechanism as fact.** That one is a live trap for the next author who opens the file; it was deliberately left unedited and the corrected rule is routed through briefs instead |
+| **`EXEC-004`'s pre-migration baseline** | **Never obtained.** Compile was deferred at T00.5, checkstyle is UNVERIFIABLE, and no baseline `mvn test` was recorded. Green `install` + `test` were obtained *later* (T04 onward) but **not as CP0's baseline**. `EXEC-010`/`EXEC-030` gate on "CP0 = PASS" — child 2 must read CP0's ledger cell, not its status word |
+
+---
+
+**CP2 is COMPLETE. CP3 (`T14`–`T17`) is next: eliminate the AD construction in `ContactPersonAction`,
+prove its endpoint unchanged, re-inventory the call sites, and report.**
+
+---
+
 ### `DIRABS-T12` — Spring context smoke check *(the only `D8` evidence)*
 
 | Field | Value |
