@@ -512,7 +512,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T16 (EXEC-052) — Re-inventory the runtime call sites
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-29, Leader-inline (read-only, no diff). **Reconciles against T00: 9 baseline sites − 6 removed + 1 created = 4 construction sites, 3 LIVE.** `new ADConexion`: **zero**. Import gate **1 / 1 / 3** across all three roots — **this closes `DIRABS-T11`'s deferred loop**. `searchUsersUtil` unreachability actively probed on three axes (`main()`, zero callers, absent from all configs), not accepted on the analysis' word. `getOutlookUser`: zero declarations, zero calls, 5 Javadoc mentions. **Two defects found in T16's own verification command, both of which fired the STOP on correct code** — corrected above. See `execution.md`
 - **Depends on:** T15 · **Module:** none (read-only) · **Size:** S
 - **Requirements:** `DIRABS-FN-008`, and the `SC-8` count
 - **Scope:** reproduce `DIRABS-T00`'s inventory with a *"still reachable?"* column. **Expected end state — exactly 3 live `adauth` call sites:**
@@ -525,7 +525,24 @@ Three fields appear in every task and mean the same thing throughout:
   | `CrpUsersAction`, `ManageUsersAction` ×2, `SearchUserAction`, `GuestUsersValidator` | **Migrated** |
   | `ContactPersonAction` | **Eliminated** |
   | `searchUsersUtil` | Unreachable (`main()`) — child 3 |
-- **Verification:** `grep -rn "new LDAPService()\|new ADConexion" marlo-web/src marlo-data/src --include="*.java"` reconciles with the table and with T00's baseline.
+- **Verification — command corrected 2026-08-29 at execution; the original produced a false STOP.**
+  ```
+  grep -rn "new LDAPService()\|new ADConexion" marlo-web/src/main marlo-data/src/main --include="*.java"
+  # EXPECTED: 4 construction sites = 3 LIVE + 1 unreachable (searchUsersUtil, main()).
+  #   new ADConexion  -> expect 0
+  ```
+  > **Two defects in the original command, both of which fire the STOP on correct code.**
+  >
+  > **(1) It was scoped to `marlo-web/src`, which includes `src/test`.** T15's `ContactPersonActionTest`
+  > explains its bytecode assertion in a Javadoc that contains the literal `new LDAPService()`. The
+  > original command therefore returns **5**, and a closer reading *"STOP if the count is not 3"*
+  > literally would halt on a **comment**. Scoped to `src/main`. Child 2 and child 3 inherit this
+  > command shape — the fix matters beyond this spec.
+  >
+  > **(2) Its raw output never equals the stated expectation, even when everything is correct.** The
+  > table expects *"exactly 3 **live** sites"*; the grep counts **construction sites**, of which one
+  > (`searchUsersUtil`) is unreachable and deliberately retained. 4 ≠ 3 was guaranteed. The arithmetic is
+  > now stated so the two numbers can be compared.
 - **AND the import gate, re-run post-T14 across ALL THREE roots — added 2026-08-28. This is the step that closes `DIRABS-T11`'s loop:**
   ```
   grep -rl "^import org.cgiar.ciat.auth" marlo-web/src/main --include="*.java"

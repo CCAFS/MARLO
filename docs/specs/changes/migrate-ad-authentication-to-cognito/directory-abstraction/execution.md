@@ -2772,3 +2772,98 @@ property nobody checked.
 - The bytecode test is only as fresh as `target/classes`. Fresh under the documented command (`test`
   compiles main first); stale only against a hand-staged `target/` -- **which is exactly EB-3**.
 - The test reads `ContactPersonAction.class` only, not hypothetical nested classes. The class has none.
+
+---
+
+### `DIRABS-T16` (EXEC-052) — Re-inventory the runtime call sites
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS** |
+| **Date** | 2026-08-29 |
+| **Implementer attempts** | **0 — executed Leader-inline** |
+| **Reviewer verdict** | **N/A — no diff to audit** (the two `tasks.md` corrections below are Leader edits to the spec, not to code) |
+| **Requirements covered** | `DIRABS-FN-008`, the `SC-8` count, and **`DIRABS-T11`'s deferred import gate** |
+
+#### Delegation deviation — same basis as T00
+
+Executed inline: `Module: none (read-only)`. It produces evidence, not a diff; the Reviewer gate audits
+a diff, so spawning it would be a spawn with an empty payload. Squarely the *Delegation Thresholds*
+inline row.
+
+#### Reconciliation against T00's anchor — all 9 baseline sites accounted for
+
+T00 recorded **9 construction sites** in 8 rows. Each verified at source today:
+
+| T00 site | Declared fate | Constructions now |
+|---|---|---|
+| `BaseAction:4803` | Deleted (T05) | **0** ✅ |
+| `ContactPersonAction:86` + `:93` | Deleted (T14) | **0** ✅ |
+| `center/json/global/ManageUsersAction:249` | Migrated (T10) | **0** ✅ |
+| `json/global/SearchUserAction:193` | Migrated (T09) | **0** ✅ |
+| `GuestUsersValidator:37` | Migrated (T08) | **0** ✅ |
+| `searchUsersUtil:14` | Untouched — unreachable | **1** ✅ |
+| `APCustomRealm:287` | Untouched — Capability A, child 2 | **1** ✅ |
+| `LDAPAuthenticator:61` | Untouched — Capability A, child 2 | **1** ✅ |
+| `LdapDirectoryService:92` **(new, this spec)** | The single Capability B site | **1** ✅ |
+
+**Arithmetic: 9 baseline − 6 removed + 1 created = 4 construction sites, of which 3 are LIVE.** Matches
+T16's expected table exactly. **`new ADConexion`: ZERO** — T14 confirmed at the inventory level.
+
+#### Import gate — `DIRABS-T11`'s loop, closed
+
+| Root | Expected | Found |
+|---|---|---|
+| `marlo-web/src/main` | 1 — `utils/searchUsersUtil.java` | **1** ✅ |
+| `marlo-web/src/test` | 1 — `security/directory/LdapDirectoryServiceTest.java` (DD-12) | **1** ✅ |
+| `marlo-data/src` | 3 | **3** ✅ |
+
+`ContactPersonAction` is gone from `src/main`, which is what T11 could not verify because it runs before
+T14. **T15's `ContactPersonActionTest` does not appear in `src/test`** — it references `adauth` only as
+string literals inside the bytecode assertion, never as an import, which is exactly why that choice was
+made.
+
+#### Falsifying input, actively tested rather than assumed
+
+T16's falsifier is *"a site the analysis called unreachable turning out to be reachable."* `searchUsersUtil`
+was probed on three independent axes, not accepted on the analysis' word:
+
+- It is `public static void main(String[] args)` — an entry point the servlet container never calls.
+- **Zero Java callers** anywhere in `marlo-web/src` or `marlo-data/src`.
+- **Not registered in any configuration** — no hit across `marlo-web/src/main/resources`,
+  `marlo-web/src/main/webapp`, or `marlo-data/src/main/resources` (Struts, Spring, `web.xml`).
+
+Unreachability **confirmed**. No fourth live site. Child 3 deletes it (EXEC-106).
+
+#### `getOutlookUser` — verified absent, not assumed absent
+
+5 occurrences remain, and all 5 are **Javadoc prose** (4 in test classes describing what they prove, 1 in
+`LdapDirectoryService`'s class comment). **Zero declarations, zero call sites**, confirmed with separate
+declaration-shaped and call-shaped greps rather than a bare token count. The token count alone would have
+been ambiguous in exactly the direction that hides a survivor.
+
+#### Two defects found in T16's OWN verification command — both fire the STOP on correct code
+
+This is the second time in this spec that a task's *verification* was wrong rather than its
+implementation (cf. T11). Both corrected in `tasks.md`.
+
+**(1) Scope included `src/test`, so a comment triggers the STOP.** The command read
+`marlo-web/src marlo-data/src`. **T15 — landed one task ago — put the literal `new LDAPService()` inside
+a Javadoc** in `ContactPersonActionTest`, explaining why the bytecode assertion exists. The command
+therefore returns **5**, and *"STOP if the count is not 3"* executed literally halts the checkpoint on a
+**comment in a test that was written to prove the very thing being counted**. Scoped to `src/main`.
+
+**This one travels.** Child 2 and child 3 inherit the same command shape from the parent runbook, and
+`ContactPersonActionTest` is not going away.
+
+**(2) The command's raw output could never equal its stated expectation.** The table expects *"exactly 3
+**live** sites"*; the grep counts **construction sites**, one of which (`searchUsersUtil`) is unreachable
+and deliberately retained. **4 ≠ 3 was guaranteed even on a perfect implementation.** The arithmetic is
+now written out so the two numbers are comparable — a count and an expectation that measure different
+things cannot reconcile, and a STOP condition wired to the mismatch fires every time.
+
+#### What T16 does NOT establish
+
+It counts **presence and location**. It says nothing about behavior — that is T04's contract test and the
+per-consumer tests T06–T10 and T15. It also does not show that the three live sites are *safe* to swap;
+that is child 2 (Capability A) and child 3 (Capability B).
