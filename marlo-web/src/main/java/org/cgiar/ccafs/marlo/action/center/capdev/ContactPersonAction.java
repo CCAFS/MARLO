@@ -21,9 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AdUserManager;
 import org.cgiar.ccafs.marlo.data.model.AdUser;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
-import org.cgiar.ciat.auth.ADConexion;
-import org.cgiar.ciat.auth.LDAPService;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,14 +80,7 @@ public class ContactPersonAction extends BaseAction {
 
   public String searchADUser() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    LDAPService service = new LDAPService();
     String queryParameter = StringUtils.trim(parameters.get(APConstants.QUERY_PARAMETER).getMultipleValues()[0]);
-    String genericUser = APConstants.GENERICUSER_AD;
-    String genericPassword = APConstants.GENERICPASSWORD_AD;
-    String hostName = APConstants.HOSTNAME_AD;
-    String port = APConstants.PORT_AD;
-
-    ADConexion adConection = new ADConexion(genericUser, genericPassword, hostName, Integer.parseInt(port));
 
     queryParameter = queryParameter.trim();
     // List<LDAPUser> ad_users = adConection.searchUsers(this.getADFilter(queryParameter),

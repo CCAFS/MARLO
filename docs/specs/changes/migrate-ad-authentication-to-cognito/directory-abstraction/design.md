@@ -370,7 +370,8 @@ Three decisions remove behavior the codebase already ships. Each was challenged 
 | **Result (a)** | No read exists. `:95-96` — the only use — is commented out. `:99` onward uses `adUsermanager.searchUsers()` against the `ad_user` **table** |
 | **Result (b)** | The constructor performs an AD bind. Its only observable consequences are latency and an entry in AD's own auth log. Nothing in MARLO reads either. **Removing it removes one AD bind per request — which is the point** |
 | **Result (c)** | **A real, if inverted, finding.** If `APConstants.PORT_AD` were ever malformed, `Integer.parseInt` at `:93` would throw and `searchContact.do` would 500 **today**. After deletion it would succeed. This is a behavior change in the *"it now works where it used to fail"* direction, on a code path that is dead anyway |
-| **Verdict** | ✅ **Deletion is safe.** Design unchanged. Result (c) recorded so a reviewer does not read it as an unnoticed side effect |
+| **Result (d)** | **Added 2026-08-29 at T14, on the Reviewer's caveat.** (b) analyses the `ADConexion` constructor but says nothing about `new LDAPService()`, which is also deleted. Bytecode settles it: `LDAPService()` is `super()`, one `putfield internalConnection:Z`, `return`, with **no static initializer** — no network, no I/O, **nothing observable to lose**. Stronger than (b), which only argued the effect was unread. Evidence already in this spec at `design.md:717` and `execution.md:949` (T05/DD-12); it was missing only a pointer from here |
+| **Verdict** | ✅ **Deletion is safe.** Design unchanged. Result (c) recorded so a reviewer does not read it as an unnoticed side effect. **Discharged at T14** — Reviewer PASS, zero findings, both gates green |
 
 #### C-3 — Deleting `GuestUsersValidator`'s private `getOutlookUser` (DD-8)
 

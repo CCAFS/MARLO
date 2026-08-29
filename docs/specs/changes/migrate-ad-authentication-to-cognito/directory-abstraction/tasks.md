@@ -466,7 +466,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T14 (EXEC-050) — Eliminate the AD construction in `ContactPersonAction`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-29, attempt 1, Reviewer PASS with **zero findings**. Both gates green: `clean install` exit 0, **33 tests** (baseline held exactly). Last `new ADConexion(...)` in MARLO source is gone; `getADFilter` and all four `APConstants.*_AD` survive. Gates were initially UNVERIFIABLE and were **resolved, not waived** — root cause recorded as **EB-3** (VS Code's JDT language server writes into `target/`). Reviewer caveat on `new LDAPService()`'s side effect closed by bytecode. See `execution.md`
 - **Depends on:** T13 · **Module:** `marlo-web` · **Size:** S
 - **Design:** §6.2, **DD-7**, §10.0 **C-2** · **Requirements:** `DIRABS-FN-008`
 - **Files touched:** `action/center/capdev/ContactPersonAction.java` — **deletions only**

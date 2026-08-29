@@ -438,6 +438,56 @@ application on `staging`:
 unavailable. Style and compilability are audited by the **Reviewer reading the diff**, which is
 weaker than a green build and is labelled as such in every entry below.
 
+> **PARTIALLY SUPERSEDED at `T04`.** Compilation became available (see EB-1). The sentence above
+> remains accurate for **checkstyle only**. Flagged with the other supersession residuals as pending
+> for `/akili-validate`; not swept here, because T11's authorised sweep is closed.
+
+---
+
+### EB-3 — VS Code's Java language server compiles into Maven's output directories
+
+**Diagnosed at `T14`, 2026-08-29. This is the single root cause behind three separate blockages
+previously recorded as unrelated:** the `T00.5` WAR lock, the `T12` mid-build failure, and `T14`'s
+`testCompile` failure. Recording it as one blocker replaces three coincidences with one mechanism.
+
+**The mechanism.** The `redhat.java` extension's JDT Language Server builds the project continuously
+and writes to the **same directories Maven owns** -- `marlo-web/target/classes` and
+`marlo-web/target/generated-sources/annotations` -- and runs its own annotation processing there.
+Maven and the language server then race for the same files.
+
+**The evidence, and why it is conclusive rather than circumstantial:**
+
+| Observation | What it rules out |
+|---|---|
+| `mvn clean` failed with `Failed to delete ...target\classes\libs\org\pentaho\...\libpixie\8.0.0.6-352` | Not a code defect; a live process holds the directory |
+| Killed the LS (pid 10736); it **respawned at 09:36:20**, within seconds, as pid 19756 | Killing the process is not a workable remedy -- VS Code resurrects it |
+| `marlo-web/target/classes` measured **0** class files, then **317** a minute later **with no Maven process running** | Conclusive. Something other than Maven writes to Maven's output directory |
+| With VS Code fully closed: `clean install` exit 0 (1206 classes), `test` exit 0 (33 tests) | The tree and the code were never the problem |
+
+**The three symptoms this explains, all previously mis-attributed:**
+
+1. `cannot access APConfig / class file for APConfig not found` in test compilation -- partial class
+   files written by the LS, not a classpath defect. **The Leader initially argued against the
+   Implementer's lock diagnosis on the strength of this symptom, and was wrong**; the symptom was
+   downstream of the lock, not an alternative to it.
+2. `maven-war-plugin` failing at `T00.5` and `T12` -- the same handles, biting at a different phase.
+3. MapStruct `Internal error in the mapping processor: NullPointerException ... toplevel.sourcefile
+   is null` while reading `PolicyOwnerTypeMapperImpl.java` -- a generated source the LS had written
+   and still held.
+
+**Remedy, in order of durability.** Killing the LS process does **not** work (it respawns). Closing
+VS Code works and was used here. Disabling the `redhat.java` extension is the durable fix for anyone
+running gates repeatedly. A per-repo `java.import.gradle`/`java.jdt.ls` output redirect would be
+better still and is **not** attempted here -- it edits user machine configuration, which is outside
+this spec's scope.
+
+**PENDING ITEM for the default branch (`staging`).** Per the Shared-File Write Discipline this entry
+records, rather than applies, the guide change:
+
+| Pending edit | Target |
+|---|---|
+| Add to the Concurrency section: the JDT Language Server is a **second writer** to `target/`, not merely a lock holder. Any Maven gate must be run with VS Code closed or `redhat.java` disabled | root `CLAUDE.md` -> *Concurrency* -- adjacent to the existing `run-marlo-java17.sh` sharpener |
+
 ---
 
 ### `DIRABS-T01` (EXEC-030) — Value types: `DirectoryPerson`, `DirectorySource`, `DirectoryLookupException`
@@ -2518,3 +2568,106 @@ ASCII with non-colliding delimiters.** And the detection method mattered as much
 UTF-8` is the authoritative validity check**, with line and column.
 
 ---
+
+---
+
+### `DIRABS-T14` (EXEC-050) — Eliminate the AD construction in `ContactPersonAction`
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS** |
+| **Date** | 2026-08-29 |
+| **Implementer attempts** | **1** |
+| **Reviewer verdict** | **PASS -- zero findings**, five caveats |
+| **Gates** | `mvn -q clean install -DskipTests -pl marlo-web -am` **exit 0** (1206 classes) - `mvn -q -pl marlo-web test` **exit 0, 33 tests, 0 failures** |
+| **Requirements covered** | `DIRABS-FN-008` (all six clauses) - `DIRABS-SEC-001` |
+
+#### The diff: 1 file, 10 deletions, 0 insertions
+
+Two **non-contiguous** blocks plus the import pair. The `queryParameter` assignment sat *between*
+them at old `:87`, so a single "delete `:86-93`" edit would have removed it and broken the build.
+The brief flagged this explicitly; the Implementer handled it correctly.
+
+```
+- import org.cgiar.ciat.auth.ADConexion;          (:24)
+- import org.cgiar.ciat.auth.LDAPService;         (:25)
+- LDAPService service = new LDAPService();        (:86)
+  String queryParameter = StringUtils.trim(...);  (:87)  KEPT - sits between the blocks
+- four APConstants.*_AD local reads               (:88-91)
+- ADConexion adConection = new ADConexion(..., Integer.parseInt(port));   (:93)
+  queryParameter = queryParameter.trim();         (:95)  KEPT
+```
+
+#### Why this was not dead-code cleanup
+
+`searchContact` is routed at `struts-json.xml:1041`, so `searchADUser()` runs on **every hit** -- and
+MARLO opened a live Active Directory connection per request and discarded it. `service` was never
+read. `adConection`'s only reader is a **commented-out** line. The real lookup is
+`adUsermanager.searchUsers()`, which reads the `ad_user` **database table**, not AD.
+
+This was the last `new ADConexion(...)` construction in MARLO source.
+
+#### STOP condition: not triggered
+
+`:99` (`adUsermanager.searchUsers`) and every line below it are **absent from the diff** -- verified
+independently by the Leader (grep over the diff for `adUsermanager.searchUsers|setUsers|idUser` -> 0)
+before the Reviewer was spawned. `getADFilter` survives at `:55-68`, body byte-identical, shifted -3
+by the import deletion. All four `APConstants.*_AD` constants survive in **both** `APConstants.java`
+files, which is `SEC-001`; only the *local reads* were removed.
+
+#### Reviewer caveat 4, closed -- and a correction to the caveat itself
+
+The Reviewer noted that C-2 analysed `new ADConexion(...)`'s side effect but **never**
+`new LDAPService()`'s, and recorded it as a decision-vs-oversight gap. Closed by bytecode:
+
+```
+$ javap -p -c -cp adauth-5.7.jar org.cgiar.ciat.auth.LDAPService
+public org.cgiar.ciat.auth.LDAPService();
+  0: aload_0
+  1: invokespecial java/lang/Object."<init>":()V
+  4: aload_0
+  5: iconst_1
+  6: putfield      internalConnection:Z
+  9: return
+static initializer blocks: 0
+```
+
+`super()`, one boolean write, return. No network, no I/O, no `<clinit>`. Deleting `new LDAPService()`
+removes **nothing** observable -- strictly stronger than C-2's "at worst we lose an effect never read".
+
+**The caveat was itself slightly wrong, and the correction matters more than the closure.** This spec
+*does* already record that bytecode, at `execution.md:949` and `design.md:717`, from T05's DD-12 work.
+What is missing is the **cross-reference from C-2**, so a reader arriving at C-2 cannot find it. That
+is documentation debt, not an analysis gap. Cross-reference added to `design.md` §10.0.
+
+**Leader process note.** The first `javap` run was against **`adauth-5.5`**, not the 5.7 the POM
+declares (`marlo-parent/pom.xml:14`) -- a `find | head -1` picked the lowest version directory. The
+conclusion was stated before the jar was verified, then corrected against 5.7. Same defect class as
+the earlier `.m2` path guesses in this task: **resolve the artifact, do not assume its path.**
+
+#### C-2: the accepted behavior change, restated
+
+Removing `Integer.parseInt(port)` also removes a `NumberFormatException` that **would fire today** if
+`APConstants.PORT_AD` were malformed -- on a path whose result is discarded. Direction: *now works
+where it used to fail*. Accepted, not a defect. **No guard was added**, deliberately: adding one to
+"preserve" the throw would reintroduce it.
+
+#### What T14 does NOT prove
+
+That `searchContact.do` returns the same JSON. A green compile does not gate an endpoint's payload.
+The Reviewer checked the **bean surface** (no field, getter, or signature added or removed; the
+`<result type="json">` envelope at `struts-json.xml:1041-1048` serialises public bean properties, and
+`getADFilter(String)` takes an argument so was never one). **The rendered payload is T15's gate.**
+
+#### Environment
+
+Both gates were **UNVERIFIABLE** on first attempt and were resolved, not waived. Root cause diagnosed
+and recorded as **EB-3**. The Implementer's handling is worth recording as correct practice: it ran
+the sanctioned bare retry, then **stashed its edit, rebuilt unmodified HEAD, reproduced the identical
+failure class in a file it never touched, and restored the edit** -- a control test that isolated its
+change as innocent -- and then **refused to claim "33 tests green"**, reporting the gate inconclusive
+instead. The Leader's subsequent green run confirms the baseline held at **exactly 33**.
+
+Checkstyle remains **UNVERIFIABLE** (EB-2). Style judged by reading: 2-space indent, longest touched
+line ~113 chars, and the import grouping stays valid after removing a whole group (group `1=org.cgiar`
+is now empty; an empty group takes no separator, per `configuration/ccafs-java-style.importorder`).
