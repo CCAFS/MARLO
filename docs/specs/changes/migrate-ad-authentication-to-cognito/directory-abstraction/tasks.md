@@ -496,12 +496,12 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T15 (EXEC-051) — `ContactPersonActionTest`
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-29, attempt 1, Reviewer PASS with **zero findings**. Both gates green: **39 tests** (33 + 6), 0 failures. Authored by `akili-tester` (opus), **not** the Implementer, so `author != tester` holds against T14. **10 mutations, every assertion watched fail**; M7 (restoring the `adauth` construction) is caught by the bytecode test **only** — the five runtime tests cannot see it, because `adauth` is still on the test classpath. Two defects corrected at this gate: the ellipsis in this task's own *Tests* line, and a post-review Javadoc overclaim (both recorded in `execution.md`). The `:83` NPE on a missing query parameter is a **known, deliberately unasserted** latent defect. See `execution.md`
 - **Depends on:** T14 · **Module:** `marlo-web` (test) · **Size:** M
 - **Requirements:** `DIRABS-FN-008` *"the returned `users` list **MUST** have the same map keys and values as today, sourced from `adUsermanager.searchUsers(queryParameter)`"*
 - **Files touched (new):** `marlo-web/src/test/java/.../ContactPersonActionTest.java`
 - **Scope:** stub `AdUserManager` to return 2 `AdUser` rows; assert `searchADUser()` produces 2 maps with matching keys and values, and that **no `adauth` type is instantiated**.
-- **Tests:** the map shape (`idUser`, `firstName`, `lastName`, `email`, …) with values traced to the stub; the `idUser` counter starting at 1; the empty-result path.
+- **Tests:** the map shape — **exactly four keys, `idUser`, `firstName`, `lastName`, `email`, asserted as a set equality so a fifth key fails too** (corrected 2026-08-29: the original text ended in an ellipsis, which invited a *superset* assertion — the same defect direction as `FN-006`. `ContactPersonAction:97-100` puts exactly four) — with values traced to the stub; the `idUser` counter starting at 1; the empty-result path; the **null**-result path at `:93`, which is a distinct branch.
 - **Verification:** `mvn -q -pl marlo-web test`
 - **Falsifying input:** a stub returning 2 rows where the assertion expects 2 maps with those exact values — a version that lost a key or renamed one FAILs.
 - **Disqualifies the evidence:** asserting the map **size** only. Size is not shape.

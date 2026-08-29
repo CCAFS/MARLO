@@ -2671,3 +2671,104 @@ instead. The Leader's subsequent green run confirms the baseline held at **exact
 Checkstyle remains **UNVERIFIABLE** (EB-2). Style judged by reading: 2-space indent, longest touched
 line ~113 chars, and the import grouping stays valid after removing a whole group (group `1=org.cgiar`
 is now empty; an empty group takes no separator, per `configuration/ccafs-java-style.importorder`).
+
+---
+
+### `DIRABS-T15` (EXEC-051) — `ContactPersonActionTest`
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS** |
+| **Date** | 2026-08-29 |
+| **Authored by** | **`akili-tester` (opus), not the Implementer** -- see the delegation note below |
+| **Attempts** | **1** |
+| **Reviewer verdict** | **PASS -- zero findings**, six caveats + one spec-hygiene note to the Leader |
+| **Gates** | `clean install` **exit 0** - `mvn -q -pl marlo-web test` **exit 0, 39 tests, 0 failures** (baseline 33 + 6) |
+| **Requirements covered** | `DIRABS-FN-008`, all clauses -- see the coverage list below |
+
+#### Delegation choice, recorded because it deviates from the execute triad
+
+T15 was dispatched to **`akili-tester` (opus)**, not `akili-implementer` (sonnet). Reason: T15 exists to
+verify T14, and **the Implementer wrote T14**. Having one model both change the code and author the test
+that declares the change safe is precisely what `author != tester` prevents. The Reviewer (opus, no write
+tools) audited as usual, so both independence axes hold.
+
+#### The six tests, and which one actually gates T14
+
+| Test | Gates |
+|---|---|
+| `twoStubRowsProduceTwoMapsWithExactKeysAndTracedValues` | Row shape: 2 rows -> 2 maps, **exact** 4-key set, `idUser` is `Integer`, every value traced, list order, returns `SUCCESS` |
+| `idUserCounterStartsAtOneAndIncrementsPerRow` | `idUser++` precedes the `put`; 3 rows separate an off-by-one from a stalled counter |
+| `trimmedQueryParameterIsWhatReachesTheManager` | *"sourced from `adUsermanager.searchUsers(queryParameter)`"* -- `"  smith  "` proves both trims and exactly one call |
+| `emptyManagerResultProducesAnEmptyUsersList` | Empty path: non-null, empty, `SUCCESS` |
+| `nullManagerResultProducesAnEmptyUsersListNotNull` | The `:93` null branch. **Not named in `tasks.md`** -- added because it is a real branch |
+| `compiledActionReferencesNoActiveDirectoryType` | *"no `adauth` type is instantiated"*, read off the compiled constant pool |
+
+**The last one is the only test that gates what T14 actually did, and the reason is worth recording.**
+The `adauth` types remain on the test classpath (`LdapDirectoryServiceTest` imports them under DD-12), so
+a restored `new LDAPService()` **would execute happily and leave the other five tests green**. A runtime
+assertion structurally cannot observe the *absence* of a construction; only the constant pool can. The
+test reads `ContactPersonAction.class` off the classpath, decodes ISO-8859-1 (byte-preserving), and
+asserts neither `org/cgiar/ciat` nor `org.cgiar.ciat` appears. It uses **string literals, not imports**,
+so `src/test` stays at exactly one `adauth` importer and T16's gate is intact.
+
+#### Mutation evidence -- 10 mutations, every assertion watched fail
+
+M1 renamed a key - M2 made the counter 0-based - M3 deleted a `put` - M4 crossed a value to the wrong
+getter - M5 made the null path return null - M6 dropped both trims - **M7 restored the `adauth` import and
+construction** - M8 made `idUser` a `String` - M9 returned `INPUT` - M10 reversed row order.
+
+**M7 is load-bearing for T14: it is the only mutation the other five tests do not notice.**
+
+**A false green, self-caught, and it is the same defect class the Leader hit three times in this run.**
+M3 and M5 **silently failed to apply** on first attempt -- the file has CRLF endings, so `$`-anchored
+`perl` substitutions did not match, and the run went green against **unmutated** source. The Tester
+detected it by **grepping the mutated file rather than trusting the run**, and re-ran both. The general
+rule this run has now paid for four times: *`perl`/`sed` report success without having changed anything;
+verify the mutation landed before believing the result.* The Reviewer additionally confirmed, by reading,
+that M3 and M5 land on assertions that are load-bearing by construction (`assertEquals(EXPECTED_KEYS,
+row.keySet())` and `assertNotNull`), so the near-miss leaves no residual doubt.
+
+M10's run also reported `Errors: 1` -- `Collections.reverse(null)` in the null-path test, an artifact of
+probe placement. Reviewer concurred, and noted the substantive catch does not depend on that run.
+
+#### Two defects corrected at this gate
+
+**1. A spec defect in `tasks.md`, found by the Reviewer and pointed at the Leader.** T15's *Tests* line
+listed the map keys as `` (`idUser`, `firstName`, `lastName`, `email`, ...) `` -- **with a trailing
+ellipsis.** The source puts exactly four (`ContactPersonAction:97-100`). The ellipsis invites a
+**superset** assertion, which is *the same defect direction as `FN-006`* -- the insertion-order clause
+written against a `HashMap` that this spec already corrected at five loci. Corrected: the line now states
+four keys, names set-equality, and records why.
+
+**2. A Javadoc overclaim in the test, corrected by the Leader AFTER review.** Disclosed here in full,
+because the committed artifact then differs from the reviewed one. Comment-only, zero behavioral effect,
+gates re-run green (39 tests) after the edit:
+
+```
+- * deletion of the dead Active Directory construction left the JSON payload byte-identical:
++ * deletion of the dead Active Directory construction left the payload's shape and values unchanged.
++ * Note the deliberate limit: these tests never invoke the JSON result and never assert HashMap
++ * key order, so the emitted JSON's field order is NOT proven identical, and no claim of a
++ * byte-identical response is made here:
+```
+
+*"Byte-identical"* is stronger than six tests that never invoke the JSON result and deliberately never
+assert `HashMap` key order establish. Left alone, a future reader could cite the comment as proof of a
+property nobody checked.
+
+#### Known gaps -- named, not closed
+
+| Gap | Status |
+|---|---|
+| **The real `ad_user` query is entirely stubbed.** `AdUserManagerImpl` and its Hibernate DAO never execute | Already recorded in `tasks.md` T15 *Cannot prove*. **No task in this spec covers it.** Still open |
+| **JSON serialization is not exercised.** The in-memory payload is proven; the wire bytes are inferred | New. Out of reach of a plain JUnit run |
+| **`ContactPersonAction:83` NPEs when the query parameter is absent** -- a latent production defect | **Deliberately not asserted.** Asserting it would freeze a bug as this spec's contract; fixing it is barred by T15's *STOP if the test requires a production change*. Reviewer concurred and asked that it be recorded here rather than living only in the Tester's report. **Recorded.** |
+| Struts request-parameter plumbing bypassed by the `getParameters()` override | Bounded: the test still drives the real `Parameter.getMultipleValues()[0]` and the real trim chain |
+| Checkstyle | **UNVERIFIABLE** (EB-2). Also `includeTestSourceDirectory` is unconfigured, so this file is out of its scope even if the plugin ran |
+
+#### Reviewer caveats not otherwise actioned
+
+- The bytecode test is only as fresh as `target/classes`. Fresh under the documented command (`test`
+  compiles main first); stale only against a hand-staged `target/` -- **which is exactly EB-3**.
+- The test reads `ContactPersonAction.class` only, not hypothetical nested classes. The class has none.
