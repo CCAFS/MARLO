@@ -432,7 +432,7 @@ Three fields appear in every task and mean the same thing throughout:
 
 ### DIRABS-T12 — Spring context smoke check *(spec-added; no `EXEC-` equivalent)*
 
-- **Status:** `[ ]`
+- **Status:** `[x]` -- PASS 2026-08-29. Context started CLEAN (0 bean exceptions), HTTP 302 root, HTTP 200 on crpUsers.do. D8 has its evidence, and it is demonstrably falsifiable: run #2 went RED on a different unresolvable dependency, run #3 green. Does NOT cover the config clause. See `execution.md`
 - **Depends on:** T11 · **Module:** none · **Size:** S
 - **Design:** **DD-10** · **Requirements:** the `D8` substitute in `requirements.md` §9. ⚠️ **NOT the field-injection clause of `FN-006` *GuestUsersValidator*** — corrected 2026-08-28: after T08, that class references `config` nowhere, so a successful start certifies a no-op and cannot be evidence for the clause. It is gated by T08's structural check instead. See this task's *Cannot prove* below.
 - **Why this task exists:** MARLO has **no Spring context test**. A missing or ambiguous `@Named` bean **compiles and passes `mvn test`** (checkstyle would not catch it either, and is UNVERIFIABLE here — §3.1), failing only at Tomcat startup — which CI never exercises (`Dockerfile` builds with `-Dmaven.test.skip=true`). This is the spec's largest blind spot, and this manual check is its only available substitute. **It is a task rather than a footnote so it cannot be skipped silently.**

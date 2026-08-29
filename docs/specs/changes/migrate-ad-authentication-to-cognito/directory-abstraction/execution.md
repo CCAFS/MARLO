@@ -1856,6 +1856,148 @@ T08: 2 · T09: 1).
 
 ---
 
+### `DIRABS-T12` — Spring context smoke check *(the only `D8` evidence)*
+
+| Field | Value |
+|---|---|
+| **Status** | **PASS** — the context started clean and the seam resolved |
+| **Date** | 2026-08-29 |
+| **Executed by** | **Leader, inline** — see the delegation-failure record below |
+| **Review rounds** | 0 (no diff; the deliverable is evidence) |
+
+#### 🎯 The result, and why it is real evidence rather than a green light
+
+**`DirectoryService` resolves in a live Spring container.** The decisive argument is not the HTTP code —
+it is **bean scope**:
+
+`LdapDirectoryService` and `GuestUsersValidator` are both **`@Named` with no `@Scope`/prototype** and both
+take an **`@Inject` constructor**. They are therefore **singletons, instantiated eagerly at context
+startup**. `GuestUsersValidator`'s constructor takes `DirectoryService`. So:
+
+> **A missing `@Named`, or a second implementation making the injection ambiguous, would have aborted the
+> context at startup — before serving a single request.** It did not.
+
+That is precisely the falsifying input `tasks.md` T12 names, and it is what `D8` exists to catch: such a
+defect **compiles, passes all 33 tests, and fails only at Tomcat startup**, which CI never exercises.
+
+#### ✅ And the check was *demonstrated falsifiable* — by an unplanned natural experiment
+
+This run produced its own red-then-green pair, which is the standard this spec has held since T04:
+
+| Run | Condition | Result |
+|---|---|---|
+| **#2** | `marlo-dev.properties` missing `microservice.queueUrl` | `APConfig` → `UnsatisfiedDependencyException` → **context aborted**, `HTTP 404`, WAR deployed but not serving |
+| **#3** | property added | **0 bean exceptions**, context started, `HTTP 302` root / `HTTP 200` on `crpUsers.do` |
+
+**We watched this exact check go red for a dependency that could not resolve, then green when it could.**
+The mechanism is proven live in this container — so the green is evidence, not an absence of news.
+
+#### Evidence, in the order the disqualifier requires
+
+| # | Check | Result |
+|---|---|---|
+| **1** | Build succeeded **this run** | `BUILD SUCCESS`; WAR **270,735,343 bytes @ 08:31**, and the script had deleted all three `target/` dirs first — a stale WAR was impossible |
+| **2** | The five new classes in the **deployed** artifact | All **PRESENT** in `.../cargo/configurations/tomcat9x/webapps/marlo-web/WEB-INF/lib/marlo-data-4.5.1-SNAPSHOT.jar` (**7 entries** under `security/directory/`, jar @ 08:37) — this is what makes the HTTP result meaningful rather than accidental |
+| **3** | Health check | `GET /marlo-web/` → **HTTP 302** (2xx/3xx as required) |
+| **4** | The four bean exceptions | `NoSuchBeanDefinitionException`, `NoUniqueBeanDefinitionException`, `UnsatisfiedDependencyException`, `BeanCreationException` → **0 occurrences**. `Could not resolve placeholder` → **0**. `Tomcat 9.x Embedded started on port [8080]` → present |
+| **5** | Exercise a consumer | **`crp/admin/crpUsers.do` → HTTP 200** — `CrpUsersAction` is one of the five migrated consumers. `crp/admin/users.do` → 200. **Zero** bean failures after exercising |
+
+Server **shut down**; 0 listeners on 8080, 0 cargo/tomcat processes, `curl` → `000`.
+
+#### ⚠️ What this task does NOT cover — the correction applied 2026-08-28
+
+**It does not discharge `FN-006`'s `config` field-injection clause for `GuestUsersValidator`.** After T08
+deleted `getOutlookUser`, that class references `config` **nowhere**, so if Spring's field injection
+silently failed **nothing would break** and a green start certifies a **no-op**. The clause is gated by
+**T08's structural check** instead. `tasks.md` said the opposite at three loci until this was corrected.
+
+Also out of reach (§6.4): single Cargo instance, **no memcached** — kryo session-serialisation defects
+(`TS-3`) stay invisible; no load balancer; HTTP not HTTPS; `/marlo-web/` context path vs `ROOT` in the
+image.
+
+#### 🔴 Delegation failure — the subagent was replaced, and the reason is recorded
+
+The T12 Implementer **twice ended its turn having set up a background wait and never delivered its
+report** — `leader.md`'s *"idle is not delivered"* case. Poked once per protocol; it repeated the same
+pattern. **Replaced rather than poked twice**, and the Leader took the task inline: T12 authors no code
+(a script, a `curl`, a log read), and the poll-to-push bridge that defeated the worker is native to the
+Leader's harness.
+
+**And the replacement was botched, which is the more useful record.** The Leader began running the script
+**while the subagent was still alive**, because it read the notification's `completed` status as *"the
+agent is finished."* It was not — the agent had a live background child and launched its own build.
+
+> **Two destructive builds ran concurrently in one checkout**, and the first `BUILD FAILURE` — *"Fatal
+> error compiling: marlo-utils-4.5.1-SNAPSHOT.jar"*, a jar that had built successfully seconds earlier and
+> then vanished — was the other run's `target/` deletion landing mid-compile.
+
+This is exactly the corruption `CLAUDE.md`'s *Concurrency* section describes, caused by the Leader that
+had cited that section when dispatching. **Lesson, stated so it survives: a `completed` task notification
+means the agent's turn ended, not that its work stopped.** Kill the agent explicitly before taking its
+task inline; never infer termination from status.
+
+#### Retries — three, each reported with a distinct cause, per §3.0
+
+| # | Cause | Class |
+|---|---|---|
+| **1** | The Leader's own concurrent build (above) | **Self-inflicted** — deliberately *not* counted toward the transient-lock pattern, which would otherwise misreport environment stability |
+| **2** | The **JDT LS WAR lock returned** (`CrossCuttingDimensionAction.class` in use) | **EB-2, environmental.** Resolved by the user closing VS Code — verified released before relaunching |
+| **3** | **10 property keys missing** from `marlo-dev.properties` | **Configuration** — see below |
+
+**The lock's return was predicted in writing.** EB-1's closure block recorded: *"The lock may return. It is
+a property of the editor session, not of the repository."* That note turned what would have been a
+baffling failure into a thirty-second diagnosis.
+
+#### The 10 missing properties — and why enumerating the class mattered again
+
+Spring **fails fast**, reporting only the *first* unresolved placeholder (`microservice.queueUrl`).
+Chasing that one alone would have meant **ten build-fail-fix cycles of ~4 minutes each**. Comparing the
+**key sets** of `marlo-dev.properties` against `marlo-test.properties` found all ten at once:
+`log.instance`, `microservice.{apiKey,bucketName,password,queueName,queueUrl,reporting.url,s3.url,userName}`,
+`summary.microservice.url`.
+
+**Same methodology that fixed the documentation sweep: enumerate the class, do not chase the reported
+instance.**
+
+All ten are non-secret `XXXXXX` placeholders in the template — including the ones named `password` and
+`apiKey` — so they were copied verbatim. **No secret was invented.** T12 exercises neither the reporting
+microservice nor S3.
+
+#### 🔒 Credential-exposure near-miss — caught by the user, and worth a standing note
+
+The Leader created `marlo-dev.properties.pre-t12.bak` as a safety copy. **That file was NOT gitignored**:
+`marlo-web/src/main/resources/config/.gitignore` lists **exact filenames**
+(`marlo-dev.properties`, `marlo-api.properties`, `marlo-pro.properties`, `marlo-test.properties`), so any
+derivative — `.bak`, `.orig`, `.old` — falls outside the protection. `git status` listed it as untracked,
+i.e. **a `git add -A` would have staged a file containing the real MySQL password.**
+
+Verified never committed (`git log --all` on the path → empty; the last three commits contain zero
+credential files) and **deleted**. `marlo-dev.properties` itself is correctly ignored throughout.
+
+> **Standing hazard, worth raising with the team:** MARLO's own
+> `scripts/update-marlo-dev-java17.sh` runs `sed -i.bak`, so it **generates `marlo-dev.properties.bak` on
+> every local run** — the same unprotected shape. The `.gitignore` rule should be `marlo-dev.properties*`.
+> **Recorded as a pending item for `staging`** (shared-file discipline: not edited from this spec branch).
+
+Also verified before running: `update-marlo-dev-java17.sh` rewrites **only** `marlo.baseUrl`,
+`file.downloads` and `clarisa.summariesPDF` — **no `mysql.*` key** — so the user's connection settings
+survive the script.
+
+#### Environment pre-check — probed, not assumed
+
+Per `leader.md`'s *"test the assumption first"*, every precondition was probed **before** paying the
+script's destructive cost: JDK 17 ✓ · port 8080 free ✓ · **MySQL running on `localhost:3306`** ✓ ·
+schema `aiccradb5` with **597 tables** ✓ · **`users` has 3583 rows** — a real dev dataset, which
+`infrastructure.md` §6.1 says must be obtained from the IBD team and could not be assumed ✓.
+
+#### Final verification result
+
+**PASS.** `D8` — the spec's largest blind spot — now has the evidence `DD-10` designed this task to
+produce, **and that evidence is demonstrably falsifiable**, having been observed red in run #2 and green
+in run #3 on the same mechanism.
+
+---
+
 ### `DIRABS-T10` (EXEC-039) — `center/json/global/ManageUsersAction`, the `ERROR` branch
 
 | Field | Value |
