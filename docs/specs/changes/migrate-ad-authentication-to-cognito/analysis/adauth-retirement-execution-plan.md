@@ -26,42 +26,70 @@ inspect → implement ONE controlled unit → verify → report → continue onl
 > task's changes. It is the only mechanism that makes execution resumable.
 
 ```text
-Current checkpoint:        CP2 COMPLETE  ->  CP3 NEXT (not started)
-Last completed task:       EXEC-041 (Checkpoint 2 report) = DIRABS-T13
+Current checkpoint:        CP3 COMPLETE  ->  CP4 NEXT (STOP GATE -- DEC-002 PENDING)
+Last completed task:       EXEC-053 (Checkpoint 3 report) = DIRABS-T17
 Gate 1 (functional):       NOT REACHED  -- and NOT claimed. Two Capability A sites
                            remain live by design: APCustomRealm:287 and
                            LDAPAuthenticator:61. Both belong to child 2.
+                           Reaching zero is child 2's and child 3's work.
 Stabilization:             NOT STARTED
 Gate 2 (physical):         NOT REACHED
 
-Capability B provider:     UNDECIDED (DEC-002 still PENDING). CP2 was built to be
-                           correct under ALL six candidates, so this does not block it.
+Capability B provider:     UNDECIDED (DEC-002 still PENDING). CP2 and CP3 were both
+                           built to be correct under ALL six candidates, so neither
+                           is blocked by it. CP4 IS the STOP GATE this decision guards --
+                           CP5 (EXEC-060 onward) may not begin while DEC-002 is PENDING.
 
 Last execution date:       2026-08-29
-Last commit:               (this commit)
+Last commit:               054626885e (DIRABS-T16); DIRABS-T17's own commit lands
+                           after this Execution State update, per the Leader's review flow.
 Executed by:               AKILI /akili-execute -- Leader/Implementer/Reviewer triad,
                            spec changes/migrate-ad-authentication-to-cognito/directory-abstraction
 Working branch:            staging-cognito-impl  -- NOTE: this document's header still
                            declares "staging-cognito". The impl branch is authoritative
                            for CP2-CP3; flagged for correction at archive time.
 Baseline commit (CP0):     8f88e7822534fa2e1a0e94fa6fb5c90b1195a683
+Merge-base with staging:   c06a8d9f5fa814bc7199bf9268e64398ff93b74b -- 15 spec-tagged
+                           commits ahead of it as of DIRABS-T16; working tree clean.
 Toolchain verified:        YES -- Java 17.0.12. NOTE: this shell defaults to JDK 1.8,
                            so every Maven command MUST be prefixed with
                            export JAVA_HOME="C:/Program Files/Java/jdk-17".
                            A run without it is disqualified evidence, not a failure.
 ```
 
-> **CP2 result in one line:** `adauth` is **still the implementation**, **nothing was removed**, and
-> **observable behavior is unchanged.** The change is structural only — `marlo-web` business code no
-> longer names an AD type. Full evidence, command by command, in the spec's `execution.md`
-> (`## CHECKPOINT RESULT — CP2`).
+> **CP3 result in one line:** the last unread runtime AD construction (`ContactPersonAction`'s
+> `LDAPService` + `ADConexion` pair) is gone; `adauth` is still present in all 3 POMs and still the
+> only implementation behind the seam; **Gate 1 is NOT reached** — 3 live `adauth` call sites remain
+> (2 Capability A, 1 the seam's own `LdapDirectoryService`), reconciled against the `EXEC-005` baseline.
+> Full evidence, command by command, in the spec's `execution.md` (`## CHECKPOINT RESULT — CP3`).
+>
+> **CP2 result, for continuity:** `adauth` was **still the implementation**, **nothing was removed**,
+> and **observable behavior was unchanged**. Full evidence in `execution.md` (`## CHECKPOINT RESULT —
+> CP2`).
 >
 > **Two defects in this runbook were found while executing it**, both in `EXEC-040`'s expected output,
 > and both corrected in the child spec rather than here (see *Shared-File Write Discipline*):
 > its `marlo-data` list **omits `APCustomRealm`** (`judgment.md` JD-1), and its `marlo-web` expectation
 > of one importer is **unsatisfiable as written** — it states a post-`EXEC-050` end state at a
 > pre-`EXEC-050` checkpoint and scopes to `marlo-web/src`, which sweeps in the test source root.
-> **Both are flagged for this document at archive time.**
+> **A third defect surfaced at CP3, in `EXEC-052`'s own re-inventory command** (see `tasks.md` T16):
+> it too scopes to `marlo-web/src`, so T15's `ContactPersonActionTest` Javadoc (which quotes
+> `new LDAPService()` to explain its own bytecode assertion) makes the unscoped grep return 5, not 3 —
+> and even scoped correctly, the command counts **construction sites** (4) against a table stated in
+> **live sites** (3), so the two numbers were never comparable as written.
+>
+> **A fourth defect, caused by child 1's own `DIRABS-T14` and recorded here rather than fixed:**
+> **`EXEC-106` (CP8) instructs "Delete … `ContactPersonAction.getADFilter` `:58-71`". That range is now
+> wrong.** T14 deleted the two `org.cgiar.ciat` imports at `:24-25`, shifting the method to **`:55-68`**
+> — verified by reading the file on 2026-08-29. **A child-3 agent following `EXEC-106` literally would
+> delete three lines of the wrong code.** `EXEC-106` itself is not edited from this branch (parent
+> artifact, Shared-File Write Discipline); the correction is recorded here, in the block child 1 is
+> already updating. *(This bullet also corrects the enumeration below, which said "all three" and was
+> written before this defect existed.)*
+>
+> **All four are flagged for
+> this document at archive time**, and the third travels: children 2 and 3 inherit the same command
+> shape from this runbook.
 
 ### Checkpoint ledger
 
@@ -69,8 +97,8 @@ Toolchain verified:        YES -- Java 17.0.12. NOTE: this shell defaults to JDK
 |---|---|---|---|---|
 | 0 | Baseline and safety | **`COMPLETE (SCOPED)`** | 2026-08-28 | Baseline `8f88e78`; **zero drift** across all 19 cited `file:line` refs; toolchain 17 verified. CP0's content is discharged by `DIRABS-T00` per the approved collapse in the child spec's `design.md`. ⚠️ **`EXEC-004`'s baseline build/style/test triple was NOT obtained** — compile was **deferred by user decision**, `checkstyle:check` is **UNVERIFIABLE** in this checkout (`maven-checkstyle-plugin:2.9.1` vs a forced `checkstyle:8.18`; `pom.xml` protected), and **no baseline `mvn test` was recorded**. **No standalone CP0 `CHECKPOINT RESULT` was emitted.** A later task did obtain green `install` + `test` (see CP2), but **not as `EXEC-004`'s pre-migration baseline.** ⚠️ **`EXEC-010`/`EXEC-030` gate on "CP0 = PASS" — read this cell, not the status word, before relying on it** |
 | 1 | Cognito authentication | `NOT STARTED` | — | **child 2 `auth-flow`** — not this child |
-| 2 | Isolate `adauth` | **`COMPLETE`** | 2026-08-29 | `EXEC-030`…`041` = `DIRABS-T01`…`T13`. `install` + 33 tests green; `D8` closed by the added `DIRABS-T12`; `adauth` still the implementation, nothing removed, behavior unchanged |
-| 3 | Remove unnecessary runtime AD usage | `NOT STARTED` | — | `EXEC-050`…`053` = `DIRABS-T14`…`T17`. Removes the unread `new LDAPService()` / `new ADConexion` that execute on **every `searchContact.do` hit** |
+| 2 | Isolate `adauth` | **`COMPLETE`** | 2026-08-29 | `EXEC-030`…`041` = `DIRABS-T01`…`T13`. `install` + 33 tests green; **`D8` has substitute evidence from the added `DIRABS-T12` — an accepted risk, NOT a closed gate** *(corrected 2026-08-29 during T17: this cell read "`D8` closed by the added `DIRABS-T12`", which contradicts `directory-abstraction/execution.md`'s own gate tables. CP2 says **"`D8` remains an *accepted risk*, not a closed gate"**; CP3 says **"Unchanged since CP2 — accepted risk, not a closed gate"**. *(Attribution split: an earlier version of this note gave the CP2 string as a joint quotation of both tables, which is the same citation defect being corrected two clauses above.)* Left standing, it would have travelled into child 2 and child 3 as a discharged dependency. A first version of this note also attributed a **Leader paraphrase** to that log as a quotation; the quoted words above are the actual ones)*; `adauth` still the implementation, nothing removed, behavior unchanged |
+| 3 | Remove unnecessary runtime AD usage | **`COMPLETE`** | 2026-08-29 | `EXEC-050`…`053` = `DIRABS-T14`…`T17`. `ContactPersonAction`'s unread `new LDAPService()` / `new ADConexion` (executing on every `searchContact.do` hit) removed; `install` + 39 tests green; 3 live `adauth` sites remain (2 Capability A + `LdapDirectoryService`), reconciled against `EXEC-005`'s baseline; `adauth` still present in all 3 POMs, still the implementation. **Gate 1 NOT reached** |
 | 4 | **Capability B decision gate** | `NOT STARTED` | — | **STOP GATE** |
 | 5 | Implement selected Capability B provider | `NOT STARTED` | — | — |
 | 6 | Cut over to zero `adauth` runtime usage | `NOT STARTED` | — | **GATE 1** |

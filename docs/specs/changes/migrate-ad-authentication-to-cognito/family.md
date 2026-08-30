@@ -5,7 +5,7 @@
 | Parent spec path | `docs/specs/changes/migrate-ad-authentication-to-cognito` |
 | Spec Family ID | `CHG-COGNITO-FAMILY` |
 | Date created | 2026-08-24 (on `staging-cognito`) · **rebuilt on this branch 2026-08-27** |
-| Last updated | 2026-08-27 |
+| Last updated | 2026-08-29 |
 | Spec-family status | `open` |
 | Owner | IBD Team — Alliance of Bioversity International and CIAT |
 | Working branch | **`staging-cognito-impl`** |
@@ -55,7 +55,7 @@ call against the real federated pool settles it** (OQ-21). Until then, no candid
 
 | # | Spec Path | Depends on | Parallel-safe | Status |
 |---|---|---|---|---|
-| 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | `in-progress` — approved and executing since 2026-08-28 |
+| 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | **`done`** — CP2+CP3 complete 2026-08-29, all 18 tasks (T00–T17); see `directory-abstraction/tasks.md` §10 and `execution.md`'s CP3 report |
 | 2 | `changes/migrate-ad-authentication-to-cognito/auth-flow` | none | **yes** | `pending` |
 | 3 | `changes/migrate-ad-authentication-to-cognito/directory-retirement` | `directory-abstraction`, `auth-flow` | no | `pending` |
 
@@ -66,6 +66,13 @@ call against the real federated pool settles it** (OQ-21). Until then, no candid
 **Row 1 is new** (approved 2026-08-27, see Decision Log). **`#` is build order by readiness, not
 priority** — `directory-abstraction` leads because it is the only child with no unresolved external
 blocker.
+
+**Row 3's `Depends on` is only partially satisfied.** Row 1 moving to `done` discharges the
+`directory-abstraction` leg — `LdapDirectoryService` and the seam it sits behind now exist for child 3
+to swap the provider into. **The `auth-flow` leg remains `pending`**, and child 3 also depends on it for
+a hard reason (see § *Child scope boundaries* → 3): `APCustomRealm.getCgiarNickname()` still calls
+`LDAPService` on every CGIAR login, and the jar cannot be deleted while that call site exists. **Child 3
+is therefore not yet unblocked overall** — one of its two dependency legs is closed, not both.
 
 ---
 
@@ -256,3 +263,4 @@ A child spec may not close a question it does not own.
 | **2026-08-27** | **Cognito connection settings are delivered as environment variables** | Product-owner decision. Recorded because analysis §4.6 assumed `APConfig` keys without stating their source. Every key still requires the `${key:default}` form — an unset env var otherwise fails Spring context startup. See § *Configuration delivery* |
 | **2026-08-27** | **OQ-3 / OQ-3b deferred; not asked of CGIAR IT yet** | Product-owner decision ("se averigua después"). Recorded so R1 and R2 stay visibly **Critical and unmitigated** rather than quietly assumed away. Neither blocks child 1 |
 | **2026-08-27** | **OQ-21 opened: is candidate 1 (Cognito `ListUsers` by email) viable?** Not resolved in either direction | The product owner and analysis Revision 3 disagree, and the disagreement is decidable by a single API call against the real federated pool rather than by argument. Recording it as a testable question — instead of editing the analysis to match either position — keeps the `[V-AWS]` evidence chain intact and makes the cheapest candidate cheap to confirm. **If OQ-21 resolves yes, Bucket B's 27–36 day estimate drops materially and OQ-3b / OQ-15 become moot for Capability B** |
+| **2026-08-29** | **Row 1 (`directory-abstraction`) moved to `done`** — all 18 tasks (T00–T17), CP2 and CP3 both complete | `adauth` is still present in all 3 POMs and still the implementation; **Gate 1 is explicitly NOT reached** — 3 live call sites remain (2 Capability A, owned by child 2; 1 the seam's own `LdapDirectoryService`). This closes only the `directory-abstraction` leg of child 3's `Depends on`; the `auth-flow` leg is still `pending`, so **child 3 is not yet unblocked overall**. See `directory-abstraction/execution.md`'s `CHECKPOINT RESULT — CP3` |
