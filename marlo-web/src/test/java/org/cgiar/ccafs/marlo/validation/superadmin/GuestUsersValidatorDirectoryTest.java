@@ -157,9 +157,18 @@ public class GuestUsersValidatorDirectoryTest {
    * that let Spring populate it.
    * <p>
    * <b>This test does not, and cannot, cover the field-injection clause itself.</b> That requires a
-   * Spring-managed instance, which MARLO's test setup cannot produce (`D8`). Per
-   * {@code tasks.md} DIRABS-T08's own disqualifier, the field-injection clause is reported as covered
-   * by {@code DIRABS-T12}'s app-start check, not by this test.
+   * Spring-managed instance, which MARLO's test setup cannot produce ({@code D8}).
+   * <p>
+   * <b>Nothing else covers it either — the clause is genuinely uncovered, and is recorded as such.</b>
+   * <i>(Corrected 2026-08-29 by {@code /akili-validate}. This paragraph previously said the clause was
+   * "reported as covered by DIRABS-T12's app-start check". {@code tasks.md} repudiated exactly that on
+   * 2026-08-28: after T08 this class references {@code config} nowhere, so a green app start certifies
+   * a <b>no-op</b> and is not evidence. Five loci were corrected then; this one — the only one in a
+   * compiled file — was missed.)</i>
+   * <p>
+   * What <em>is</em> gated here is the falsifiable structural substitute: no subclass field shadows
+   * {@code config}, and {@code BaseValidator}'s inherited field is still {@code @Inject}-annotated and
+   * {@code protected}.
    */
   @Test
   public void configFieldIsNotShadowedByTheNewConstructor() throws Exception {

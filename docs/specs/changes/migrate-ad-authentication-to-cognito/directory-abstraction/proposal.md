@@ -174,7 +174,7 @@ the same `null` it returned for a genuine miss, `LdapDirectoryService` distingui
 | The directory answered; the person is absent | `false` | `NOT_FOUND` |
 | The lookup failed — unreachable, timeout, exception | `false` | **`ERROR`** |
 
-That distinction is **invisible to the five consumers that read only `found`** — for them `ERROR` and
+That distinction is **invisible to the four consumers that read only `found`** — for them `ERROR` and
 `NOT_FOUND` are both `found == false`, exactly as `null` was. It is **load-bearing for the one
 consumer that historically did not collapse them** (see § *Requirement Delta Preview* → ADDED).
 
@@ -286,7 +286,7 @@ probe, the `EXEC-005` call-site inventory) as a precondition, if not already rec
   | Layer | On a backend failure |
   |---|---|
   | `DirectoryService` / `LdapDirectoryService` | returns `DirectoryPerson(found=false, source=ERROR)` and logs at `error`. **Throws nothing** |
-  | The five consumers that read only `found` | behave exactly as today — `ERROR` and `NOT_FOUND` are both `found == false`, as `null` was |
+  | The **four** consumers that read only `found` | behave exactly as today — `ERROR` and `NOT_FOUND` are both `found == false`, as `null` was |
   | `center/json/global/ManageUsersAction.validateOutlookUser` | reads `source == ERROR` and **throws `DirectoryLookupException`**, preserving the propagation it has today (`:255` has no `try/catch`) |
 
   Without this, a directory outage would reach an administrator as
@@ -448,7 +448,7 @@ DA-OQ-3 is resolved by running Checkpoint 0; DA-OQ-4 is a records question.
 | **SC-4** | `mvn -q install -DskipTests -pl marlo-web -am` passes. **`mvn -q checkstyle:check` is ENVIRONMENTALLY UNRUNNABLE in this checkout and is recorded as *unverifiable*, not as passed or failed** — see `execution.md` **EB-2**: `marlo-parent/pom.xml:827-833` pins `maven-checkstyle-plugin:2.9.1` against a forced `checkstyle:8.18`, and a `PluginContainerException` (classloader-realm construction) now masks the older `NoSuchMethodError`. `pom.xml` is a §3.2 protected file, so repairing it is **out of scope by construction**. *(Annotated 2026-08-28 — this criterion is DoD-gated, so without this note whoever closes the spec would record a failure for a defect the spec is forbidden to fix.)* | every task |
 | **SC-5** | `DirectoryServiceContractTest` + `LdapDirectoryServiceTest` + `ContactPersonActionTest` pass via `mvn -q -pl marlo-web test` | `EXEC-033`, `EXEC-051` |
 | **SC-6** | **Observable behavior equivalence.** For the same inputs, every consumer produces the same observable outcome as before — the same field assignments, the same JSON, the same messages, the same propagation. No protected file appears in any diff | per-task `git diff` review + the per-consumer tests + Reviewer audit |
-| **SC-6a** | **The `NOT_FOUND` / `ERROR` distinction is real and correctly consumed.** A stub that throws yields `found=false` with `source=ERROR` (never `NOT_FOUND`); the five `found`-only consumers behave identically for both; `center/json/global/ManageUsersAction` throws `DirectoryLookupException` on `ERROR` and returns `null` on `NOT_FOUND` | `DirectoryServiceContractTest` + `CenterManageUsersActionDirectoryTest` |
+| **SC-6a** | **The `NOT_FOUND` / `ERROR` distinction is real and correctly consumed.** A stub that throws yields `found=false` with `source=ERROR` (never `NOT_FOUND`); the **four** `found`-only consumers behave identically for both *(count corrected 2026-08-29; the substance was always covered — every found-only consumer is tested)*; `center/json/global/ManageUsersAction` throws `DirectoryLookupException` on `ERROR` and returns `null` on `NOT_FOUND` | `DirectoryServiceContractTest` + `CenterManageUsersActionDirectoryTest` |
 | **SC-6b** | **A directory outage is never reported as "user does not exist."** With the directory unavailable, `center/json/global/ManageUsersAction.create()` does **not** produce `manageUsers.email.doesNotExist` | `CenterManageUsersActionDirectoryTest` |
 | **SC-7** | `searchContact.do` returns the same JSON, from `ad_user`, constructing no AD object | `EXEC-051` |
 | **SC-8** | `EXEC-052`'s re-inventory shows exactly **3** live `adauth` call sites, reconciled against `EXEC-005` | `EXEC-052` |

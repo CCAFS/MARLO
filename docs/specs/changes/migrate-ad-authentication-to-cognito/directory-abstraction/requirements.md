@@ -154,7 +154,23 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 
 #### Scenario: Every consumer goes through the seam
 
-- **GIVEN** the six consumers listed in §2.1
+- **GIVEN** the **five** consumers listed in §2.1 that survive `DD-2` — i.e. rows 2–6, **excluding
+  `BaseAction`**
+
+> **Count corrected 2026-08-29 (`/akili-validate`), here and at 11 sibling loci.** This scenario read
+> *"the **six** consumers listed in §2.1"*, and §2.1's row 1 is **`BaseAction`**. **`DD-2` removed
+> `BaseAction` from the consumer set** — the table's own *Fate* column says *"Method deleted (DD-2)"*,
+> and `FN-007` forbids `BaseAction` from referencing `DirectoryService` **"in any form"**. Applied
+> literally to row 1, this clause was **unsatisfiable and forbidden by another requirement in the same
+> document.**
+>
+> Measured against the tree on 2026-08-29: **5 classes inject `DirectoryService`**; **exactly 1**
+> imports `DirectorySource` (`center/json/global/ManageUsersAction`); therefore **4 read `found`
+> only**. Every *"five found-only + one source-reader"* sentence in this spec was the **pre-`DD-2`
+> six-consumer arithmetic carried past the decision that invalidated it** — `design.md` §1 and §2.1
+> were updated to five, while §5.2, `DD-3` and `C-4` were not, so `design.md` contradicted itself.
+>
+> **No code changed.** `SC-6a`'s substance is unaffected: every found-only consumer is tested.
 - **WHEN** any of them needs a corporate person's identity by email
 - **THEN** it **MUST** call `DirectoryService.findByEmail(email)`
 - **AND** it **MUST NOT** import any `org.cgiar.ciat` type
@@ -202,8 +218,26 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 - **GIVEN** a well-formed email the directory does not resolve
 - **WHEN** `findByEmail` is invoked
 - **THEN** it **MUST** return `found == false` with `source == NOT_FOUND`
-- **AND IT MUST** be reachable only after the directory actually answered — `NOT_FOUND` asserts
-  knowledge, not absence of knowledge
+- **AND IT MUST**, *in this scenario*, be reached only after the directory actually answered — here
+  `NOT_FOUND` asserts knowledge, not absence of knowledge
+
+> **Scope correction, 2026-08-29 (`/akili-validate`).** This clause previously read *"**AND IT MUST**
+> be reachable only after the directory actually answered"*, without the scenario qualifier — and
+> **`DD-11` falsified it on 2026-08-28 without the clause being reconciled.** Three shipped paths
+> return `NOT_FOUND` and **only one involves a directory answer**:
+>
+> | Path | Directory answered? |
+> |---|---|
+> | Null or blank input | **No — no backend call is made at all** |
+> | Malformed email, discriminated *inside* the catch (**DD-11**) | **No — the backend threw** |
+> | Person absent (**this scenario**) | Yes |
+>
+> The clause is correct *about this scenario* and false as a global invariant about the value. The
+> distinction that actually matters is unchanged and still load-bearing: **`ERROR` means the lookup
+> failed and nothing is known**; `NOT_FOUND` never means that. What `NOT_FOUND` does mean is *"this
+> lookup produced no person"*, which covers the two input-rejection paths as well as the negative
+> answer. Both Javadoc blocks that had inherited the un-scoped wording were corrected at the same
+> time — see `DirectoryService` and `DirectorySource`.
 
 #### Scenario: Backend failure
 
@@ -218,7 +252,7 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
   logging it at `error` would fill the log with admin typos while burying real outages
 - **BUT** it must **NOT** throw — the *contract* never throws; a caller may choose to
 - **AND IT MUST** leave a caller that reads only `found` behaving **exactly** as today: `ERROR` and
-  `NOT_FOUND` are both `found == false`, so the five callers that ignore `source` are unaffected
+  `NOT_FOUND` are both `found == false`, so the **four** callers that ignore `source` are unaffected
 
 #### Scenario: A caller that must not silently degrade
 
@@ -229,7 +263,7 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 - **AND** it **MUST** still return `null` on a genuine `NOT_FOUND`, which is what `create():128` handles
 - **BUT** it must **NOT** report `manageUsers.email.doesNotExist` for a backend failure — that message
   would be factually false and can lead to a permanently mis-classified `users` row
-- **AND IT MUST** be the **only** caller that reads `source`; the other five read `found` alone
+- **AND IT MUST** be the **only** caller that reads `source`; the other **four** read `found` alone
 
 ### DIRABS-FN-003 — `source` is always populated
 
@@ -305,7 +339,7 @@ exactly one method: `DirectoryPerson findByEmail(String email)`.
 Each migrated consumer **MUST** preserve its **observable behavior for the same inputs** — the same
 field assignments, the same JSON keys and values, the same messages, the same propagation. Internally,
 a genuine `NOT_FOUND` becomes distinguishable from a backend `ERROR`; that distinction is invisible to
-the five consumers that read only `found`, and is the point for the sixth.
+the **four** consumers that read only `found`, and is the point for the **fifth**.
 
 #### Scenario: `CrpUsersAction` (`:630-657`)
 
@@ -455,7 +489,7 @@ the original reasoning had not checked:
 
 **Resolution.** `design.md` **DD-3** adds `DirectorySource.ERROR`. The contract still never throws, but
 it now says *why* it failed, so this one consumer propagates on `ERROR` and preserves today's observable
-outcome exactly. The other five consumers read only `found` and are untouched.
+outcome exactly. The other **four** consumers read only `found` and are untouched.
 
 **Cost of the fix:** one enum constant, one branch in one consumer, one contract-test row.
 
@@ -607,7 +641,7 @@ and nothing in this spec depends on its answer.
 | 2026-08-27 | Depth **Standard**, not Full | Cross-cutting but zero-behavior-change, and the risk register, rollback and STOP conditions already exist in the execution plan. Full depth would duplicate an authored artifact |
 | 2026-08-27 | Corrected the proposal's consumer set | Reading the code showed the six `new LDAPService()` sites and the six migrated consumers are **different sets**. `ContactPersonAction` and `searchUsersUtil` are `LDAPService` sites that are not migrated; `CrpUsersAction` and `json/global/ManageUsersAction` are migrated consumers with no `LDAPService` call of their own |
 | 2026-08-27 | `DirectoryPerson` carries **raw** values; consumers keep their `.toLowerCase()` | Moving the transformation into the abstraction would work today and break silently the first time an implementation stops applying it, sending mixed-case usernames into a `UNIQUE` column and on to CLARISA and the QA service (`R5`, `R17`) |
-| 2026-08-27 | ~~Backend failure collapses into `found == false`~~ → **REVERSED same day by `design.md` DD-3** | The original reasoning was that `getOutlookUser` collapses them, so equivalence requires it. That was true for five of six consumers and **false for the sixth**, which has no `try/catch`. See the next row |
+| 2026-08-27 | ~~Backend failure collapses into `found == false`~~ → **REVERSED same day by `design.md` DD-3** | The original reasoning was that `getOutlookUser` collapses them, so equivalence requires it. That was true for **four of the five** consumers and **false for the fifth**, which has no `try/catch`. *(Count corrected 2026-08-29 with the other 11 loci: the "six" set counted `BaseAction`, which `DD-2` removed from the consumer set.)* See the next row |
 | 2026-08-27 | **`DirectorySource.ERROR` added; DEV-1 withdrawn** (`design.md` DD-3, challenge C-4) | Collapsing a lookup failure into "not found" makes `center/…/ManageUsersAction.create()` report `manageUsers.email.doesNotExist` during an AD outage — telling an admin a real employee does not exist, and inviting a mis-classified `users` row. The "it's unreachable anyway" justification also weakened once the convention plugin's configuration was read. One enum constant restores true equivalence |
 | 2026-08-27 | **DEV-2** — delete `getOutlookUser` instead of rewiring it | See `design.md` DD-2. Verified there are exactly 2 callers and no FTL/JS/XML reference, so deletion is bounded — and it avoids giving MARLO's widest shared file a new dependency |
 | 2026-08-27 | **D8 (Spring wiring) recorded as an accepted risk with a manual substitute** | MARLO has no Spring context test and adding one requires `DEC-005` and a `marlo-parent/pom.xml` edit, which would break this child's parallel-safety with `auth-flow`. A one-time app-start check at the HITL pause is the honest substitute |

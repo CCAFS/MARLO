@@ -154,7 +154,7 @@ Three fields appear in every task and mean the same thing throughout:
 - **Depends on:** T01 · **Module:** `marlo-data` · **Size:** S · **Skills:** `error-handling-patterns`
 - **Design:** §5.1, §6.1 · **Requirements:** `DIRABS-FN-001`, `DIRABS-FN-002`, `DIRABS-FN-003`
 - **Files touched (new):** `security/directory/DirectoryService.java`
-- **Scope:** one method — `DirectoryPerson findByEmail(String email)`. **The Javadoc *is* the contract**, and must state all five rows of design §5.1's table, plus the three invariants and the no-network-call clause, explicitly: never throws · never returns `null` · `source` never `null`. It must state that `NOT_FOUND` asserts knowledge (*the directory answered*) and `ERROR` asserts the absence of knowledge (*the lookup failed*).
+- **Scope:** one method — `DirectoryPerson findByEmail(String email)`. **The Javadoc *is* the contract**, and must state all five rows of design §5.1's table, plus the three invariants and the no-network-call clause, explicitly: never throws · never returns `null` · `source` never `null`. It must state that `NOT_FOUND` means *this lookup produced no person* — the directory answered and the person is absent, **or** the input was rejected before any backend call (null, blank, or malformed per DD-11) — and that `ERROR` asserts the absence of knowledge (*the lookup failed*).
 - **Requirements covered — clause level:**
   - `FN-001` *"exactly one method"*
   - `FN-002` *"**MUST NOT** propagate an exception under any input or backend condition"*

@@ -2165,7 +2165,7 @@ in run #3 on the same mechanism.
 | **Effort** | `xhigh`, held on retry (`max` forbidden on T2) · **Skills** `error-handling-patterns` |
 | **Gates** | `INSTALL_EXIT=0` · `TEST_EXIT=0` · **33 tests** (28 → 33), Leader-verified. **Zero retries** |
 
-#### Why this consumer is unlike the other five — confirmed at the source
+#### Why this consumer is unlike the other four — confirmed at the source
 
 `:255` had **no `try/catch`**. Every other migrated consumer swallowed its `adauth` exception; **this one
 never did** — a failure propagated through `create()` and Struts to a 500. That is the concrete reason
@@ -3060,6 +3060,16 @@ runtime construction) entirely.
 
 This branch may not apply any of these; they are recorded so `staging` can:
 
+0. **⚠️ The two `docs/trd/trd.md` deliverables `design.md` §8 declares — added 2026-08-29 by
+   `/akili-validate`, which found them **withheld correctly but never recorded**.** The Shared-File
+   Write Discipline requires a would-be shared-file edit to be *recorded as a pending item* **and**
+   applied on `staging`; only the first half had happened, so **the TRD sync had no carrier out of this
+   branch and would have been lost at archive.** Verified: `docs/trd/trd.md` contains **zero**
+   occurrences of `security/directory` or `DirectoryService`.
+   - `trd.md` **§2** (domain modules): a **one-line** addition recording that `marlo-data` gains a
+     `security/directory` package. No ADR is superseded.
+   - `trd.md` **§14.5 `MO-2`**: change cost for directory work drops from **6 classes to 1** — worth
+     recording as evidence that the scenario's measure is met.
 1. Two residual `Checkstyle`-as-working-gate prose items (`requirements.md` §9 opening; `design.md:401`).
 2. The asymmetric supersession at `execution.md` §2's gate table (`:282`).
 3. `EB-2`'s pending root-guide edit: correct the Checkstyle row in `CLAUDE.md` / `AGENTS.md`.

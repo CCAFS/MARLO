@@ -239,7 +239,10 @@ This is the crux of DD-3, and it is why one enum value buys real equivalence.
 | `SearchUserAction` | `found` only | same | ✅ identical — it has its own `try/catch → null` at `:203-205` |
 | **`center/json/global/ManageUsersAction`** | **`found` *and* `source == ERROR`** | **Propagates** — via `DirectoryLookupException` | ✅ same Struts handling and same 500 page; **different exception subtype** — see DD-3a |
 
-Five callers never learn that `ERROR` exists. One does, because one needs to.
+**Four** callers never learn that `ERROR` exists. One does, because one needs to. *(Corrected
+2026-08-29: this read "Five … One does", i.e. six — contradicted by the five-row table directly above
+it, which this sentence summarises. It was the pre-`DD-2` arithmetic; `DD-2` removed `BaseAction` from
+the consumer set. Measured: 5 consumers inject the seam, exactly 1 reads `source`.)*
 
 ---
 
@@ -392,7 +395,7 @@ grep had not needed: `center/json/global/ManageUsersAction:127`.
 | **What the challenge asked** | What does removing the exception propagation actually *do* on that endpoint? |
 | **Finding 1 — the consequence is a false statement to an admin** | `create()` at `:127-131` reads: `newUser = this.validateOutlookUser(...)`; `if (newUser == null) { message = getText("manageUsers.email.doesNotExist"); return SUCCESS; }`. So an **AD outage** would report *"this email does not exist in the Active Directory"* — factually false. Worse, an admin acting on it would create the person as a **non-CGIAR** user with hand-typed names, producing a permanently mis-classified `users` row (`is_cgiar_user = 0`). A 500 is unfriendly; **this is wrong data** |
 | **Finding 2 — "unreachable" was a weaker claim than it looked** | The analysis based it on "the class appears in no Struts XML" — verified true. But `struts2-convention-plugin` **is on the classpath** (`marlo-web/pom.xml:89`) with `struts.convention.action.suffix=Action` and `struts.convention.action.mapAllMatches=true` (`struts.xml:25-28`), and **no `package.locators` or `action.packages` restriction is configured**. The plugin's default locators include `action`, which `org.cgiar.ccafs.marlo.action.center.json.global` matches. **Configuration evidence points toward the class being exposed, not toward it being dead.** This does not *prove* reachability — that still needs the `OQ-12` runtime probe — but it **inverts the presumption** |
-| **Design change** | Add `DirectorySource.ERROR` (DD-3). `center/ManageUsersAction` propagates on `ERROR` via `DirectoryLookupException`, preserving today's Struts-level outcome (see DD-3a for what is and is not identical). The other five callers read only `found` and are unaffected |
+| **Design change** | Add `DirectorySource.ERROR` (DD-3). `center/ManageUsersAction` propagates on `ERROR` via `DirectoryLookupException`, preserving today's Struts-level outcome (see DD-3a for what is and is not identical). The other **four** callers read only `found` and are unaffected |
 | **Cost** | One enum constant, one branch in one consumer, one contract-test row |
 | **Verdict** | 🔴 **Design changed. DEV-1 is withdrawn** — the deviation no longer exists, because equivalence is now preserved. `requirements.md` amended: `FN-002` gains the `ERROR` row, `FN-006`'s center scenario replaces its DEV-1 clause, `DIRABS-OQ-2` is closed, `DIRABS-OQ-3` is closed by DD-3 |
 
@@ -453,12 +456,12 @@ at archive time, not silently diverged from.
 
 ### DD-3 — `DirectorySource.ERROR`: a lookup failure is distinguishable *(supersedes DEV-1 — see C-4)*
 
-**Problem:** `getOutlookUser` collapses "not found" and "backend failed" into `null`. Five consumers
+**Problem:** `getOutlookUser` collapses "not found" and "backend failed" into `null`. **Four** consumers
 depend on that collapse. One consumer (`center/ManageUsersAction`) does **not** collapse it today — it
 has no `try/catch`, so a failure propagates. A single never-throws contract cannot serve both.
 
 **Decision:** the contract never throws, **and** carries *why* in `source`. `ERROR` means "nothing is
-known about this person." `center/ManageUsersAction` reads it and propagates; the other five read only
+known about this person." `center/ManageUsersAction` reads it and propagates; the other **four** read only
 `found` and behave exactly as today.
 
 **Alternatives rejected:**
@@ -467,7 +470,7 @@ known about this person." `center/ManageUsersAction` reads it and propagates; th
 |---|---|
 | Collapse everything; accept the change (original DEV-1) | C-4: turns an AD outage into a false *"email does not exist"* and can produce a mis-classified user row. And "the class is unreachable" is weaker than it looked |
 | A second, throwing method on the interface | Two methods where one suffices, and it puts failure handling back in the interface's shape rather than in its data |
-| Let `LdapDirectoryService` throw for that one caller | Breaks the never-throws invariant the other five rely on, and re-exports an `adauth`-shaped exception into `marlo-web` — defeating the spec |
+| Let `LdapDirectoryService` throw for that one caller | Breaks the never-throws invariant the other **four** rely on, and re-exports an `adauth`-shaped exception into `marlo-web` — defeating the spec |
 | Preserve the old behavior by *not* migrating `center/ManageUsersAction` | It would keep importing `LDAPUser`, so `DIRABS-NF-002` fails and `marlo-web` is not isolated |
 
 **Argument:** this is the **Result-type pattern** — the return value carries success *and* the reason

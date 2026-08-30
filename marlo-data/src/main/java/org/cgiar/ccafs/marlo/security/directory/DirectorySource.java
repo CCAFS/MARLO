@@ -27,8 +27,12 @@ package org.cgiar.ccafs.marlo.security.directory;
  * <h2>Introduced by this spec</h2>
  * <ul>
  * <li>{@link #LDAP} — the AD bind confirmed this person.</li>
- * <li>{@link #NOT_FOUND} — the directory answered, and the person is not there. This asserts
- * knowledge: the backend was reachable and gave a definitive negative answer.</li>
+ * <li>{@link #NOT_FOUND} — <b>this lookup produced no person.</b> It covers three paths, and only
+ * one of them is a directory answer: the backend was reachable and gave a definitive negative
+ * answer; <em>or</em> the input was null/blank and no backend call was made at all; <em>or</em> the
+ * input was malformed and the backend threw, which is discriminated inside the handler per
+ * {@code DD-11}. <b>What {@code NOT_FOUND} never means is that the lookup itself failed on a
+ * well-formed input</b> — that is {@link #ERROR}, and it is the distinction that carries weight.</li>
  * <li>{@link #ERROR} — the directory could not be reached, or the lookup failed for any other
  * reason. Nothing is known about the person. This is deliberately distinct from {@link #NOT_FOUND}:
  * collapsing the two would let a backend outage read as "this email does not exist", which is a

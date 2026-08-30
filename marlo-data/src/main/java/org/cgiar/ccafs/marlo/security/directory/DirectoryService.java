@@ -52,8 +52,10 @@ package org.cgiar.ccafs.marlo.security.directory;
  * before any bind or connection to the backend.
  * <p>
  * <b>{@code NOT_FOUND} and {@code ERROR} both leave {@code found == false}, but they are not
- * interchangeable.</b> {@link DirectorySource#NOT_FOUND} <em>asserts knowledge</em>: the directory
- * was reached, it answered, and the person is not there. {@link DirectorySource#ERROR}
+ * interchangeable.</b> {@link DirectorySource#NOT_FOUND} means <em>this lookup produced no
+ * person</em> — the directory answered and the person is not there, <em>or</em> the input was
+ * rejected before any backend call (null, blank, or malformed per {@code DD-11}). It never means
+ * the lookup failed on a well-formed input. {@link DirectorySource#ERROR}
  * <em>asserts the absence of knowledge</em>: the lookup itself failed — the backend was
  * unreachable, timed out, or threw — and nothing is known about whether the person exists.
  * Collapsing this distinction would let a backend outage read as "this email does not exist",

@@ -49,6 +49,22 @@ public abstract class DirectoryServiceContractTest {
    */
   protected static final String MALFORMED_EMAIL = "admin@typo";
 
+  /**
+   * The email the <em>directory</em> answers with, deliberately DIFFERENT from
+   * {@link #WELL_FORMED_EMAIL}, which is what the caller requests.
+   * <p>
+   * <b>This difference is the whole assertion.</b> While the fixture returned the same string the
+   * test had just requested, an implementation that echoed its own input parameter instead of
+   * reading {@code LDAPUser.getEmail()} passed every test in this suite — the mapping was asserted
+   * nowhere and was <em>unassertable</em>. That is {@code D1}, this spec's dominant defect class,
+   * and it is the same shape as {@link #RAW_LOGIN}'s note one field over. Keep these two values
+   * distinct.
+   * <p>
+   * The mixed case additionally holds {@code DIRABS-FN-004}: the seam returns raw values and must
+   * not normalise them.
+   */
+  protected static final String RAW_BACKEND_EMAIL = "Jane.Smith@CGIAR.ORG";
+
   /** Mixed-case on purpose (DIRABS-FN-004): a lowercase fixture would pass whether or not the raw
    *  contract holds. */
   protected static final String RAW_LOGIN = "JSmith";
@@ -154,7 +170,7 @@ public abstract class DirectoryServiceContractTest {
   @Test
   public void foundPersonKeepsRawFieldsAndReportsTheProviderSource() {
     DirectoryService service =
-      this.createServiceWithFoundPerson(WELL_FORMED_EMAIL, RAW_LOGIN, RAW_FIRST_NAME, RAW_LAST_NAME);
+      this.createServiceWithFoundPerson(RAW_BACKEND_EMAIL, RAW_LOGIN, RAW_FIRST_NAME, RAW_LAST_NAME);
 
     DirectoryPerson person = service.findByEmail(WELL_FORMED_EMAIL);
 
@@ -165,6 +181,8 @@ public abstract class DirectoryServiceContractTest {
     assertEquals("login must be raw, not transformed", RAW_LOGIN, person.getLogin());
     assertEquals(RAW_FIRST_NAME, person.getFirstName());
     assertEquals(RAW_LAST_NAME, person.getLastName());
+    assertEquals("email must come from the directory's answer, not be echoed back from the request",
+      RAW_BACKEND_EMAIL, person.getEmail());
   }
 
   @Test
