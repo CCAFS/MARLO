@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/fieldsValidation.js" ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/homepageBanner.css?20260828" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/homepageBanner.css?20260831" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "homepageBannerManagement" /]
 
@@ -54,8 +54,13 @@
           [@customForm.input name="homepageBanner.title" i18nkey="homepageBannerManagement.field.title"
             placeholder="homepageBannerManagement.field.title.placeholder" required=false editable=true /]
 
-          [@customForm.textArea name="homepageBanner.description" i18nkey="homepageBannerManagement.field.description"
-            required=false editable=true className="homepageBannerDescription" /]
+          [#-- The label is rendered here instead of by the macro: the shared textArea macro leaves a blank space
+               before the colon, which reads as "Description :". --]
+          <div class="homepageBannerDescription">
+            <label class="editable" for="homepageBanner.description">[@s.text name="homepageBannerManagement.field.description" /]:</label>
+            [@customForm.textArea name="homepageBanner.description" showTitle=false
+              required=false editable=true className="homepageBannerDescriptionText" /]
+          </div>
 
           [#-- Image. Shown through the very same route the homepage uses, so what the administrator sees here is
                exactly what a visitor sees. --]

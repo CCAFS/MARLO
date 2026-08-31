@@ -6,12 +6,16 @@
   padding: 20px;
 }
 
-.homepageBannerForm .homepageBannerDescription textarea {
+.homepageBannerForm .homepageBannerDescription {
+  margin-top: 10px;
+}
+
+.homepageBannerForm .homepageBannerDescriptionText {
   min-height: 160px;
 }
 
 .homepageBannerImage {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .homepageBannerImage__label {
