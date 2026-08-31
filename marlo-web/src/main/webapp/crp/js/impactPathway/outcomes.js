@@ -10,7 +10,9 @@ function init() {
   attachEvents();
  
   /* Init Select2 plugin */
-  $('.outcomes-list select').not('.opi-plain').select2();
+  // .opi-plain / .opi-select keep the native control: the design's selects are
+  // plain boxes with a chevron, not select2's rendered markup.
+  $('.outcomes-list select').not('.opi-plain, .opi-select').select2();
 
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();

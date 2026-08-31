@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?202608315",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083111",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?202608319",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083111",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -304,7 +304,7 @@
       [#if action.hasSpecificities('portfolio_feature_active')]
         <div class="opi-grid5">
           <div>
-            [@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
+            [@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus opi-select" editable=editable /]
           </div>
         </div>
       [/#if]
@@ -329,13 +329,13 @@
       [#-- Baseline year / Closing year / Target unit / Target value / Order --]
       <div class="opi-grid5 target-block">
         [#-- Baseline (start) year --]
-        <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear" required=true editable=editable /]</div>
+        <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
         [#-- Closing (target) year --]
-        <div>[@customForm.select name="${outcomeCustomName}.year" value="${(outcome.year)!-1}" i18nkey="${isAiccraUI?string('outcome.closingYear','outcome.targetYear')}" listName="milestoneYears" className="targetYear outcomeYear" required=true editable=editable /]</div>
+        <div>[@customForm.select name="${outcomeCustomName}.year" value="${(outcome.year)!-1}" i18nkey="${isAiccraUI?string('outcome.closingYear','outcome.targetYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
         [#-- Target Unit --]
         [#if targetUnitList?has_content]
         <div class="targetUnit-block">
-          [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+          [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit opi-select" listName="targetUnitList" editable=editable  /]
         </div>
         [#else]
         <input type="hidden" name="${outcomeCustomName}.srfTargetUnit.id" value="-1"/>

@@ -889,6 +889,102 @@ span.icon-20 {
 .opi-page .opi-card__body .fieldError,
 .opi-page .opi-card__body .fieldError:focus { border-color: var(--opi-err-field); background: var(--opi-warn-bg); }
 
+/* ---------- Native selects (design boxes with a chevron) ---------- */
+
+.opi-page .opi-card__body select.opi-select {
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 11px;
+  border: 1px solid var(--opi-border-strong);
+  border-radius: var(--opi-radius-sm);
+  background-color: #fff;
+  /* Chevron drawn inline so it matches the design instead of the UA default. */
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  font: 400 13.5px Figtree, sans-serif;
+  color: var(--opi-ink);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
+}
+
+.opi-page .opi-card__body select.opi-select:focus {
+  border-color: var(--opi-primary);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  outline: none;
+}
+
+.opi-page .opi-card__body select.opi-select[disabled] { background-color: #F5F7FA; color: var(--opi-ink-soft); }
+
+.opi-page .opi-card__body select.opi-select.fieldError {
+  border-color: var(--opi-err-field);
+  background-color: var(--opi-warn-bg);
+}
+
+/* The macro wraps every select in .select > .selectList; neutralise its spacing. */
+.opi-page .opi-card__body .select,
+.opi-page .opi-card__body .selectList { margin: 0; padding: 0; }
+
+/* ---------- select2 controls ----------
+   customForm.select is upgraded by select2, which swaps the native <select>
+   for its own markup and ships a 28px / #aaa / 4px box. Match the inputs. */
+
+.opi-page .opi-card__body .select2-container { width: 100% !important; }
+
+.opi-page .opi-card__body .select2-container--default .select2-selection--single {
+  height: 36px;
+  border: 1px solid var(--opi-border-strong);
+  border-radius: var(--opi-radius-sm);
+  background: #fff;
+  outline: none;
+}
+
+.opi-page .opi-card__body .select2-container--default .select2-selection--single .select2-selection__rendered {
+  height: 34px;
+  line-height: 34px;
+  padding-left: 11px;
+  padding-right: 28px;
+  font: 400 13.5px Figtree, sans-serif;
+  color: var(--opi-ink);
+}
+
+.opi-page .opi-card__body .select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #9AA4B0;
+}
+
+.opi-page .opi-card__body .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 34px;
+  right: 8px;
+}
+
+.opi-page .opi-card__body .select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--opi-ink-soft) transparent transparent transparent;
+}
+
+/* Focus / open ring, mirroring the inputs. */
+.opi-page .opi-card__body .select2-container--default.select2-container--focus .select2-selection--single,
+.opi-page .opi-card__body .select2-container--default.select2-container--open .select2-selection--single {
+  border-color: var(--opi-primary);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+}
+
+.opi-page .opi-card__body .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: transparent transparent var(--opi-ink-soft) transparent;
+}
+
+.opi-page .opi-card__body .select2-container--default.select2-container--disabled .select2-selection--single {
+  background: #F5F7FA;
+}
+
+/* A select flagged by the validator turns amber like the inputs do. */
+.opi-page .opi-card__body .select2-container--default .select2-selection--single.fieldError,
+.opi-page .opi-card__body span.select2.fieldError .select2-selection--single {
+  border-color: var(--opi-err-field);
+  background: var(--opi-warn-bg);
+}
+
 /* ---------- Section blocks ---------- */
 
 .opi-block { display: flex; flex-direction: column; gap: 8px; }
