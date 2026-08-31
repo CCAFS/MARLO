@@ -2,8 +2,15 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260820" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260618" ] /]
+[#assign customJS = [
+  "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260827",
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
+  ]
+/]
+[#assign customCSS = [
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260827",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
+  ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "parameters" /]
 
@@ -82,7 +89,13 @@
                   <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </div>
               </div>
-              <table class="table table-striped table-condensed" id="table-${type_index}-${element.id}">
+              <table class="table table-striped table-hover parametersTable" id="table-${type_index}-${element.id}" width="100%">
+                <thead>
+                  <tr>
+                    <th id="parameterNames-${type_index}-${element.id}">[@s.text name="marloParameters.table.parameter" /]</th>
+                    <th id="parameterValues-${type_index}-${element.id}" class="col-md-3 text-center">[@s.text name="marloParameters.table.value" /]</th>
+                  </tr>
+                </thead>
                 <tbody>
                 [#list element.parameters as crpParameter]
                   [#if type.id ==crpParameter.parameter.category]

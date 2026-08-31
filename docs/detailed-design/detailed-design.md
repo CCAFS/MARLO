@@ -84,8 +84,8 @@ MARLO is structured as a multi-module Maven project. The aggregator (`marlo-aggr
 |---|---|---|
 | `marlo-parent` | Dependency and plugin management. No executable code. | `pom.xml` declares `struts2`, `hibernate`, `spring`, `shiro`, `mysql`, `flyway`, etc. (see `marlo-parent/pom.xml`). |
 | `marlo-utils` | Pure utility classes (dates, strings, file processing for Excel/CSV/PDF, JSON helpers, constants). | `org.cgiar.ccafs.marlo.utils.*`. |
-| `marlo-core` | Cross-cutting configuration: Shiro security wiring, Hibernate session factory, custom security utilities. | `MarloShiroConfiguration`, `MarloLocalSessionFactoryBean`, `MarloDatabaseConfiguration`. |
-| `marlo-data` | Domain layer: JPA/Hibernate entities (`model`), `dao`/`mapper`, Manager interfaces and implementations. Audit listeners. | `org.cgiar.ccafs.marlo.data.{model,dao,manager,mapper}`; `IAuditLog`, `HibernateAuditLogListener`, `AuditColumnHibernateListener`. |
+| `marlo-core` | Minimal servlet/Spring bootstrap shared by the web tier. No domain code. | `org.marlo.core.CoreAppContextConfig`, `org.marlo.core.WebAppInitializer`. |
+| `marlo-data` | Domain layer: JPA/Hibernate entities (`model`), `dao`/`mapper`, Manager interfaces and implementations. Audit listeners. Also hosts the Shiro / Hibernate wiring. | `org.cgiar.ccafs.marlo.data.{model,dao,manager,mapper}`; `IAuditLog`, `HibernateAuditLogListener`, `AuditColumnHibernateListener`; `MarloShiroConfiguration`, `MarloLocalSessionFactoryBean`, `MarloDatabaseConfiguration`. |
 | `marlo-web` | Web tier: Struts actions, REST controllers, FreeMarker templates, validators, interceptors, Spring MVC config, web resources, SQL migrations. | `org.cgiar.ccafs.marlo.action.*`, `rest.controller.v2.*`, `validation.*`, `interceptor.*`. |
 
 ### 2.1 Action package map (`marlo-web`)
@@ -127,12 +127,18 @@ Top-level Struts action packages and their domains:
 
 ### 2.3 Configuration packages (`marlo-web` core)
 
-- `config/ApplicationContextConfig.java` — Spring application context.
-- `config/MarloRestApiConfig.java` — Spring MVC for `/api/*`.
-- `config/MarloSwaggerConfiguration.java` — Springdoc OpenAPI.
-- `config/MarloFlywayConfiguration.java` — Flyway migrations.
-- `config/MarloBusinessIntelligenceConfiguration.java` — BI config.
-- `config/WebAppInitializer.java` — Servlet container bootstrap.
+The Spring/Flyway bootstrap classes live in the **root package** `org.cgiar.ccafs.marlo` of `marlo-web`, not under
+`config/`. The `config/` package holds Struts/FreeMarker plumbing and the web-tier constants.
+
+- `ApplicationContextConfig.java` (root package) — Spring application context.
+- `MarloRestApiConfig.java` (root package) — Spring MVC for `/api/*`.
+- `MarloFlywayConfiguration.java` (root package) — Flyway migrations.
+- `MarloBusinessIntelligenceConfiguration.java` (root package) — BI config.
+- `WebAppInitializer.java` (root package) — Servlet container bootstrap.
+- `config/SpringDocWebConfig.java` — Springdoc OpenAPI.
+- `config/APConstants.java` — web-tier constants (mirror of the `marlo-data` file).
+- `config/APFreemarkerManager.java`, `config/MarloLocalizedTextProvider.java` — FreeMarker and i18n plumbing.
+- `config/ShiroSpringStartupListener.java` — Shiro startup hook.
 - `interceptor/` — Struts interceptors (auth, CRP validation, edit gates).
 - `validation/` — Action-side validators (e.g., `ProjectDescriptionValidator`).
 - `security/` — App-level security helpers complementing Shiro.
@@ -334,7 +340,7 @@ The constant value MUST equal the `parameters.key`. Both `APConstants.java` file
 
 ### 6.2 Composition (per `reports/ai-context/frontend-composition-map.md`)
 
-- `[#include]` for layout fragments (`header.ftl`, `main-menu.ftl`, `footer.ftl`, `breadcrumb.ftl`, `messages.ftl`, area submenus).
+- `[#include]` for layout fragments (`header.ftl`, `main-menu.ftl`, `footer.ftl`, `breadcrumb.ftl`, `generalMessages.ftl`, area submenus).
 - `[#import ... as alias]` for macro libraries (`forms.ftl` → alias `customForm`, area-specific macro files).
 - Macro calls (`[@customForm.input ... /]`) for form rendering.
 - Hidden template macros (`isTemplate=true`) for repeated blocks (cloned/reindexed by JS).
@@ -460,8 +466,8 @@ Do not claim HikariCP ≥ 5.x or Groovy ≥ 2.4.21 until those upgrades are impl
 ### 9.2 Action-level error handling
 
 - `UnhandledExceptionAction` is the global Struts fallback.
-- Error views: `WEB-INF/global/views/403.ftl`, `404.ftl`, `500.ftl`.
-- User-visible errors flow through the page-level message banner (`messages.ftl`); never expose stack traces.
+- Error views: `WEB-INF/global/pages/error/401.ftl`, `403.ftl`, `404.ftl`, `500.ftl`.
+- User-visible errors flow through the page-level message banner (`generalMessages.ftl`, plus the per-area `messages-<area>.ftl` banners); never expose stack traces.
 
 ### 9.3 REST error handling
 

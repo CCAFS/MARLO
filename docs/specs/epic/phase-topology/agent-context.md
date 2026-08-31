@@ -24,7 +24,7 @@ evidence.
 | `start_date` / `end_date` | The only ordering key in the UI today. |
 | `crp` | Global Unit (column `global_unit_id`). |
 
-`Phase.hbm.xml` also declares **84 child collections**, and the migrations accumulate **160+ FK declarations
+`Phases.hbm.xml` also declares **84 child collections**, and the migrations accumulate **160+ FK declarations
 pointing at `phases`**, almost all `RESTRICT`.
 
 ## 2. The canonical chain
