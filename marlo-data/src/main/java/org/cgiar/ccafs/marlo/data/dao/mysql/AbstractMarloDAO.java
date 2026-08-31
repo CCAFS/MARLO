@@ -126,8 +126,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery) {
     try {
-      LOG.debug("*****FDIAZ - storeProcedure1: " + storeProcedure);
-      LOG.debug("*****FDIAZ - sqlQuery1: " + sqlQuery);
       NativeQuery<Map<String, Object>> queryProcd =
         this.sessionFactory.getCurrentSession().createSQLQuery(storeProcedure);
       queryProcd.setFlushMode(FlushMode.COMMIT);
@@ -148,8 +146,6 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
   @Transactional
   public List<Map<String, Object>> excuteStoreProcedure(String storeProcedure, String sqlQuery, int userId) {
     try {
-      LOG.debug("*****FDIAZ - storeProcedure2: " + storeProcedure);
-      LOG.debug("*****FDIAZ - sqlQuery2: " + sqlQuery);
       Session session = sessionFactory.getCurrentSession();
         StoredProcedureQuery spQuery = session.createStoredProcedureQuery(storeProcedure);
       spQuery.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
