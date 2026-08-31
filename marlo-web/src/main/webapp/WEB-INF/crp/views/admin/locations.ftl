@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/admin/locations.js?20260326",
   "${baseUrlCdn}/global/js/fieldsValidation.js" ] 
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/locations.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/locations.css?20260820" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "locations" /]
 
@@ -50,6 +50,7 @@
               [/#if]
               <label for="${customLocName}"><span class="glyphicon glyphicon-map-marker"></span> <span>${elementType.locElementType.name}</span></label>
               [#-- CRPs that allow this location --]
+              [#--             
               <div class="crps" title="CRPs ">
                 [#if elementType.locElementType?? && elementType.locElementType.crpLocElementTypes?has_content]
                   [#list elementType.locElementType.crpLocElementTypes as crpLocElementType]
@@ -57,6 +58,7 @@
                   [/#list] 
                 [/#if]
               </div>
+              --]
             </li>
           [/#list]
           </ul>

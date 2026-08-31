@@ -273,7 +273,7 @@ The page shell is composed by global FTL fragments under `WEB-INF/global/pages/`
 - `main-menu.ftl` — top-level zone navigation (Home, Impact Pathway, POWB, Projects, Funding Sources, QA, AR, BI, AI, Admin).
 - `footer.ftl` — version, support email, license info, language switch.
 - `breadcrumb.ftl` — context trail (e.g., `Admin > Portfolios > Cluster A`).
-- `messages.ftl` / `generalMessages.ftl` — global success/info/error banner.
+- `generalMessages.ftl` — global success/info/error banner. Per-area banners are `messages-<area>.ftl` next to the views (e.g., `messages-projects.ftl`, `messages-powb.ftl`).
 
 Module-specific submenus live alongside the views (e.g., `submenu-powb.ftl`, `menu-admin.ftl`).
 

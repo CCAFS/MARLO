@@ -20,7 +20,7 @@
   [#assign items= [
     { 'slug': 'management',       'name': 'CRPAdmin.menu.hrefProgramManagement',  'action': 'management',         'active': true, 'visible': true },
     { 'slug': 'regionalMapping',  'name': 'CRPAdmin.menu.hrefRegionalMapping',    'action': 'regionalMapping',    'active': action.hasProgramnsRegions(), 'visible': true },
-    { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true, 'visible': true },
+    [#-- { 'slug': 'siteIntegration',  'name': 'CRPAdmin.menu.hrefSiteIntegration',    'action': 'siteIntegration',    'active': true, 'visible': true }, --]
     { 'slug': 'ppaPartners',      'name': 'CRPAdmin.menu.hrefPPAPartners',        'action': 'ppaPartners',        'active': true, 'visible': true },  
     { 'slug': 'activities',       'name': 'CRPAdmin.menu.activities',             'action': 'activityManager',    'active': true, 'visible': true },  
     { 'slug': 'locations',        'name': 'CRPAdmin.menu.hrefLocations',          'action': 'locations',          'active': true, 'visible': true },

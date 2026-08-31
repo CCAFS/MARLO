@@ -80,7 +80,7 @@
     <span class="crps" style="color: #9c9c9c; margin-left: 16px; font-size: 0.75em;" title="CRPs ">
       [#if element.crpTargetUnits?has_content]
         [#list element.crpTargetUnits as crpTargetUnit]
-          [#if crpTargetUnit.active]
+          [#if crpTargetUnit.active && (crpTargetUnit.crp?? && crpTargetUnit.crp.active?? && crpTargetUnit.crp.active)]
           [${crpTargetUnit.crp.acronym}]   
           [/#if]
         [/#list] 

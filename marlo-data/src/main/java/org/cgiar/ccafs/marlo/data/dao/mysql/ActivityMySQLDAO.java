@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ActivityDAO;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,42 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
       return list;
     }
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<Map<String, Object>> getActivityTitleRelations(long globalUnitId, long currentPhaseId) {
+    StringBuilder query = new StringBuilder();
+    query.append("select a.title_id as titleId");
+    query.append(", a.project_id as clusterId");
+    query.append(", a.composed_id as composedId");
+    query.append(", a.id as activityId");
+    query.append(", a.is_active as activityActive");
+    query.append(", a.description as activityDescription");
+    query.append(", a.id_phase as phaseId");
+    query.append(", ph.name as phaseName");
+    query.append(", ph.year as phaseYear");
+    // Cluster title of the current phase, falling back to the latest phase where the cluster was described. Scalar
+    // subqueries are used on purpose: joining projects_info would multiply the activity rows.
+    query.append(", coalesce(");
+    query.append("(select pic.title from projects_info pic where pic.project_id = a.project_id");
+    query.append(" and pic.id_phase = " + currentPhaseId + " and pic.is_active = 1 limit 1)");
+    query.append(", (select pil.title from projects_info pil inner join phases phl on phl.id = pil.id_phase");
+    query.append(" where pil.project_id = a.project_id and pil.is_active = 1");
+    query.append(" order by phl.year desc, phl.id desc limit 1)");
+    query.append(") as clusterTitle");
+    query.append(" from activities a");
+    query.append(" inner join activities_titles att on att.id = a.title_id");
+    query.append(" inner join phases ph on ph.id = a.id_phase");
+    query.append(" where att.global_unit_id = " + globalUnitId);
+    // A year holds up to three phases (POWB, AR, UpKeep) and their ids were reassigned over time, so start_date
+    // is what puts them in chronological order; id is only the last tie breaker.
+    query.append(" order by a.project_id asc, a.composed_id asc, ph.year asc, ph.start_date asc, ph.id asc");
+
+    List<Map<String, Object>> list = super.findCustomQuery(query.toString());
+    if (list == null) {
+      return new ArrayList<>();
+    }
+    return list;
   }
 
   @Override

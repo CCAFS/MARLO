@@ -18,6 +18,71 @@ $(function() {
   }
 
   /**
+   * Opt in per column filters. A modal gets them by rendering, before its table:
+   *   <div class="relationsModalFilters" data-filter-columns="3,4" data-label-all="All"></div>
+   * One select is built per listed column, offering the distinct values found in that column and labelled with the
+   * column header, so no label has to be duplicated in the markup. Modals without the container are untouched.
+   * A filtered column must hold the plain value and nothing else: DataTables filters against the raw cell content,
+   * so nested markup or extra text (a badge, a counter) would split one value into several filter options. Put that
+   * kind of decoration in a cell attribute such as title instead.
+   */
+  function buildColumnFilters($table) {
+    var $container = $table.closest('.modal-body').find('.relationsModalFilters').first();
+    if (!$container.length || $container.data('relationsModalFiltersReady')) {
+      return;
+    }
+    var columns = String($container.data('filter-columns') || '').split(',');
+    var labelAll = $container.data('label-all') || 'All';
+    var table = $table.DataTable();
+
+    $.each(columns, function(i, rawIndex) {
+      var index = parseInt(String(rawIndex).trim(), 10);
+      if (isNaN(index)) {
+        return;
+      }
+      var column = table.column(index);
+      if (!column || typeof column.data !== 'function') {
+        return;
+      }
+
+      /* Distinct plain text values of the column, so markup such as labels does not leak into the option */
+      var values = [];
+      column.data().each(function(value) {
+        var text = $('<div></div>').html(value).text().trim();
+        if (text.length && values.indexOf(text) === -1) {
+          values.push(text);
+        }
+      });
+      if (values.length < 2) {
+        /* A single value filters nothing, do not add noise to the popup */
+        return;
+      }
+      values.sort();
+
+      var label = $(column.header()).text().trim() || ('#' + index);
+      var $group = $('<div class="relationsModalFilter"></div>');
+      $group.append($('<label></label>').text(label + ':'));
+
+      var $select = $('<select class="form-control input-sm"></select>');
+      $select.append($('<option></option>').val('').text(labelAll));
+      $.each(values, function(j, value) {
+        $select.append($('<option></option>').val(value).text(value));
+      });
+      $group.append($select);
+      $container.append($group);
+
+      $select.on('change', function() {
+        var value = $(this).val();
+        /* Anchored so "AR 2023" does not also match "AR 2023 extended"; \s* absorbs cell indentation */
+        var term = value ? '^\\s*' + $.fn.dataTable.util.escapeRegex(value) + '\\s*$' : '';
+        column.search(term, true, false).draw();
+      });
+    });
+
+    $container.data('relationsModalFiltersReady', true);
+  }
+
+  /**
    * Mirrors projectContributionsCrpList.js initializeDataTable($table).
    */
   function initializeDataTableLikeContributions($table) {
@@ -39,6 +104,8 @@ $(function() {
       bFilter: true,
       bSort: true,
       bAutoWidth: false,
+      /* DataTables merges the table data-* attributes over these options, so a table can override this
+         default page size with data-page-length (see _fnCamelToHungarian on init). */
       iDisplayLength: 25,
       language: {
         searchPlaceholder: 'Search...'
@@ -62,6 +129,8 @@ $(function() {
     var $wrapper = $table.closest('.dataTables_wrapper');
     var $filter = $wrapper.find('.dataTables_filter');
     appendSearchIconToFilter($filter);
+
+    buildColumnFilters($table);
 
     var $next = $table.next();
     if ($next.length) {

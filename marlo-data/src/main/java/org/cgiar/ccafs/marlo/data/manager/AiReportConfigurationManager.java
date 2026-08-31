@@ -45,11 +45,16 @@ public interface AiReportConfigurationManager {
 
 
   /**
-   * This method gets a list of aiReportConfiguration that are active
+   * This method gets the list of active aiReportConfiguration rows that belong to the given Global Unit.
+   * <p>
+   * The AI section content is per Global Unit, so there is deliberately no unscoped {@code findAll()}: every read of
+   * this table must be filtered by owner to avoid rendering another Global Unit's AI tools.
    * 
-   * @return a list from AiReportConfiguration null if no exist records
+   * @param globalUnitId is the Global Unit identifier that owns the configurations.
+   * @return a list of AiReportConfiguration ordered by id, empty when the Global Unit has no active rows - never
+   *         {@code null}.
    */
-  public List<AiReportConfiguration> findAll();
+  public List<AiReportConfiguration> findAllByGlobalUnit(long globalUnitId);
 
 
   /**
