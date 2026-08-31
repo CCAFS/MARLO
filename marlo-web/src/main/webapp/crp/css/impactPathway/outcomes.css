@@ -672,7 +672,7 @@ span.icon-20 {
 
 /* ---------- Main column header ---------- */
 
-.opi-mainHead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.opi-mainHead { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 .opi-mainHead__title { margin: 0; font: 600 22px Figtree, sans-serif; color: var(--opi-ink); }
 .opi-mainHead__summary { font: 400 13px Figtree, sans-serif; color: var(--opi-muted); }
 
@@ -732,6 +732,16 @@ span.icon-20 {
 }
 
 .opi-card__caret:hover { background: #DDE5EC; }
+
+/* Wins over the generic .btn-expand-Outcome box above. */
+.opi-page .opi-card__head .opi-card__caret {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: #EEF2F5;
+}
 .opi-card__caret svg { transform: rotate(90deg); transition: transform .15s ease; }
 .opi-page .outcome.is-collapsed .opi-card__caret svg { transform: rotate(0deg); }
 
@@ -774,6 +784,15 @@ span.icon-20 {
 
 .opi-card__relations { flex: none; display: inline-flex; align-items: center; }
 
+/* relationsPopupMacro renders `.form-group.elementRelations > button.btn-xs`,
+   which carries a bootstrap margin and square corners. */
+.opi-card__relations .form-group,
+.opi-card__relations .elementRelations {
+  margin: 0;
+  padding: 0;
+}
+
+.opi-card__relations .btn,
 .opi-card__relations .button-blue,
 .opi-card__relations .relationsButton,
 .opi-card__relations a {
@@ -782,15 +801,28 @@ span.icon-20 {
   gap: 6px;
   height: 28px;
   padding: 0 10px;
+  margin: 0;
   border: 1px solid var(--opi-border-strong);
   border-radius: 7px;
   background: #fff;
   font: 600 12px Figtree, sans-serif;
+  line-height: 1;
   color: var(--opi-ink-soft);
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.opi-card__relations a:hover { border-color: var(--opi-primary); color: var(--opi-primary); }
+.opi-card__relations .btn:hover,
+.opi-card__relations a:hover { border-color: var(--opi-primary); color: var(--opi-primary); background: #fff; }
+
+.opi-card__relations .btn strong { font-weight: 700; }
+
+/* The shared `span.icon-20 { margin-top: 7px }` above (still needed by
+   safeguard.ftl and the center outcome list) pushes the icon off-centre here. */
+.opi-page span.icon-20 { margin-top: 0; }
+
+/* The modal is a child of the same wrapper; keep it out of the flex row. */
+.opi-card__relations .modal { position: fixed; }
 
 .opi-card__delete {
   flex: none;
@@ -1274,7 +1306,8 @@ span.icon-20 {
 .opi-page .milestoneTitlePreview { font: 400 13px Figtree, sans-serif; color: var(--opi-ink-soft); }
 
 .opi-page .btn-expand,
-.opi-page .btn-expand-all {
+.opi-page .btn-expand-all,
+.opi-page .btn-expand-Outcome {
   position: static;
   bottom: auto;
   flex: none;
@@ -1292,6 +1325,14 @@ span.icon-20 {
 .opi-page .btn-expand-all:hover { border-color: var(--opi-primary); color: var(--opi-primary); }
 
 .opi-page .cont-btn-min { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+
+/* In the header the toggle sits beside the title, so it must not inherit the
+   shared `width: 100%` that would push it onto its own row. */
+.opi-mainHead .cont-btn-min {
+  width: auto;
+  flex: none;
+  margin: 0;
+}
 
 .opi-page .milestones-list .message,
 .opi-page .subIdos-list .message {
