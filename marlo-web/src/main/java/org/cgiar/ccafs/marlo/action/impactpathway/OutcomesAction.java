@@ -1376,7 +1376,9 @@ public class OutcomesAction extends BaseAction {
           incomingMilestone.setGenderFocusLevel(repIndGenderYouthFocusLevel);
         }
 
-        Long unitId = incomingMilestone.getSrfTargetUnit().getId();
+        // A milestone submitted without its unit (partial binding) must not NPE
+        Long unitId =
+          incomingMilestone.getSrfTargetUnit() != null ? incomingMilestone.getSrfTargetUnit().getId() : null;
         if (unitId != null && unitId != -1) {
             SrfTargetUnit unit = srfTargetUnitManager.getSrfTargetUnitById(unitId);
             milestone.setSrfTargetUnit(unit); // Reemplaza el objeto completo

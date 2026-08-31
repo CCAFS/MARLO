@@ -10,7 +10,7 @@ function init() {
   attachEvents();
  
   /* Init Select2 plugin */
-  $('.outcomes-list select').select2();
+  $('.outcomes-list select').not('.opi-plain').select2();
 
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
@@ -375,10 +375,12 @@ function expandOutcome(){
   let $selector="#"+$outcome[0].id;
   if ($($selector+" .to-minimize-outcome").hasClass("minimizeOutcome")){
     $($selector+" .to-minimize-outcome").removeClass("minimizeOutcome");
-     $($selector+" .btn-expand-Outcome").html("Collapse Indicator")
+    $outcome.removeClass("is-collapsed");
+    $($selector+" .btn-expand-Outcome").attr("aria-expanded","true");
   }else{
     $($selector+" .to-minimize-outcome").addClass("minimizeOutcome");
-     $($selector+" .btn-expand-Outcome").html("Expand Indicator")
+    $outcome.addClass("is-collapsed");
+    $($selector+" .btn-expand-Outcome").attr("aria-expanded","false");
   }
 }
 
@@ -465,15 +467,17 @@ function expandAllOutcomes(){
       }
     });
 
+  var opiCA = (typeof opiLabel === 'function' && opiLabel('collapseAll')) || "Collapse all";
+  var opiEA = (typeof opiLabel === 'function' && opiLabel('expandAll')) || "Expand all";
   if(expandAllOutcomesbol){
-    $(".btn-expand-all-outcomes ").html("Collapse all indicators");
-    $(".btn-expand-Outcome").html("Collapse indicators");
-    console.log("collapse");
+    $(".btn-expand-all-outcomes ").text(opiCA);
+    $(".outcomes-list .outcome").removeClass("is-collapsed");
+    $(".btn-expand-Outcome").attr("aria-expanded","true");
     expandAllOutcomesbol = false;
   }else{
-    $(".btn-expand-all-outcomes ").html("Expand all indicators");
-    $(".btn-expand-Outcome").html("Expand indicator");
-    console.log("Expand");
+    $(".btn-expand-all-outcomes ").text(opiEA);
+    $(".outcomes-list .outcome").addClass("is-collapsed");
+    $(".btn-expand-Outcome").attr("aria-expanded","false");
     expandAllOutcomesbol = true;
   }
   
@@ -745,4 +749,548 @@ function initializeDataTable($table) {
       }
     }
   });
+}
+/* ============================================================================
+ * OPI redesign (A2-2437) — Overall Performance Indicators
+ *
+ * Renders the design's matrix over the flat milestone list: distinct milestone
+ * statements are the disaggregation rows, distinct years are the period-target
+ * columns. Every visible control here syncs into the real Struts inputs
+ * (outcomesForm[i].milestones[j].*), so OutcomeValidator and the save chain
+ * stay untouched. All wording comes from the #opiI18n carrier.
+ * ========================================================================== */
+
+var opiRowSeq = 0;
+
+$(document).ready(function() {
+  if (!$('.opi-page').exists()) {
+    return;
+  }
+  opiAttachHelpToggle();
+  opiDecorateCheckButton();
+  if (!opiIsEditable()) {
+    return;
+  }
+  opiAttachDirtyTracking();
+  opiRefreshAllStatuses();
+  opiDecorateSidebar();
+  $('.opi-q').each(function() { opiRefreshQuestions($(this).closest('.outcome')); });
+  $('.opi-matrix__row .opi-cell__value').each(function() { opiRefreshCell($(this)); });
+  $('.opi-dis__row').each(function() {
+    var $card = $(this).closest('.outcome');
+    var $mRow = opiMatrixRow($card, $(this).attr('data-opi-row'));
+    $mRow.find('[data-opi-rowsub]').text($(this).find('.opi-dis__unitSelect option:selected').text() || '');
+    $mRow.find('[data-opi-rowcode]').text($(this).find('.opi-dis__codeInput').val() || ' ');
+  });
+  $('.outcomes-list > .outcome').each(function() { opiRecodeRows($(this)); });
+
+  var $page = $('.opi-page');
+
+  // ---- live recount ----
+  $page.on('change keyup', 'input, textarea, select', function() {
+    opiRefreshCardStatus($(this).closest('.opi-card'));
+  });
+
+  // ---- indicator statement mirrors the principal row ----
+  $page.on('input keyup', '.outcome-statement', function() {
+    var $card = $(this).closest('.outcome');
+    var v = $(this).val() || '';
+    $card.find('[data-opi-cardname]').text(v);
+    var $pDis = $card.find('.opi-dis__row.is-principal');
+    $pDis.find('.opi-dis__stmtInput').val(v);
+    opiSyncRow($card, $pDis.attr('data-opi-row'));
+  });
+
+  // ---- outcome unit mirrors the principal row unit ----
+  $page.on('change', 'select.targetUnit', function() {
+    var $card = $(this).closest('.outcome');
+    if (!$card.exists()) { return; }
+    var $pDis = $card.find('.opi-dis__row.is-principal');
+    $pDis.find('.opi-dis__unitSelect').val($(this).val());
+    opiSyncRow($card, $pDis.attr('data-opi-row'));
+  });
+
+  // ---- disaggregation row edits sync into the hidden milestone inputs ----
+  $page.on('input keyup', '.opi-dis__stmtInput, .opi-dis__codeInput', function() {
+    var $card = $(this).closest('.outcome');
+    opiSyncRow($card, $(this).closest('.opi-dis__row').attr('data-opi-row'));
+  });
+  $page.on('change', '.opi-dis__unitSelect', function() {
+    var $card = $(this).closest('.outcome');
+    opiSyncRow($card, $(this).closest('.opi-dis__row').attr('data-opi-row'));
+  });
+
+  // ---- Yes / No disaggregations toggle ----
+  $page.on('click', '.opi-dis__yes, .opi-dis__no', function() {
+    var yes = $(this).hasClass('opi-dis__yes');
+    var $card = $(this).closest('.outcome');
+    $card.find('.opi-dis__yes').toggleClass('is-on', yes).attr('aria-pressed', String(yes));
+    $card.find('.opi-dis__no').toggleClass('is-on', !yes).attr('aria-pressed', String(!yes));
+    $card.find('.opi-dis').toggle(yes);
+    $card.find('.opi-matrix__row').not('.is-principal').toggle(yes);
+    var $note = $card.find('[data-opi-disnote]');
+    $note.text($note.data(yes ? 'yes' : 'no'));
+  });
+
+  // ---- drag & drop reorder ----
+  $page.on('dragstart', '.opi-dis__row[draggable=true]', function(e) {
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    try { e.originalEvent.dataTransfer.setData('text/plain', $(this).attr('data-opi-row')); } catch (err) {}
+    $(this).addClass('is-dragging');
+  });
+  $page.on('dragend', '.opi-dis__row', function() {
+    $(this).removeClass('is-dragging');
+    $('.opi-dis__row').removeClass('is-dropTarget');
+  });
+  $page.on('dragover', '.opi-dis__row:not(.is-principal)', function(e) {
+    if (!$(this).closest('.outcome').find('.opi-dis__row.is-dragging').exists()) { return; }
+    e.preventDefault();
+    e.originalEvent.dataTransfer.dropEffect = 'move';
+    $(this).addClass('is-dropTarget');
+  });
+  $page.on('dragleave', '.opi-dis__row', function() { $(this).removeClass('is-dropTarget'); });
+  $page.on('drop', '.opi-dis__row:not(.is-principal)', function(e) {
+    e.preventDefault();
+    var $card = $(this).closest('.outcome');
+    var $from = $card.find('.opi-dis__row.is-dragging');
+    $(this).removeClass('is-dropTarget');
+    if (!$from.exists() || $from.is(this)) { return; }
+    var fromKey = $from.attr('data-opi-row');
+    var toKey = $(this).attr('data-opi-row');
+    $from.insertBefore(this);
+    var $mFrom = opiMatrixRow($card, fromKey);
+    $mFrom.insertBefore(opiMatrixRow($card, toKey));
+    opiRecodeRows($card, true);
+    updateAllIndexes();
+    opiRefreshCardStatus($card);
+  });
+
+  // ---- delete a disaggregation row (all its milestones) ----
+  $page.on('click', '.opi-dis__delete', function() {
+    var $card = $(this).closest('.outcome');
+    var $row = $(this).closest('.opi-dis__row');
+    var key = $row.attr('data-opi-row');
+    opiMatrixRow($card, key).remove();
+    $row.remove();
+    opiRecodeRows($card, true);
+    updateAllIndexes();
+    opiRenumberDis($card);
+    opiRefreshCardStatus($card);
+  });
+
+  // ---- add a disaggregation row ----
+  $page.on('click', '.opi-addDis', function() {
+    var $card = $(this).closest('.outcome');
+    opiAddDisRow($card);
+  });
+
+  // ---- add a year column ----
+  $page.on('click', '.opi-addYear', function() {
+    var $card = $(this).closest('.outcome');
+    opiAddYear($card);
+  });
+
+  // ---- create the missing milestone behind an empty cell ----
+  $page.on('click', '.opi-cell__create', function() {
+    var $ph = $(this).closest('.opi-cell');
+    var $mRow = $ph.closest('.opi-matrix__row');
+    var $card = $ph.closest('.outcome');
+    var $cell = opiNewCell($card, $mRow.attr('data-opi-row'), $ph.attr('data-opi-year'));
+    $ph.replaceWith($cell);
+    updateAllIndexes();
+    opiRefreshCardStatus($card);
+    $cell.find('.opi-cell__value').trigger('focus');
+  });
+
+  // ---- status: reveal the extended-year select on "Extended" ----
+  $page.on('change', '.opi-cell__status', function() {
+    var $cell = $(this).closest('.opi-cell');
+    $cell.find('.opi-cell__extYear').toggle($(this).val() === '4');
+  });
+
+  // ---- cell values: amber when missing + percentage hint ----
+  $page.on('input keyup change', '.opi-cell__value', function() {
+    opiRefreshCell($(this));
+  });
+
+  // ---- questions: renumber + gate the add button while one is empty ----
+  $page.on('input keyup', '.opi-q__input', function() {
+    opiRefreshQuestions($(this).closest('.outcome'));
+  });
+  $page.on('click', '.addBaselineIndicator, .removeBaselineIndicator', function() {
+    var $card = $(this).closest('.outcome');
+    setTimeout(function() { opiRefreshQuestions($card); }, 0);
+  });
+});
+
+/**
+ * Reads one localized string from the carrier rendered by outcomes.ftl.
+ * @param {string} key data-attribute name on #opiI18n
+ * @return {string} the localized text, or '' when the key is absent
+ */
+function opiLabel(key) {
+  var text = $('#opiI18n').data(key);
+  return (text === undefined || text === null) ? '' : String(text);
+}
+
+/**
+ * Whether the section renders editable controls in this phase.
+ * @return {boolean} true when the form is editable
+ */
+function opiIsEditable() {
+  return String($('#opiI18n').data('editable')) === 'true';
+}
+
+/**
+ * Collapses / expands the "How this section works" panel.
+ */
+function opiAttachHelpToggle() {
+  $('.opi-help__toggle').on('click', function() {
+    var $button = $(this);
+    var $body = $('#' + $button.attr('aria-controls'));
+    var isOpen = $button.attr('aria-expanded') === 'true';
+    $body.slideToggle(150);
+    $button.attr('aria-expanded', isOpen ? 'false' : 'true');
+    $button.text(isOpen ? opiLabel('buttonShow') : opiLabel('buttonHide'));
+  });
+}
+
+/**
+ * Adds the design's subtitle ("N indicators") and missing-fields badge to the
+ * active component entry — the only one whose data is on this page.
+ */
+function opiDecorateSidebar() {
+  var $active = $('.opi-sidebar .menuList p.active a').first();
+  if (!$active.exists() || $active.find('.opi-menu__sub').exists()) { return; }
+  var $cards = $('.outcomes-list > .opi-card').filter(function() {
+    return $(this).attr('id') !== 'outcome-template';
+  });
+  var count = $cards.length;
+  var total = 0;
+  $cards.each(function() { total += opiCountMissing($(this)); });
+  var $body = $('<span class="opi-menu__body" />')
+    .append($('<span class="opi-menu__title" />').text($active.text().trim()))
+    .append($('<span class="opi-menu__sub" />').text(count + ' ' + opiLabel(count === 1 ? 'countOne' : 'countMany')));
+  var $badge = $('<span class="opi-menu__badge" />').text(total > 0 ? String(total) : '✓').toggleClass('is-ok', total === 0);
+  $active.empty().append($body).append($badge);
+}
+
+/**
+ * Prepends the design's check icon to the sidebar validate button.
+ */
+function opiDecorateCheckButton() {
+  var $btn = $('.opi-sidebar .projectValidateButton');
+  if ($btn.exists() && !$btn.find('svg').exists()) {
+    $btn.prepend('<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="#fff" stroke-width="1.5"></circle><path d="M5.2 8.2 7.1 10l3.7-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg> ');
+  }
+}
+
+/**
+ * Flips the save bar to its "unsaved changes" state on the first edit.
+ */
+function opiAttachDirtyTracking() {
+  $('.opi-page').on('change keyup', 'input, textarea, select', function() {
+    var $bar = $('.opi-saveBar');
+    if (!$bar.hasClass('is-dirty')) {
+      $bar.addClass('is-dirty');
+      $bar.find('[data-opi-save-state]').text(opiLabel('saveUnsaved'));
+      $bar.find('[data-opi-save-detail]').text(opiLabel('saveUnsavedDetail'));
+    }
+  });
+}
+
+/**
+ * Finds the matrix row that pairs with a disaggregations row.
+ * @param {jQuery} $card the .outcome card
+ * @param {string} key the shared data-opi-row key
+ * @return {jQuery} the .opi-matrix__row element
+ */
+function opiMatrixRow($card, key) {
+  return $card.find('.opi-matrix__row[data-opi-row="' + key + '"]');
+}
+
+/**
+ * Copies one disaggregation row's statement / code / unit into the hidden
+ * inputs of every milestone cell on its matrix row.
+ * @param {jQuery} $card the .outcome card
+ * @param {string} key the shared data-opi-row key
+ */
+function opiSyncRow($card, key) {
+  if (!key) { return; }
+  var $dis = $card.find('.opi-dis__row[data-opi-row="' + key + '"]');
+  var $mRow = opiMatrixRow($card, key);
+  if (!$dis.exists() || !$mRow.exists()) { return; }
+  var stmt = $dis.find('.opi-dis__stmtInput').val() || '';
+  var code = $dis.find('.opi-dis__codeInput').val() || '';
+  var unit = $dis.find('.opi-dis__unitSelect').val() || '-1';
+  $mRow.find('[data-opi-rowstmt]').text(stmt);
+  $mRow.find('[data-opi-rowcode]').text(code || ' ');
+  $mRow.find('[data-opi-rowsub]').text($dis.find('.opi-dis__unitSelect option:selected').text() || '');
+  $mRow.find('.opi-cell').each(function() {
+    $(this).find('.opi-cell__title').val(stmt);
+    $(this).find('.opi-cell__code').val(code);
+    $(this).find('.opi-cell__unit').val(unit);
+    var $value = $(this).find('.opi-cell__value');
+    if ($value.exists()) { opiRefreshCell($value); }
+  });
+}
+
+/**
+ * Renumbers the # column of the disaggregations table.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiRenumberDis($card) {
+  $card.find('.opi-dis__row').each(function(i) {
+    $(this).find('.opi-dis__n').text(i + 1);
+  });
+}
+
+/**
+ * Renumbers non-principal codes as <prefix>.<n>, mirroring the design's
+ * "codes renumber automatically" rule. The principal code is never touched.
+ * @param {jQuery} $card the .outcome card
+ * @param {boolean} apply false skips the rewrite (used at load time)
+ */
+function opiRecodeRows($card, apply) {
+  if (!apply) { opiRenumberDis($card); return; }
+  var pCode = $card.find('.opi-dis__row.is-principal .opi-dis__codeInput').val() || '';
+  var match = pCode.match(/^(.*)\.\d+$/);
+  var prefix = match ? match[1] : (pCode !== '' ? pCode : '1');
+  var n = 1;
+  $card.find('.opi-dis__row').not('.is-principal').each(function() {
+    $(this).find('.opi-dis__codeInput').val(prefix + '.' + n);
+    n++;
+    opiSyncRow($card, $(this).attr('data-opi-row'));
+  });
+  opiRenumberDis($card);
+}
+
+/**
+ * Clones the hidden matrix-cell template as a new milestone for (row, year).
+ * @param {jQuery} $card the .outcome card
+ * @param {string} key the row's data-opi-row key
+ * @param {string|number} year the reporting year
+ * @return {jQuery} the new .opi-cell element (not yet inserted)
+ */
+function opiNewCell($card, key, year) {
+  var $dis = $card.find('.opi-dis__row[data-opi-row="' + key + '"]');
+  var $cell = $('#opiCell-template').clone(true).removeAttr('id').removeAttr('style');
+  $cell.attr('data-opi-year', year);
+  $cell.find('.opi-cell__year').val(year);
+  $cell.find('.opi-cell__title').val($dis.find('.opi-dis__stmtInput').val() || '');
+  $cell.find('.opi-cell__code').val($dis.find('.opi-dis__codeInput').val() || '');
+  $cell.find('.opi-cell__unit').val($dis.find('.opi-dis__unitSelect').val() || '-1');
+  $cell.find('.opi-cell__status').val('1'); // New
+  if ($cell.find('input.targetValue').numericInput) {
+    $cell.find('input.targetValue').numericInput();
+  }
+  return $cell;
+}
+
+/**
+ * Adds a year column: one header cell plus one new milestone per row.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiAddYear($card) {
+  var years = $card.find('.opi-matrix__head [data-opi-yearcol]').map(function() {
+    return parseInt($(this).attr('data-opi-yearcol'), 10);
+  }).get().filter(function(y) { return !isNaN(y); });
+  var nowYear = parseInt($('#opiI18n').data('nowYear'), 10);
+  var newYear = years.length ? Math.max.apply(null, years) + 1 : (isNaN(nowYear) ? new Date().getFullYear() : nowYear);
+
+  var $head = $card.find('.opi-matrix__head');
+  var $col = $('<span class="opi-matrix__year" />').attr('data-opi-yearcol', newYear)
+    .append($('<span class="opi-matrix__yearLabel" />').text(newYear));
+  $col.insertBefore($head.find('.opi-matrix__addcol'));
+
+  $card.find('.opi-matrix__row').each(function() {
+    var $cell = opiNewCell($card, $(this).attr('data-opi-row'), newYear);
+    $cell.insertBefore($(this).find('.opi-matrix__tail'));
+  });
+
+  opiApplyGrid($card);
+  updateAllIndexes();
+  opiRefreshCardStatus($card);
+}
+
+/**
+ * Adds a disaggregation row plus one new milestone per existing year column.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiAddDisRow($card) {
+  var key = 'jr' + (++opiRowSeq);
+  var $pDis = $card.find('.opi-dis__row.is-principal');
+
+  var $row = $pDis.clone(false).removeClass('is-principal').attr('data-opi-row', key).attr('draggable', 'true');
+  $row.find('.opi-dis__pBadge').remove();
+  $row.find('.opi-dis__codeInput').val('').prop('readonly', false);
+  $row.find('.opi-dis__stmtInput').val('').prop('readonly', false).removeAttr('title');
+  $row.find('.opi-dis__unitSelect').val('-1').prop('disabled', false);
+  if (!$row.find('.opi-dis__delete').exists()) {
+    $row.find('.opi-dis__actions').append('<button type="button" class="opi-dis__delete" aria-label="Delete disaggregation">✕</button>');
+  }
+  $card.find('.opi-dis__rows').append($row);
+
+  var $mPrincipal = $card.find('.opi-matrix__row.is-principal');
+  var $mRow = $('<div class="opi-matrix__row" />').attr('data-opi-row', key).attr('style', $mPrincipal.attr('style') || '');
+  var $label = $('<span class="opi-matrix__label" />')
+    .append('<span class="opi-matrix__rowcode" data-opi-rowcode>&nbsp;</span>')
+    .append($('<span class="opi-matrix__stmtWrap" />')
+      .append('<span class="opi-matrix__stmt" data-opi-rowstmt></span>')
+      .append('<span class="opi-matrix__sub" data-opi-rowsub></span>'));
+  $mRow.append($label);
+  $card.find('.opi-matrix__head [data-opi-yearcol]').each(function() {
+    $mRow.append(opiNewCell($card, key, $(this).attr('data-opi-yearcol')));
+  });
+  $mRow.append('<span class="opi-matrix__tail"></span>');
+  $card.find('.opi-matrix__rows').append($mRow);
+
+  opiRecodeRows($card, true);
+  updateAllIndexes();
+  opiRefreshCardStatus($card);
+  $row.find('.opi-dis__stmtInput').trigger('focus');
+}
+
+/**
+ * Recomputes the shared grid-template-columns after a column change.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiApplyGrid($card) {
+  var n = $card.find('.opi-matrix__head [data-opi-yearcol]').length;
+  var cols = 'minmax(260px,1fr)' + (n > 0 ? ' repeat(' + n + ',132px)' : '') + ' 88px';
+  $card.find('.opi-matrix__head, .opi-matrix__row').css('grid-template-columns', cols);
+}
+
+/**
+ * Amber-flags an empty cell value and refreshes the percentage hint.
+ * A row whose unit label contains "%" resolves against the principal row's
+ * value for the same year, like the design's derived hint.
+ * @param {jQuery} $value the .opi-cell__value input
+ */
+function opiRefreshCell($value) {
+  var $cell = $value.closest('.opi-cell');
+  var raw = $.trim($value.val() || '');
+  $cell.toggleClass('is-missing', raw === '');
+
+  var $card = $cell.closest('.outcome');
+  var $mRow = $cell.closest('.opi-matrix__row');
+  var $dis = $card.find('.opi-dis__row[data-opi-row="' + $mRow.attr('data-opi-row') + '"]');
+  var unitText = $dis.find('.opi-dis__unitSelect option:selected').text() || '';
+  var isPct = unitText.indexOf('%') !== -1;
+  var isNA = /not applicable/i.test(unitText);
+  $cell.find('.opi-cell__affix').text(isNA ? '' : (isPct ? '%' : '#'));
+  var $hint = $cell.find('[data-opi-hint]');
+  var hint = '';
+  if (raw === '' && !isNA) {
+    hint = opiLabel('requiredLabel');
+  } else if (unitText.indexOf('%') !== -1 && raw !== '' && !$mRow.hasClass('is-principal')) {
+    var year = $cell.attr('data-opi-year');
+    var baseRaw = $card.find('.opi-matrix__row.is-principal .opi-cell[data-opi-year="' + year + '"] .opi-cell__value').val();
+    var base = parseFloat(String(baseRaw || '').replace(/[,\s]/g, ''));
+    var pct = parseFloat(raw.replace(/[,\s]/g, ''));
+    if (!isNaN(base) && !isNaN(pct)) {
+      hint = '≈ ' + Math.round(base * pct / 100).toLocaleString('en-US');
+    }
+  }
+  $hint.text(hint).toggleClass('is-required', raw === '' && !isNA);
+}
+
+/**
+ * Renumbers questions, refreshes the count badge, and gates the add button
+ * while any question is still empty (design rule).
+ * @param {jQuery} $card the .outcome card
+ */
+function opiRefreshQuestions($card) {
+  var $rows = $card.find('.baselineIndicator').filter(function() {
+    return $(this).attr('id') !== 'baselineIndicator-template';
+  });
+  $rows.each(function(i) { $(this).find('.index').text(i + 1); });
+  var $qc = $card.find('[data-opi-qcount]');
+  $qc.text($rows.length);
+  var $noun = $qc.parent();
+  if ($noun.exists()) {
+    $noun.contents().filter(function() { return this.nodeType === 3; }).remove();
+    $noun.append(' ' + opiLabel($rows.length === 1 ? 'qOne' : 'qMany'));
+  }
+  $card.find('.opi-q__empty').toggle($rows.length === 0);
+
+  var hasEmpty = false;
+  $rows.find('.opi-q__input').each(function() {
+    if ($.trim($(this).val() || '') === '') { hasEmpty = true; }
+  });
+  var $add = $card.find('.addBaselineIndicator');
+  $add.prop('disabled', hasEmpty);
+  $card.find('[data-opi-qnote]').text(hasEmpty ? ($add.data('blockedTitle') || '') : '');
+}
+
+/**
+ * Counts required fields left empty inside one indicator card: every shown
+ * required marker with an empty control, plus every empty matrix cell.
+ * @param {jQuery} $card the .opi-card element
+ * @return {number} how many required fields are still empty
+ */
+function opiCountMissing($card) {
+  var missing = 0;
+  $card.find('.opi-card__body .requiredTag').each(function() {
+    var $tag = $(this);
+    if (!$tag.is(':visible')) { return; }
+    var $group = $tag.closest('.form-group, .opi-grid5 > div, .opi-fieldRow__acronym, .opi-fieldRow__statement');
+    if (!$group.exists()) { $group = $tag.parent(); }
+    var $field = $group.find('input:not([type="hidden"]), textarea, select').first();
+    if (!$field.exists()) { return; }
+    var value = $.trim($field.val() || '');
+    if (value === '' || value === '-1') { missing++; }
+  });
+  $card.find('.opi-cell__value:visible').each(function() {
+    if ($.trim($(this).val() || '') === '') { missing++; }
+  });
+  return missing;
+}
+
+/**
+ * Repaints the status pill of one indicator card.
+ * @param {jQuery} $card the .opi-card element
+ */
+function opiRefreshCardStatus($card) {
+  if (!$card || !$card.exists() || $card.attr('id') === 'outcome-template') { return; }
+  var $pill = $card.find('[data-opi-status]').first();
+  if (!$pill.exists()) { return; }
+  var missing = opiCountMissing($card);
+  if (missing === 0) {
+    $pill.removeClass('is-missing').text(opiLabel('statusComplete'));
+  } else {
+    $pill.addClass('is-missing')
+      .text(missing + ' ' + opiLabel(missing === 1 ? 'statusMissingOne' : 'statusMissingMany'));
+  }
+  opiRefreshSummary();
+}
+
+/**
+ * Repaints every visible indicator card and the section summary.
+ */
+function opiRefreshAllStatuses() {
+  $('.outcomes-list > .opi-card').each(function() {
+    opiRefreshCardStatus($(this));
+  });
+}
+
+/**
+ * Updates the "N indicators - M fields still missing" line above the list.
+ */
+function opiRefreshSummary() {
+  var $summary = $('[data-opi-summary]');
+  if (!$summary.exists()) { return; }
+  var $cards = $('.outcomes-list > .opi-card').filter(function() {
+    return $(this).attr('id') !== 'outcome-template' && $(this).is(':visible');
+  });
+  var total = 0;
+  $cards.each(function() { total += opiCountMissing($(this)); });
+  var count = $cards.length;
+  var text = count + ' ' + opiLabel(count === 1 ? 'countOne' : 'countMany');
+  if (total > 0) {
+    text += ' · ' + total + ' ' + opiLabel(total === 1 ? 'summaryMissingOne' : 'summaryMissingMany');
+  } else {
+    text += ' · ' + opiLabel('summaryComplete');
+  }
+  $summary.text(text);
 }

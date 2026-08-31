@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20250827",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?202608314",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20260619",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?202608314",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -43,40 +43,62 @@
 </div>
 -->
 
-<div class="animated flipInX container  viewMore-block containerAlertMargin">
-  <div class=" containerAlert alert-leftovers alertColorBackgroundInfo " id="containerAlert"> 
-    <div class="containerLine alertColorInfo"></div>
-    <div class="containerIcon">
-      <div class="containerIcon alertColorInfo">
-        <img src="${baseUrlCdn}/global/images/icon-question.png" />         
-      </div>
-    </div>
-    <div class="containerText col-md-12 alertCollapse">
-      <p class="alertText">
-       [@s.text name="outcomes.help" /]
-      </p>
-    </div>
-    <div  class="viewMoreCollapse closed"></div>
-  </div>  
-</div>
-
-<section class="marlo-content">
+<section class="marlo-content opi-page">
   <div class="container">
     [#if programs?has_content]
-    <div class="row">
-      <div class="col-md-3">
-        [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
+
+      [#-- AICCRA calls these "indicators"; every other global unit calls them "outcomes". --]
+      [#if action.isAiccra()]
+        [#assign countNounOne][@s.text name="outcomes.status.count.one"/][/#assign]
+        [#assign countNounMany][@s.text name="outcomes.status.count.many"/][/#assign]
+      [#else]
+        [#assign countNounOne][@s.text name="outcomes.status.count.one.outcome"/][/#assign]
+        [#assign countNounMany][@s.text name="outcomes.status.count.many.outcome"/][/#assign]
+      [/#if]
+
+      [#-- i18n carrier for outcomes.js (no user-facing literals in the JS) --]
+      <span id="opiI18n" style="display:none"
+        data-editable="${editable?string}"
+        data-now-year="${(actualPhase.year)!''}"
+        data-button-show="[@s.text name="form.buttons.show"/]"
+        data-button-hide="[@s.text name="form.buttons.hide"/]"
+        data-status-complete="[@s.text name="outcomes.status.complete"/]"
+        data-status-missing-one="[@s.text name="outcomes.status.missing.one"/]"
+        data-status-missing-many="[@s.text name="outcomes.status.missing.many"/]"
+        data-count-one="${countNounOne}"
+        data-count-many="${countNounMany}"
+        data-summary-complete="[@s.text name="outcomes.summary.allComplete"/]"
+        data-summary-missing-one="[@s.text name="outcomes.summary.missing.one"/]"
+        data-summary-missing-many="[@s.text name="outcomes.summary.missing.many"/]"
+        data-required-label="[@s.text name="outcomes.matrix.required"/]"
+        data-q-one="[@s.text name="outcomes.questions.count.one"/]"
+        data-q-many="[@s.text name="outcomes.questions.count.many"/]"
+        data-collapse-all="[@s.text name="outcomes.collapseAll"/]"
+        data-expand-all="[@s.text name="outcomes.expandAll"/]"
+        data-save-unsaved="[@s.text name="outcomes.saveBar.unsaved"/]"
+        data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"></span>
+
+      [#-- How this section works --]
+      <div class="opi-help" id="opiHelp">
+        <div class="opi-help__head">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.2" stroke="#015C7D" stroke-width="1.5"></circle><path d="M9 8.1v4.3" stroke="#015C7D" stroke-width="1.6" stroke-linecap="round"></path><circle cx="9" cy="5.6" r="1" fill="#015C7D"></circle></svg>
+          <h2 class="opi-help__title">[@s.text name="outcomes.help.title" /]</h2>
+          <button type="button" class="opi-help__toggle" aria-expanded="true" aria-controls="opiHelpBody">[@s.text name="form.buttons.hide" /]</button>
+        </div>
+        <div class="opi-help__body" id="opiHelpBody">[@s.text name="outcomes.help" /]</div>
       </div>
-      <div class="col-md-9">
-        [#-- Sub Menu --]
-        [#include "/WEB-INF/crp/views/impactPathway/submenu-impactPathway.ftl" /]
 
-        [#-- Section Messages --]
-        [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
+      <div class="opi-layout">
 
-        [@s.form action=actionName ]
-        [#-- Outcomes List --]
-        <h4 class="sectionTitle">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param] [/@s.text]</h4>
+        [#-- Components / flagships sidebar --]
+        <aside class="opi-sidebar">
+          [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
+        </aside>
+
+        <div class="opi-main">
+
+          [#-- Section Messages --]
+          [#include "/WEB-INF/crp/views/impactPathway/messages-impactPathway.ftl" /]
 
           [#-- Check if the programID is Valid --]
           [#assign hasAvailableProgramID = false ]
@@ -87,15 +109,24 @@
             [/#if]
           [/#list]
 
+          [@s.form action=actionName ]
+
           [#if hasAvailableProgramID]
+            [#assign outcomesCount = (outcomesForm?size)!0 /]
+
+            <div class="opi-mainHead">
+              <div>
+                <h1 class="opi-mainHead__title">[@s.text name="outcomes.title"][@s.param]${(selectedProgram.acronym)!}[/@s.param][/@s.text]</h1>
+                <span class="opi-mainHead__summary" data-opi-summary>
+                  ${outcomesCount} [#if outcomesCount == 1]${countNounOne}[#else]${countNounMany}[/#if]
+                </span>
+              </div>
+              <div class="cont-btn-min">
+                <button type="button" class="btn-expand-all-outcomes btn btn-link">[@s.text name="outcomes.collapseAll"/]</button>
+              </div>
+            </div>
+
             <div class="outcomes-list" listname="outcomes">
-             <div class="cont-btn-min">
-              [#if action.isAiccra()]
-                <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all indicators<i class="fas fa-expand-arrows-alt"></i></button>
-              [#else]
-                <button type="button" class="btn-expand-all-outcomes btn btn-link">Collapse all outcomes<i class="fas fa-expand-arrows-alt"></i></button>
-              [/#if]
-             </div>
             [#if outcomesForm?has_content]
               [#list outcomesForm as outcome]
                 [@outcomeMacro outcome=outcome name="outcomesForm" index=outcome_index /]
@@ -104,29 +135,41 @@
               [@outcomeMacro outcome={} name="outcomesForm" index=0 /]
             [/#if]
             </div>
+
             [#-- Add Outcome Button --]
             [#if editable]
-              <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addOutcome"/]</div>
+              <div class="addOutcome bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="form.buttons.addOutcome"/]</div>
             [/#if]
           [#else]
-            <p>Please select a [@s.text name="global.flagship" /]</p>
+            <div class="opi-empty">
+              <span class="opi-empty__title">Please select a [@s.text name="global.flagship" /]</span>
+            </div>
           [/#if]
 
+            [#-- Section Buttons--]
+            <div class="opi-saveBar">
+              [#-- Save state only means something while the form can be edited. --]
+              [#if editable]
+              <span class="opi-saveBar__state">
+                <span class="opi-saveBar__dot"></span>
+                <span data-opi-save-state>[@s.text name="outcomes.saveBar.saved"/]</span>
+              </span>
+              <span class="opi-saveBar__detail" data-opi-save-detail></span>
+              [/#if]
+              <div class="opi-saveBar__actions">
+                [#include "/WEB-INF/crp/views/impactPathway/buttons-impactPathway.ftl" /]
+              </div>
+            </div>
 
-
-          [#-- Section Buttons--]
-          [#include "/WEB-INF/crp/views/impactPathway/buttons-impactPathway.ftl" /]
-
-        [/@s.form]
-    </div>
+          [/@s.form]
+        </div>
+      </div>
     [#else]
-      <p class="text-center borderBox">[@s.text name="impactPathway.noFlagshipsAdded" /]</p>
+      <div class="opi-empty">
+        <span class="opi-empty__title">[@s.text name="impactPathway.noFlagshipsAdded" /]</span>
+      </div>
     [/#if]
   </div>
-</div>
-
-
-
 </section>
 
 [#-- PopUp to select SubIDOs --]
@@ -173,6 +216,9 @@
 [#-- Milestone Template --]
 [@milestoneMacro milestone={} name="outcomesForm[0].milestones" index=-1 isTemplate=true  /]
 
+[#-- Matrix Cell Template (AICCRA period-target cells) --]
+[@opiCellMacro milestone={} name="outcomesForm[0].milestones" index=-1 isTemplate=true /]
+
 [#-- Sub-Ido Template --]
 [@subIDOMacro subIdo={} name="outcomesForm[0].subIdos" index=-1 isTemplate=true /]
 
@@ -188,228 +234,446 @@
 
 [#macro outcomeMacro outcome name index isTemplate=false]
   [#assign outcomeCustomName= "${name}[${index}]" /]
-  <div id="outcome-${isTemplate?string('template', index)}" class="outcome form-group borderBox" style="display:${isTemplate?string('none','block')}">
-    <div class="leftHead">
-      <!--<span class="index">${index+1}</span>-->
-      <span class="index"> ${(outcome.year)! "[New]"}</span>
-      <span class="elementId">${(selectedProgram.acronym)!} - [@s.text name="outcome.index.title"/]</span>
-    </div>
-    [#-- Outcome ID Parameter --]
+  [#local isAiccraUI = action.isAiccra() /]
+  [#local showBaselineBlock = action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false /]
+  [#local milestoneCount = (outcome.milestones?size)!0 /]
+  [#local indicatorCount = (outcome.indicators?size)!0 /]
+  [#local subIdoCount = (outcome.subIdos?size)!0 /]
+  [#local nowYear = (actualPhase.year)!-99 /]
+
+  [#-- Group the flat milestone list into the design's matrix: distinct statements
+       are the disaggregation rows, distinct years are the period-target columns. --]
+  [#local rowStmts = [] /]
+  [#local yearCols = [] /]
+  [#if !isTemplate && outcome.milestones?has_content]
+    [#list outcome.milestones as m]
+      [#local mStmt = ((m.title)!"")?trim /]
+      [#if !rowStmts?seq_contains(mStmt)][#local rowStmts = rowStmts + [mStmt] /][/#if]
+      [#local mYear = (m.year)!-1 /]
+      [#if !yearCols?seq_contains(mYear)][#local yearCols = yearCols + [mYear] /][/#if]
+    [/#list]
+    [#local yearCols = yearCols?sort /]
+  [/#if]
+  [#-- The row matching the outcome statement is the principal one and goes first. --]
+  [#local outcomeStmt = ((outcome.description)!"")?trim /]
+  [#if rowStmts?seq_contains(outcomeStmt)]
+    [#local reordered = [outcomeStmt] /]
+    [#list rowStmts as s][#if s != outcomeStmt][#local reordered = reordered + [s] /][/#if][/#list]
+    [#local rowStmts = reordered /]
+  [/#if]
+  [#if rowStmts?size == 0][#local rowStmts = [outcomeStmt] /][/#if]
+  [#local hasDis = (rowStmts?size > 1) /]
+  [#local gridCols = "minmax(260px,1fr)" /]
+  [#list yearCols as y][#local gridCols = gridCols + " 132px" /][/#list]
+  [#local gridCols = gridCols + " 88px" /]
+
+  <div id="outcome-${isTemplate?string('template', index)}" class="outcome opi-card form-group" style="display:${isTemplate?string('none','block')}">
+
+    [#-- Outcome ID Parameters --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
-    [#-- Remove Button --]
-    [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
-      <div class="removeOutcome removeElement" title="Remove Outcome"></div>
-    [#elseif editable]
-      <div class="removeElement disable" title="[@s.text name="global.CrpProgramOutcome"/] can not be deleted"></div>
-    [/#if]
 
-    [#if !isTemplate]
-      <div class="pull-right">
-        [@popUps.relationsMacro element=outcome /]
-      </div>
-    [/#if]
-
-    <br />
-    <div class="cont-btn-min">
-     <button type="button" class="btn-expand-Outcome btn btn-link">Collapse Outcome<i class="fas fa-expand-arrows-alt"></i></button>
+    [#-- Card head --]
+    <div class="opi-card__head">
+      <button type="button" class="btn-expand-Outcome opi-card__caret" aria-expanded="true" aria-label="Toggle indicator">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5" stroke="#4B5563" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <span class="opi-card__code">[#if (outcome.acronym)?has_content]${outcome.acronym}[#else]${(outcome.year)!'New'}[/#if]</span>
+      <span class="opi-card__ident">
+        <span class="opi-card__name" data-opi-cardname>[#if (outcome.description)?has_content]${outcome.description}[#else][@s.text name="outcome.index.title"/][/#if]</span>
+        <span class="opi-card__meta">
+          [#if isAiccraUI]${rowStmts?size - 1} [@s.text name="outcomes.card.disaggregations"/][#if (outcome.srfTargetUnit.name)?has_content] &middot; ${outcome.srfTargetUnit.name}[/#if] &middot; [@s.text name="outcomes.card.closing"/] ${(outcome.year)!'—'}[#if (outcome.value)?has_content]: ${outcome.value}[/#if] &middot; ${yearCols?size} [@s.text name="outcomes.card.years"/][#else]${(selectedProgram.acronym)!} &middot; [@s.text name="outcome.targetYear"/]: ${(outcome.year)!'—'} &middot; ${milestoneCount} [@s.text name="outcome.milestone.sectionTitle"/][/#if]
+        </span>
+      </span>
+      [#if editable]<span class="opi-status" data-opi-status></span>[/#if]
+      [#if !isTemplate]
+        <span class="opi-card__relations">[@popUps.relationsMacro element=outcome /]</span>
+      [/#if]
+      [#-- Remove Button --]
+      [#if editable && action.canBeDeleted((outcome.id)!-1,(outcome.class.name)!"" )]
+        <button type="button" class="removeOutcome opi-card__delete" title="Remove Outcome" aria-label="Remove Outcome">&#10005;</button>
+      [#elseif editable]
+        <button type="button" class="opi-card__delete disable" disabled title="[@s.text name="global.CrpProgramOutcome"/] can not be deleted" aria-label="Can not be deleted">&#10005;</button>
+      [/#if]
     </div>
-    
-    <div class="form-group">
-		  [#-- Portfolio --]
-	    [#if action.hasSpecificities('portfolio_feature_active')]
-			  <div class="row form-group">
-					<div class="col-md-4">
-						[@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
-					</div>
-				</div>
-			[/#if]
- 		</div>
- 
-    [#-- Outcome Statement --]
-    <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="outcome.statement" required=true className="outcome-statement limitWords-100" editable=editable /]
-    </div>   
-    
-    [#-- Outcome Indicator --]
-    [#if action.hasSpecificities('crp_ip_outcome_indicator')]
-    <div class="form-group">
-      [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
-    </div>
-    [/#if]
 
-    <div class="row form-group target-block to-minimize-outcome">
+    [#-- Card body --]
+    <div class="opi-card__body to-minimize-outcome">
 
-      [#-- Start Year --]
-      <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!0}" type="text" i18nkey="outcome.startYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>
-      [#-- Target Year --]
-      <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.year" value="${(outcome.year)!0}" type="text" i18nkey="outcome.targetYear"  placeholder="outcome.inputTargetYear.placeholder" className="targetYear outcomeYear" required=true editable=editable /]</div>     
-      	   
-      [#-- Target Unit --]
-      [#if targetUnitList?has_content]
-      <div class="col-md-3 targetUnit-block">
-        [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
-        [#-- If you dont find the target unit in the list, please add a new one clicking here --]
-        [#--  --if editable]<div class="addOtherTargetUnit text-center"><a href="#">([@s.text name = "outcomes.addNewTargetUnit" /])</a></div>[/#if --]
-      </div>
-      [#else]
-      <input type="hidden" name="${outcomeCustomName}.srfTargetUnit.id" value="-1"/>
-      [/#if]
-      [#-- Target Value --]
-      [#local showTargetValue = (targetUnitList?has_content) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
-      <div class="col-md-3 targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
-        [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
-      </div>      
-     </div>
-      
-    <div class="row form-group target-block to-minimize-outcome">
-			[#-- Acronym --]
-    	<div class="col-md-3">[@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]</div>
-      [#-- Order --]
-	    <div class="col-md-3">[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
-    </div>
-		</br>
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs to-minimize-outcome" role="tablist">
-      <li role="presentation" class="active"><a href="#milestones-tab-${index}" aria-controls="messages" role="tab" data-toggle="tab">[@s.text name = "outcome.milestone.sectionTitle" /] <span class="badge">${(outcome.milestones?size)!'0'}</span></a></li>
-      [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
-        [#if action.isAiccra()]
-          <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Progress to Target Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
-        [#else]
-          <li role="presentation"><a href="#baseline-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Baseline Indicators <span class="badge">${(outcome.indicators?size)!'0'}</span></a></li>
-        [/#if]
-      [/#if]
-      [#if outcome.instructions?has_content]
-        [#local instructionIndicator = '1'/]
-      [#else]
-        [#local instructionIndicator = '0'/]
-      [/#if]
-         <li role="presentation"><a href="#instructions-tab-${index}" aria-controls="profile" role="tab" data-toggle="tab">Instructions <span class="badge">${(instructionIndicator)}</span></a></li>
-   
-      [#if !action.isAiccra()]
-        <li role="presentation" ><a href="#subIdos-tab-${index}" aria-controls="home" role="tab" data-toggle="tab">Sub-IDOs <span class="badge">${(outcome.subIdos?size)!'0'}</span></a></li>
-      [/#if]
-     </ul>
-
-    <!-- Tab panes -->
-    <div class="tab-content impactpathwayTabContent  to-minimize-outcome">
-
-      [#if !action.isAiccra()]
-        [#-- Outcome Sub-IDOs List --]
-        <div role="tabpanel" class="tab-pane fade " id="subIdos-tab-${index}">
-
-          [#-- <h5 class="sectionSubTitle">[@s.text name="outcome.subIDOs.sectionTitle"/] <p class="contributioRem pull-right">Contribution <span class="value">0%</span></p></h5>--]
-          <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
-            [#if outcome.subIdos?has_content]
-              [#list outcome.subIdos as subIdo]
-                [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
-              [/#list]
-            [#else]
-              [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
-              [#-- <p class="message text-center">[@s.text name="outcome.subIDOs.section.notSubIDOs.span"/]</p> --]
-            [/#if]
+      [#-- Portfolio --]
+      [#if action.hasSpecificities('portfolio_feature_active')]
+        <div class="opi-grid5">
+          <div>
+            [@customForm.select name="${outcomeCustomName}.portfolio.id" i18nkey="outcome.portfolio" listName="portfolios" keyFieldName="id" displayFieldName="name" required=true  className="milestoneStatus" editable=editable /]
           </div>
-          [#-- Add Sub-IDO Button --]
-          [#if editable]
-            <div class="text-right">
-              <div class="addSubIdo button-blue text-right"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
+        </div>
+      [/#if]
+
+      [#-- Acronym + Statement row --]
+      <div class="opi-fieldRow">
+        <div class="opi-fieldRow__acronym">
+          [@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]
+        </div>
+        <div class="opi-fieldRow__statement">
+          [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="${isAiccraUI?string('outcome.statementIndicator','outcome.statement')}" required=true className="outcome-statement limitWords-100" editable=editable /]
+        </div>
+      </div>
+
+      [#-- Outcome Indicator --]
+      [#if action.hasSpecificities('crp_ip_outcome_indicator')]
+      <div class="form-group">
+        [@customForm.textArea name="${outcomeCustomName}.indicator"  i18nkey="outcome.inidicator" required=false className="outcome-inidicator limitWords-100" editable=editable /]
+      </div>
+      [/#if]
+
+      [#-- Baseline year / Closing year / Target unit / Target value / Order --]
+      <div class="opi-grid5 target-block">
+        [#-- Baseline (start) year --]
+        <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear" required=true editable=editable /]</div>
+        [#-- Closing (target) year --]
+        <div>[@customForm.select name="${outcomeCustomName}.year" value="${(outcome.year)!-1}" i18nkey="${isAiccraUI?string('outcome.closingYear','outcome.targetYear')}" listName="milestoneYears" className="targetYear outcomeYear" required=true editable=editable /]</div>
+        [#-- Target Unit --]
+        [#if targetUnitList?has_content]
+        <div class="targetUnit-block">
+          [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit" listName="targetUnitList" editable=editable  /]
+        </div>
+        [#else]
+        <input type="hidden" name="${outcomeCustomName}.srfTargetUnit.id" value="-1"/>
+        [/#if]
+        [#-- Target Value --]
+        [#local showTargetValue = (targetUnitList?has_content) && (outcome.srfTargetUnit??) && (outcome.srfTargetUnit.id??) && (outcome.srfTargetUnit.id != -1) /]
+        <div class="targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
+          [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
+        </div>
+        [#-- Order --]
+        <div>[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
+      </div>
+
+      [#if isAiccraUI]
+        [#-- =================== Disaggregations (design table) =================== --]
+        <div class="opi-panel opi-dis__ask">
+          <span class="opi-panel__label">[@s.text name="outcomes.disaggregations.question"/]</span>
+          <span class="opi-seg" role="group">
+            <button type="button" class="opi-seg__btn opi-dis__yes ${hasDis?string('is-on','')}" aria-pressed="${hasDis?string}" [#if !editable]disabled[/#if]>[@s.text name="outcomes.disaggregations.yes"/]</button>
+            <button type="button" class="opi-seg__btn opi-dis__no ${hasDis?string('','is-on')}" aria-pressed="${(!hasDis)?string}" [#if !editable]disabled[/#if]>[@s.text name="outcomes.disaggregations.no"/]</button>
+          </span>
+          <span class="opi-panel__note" data-opi-disnote data-yes="[@s.text name="outcomes.disaggregations.note.yes"/]" data-no="[@s.text name="outcomes.disaggregations.note.no"/]">[#if hasDis][@s.text name="outcomes.disaggregations.note.yes"/][#else][@s.text name="outcomes.disaggregations.note.no"/][/#if]</span>
+        </div>
+
+        <div class="opi-block opi-dis" style="display:${hasDis?string('flex','none')}">
+          <div class="opi-block__head">
+            <span class="opi-block__label">[@s.text name="outcomes.disaggregations"/]</span>
+            <span class="opi-block__hint">[@s.text name="outcomes.disaggregations.hint"/]</span>
+          </div>
+          <div class="opi-dis__table">
+            <div class="opi-dis__thead">
+              <span></span>
+              <span>#</span>
+              <span>[@s.text name="outcomes.disaggregations.code"/]</span>
+              <span>[@s.text name="outcomes.disaggregations.statement"/]</span>
+              <span>[@s.text name="outcomes.disaggregations.unit"/]</span>
+              <span></span>
             </div>
+            <div class="opi-dis__rows">
+            [#list rowStmts as stmt]
+              [#local isPrincipal = (stmt_index == 0) /]
+              [#local rowCode = "" /][#local rowUnitId = "-1" /][#local rowDeletable = true /][#local rowHasMilestones = false /]
+              [#if !isTemplate]
+                [#list outcome.milestones![] as m]
+                  [#if ((m.title)!"")?trim == stmt]
+                    [#local rowHasMilestones = true /]
+                    [#if rowCode == ""][#local rowCode = (m.code)!"" /][/#if]
+                    [#if rowUnitId == "-1" && (m.srfTargetUnit.id)??][#local rowUnitId = m.srfTargetUnit.id?c /][/#if]
+                    [#if !action.canBeDeleted((m.id)!-1,(m.class.name)!"")][#local rowDeletable = false /][/#if]
+                  [/#if]
+                [/#list]
+              [/#if]
+              <div class="opi-dis__row ${isPrincipal?string('is-principal','')}" data-opi-row="r${index}-${stmt_index}" [#if editable && !isPrincipal]draggable="true"[/#if]>
+                <span class="opi-dis__grip" [#if editable && !isPrincipal]title="[@s.text name="outcomes.disaggregations.grip"/]"[/#if] aria-hidden="true">
+                  <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><circle cx="4" cy="3" r="1.15" fill="currentColor"></circle><circle cx="8" cy="3" r="1.15" fill="currentColor"></circle><circle cx="4" cy="7" r="1.15" fill="currentColor"></circle><circle cx="8" cy="7" r="1.15" fill="currentColor"></circle><circle cx="4" cy="11" r="1.15" fill="currentColor"></circle><circle cx="8" cy="11" r="1.15" fill="currentColor"></circle></svg>
+                </span>
+                <span class="opi-dis__n">${stmt_index + 1}</span>
+                <span class="opi-dis__code">
+                  <input type="text" class="opi-plainInput opi-dis__codeInput" value="${rowCode}" aria-label="[@s.text name="outcomes.disaggregations.code"/]" [#if !editable || isPrincipal]readonly[/#if] />
+                  [#if isPrincipal]<span class="opi-dis__pBadge">P</span>[/#if]
+                </span>
+                <span class="opi-dis__stmt">
+                  <input type="text" class="opi-plainInput opi-dis__stmtInput" value="${stmt}" aria-label="[@s.text name="outcomes.disaggregations.statement"/]" [#if !editable || isPrincipal]readonly[/#if] [#if isPrincipal]title="[@s.text name="outcomes.disaggregations.fromIndicator"/]"[/#if] />
+                </span>
+                <span class="opi-dis__unit">
+                  <select class="opi-plain opi-dis__unitSelect" aria-label="[@s.text name="outcomes.disaggregations.unit"/]" [#if !editable || isPrincipal]disabled[/#if]>
+                    <option value="-1"></option>
+                    [#-- targetUnitList is a Map<Long,String>: ?keys and ?values iterate in the same order --]
+                    [#if targetUnitList?has_content]
+                      [#local unitKeys = targetUnitList?keys /]
+                      [#local unitVals = targetUnitList?values /]
+                      [#list unitKeys as k]
+                        <option value="${k?c}" [#if k?c == rowUnitId]selected[/#if]>${unitVals[k_index]}</option>
+                      [/#list]
+                    [/#if]
+                  </select>
+                </span>
+                <span class="opi-dis__actions">
+                  [#if editable && !isPrincipal && rowDeletable]
+                    <button type="button" class="opi-dis__delete" aria-label="Delete disaggregation">&#10005;</button>
+                  [/#if]
+                </span>
+              </div>
+            [/#list]
+            </div>
+          </div>
+          [#if editable]
+            <button type="button" class="opi-addDis opi-dashedBtn">+ [@s.text name="outcomes.disaggregations.add"/]</button>
+          [/#if]
+        </div>
+
+        [#-- =================== Period targets (year matrix) =================== --]
+        <div class="opi-block opi-matrix-block">
+          <div class="opi-block__head">
+            <span class="opi-block__label">[@s.text name="outcome.milestone.sectionTitle"/]</span>
+            <span class="opi-block__hint">[@s.text name="outcomes.matrix.hint"/]</span>
+            <span class="opi-block__legend"><span class="opi-legendSwatch"></span>[@s.text name="outcomes.matrix.missingLegend"/]</span>
+          </div>
+          <div class="opi-matrix mz">
+            <div class="opi-matrix__scroll">
+              <div class="opi-matrix__head" style="grid-template-columns:${gridCols}">
+                <span class="opi-matrix__corner">[@s.text name="outcomes.matrix.targetStatement"/]</span>
+                [#list yearCols as y]
+                  <span class="opi-matrix__year ${(y == nowYear)?string('is-now','')}" data-opi-yearcol="${y}">
+                    <span class="opi-matrix__yearLabel">${y}</span>
+                    [#if y == nowYear]<span class="opi-matrix__now">[@s.text name="outcomes.matrix.now"/]</span>[/#if]
+                  </span>
+                [/#list]
+                <span class="opi-matrix__addcol">
+                  [#if editable]<button type="button" class="opi-addYear opi-dashedBtn opi-dashedBtn--sm">+ [@s.text name="outcomes.matrix.addYear"/]</button>[/#if]
+                </span>
+              </div>
+              [#local placed = [] /]
+              <div class="milestones-list opi-matrix__rows" listname="${outcomeCustomName}.milestones">
+              [#list rowStmts as stmt]
+                [#local isPrincipal = (stmt_index == 0) /]
+                <div class="opi-matrix__row ${isPrincipal?string('is-principal','')}" data-opi-row="r${index}-${stmt_index}" style="grid-template-columns:${gridCols}">
+                  <span class="opi-matrix__label">
+                    <span class="opi-matrix__rowcode" data-opi-rowcode>&nbsp;</span>
+                    <span class="opi-matrix__stmtWrap">
+                      <span class="opi-matrix__stmt" data-opi-rowstmt>${stmt}</span>
+                      <span class="opi-matrix__sub" data-opi-rowsub></span>
+                    </span>
+                  </span>
+                  [#list yearCols as y]
+                    [#local foundIdx = -1 /]
+                    [#if !isTemplate]
+                      [#list outcome.milestones![] as m]
+                        [#if !placed?seq_contains(m_index) && ((m.title)!"")?trim == stmt && ((m.year)!-1) == y]
+                          [#local foundIdx = m_index /]
+                          [#local placed = placed + [m_index] /]
+                          [#break]
+                        [/#if]
+                      [/#list]
+                    [/#if]
+                    [#if foundIdx != -1]
+                      [@opiCellMacro milestone=outcome.milestones[foundIdx] name="${outcomeCustomName}.milestones" index=foundIdx rowStmt=stmt /]
+                    [#else]
+                      <span class="opi-cell is-empty" data-opi-year="${y}">
+                        [#if editable]<button type="button" class="opi-cell__create" title="[@s.text name="outcomes.matrix.addValue"/]">+</button>[#else]<span class="opi-cell__dash">&mdash;</span>[/#if]
+                      </span>
+                    [/#if]
+                  [/#list]
+                  <span class="opi-matrix__tail"></span>
+                </div>
+              [/#list]
+              </div>
+            </div>
+          </div>
+          [#-- Milestones that could not be placed in the matrix (duplicated statement+year) keep the classic block so no data is hidden. --]
+          [#if !isTemplate && outcome.milestones?has_content && placed?size < outcome.milestones?size]
+            <div class="opi-matrix__leftovers">
+              [#list outcome.milestones as m]
+                [#if !placed?seq_contains(m_index)]
+                  [@milestoneMacro milestone=m name="${outcomeCustomName}.milestones" index=m_index editable=editable canEditMilestone=action.canEditMileStone(m) /]
+                [/#if]
+              [/#list]
+            </div>
+          [/#if]
+        </div>
+      [#else]
+        [#-- =================== Legacy stacked milestones (non-AICCRA: POWB fields, DAC markers) =================== --]
+        <div class="opi-block">
+          <div class="opi-block__head">
+            <span class="opi-block__label">[@s.text name="outcome.milestone.sectionTitle"/]</span>
+            <span class="opi-block__hint">[@s.text name="outcomes.periodTargets.hint"/]</span>
+            <span class="opi-block__count">${milestoneCount}</span>
+          </div>
+          <div class="milestones-list" listname="${outcomeCustomName}.milestones">
+          [#if outcome.milestones?has_content]
+            <div class="cont-btn-min">
+              <button type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
+            </div>
+            [#list outcome.milestones as milestone]
+              [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
+            [/#list]
+          [#else]
+            <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
+          [/#if]
+          </div>
+          [#if editable]
+            <div class="addMilestone opi-dashedBtn">+ [@s.text name="form.buttons.addMilestone"/]</div>
+            <div class="note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>
           [/#if]
         </div>
       [/#if]
 
-      [#-- Baseline indicators --]
-      [#if action.hasSpecificities('crp_baseline_indicators') && (selectedProgram.baseLine)!false]
-      <div role="tabpanel" class="tab-pane fade" id="baseline-tab-${index}">
+      [#-- =================== Progress to target indicators (questions) =================== --]
+      [#if showBaselineBlock]
+      <div class="opi-block opi-q">
+        <div class="opi-block__head">
+          <span class="opi-block__label">[#if isAiccraUI][@s.text name="outcome.progressIndicators.title"/][#else][@s.text name="outcome.baselineIndicators.title"/][/#if]</span>
+          <span class="opi-block__hint">[@s.text name="outcomes.progressIndicators.hint"/]</span>
+          <span class="opi-block__count"><span data-opi-qcount>${indicatorCount}</span> [#if indicatorCount == 1][@s.text name="outcomes.questions.count.one"/][#else][@s.text name="outcomes.questions.count.many"/][/#if]</span>
+        </div>
 
-        [#-- Upload a PDF with baseline instructions --]
-        <div class="form-group fileUploadContainer">
-          <label>[@customForm.text name="outcome.baselineInstructions" readText=!editable /]:</label>
+        [#-- Baseline instructions (PDF) --]
+        <div class="opi-panel fileUploadContainer">
+          <span class="opi-panel__label">[@s.text name="outcomes.baselineInstructions.pdf"/]</span>
           [#if !isTemplate]
-          	[#if outcome?has_content]
-							[#local hasFile = (outcome??) && action.hasBaselineFile(outcome) /]
-						[#else]
-							[#local hasFile = false/]
-						[/#if]
+            [#if outcome?has_content]
+              [#local hasFile = (outcome??) && action.hasBaselineFile(outcome) /]
+            [#else]
+              [#local hasFile = false/]
+            [/#if]
             <input class="fileID" type="hidden" name="${outcomeCustomName}.file.id" value="${(outcome.file.id)!}" />
-            [#-- Input File --]
             [#if editable]
             <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
-
             [/#if]
-            [#-- Uploaded File --]
             <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
               <span class="contentResult">[#if outcome.file??]
-                <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="38px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
+                <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="24px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span>
-              [#if editable]<span class="removeIcon"> </span> [/#if]
+              [#if editable]<span class="removeIcon opi-fileRemove"> </span>[/#if]
             </p>
+            [#if !hasFile]<span class="opi-panel__note">[@s.text name="outcomes.file.none"/]</span>[/#if]
           [#else]
             <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]
         </div>
-        <br />
-        [#-- Baseline indicators list --]
-        <h5 class="sectionSubTitle">[@s.text name="outcome.baselineIndicators" /]:</h5>
-        <div class="baselineIndicators-list"">
 
-        [#if outcome.indicators?has_content]
-          [#list outcome.indicators as baselineIndicator]
-            [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
-          [/#list]
-        [#else]
-          [#-- @baselineIndicatorMacro indicator={} name="${outcomeCustomName}.indicators" index=0 / --]
-        [/#if]
+        [#-- Questions table --]
+        <div class="opi-q__table baselineIndicators-list">
+          <div class="opi-q__thead">
+            <span>#</span>
+            <span>[@s.text name="outcomes.questions.question"/]</span>
+            <span></span>
+          </div>
+          [#if outcome.indicators?has_content]
+            [#list outcome.indicators as baselineIndicator]
+              [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
+            [/#list]
+          [#else]
+            <div class="opi-empty opi-empty--sm opi-q__empty">
+              <span class="opi-empty__title">[@s.text name="outcomes.questions.empty.title"/]</span>
+              <span class="opi-empty__hint">[@s.text name="outcomes.questions.empty.hint"/]</span>
+            </div>
+          [/#if]
         </div>
-        [#-- Add Baseline Indicator Button --]
         [#if editable]
-        <div class="text-right">
-          <div class="addBaselineIndicator button-green"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addBaselineIndicator"/]</div>
-        </div>
+          <div class="opi-q__addRow">
+            <button type="button" class="addBaselineIndicator opi-dashedBtn" data-blocked-title="[@s.text name="outcomes.questions.addBlocked"/]">+ [@s.text name="outcomes.questions.add"/]</button>
+            <span class="opi-q__addNote" data-opi-qnote></span>
+          </div>
         [/#if]
       </div>
       [/#if]
 
-      [#-- Instructions tab--]
-      <div role="tabpanel" class="tab-pane fade" id="instructions-tab-${index}">
-      [#--  
-         <p class="subTitle col-md-12"><i> [@s.text name="outcome.instructions.help" /] </i> </p><br />
-         --]
-         <div class="form-group">
-          [@customForm.textArea name="${outcomeCustomName}.instructions" i18nkey="outcome.instructions" required=false className="milestone-statement" editable=editableMilestone allowTextEditor=true/]
+      [#-- =================== Instructions =================== --]
+      <div class="opi-block">
+        <div class="opi-block__head">
+          <span class="opi-block__label">[@s.text name="outcome.instructions"/]</span>
+          <span class="opi-block__hint">[@s.text name="outcomes.instructions.hint"/]</span>
         </div>
+        [@customForm.textArea name="${outcomeCustomName}.instructions" i18nkey="outcome.instructions" showTitle=false required=false className="milestone-statement" editable=editable allowTextEditor=true/]
       </div>
 
-      [#-- Outcome Milestones List --]
-      <div role="tabpanel" class="tab-pane fade in active" id="milestones-tab-${index}">
-
-        [#--<h5 class="sectionSubTitle">[@s.text name="outcome.milestone.sectionTitle"/]</h5>--]
-        <div class="milestones-list" listname="${outcomeCustomName}.milestones">
-
-        [#if outcome.milestones?has_content]
-           <div class="cont-btn-min">
-             <button   type="button" class="btn-expand-all btn btn-link">Collapse all<i class="fas fa-expand-arrows-alt"></i></button>
-           </div>
-          [#list outcome.milestones as milestone]
-            [@milestoneMacro milestone=milestone name="${outcomeCustomName}.milestones" index=milestone_index editable=editable canEditMilestone=action.canEditMileStone(milestone) /]
-          [/#list]
-        [#else]
-          <p class="message text-center">[@s.text name="outcome.milestone.section.notMilestones.span"/]</p>
-        [/#if]
+      [#-- =================== Sub-IDOs (non-AICCRA) =================== --]
+      [#if !isAiccraUI]
+      <div class="opi-block">
+        <div class="opi-block__head">
+          <span class="opi-block__label">[@s.text name="outcome.subIDOs.sectionTitle"/]</span>
+          <span class="opi-block__hint">[@s.text name="outcomes.subIdos.hint"/]</span>
+          <span class="opi-block__count">${subIdoCount}</span>
         </div>
-        [#-- Add Milestone Button --]
+        <div class="subIdos-list" listname="${outcomeCustomName}.subIdos">
+          [#if outcome.subIdos?has_content]
+            [#list outcome.subIdos as subIdo]
+              [@subIDOMacro subIdo=subIdo name="${outcomeCustomName}.subIdos" index=subIdo_index /]
+            [/#list]
+          [#else]
+            [@subIDOMacro subIdo={} name="${outcomeCustomName}.subIdos" index=0 /]
+          [/#if]
+        </div>
         [#if editable]
-        <div class="">
-          <div class="addMilestone bigAddButton text-center form-group"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addMilestone"/]</div>
-        </div>
+          <div class="addSubIdo button-blue"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> [@s.text name="form.buttons.addSubIDO"/]</div>
         [/#if]
-        [#if editable]<div class="form-group note"><small>[@s.text name = "outcomes.addNewTargetUnit" /]</small></div>[/#if]
       </div>
+      [/#if]
+
     </div>
-
-    <br />
-
   </div>
+[/#macro]
+
+[#-- One matrix cell: a milestone rendered as (year, value, status). The row-level
+     statement / code / unit live in the disaggregations table and are copied into
+     this cell's hidden inputs by outcomes.js. --]
+[#macro opiCellMacro milestone name index rowStmt="" isTemplate=false]
+  [#local cellName = "${name}[${index}]" /]
+  [#local cellEditable = editable /]
+  [#if !isTemplate]
+    [#local cellEditable = editable && action.canEditMileStone(milestone) /]
+  [/#if]
+  [#local cellStatus = (milestone.milestonesStatus.id)!-1 /]
+  [#local showExt = ((milestone.extendedYear?has_content) && (milestone.extendedYear != -1) && milestone.extendedYear != milestone.year) || (cellStatus == 4) /]
+  <span [#if isTemplate]id="opiCell-template"[/#if] class="milestone opi-cell" data-opi-year="${(milestone.year)!''}" [#if isTemplate]style="display:none"[/#if]>
+    <input type="hidden" class="mileStoneId" name="${cellName}.id" value="${(milestone.id)!}"/>
+    <input type="hidden" class="mileStoneComposeId" name="${cellName}.composeID" value="${(milestone.composeID)!}"/>
+    [#if cellEditable || isTemplate]
+      <input type="hidden" class="opi-cell__title" name="${cellName}.title" value="${(milestone.title)!rowStmt}"/>
+      <input type="hidden" class="opi-cell__code" name="${cellName}.code" value="${(milestone.code)!}"/>
+      <input type="hidden" class="opi-cell__year" name="${cellName}.year" value="${(milestone.year)!}"/>
+      <input type="hidden" class="opi-cell__unit" name="${cellName}.srfTargetUnit.id" value="${(milestone.srfTargetUnit.id)!-1}"/>
+      <span class="opi-cell__valueWrap">
+        <span class="opi-cell__affix" aria-hidden="true"></span>
+        <input type="text" inputmode="numeric" class="targetValue targetValueNumber opi-cell__value" name="${cellName}.value" value="${(milestone.value)!}" aria-label="${rowStmt} ${(milestone.year)!''}"/>
+      </span>
+      <select class="milestoneStatus opi-plain opi-cell__status" name="${cellName}.milestonesStatus.id" aria-label="Status">
+        <option value="-1"></option>
+        [#list generalStatuses![] as st]
+          <option value="${st.id?c}" [#if st.id == cellStatus]selected[/#if]>${st.name}</option>
+        [/#list]
+      </select>
+      <select class="opi-plain opi-cell__extYear" name="${cellName}.extendedYear" aria-label="[@s.text name="outcome.milestone.inputNewTargetYear"/]" style="display:${showExt?string('block','none')}">
+        <option value="-1"></option>
+        [#list milestoneYears![] as my]
+          <option value="${my?c}" [#if ((milestone.extendedYear)!-1) == my]selected[/#if]>${my?c}</option>
+        [/#list]
+      </select>
+      <span class="opi-cell__hint" data-opi-hint></span>
+    [#else]
+      [#-- Read-only cell: carry the milestone's full current state. The save chain
+           rebuilds each incoming milestone with copyFields(), which also copies
+           nulls — a partial submit here would wipe the fields the user cannot
+           edit and NPE on the missing target unit (OutcomesAction.saveMilestones). --]
+      <input type="hidden" name="${cellName}.title" value="${(milestone.title)!}"/>
+      <input type="hidden" name="${cellName}.code" value="${(milestone.code)!}"/>
+      <input type="hidden" name="${cellName}.year" value="${(milestone.year)!}"/>
+      <input type="hidden" name="${cellName}.value" value="${(milestone.value)!}"/>
+      <input type="hidden" name="${cellName}.srfTargetUnit.id" value="${(milestone.srfTargetUnit.id)!-1}"/>
+      [#-- Always sent (with -1 defaults), like the legacy macro: a milestone bound
+           without a status NPEs OutcomeValidator.validateMilestone. --]
+      <input type="hidden" name="${cellName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id?c)!-1}"/>
+      <input type="hidden" name="${cellName}.extendedYear" value="${(milestone.extendedYear?c)!-1}"/>
+      <span class="opi-cell__read">${(milestone.value)!'&mdash;'}</span>
+      <span class="opi-cell__readStatus">${(milestone.milestonesStatus.name)!}</span>
+    [/#if]
+  </span>
 [/#macro]
 
 
@@ -653,26 +917,25 @@
 
 [#macro baselineIndicatorMacro indicator name index isTemplate=false]
   [#local customName = "${name}[${index}]" /]
-  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox form-group" style="position:relative; display:${isTemplate?string('none','block')}">
-    [#-- Index --]
-    <div class="leftHead gray sm">
-      <span class="index">${index+1}</span>
-    </div>
-    [#-- Remove Button --]
-    [#if editable]<div class="removeBaselineIndicator removeElement sm" title="Remove Indicators"></div>[/#if]
+  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator opi-q__row" style="display:${isTemplate?string('none','grid')}">
     [#-- Hidden inputs --]
     <input type="hidden" class="baselineIndicatorId" name="${customName}.id" value="${(indicator.id)!}"/>
-
     <input type="hidden"  name="${customName}.composeID" value="${(indicator.composeID)!}"/>
-
-    [#if editable]
-      [@customForm.textArea name="${customName}.indicator" value=(indicator.indicator)! i18nkey="baselineIndicator.title" showTitle=true className="statement limitWords-50" required=true editable=editable allowTextEditor=true/]
-    [#else]
-      [#if indicator.indicator?has_content]
-        [#-- decodeHTML turns escaped markup into rendered HTML (same pattern as customForm.textArea + allowTextEditor) --]
-        <div class="input"><p class="decodeHTML trumbowyg-editor">${(indicator.indicator)!}</p></div>
+    <span class="opi-q__n"><span class="index">${index + 1}</span></span>
+    <span class="opi-q__field">
+      [#if editable]
+        <input type="text" class="opi-plainInput opi-q__input" name="${customName}.indicator" value="${(indicator.indicator)!}" placeholder="[@s.text name="outcomes.questions.placeholder"/]" aria-label="[@s.text name="outcomes.questions.question"/]" />
+      [#else]
+        [#if indicator.indicator?has_content]
+          [#-- decodeHTML turns escaped markup into rendered HTML (legacy rich-text values) --]
+          <div class="opi-q__read decodeHTML">${(indicator.indicator)!}</div>
+        [#else]
+          <div class="opi-q__read">&mdash;</div>
+        [/#if]
       [/#if]
-    [/#if]
-    <div class="clearfix"></div>
+    </span>
+    <span class="opi-q__actions">
+      [#if editable]<button type="button" class="removeBaselineIndicator opi-q__delete" aria-label="Delete question">&#10005;</button>[/#if]
+    </span>
   </div>
 [/#macro]
