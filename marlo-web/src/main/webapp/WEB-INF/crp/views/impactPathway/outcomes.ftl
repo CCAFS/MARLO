@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?202608314",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?202608315",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?202608314",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?202608316",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -90,9 +90,9 @@
 
       <div class="opi-layout">
 
-        [#-- Components / flagships sidebar --]
+        [#-- Components sidebar (design's card; the shared dropdown menu stays on clusterActivities) --]
         <aside class="opi-sidebar">
-          [#include "/WEB-INF/crp/views/impactPathway/menu-impactPathway.ftl" /]
+          [#include "/WEB-INF/crp/views/impactPathway/sidebar-opi.ftl" /]
         </aside>
 
         <div class="opi-main">

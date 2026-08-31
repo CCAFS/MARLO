@@ -344,6 +344,42 @@ public class OutcomesAction extends BaseAction {
     return programs;
   }
 
+  /**
+   * Counts the active outcomes of the current phase per program, so the sidebar
+   * can show the design's "N indicators" subtitle for every component without
+   * lazy-loading each program's outcome collection from the template.
+   *
+   * Keys are the program id as a String: FreeMarker looks map entries up by
+   * string key, so a Map<Long, ?> would never resolve from the template.
+   *
+   * @return a map of crpProgram id (as String) to its outcome count in the current phase
+   */
+  public Map<String, Integer> getOutcomeCountByProgram() {
+    Map<String, Integer> counts = new HashMap<>();
+    if (this.getActualPhase() == null || this.getActualPhase().getId() == null) {
+      return counts;
+    }
+    List<CrpProgramOutcome> phaseOutcomes =
+      crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId());
+    if (phaseOutcomes == null) {
+      return counts;
+    }
+    Long actualPhaseId = this.getActualPhase().getId();
+    for (CrpProgramOutcome outcome : phaseOutcomes) {
+      if (outcome == null || !outcome.isActive() || outcome.getCrpProgram() == null) {
+        continue;
+      }
+      // getAllCrpProgramOutcomesByPhase queries `phase.id >= :phaseId`, so it also
+      // returns every future phase; keep only the phase actually being shown.
+      if (outcome.getPhase() == null || !actualPhaseId.equals(outcome.getPhase().getId())) {
+        continue;
+      }
+      String programId = String.valueOf(outcome.getCrpProgram().getId());
+      counts.put(programId, counts.getOrDefault(programId, 0) + 1);
+    }
+    return counts;
+  }
+
   public RepIndGenderYouthFocusLevelManager getRepIndGenderYouthFocusLevelManager() {
     return repIndGenderYouthFocusLevelManager;
   }

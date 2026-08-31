@@ -507,7 +507,10 @@ span.icon-20 {
   .opi-sidebar { width: 100%; }
 }
 
-/* ---------- Sidebar (restyle of menu-impactPathway.ftl) ---------- */
+/* ---------- Sidebar: the design's Components card ----------
+   Rendered by sidebar-opi.ftl. The #secondaryMenu id is kept because
+   fieldsValidation.js / autoSave.js look it up, but every visual rule the
+   shared global.css attaches to it is neutralised here. */
 
 .opi-sidebar #secondaryMenu {
   background: var(--opi-surface);
@@ -517,21 +520,46 @@ span.icon-20 {
   padding: 16px 14px;
   margin: 0;
   width: auto;
+  min-height: 0;
   float: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.opi-sidebar #secondaryMenu > p {
-  margin: 0 0 12px;
+/* global.css styles `#secondaryMenu > p` at 1.3em/#1DA5CE — an id selector, so
+   the heading needs matching specificity to win. */
+.opi-sidebar #secondaryMenu > p.opi-menu__heading {
+  margin: 0;
   font: 600 12px Figtree, sans-serif;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--opi-muted);
 }
 
-.opi-sidebar #secondaryMenu > p .selectedProgram { color: var(--opi-primary); }
+/* global.css hides .menuList (it is the dropdown body) and gives each entry a
+   grey box with a #1DA5CE active state — undo all of it. */
+.opi-sidebar #secondaryMenu .menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
 
-.opi-sidebar #secondaryMenu .menuList { display: flex; flex-direction: column; gap: 4px; }
-.opi-sidebar #secondaryMenu .menuList p { margin: 0; }
+.opi-sidebar #secondaryMenu .menuList p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  text-align: left;
+}
+
+.opi-sidebar #secondaryMenu .menuList p.active,
+.opi-sidebar #secondaryMenu .menuList p.active a {
+  background: none;
+  border-color: transparent;
+}
 
 .opi-sidebar #secondaryMenu .menuList p a {
   display: flex;
@@ -549,13 +577,15 @@ span.icon-20 {
 .opi-sidebar #secondaryMenu .menuList p a:before {
   content: "";
   position: absolute;
-  left: 0; top: 8px; bottom: 8px;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
   width: 3px;
   border-radius: 2px;
   background: transparent;
 }
 
-.opi-sidebar #secondaryMenu .menuList p a:hover { filter: brightness(.97); background: var(--opi-surface-head); }
+.opi-sidebar #secondaryMenu .menuList p a:hover { background: var(--opi-surface-head); }
 
 .opi-sidebar #secondaryMenu .menuList p.active a {
   background: var(--opi-info-bg);
@@ -565,29 +595,51 @@ span.icon-20 {
 
 .opi-sidebar #secondaryMenu .menuList p.active a:before { background: var(--opi-primary); }
 
-.opi-sidebar #secondaryMenu > ul { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid #EEF2F5; }
-.opi-sidebar #secondaryMenu > ul ul { list-style: none; margin: 0; padding: 0; }
+.opi-menu__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.opi-menu__title { font: inherit; }
+.opi-menu__sub { font: 400 12px Figtree, sans-serif; color: var(--opi-muted); font-weight: 400; }
 
-.opi-sidebar #secondaryMenu > ul li a {
-  display: block;
-  padding: 7px 10px;
-  border-radius: 7px;
-  font: 500 13px Figtree, sans-serif;
-  color: var(--opi-ink-soft);
-  text-decoration: none;
+.opi-menu__badge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font: 700 12px Figtree, sans-serif;
+  background: var(--opi-warn-bg);
+  border: 1px solid var(--opi-warn-border);
+  color: var(--opi-warn);
 }
 
-.opi-sidebar #secondaryMenu > ul li.currentSection > a { background: var(--opi-surface-head); color: var(--opi-primary-dark); font-weight: 600; }
-.opi-sidebar #secondaryMenu > ul li.disabled > a { color: #9AA4B0; cursor: not-allowed; }
+.opi-menu__badge.is-ok { background: var(--opi-ok-bg); border-color: var(--opi-ok-border); color: var(--opi-ok); }
+.opi-menu__badge:empty { display: none; }
+
+/* Check block, inside the card per the design */
+.opi-menu__foot {
+  border-top: 1px solid #EEF2F5;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
 .opi-sidebar .projectValidateButton-message {
-  margin: 12px 0 8px;
+  margin: 0;
   font: 400 12.5px/1.5 Figtree, sans-serif;
   color: var(--opi-muted);
   text-align: left;
 }
 
+.opi-menu__note { margin: 0; font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--opi-muted); }
+
 .opi-sidebar .projectValidateButton {
+  /* global.css gives this button `margin: 0 8%` and an asymmetric padding for its
+     sprite icon, which pushes it out of the card. The icon is an inline SVG here. */
+  margin: 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -607,7 +659,6 @@ span.icon-20 {
 .opi-sidebar .projectSubmitButton,
 .opi-sidebar .projectUnSubmitButton {
   display: block;
-  margin-top: 10px;
   height: 38px;
   line-height: 38px;
   border-radius: var(--opi-radius-sm);
@@ -1425,27 +1476,6 @@ span.icon-20 {
 
 .opi-page .opi-cell__valueWrap .opi-cell__value { border: 0; background: none; height: 30px; }
 .opi-cell.is-missing .opi-cell__valueWrap { border-color: var(--opi-warn-field); }
-
-.opi-menu__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.opi-menu__title { font: inherit; }
-.opi-menu__sub { font: 400 12px Figtree, sans-serif; color: var(--opi-muted); }
-
-.opi-menu__badge {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 6px;
-  font: 700 12px Figtree, sans-serif;
-  background: var(--opi-warn-bg);
-  border: 1px solid var(--opi-warn-border);
-  color: var(--opi-warn);
-}
-
-.opi-menu__badge.is-ok { background: var(--opi-ok-bg); border-color: var(--opi-ok-border); color: var(--opi-ok); }
 
 .opi-card__meta { text-transform: none; }
 

@@ -956,23 +956,17 @@ function opiAttachHelpToggle() {
 }
 
 /**
- * Adds the design's subtitle ("N indicators") and missing-fields badge to the
- * active component entry — the only one whose data is on this page.
+ * Fills the live missing-fields badge on the active component. Only the active
+ * component's data is on the page, so the other entries carry no badge.
  */
 function opiDecorateSidebar() {
-  var $active = $('.opi-sidebar .menuList p.active a').first();
-  if (!$active.exists() || $active.find('.opi-menu__sub').exists()) { return; }
-  var $cards = $('.outcomes-list > .opi-card').filter(function() {
-    return $(this).attr('id') !== 'outcome-template';
-  });
-  var count = $cards.length;
+  var $badge = $('[data-opi-menu-badge]');
+  if (!$badge.exists()) { return; }
   var total = 0;
-  $cards.each(function() { total += opiCountMissing($(this)); });
-  var $body = $('<span class="opi-menu__body" />')
-    .append($('<span class="opi-menu__title" />').text($active.text().trim()))
-    .append($('<span class="opi-menu__sub" />').text(count + ' ' + opiLabel(count === 1 ? 'countOne' : 'countMany')));
-  var $badge = $('<span class="opi-menu__badge" />').text(total > 0 ? String(total) : '✓').toggleClass('is-ok', total === 0);
-  $active.empty().append($body).append($badge);
+  $('.outcomes-list > .opi-card').filter(function() {
+    return $(this).attr('id') !== 'outcome-template';
+  }).each(function() { total += opiCountMissing($(this)); });
+  $badge.text(total > 0 ? String(total) : '\u2713').toggleClass('is-ok', total === 0);
 }
 
 /**
@@ -1293,4 +1287,5 @@ function opiRefreshSummary() {
     text += ' · ' + opiLabel('summaryComplete');
   }
   $summary.text(text);
+  opiDecorateSidebar();
 }
