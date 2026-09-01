@@ -168,10 +168,11 @@ passed none.** Every code task passed with zero findings. The document describin
 |---|---|
 | Kind | **factual-sweep** |
 | Target | `marlo-web/src/main/resources/config/.gitignore` and `marlo-core/.../config/.gitignore` |
-| Edit | Change the exact-filename rule to `marlo-dev.properties*`. MARLO's own `update-marlo-dev-java17.sh` runs `sed -i.bak`, generating `marlo-dev.properties.bak` on **every local run** — and that derivative is **currently committable** while holding real database credentials. |
-| Severity | **High** |
-| Status | pending |
-| Why it matters | Root `CLAUDE.md` Hard rule 12 forbids committing credential files; the `.gitignore` as written does not enforce it for the shape the project's own script produces. |
+| Edit | Change the exact-filename rule to `marlo-dev.properties*`. |
+| Severity | **Medium** *(downgraded from High — see the premise correction)* |
+| Status | **applied 2026-08-31 on `staging-cognito-impl`**, not on `staging`. `.gitignore` is not one of the shared files the Default-Branch discipline protects (that list is root `CLAUDE.md` / `AGENTS.md`, `.agents/*.md`, packaged AKILI templates, `docs/trd/trd.md`), so the edit was in scope for a spec branch. Verified with `git check-ignore -v` against both paths. |
+| Why it matters | Root `CLAUDE.md` Hard rule 12 forbids committing credential files; the `.gitignore` as written did not enforce it for a `.bak` derivative holding real database credentials. |
+| **Premise correction (2026-08-31)** | This item recorded that `update-marlo-dev-java17.sh` generates `marlo-dev.properties.bak` **"on every local run"**. That is **false**, and the item was written without opening the script. `set_or_append_property` at `scripts/update-marlo-dev-java17.sh:27-29` runs `sed -i.bak …` and then `rm -f "${file}.bak"` on the very next line, so the derivative is deleted inside the same function call. **The real exposure is narrower:** a run interrupted between the two commands, a hand-run `sed -i.bak`, or an editor's own backup file. The fix stays correct as defense-in-depth — a `.gitignore` should not depend on a cleanup line in an unrelated script staying there — but its severity was inflated by an unverified claim. **Lesson: a kaizen item asserting what a script does must cite the lines it read.** |
 
 ### P9
 
