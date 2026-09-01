@@ -1210,7 +1210,15 @@ public class OutcomesAction extends BaseAction {
 
       programOutcomeIncoming.setFile(null); 
 
+      // The Order field was removed from the form, so it no longer binds. copyFields()
+      // copies nulls, which would wipe the stored value; keep whatever is already there.
+      Integer storedOrderIndex = crpProgramOutcome.getOrderIndex();
+
       crpProgramOutcome.copyFields(programOutcomeIncoming);
+
+      if (programOutcomeIncoming.getOrderIndex() == null) {
+        crpProgramOutcome.setOrderIndex(storedOrderIndex);
+      }
 
       if (incomingFileId != null) {
           // If an ID is provided, look up the file record in the DB

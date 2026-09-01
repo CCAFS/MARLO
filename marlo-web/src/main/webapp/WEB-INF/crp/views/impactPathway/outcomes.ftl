@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083111",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083114",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -330,6 +330,16 @@
       <div class="opi-grid5 target-block">
         [#-- Baseline (start) year --]
         <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
+        [#-- Baseline value: present in the design but with no column behind it yet, so it
+             is rendered read-only and carries no name — nothing is submitted or lost. --]
+        [#if isAiccraUI]
+        <div class="opi-pendingField">
+          <label>[@s.text name="outcome.baselineValue"/]</label>
+          <input type="text" class="opi-pendingField__input" value="" readonly
+            title="[@s.text name="outcomes.baselineValue.pending"/]" aria-describedby="opi-baselineValue-note-${index}" />
+          <span class="opi-pendingField__note" id="opi-baselineValue-note-${index}">[@s.text name="outcomes.baselineValue.pending"/]</span>
+        </div>
+        [/#if]
         [#-- Closing (target) year --]
         <div>[@customForm.select name="${outcomeCustomName}.year" value="${(outcome.year)!-1}" i18nkey="${isAiccraUI?string('outcome.closingYear','outcome.targetYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
         [#-- Target Unit --]
@@ -345,8 +355,6 @@
         <div class="targetValue-block" style="display:${showTargetValue?string('block', 'none')}">
           [@customForm.input name="${outcomeCustomName}.value" i18nkey="outcome.targetValue" help="outcomes.addNewTargetUnit"  placeholder="outcome.inputTargetValue.placeholder" className="targetValue targetValueNumber" required=true editable=editable /]
         </div>
-        [#-- Order --]
-        <div>[@customForm.input name="${outcomeCustomName}.orderIndex" value="${(outcome.orderIndex)!}" type="text" i18nkey="outcome.order" required=false editable=editable /]</div>
       </div>
 
       [#if isAiccraUI]
@@ -372,6 +380,7 @@
               <span>[@s.text name="outcomes.disaggregations.code"/]</span>
               <span>[@s.text name="outcomes.disaggregations.statement"/]</span>
               <span>[@s.text name="outcomes.disaggregations.unit"/]</span>
+              <span>[@s.text name="outcomes.disaggregations.rule"/]</span>
               <span></span>
             </div>
             <div class="opi-dis__rows">
@@ -411,6 +420,15 @@
                         <option value="${k?c}" [#if k?c == rowUnitId]selected[/#if]>${unitVals[k_index]}</option>
                       [/#list]
                     [/#if]
+                  </select>
+                </span>
+                [#-- Business rule: in the design but with no table behind it yet, so it is
+                     read-only and unnamed — nothing is submitted or silently lost. --]
+                <span class="opi-dis__rule">
+                  <select class="opi-plain opi-dis__ruleSelect" disabled
+                    title="[@s.text name="outcomes.disaggregations.rule.pending"/]"
+                    aria-label="[@s.text name="outcomes.disaggregations.rule"/]">
+                    <option>[@s.text name="outcomes.disaggregations.rule.none"/]</option>
                   </select>
                 </span>
                 <span class="opi-dis__actions">
