@@ -64,12 +64,10 @@
 
 ### CHG-COGNITO-AUTH-001-T01 — Extract `finishLogin` from `LoginAction` (behavior-preserving)
 
-- **Status:** `[~]` — code complete and **audited** 2026-08-31 on `staging-cognito-impl` (independent Reviewer,
-  `sonnet`, verdict PASS-WITH-FINDINGS; see `execution.md` §4). Compile PASS, 44/44 tests PASS, Checkstyle 0
-  violations (via a compatible plugin — the pinned one is broken, see `execution.md` EB-1).
-  **Not `[x]`: one *Done when* clause is still open.** It requires the single behavioral change to be
-  *"explicitly called out in the commit body"*, and nothing has been committed yet. This flips to `[x]` when the
-  commit exists with that message — not before.
+- **Status:** `[x]` — code complete and **audited** 2026-08-31 (independent Reviewer, `sonnet`,
+  PASS-WITH-FINDINGS; `execution.md` §4). Compile PASS, 44/44 tests at the time, 0 lines over 120.
+  **The last open clause closed at commit `046c31e7dc`**, whose body names the single behavioral change (the
+  `returnUrl` null guard) as the *Done when* requires.
 - **Depends on:** none — **must land before every Cognito task**
 - **Module:** marlo-web
 - **Files touched:** `action/home/LoginAction.java` (modify)

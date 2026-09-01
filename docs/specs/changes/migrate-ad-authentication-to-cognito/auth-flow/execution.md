@@ -15,7 +15,7 @@
 | Created | 2026-08-31 |
 | Last appended | 2026-08-31 |
 | Tasks total | 14 (`T00` … `T14`) |
-| Tasks complete | 9 (`T01`–`T06`, `T08`, `T10`, `T11`). `T01` and `T03` each have one clause open; **`T11` awaits audit**; `T04` was reopened by T06 and re-closed |
+| Tasks complete | 9 (`T01`–`T06`, `T08`, `T10`, `T11`). **`T01` closed at commit `046c31e7dc`**, whose body names its behavioral change; `T03` still has its live-boot clause open (PS-7). `T04` was reopened by T06 and re-closed |
 | Tasks reachable on this branch | **6** (`T01`–`T06`). `T07` is blocked by OQ-9, `T12` onward by OQ-3 |
 | Review rounds consumed | **12** — T01+T02 (§4), T03+T04 (§6) on `sonnet`; T05 (§7), T06 (§8, §9, §10), T08 (§11, §12), T10 (§13, §14), T11 (§15 FAIL, §16 PASS) on `opus`. **Four tasks FAILed at least once; T06 twice** |
 
