@@ -269,3 +269,33 @@ The card disappears and nothing else changes.
 - [x] `mvn compile` passes; Checkstyle rules clean on the changed Java file (the Maven goal is broken repo-wide, pre-existing).
 - [x] User-entered activity text cannot inject markup or script.
 - [ ] Verified in a running MARLO instance against real data (Operational Steps 1–2).
+
+## 9. QA Follow-ups
+
+### A2-2427 — App-restart reminder for new i18n keys (QA-Enhancement, closed)
+
+Raised during QA regression testing of this spec. The 34 new `dashboard.schedule.*` keys only rendered
+correctly in the test environment because it had already been restarted; nothing in the repository told
+a deployer that a restart was required, so a production deploy could have surfaced raw key names.
+
+Resolved by documenting and automating the requirement rather than by changing application behaviour
+(`struts.devMode` stays `false`; per-request bundle reloading is a performance and correctness risk in a
+multi-Global-Unit deployment):
+
+- `reports/ai-context/deployment-checklist.md` — new operational runbook. "Rule 0" states the restart
+  requirement, with the mechanism (classpath resource + `ResourceBundle` cache keyed by classloader +
+  `devMode=false` + `resetResourceBundles()` clearing bundle *names* only) and a table of what does and
+  does not invalidate the cache. `crp_refresh` is called out explicitly as a false friend.
+- `scripts/post-deploy-smoke-i18n.sh` — post-deploy smoke check (the ticket's stretch criterion). Reads
+  key names straight from `global.properties`, fetches a URL or reads a saved HTML file, strips
+  `<script>` / `<style>`, and exits non-zero if any key renders literally. Safe against false positives
+  here because `dashboard.ftl` resolves every key server-side through `[@s.text name="..."]`, so a key
+  name in the output can only mean an unresolved lookup.
+- `marlo-web/src/main/resources/global.properties` — header comment carrying the warning at the point
+  where a developer adds a key.
+- `README.md` — the runbook is listed under Operational runbooks and the restart rule is stated in the
+  release-model section.
+
+Not done: `CLAUDE.md` and `AGENTS.md` are constitutional documents under the process in `CLAUDE.md`, so
+adding the runbook to their document maps needs an `epic` spec and review. Until that lands, agents
+reach the runbook through `README.md` and the `global.properties` header.

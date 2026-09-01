@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.DeliverableManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.HomepageBannerManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
@@ -28,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.TimelineManager;
 import org.cgiar.ccafs.marlo.data.model.DeliverableHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.HomepageBanner;
 import org.cgiar.ccafs.marlo.data.model.InnovationHomeDTO;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -75,8 +77,11 @@ public class DashboardAction extends BaseAction {
 
   private TimelineManager timelineManager;
 
+  private HomepageBannerManager homepageBannerManager;
+
   // Variables
   private GlobalUnit loggedCrp;
+  private HomepageBanner homepageBanner;
 
   private List<Project> myProjects;
   private List<DeliverableHomeDTO> myDeliverables = new ArrayList<>();
@@ -89,7 +94,8 @@ public class DashboardAction extends BaseAction {
   public DashboardAction(APConfig config, ProjectManager projectManager, GlobalUnitManager crpManager,
     PhaseManager phaseManager, DeliverableManager deliverableManager, ProjectPolicyManager projectPolicyManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ProjectInnovationManager projectInnovationManager,
-    SectionStatusManager sectionStatusManager, TimelineManager timelineManager) {
+    SectionStatusManager sectionStatusManager, TimelineManager timelineManager,
+    HomepageBannerManager homepageBannerManager) {
     super(config);
     this.projectManager = projectManager;
     this.crpManager = crpManager;
@@ -100,6 +106,7 @@ public class DashboardAction extends BaseAction {
     this.projectPolicyManager = projectPolicyManager;
     this.sectionStatusManager = sectionStatusManager;
     this.timelineManager = timelineManager;
+    this.homepageBannerManager = homepageBannerManager;
   }
 
   /**
@@ -212,6 +219,26 @@ public class DashboardAction extends BaseAction {
     }
   }
 
+  /**
+   * Administrator-entered banner content for this Global Unit, or null when there is nothing to show. The emptiness
+   * decision belongs here rather than in the template: dashboard.ftl renders no banner markup at all when this is
+   * null, which is how clearing the fields in /admin hides the banner (ENH-HOMEPAGE-BANNER-001 FN-004).
+   */
+  public HomepageBanner getHomepageBanner() {
+    return homepageBanner;
+  }
+
+  private void loadHomepageBanner() {
+    homepageBanner = null;
+    if (loggedCrp == null || loggedCrp.getId() == null) {
+      return;
+    }
+    HomepageBanner stored = homepageBannerManager.findByGlobalUnit(loggedCrp.getId());
+    if (stored != null && !stored.isEmpty()) {
+      homepageBanner = stored;
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -223,6 +250,7 @@ public class DashboardAction extends BaseAction {
     }
 
     this.loadScheduleActivities();
+    this.loadHomepageBanner();
 
     // if (projectManager.findAll() != null) {
     myProjects = new ArrayList<>();

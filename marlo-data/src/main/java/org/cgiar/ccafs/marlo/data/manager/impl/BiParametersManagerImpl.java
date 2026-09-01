@@ -18,7 +18,10 @@ import org.cgiar.ccafs.marlo.data.dao.BiParametersDAO;
 import org.cgiar.ccafs.marlo.data.manager.BiParametersManager;
 import org.cgiar.ccafs.marlo.data.model.BiParameters;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,10 +56,24 @@ public class BiParametersManagerImpl implements BiParametersManager {
   }
 
   @Override
-  public List<BiParameters> findAll() {
+  public List<BiParameters> findAll(long globalUnitId) {
+    List<BiParameters> biParameters = biParametersDAO.findAll(globalUnitId);
+    if (biParameters == null || biParameters.isEmpty()) {
+      return null;
+    }
 
-    return biParametersDAO.findAll();
+    // The DAO returns both the parameters of the global unit and the platform-wide defaults, so the ones belonging to
+    // the global unit have to win over the default that shares the same name.
+    Map<String, BiParameters> resolvedParameters = new LinkedHashMap<>();
+    for (BiParameters biParameter : biParameters) {
+      BiParameters currentParameter = resolvedParameters.get(biParameter.getParameterName());
+      if (currentParameter == null
+        || (currentParameter.getGlobalUnit() == null && biParameter.getGlobalUnit() != null)) {
+        resolvedParameters.put(biParameter.getParameterName(), biParameter);
+      }
+    }
 
+    return new ArrayList<>(resolvedParameters.values());
   }
 
   @Override

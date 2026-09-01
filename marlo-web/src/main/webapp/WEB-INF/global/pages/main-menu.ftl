@@ -75,7 +75,7 @@
   [#-- TIP Module --]
   { 'slug': 'tip', 'name': 'menu.tip',      'namespace': '/tip',       'action': '${(crpSession)!}/tip',    'visible': logged && action.hasSpecificities('tip_section_active'), 'active': true, 'beta': true }
   [#-- ia Module --]
-  { 'slug': 'ai', 'name': 'menu.ai',      'namespace': '/ai',       'action': '${(crpSession)!}/ai',    'visible': logged && action.hasSpecificities('user_idea_section_active'), 'active': true }
+  { 'slug': 'ai', 'name': 'menu.ai',      'namespace': '/ai',       'action': '${(crpSession)!}/ai',    'visible': logged && action.hasSpecificities('ai_section_active'), 'active': true }
 ]/]
 
 
@@ -122,7 +122,12 @@
 <div class="menuContent">
 	<div class="container">
 	  <ul class="hidden-md hidden-lg hidden-xl visible-sm visible-xs">
-	   <li> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">Main menu</span>
+	   [#--
+	     The panel below opens on :hover, and its links are display:none until it does, so without a tab stop on the
+	     trigger the whole menu is unreachable by keyboard under 992px. tabindex makes the row focusable and
+	     marlo-redesign.css opens the panel on :focus-within, which also gives touch a reliable tap target.
+	   --]
+	   <li tabindex="0" aria-haspopup="true"> <span class="glyphicon glyphicon-menu-hamburger"></span> <span class="menuContentTitle">[@s.text name="menu.mainMenu" /]</span>
 	     <ul class="subMenu">
 	       [@mainMenuList /]
 	     </ul>

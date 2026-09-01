@@ -95,6 +95,17 @@
   <logger name="net.sf.ehcache">
     <level value="INFO" />
   </logger>
+  <!-- The sizeOfPolicy maxDepth=0 in ehcache.xml makes these two classes warn on every cache size calculation,
+    which floods the log. They are scoped by class, not by package, so the one-off accuracy advisories from
+    AgentLoader, ReflectionSizeOf and UnsafeSizeOf are still reported. Both classes are listed because the WAR
+    ships two ehcache jars (2.10.6 and core 2.5.1) whose duplicate classes emit this warning from different
+    places, and which one wins depends on classpath order. -->
+  <logger name="net.sf.ehcache.pool.sizeof.SizeOf">
+    <level value="ERROR" />
+  </logger>
+  <logger name="net.sf.ehcache.pool.sizeof.ObjectGraphWalker">
+    <level value="ERROR" />
+  </logger>
 
   
  

@@ -2,8 +2,15 @@
 [#assign title = "MARLO Admin" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260618" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260618" ] /]
+[#assign customJS = [
+  "${baseUrlCdn}/global/js/superadmin/marloParameters.js?20260827",
+  "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
+  ]
+/]
+[#assign customCSS = [
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260827",
+  "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
+  ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "parameters" /]
 
@@ -77,12 +84,18 @@
           [#list parametersTypes as type]
             <div role="tabpanel" class="tab-pane ${type?is_first?string('active','')}" id="type-${type_index}-${element.id}">
               <div class="parameter-search-wrap">
-                <input type="text" class="form-control parameter-search" placeholder="Search..." data-target="table-${type_index}-${element.id}" />
+                <input type="text" class="form-control parameter-search" placeholder="Search parameter..." data-target="table-${type_index}-${element.id}" />
                 <div class="iconSearch parameter-search-icon">
                   <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </div>
               </div>
-              <table class="table table-striped table-condensed" id="table-${type_index}-${element.id}">
+              <table class="table table-striped table-hover parametersTable" id="table-${type_index}-${element.id}" width="100%">
+                <thead>
+                  <tr>
+                    <th id="parameterNames-${type_index}-${element.id}">[@s.text name="marloParameters.table.parameter" /]</th>
+                    <th id="parameterValues-${type_index}-${element.id}" class="col-md-3 text-center">[@s.text name="marloParameters.table.value" /]</th>
+                  </tr>
+                </thead>
                 <tbody>
                 [#list element.parameters as crpParameter]
                   [#if type.id ==crpParameter.parameter.category]
@@ -116,7 +129,29 @@
         <input type="hidden" name="${customName}.parameter.description" value="${(element.parameter.description)!}" />
         <input type="hidden" name="${customName}.paramater.key" value="${(element.parameter.key)!}" />
         <input type="hidden" name="${customName}.parameter.category" value="${(element.parameter.category)!}" />
-        <strong>${(element.parameter.key)!} </strong> <br /> <small><i>(${(element.parameter.description?replace('\n', '<br>'))!})</i></small>
+        [#--
+          IMPORTANT (developers): the label rendered below is a DISPLAY-ONLY relabeling of 'crp' to 'System'.
+          Nothing is renamed in the database: the `parameters` table keeps the original `crp_` prefix in
+          `key` and the original wording in `description`, and the hidden inputs above submit them verbatim,
+          so saving this form never rewrites them.
+
+          To look a parameter up, ALWAYS use the stored key, never the label shown on screen:
+            SELECT * FROM parameters WHERE `key` = 'crp_has_contact_point';    -- correct
+            SELECT * FROM parameters WHERE `key` = 'system_has_contact_point'; -- returns no rows
+          Same rule for custom_parameters (joined through parameter_id) and for the APConstants constants in
+          marlo-data and marlo-web: their value MUST keep matching parameters.key, so they stay 'crp_...'.
+
+          Only relabel here. Renaming a key for real means a Flyway migration plus both APConstants files
+          plus every usage, and it is out of scope for this view.
+        --]
+        [#--
+          The 'crp' -> 'system' relabeling rule only covers the 'crp_' prefix. 'crp_email_pl_crpAdmin_fl'
+          also carries 'crpAdmin' in the middle of the key, which falls outside that rule, so it is
+          relabeled here explicitly. Display only: the stored key stays 'crp_email_pl_crpAdmin_fl'.
+        --]
+        [#local displayKey = (element.parameter.key?replace(r'^crp_', 'system_', 'r')?replace('crpAdmin', 'systemAdmin'))!'' ]
+        [#local displayDescription = (element.parameter.description?replace('\n', '<br>')?replace(r'\bCRPs\b', 'Systems', 'ri')?replace(r'\bCRP\b', 'System', 'ri'))!'' ]
+        <strong>${displayKey} </strong> <br /> <small><i>(${displayDescription})</i></small>
       [/#if]
     </td>
     <td class="col-md-3 text-center">

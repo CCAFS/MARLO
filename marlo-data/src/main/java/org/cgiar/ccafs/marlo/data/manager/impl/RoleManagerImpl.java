@@ -70,6 +70,13 @@ public class RoleManagerImpl implements RoleManager {
   }
 
   @Override
+  public List<Role> findAllByGlobalUnit(long globalUnitId) {
+
+    return roleDAO.findAllByGlobalUnit(globalUnitId);
+
+  }
+
+  @Override
   @Transactional
   public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
     return roleDAO.cloneRolePermissionsByAcronym(templateGlobalUnitId, targetGlobalUnitId);

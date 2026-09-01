@@ -419,6 +419,7 @@
   <mapping resource="xmls/FeedbackQAComments.hbm.xml"/>
   <mapping resource="xmls/DeliverableCrpOutcomes.hbm.xml"/>
   <mapping resource="xmls/Timeline.hbm.xml"/>
+  <mapping resource="xmls/HomepageBanner.hbm.xml"/>
   <mapping resource="xmls/FeedbackStatuses.hbm.xml"/>
   <mapping resource="xmls/FeedbackPermissions.hbm.xml"/>
   <mapping resource="xmls/FeedbackRolesPermissions.hbm.xml"/>
