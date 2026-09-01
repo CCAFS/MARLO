@@ -173,6 +173,31 @@ public class APConfig {
   private String MICROSERVICE_API_KEY;
   @Value("${summary.microservice.url}")
   private String SUMMARY_MICROSERVICE_URL;
+  /*
+   * CHG-COGNITO-AUTH-001-T03 -- Amazon Cognito connection settings.
+   * These are the ONLY fields in this class that use the ${key:default} form, and the deviation is
+   * deliberate. The 63 fields above have no default, and PropertySourcesPlaceholderConfigurer runs with
+   * ignoreUnresolvablePlaceholders = false (Spring's default; ApplicationContextConfig does not override
+   * it). A bare ${cognito.*} placeholder would therefore make the application fail to START on every
+   * environment whose gitignored marlo-${profile}.properties lacks the key -- including every environment
+   * that never enables Cognito. The empty default is what makes phase 0 genuinely inert (design.md 9.3,
+   * 14). Do not "tidy" these to match the fields above.
+   * Values are supplied as environment variables, not committed properties (family.md, 2026-08-27).
+   */
+  @Value("${cognito.user.pool.id:}")
+  private String COGNITO_USER_POOL_ID;
+  @Value("${cognito.region:}")
+  private String COGNITO_REGION;
+  @Value("${cognito.client.id:}")
+  private String COGNITO_CLIENT_ID;
+  @Value("${cognito.client.secret:}")
+  private String COGNITO_CLIENT_SECRET;
+  @Value("${cognito.domain:}")
+  private String COGNITO_DOMAIN;
+  @Value("${cognito.callback.url:}")
+  private String COGNITO_CALLBACK_URL;
+  @Value("${cognito.jwks.uri:}")
+  private String COGNITO_JWKS_URI;
 
   public APConfig() {
   }
@@ -852,6 +877,75 @@ public class APConfig {
       return false;
     }
     return PRODUCTION.equals("true");
+  }
+
+  /**
+   * Normalizes a Cognito setting to a non-null, trimmed string.
+   * <p>
+   * Every Cognito getter routes through this so an absent key is indistinguishable from a blank one, and
+   * neither can produce a {@code null} that a caller forgets to check. The rest of this class returns
+   * {@code null} on a missing value and logs an error; that convention is not reused here on purpose,
+   * because these settings are absent by design on every environment that has not enabled Cognito, and
+   * logging an error for the normal case would train operators to ignore the log.
+   *
+   * @param value the injected value, possibly {@code null} or blank
+   * @return the trimmed value, or an empty string -- never {@code null}
+   */
+  private String cognitoSetting(String value) {
+    if (value == null) {
+      return "";
+    }
+    return value.trim();
+  }
+
+  /**
+   * @return the callback URL Cognito redirects to after authentication, or empty when unset
+   */
+  public String getCognitoCallbackUrl() {
+    return this.cognitoSetting(COGNITO_CALLBACK_URL);
+  }
+
+  /**
+   * @return the Cognito app client id, or empty when unset
+   */
+  public String getCognitoClientId() {
+    return this.cognitoSetting(COGNITO_CLIENT_ID);
+  }
+
+  /**
+   * @return the Cognito app client secret, or empty when unset. Supplied as an environment variable; it
+   *         is never committed to a properties file (hard rule 12)
+   */
+  public String getCognitoClientSecret() {
+    return this.cognitoSetting(COGNITO_CLIENT_SECRET);
+  }
+
+  /**
+   * @return the Cognito hosted-UI domain, or empty when unset
+   */
+  public String getCognitoDomain() {
+    return this.cognitoSetting(COGNITO_DOMAIN);
+  }
+
+  /**
+   * @return the JWKS URI used to validate ID-token signatures, or empty when unset
+   */
+  public String getCognitoJwksUri() {
+    return this.cognitoSetting(COGNITO_JWKS_URI);
+  }
+
+  /**
+   * @return the AWS region hosting the User Pool, or empty when unset
+   */
+  public String getCognitoRegion() {
+    return this.cognitoSetting(COGNITO_REGION);
+  }
+
+  /**
+   * @return the Cognito User Pool id, or empty when unset
+   */
+  public String getCognitoUserPoolId() {
+    return this.cognitoSetting(COGNITO_USER_POOL_ID);
   }
 
   /**
