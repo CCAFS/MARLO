@@ -54,6 +54,14 @@ public interface RoleDAO {
    */
   public List<Role> findAll();
 
+  /**
+   * This method gets the list of roles that belong to a given global unit.
+   *
+   * @param globalUnitId globalUnit identifier
+   * @return a list from Role, empty if no exist records
+   */
+  public List<Role> findAllByGlobalUnit(long globalUnitId);
+
 
   /**
    * This method gets a list of role that are active

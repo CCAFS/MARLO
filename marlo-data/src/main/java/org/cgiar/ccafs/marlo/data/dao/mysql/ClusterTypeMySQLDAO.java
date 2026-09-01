@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.ClusterTypeDAO;
 import org.cgiar.ccafs.marlo.data.model.ClusterType;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -64,7 +65,7 @@ public class ClusterTypeMySQLDAO extends AbstractMarloDAO<ClusterType, Long> imp
     if (!list.isEmpty()) {
       return list;
     }
-    return null;
+    return Collections.emptyList();
 
   }
 

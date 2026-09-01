@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class BiReportsMySQLDAO extends AbstractMarloDAO<BiReports, Long> implements BiReportsDAO {
@@ -61,10 +62,12 @@ public class BiReportsMySQLDAO extends AbstractMarloDAO<BiReports, Long> impleme
   }
 
   @Override
-  public List<BiReports> findAll() {
-    String query = "from " + BiReports.class.getName() + " where is_active=1";
-    List<BiReports> list = super.findAll(query);
-    if (list.size() > 0) {
+  public List<BiReports> findAll(long globalUnitId) {
+    String query = "from " + BiReports.class.getName() + " where crp.id = :globalUnitId and is_active=1";
+    Query<BiReports> createQuery = this.getSessionFactory().getCurrentSession().createQuery(query);
+    createQuery.setParameter("globalUnitId", globalUnitId);
+    List<BiReports> list = super.findAll(createQuery);
+    if (list != null && !list.isEmpty()) {
       return list;
     }
     return null;

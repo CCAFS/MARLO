@@ -8,10 +8,15 @@ function init() {
 }
 
 function addEvents() {
-  var idReport = $('.reportSection').children().first().attr('class');
-  var urlReport= $('.reportSection').children().first().attr('id');
+  var $firstReport = $('.reportSection').children().first();
+  var idReport = $firstReport.attr('class');
+  var urlReport = $firstReport.attr('id');
 
-  executePetition(idReport,urlReport);
+  // No .reportSection is rendered when the instance has no BI report configured. Skip the
+  // initial load in that case so the handlers below still get registered.
+  if (idReport && urlReport) {
+    executePetition(idReport, urlReport);
+  }
   $('.reportSection').on('click', function () {
     var idReport = $(this).children().first().attr('class');
     var urlReport= $(this).children().first().attr('id');
@@ -56,7 +61,10 @@ function reportsMenuToggle() {
 // Open dashboard in full screen
 function fullScreenDashboard() {
   // Get a reference to the embedded report HTML element
-  var currentID = $("div[class$='current']").attr("id");
+  var currentID = $('.reportSection.current').attr('id');
+  if (!currentID) {
+    return;
+  }
   var embedContainer = $("#" + currentID + '-contentOptions').children().first()[0];
 
   // Get a reference to the embedded report.
@@ -67,12 +75,15 @@ function fullScreenDashboard() {
       report.fullscreen();
     })
     .catch(function (error) {
-      console.log(errors);
+      console.log(error);
     });
 }
 
 // get the embedUrl from the id to pass to the reportName in the widgetInit and reload the page with the information
 function executePetition(idReport, urlReport) {
+  if (!urlReport) {
+    return;
+  }
   var url = urlReport.replace("BIreport-", "");
   var inputsContainer = idReport + '-contentOptions';
 
@@ -88,8 +99,12 @@ function executePetition(idReport, urlReport) {
 
 // Set the report title and description
 function setReportTitle() {
-  var reportTitle = $("div[class$='current']").attr("report-title");
-  $('.headTitle.text-left').text(reportTitle + '');
+  // Match the class itself rather than an attribute ending in "current": [class$='current']
+  // only matches while "current" is the last class in the attribute string, so any script that
+  // appends another class to the tab makes this miss. Combined with the old `reportTitle + ''`
+  // that rendered the literal string "undefined" on screen (A2-2428).
+  var reportTitle = $('.reportSection.current').attr('report-title');
+  $('.headTitle.text-left').text(reportTitle || '');
 }
 
 function selectBIReport(e) {

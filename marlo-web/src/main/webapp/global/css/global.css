@@ -3517,6 +3517,39 @@ input.userName {
 	color: #949494;
 }
 
+/*
+ * Full-page empty state. MARLO has no sticky footer -- .footer only carries a 100px
+ * margin-top -- so a short page leaves the rest of the viewport blank below the footer.
+ * Reserving viewport-relative height here keeps the page filled and centres the message
+ * instead of stranding it at the top. The floor keeps it sane on short viewports, and the
+ * plain min-height above it is the fallback for browsers without max().
+ *
+ * The 580px is measured, not guessed: header 247 + .footer margin-top 100 + footer 233 at
+ * desktop widths. The footer grows to 312 as its links wrap on narrow viewports, so the
+ * chrome ranges 580-659; using the low end means the page can overflow slightly when
+ * narrow but never leaves the blank strip under the footer that this rule exists to fix.
+ */
+.fullPageEmptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 240px;
+	min-height: max(240px, calc(100vh - 580px));
+	padding: 40px 24px;
+}
+
+.fullPageEmptyState h4 {
+	margin: 0 0 10px 0;
+	font-style: normal;
+	color: #6f6f6f;
+}
+
+.fullPageEmptyState p {
+	margin: 0;
+	max-width: 44em;
+}
+
 #dashboard #deadline {
 	margin-top: 0;
 	/* display: none; */
