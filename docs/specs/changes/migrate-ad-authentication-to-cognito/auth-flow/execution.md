@@ -66,6 +66,7 @@ gap explicitly and record it.
 | **EB-2** | `JAVA_HOME` on this machine points at `jdk1.8.0_202` while `java` on `PATH` is 17. Maven follows `JAVA_HOME`, so every `mvn` invocation compiled under Java 8 and failed with `invalid flag: --release` | A `mvn install -DskipTests` run can report success while compiling **nothing** ("Nothing to compile - all classes are up to date"), which is how the first baseline in this session came back falsely green | **Worked around.** Every command in §3 is prefixed `JAVA_HOME="/c/Program Files/Java/jdk-17"`. Any future session on this machine must do the same or its gates are worthless |
 | **EB-3** | **Checkstyle enforces nothing.** `configuration/marlo-checkstyle.xml:7` sets `severity=warning` for every module and `LineLength` (`:41-43`) does not override it, so `checkstyle:check` **exits 0 over real violations** — verified against a 149-character line | Every "Checkstyle: 0 violations" recorded in §3 for T01–T06 means only "the goal ran"; it is **not** evidence that hard rule 7 holds. Found by the T06 audit | **Open.** A `severity=error` flip is a shared-config change and would surface pre-existing violations across the repository; sized and decided on `staging`. Until then, line length is measured directly (`awk 'length>120'`), not via the plugin |
 | **EB-4** | **Incremental build state produces both false reds and false greens in this checkout.** Observed in one session: a `cannot find symbol` in a file nobody touched; a `.class` with *"Unresolved compilation problems"* baked in; an installed `marlo-utils` missing methods its source has; and a run reporting **`Tests run: 0`**. All cleared by targeted `rm -rf target/…`, none related to any change. Reported independently by the T08 implementer | **A test count from this repository is only trustworthy after a `clean`.** An intermediate green or red says nothing on its own | **Open.** Every count recorded from T08 onward is taken after `mvn clean -pl marlo-web`. Earlier counts in this log were not, and should be read as indicative |
+| **EB-5** | **`pkill` does not exist in this environment, and `scripts/run-marlo-java17.sh` depends on it.** The script's "stop any previous container" step fails silently, so a prior `cargo:run` keeps running, holds port 8080, and leaves `marlo-web/target/cargo/configurations/tomcat9x` populated. The next boot then dies on `Invalid configuration dir [...] must point to an empty directory` while still printing `BUILD SUCCESS` and `Press Ctrl-C to stop the container...` | **A boot can report success without ever starting a container**, and a `curl` against 8080 then answers from the *stale* one. Both readings of that state — "it built but does not serve", and "it serves" — are wrong | **Open**, worked around. Substitute: `Get-NetTCPConnection -LocalPort 8080` to find the PID, then `taskkill //PID <pid> //F`, then `rm -rf marlo-web/target/cargo`. Pending item for `staging`: make the script's kill step portable |
 
 **EB-1 workaround, and its limit.** Style was verified by invoking a *compatible* plugin against MARLO's own
 config, without editing any POM:
@@ -1800,3 +1801,106 @@ before believing the result.** The mutation was then applied by line number and 
 - Small unauthenticated DB amplification: the guard now runs before the password check, so a POST with no
   password does up to 2 user lookups plus one resolver read per membership where it previously did none.
   Bounded, local, no LDAP.
+
+---
+
+## 17. Live boot — 2026-09-01 · **T03's last clause closed, and one defect the whole suite missed**
+
+The first boot of this branch was the single highest-value verification of the spec so far. It did not
+confirm anything: it **found a defect that would have taken the entire application down**, and no gate in
+the project could have seen it.
+
+### 17.1 The defect
+
+The T08/T09 comment added to `struts-home.xml` used `--` as an em-dash. That sequence is illegal inside an
+XML comment, so `ConfigurationManager` threw
+
+```
+SAXParseException: The string "--" is not permitted within comments
+```
+
+while loading the file, `StrutsPrepareAndExecuteFilter` failed to initialise, and
+
+```
+SEVERE: Context [/marlo-web] startup failed
+```
+
+**Every user of MARLO would have been unable to reach any page — local login included, nothing to do with
+Cognito.** A one-character typo in a comment, in a file no test opens.
+
+**Why 97 unit tests and 12 independent review rounds missed it, structurally:** every test in this spec
+drove Java objects directly. The Struts configuration is read only by a running container. Reviewers read
+the diff as prose and the comment reads correctly as prose — it is *only* illegal to a parser. There was no
+gate between "the diff looks right" and "the container starts".
+
+**Closed by** `StrutsConfigurationWellFormedTest` (commit `f70972a55b`), which parses every `struts*.xml`
+in the module. Deliberately well-formedness only, not DTD validation: resolving the Struts DTD needs the
+network, and a test that silently degrades when offline is worse than none. **Proven to bite** —
+reintroducing `--` reddens it with the exact message above.
+
+### 17.2 Two false readings on the way, both worth recording
+
+**The 404 was not evidence of anything.** Boot #2 reported `BUILD SUCCESS`, `Press Ctrl-C to stop the
+container`, and `curl` returned 404. Read naively that is "the app builds but does not serve". It was
+neither. Boot #2 **never started a container at all**:
+
+```
+Invalid configuration dir [...\target\cargo\configurations\tomcat9x].
+The configuration dir must point to an empty directory
+```
+
+Boot #1's container was still alive, holding port 8080 and owning that directory. The 404 came from *that*
+Tomcat — the one whose `/marlo-web` context had failed on the `--`. The `NoClassDefFoundError:
+DefaultJvmLauncher` in the tail was cargo's shutdown hook after the abort, not an independent plugin fault.
+
+**Root cause of the stale container: `pkill` does not exist in this environment.** `scripts/run-marlo-java17.sh`
+relies on it to stop a previous container, and it fails silently — so the script's own "kill the old one"
+step is a no-op on this machine, and every subsequent boot inherits a dirty `target/cargo`. Recorded as
+**EB-5**. `taskkill //PID <pid> //F` after `Get-NetTCPConnection -LocalPort 8080` is the working substitute.
+
+### 17.3 Boot #3 — clean, with the precondition T03 actually requires
+
+| Check | Result |
+|---|---|
+| `cognito.*` keys in `marlo-dev.properties` | **0** — the precondition T03 exists to test |
+| `Dispatcher initialization failed` / `startup failed` / `SEVERE` | **0** |
+| Container | `Tomcat 9.x Embedded started on port [8080]`, Spring `DispatcherServlet` initialised |
+| `GET /marlo-web/` | **302** |
+| `GET /marlo-web/login.do` | **200** |
+
+**T03's open Done-when clause — *"the app boots with no Cognito keys present"* — is closed on evidence.**
+
+### 17.4 T10's HQL, verified under a live Hibernate context
+
+The repair to `ParameterMySQLDAO.getParameterByKey` had until now been verified only structurally, against
+the mapping and by SQL equivalence. The HQL parse itself needs a live session. Forced through the path
+where the defect would have locked every user out — wizard step 1:
+
+```
+POST /marlo-web/crpByEmail.do  userEmail=<a real active user>
+→ HTTP 200
+  {"crps":[{"idType":3,...,"id":45,"cognitoEnabled":false},
+           {"idType":3,...,"id":47,"cognitoEnabled":false}], ...}
+```
+
+**Why this is conclusive rather than merely green**, checked before it was believed:
+
+1. `CrpByUserEmailAction`'s per-entry `catch` wraps `crps.add(crpMap)` **as well as** the resolver call. Had
+   `isActiveFor` thrown `QuerySyntaxException`, the entry would never have been added and `crps[]` would
+   have arrived **empty** — the exact lockout T10 describes. Both units arrived, so the query returned.
+2. The `custom_parameters` override is the only short-circuit above the DAO call. Verified directly in the
+   database: **no rows** for `cognito_auth_active`. The `getParameterByKey` branch is the one that ran.
+3. `cognitoEnabled:false` is *correct*, not a fallback: catalog row **393** (`global_unit_type_id = 3`,
+   matching both units' `idType`) carries `default_value = false`. T02 seeds the catalog and no override,
+   so `false` is the designed answer.
+4. Zero exceptions in the container log after the request — and the action now logs what it catches, so a
+   swallowed failure would still have appeared.
+
+**The gap flagged before booting is closed.** `getParameterByKey` parses, executes, and returns the catalog
+row under a real Hibernate session.
+
+### 17.5 What this still does not prove
+
+No Cognito path was exercised — there are no keys, no User Pool, and OQ-3 is unanswered. `cognitoLogin.do`'s
+reachability through `cognitoUnloggedStack` remains argued from the interceptor sources, **not observed**.
+It becomes observable only once the flag is enabled for a unit, which needs T02's override and a real IdP.

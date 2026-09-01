@@ -122,12 +122,15 @@
 
 ### CHG-COGNITO-AUTH-001-T03 — Dependencies + configuration that cannot break startup
 
-- **Status:** `[~]` — 2026-08-31 on `staging-cognito-impl`. AWS SDK v2 BOM `2.31.30` + `nimbus-jose-jwt 9.48` in
+- **Status:** `[x]` — **closed 2026-09-01 by a live boot** (`execution.md` §17.3): 0 `cognito.*` keys present,
+  0 `Dispatcher initialization failed` / `startup failed` / `SEVERE`, Tomcat 9.x embedded up on 8080,
+  `GET /marlo-web/` -> 302 and `login.do` -> 200. That boot also **found the defect no gate could see** -- a `--`
+  em-dash inside an XML comment in `struts-home.xml` that took the whole context down (§17.1); fixed and covered
+  by `StrutsConfigurationWellFormedTest` in commit `f70972a55b`.
+  Implementation record, 2026-08-31 on `staging-cognito-impl`: AWS SDK v2 BOM `2.31.30` + `nimbus-jose-jwt 9.48` in
   `dependencyManagement` (both resolution-checked); 7 `@Value` fields all in the `${key:}` form with getters that
   return empty, never `null`; the 7 keys added blank to `marlo-test.properties`. Compile PASS, 47/47 tests PASS,
   Checkstyle 0 violations in `marlo-web`/`marlo-data`/`marlo-utils`, no literal config value in any `.java`.
-  **Not `[x]`: the live boot clause is open** — *"the app boots with no Cognito keys present"* needs
-  `run-marlo-java17.sh`, which is destructive, and was left for the user to authorise (`execution.md` PS-7).
   **Audited** (independent `sonnet` Reviewer, PASS-WITH-FINDINGS; §6). One finding: a false claim in the test javadoc about resource copying, since corrected. The `aws-serverless` skill was deliberately not loaded — root `CLAUDE.md` says it does not
   apply to MARLO (PS-6).
 - **Depends on:** none
