@@ -113,6 +113,28 @@ what a role can do. The practical consequences, all cited in the PRD problem are
   write occurred against the authorization tables.
 - **AC-8** (NF-002) Given the catalog header, then it names the database and date of the snapshot.
 
+## 6b. Coverage of the Jira acceptance criteria (A2-2022)
+
+The story's own criteria, verbatim, mapped to where they are satisfied. Deliverable = `roles-permissions-catalog.md`
+unless noted.
+
+| Story criterion | Status | Where |
+|---|---|---|
+| "A dedicated Notion page or space is created specifically for documenting roles and permissions." | **Satisfied differently** | The team redirected the deliverable to a comment on A2-2022 (comments `41599`, `41605`). The versioned repo file is the source of truth. Recorded in the Decision Log. |
+| "Each user role/profile is documented, including: Role name" | Satisfied | §2 role catalog — acronym, database description, and the label the UI renders |
+| "…Purpose and scope" | Satisfied | §3, one row per role |
+| "…Permissions (view, edit, delete, approve, configure, etc.)" | Satisfied | §4.5 capability summary by action, in those verbs; the literal grants are in Appendix A |
+| "…Associated modules or sections" | Satisfied | §3 (modules column), §4.1–4.4 (per section), §9 (which are reachable on AICCRA III) |
+| "…Any constraints or special rules" | Satisfied | §3 (constraints column), plus §1 for the three model-wide rules: phase scoping, node-grant cascade, per-global-unit scoping |
+| "A permissions matrix (roles × actions) is created for quick reference." | Satisfied | §4.1–4.4 by grant scope, §4.5 by action, §13.3 workflow rosters |
+| "All roles are validated with system owners or relevant team members." | **Deferred** | Deferred by the team on 2026-09-01; the seven questions stay recorded in §12. Tracked as T10. |
+| "Documentation follows a clean, consistent structure across all roles." | Satisfied | One row per role in §2, §3 and §4.5; one table per role in Appendix A. No role is described in prose only. |
+| "Permissions are verified against the current system configuration to ensure accuracy." | Satisfied | §13 — 43/43 static assertions plus runtime verification; the audited database was confirmed to carry production data |
+| "The final documentation is accessible to all authorized team members." | Satisfied | Repository branch off `staging`, plus the Jira comments |
+| *Assumption:* "No changes will be made to roles or permissions." | Honored | Read-only access only (`SELECT` and `CALL getPermissions`, which writes a session temp table); asserted in §13 |
+| *Assumption:* "Admin access is available to review all roles and configurations." | Met by other means | Read-only database access was used instead of the Admin UI, which gives complete coverage rather than what the screens expose |
+| *Assumption:* "Future updates to permissions will follow this same document structure." | Satisfied | §14 — what to update when each thing changes, and which sections are generated rather than hand-written |
+
 ## 7. Constitutional Compliance Checklist
 
 | Rule (CLAUDE.md) | Status |

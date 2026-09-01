@@ -255,6 +255,53 @@ string because their reach is the point.
 | `api:*:update` | ● | · | ● |
 | `api:*:delete` | ● | · | ● |
 
+### 4.5 Capability summary by action
+
+The matrices above are organised by section, which answers "who can touch X". This table answers the reverse —
+"what can this role do" — in the verbs the story asks for. `●` the role holds the grant directly, `○` it is
+implied by a wildcard it holds (see §11.12), `·` no.
+
+| Role | View | Edit | Delete project | Submit | Unsubmit | Approve comments | Configure (Admin) | REST API |
+|---|---|---|---|---|---|---|---|---|
+| `E` | ● | ● | · | · | · | · | · | · |
+| `SuperAdmin` | ● | ● | ○ | ○ | ○ | ● | ○ | ○ |
+| `CRP-Admin` | ● | ● | ○ | ○ | ○ | · | ● | · |
+| `PMU` | ● | ● | ○ | ○ | ○ | ● | · | · |
+| `FM` | ● | ● | · | · | · | · | · | · |
+| `DM` | ● | ● | · | · | · | · | ● | · |
+| `FPL` | ● | ● | ● | ● | ● | · | · | · |
+| `RPL` | ● | ● | ● | ● | ● | ● | · | · |
+| `CP` | ● | ● | · | ● | ● | · | · | · |
+| `CL` | ● | ● | · | · | ● | · | · | · |
+| `FPM` | ● | ● | ● | ● | ● | · | · | · |
+| `SL` | · | · | · | · | · | · | · | · |
+| `ML` | ● | ● | ● | ● | · | · | · | · |
+| `RPM` | ● | ● | ● | ● | ● | ● | · | · |
+| `PL` | ● | ● | · | ● | · | · | · | · |
+| `PC` | ● | ● | · | · | · | · | · | · |
+| `G` | ● | · | · | · | · | · | · | · |
+| `AR` | · | · | · | · | · | · | · | ● |
+| `ARW` | · | · | · | · | · | · | · | ● |
+| `CD` | ● | ● | · | · | · | · | · | · |
+
+**Reading notes.**
+
+- **View** means the role holds at least one grant that renders something in the UI. `SL` holds none, so it shows
+  nothing; `AR` and `ARW` hold only `api:` grants and have no UI access at all.
+- **Edit** means the role can modify at least one section — it is deliberately broad, because several roles are
+  narrow specialists: `E` can edit only the project evaluation section, `FM` only funding sources plus the project
+  partner and budget sections, `CD` only CapDev, `DM` only publication creation and program synthesis. Their exact
+  reach is in §3 and Appendix A.
+- **Delete project**, **Submit** and **Unsubmit** are the project workflow actions. `PMU`, `CRP-Admin` and
+  `SuperAdmin` reach all three through wildcards without holding any of the grants explicitly.
+- **Approve comments** is the feedback subsystem (§5), which is a separate table and does **not** honour Shiro
+  wildcards — the only implicit holder is `SuperAdmin`, because `canApproveComments()` short-circuits for super
+  admins in code. This is why `CRP-Admin` cannot approve comments despite holding `crp:*`.
+- **Configure (Admin)** is entry to the Admin module, i.e. managing users, phases, institutions and partners.
+- There is no separate "create" column: creating a project is governed by
+  `project:projectsList:addCoreProject` / `addBilateralProject`, which no AICCRA role holds explicitly — it comes
+  from the `PMU` and admin wildcards.
+
 ---
 
 ## 5. Feedback permissions (separate subsystem)
@@ -803,6 +850,31 @@ SELECT 'Roles held by nobody, per global unit' AS check_name,
 Result on the 2026-09-01 snapshot: every check `PASS`; the population check returned
 `GU45: AR,ARW,CD,CL,DM,E,FM,ML | GU47: AR,ARW,CD,CL,CP,DM,E,FM,G,ML,PL,SL`, which is the evidence behind
 finding §11.10.
+
+---
+
+## 14. Keeping this document current
+
+The story assumes future permission updates follow this structure. What to update, and when:
+
+| When this changes | Update |
+|---|---|
+| A role is added, renamed or removed | §2 role catalog, §3 purpose table, §4.5 capability summary, Appendix A |
+| A grant is added or removed | §4 matrices for the affected scope, §4.5 if a verb changes, Appendix A |
+| A role-id parameter (`crp_*_rol`) changes | §7 parameter table |
+| A module flag in `custom_parameters` changes | §9 reachability table |
+| The feedback matrix changes | §5 |
+| `getPermissions` is modified | §1 model description and §13.2 runtime table |
+| A `BaseAction` access gate is added or changed | §6 |
+| Anything at all | Re-run §13.5, then refresh the snapshot date in the header |
+
+**The mechanical part is generated, not written by hand.** §2, the §4 matrices and Appendix A are derived from two
+queries — the role catalog (§10.1) and the full grant list (§10.2) — so regenerating them is a matter of re-running
+those and reformatting, not re-reading the database by eye. §3 and §6 are the only sections that need human
+judgement.
+
+**Before trusting this document in a new environment**, run §13.5. It is 12 assertions and takes seconds; it is
+what caught the three errors listed in §13.1.
 
 ---
 
