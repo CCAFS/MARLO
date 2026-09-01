@@ -97,6 +97,27 @@ public class APCustomRealm extends AuthorizingRealm {
     this.setName("APCustomRealm");
   }
 
+  /**
+   * Declares which token types this realm will accept.
+   * <p>
+   * <b>Without this override the Cognito path is unreachable.</b> {@code AuthenticatingRealm}'s constructor
+   * defaults {@code authenticationTokenClass} to {@code UsernamePasswordToken.class}, and
+   * {@code ModularRealmAuthenticator} calls {@code supports(token)} and throws {@code UnsupportedTokenException}
+   * <b>before</b> it ever delegates to {@link #doGetAuthenticationInfo}. So the {@code instanceof} guard there
+   * would never execute for a {@code CognitoAuthenticationToken}, no matter how correct it is.
+   * <p>
+   * The list is enumerated rather than widened to {@code AuthenticationToken.class}: accepting everything
+   * would turn a clean framework-level rejection of an unknown third token type into a
+   * {@code ClassCastException} inside {@code doGetAuthenticationInfo}'s unconditional cast.
+   *
+   * @param token the token Shiro is about to authenticate
+   * @return {@code true} only for the two token types this realm actually handles
+   */
+  @Override
+  public boolean supports(AuthenticationToken token) {
+    return token instanceof UsernamePasswordToken || token instanceof CognitoAuthenticationToken;
+  }
+
   @Override
   public void clearCachedAuthorizationInfo(PrincipalCollection principals) {
     super.clearCachedAuthorizationInfo(principals);
@@ -111,6 +132,19 @@ public class APCustomRealm extends AuthorizingRealm {
    */
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+    // CHG-COGNITO-AUTH-001-T06: dispatch on token type, above the unconditional cast below. The assertion
+    // carried here was already validated in CognitoCallbackAction (design.md DD-5) -- this realm performs
+    // no I/O and no further verification, it only carries the already-validated identity into Shiro.
+    // Everything from the cast down is the pre-existing local/CGIAR login path, untouched (design.md 2.1).
+    // The principal MUST be the users.id, exactly as the local path below produces it. MARLO's filters,
+    // its DAO audit layer, its REST controllers and doGetAuthorizationInfo all cast the principal to Long
+    // without a guard, so any other type fails on the first request after login -- the dashboard redirect.
+    // The token cannot be constructed without a resolved id, which is what makes this safe here.
+    if (token instanceof CognitoAuthenticationToken) {
+      CognitoAuthenticationToken cognitoToken = (CognitoAuthenticationToken) token;
+      return new SimpleAuthenticationInfo(cognitoToken.getUserId(), cognitoToken.getAssertion(), this.getName());
+    }
+
     // identify account to log to
     UsernamePasswordToken userPassToken = (UsernamePasswordToken) token;
     final String username = userPassToken.getUsername();
