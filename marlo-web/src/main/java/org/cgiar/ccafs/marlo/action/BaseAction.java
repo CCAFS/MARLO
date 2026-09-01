@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.action.summaries.ai.service.AIIndicatorReport;
 import org.cgiar.ccafs.marlo.action.summaries.ai.service.AIReportService;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.IAuditLog;
-import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ButtonGuideContentManager;
@@ -342,8 +341,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Autowired
   private CrpClusterOfActivityManager crpClusterOfActivityManager;
 
-  @Autowired
-  ActivityManager activityManager;
   @Autowired
   private CrpMilestoneManager crpMilestoneManager;
   private Long crpID;
@@ -1304,19 +1301,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return CANCEL;
   }
 
-  public boolean canDeleteActivity(long activityTitleID) {
-    boolean canDelete = true;
-    List<Activity> activities = new ArrayList<>();
-    activities = activityManager.findAll().stream()
-      .filter(a -> a.getPhase().getId().equals(this.getActualPhase().getId()) && a.getActivityTitle() != null
-        && a.getActivityTitle().getId() != null && a.getActivityTitle().getId().equals(activityTitleID))
-      .collect(Collectors.toList());
-    if (activities != null && !activities.isEmpty()) {
-      canDelete = false;
-    }
-    return canDelete;
-  }
-
   /**
    * @author KTANAKA
    * @param deliverableID
@@ -2157,14 +2141,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return allYears;
   }
 
-  /*
-   * public String generatePermission(String permission, Map<String, Object>
-   * session, long crpID, String... params) { Phase phase =
-   * this.getActualPhase(session, crpID); String paramsRefactor[] =
-   * Arrays.copyOf(params, params.length); paramsRefactor[0] = paramsRefactor[0] +
-   * ":" + phase.getDescription() + ":" + phase.getYear(); return
-   * this.getText(permission, paramsRefactor); }
-   */
   public String generatePermission(String permission, String... params) {
     Phase phase = this.getActualPhase();
     // TODO global unit.
@@ -2285,43 +2261,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
 
-    } catch (Exception e) {
-      return new Phase(null, "", -1);
-    }
-
-  }
-
-  public Phase getActualPhase(Map<String, Object> session, long crpID) {
-
-    try {
-      Map<Long, Phase> allPhases = null;
-      if (session != null) {
-        if (session.containsKey(APConstants.ALL_PHASES)) {
-          List<Phase> phases = this.phaseManager.findAll().stream()
-            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
-          phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
-          Map<Long, Phase> allPhasesMap = new HashMap<>();
-          for (Phase phase : phases) {
-            allPhasesMap.put(phase.getId(), phase);
-          }
-          session.put(APConstants.ALL_PHASES, allPhasesMap);
-        }
-        allPhases = (Map<Long, Phase>) session.get(APConstants.ALL_PHASES);
-      }
-
-      Map<String, Parameter> parameters = this.getParameters();
-      if (this.getPhaseID() != null) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-        Phase phase = allPhases.get(new Long(phaseID));
-        return phase;
-      }
-      if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
-        long phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-        Phase phase = allPhases.get(new Long(phaseID));
-        return phase;
-      }
-      Phase phase = this.phaseManager.getPhaseById(this.getCurrentPhaseParam());
-      return phase;
     } catch (Exception e) {
       return new Phase(null, "", -1);
     }
@@ -3559,268 +3498,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                           for (ProjectDeliverableShared sharedOthers : deliverablesSharedFromOther) {
                             if (sharedOthers.getDeliverable().getId().equals(deliverableS.getDeliverable().getId())) {
 
-
-                              if (deliverableS.getDeliverable().getSharedWithProjects() == null
-                                || (deliverableS.getDeliverable().getSharedWithProjects() != null
-                                  && deliverableS.getDeliverable().getSharedWithProjects().isEmpty())) {
-                                deliverableS.getDeliverable().setSharedWithProjects(""
-                                  + sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                              } else {
-                                if (sharedOthers != null && sharedOthers.getProject() != null
-                                  && sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase()) != null
-                                  && sharedOthers.getProject().getProjecInfoPhase(this.getActualPhase())
-                                    .getAcronym() != null
-                                  && deliverableS.getDeliverable().getSharedWithProjects() != null
-                                  && (!deliverableS.getDeliverable().getSharedWithProjects().contains(sharedOthers
-                                    .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
-                                  deliverableS.getDeliverable().setSharedWithProjects(
-                                    deliverableS.getDeliverable().getSharedWithProjects() + "; " + sharedOthers
-                                      .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                                }
-                              }
-
-                            }
-                          }
-
-                        }
-                        deliverables.add(deliverableS.getDeliverable());
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          } catch (Exception e) {
-            LOG.error("unable to get shared deliverables", e);
-          }
-        }
-      }
-
-    } catch (Exception e) {
-      e.printStackTrace();
-
-    }
-    return deliverables;
-
-  }
-
-  public List<Deliverable> getDeliverableRelationsProjectOld(Long id, String className, Long projectID) {
-    Class<?> clazz;
-    List<Deliverable> deliverables = null;
-    try {
-      clazz = Class.forName(className);
-
-      if (clazz == ProjectBudget.class) {
-        ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
-        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getDeliverable().getProject() != null
-            && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
-          .collect(Collectors.toList());
-        Set<Deliverable> deSet = new HashSet<>();
-        for (DeliverableFundingSource deliverableInfo : deList) {
-          Deliverable deliverable = deliverableInfo.getDeliverable();
-          long projectDB = deliverable.getProject().getId().longValue();
-          if (deliverable.getProject() != null && projectDB == projectID) {
-            if (deliverable.getDeliverableInfo() != null) {
-              if (this.isReportingActive() || this.isUpKeepActive()) {
-                if (deliverable.getDeliverableInfo().isRequiredToComplete()
-                  || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
-                  deSet.add(deliverable);
-                }
-              } else {
-                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                  deSet.add(deliverable);
-                }
-                if (deliverable.isActive()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-                  deSet.add(deliverable);
-                }
-              }
-            }
-          }
-
-        }
-        deliverables = new ArrayList<>();
-        deliverables.addAll(deSet);
-      }
-
-      if (clazz == Project.class) {
-        ProjectBudget projectBudget = this.projectBudgetManager.getProjectBudgetById(id);
-        List<DeliverableFundingSource> deList = projectBudget.getFundingSource().getDeliverableFundingSources().stream()
-          .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase())
-            && c.getDeliverable().getProject().getId().longValue() == projectID.longValue())
-          .collect(Collectors.toList());
-        Set<Deliverable> deSet = new HashSet<>();
-        for (DeliverableFundingSource deliverableInfo : deList) {
-          Deliverable deliverable = deliverableInfo.getDeliverable();
-          long projectDB = deliverable.getProject().getId().longValue();
-          if (deliverable.getProject() != null && projectDB == projectID) {
-            if (deliverable.getDeliverableInfo() != null) {
-              if (this.isReportingActive() || this.isUpKeepActive()) {
-                if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
-                  deSet.add(deliverable);
-                }
-              } else {
-                if (deliverable.isActive() && deliverable.getDeliverableInfo().getNewExpectedYear() != null
-                  && deliverable.getDeliverableInfo().getNewExpectedYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Extended.getStatusId())) {
-                  deSet.add(deliverable);
-                }
-                if (deliverable.isActive()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getYear() >= this.getActualPhase().getYear()
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
-                  && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() == Integer
-                    .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
-                  deSet.add(deliverable);
-                }
-              }
-            }
-          }
-
-        }
-        deliverables = new ArrayList<>();
-        deliverables.addAll(deSet);
-      }
-
-      if (clazz == ProjectOutcome.class) {
-        if (this.isAiccra()) {
-          deliverables = new ArrayList<>();
-          ProjectOutcome projectOutcome = this.projectOutcomeManager.getProjectOutcomeById(id);
-
-          List<Deliverable> deliverablesTemp = null;
-
-          deliverablesTemp = projectOutcome.getProject().getCurrentDeliverables(this.getActualPhase());
-
-          if (this.getActualPhase().isReporting()) {
-            deliverablesTemp = deliverablesTemp.stream().filter(d -> d.getDeliverableInfo(this.getActualPhase()) != null
-              && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
-          }
-
-          // Shared with others
-          List<ProjectDeliverableShared> deliverablesSharedOther = new ArrayList<>();
-
-          deliverablesSharedOther = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
-          if (deliverablesSharedOther != null && !deliverablesSharedOther.isEmpty()) {
-            deliverablesSharedOther = deliverablesSharedOther.stream()
-              .filter(ds -> ds.getDeliverable() != null && ds.getDeliverable().getProject().getId().equals(projectID))
-              .collect(Collectors.toList());
-          }
-
-          for (Deliverable deliverable : deliverablesTemp) {
-            if (deliverable.getDeliverableCrpOutcomes() != null) {
-              deliverable.setCrpOutcomes(new ArrayList<>(deliverable.getDeliverableCrpOutcomes().stream()
-                .filter(o -> o.getPhase().getId().equals(this.getActualPhase().getId())).collect(Collectors.toList())));
-            }
-            if (deliverable != null && deliverable.getCrpOutcomes() != null
-              && !deliverable.getCrpOutcomes().isEmpty()) {
-              for (DeliverableCrpOutcome deliverableCrpOutcome : deliverable.getCrpOutcomes()) {
-                if (deliverableCrpOutcome != null && deliverableCrpOutcome.getCrpProgramOutcome() != null
-                  && deliverableCrpOutcome.getCrpProgramOutcome().getId() != null && deliverableCrpOutcome
-                    .getCrpProgramOutcome().getId().compareTo(projectOutcome.getCrpProgramOutcome().getId()) == 0) {
-                  // Owner
-                  if (deliverable.getProject() != null && !deliverable.getProject().getId().equals(projectID)) {
-                    deliverable
-                      .setOwner(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                    deliverable
-                      .setSharedWithMe(deliverable.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                  } else {
-                    deliverable.setOwner("This Cluster");
-                    deliverable.setSharedWithMe("Not Applicable");
-                  }
-
-                  // check if shared with others
-                  for (ProjectDeliverableShared deliverableSharedT : deliverablesSharedOther) {
-                    if (deliverableSharedT.getDeliverable().getId().equals(deliverable.getId()) && deliverableSharedT
-                      .getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null) {
-
-                      if (deliverable.getSharedWithProjects() == null || (deliverable.getSharedWithProjects() != null
-                        && deliverable.getSharedWithProjects().isEmpty())) {
-                        deliverable.setSharedWithProjects(
-                          "" + deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                      } else {
-                        if (deliverable.getSharedWithProjects() != null
-                          && (!deliverable.getSharedWithProjects().contains(
-                            deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
-                          deliverable.setSharedWithProjects(deliverable.getSharedWithProjects() + "; "
-                            + deliverableSharedT.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                        }
-                      }
-                    }
-                  }
-                  deliverables.add(deliverable);
-                }
-              }
-            }
-          }
-
-          try {
-
-            // Shared with others
-            List<ProjectDeliverableShared> deliverablesSharedFromOther = new ArrayList<>();
-
-            deliverablesSharedFromOther = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
-            if (deliverablesSharedOther != null && !deliverablesSharedOther.isEmpty()) {
-              deliverablesSharedOther = deliverablesSharedOther.stream()
-                .filter(ds -> ds.getDeliverable() != null && ds.getProject().getId().equals(projectID))
-                .collect(Collectors.toList());
-            }
-            // Load Shared deliverables
-            List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
-              .getByProjectAndPhase(projectID, this.getActualPhase().getId()) != null
-                ? this.projectDeliverableSharedManager.getByProjectAndPhase(projectID, this.getActualPhase().getId())
-                  .stream()
-                  .filter(px -> px.isActive() && px.getDeliverable().isActive()
-                    && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                    && !px.getDeliverable().getDeliverableInfo().isPrevious())
-                  .collect(Collectors.toList())
-                : Collections.emptyList();
-
-            if (deliverableShared != null && !deliverableShared.isEmpty()) {
-
-              if (this.getActualPhase().isReporting()) {
-                deliverableShared = deliverableShared.stream()
-                  .filter(d -> d.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                    && d.getDeliverable().getDeliverableInfo(this.getActualPhase()).getStatus() == 3)
-                  .collect(Collectors.toList());
-              }
-
-              for (ProjectDeliverableShared deliverableS : deliverableShared) {
-
-                if (deliverableS.getDeliverable() != null && deliverableCrpOutcomeManager.findAll() != null) {
-                  List<DeliverableCrpOutcome> deliverableOutcomes = deliverableCrpOutcomeManager.findAll().stream()
-                    .filter(d -> d != null && d.getDeliverable() != null
-                      && d.getDeliverable().getId().equals(deliverableS.getDeliverable().getId()))
-                    .collect(Collectors.toList());
-                  if (deliverableOutcomes != null && !deliverableOutcomes.isEmpty()) {
-                    for (DeliverableCrpOutcome deliverableOutcome : deliverableOutcomes) {
-
-                      if (deliverableOutcome.getCrpProgramOutcome().getId()
-                        .equals(projectOutcome.getCrpProgramOutcome().getId())) {
-
-                        if (deliverableS.getDeliverable().getProject() != null
-                          && deliverableS.getDeliverable().getProject().getId() != null
-                          && !deliverableS.getDeliverable().getProject().getId().equals(projectID)) {
-                          deliverableS.getDeliverable()
-                            .setTagTitle(deliverableS.getDeliverable().getDeliverableInfo().getTitle());
-                          deliverableS.getDeliverable().setOwner(deliverableS.getDeliverable().getProject()
-                            .getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                          deliverableS.getDeliverable().setSharedWithMe(deliverableS.getDeliverable().getProject()
-                            .getProjecInfoPhase(this.getActualPhase()).getAcronym());
-
-
-                          // Shared clusters from others deliverables
-                          for (ProjectDeliverableShared sharedOthers : deliverablesSharedFromOther) {
-                            if (sharedOthers.getDeliverable().getId().equals(deliverableS.getDeliverable().getId())) {
 
                               if (deliverableS.getDeliverable().getSharedWithProjects() == null
                                 || (deliverableS.getDeliverable().getSharedWithProjects() != null
@@ -6890,34 +6567,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     int sectionsBD = this.sectionStatusManager.findAllQuantity();
     if (sectionsBD == 0) {
-      return false;
-    }
-
-    CrpProgram cpCrpProgram = this.crpProgramManager.getCrpProgramById(crpProgramID);
-    List<SectionStatus> sections =
-      cpCrpProgram
-        .getSectionStatuses().stream().filter(c -> c.getYear() == this.getActualPhase().getYear()
-          && c.getCycle() != null && c.getCycle().equals(this.getActualPhase().getDescription()))
-        .collect(Collectors.toList());
-
-    for (SectionStatus sectionStatus : sections) {
-      if (sectionStatus.getMissingFields().length() > 0) {
-        return false;
-      }
-    }
-    if (sections.size() == 0) {
-      return false;
-    }
-    if (sections.size() < 2) {
-      return false;
-    }
-    return true;
-  }
-
-  public boolean isCompleteImpactOld(long crpProgramID) {
-
-    List<SectionStatus> sectionsBD = this.sectionStatusManager.findAll();
-    if (sectionsBD == null) {
       return false;
     }
 
