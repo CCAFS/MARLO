@@ -36,7 +36,9 @@ which is why reading the `role_permissions` table alone is not enough.
 - **Permissions are phase-scoped.** `getPermissions` joins `phases` with `editable = 1`. A role holding
   `crp:{0}:project:{1}:description:*` can only edit while a phase is open. When every phase of a global unit is
   closed, the role grants nothing — this is how AICCRA phase 2 (GU 45) is frozen today while AICCRA III
-  (GU 47, `Planning 2026`, phase 444) is open.
+  (GU 47, `Planning 2026`, phase 444) is open. **This reaches administration, not just data entry:** because
+  `CRP-Admin`'s grants are all phase-gated, its holders lose the Admin module itself when no phase is editable
+  (§11.14).
 - **Holding a node grants everything under it.** `BaseAction.hasPermission(fieldName)` returns true when the
   subject has `basePermission + ":" + fieldName` **or** `basePermission` itself
   (`marlo-web/.../action/BaseAction.java:6348`). A grant that stops at the section (e.g.
@@ -342,7 +344,7 @@ All live in `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/BaseAction.jav
 |---|---|---|
 | `canAccessSuperAdmin()` | `hasAllPermissions("*")` | Gates the BI module menu entry, the QA section and every superadmin screen. |
 | `isAdmin()` | `hasRole("Admin")` | Legacy Center-type check; no AICCRA role uses the `Admin` acronym. |
-| `canAcessCrpAdmin()` | `crp:{0}:admin:canAcess` | Admin module entry. `CRP-Admin` and `DM` only. |
+| `canAcessCrpAdmin()` | `crp:{0}:admin:canAcess`, **phase-qualified** — `generatePermission()` appends the current phase's description and year | Admin module entry. `CRP-Admin` and `DM` only, **and only while a phase is editable** (§11.14). |
 | `canAcessSumaries()` | `canAcessCrpAdmin() OR canAccessSuperAdmin() OR user holds the role id in crp_pmu_rol` | PMU reaches Summaries through a role-id comparison, not through a permission string. |
 | `canAcessImpactPathway()` | `crp:{0}:impactPathway:canAcess` | Impact pathway menu. Held by every role except `CRP-Admin`, `FM` and `SuperAdmin` (the latter via `*`). |
 | `canAcessFunding()` | `crp:{0}:fundingSource:canEdit` | Funding sources module. |
@@ -350,6 +352,7 @@ All live in `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/BaseAction.jav
 | `canAcessPOWB()` | `crp:{0}:powbSynthesis:manage:canAcess` | POWB synthesis. |
 | `hasPersmissionSubmit(projectId)` | `crp:{0}:project:{1}:manage:submitProject` **and** `!phase.upkeep` | Submit button; suppressed during upkeep phases. |
 | `hasPermission(field)` | `base:field` OR `base` OR the phase-qualified variant | Explains why a section-level grant unlocks all its fields. |
+| `isVisibleTop()` | `canAccessSuperAdmin() OR canAcessCrpAdmin() OR isVisibleTopGUList()` | Renders the whole top bar. `isVisibleTopGUList()` is true only for users belonging to more than one global unit, so a single-program administrator who fails the first two loses the bar entirely (§11.14). |
 | `isAiccra()` | `getCurrentCrp().getId() >= 45` | Switches role labels and cluster terminology. See §11.4. |
 
 ---
@@ -510,6 +513,7 @@ reclassified two of them from "possible AICCRA defect" to "platform-wide design"
 | 11.11 | `PL` submits, `CL` unsubmits | **By design, platform-wide** — AICCRA never adopted `CL` |
 | 11.12 | Wildcard holders invisible to naive audits | **Methodology** — affects every future audit |
 | 11.13 | `PC` holds no workflow grant | **Decision** — largest population |
+| 11.14 | Administrators lose the Admin module when no phase is open | **Defect** — confirmed in AICCRA; fix specced under `docs/specs/bugfix/admin-menu-phase-lockout/` |
 
 ### 11.1 `SL` is a role with users and no permissions — and that is the platform norm
 
@@ -646,6 +650,46 @@ which are annotated accordingly.
 `project:{1}:manage:submitProject` nor `project:{1}:unsubmitted`. It can edit its project's sections but cannot
 move the project through the workflow in either direction; that depends on `PL`, `CP` or a leader role. Note this
 is `PC`, not `CP` — the two acronyms are easy to transpose and their capabilities differ (see the note in §3).
+
+### 11.14 Administrators lose the Admin module when no phase is open
+
+`CRP-Admin` holders on AICCRA (global unit 45) cannot reach the Admin module at all. Reproduced with both
+holders — user ids 22 and 3862 — and traced end to end.
+
+**The chain.** The Admin entry lives in `superadmin-menu.ftl` (included by `header.ftl:191`), and the whole top
+block is gated on `logged && action.isVisibleTop()`. `isVisibleTop()` is an OR of three conditions, and for a
+`CRP-Admin` on AICCRA all three are false:
+
+| Condition | Requires | Result on AICCRA |
+|---|---|---|
+| `canAccessSuperAdmin()` | the `*` permission | false |
+| `canAcessCrpAdmin()` | `crp:AICCRA:<phase>:<year>:admin:canAcess` | false — the role yields no permissions at all |
+| `isVisibleTopGUList()` | membership in more than one global unit | false for a single-program user |
+
+So the entire bar disappears, not just the Admin link.
+
+**The root cause.** `CRP-Admin`'s nine grants are five of `type = 0` and four of `type = 3`, and both branches of
+`getPermissions` require `ph.editable = 1`. AICCRA has **21 visible phases and none editable** (its current phase,
+431 `Reporting 2026`, is visible but not editable), so the branches emit zero rows for the role.
+`CALL getPermissions(3862)` returns **0 rows** for `CRP-Admin`, while the AICCRA III holder (user 1082, one
+editable phase) receives `crp:AICCRA_III:Planning:2026:admin:canAcess` and sees the menu. Same role, same nine
+grants, differing only in phase state.
+
+Note that `CRP-Admin` also holds `crp:*`, which on its own would satisfy the check under Shiro wildcard
+semantics — but `crp:*` is emitted by that same phase-gated branch, so it is lost with the rest.
+
+**Why this is a defect and not the phase rule working as intended.** The program is not configured as closed:
+`crp_closed = false`, `crp_admin_active = true`, `crp_planning_active = true`, `crp_reporting_active = true`.
+More importantly, the Admin module does not manage phased data — it manages users, institutions, PPA partners and
+**the phases themselves**. The `crpPhases` screen, the only place a phase can be reopened, sits inside the module
+that the closed phase blocks. The single escape is `SuperAdmin`, whose `*` is emitted without phase
+qualification.
+
+**Requirement recorded by the team (2026-09-01):** administrators must be able to reach their menu regardless of
+phase state.
+
+Fix specced separately under `docs/specs/bugfix/admin-menu-phase-lockout/` — it changes the authorization
+procedure for every global unit, so it is out of scope for this documentation spec.
 
 ---
 
