@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083116",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083117",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -440,6 +440,10 @@
                 <span class="opi-dis__actions">
                   [#if editable && !isPrincipal && rowDeletable]
                     <button type="button" class="opi-dis__delete" aria-label="Delete disaggregation">&#10005;</button>
+                  [#elseif editable]
+                    [#-- The principal row cannot be deleted; the design still shows the
+                         control disabled so the column keeps its alignment. --]
+                    <button type="button" class="opi-dis__delete" disabled aria-label="Cannot be deleted">&#10005;</button>
                   [/#if]
                 </span>
               </div>

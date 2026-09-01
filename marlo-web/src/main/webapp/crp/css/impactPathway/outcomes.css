@@ -1667,3 +1667,6 @@ span.icon-20 {
   border-color: transparent;
   cursor: default;
 }
+
+.opi-dis__delete[disabled] { opacity: .35; cursor: not-allowed; color: var(--opi-border-strong); }
+.opi-dis__delete[disabled]:hover { background: #fff; }
