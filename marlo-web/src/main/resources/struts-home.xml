@@ -24,6 +24,36 @@
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
 
+		<!--
+			CHG-COGNITO-AUTH-001-T08/T09: cognitoLogin.do and cognitoCallback.do are flat action names (no
+			{crp}/ prefix), matching login.do/logout.do above -- the Global Unit is not yet known from the URL
+			at authorize time. design.md 8 and tasks.md both say "register with unloggedStack", but that shared
+			stack's validCrp and validSessionCrp interceptors (struts.xml) unconditionally split the action name
+			on "/" and return NOT_FOUND when there is no second segment -- verified against
+			ValidCrpActionInterceptor and ValidSessionCrpInterceptor. Reusing unloggedStack verbatim would make
+			both actions permanently unreachable (every request NOT_FOUND), which is exactly the "code correct
+			in isolation, unreachable through the real framework" defect class this spec's own T06 audit found
+			twice. This stack reproduces unloggedStack's actual intent for an unauthenticated, non-crp-prefixed
+			action -- i18n plus the standard param/validation pipeline, no requireUser -- without the two
+			interceptors that assume a {crp}/action URL shape. Named per TRD 4.3 rule 1; every interceptor it
+			references is inherited from marlo-default (struts.xml), so nothing there needed to change.
+		-->
+		<interceptors>
+			<interceptor-stack name="cognitoUnloggedStack">
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<action name="cognitoLogin" class="org.cgiar.ccafs.marlo.action.home.CognitoLoginAction">
+			<interceptor-ref name="cognitoUnloggedStack" />
+			<result name="input">
+				<param name="location">/WEB-INF/global/views/login/login.ftl</param>
+				<param name="model">action</param>
+			</result>
+			<result name="success" type="redirect">${authorizeUrl}</result>
+		</action>
+
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">
 			<result name="input">
