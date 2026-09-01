@@ -1,7 +1,8 @@
 # Admin — Roles & Permissions Documentation — Task Plan
 
 **Spec ID:** DOMAIN-ADMIN-001
-**Status:** In Progress — T01…T09 done, T10…T12 pending review/validation
+**Status:** In Progress — T01…T09, T11 and T13 done; T12 triaged with issue creation pending epic confirmation;
+T10 (PMU review) is the only task waiting on someone else
 **Owner:** IBD Team — Kenji Tanaka
 **Last Updated:** 2026-09-01
 **Target merge:** staging (then promoted to main per release process).
