@@ -1022,10 +1022,12 @@ function opiSyncRow($card, key) {
   $mRow.find('[data-opi-rowstmt]').text(stmt);
   $mRow.find('[data-opi-rowcode]').text(code || ' ');
   $mRow.find('[data-opi-rowsub]').text($dis.find('.opi-dis__unitSelect option:selected').text() || '');
+  var naUnit = String(unit) === '-1';
   $mRow.find('.opi-cell').each(function() {
     $(this).find('.opi-cell__title').val(stmt);
     $(this).find('.opi-cell__code').val(code);
     $(this).find('.opi-cell__unit').val(unit);
+    opiApplyNotApplicable($(this), naUnit);
     var $value = $(this).find('.opi-cell__value');
     if ($value.exists()) { opiRefreshCell($value); }
   });
@@ -1164,6 +1166,38 @@ function opiApplyGrid($card) {
 }
 
 /**
+ * Puts one cell into (or out of) the "Not applicable" state.
+ *
+ * The value is parked on the element while the unit says Not applicable, so
+ * switching back to # of / % restores what the user had typed. It is only lost
+ * for good if the form is saved while the row is Not applicable — the input
+ * submits empty, which is what clears the column.
+ *
+ * @param {jQuery} $cell the .opi-cell element
+ * @param {boolean} na whether the row's unit is Not applicable
+ */
+function opiApplyNotApplicable($cell, na) {
+  var $value = $cell.find('.opi-cell__value');
+  if (!$value.exists()) { return; }
+
+  if (na) {
+    if (!$cell.hasClass('is-na')) {
+      $cell.data('opiPrevValue', $value.val() || '');
+      $cell.addClass('is-na');
+    }
+    $value.val('').prop('readonly', true);
+  } else if ($cell.hasClass('is-na')) {
+    $cell.removeClass('is-na');
+    $value.prop('readonly', false);
+    var previous = $cell.data('opiPrevValue');
+    if (previous !== undefined && previous !== null && $.trim($value.val() || '') === '') {
+      $value.val(previous);
+    }
+    $cell.removeData('opiPrevValue');
+  }
+}
+
+/**
  * Amber-flags an empty cell value and refreshes the percentage hint.
  * A row whose unit label contains "%" resolves against the principal row's
  * value for the same year, like the design's derived hint.
@@ -1172,7 +1206,8 @@ function opiApplyGrid($card) {
 function opiRefreshCell($value) {
   var $cell = $value.closest('.opi-cell');
   var raw = $.trim($value.val() || '');
-  $cell.toggleClass('is-missing', raw === '');
+  var notApplicable = $cell.hasClass('is-na');
+  $cell.toggleClass('is-missing', raw === '' && !notApplicable);
 
   var $card = $cell.closest('.outcome');
   var $mRow = $cell.closest('.opi-matrix__row');
@@ -1183,7 +1218,9 @@ function opiRefreshCell($value) {
   $cell.find('.opi-cell__affix').text(isNA ? '' : (isPct ? '%' : '#'));
   var $hint = $cell.find('[data-opi-hint]');
   var hint = '';
-  if (raw === '' && !isNA) {
+  if (notApplicable || isNA) {
+    hint = 'n/a';
+  } else if (raw === '') {
     hint = opiLabel('requiredLabel');
   } else if (unitText.indexOf('%') !== -1 && raw !== '' && !$mRow.hasClass('is-principal')) {
     var year = $cell.attr('data-opi-year');
@@ -1194,7 +1231,7 @@ function opiRefreshCell($value) {
       hint = '≈ ' + Math.round(base * pct / 100).toLocaleString('en-US');
     }
   }
-  $hint.text(hint).toggleClass('is-required', raw === '' && !isNA);
+  $hint.text(hint).toggleClass('is-required', raw === '' && !isNA && !notApplicable);
 }
 
 /**
@@ -1244,6 +1281,7 @@ function opiCountMissing($card) {
     if (value === '' || value === '-1') { missing++; }
   });
   $card.find('.opi-cell__value:visible').each(function() {
+    if ($(this).closest('.opi-cell').hasClass('is-na')) { return; }
     if ($.trim($(this).val() || '') === '') { missing++; }
   });
   return missing;

@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083115",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083118",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083117",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083119",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -671,12 +671,11 @@
         <span class="opi-cell__affix" aria-hidden="true"></span>
         <input type="text" inputmode="numeric" class="targetValue targetValueNumber opi-cell__value" name="${cellName}.value" value="${(milestone.value)!}" aria-label="${rowStmt} ${(milestone.year)!''}"/>
       </span>
-      <select class="milestoneStatus opi-plain opi-cell__status" name="${cellName}.milestonesStatus.id" aria-label="Status">
-        <option value="-1"></option>
-        [#list generalStatuses![] as st]
-          <option value="${st.id?c}" [#if st.id == cellStatus]selected[/#if]>${st.name}</option>
-        [/#list]
-      </select>
+      [#-- Status is out of the design. It still has to be submitted: saveMilestones
+           rebuilds the milestone with copyFields(), which copies nulls, and
+           OutcomeValidator NPEs on a milestone whose status has no id. Dropping the
+           column is a separate backend change. --]
+      <input type="hidden" class="milestoneStatus opi-cell__status" name="${cellName}.milestonesStatus.id" value="${cellStatus}" />
       <select class="opi-plain opi-cell__extYear" name="${cellName}.extendedYear" aria-label="[@s.text name="outcome.milestone.inputNewTargetYear"/]" style="display:${showExt?string('block','none')}">
         <option value="-1"></option>
         [#list milestoneYears![] as my]

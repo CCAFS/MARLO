@@ -1622,7 +1622,37 @@ span.icon-20 {
   background: #fff;
 }
 
-.opi-page .opi-cell__valueWrap .opi-cell__value { border: 0; background: none; height: 30px; }
+/* One box, not two: needs the element selector to outweigh
+   `.opi-page .opi-card__body input[type="text"]`, which re-adds a border. */
+.opi-page .opi-card__body .opi-cell__valueWrap input.opi-cell__value {
+  border: 0;
+  background: none;
+  height: 30px;
+  padding: 0 8px 0 2px;
+  box-shadow: none;
+}
+
+.opi-page .opi-card__body .opi-cell__valueWrap input.opi-cell__value:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+/* The focus ring belongs to the wrapper so it frames affix + input together.
+   The inner input drops its own outline — not an accessibility loss, the wrapper
+   below shows the focus state for it. */
+.opi-page .opi-card__body .opi-cell__valueWrap input.opi-cell__value:focus-visible {
+  outline: none;
+}
+
+.opi-cell__valueWrap:focus-within {
+  border-color: var(--opi-primary);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+}
+
+/* Unit "Not applicable": the value is not collected for this row. */
+.opi-cell.is-na .opi-cell__valueWrap { background: #F5F7FA; border-color: var(--opi-border); }
+.opi-page .opi-card__body .opi-cell.is-na input.opi-cell__value { cursor: not-allowed; }
+.opi-cell.is-na .opi-cell__affix { visibility: hidden; }
 .opi-cell.is-missing .opi-cell__valueWrap { border-color: var(--opi-warn-field); }
 
 .opi-card__meta { text-transform: none; }
