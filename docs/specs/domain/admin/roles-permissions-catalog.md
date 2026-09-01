@@ -84,6 +84,10 @@ falls back to `roles.description`.
 
 ## 3. Purpose, scope and constraints per role
 
+> **`PC` and `CP` are different roles and are easy to confuse.** `PC` = Project coordinator (Cluster Coordinator
+> in AICCRA, 145 users on GU 45, project-scoped). `CP` = Contact point (institutional, 21 users). Their workflow
+> capability differs: `CP` can submit **and** unsubmit a project; `PC` can do neither.
+
 | Role | Purpose | Grant scope | Modules / sections | Constraints & special rules |
 |---|---|---|---|---|
 | `SuperAdmin` | Platform operator. | `*` — unlimited, across every global unit | Everything, including the superadmin console and the full REST API | Only role that bypasses every check (`BaseAction.canAccessSuperAdmin()`). Also the only role with `api:*`. |
@@ -94,8 +98,8 @@ falls back to `roles.description`.
 | `RPL` | Leads one region. | Projects and programs mapped to the region | Project sections, impact pathway edit, publications, studies, POWB collaboration | No `budgetByFlagship`, no `budgetByCoAs`. |
 | `RPM` | Operational manager of a region. | Same resolution path as `RPL` | Project sections incl. full `budgetByPartners`, publications, studies | Only role with a wildcard on `budgetByPartners`. |
 | `PL` (AICCRA label **Cluster Leader**) | Leads one cluster / project. | Single project, resolved from `project_partner_persons` | All editable sections of that project + submit | Granted implicitly when the user is set as project leader in the Partners section; see §7. |
-| `PC` (AICCRA label **Cluster Coordinator**) | Coordinates one cluster / project. | Single project, same resolution as `PL` | Same sections as `PL` minus `manage` (submit), `partner`, `evaluation`, `deleteProject` | Cannot submit the project. Largest population in AICCRA (145 users on GU 45). |
-| `CP` (AICCRA label **Contact Point**) | Institutional contact point for a PPA partner. | Projects where the user's institution participates | Project sections; `unsubmitted` | Assigned from Admin → PPA Partners; gated by `crp_has_contact_point`. |
+| `PC` (AICCRA label **Cluster Coordinator**) | Coordinates one cluster / project. | Single project, same resolution as `PL` | Same sections as `PL` minus `manage` (submit), `partner`, `evaluation`, `deleteProject` | **Can neither submit nor unsubmit the project** — it holds no workflow grant at all (§11.13). Largest population in AICCRA (145 users on GU 45). Not to be confused with `CP`. |
+| `CP` (AICCRA label **Contact Point**) | Institutional contact point for a PPA partner. | Projects where the user's institution participates | Project sections; both submit and `unsubmitted` | Assigned from Admin → PPA Partners; gated by `crp_has_contact_point`. |
 | `ML` | Management Liaison for a liaison institution. | Projects attached to the liaison institution | Project sections, publications, summaries, `deleteProject` | 0 users in both AICCRA global units — inactive in practice. |
 | `CL` | Cluster Leader (parallel definition to `PL`). | Project-scoped | 58 grants: 57 shared with `PL`, 1 exclusive | **Not a subset of `PL`.** It uniquely holds `project:{1}:unsubmitted`, which `PL` lacks, and lacks 24 grants `PL` holds. Net effect: `CL` can unsubmit but not submit, `PL` can submit but not unsubmit (§11.11). 0 users in both AICCRA global units. Its label collides with `PL`'s AICCRA label — see §11.3. |
 | `FM` | Finance person. | Funding sources + project budget sections | `fundingSource:*`, `budgetByPartners`, `budgetByFlagship`, `partner`, `projectSwitch` | Explicitly excluded from the generic branch of `getPermissions` (`r.acronym != 'FM'`); resolved through dedicated branches keyed on the finance person of an institution. 0 users. |
@@ -532,6 +536,13 @@ even though `PMU` holds none of those grants explicitly. The same applies to `CR
 `SuperAdmin` (`*`). Any access audit must expand wildcards before drawing conclusions — see the rosters in §13.3,
 which are annotated accordingly.
 
+### 11.13 `PC` holds no workflow grant despite being the largest population
+
+`PC` (Cluster Coordinator, 145 users on GU 45 — more than every other role combined) holds neither
+`project:{1}:manage:submitProject` nor `project:{1}:unsubmitted`. It can edit its project's sections but cannot
+move the project through the workflow in either direction; that depends on `PL`, `CP` or a leader role. Note this
+is `PC`, not `CP` — the two acronyms are easy to transpose and their capabilities differ (see the note in §3).
+
 ---
 
 ## 12. Open questions for validation
@@ -543,6 +554,7 @@ which are annotated accordingly.
 5. Should the feedback matrix be seeded for global unit 47 before AICCRA III enables the module (§11.7)?
 6. Is it intended that a Cluster Leader (`PL`) can submit a project but not reopen it, while `CL` — which has no
    users — is the only project role that can unsubmit without submitting (§11.11)?
+7. Is it intended that `PC`, the role with by far the most users, holds no workflow grant at all (§11.13)?
 
 
 ---

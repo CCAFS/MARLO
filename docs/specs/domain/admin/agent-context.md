@@ -68,6 +68,9 @@ Unused in AICCRA today: `FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD`.
 - `permissions` contains `crp:{0}:fundingSource:*` twice (ids 450, 451).
 - `PL` can submit a project but **cannot** unsubmit it; `CL` is the mirror (unsubmit, no submit). `CL` is not a
   subset of `PL` despite looking like a duplicate.
+- **`PC` is not `CP`.** `PC` = Project coordinator (Cluster Coordinator, the largest population) and holds *no*
+  workflow grant — neither submit nor unsubmit. `CP` = Contact point and holds both. Transposing the two acronyms
+  produces the wrong answer about who can move a project through the workflow.
 - **Never audit access with a literal permission query.** Wildcard grants match without appearing in
   `role_permissions`: `crp:{0}:project:*` (PMU) implies submit, unsubmit and delete on every project, because
   Shiro treats a shorter granted permission as implying the remaining parts. Expand wildcards first.
