@@ -1659,3 +1659,11 @@ span.icon-20 {
   font: 400 11.5px/1.35 Figtree, sans-serif;
   color: var(--opi-muted);
 }
+
+/* Codes are generated, so they read as text rather than an editable box.
+   Needs the element selector to outweigh `.opi-page .opi-card__body input[type=text]`. */
+.opi-page .opi-card__body input.opi-dis__codeInput[readonly] {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}

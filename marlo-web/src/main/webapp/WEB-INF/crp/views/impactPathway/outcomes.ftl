@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083111",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083115",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083114",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083116",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -403,7 +403,8 @@
                 </span>
                 <span class="opi-dis__n">${stmt_index + 1}</span>
                 <span class="opi-dis__code">
-                  <input type="text" class="opi-plainInput opi-dis__codeInput" value="${rowCode}" aria-label="[@s.text name="outcomes.disaggregations.code"/]" [#if !editable || isPrincipal]readonly[/#if] />
+                  [#-- Codes are derived from the row order by outcomes.js, never typed. --]
+                  <input type="text" class="opi-plainInput opi-dis__codeInput" value="${rowCode}" aria-label="[@s.text name="outcomes.disaggregations.code"/]" readonly tabindex="-1" />
                   [#if isPrincipal]<span class="opi-dis__pBadge">P</span>[/#if]
                 </span>
                 <span class="opi-dis__stmt">
@@ -411,13 +412,18 @@
                 </span>
                 <span class="opi-dis__unit">
                   <select class="opi-plain opi-dis__unitSelect" aria-label="[@s.text name="outcomes.disaggregations.unit"/]" [#if !editable || isPrincipal]disabled[/#if]>
-                    <option value="-1"></option>
-                    [#-- targetUnitList is a Map<Long,String>: ?keys and ?values iterate in the same order --]
+                    [#-- The design offers three units only. They are matched by name against
+                         targetUnitList (a Map<Long,String>) so the ids stay environment-agnostic;
+                         -1 is MARLO's existing "no unit" sentinel. --]
+                    <option value="-1" [#if rowUnitId == "-1"]selected[/#if]>[@s.text name="outcomes.disaggregations.unit.notApplicable"/]</option>
                     [#if targetUnitList?has_content]
                       [#local unitKeys = targetUnitList?keys /]
                       [#local unitVals = targetUnitList?values /]
                       [#list unitKeys as k]
-                        <option value="${k?c}" [#if k?c == rowUnitId]selected[/#if]>${unitVals[k_index]}</option>
+                        [#local unitName = unitVals[k_index]?trim /]
+                        [#if unitName == "# of" || unitName == "%"]
+                          <option value="${k?c}" [#if k?c == rowUnitId]selected[/#if]>${unitName}</option>
+                        [/#if]
                       [/#list]
                     [/#if]
                   </select>
