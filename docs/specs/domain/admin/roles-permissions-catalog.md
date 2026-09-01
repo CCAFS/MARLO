@@ -6,7 +6,9 @@
 **Last Updated:** 2026-09-01
 **Source of truth:** `roles`, `role_permissions`, `permissions`, `user_roles`, `custom_parameters`,
 `feedback_roles_permissions` (global units 45 `AICCRA` and 47 `AICCRA_III`), plus the code paths listed in §8.
-**Verification snapshot:** local database `aiccradb1`, 2026-09-01. Re-run the queries in §10 to refresh.
+**Verification snapshot:** database `aiccradb1`, 2026-09-01 — confirmed by the team to carry the same data as
+production, so the figures below are production facts. Re-run the queries in §10 after any role or permission
+change.
 
 > This catalog is descriptive, not prescriptive. It documents the access model **as configured today**.
 > No role or permission was changed while producing it.
@@ -443,13 +445,39 @@ WHERE global_unit_id = 45 ORDER BY year, id;
 
 ## 11. Findings raised while documenting
 
-These are observations, not changes. Each one is a candidate ticket under epic A2-2017.
+These are observations, not changes. Each was checked against the whole platform, not only AICCRA, which
+reclassified two of them from "possible AICCRA defect" to "platform-wide design".
 
-### 11.1 `SL` is a role with users and no permissions
+| # | Finding | Class |
+|---|---|---|
+| 11.1 | `SL` has users and no permissions | **By design, platform-wide** — document, do not "fix" |
+| 11.2 | No uniqueness on the join tables | **Defect** — 15,608 duplicate grant rows platform-wide |
+| 11.3 | `PL` and `CL` render the same label | **Defect (cosmetic)** — latent in AICCRA |
+| 11.4 | `isAiccra()` matches every global unit id ≥ 45 | **Defect** — Alliance (GU 46) misclassified |
+| 11.5 | Grants that can never match at runtime | **Defect** — needs platform-wide check before removal |
+| 11.6 | Feedback seed migration diverges from production | **Defect** — migration only |
+| 11.7 | AICCRA III has no feedback configuration | **Decision** — blocks enabling the module |
+| 11.8 | `PMU` cannot reach the Admin module | **Decision** — separation of duties |
+| 11.9 | `CRP-Admin` is granted `crp:*` | **Decision** — security posture |
+| 11.10 | Roles configured but unused in AICCRA | **Decision** — see the caveat below |
+| 11.11 | `PL` submits, `CL` unsubmits | **By design, platform-wide** — AICCRA never adopted `CL` |
+| 11.12 | Wildcard holders invisible to naive audits | **Methodology** — affects every future audit |
+| 11.13 | `PC` holds no workflow grant | **Decision** — largest population |
+
+### 11.1 `SL` is a role with users and no permissions — and that is the platform norm
 
 `SL` (Site Integration Leader) has **0** rows in `role_permissions` on both AICCRA global units, yet 13 distinct
-users hold it on GU 45. `getPermissions` contains a dedicated `SL` branch, so the branch exists but yields nothing.
-Either the role is intentionally a label (and should be documented as such in the Admin UI) or its grants were lost.
+users hold it on GU 45. The first reading was that its grants had been lost. Checking every global unit shows
+otherwise: **`SL` holds zero grants in 19 of the 21 global units where it exists**, including others that have
+users (CCAFS 12 users, CIAT 1 user). Two outliers: `Genebank` (role 345) carries **947** grants with 0 users, and
+`CIAT50` (role 137) carries 1 grant with 10 users.
+
+So a permission-less `SL` is the intended shape, not an AICCRA defect: the role marks a person as a site
+integration leader for display and selection purposes, and access comes from whatever other role they hold. Two
+things still deserve attention:
+
+- The Admin UI gives no hint that the role grants nothing, so an administrator may assign it expecting access.
+- `Genebank`'s 947 grants look like an accident and should be reviewed separately.
 
 ### 11.2 No uniqueness on the join tables
 
@@ -460,7 +488,11 @@ duplicates exist today:
 - `role_permissions`: `PMU` holds permission `448` (`crp:{0}:fundingSource:canEdit`) **three times**.
 - `permissions`: `crp:{0}:fundingSource:*` exists twice (ids `450` and `451`).
 
-Duplicates inflate every count, multiply rows in the `user_permission` temp table and make audits unreliable.
+Platform-wide the scale is much larger than the AICCRA sample suggests: **15,608 duplicate rows across 4,192
+distinct `(role_id, permission_id)` pairs** in `role_permissions`, and 123 duplicate rows across 13
+`(user_id, role_id)` pairs in `user_roles`. Duplicates inflate every count, multiply the rows `getPermissions`
+writes into the `user_permission` temp table on every authorization cache miss, and make audits unreliable. This
+is the one finding with a measurable runtime cost.
 
 ### 11.3 `PL` and `CL` render the same label
 
@@ -486,7 +518,12 @@ crp:<GU>:<phase>:synthesisProgram:{1}:*
 ```
 
 Observed for `FPL`, `RPL` and `SuperAdmin` (harmless for `SuperAdmin`, which holds `*`). Either the branch that
-should resolve the id is missing, or these grants are dead and should be removed.
+should resolve the id is missing, or these grants are dead.
+
+The four permission rows are held far beyond AICCRA — `fundingSource:{1}:canEdit` (id 438) by 127 roles,
+`fundingSource:{1}:budget` (462) by 124, `crpIndicators:{1}:*` (468) by 101, `synthesisProgram:{1}:*` (464) by 87.
+Non-resolution was verified only for the AICCRA roles, so a platform-wide check is required before removing
+anything: another branch of `getPermissions` may resolve `{1}` for a role type AICCRA does not use.
 
 ### 11.6 The feedback seed migration does not match production
 
@@ -515,16 +552,36 @@ semantics that matches any global unit, so the role is effectively cross-tenant.
 ### 11.10 Eight roles are configured but unused in AICCRA
 
 `FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD` have 0 users on both AICCRA global units while carrying up to 132
-grants. They should be either retired, or documented as reserved so audits do not read them as active access.
+grants. They should be either deactivated for AICCRA, or documented as reserved so audits do not read them as
+active access.
 
-### 11.11 `PL` can submit but not unsubmit; `CL` is the mirror image
+**Caveat: unused in AICCRA does not mean dead.** `CL` alone has users in nine other global units (`A4NH` 22,
+`PIM` 24, `Wheat` 22, `Maize` 21, `Livestock` 21, `FTA` 21, `CCAFS` 7, `WLE` 13, `Rice` 13). Roles are per global
+unit, so anything done here must target the AICCRA rows only and must never touch the shared `permissions`
+catalog.
+
+### 11.11 `PL` submits and `CL` unsubmits — a deliberate split AICCRA never adopted
 
 `PL` holds `project:{1}:manage:submitProject` and **not** `project:{1}:unsubmitted`. `CL` holds
-`project:{1}:unsubmitted` and **not** the submit grant — it is the only project-scoped role with that shape, and
-the only grant it has that `PL` lacks. Since `CL` has no users, in practice a Cluster Leader (`PL`) can submit a
-project but cannot reopen it, and must ask a role with `unsubmitted` (`CP`, `FPL`, `FPM`, `RPL`, `RPM`, or `PMU`
-through its wildcard). Worth confirming this is the intended workflow rather than an artifact of `CL` being a
-half-finished duplicate of `PL`.
+`project:{1}:unsubmitted` and **not** the submit grant. The first reading was that `CL` looked like a
+half-finished duplicate of `PL`; the platform says otherwise. Sampling six global units:
+
+| Global unit | `PL` submit / unsubmit | `CL` submit / unsubmit | `CL` users |
+|---|---|---|---:|
+| CCAFS | yes / no | no / yes | 7 |
+| A4NH | yes / no | no / yes | 22 |
+| Wheat | yes / no | no / yes | 22 |
+| PIM | yes / no | **yes** / yes | 24 |
+| AICCRA | yes / no | no / yes | 0 |
+| AICCRA III | yes / no | no / yes | 0 |
+
+The submit/unsubmit split between `PL` and `CL` is therefore an intentional separation of duties, consistent
+across the platform (PIM being the one variant), and `CL` is a role in real use elsewhere.
+
+**The AICCRA-specific consequence stands:** because AICCRA never assigns `CL`, no cluster-level role can reopen a
+submitted project. That falls to `CP`, a leader role (`FPL`, `FPM`, `RPL`, `RPM`), or `PMU` through its wildcard.
+The question for PMU is whether AICCRA should start using `CL`, or whether reopening is meant to sit above the
+cluster on purpose.
 
 ### 11.12 Wildcard holders are invisible to naive audit queries
 
@@ -547,13 +604,14 @@ is `PC`, not `CP` — the two acronyms are easy to transpose and their capabilit
 
 ## 12. Open questions for validation
 
-1. Is `SL` meant to be a permission-less label (§11.1)?
+1. `SL` is permission-less by platform convention (§11.1). Should the Admin UI say so, so administrators stop
+   assigning it expecting access? And separately, why does `Genebank` carry 947 grants on that role?
 2. Should `PMU`/PMC gain read access to the Admin module (§11.8)?
 3. Is `CRP-Admin`'s cross-tenant `crp:*` grant intended (§11.9)?
 4. Which of the eight unused roles should be retired for AICCRA III (§11.10)?
 5. Should the feedback matrix be seeded for global unit 47 before AICCRA III enables the module (§11.7)?
-6. Is it intended that a Cluster Leader (`PL`) can submit a project but not reopen it, while `CL` — which has no
-   users — is the only project role that can unsubmit without submitting (§11.11)?
+6. AICCRA never assigns `CL`, so no cluster-level role can reopen a submitted project (§11.11). Should AICCRA
+   start using `CL`, or is reopening meant to sit above the cluster deliberately?
 7. Is it intended that `PC`, the role with by far the most users, holds no workflow grant at all (§11.13)?
 
 
@@ -631,15 +689,20 @@ roles that also match through a broader grant, per §11.12.
 Note that `PL` is absent from the unsubmit roster and `PC` from the submit roster — both by configuration, see
 §11.11 and §3.
 
-### 13.4 What could not be validated in this environment
+### 13.4 What is validated, and what is not
+
+The audited database was confirmed to carry the same data as production, so populations, phases and the feedback
+matrix are production values rather than a possibly-stale copy. What remains outside the reach of a data audit:
 
 | Item | Why | How to close |
 |---|---|---|
-| User populations per role | The local database is a copy; production may differ | Run §10.1 in production (`task.md` T11) |
-| Findings §11.1, §11.7, §11.10 | Depend on production state (users, feedback rows) | Same as above |
-| Runtime rows for 9 roles | No users on either AICCRA global unit locally | Re-run §10.4 in production for a user of each role |
+| Runtime rows for 9 roles | No users hold them on either AICCRA global unit, so `getPermissions` emits nothing | Nothing to do — the static grant sets were asserted instead (§13.1) |
 | Node-grant cascade (`base` implies `base:field`) | Shiro evaluation happens in the running application | Confirmed by code reading (`BaseAction.java:6348`); a UI walkthrough would confirm behaviourally |
-| Role purposes and intent | Not derivable from data | PMU / QA review (`task.md` T10) |
+| Role purposes and intent | Not derivable from data at all | PMU / QA review (`task.md` T10) |
+| Whether each finding should be acted on | A judgement call, not a fact | Triaged in `proposed-backlog.md`; decisions listed there |
+
+A snapshot is still a point in time: any role or permission change after 2026-09-01 invalidates the counts, which
+is what §13.5 is for.
 
 ### 13.5 Re-runnable assertion suite (SQL)
 

@@ -177,10 +177,10 @@ the source of truth.
 
 - **Snapshot drift.** The catalog is true as of 2026-09-01 against `aiccradb1`. Any role or permission change in
   production invalidates counts. Mitigation: §10 queries plus the snapshot header.
-- **Local copy may lag production.** `aiccradb1` is a local copy; on it, only phase 444 is editable and
-  `feedback_roles_permissions` has rows for global unit 45 only. Both facts should be reconfirmed in production
-  before acting on findings §11.7 and §11.1.
-- **Unverified role population.** Roles with 0 users locally (`FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD`) may
-  have users in production. Finding §11.10 must be reconfirmed there before any retirement decision.
+- **Snapshot drift, not environment drift.** The audited database was confirmed to carry production data, so the
+  figures are production values. The residual risk is time: any role or permission change after 2026-09-01
+  invalidates them. Mitigation: the assertion suite in the catalog §13.5.
+- **Cross-global-unit blast radius.** Roles are per global unit but `permissions` is shared. `CL` has no users in
+  AICCRA yet has users in nine other global units, so any deactivation must target AICCRA rows only.
 - **Published-copy divergence.** The Jira comment on A2-2022 is a point-in-time render. If the catalog changes
   and the comment is not re-published, the two disagree with no detection mechanism.

@@ -145,9 +145,11 @@
 - **Files touched:** `roles-permissions-catalog.md` header and §11
 - **Constitutional checks:** read-only queries only, run by an authorized DBA/admin.
 - **Tests:** not applicable.
-- **Done when:** §10.1, §10.5, §10.6 and §10.7 have been run against production and the deltas recorded.
-- **Verification:** populations, open phases and the feedback matrix confirmed or corrected. **Pending** —
-  three findings (§11.1, §11.7, §11.10) depend on production state and must not be acted on before this.
+- **Done when:** §10.1, §10.5, §10.6 and §10.7 reflect production values.
+- **Verification:** the team confirmed the audited database (`aiccradb1`) carries the same data as production, so
+  the recorded populations, open phases and feedback matrix are production values and no separate reconfirmation
+  run is required. Findings §11.1, §11.7 and §11.10 are therefore based on production state. Re-run §13.5 after
+  any future role or permission change. **Done.**
 
 ### DOMAIN-ADMIN-001-T12 — Raise tickets for the accepted findings
 
@@ -156,8 +158,13 @@
 - **Files touched:** none
 - **Constitutional checks:** issues created in project `A2` under epic A2-2017, written in English.
 - **Tests:** not applicable.
-- **Done when:** each accepted finding has a Jira issue linked back to A2-2022.
-- **Verification:** issue keys appended to the corresponding finding in the catalog. **Pending.**
+- **Done when:** each accepted finding has a Jira issue linked back to A2-2022, or a recorded reason for not
+  raising one.
+- **Verification:** triage complete in `proposed-backlog.md`. Of the 13 findings, one justifies a ticket now
+  (duplicate rows and missing unique constraints, with 15,608 duplicate grant rows and up to 80% wasted rows per
+  user), one is a cheap low-urgency fix (`isAiccra()` and global unit 46), five are latent or impact-free, two are
+  platform-wide design rather than defects, and five are PMU decisions rather than work. **Issue creation pending
+  confirmation of the parent epic.**
 
 ### DOMAIN-ADMIN-001-T13 — Validate every role against the database
 
@@ -210,7 +217,8 @@ There is no code to unit-test. Verification is evidence-based:
 | Runtime | Placeholder expansion for all 8 roles with users on GU 47 | Matched; grant counts confirmed to be upper bounds |
 | Re-runnable suite | SQL assertion suite in §13.5 executed on the snapshot | All checks PASS |
 | Review | PMU / QA walkthrough of §3 and §12 | Pending (T10) |
-| Environment | Production reconfirmation of populations, phases and feedback rows | Pending (T11) |
+| Environment | Production values for populations, phases and feedback rows | Confirmed — audited database carries production data (T11) |
+| Triage | Impact assessment per finding, including runtime cost measurement | Complete — see `proposed-backlog.md` (T12) |
 
 ## 6. Operational Steps
 
@@ -235,8 +243,9 @@ Revert the documentation commit. Nothing else changes: no schema, no configurati
 - [x] Findings recorded with evidence, no configuration changed (FN-009, SEC-001).
 - [x] Snapshot environment and date stated in the header (NF-002).
 - [ ] Roles validated with system owners (T10) — the story's "All roles are validated with system owners".
-- [ ] Snapshot reconfirmed against production (T11).
-- [ ] Tickets raised for accepted findings (T12).
+- [x] Snapshot confirmed to reflect production data (T11).
+- [x] Findings triaged by real impact, with a documented reason for each one that gets no ticket (T12 triage).
+- [ ] Tickets created for the accepted findings, once the parent epic is confirmed (T12 creation).
 - [x] Every role validated against the database; 43/43 assertions pass and a re-runnable SQL suite is published
       (T13). This closes the story's criterion "Permissions are verified against the current system configuration".
 - [x] Rendered summary published on Jira A2-2022 (comment `41599`).
