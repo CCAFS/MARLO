@@ -19,6 +19,13 @@ marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/NewRole.java
 marlo-web/src/main/java/org/cgiar/ccafs/marlo/validation/WelcomeEmail.java
 
 
+# Local logs. logback.xml writes to ${log.folder}, which comes from the
+# gitignored config/marlo-<profile>.properties. A Windows-style value there
+# (log.folder=C:/logs) makes a literal "C:" directory in the repo root on
+# macOS and Linux. The real fix is a POSIX path in that properties file; this
+# keeps the accident out of git either way.
+/C:/
+
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
