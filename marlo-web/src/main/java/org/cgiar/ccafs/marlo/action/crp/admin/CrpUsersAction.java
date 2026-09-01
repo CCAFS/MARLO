@@ -733,8 +733,7 @@ public class CrpUsersAction extends BaseAction {
               .filter(u -> u.getUser().getId().equals(existingUser.getId())).collect(Collectors.toList());
 
             // get roles for selected CRP
-            roleListCRP = roleManager.findAll().stream().filter(r -> r.getCrp().getId().equals(globalUnitE.getId()))
-              .collect(Collectors.toList());
+            roleListCRP = roleManager.findAllByGlobalUnit(globalUnitE.getId());
             boolean containsRol = false;
 
             if (userRoleList != null) {

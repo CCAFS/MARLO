@@ -58,6 +58,31 @@
   position: relative;
 }
 
+/*
+ * The title row is what opens and closes the permission: pointer plus the open/closed arrow.
+ * impactPathway/outcomes.css declares this for .srfSlo, but that stylesheet is not loaded on this page, so the
+ * same rules are repeated here, matching feedbackManagement.css. The image path is relative to this file and
+ * resolves to webapp/global/images.
+ */
+.srfSlo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+/*
+ * Only the arrow changes on open. outcomes.css also dims the whole title with opacity: 0.5, which would fade the
+ * "New" badge rendered inside it for recently created grants.
+ */
+.srfSlo .blockTitle.opened {
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
 #clearFeedbackPermissionFilter i {
   margin-right: 4px;
 }
