@@ -34,7 +34,7 @@
 	<constant name="struts.multipart.saveDir" value="/tmp" />
 
 	<!-- Spring MVC will power the REST services exposed by MARLO not Struts2 -->
-	<constant name="struts.action.excludePattern" value="/api/*" />
+	<constant name="struts.action.excludePattern" value="/api/.*" />
 
 	<!-- Add addition packages and configuration here. -->
 	<package name="marlo-default" namespace="/"

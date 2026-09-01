@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo;
 
 import org.cgiar.ccafs.marlo.logging.LoggingAspect;
+import org.cgiar.ccafs.marlo.rest.helldots.HelldotsUploadValidator;
 
 import java.util.Arrays;
 
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -78,6 +80,23 @@ public class MarloRestApiConfig {
   @Bean
   public LoggingAspect loggingAspect() {
     return new LoggingAspect();
+  }
+
+  /**
+   * Required for {@code @RequestPart}/{@code MultipartFile} binding (HellDots screenshot upload). The bean
+   * name must be exactly {@code multipartResolver}: Spring MVC looks it up by that name.
+   *
+   * <p>
+   * The cap matches {@link HelldotsUploadValidator#MAX_SCREENSHOT_BYTES} so that anything over the limit is
+   * rejected by the validator's clean 413, instead of escaping this resolver's own ceiling as an unhandled
+   * {@code MaxUploadSizeExceededException} (500).
+   * </p>
+   */
+  @Bean(name = "multipartResolver")
+  public CommonsMultipartResolver multipartResolver() {
+    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+    resolver.setMaxUploadSize(HelldotsUploadValidator.MAX_SCREENSHOT_BYTES);
+    return resolver;
   }
 
 }

@@ -1,0 +1,40 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+
+package org.cgiar.ccafs.marlo.data.manager;
+
+import org.cgiar.ccafs.marlo.data.model.HelldotsComment;
+
+import java.util.List;
+
+public interface HelldotsCommentManager {
+
+  public HelldotsComment find(long id);
+
+  public List<HelldotsComment> findAllActive();
+
+  public HelldotsComment findByCommentId(String commentId);
+
+  /**
+   * Same lookup as {@link #findByCommentId(String)} but without the {@code active = true} predicate, so a
+   * soft-deleted comment is still found. Used only where the caller needs to revive a soft-deleted row
+   * (upsert); every read path keeps using {@link #findByCommentId(String)}.
+   */
+  public HelldotsComment findByCommentIdIncludingInactive(String commentId);
+
+  public List<HelldotsComment> findByPage(String page);
+
+  public HelldotsComment save(HelldotsComment helldotsComment);
+}

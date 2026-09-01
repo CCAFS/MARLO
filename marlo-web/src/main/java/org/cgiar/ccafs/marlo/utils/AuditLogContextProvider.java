@@ -15,9 +15,6 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Class that allows us to pass values from the DAOs to the AuditLogEventListener.
  * This class and framework exists because Hibernate event listeners and Hibernate interceptors are outside the scope of
@@ -27,17 +24,31 @@ import org.slf4j.LoggerFactory;
  */
 public final class AuditLogContextProvider {
 
-  public static Logger LOG = LoggerFactory.getLogger(AuditLogContextProvider.class);
-  //
   private static final ThreadLocal<AuditLogContext> auditLogContextMap = new ThreadLocal<AuditLogContext>();
 
+  /**
+   * Returns the AuditLogContext bound to the current thread.
+   *
+   * @return the context pushed to this thread.
+   * @throws IllegalStateException if no context has been pushed. This is a programming error in the calling code, not a
+   *         recoverable condition: callers that can push their own context MUST check hasAuditLogContext() first
+   *         instead of catching this exception.
+   */
   public static AuditLogContext getAuditLogContext() {
-    if (auditLogContextMap.get() == null) {
-      String errorMessage = "No AuditLogContext has been pushed to the thread";
-      LOG.error(errorMessage);
-      throw new RuntimeException(errorMessage);
-    } ;
-    return auditLogContextMap.get();
+    AuditLogContext context = auditLogContextMap.get();
+    if (context == null) {
+      throw new IllegalStateException("No AuditLogContext has been pushed to the thread");
+    }
+    return context;
+  }
+
+  /**
+   * Tells whether the current thread already has an AuditLogContext, without throwing.
+   *
+   * @return true if a context has been pushed to this thread.
+   */
+  public static boolean hasAuditLogContext() {
+    return auditLogContextMap.get() != null;
   }
 
   public static void pop() {

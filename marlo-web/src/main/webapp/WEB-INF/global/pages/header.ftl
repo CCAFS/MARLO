@@ -38,7 +38,7 @@
     [#-- Redesign typeface --]
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" crossorigin href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
 
     [#-- Second, import global javascripts and templates. --]
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260826" />
