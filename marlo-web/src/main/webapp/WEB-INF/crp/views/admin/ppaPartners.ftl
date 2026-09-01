@@ -5,14 +5,14 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js?20230927",
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js",
-  "${baseUrlCdn}/global/js/relationsModalDataTables.js?20260415",
+  "${baseUrlCdn}/global/js/relationsModalDataTables.js?20260828",
   "${baseUrlMedia}/js/admin/ppaPartners.js?20260528",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/admin/ppaPartners.css",
-  "${baseUrlMedia}/css/admin/relationsModalTables.css",
+  "${baseUrlMedia}/css/admin/relationsModalTables.css?20260828",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
 [#assign currentSection = "admin" /]

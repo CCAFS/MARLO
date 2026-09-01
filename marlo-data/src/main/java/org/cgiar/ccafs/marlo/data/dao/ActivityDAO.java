@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface ActivityDAO {
@@ -62,6 +63,20 @@ public interface ActivityDAO {
    * @return a list from Activity null if no exist records
    */
   List<Activity> getActiveActivitiesByProject(long projectId, long phaseId);
+
+  /**
+   * This method gets, for every activity title of a global unit, the activities that are using it. One row per
+   * activities record is returned, that is one row per phase, because activities replicate forward; the caller is
+   * expected to collapse them by composedId. Only scalar columns are projected, so rendering the report does not
+   * hydrate entities nor trigger lazy loads.
+   * Columns: titleId, clusterId, composedId, activityId, activityActive, activityDescription, phaseId, phaseName,
+   * phaseYear, clusterTitle. Rows come ordered by cluster, composedId and phase.
+   * 
+   * @param globalUnitId is the global unit that owns the activity titles.
+   * @param currentPhaseId is the phase used to resolve the cluster title, falling back to its latest phase.
+   * @return a list of rows, empty if no exist records
+   */
+  public List<Map<String, Object>> getActivityTitleRelations(long globalUnitId, long currentPhaseId);
 
   /**
    * This method gets activities by a given activity composedID and phase.

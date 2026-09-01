@@ -13,6 +13,8 @@ function init() {
 
   $(".parameterValue.type-3").numericInput();
 
+  registerParameterValueOrder();
+
   /* Declaring Events */
   attachEvents();
 
@@ -23,6 +25,11 @@ function attachEvents() {
   $('.addParameter').on('click', addParameter);
   $('.removeParameter').on('click', removeParameter);
   $('.parameter-search').on('input', filterParametersBySearch);
+  // The tables live inside collapsed blocks and hidden tabs, so each one is initialized the first time it
+  // becomes visible instead of initializing every CRP table on page load.
+  $('.crpParameters').on('shown.bs.tab', 'a[data-toggle="tab"]', function() {
+    initializeParametersTables($($(this).attr('href')));
+  });
 
   $('.blockTitle.closed').on('click', function() {
     if($(this).hasClass('closed')) {
@@ -34,6 +41,7 @@ function attachEvents() {
     }
     $(this).next().slideToggle('slow', function() {
       $(this).find('textarea').autoGrow();
+      initializeParametersTables($(this).find('.tab-pane.active'));
     });
   });
 
@@ -66,6 +74,80 @@ function filterParametersBySearch() {
       $(this).hide();
     }
   });
+}
+
+/*
+ * DataTables setup for the parameters tables, using the same table format as the evidencies popup
+ * (relationsPopupMacro.ftl / projectContributionsCrpList.js).
+ *
+ * IMPORTANT (developers): paging, searching and the length menu are intentionally OFF. DataTables detaches the
+ * rows it is not drawing from the DOM, and every row here carries the form inputs of one CustomParameter. A
+ * detached row is not submitted, and CrpParametersAction.save() DELETES every DB custom parameter missing from
+ * the submitted list, so paging or DataTables' own search would silently wipe parameters on save. Sorting is
+ * safe because it only reorders the rows that are already in the tbody. The search box above the table is the
+ * custom one in filterParametersBySearch(), which only shows/hides rows and never removes them.
+ */
+function initializeParametersTables($container) {
+  if(!$.fn.dataTable) {
+    return;
+  }
+  $container.find('table.parametersTable').each(function() {
+    var $table = $(this);
+    if($.fn.dataTable.isDataTable($table)) {
+      return;
+    }
+    $table.DataTable({
+      "bPaginate": false, // Keep every row in the DOM: see the note above
+      "bLengthChange": false,
+      "bFilter": false, // The custom parameter search is used instead
+      "bInfo": false,
+      "bSort": true, // This option enables the sort of contents by columns
+      "bAutoWidth": false, // This option enables the auto adjust columns width
+      "order": [
+        [0, 'asc']
+      ],
+      aoColumnDefs: [
+        {
+          orderDataType: "parameter-value",
+          aTargets: [1]
+        }
+      ]
+    });
+  });
+}
+
+/*
+ * The value column holds form controls instead of text, so DataTables is told how to read each cell: the checked
+ * radio for booleans, the selected option for the role selects and the typed text for the remaining inputs.
+ */
+function registerParameterValueOrder() {
+  if(!$.fn.dataTable) {
+    return;
+  }
+  $.fn.dataTable.ext.order['parameter-value'] = function(settings, colIndex) {
+    return this.api().column(colIndex, {
+      order: 'index'
+    }).nodes().map(function(cell) {
+      var $cell = $(cell);
+
+      var $checkedRadio = $cell.find('input[type="radio"]:checked');
+      if($checkedRadio.length) {
+        return $checkedRadio.val() === 'true' ? 'Yes' : 'No';
+      }
+
+      var $select = $cell.find('select');
+      if($select.length) {
+        return ($select.find('option:selected').text() || '').trim();
+      }
+
+      var $input = $cell.find('input[type="text"], input:not([type]), textarea');
+      if($input.length) {
+        return ($input.val() || '').trim();
+      }
+
+      return ($cell.text() || '').trim();
+    });
+  };
 }
 
 function addParameter() {

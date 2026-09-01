@@ -19,6 +19,7 @@ package org.cgiar.ccafs.marlo.data.dao.mysql;
 import org.cgiar.ccafs.marlo.data.dao.AiReportConfigurationDAO;
 import org.cgiar.ccafs.marlo.data.model.AiReportConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -59,14 +60,18 @@ public class AiReportConfigurationMySQLDAO extends AbstractMarloDAO<AiReportConf
   }
 
   @Override
-  public List<AiReportConfiguration> findAll() {
-    String query = "from " + AiReportConfiguration.class.getName() + " where is_active=1";
-    List<AiReportConfiguration> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+  @SuppressWarnings("unchecked")
+  public List<AiReportConfiguration> findAllByGlobalUnit(long globalUnitId) {
+    String queryString = "SELECT arc FROM AiReportConfiguration arc "
+      + "WHERE arc.globalUnit.id = :globalUnitId AND arc.active = TRUE ORDER BY arc.id";
 
+    List<AiReportConfiguration> configurations = this.getSessionFactory().getCurrentSession()
+      .createQuery(queryString).setParameter("globalUnitId", globalUnitId).list();
+
+    if (configurations == null) {
+      return new ArrayList<>();
+    }
+    return configurations;
   }
 
   @Override

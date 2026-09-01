@@ -50,7 +50,7 @@ read `docs/specs/domain/<module>/agent-context.md` first when the file exists.
 ## Spec taxonomy under `docs/specs/`
 
 - `docs/specs/general-setup/` — methodology templates (read-only for individual specs; update only as a constitutional change).
-- `docs/specs/domain/<module>/` — module-level specs aligned with MARLO domain areas (e.g., `domain/projects/`, `domain/deliverables/`, `domain/innovations/`, `domain/oicrs/`, `domain/powb/`, `domain/annual-report/`, `domain/qa/`, `domain/admin/`, `domain/auth/`, `domain/bi/`, `domain/ai-services/`).
+- `docs/specs/domain/<module>/` — module-level specs aligned with MARLO domain areas (e.g., `domain/projects/`, `domain/deliverables/`, `domain/innovations/`, `domain/oicrs/`, `domain/powb/`, `domain/annual-report/`, `domain/qa/`, `domain/admin/`, `domain/auth/`, `domain/bi/`, `domain/ai-services/`, `domain/parameters/`).
 - `docs/specs/enhancement/<feature>/` — cross-cutting enhancements that don't belong to a single domain (e.g., `enhancement/dark-mode/`, `enhancement/design-tokens/`, `enhancement/a11y-automation/`).
 - `docs/specs/bugfix/<slug>/` — structured bug-driven specs that need explicit traceability beyond a normal commit.
 - `docs/specs/epic/<name>/` — multi-spec initiatives (e.g., `epic/java-17-cutover/`, `epic/tenant-onboarding/`, `epic/legacy-modules-retirement/`).
