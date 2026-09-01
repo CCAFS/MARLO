@@ -64,6 +64,12 @@
 
 ### CHG-COGNITO-AUTH-001-T01 — Extract `finishLogin` from `LoginAction` (behavior-preserving)
 
+- **Status:** `[~]` — code complete and **audited** 2026-08-31 on `staging-cognito-impl` (independent Reviewer,
+  `sonnet`, verdict PASS-WITH-FINDINGS; see `execution.md` §4). Compile PASS, 44/44 tests PASS, Checkstyle 0
+  violations (via a compatible plugin — the pinned one is broken, see `execution.md` EB-1).
+  **Not `[x]`: one *Done when* clause is still open.** It requires the single behavioral change to be
+  *"explicitly called out in the commit body"*, and nothing has been committed yet. This flips to `[x]` when the
+  commit exists with that message — not before.
 - **Depends on:** none — **must land before every Cognito task**
 - **Module:** marlo-web
 - **Files touched:** `action/home/LoginAction.java` (modify)
@@ -91,6 +97,13 @@
 
 ### CHG-COGNITO-AUTH-001-T02 — Specificity: migration + constants
 
+- **Status:** `[x]` — 2026-08-31 on `staging-cognito-impl`, **audited** (independent Reviewer, `sonnet`, verdict
+  PASS-WITH-FINDINGS; see `execution.md` §4). Key `cognito_auth_active`; migration applied against a live MySQL
+  schema and verified (3 rows, all `false`), then rolled back so Flyway can apply it for real. Compile PASS,
+  44/44 tests PASS, Checkstyle 0 violations in **both** `marlo-web` and `marlo-data`.
+  **The audit found a real defect in `scripts/verify-specificity-constants.sh`, since fixed** — it checked only
+  that the key string appeared *somewhere* in the `VALUES` tuple, so a typo'd `key` whose `description` held the
+  correct string passed. It now resolves the `key` column's position from each statement's own column list.
 - **Depends on:** none
 - **Module:** marlo-web, marlo-data
 - **Files touched:**
@@ -111,6 +124,14 @@
 
 ### CHG-COGNITO-AUTH-001-T03 — Dependencies + configuration that cannot break startup
 
+- **Status:** `[~]` — 2026-08-31 on `staging-cognito-impl`. AWS SDK v2 BOM `2.31.30` + `nimbus-jose-jwt 9.48` in
+  `dependencyManagement` (both resolution-checked); 7 `@Value` fields all in the `${key:}` form with getters that
+  return empty, never `null`; the 7 keys added blank to `marlo-test.properties`. Compile PASS, 47/47 tests PASS,
+  Checkstyle 0 violations in `marlo-web`/`marlo-data`/`marlo-utils`, no literal config value in any `.java`.
+  **Not `[x]`: the live boot clause is open** — *"the app boots with no Cognito keys present"* needs
+  `run-marlo-java17.sh`, which is destructive, and was left for the user to authorise (`execution.md` PS-7).
+  **Audited** (independent `sonnet` Reviewer, PASS-WITH-FINDINGS; §6). One finding: a false claim in the test javadoc about resource copying, since corrected. The `aws-serverless` skill was deliberately not loaded — root `CLAUDE.md` says it does not
+  apply to MARLO (PS-6).
 - **Depends on:** none
 - **Module:** marlo-parent, marlo-utils, marlo-web
 - **Files touched:**
@@ -132,6 +153,21 @@
 
 ### CHG-COGNITO-AUTH-001-T04 — `CognitoAssertion` + `CognitoAuthenticationToken`
 
+- **Status:** `[x]` — 2026-08-31 on `staging-cognito-impl`. Both classes `final`, all fields `private final`,
+  no mutators; GPL headers present. Immutability is asserted **structurally via reflection**, never by
+  round-tripping a constructor, and was proven to bite: de-finalizing a field plus adding a setter compiles and
+  makes the test fail (`CognitoAssertion.email must be final`), then restored byte-identical.
+  9/9 for `-Dtest=CognitoAssertionTest`; 56/56 for the module. Checkstyle 0 violations in all three modules.
+  **Audited** (independent `sonnet` Reviewer, PASS-WITH-FINDINGS; `execution.md` §6). **The audit found a real
+  defect, since fixed:** `CognitoAssertion` was not `Serializable`, while Shiro's `AuthenticationToken` — which
+  `CognitoAuthenticationToken` implements — extends `Serializable`. Latent under today's in-memory session DAO,
+  live the moment T06 puts an assertion into Shiro's principal path. Reproduced, then fixed, with a round-trip
+  test now standing guard. `usernameClaim` stays optional on purpose (OQ-18 is not MARLO's to decide).
+  **REOPENED 2026-08-31 by T06's audit, then re-closed.** `CognitoAuthenticationToken` now carries the
+  resolved `users.id` and **requires it in its constructor**; `getPrincipal()` returns that id, not the
+  assertion. The original "both accessors return the assertion" design was wrong, and **two audits passed
+  over it** because nothing consumed the principal yet — see `execution.md` §8.2. This is not OQ-9: that
+  question is which *claim* joins to the `users` row, not what Shiro carries afterwards.
 - **Depends on:** T03
 - **Module:** marlo-data
 - **Files touched:** `security/CognitoAssertion.java` (new), `security/CognitoAuthenticationToken.java` (new)
@@ -148,6 +184,16 @@
 
 ### CHG-COGNITO-AUTH-001-T05 — `CognitoTokenValidator` — the security core
 
+- **Status:** `[x]` — 2026-08-31 on `staging-cognito-impl`. Implemented by the `akili-implementer` on `sonnet`
+  and **audited on `opus`** — the first task here with both `author != auditor` axes intact (`execution.md` §7,
+  verdict PASS-WITH-FINDINGS). Compile PASS, **70/70 tests**, Checkstyle 0 violations in three modules,
+  all ten log statements carry only a rejection reason.
+  **The audit found that the nine tests never reached the cryptography**: case 2's token carried an unknown
+  `kid`, so the trust gate short-circuited before the signature check, and stubbing `hasValidSignature` left
+  all nine green. Closed with the canonical forgery test (real `kid`, attacker signature) plus an RSA-to-HMAC
+  confusion test; the **narrow** mutation now reddens 2 where it previously reddened 0.
+  Also closed: an unbounded JWKS fetch inside a lock (NF-002 — 2 s/2 s/256 KB now), a fabricated `iat`, a
+  missing `RS256` allowlist, and blank expectations passing as expectations. **PS-10** remains open.
 - **Depends on:** T03, T04
 - **Module:** marlo-data
 - **Files touched:** `security/CognitoTokenValidator.java` (new), `security/impl/CognitoTokenValidatorImpl.java` (new)
@@ -179,6 +225,22 @@
 
 ### CHG-COGNITO-AUTH-001-T06 — Realm token-type dispatch
 
+- **Status:** `[x]` — 2026-08-31, after **three audit rounds and two FAIL verdicts** (`execution.md` §8, §9, §10).
+  Implemented on `sonnet`, audited on `opus`. Compile PASS, **76/76 tests**, 5/5 for its own suite, 0 lines over
+  120 measured directly (**EB-3**: Checkstyle enforces nothing).
+  **Two defects, both the same shape — correct code that production never reaches, certified green by tests
+  that called the unit directly instead of through the framework:**
+  1. The principal was the `CognitoAssertion`, while ~20 unguarded `(Long) getPrincipal()` sites consume it, so
+     the dashboard redirect right after login died in `AddUserIdFilter`. **A spec gap** — `design.md` §2.1 and
+     T06 both said only what the realm *consumes*, never what it must *produce*. Fixed by an explicit invariant
+     in §2.1 and by **reopening T04** so the token carries the resolved `users.id`.
+  2. The dispatch was **unreachable**: `AuthenticatingRealm` defaults `authenticationTokenClass` to
+     `UsernamePasswordToken`, so `ModularRealmAuthenticator` threw `UnsupportedTokenException` before the guard
+     ran. Fixed with an enumerated `supports()` override plus an end-to-end test through the real
+     `Subject.login`.
+  **The scope line below is drift** (PS-11): T06 declares "wire the validator into the hand-constructed realm",
+  but DD-5 makes injection into the realm dead code — the validator is a bean *beside* it. The scope also never
+  named the `supports()` requirement that `design.md` §2.1 now carries.
 - **Depends on:** T04, T05
 - **Module:** marlo-data
 - **Files touched:** `security/APCustomRealm.java` (modify), `MarloShiroConfiguration.java` (modify)
@@ -222,10 +284,20 @@
 
 ### CHG-COGNITO-AUTH-001-T08 — `CognitoLoginAction` — authorize redirect
 
+- **Status:** `[x]` — 2026-08-31, after **two audit rounds** (`execution.md` §11 FAIL, §12 PASS-WITH-FINDINGS).
+  Implemented on `sonnet`, audited on `opus`. **85/85 tests on a clean run** (see **EB-4** for why that
+  qualifier is load-bearing), 0 lines over 120 measured directly.
+  **The four blocking findings were live exploits, not latent defects** — this is the first task here to put an
+  internet-reachable endpoint in the tree: an unauthenticated GET could revoke a third party's `agree_terms`;
+  another could redirect a freshly-authenticated victim off-site; the state store was the unbounded keyed map
+  DD-4 rejected; and the persistence path chosen is the one `UserMySQLDAO` documents as not persisting.
+  Repairs required amending **`design.md` §1, §2, §5.4, §8, §13.1** and **T09's scope**.
+  **The implementer correctly refused this task's own Scope line:** `unloggedStack` would have made the action
+  permanently 404 — see the `cognitoUnloggedStack` correction above and in design §8.
 - **Depends on:** T02, T03, T06
 - **Module:** marlo-web
 - **Files touched:** `action/home/CognitoLoginAction.java` (new), `resources/struts-home.xml` (modify)
-- **Scope:** server-side re-check of `is_cgiar_user` **and** the Global Unit's flag; record terms acceptance; mint `state`/`nonce`/PKCE verifier; bind `{globalUnitId, returnUrl, nonce, verifier}` to the Shiro session keyed by `state`; 302 to `/oauth2/authorize`. Register with **`unloggedStack`**.
+- **Scope:** server-side re-check of `is_cgiar_user` **and** the Global Unit's flag; **require** terms acceptance (the write moved to T09 — §5.4); mint `state`/`nonce`/PKCE verifier; bind `{state, globalUnitId, returnUrl, nonce, verifier}` to the Shiro session under a **fixed** key; 302 to `/oauth2/authorize`. Register with **`cognitoUnloggedStack`** — see design §8; `unloggedStack` would make this action permanently unreachable.
 - **Constitutional checks:** GPL header; **named interceptor stack** (TRD §4.3 rule 1); no new `*.json` path; i18n keys for every message.
 - **Design refs:** §4, §5.4, §8, §9.2, DD-4
 - **Covers:** FN-002 (initiation), **SEC-002**, §5.4 terms
@@ -234,11 +306,11 @@
   - Unit: a request for an `is_cgiar_user = 0` account → refused.
   - Unit: `state`, `nonce`, and verifier are each **unguessable** and differ across two invocations.
   - Unit: the authorize URL carries `state`, `nonce`, `code_challenge`, `code_challenge_method=S256`.
-  - Unit: terms acceptance is persisted **before** the redirect.
+  - Unit: a request that does not accept the terms is refused, and **nothing is written** to the user's row. *(Replaced 2026-08-31: this bullet read "terms acceptance is persisted before the redirect", which the audit proved was an unauthenticated write letting anyone revoke a third party's record — see §5.4's amendment.)*
 - **Verification:** `mvn -q test -pl marlo-web -Dtest=CognitoLoginActionTest` + Checkstyle
 - **Fails when:** the server-side flag re-check is removed — the first test must then succeed in producing a redirect for a disabled unit.
 - **Not evidence when:** randomness is asserted by "the two values differ". Two calls to a broken generator can differ by luck. Assert the length and character space, and that 100 invocations produce 100 distinct values.
-- **Done when:** five tests pass, `unloggedStack` is declared in `struts-home.xml`, Checkstyle passes.
+- **Done when:** the six tests above pass (bullet 5 was replaced, not dropped — see its note), **`cognitoUnloggedStack`** is declared in `struts-home.xml` and `CognitoUnloggedStackReachabilityTest` proves why, Checkstyle passes.
 - **Skills:** `aws-serverless`, `error-handling-patterns`
 
 ---
@@ -248,11 +320,25 @@
 - **Depends on:** T01, T05, T06, T07, T08
 - **Module:** marlo-web
 - **Files touched:** `action/home/CognitoCallbackAction.java` (new, `extends LoginAction`), `resources/struts-home.xml` (modify)
-- **Scope:** the eight-step ordering in design §13.3 — consume-and-delete state/nonce/verifier/globalUnitId/returnUrl → exchange code → validate → map + gates → capture locals → `session.stop()` → `Subject.login(CognitoAuthenticationToken)` → `finishLogin(user, crp, returnUrl)`. Populate the inherited `user` field with a **detached** `User` carrying only the email. Register with `unloggedStack`.
+- **Scope:** the eight-step ordering in design §13.3 — consume-and-delete state/nonce/verifier/globalUnitId/returnUrl → exchange code → validate → map + gates → capture locals → `session.stop()` → `Subject.login(CognitoAuthenticationToken)` → `finishLogin(user, crp, returnUrl)`. Populate the inherited `user` field with a **detached** `User` carrying only the email. Register with **`cognitoUnloggedStack`** — `unloggedStack` would make the callback permanently 404, see design §8.
 - **Constitutional checks:** GPL header; named stack; i18n keys; the `input` result must expose the same model surface as `login` (`model=action`, `crpSession`, `listGlobalUnitTypes`).
 - **Design refs:** §1 ⑧, §13.3, DD-6, DD-9
 - **Covers:** FN-002, FN-003, FN-004, FN-005, **SEC-003**, defect classes **D-3**, **D-8**
+- **ALSO OWNS, added 2026-08-31 after T08's audit: persisting `users.agree_terms`.** §5.4 was amended so the
+  write happens here, not in `CognitoLoginAction` — that endpoint is unauthenticated and its `email` unverified,
+  so writing there let anyone set or revoke a third party's compliance record. **This obligation existed in no
+  task until now**: `requirements.md` never mentions terms at all, and its only enforcement was T08's deleted
+  write, so T09 would have shipped without it and nothing would have failed.
+  - **Constraint:** write through `userManager.saveLastLogin(...)`, **not** `saveUser(...)`.
+    `UserMySQLDAO.saveLastLogin` carries `@Transactional` with a comment stating that without it "the merge
+    stays in memory and `last_login` / `agree_terms` are never persisted"; `saveUser` has no such annotation,
+    and `ValidateUserAction` — the local path's writer of this same column — uses `saveLastLogin` for exactly
+    that reason.
+  - **Evidence:** prove the row changed against a real schema, as T02 did. A call-recording double cannot tell
+    you whether anything was written, and this spec has already shipped two defects of that shape.
 - **Tests (new):**
+  - Unit + real-schema: after a successful callback, `users.agree_terms` reflects the acceptance carried
+    through state — written via `saveLastLogin`, verified by reading the row back, not by asserting a call.
   - Integration: valid round trip → session scoped to the Global Unit **issued at `cognitoLogin.do`**, not one supplied on return (FN-003's `MUST NOT` trust the returned value).
   - Integration: a tampered `globalUnitId` on the callback URL is **ignored** — the session-bound value wins.
   - Integration: **session id before ≠ after** (SEC-003 / D-8).
@@ -271,6 +357,14 @@
 
 ### CHG-COGNITO-AUTH-001-T10 — `crpByEmail.do`: per-unit flag + two structural fixes
 
+- **Status:** `[x]` — 2026-08-31, after **two audit rounds** (`execution.md` §13 FAIL, §14 PASS-WITH-FINDINGS).
+  Implemented on `sonnet`, audited on `opus`. **90/90 tests on a clean run**, 0 lines over 120 measured directly.
+  **PS-16 discharged:** `CognitoAuthSpecificity` is now the only reading of `cognito_auth_active` in production.
+  **The audit found the catalog query could never execute** — HQL filtering on a column, not a mapped property —
+  which with T02 seeding no `custom_parameters` would have emptied `crps[]` for every user and rendered as
+  "email not found". Repaired in `ParameterMySQLDAO`, outside this task's declared file set, with the
+  consequence for `CrpAdminManagmentAction` recorded as **PS-19**. Three resolver mutations now redden; two of
+  them, including **MIG-001's rollback**, previously survived the whole suite green.
 - **Depends on:** T02
 - **Module:** marlo-web
 - **Files touched:** `action/json/global/CrpByUserEmailAction.java` (modify)
@@ -294,6 +388,13 @@
 
 ### CHG-COGNITO-AUTH-001-T11 — Harden `validateUser.do` against CGIAR credential relay
 
+- **Status:** `[x]` — 2026-08-31, after **two audit rounds** (`execution.md` §15 FAIL, §16 PASS-WITH-FINDINGS).
+  **97/97 tests on a clean run**, compile EXIT=0, 0 lines over 120 measured directly (EB-3).
+  **The FAIL was a bypass in the Leader's own correction:** an optional `globalUnitId` that matched no
+  membership fell out of the loop returning "allow", so `&globalUnitId=99999` switched the guard off and
+  relayed a migrated password to AD. A caller-supplied id may now only narrow to a unit the account holds.
+  Also closed: an unauthenticated NPE→500 on a missing `userEmail`, and two tests that could not fail.
+  **SEC-005 is still not absolute** — `login.do` relays through the same realm (**PS-21**).
 - **Depends on:** T02, T10
 - **Module:** marlo-web
 - **Files touched:** `action/json/global/ValidateUserAction.java` (modify)

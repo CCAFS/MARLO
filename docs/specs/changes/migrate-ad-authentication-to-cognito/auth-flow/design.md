@@ -70,7 +70,7 @@ The local flow is **two requests**, not one — the previous revision of this di
                     │
    mode = COGNITO   ├──GET  cognitoLogin.do────►  CognitoLoginAction
                     │                             ├─ re-check is_cgiar_user + flag server-side
-                    │                             ├─ record terms acceptance
+                    │                             ├─ REQUIRE terms accepted (write is in ⑧)
                     │                             ├─ mint state/nonce/PKCE + bind
                     │                             │  {globalUnitId, returnUrl} to session
                     │◄─302 to /oauth2/authorize── └─ build authorize URL
@@ -90,7 +90,8 @@ The local flow is **two requests**, not one — the previous revision of this di
                     │                             │          ∧ is_active ∧ flag still on
                     │                             │  ⑥ rotate session (stop → new)
                     │                             │  ⑦ Subject.login(CognitoAuthenticationToken)
-                    │                             │     └─ realm: instanceof → verify assertion
+                    │                             │     └─ realm: supports() → instanceof →
+                    │                             │        SimpleAuthenticationInfo(users.id)
                     │                             └─ ⑧ finishLogin(user, crp, returnUrl)
                     │◄─302 dashboard / deep link──    └─ existCrpUser, session attrs, saveLastLogin
 ```
@@ -121,7 +122,7 @@ The local flow is **two requests**, not one — the previous revision of this di
 | `.../security/CognitoAssertion.java` | **New** — immutable validated-identity value object |
 | `.../security/CognitoTokenValidator.java` (+ `impl/`) | **New** — JWKS retrieval, caching, full token validation. Placed in `security/`, **not** `data/manager/` (that package holds Hibernate service beans) |
 | `.../security/APCustomRealm.java` | **Modify** — `instanceof` guard **above** the existing cast (§2.1) |
-| `.../MarloShiroConfiguration.java` | **Modify** — inject the validator where the realm is hand-constructed (`:44-49`) |
+| `.../MarloShiroConfiguration.java` | **Modify** — declare the validator as a singleton bean alongside the realm's hand-construction (`:44-49`). **Not injected into the realm**: DD-5 means the realm never holds a raw token, so a validator field there would be provably dead code *(corrected 2026-08-31 — this row previously read "inject the validator where the realm is hand-constructed")* |
 | `.../security/authentication/Authenticator.java` | **UNCHANGED** — see DD-1 |
 | `.../security/authentication/{DB,LDAP}Authenticator.java` | **UNCHANGED** |
 
@@ -132,10 +133,10 @@ The local flow is **two requests**, not one — the previous revision of this di
 | `.../action/home/CognitoLoginAction.java` | **New** — guards, terms, state minting, authorize redirect |
 | `.../action/home/CognitoCallbackAction.java` | **New** — `extends LoginAction` (DD-6) |
 | `.../action/home/LoginAction.java` | **Modify** — extract `finishLogin(User, GlobalUnit, String returnUrl)`; `login()` calls it with the `Referer` value. **One deliberate behavior change: a null guard** (§2.2) |
-| `.../action/json/global/CrpByUserEmailAction.java` | **Modify** — add `cognitoEnabled` per `crps[]` entry; move the `user` map **out of the CRP loop**; inject `CustomParameterManager` (constructor change) |
+| `.../action/json/global/CrpByUserEmailAction.java` | **Modify** — add `cognitoEnabled` per `crps[]` entry; move the `user` map **out of the CRP loop**; inject **`CustomParameterManager` and `ParameterManager`** (constructor change) — both are needed by the shared resolver §9.2 mandates *(corrected 2026-08-31; this line named only the first)* |
 | `.../action/json/global/ValidateUserAction.java` | **Modify** — refuse `is_cgiar_user = 1` accounts whose selected Global Unit has the flag on (§5.3) |
 | `.../config/APConstants.java` | **Modify** — specificity constant |
-| `resources/struts-home.xml` | **Modify** — register both actions with `unloggedStack` (§8) |
+| `resources/struts-home.xml` | **Modify** — register both actions with **`cognitoUnloggedStack`** (§8 — `unloggedStack` itself makes a flat action name permanently 404) |
 | `resources/global.properties` | **Modify** — new keys **plus `login.error.invalidUserCrp`**, which is missing today (§9.4) |
 | `resources/config/marlo-test.properties` | **Modify** — Cognito keys in the tracked bootstrap template (hard rule 12) |
 | `webapp/WEB-INF/global/pages/loginForm.ftl` | **Modify** — add the `#login-step-cgiar` block |
@@ -162,6 +163,65 @@ This prologue executes on **every** local login. The edit inserts an `instanceof
 > **This corrects a false comfort in revision 1.** Saying "the `else` (local) branch is not edited" was true and misleading — the shared prologue *is* edited. `requirements.md` D-2's gate must therefore be restated: **"the `UsernamePasswordToken` path through `doGetAuthenticationInfo` produces identical behavior"**, not "the local branch is untouched". A gate phrased the old way passes green over a rewritten prologue.
 
 **No flag logic enters the realm.** The realm has no Global Unit and no session (§9.1). Revision 1's "routes to Cognito when the flag is on" was unimplementable and is deleted.
+
+> **Amended 2026-08-31, after the independent audit of T06 returned FAIL.**
+>
+> **Invariant: the `AuthenticationInfo` principal MUST be the `users.id` (`Long`) on every path, Cognito included.**
+>
+> This section previously described only what the realm *consumes*, and `tasks.md` T06 said only "returning
+> `SimpleAuthenticationInfo` built from the assertion". Both were silent on what the realm must *produce*, and
+> the first implementation followed them literally: it returned the `CognitoAssertion` as the principal.
+>
+> That does not survive one request. MARLO has roughly twenty unguarded `(Long) getPrincipal()` sites, and the
+> first two are reached before any page renders:
+>
+> | Site | Effect |
+> |---|---|
+> | `AddUserIdFilter:52` | runs on every `*.do` / `*.json` / `/api/*` request → `ClassCastException` → HTTP 500 |
+> | `APCustomRealm.doGetAuthorizationInfo` — the `(Long)` cast on the primary principal | `ClassCastException` on every permission check |
+> | `AddSessionToRestRequestFilter:178` | same, for `/api/**` |
+> | `AbstractMarloDAO:451` | inside `catch (Exception)` — **fails silently**, nulling `created_by` / `modified_by` |
+>
+> `finishLogin` returns `SUCCESS` → `struts-home.xml:33-35` redirects to the dashboard → `AddUserIdFilter`
+> throws. The dashboard is the only destination for Global Unit types 1/3/4/5, so the path cannot reach a page.
+>
+> **This is not OQ-9.** OQ-9 asks which Cognito *claim* joins to the `users` row. This asks what Shiro carries
+> afterwards, and the answer is fixed by the twenty existing consumers, not by CGIAR IT.
+>
+> **Consequence for `CognitoAuthenticationToken` (T04):** it carries the resolved `users.id` alongside the
+> assertion, and requires it in its constructor. §13.3 already resolves identity and applies **gates 1-3** at
+> step ③, before `Subject.login(...)` at step ⑥ — requiring the id makes that ordering structural instead of
+> conventional. The realm still performs **no I/O**, so DD-5 is intact.
+>
+> **Rejected:** widening the ~20 consumer sites to accept a second principal type. That is precisely the
+> destabilization of working paths DD-1 exists to prevent, for a change that benefits one caller.
+
+> **Amended again 2026-08-31, after the re-audit of T06 returned a second FAIL.**
+>
+> **The `instanceof` guard is not sufficient. `APCustomRealm` must also override `supports(AuthenticationToken)`.**
+>
+> This section described the guard and stopped there, and the first implementation did exactly that — correctly.
+> It was still **dead code in production**. `AuthenticatingRealm`'s constructor defaults
+> `authenticationTokenClass` to `UsernamePasswordToken.class`, and `ModularRealmAuthenticator` calls
+> `realm.supports(token)` and throws `UnsupportedTokenException` **before** it ever delegates to
+> `doGetAuthenticationInfo`. A `CognitoAuthenticationToken` never reached the guard.
+>
+> ```java
+> @Override
+> public boolean supports(AuthenticationToken token) {
+>   return token instanceof UsernamePasswordToken || token instanceof CognitoAuthenticationToken;
+> }
+> ```
+>
+> **Enumerated, not widened to `AuthenticationToken.class`.** Accepting everything would convert a clean
+> framework-level rejection of an unknown third token type into a `ClassCastException` inside
+> `doGetAuthenticationInfo`'s unconditional cast.
+>
+> **Why the tests did not catch it, and what changed.** Every test called `realm.doGetAuthenticationInfo(token)`
+> directly — same-package access that bypasses `supports()` entirely. Such a test proves the method is
+> *correct* and is structurally incapable of proving it is *reached*. The suite now also drives a real
+> `Subject.login(...)` through a `DefaultSecurityManager`, which is the path `CognitoCallbackAction` takes at
+> §13.3 step ⑥. **Any future realm-adjacent task must assert reachability, not only behavior.**
 
 ### 2.2 The one deliberate change to local behavior
 
@@ -197,7 +257,7 @@ Two new Struts `.do` actions in the existing `home` package. No `/api/*` endpoin
 
 | Action | Method | Purpose |
 |---|---|---|
-| `cognitoLogin.do` | GET | Re-verify eligibility, record terms, mint state, redirect to `/oauth2/authorize` |
+| `cognitoLogin.do` | GET | Re-verify eligibility, **require terms accepted** (the write is T09's — §5.4), mint state, redirect to `/oauth2/authorize` |
 | `cognitoCallback.do` | GET | Validate, gate, rotate session, establish login |
 
 On failure both return `input` → `login.ftl`. **They must expose the same model surface `login` does** — `struts-home.xml:29-33` binds `model=action`, and `loginForm.ftl` reads `crpSession` and `listGlobalUnitTypes`; without them the failure page renders broken.
@@ -218,9 +278,35 @@ The client composes `mode = user.isCgiarUser && card.cognitoEnabled`. This is th
 **Two structural issues in the existing action must be fixed as part of this:**
 
 1. The `user` map is built **inside** the `for (GlobalUnit crp : crps)` loop (`:89`), so a user with zero Global Units returns `user == null`. Move it out.
-2. The constructor takes `(APConfig, GlobalUnitManager, UserManager)`; resolving the flag needs `CustomParameterManager` injected.
+2. The constructor takes `(APConfig, GlobalUnitManager, UserManager)`; resolving the flag needs **`CustomParameterManager` and `ParameterManager`** injected — both, because the shared resolver reads the per-unit override *and* the catalog default. *(Corrected 2026-08-31 during T10; this line named only `CustomParameterManager`.)*
 
 **Unknown email and zero-units both fall through to the existing `emailNotFound` slot** with no `isCgiarUser` and no `crps[]` — FN-001's third scenario forbids disclosing which path an unknown email *would* have used.
+
+> **Amended 2026-08-31 during T10 — this sentence and T10's own test 2 could not both hold.**
+>
+> T10's Scope and its named test 2 require that *"a user with zero Global Units returns a well-formed response,
+> not `user == null`"* — the structural bug where the `user` map was built inside the `crps` loop. The sentence
+> above required the opposite for that same input. The task was implemented; the sentence is corrected here.
+>
+> **What actually changed on the wire**, since the difference is real and was shipped without being named:
+>
+> | Input | Before | After |
+> |---|---|---|
+> | unknown email | `{"crps":[],"user":null}` | unchanged |
+> | **known account, zero units** | `{"crps":[],"user":null}` | `{"crps":[],"user":{name, agree, isCgiarUser}}` |
+>
+> So an account with zero `crp_users` rows was previously indistinguishable from a non-existent one and now
+> discloses its existence, full name and authentication type. **R-D3 accepted a *type* oracle layered on an
+> existing *existence* oracle; for this class of account there was no existence oracle to layer on.** R-D3's
+> acceptance is widened here deliberately rather than stretched silently.
+>
+> **Why the wider oracle is accepted:** `login.js:418` gates on `data.user == null || data.crps.length == 0`,
+> so both cases still collapse to the same `emailNotFound` state in the UI. The disclosure is wire-only, and
+> the alternative — withholding `name`/`isCgiarUser` when `crps` is empty — reintroduces the exact
+> `user == null` defect T10 exists to remove.
+>
+> **FN-001's third scenario is unaffected**: it governs an email matching *no* `users` row, and that response
+> is byte-identical to before.
 
 > **Enumeration caveat (R-D3).** For an email that **exists**, the response now discloses its authentication type. `crpByEmail.do` sits in `homeJson` with no `requireUser` and already discloses existence and Global Unit membership to an unauthenticated caller, so this adds a *type* oracle to an existing *existence* oracle. Accepted, recorded, not treated as free.
 
@@ -260,7 +346,21 @@ Left alone, it keeps accepting and relaying CGIAR passwords to Active Directory 
 
 `ValidateUserAction.java:87` (`user.setAgreeTerms(agree)`) is the **only** writer of `users.agree_terms`, and it is reached only from the password branch. A COGNITO user bypasses it entirely, so acceptance would silently stop being recorded.
 
-**Decision:** the terms checkbox is rendered in `#login-step-cgiar` and its acceptance is recorded by `CognitoLoginAction` **before** the redirect. Dropping it would be a compliance regression outside this spec's declared blast radius.
+**Decision:** the terms checkbox is rendered in `#login-step-cgiar` and its acceptance is recorded. Dropping it would be a compliance regression outside this spec's declared blast radius.
+
+> **Amended 2026-08-31, after the independent audit of T08.**
+>
+> This section originally said acceptance is recorded by `CognitoLoginAction` **before** the redirect. That was implemented, and it was a **defect**: `cognitoLogin.do` is unauthenticated and its `email` is unverified (§13.1's correction says so explicitly). Writing `users.agree_terms` there meant
+> `GET /cognitoLogin.do?email=victim@cgiar.org&globalUnitId=<enabled>&agree=false` let **anyone on the internet revoke a third party's compliance record**, with no authentication, no CSRF token and no proof of address ownership. Omitting the parameter wrote `null`.
+>
+> **The check and the write are separated:**
+>
+> | Where | What | Why there |
+> |---|---|---|
+> | `CognitoLoginAction` (T08) | **Check** — refuse unless the terms were accepted | DD-2 puts this path's accept control *outside* the form, so HTML5 `required` cannot fire. Without a server check a user completes sign-in having declined — the same compliance regression, by a different door |
+> | `CognitoCallbackAction` (T09) | **Write** — persist acceptance | The only point where an ID token has proved who the person is. Recording a compliance decision against an identity nobody verified is not a record, it is an assertion by a stranger |
+>
+> **T09 must use a persistence path that actually persists.** `UserMySQLDAO.saveLastLogin` carries `@Transactional` with a comment stating that without it *"the merge stays in memory and `last_login` / `agree_terms` are never persisted"*. Its sibling `saveUser` has no such annotation, and `ValidateUserAction` — the local path's writer of this same column — writes through `saveLastLogin` for that reason. Prove the row changed against a real schema, as T02 did; a call-recording double cannot tell you whether anything was written.
 
 ### 5.5 The control
 
@@ -288,6 +388,27 @@ The redirect is always user-initiated. Nothing navigates on its own.
 
 Both new actions declare **`unloggedStack`** (`struts.xml:198-203`) — `i18nFile` + `validCrp` + `validSessionCrp` + `defaultStack`, no `requireUser`. They must be reachable without a session, and TRD §4.3 rule 1 requires every new `.do` action to name a stack. Revision 1 said "package default", which left `requirements.md` §7's checklist item unclosed and departed from the TRD without a Decision Log entry.
 
+> **Amended 2026-08-31, during T08 — `unloggedStack` cannot be used, and using it ships a 404.**
+>
+> `unloggedStack` contains `validCrp` and `validSessionCrp`. Both split `ActionContext.getActionName()` on `"/"`
+> and return `BaseAction.NOT_FOUND` when there is no second segment — `ValidCrpActionInterceptor:50-62`, before
+> `crpManager` is even consulted. `cognitoLogin` and `cognitoCallback` are **flat** action names, like `login.do`
+> and `logout.do`, not `{crp}/action`. Registering them with `unloggedStack` would make both **permanently
+> unreachable**: every request 404, with the action never entered.
+>
+> **Use `cognitoUnloggedStack`** — declared in `struts-home.xml` as `i18nFile` + `defaultStack`, both inherited
+> from `marlo-default`. That reproduces `unloggedStack`'s actual intent for an unauthenticated, non-crp-prefixed
+> action (i18n plus the standard pipeline, no `requireUser`) without the two interceptors that assume a
+> `{crp}/action` URL shape. `i18nFile` is safe pre-auth: `InternationalitazionFileInterceptor` guards every
+> branch on `session.containsKey(SESSION_CRP)` and always reaches `invocation.invoke()`.
+>
+> This still satisfies TRD §4.3 rule 1 — the action names a stack, which is more than the `login.do` precedent
+> does (it relies on the package default). `CognitoUnloggedStackReachabilityTest` drives the real
+> `ValidCrpActionInterceptor` against `actionName="cognitoLogin"` and proves the 404.
+>
+> **Recorded here rather than left as an XML comment**, because an implementer reading this section is exactly
+> who would otherwise ship T09's callback unreachable — the half that receives the authorization code.
+
 No `canEdit*` gates: nothing is edited. `doGetAuthorizationInfo()` is **not modified**, so roles, permissions, and `crp_users` scoping behave identically regardless of which path authenticated.
 
 **Membership is still enforced** inside the shared tail (`existCrpUser`, `LoginAction.java:236`). A valid IdP authentication does not grant access to a Global Unit the user does not belong to.
@@ -314,7 +435,7 @@ No `canEdit*` gates: nothing is edited. `doGetAuthorizationInfo()` is **not modi
 
 A crafted `cognitoLogin.do` for a disabled Global Unit is rejected. The client's answer is never an authorization decision.
 
-Resolution uses `CustomParameterManager.getAllCustomParametersByGlobalUnitId()` — the same manager `LoginAction` already uses, called earlier.
+Resolution goes through **one shared resolver**, `CognitoAuthSpecificity.isActiveFor(GlobalUnit, CustomParameterManager, ParameterManager)` in `marlo-data/.../security/` — `COALESCE(active custom_parameters value, parameters.default_value)`. *(Corrected 2026-08-31 during T10, closing PS-16: this line named `getAllCustomParametersByGlobalUnitId()`, and MARLO's runtime convention `BaseAction.hasSpecificities` ignores `default_value` entirely, so the three resolution points above were already drifting toward three different answers. **T11 must call the shared resolver, not write a fourth reading.**)*
 
 ### 9.3 Configuration must not break startup
 
@@ -387,7 +508,15 @@ A valid IdP token proves who the person is **at CGIAR**. It does not grant MARLO
 
 > **Gate 2 was missing from revision 1, and its absence was an authentication bypass.** Many MARLO *local* accounts belong to CGIAR staff and carry an `@cgiar.org` address with `is_cgiar_user = 0` — the population `requirements.md` OQ-1 exists to count. Without gate 2, anyone able to authenticate at the CGIAR IdP for such an address would obtain a MARLO session for a **local** account, without its MD5 password — bypassing the very path this spec declares out of scope and untouched.
 >
-> The flag is **also** re-checked here, not only in `CognitoLoginAction`: that action runs before the redirect and does not yet know who the user is, so it can verify the Global Unit's flag but not `is_cgiar_user`. Both halves of §9's formula must be verified where identity is known.
+> The flag is **also** re-checked here, not only in `CognitoLoginAction`. Both halves of §9's formula must be verified where identity is known.
+>
+> **Corrected 2026-08-31, during T08.** This paragraph previously read *"that action runs before the redirect and does not yet know who the user is, so it can verify the Global Unit's flag but not `is_cgiar_user`"* — and `tasks.md` T08 simultaneously required an `is_cgiar_user` re-check with a named test for it. Both could not be true.
+>
+> **The premise was the wrong half.** `CognitoLoginAction` *does* have an email: the wizard's step 1 (`crpByEmail.do`) collects it before step 3 is reachable, so it can be submitted. What the action does **not** have is *proof* that the person submitting it owns that address.
+>
+> So T08's check is real and worth having, but it is a **pre-filter, not an authorization gate**: it stops an ineligible account from being sent on a pointless round trip, using an unverified email. **The authoritative gate is §13.1's, applied in the callback against the identity the ID token actually proves.** Removing T08's check would degrade the experience; removing the callback's would be the authentication bypass this section exists to prevent. Never treat them as interchangeable.
+>
+> **One consequence T08 must honor and does:** because the email is attacker-supplied on an unauthenticated endpoint, its two refusal branches — *flag off* and *not a CGIAR account* — return the **same** i18n key, and "no such user" is folded into the second. A distinguishable refusal here would be a user-enumeration oracle, which is the same class of leak SEC-006 forbids in the callback.
 
 **Authentication is federated; authorization never leaves MARLO.**
 
@@ -415,7 +544,7 @@ The ordering is security-relevant because DD-4 stores `state`, `nonce`, verifier
 ```
 ① read + DELETE state, nonce, verifier, globalUnitId, returnUrl from the pre-auth session
 ② exchange code, validate token          (needs nonce from ①)
-③ map claim → users row; apply the four gates of §13.1
+③ map claim → users row; apply **gates 1-3** of §13.1 (gate 4, `crp_users` membership, is applied at ⑦ inside `finishLogin`)
 ④ capture carry-forward values into locals
 ⑤ subject.getSession().stop()            ← pre-auth session destroyed
 ⑥ subject.login(CognitoAuthenticationToken)  ← new session created
@@ -458,7 +587,7 @@ Phase 4 is not in this spec, and **is unreachable for type-2/5 Global Units** wh
 **DD-1 — The realm consumes the assertion directly; the `Authenticator` seam is NOT used.**
 *Problem:* add a third authentication mechanism without destabilizing two working ones.
 *Revision 1 was wrong.* It claimed "the existing seam already supports" this. `Authenticator.java:32` declares exactly `Map<String,Object> authenticate(String email, String password)` — it cannot carry a validated assertion. Every workaround was worse: changing the shared interface would force edits to `DBAuthenticator` (which `family.md` declares untouched), and smuggling a serialized assertion through the `password` parameter is precisely what D-2 exists to catch.
-*Decision:* keep one realm; dispatch on token type; the realm verifies the `CognitoAssertion` carried by the token. **`Authenticator.java`, `DBAuthenticator`, and `LDAPAuthenticator` are not modified at all.**
+*Decision:* keep one realm; dispatch on token type; the realm **accepts** the already-validated `CognitoAssertion` carried by the token and performs no verification of its own *(wording corrected 2026-08-31: "verifies" was the reading that produced the principal defect, by treating the realm as an identity-processing component rather than a carrier)*. **`Authenticator.java`, `DBAuthenticator`, and `LDAPAuthenticator` are not modified at all.**
 *Rejected:* a `default` method on `Authenticator` (widens a shared interface for one caller); a second Shiro `Realm` (changes how *every* login resolves, including local ones).
 
 **DD-2 — The password input is removed from the DOM, and the control sits outside the form.**
@@ -469,10 +598,10 @@ Phase 4 is not in this spec, and **is unreachable for type-2/5 Global Units** wh
 
 **DD-3 — The specificity is resolved from the selected Global Unit, not `hasSpecificities()`.**
 *Problem:* the session-backed helper is empty at authentication time (`BaseAction.java:6574`).
-*Decision:* query `CustomParameterManager` directly, server-side, at the three points in §9.2.
+*Decision:* resolve the flag server-side at the three points in §9.2, **through the single shared resolver `CognitoAuthSpecificity.isActiveFor(...)`** — not by querying a manager directly in each action. *(Corrected 2026-08-31 during T10, closing PS-16: "query `CustomParameterManager` directly" is what produced three independent readings, one of which ignored `parameters.default_value` entirely.)*
 *Rejected:* **pre-populating the session with the Global Unit's custom parameters before authentication.** The objection is not that a pre-auth session exists — DD-4 deliberately uses one — but that custom parameters carry authorization-relevant configuration, and writing them for an unauthenticated visitor exposes a Global Unit's configuration to anyone who reaches step 2. *(Revision 1 gave "session fixation" as the reason, which condemned DD-4's own mechanism; §13.3 handles fixation directly.)*
 
-**DD-4 — Round-trip state lives in the server-side session, keyed by `state`.**
+**DD-4 — Round-trip state lives in the server-side session, under a fixed key, matched on `state`.** *(Heading corrected 2026-08-31: it read "keyed by `state`", which the original T08 implementation followed literally into the per-state map this decision's own Concurrency clause rejects. The state travels inside the single stored object.)*
 *Problem:* Global Unit, nonce, verifier, and return URL must survive the redirect and must not be attacker-controllable.
 *Decision:* bind all four server-side; the callback reads them from the session, never from the returned URL. Read-and-delete on first use (§13.2).
 *Rejected:* encoding any of them in the redirect URI or a client cookie — that lets a caller choose the Global Unit they return with, turning a UX convenience into an access-control input. `crp_users` would still block it, but that check should not be the only thing standing there.
@@ -480,7 +609,7 @@ Phase 4 is not in this spec, and **is unreachable for type-2/5 Global Units** wh
 
 **DD-5 — Validate in the callback; keep the realm I/O-free.**
 *Problem:* Shiro realms performing network calls are hard to test — today's `LDAPAuthenticator` demonstrates it.
-*Decision:* the callback validates and produces a `CognitoAssertion`; the realm verifies an already-validated value object.
+*Decision:* the callback validates and produces a `CognitoAssertion`; the realm **accepts** an already-validated value object — it verifies nothing and performs no I/O. **Consequence, stated rather than left implicit:** a `CognitoAuthenticationToken` is therefore a "log in as this `users.id`" capability, mintable anywhere on the `marlo-data` classpath. That is intended under DD-5, and it is why T09's gates are the only thing standing between a validated token and a session.
 *Consequence:* every SEC-001 rejection case is a **pure unit test** — no network, no container, no mock server. With three test classes in the entire repository, testability decided this, not elegance.
 
 **DD-6 — `CognitoCallbackAction extends LoginAction`; the tail becomes `finishLogin(User, GlobalUnit, String)`.**
@@ -511,7 +640,7 @@ ADR-6 records *"Apache Shiro for authentication and authorization; CGIAR AD is t
 |---|---|---|---|
 | R-D1 | The `finishLogin` extraction (DD-6) silently changes local-login behavior | Design | Its own task, its own review, done **first**. One declared change only (§2.2); Reviewer FAILs any other delta |
 | R-D2 | Identity claim unresolved — `sub`, `oid`, or email? Mapping on mutable email orphans accounts | **OQ-9** | Blocks the mapping task. Design supports any; the choice is CGIAR IT's |
-| R-D3 | `crpByEmail.do` becomes an authentication-type oracle for a known email | Design §4 | Accepted. Existence and membership are already disclosed; consider rate limiting as separate work |
+| R-D3 | `crpByEmail.do` becomes an authentication-type oracle for a known email — **and, since T10, an existence oracle for an account with zero Global Units** | Design §4 | Accepted, **acceptance widened 2026-08-31**. The original rationale ("existence and membership are already disclosed") was true for accounts *with* Global Units and **false** for accounts with none, which previously returned `user: null`, indistinguishable from an unknown email. Accepted anyway because `login.js:418` collapses both cases to the same `emailNotFound` UI state, so the disclosure is wire-only — see §4's amendment for the before/after payloads. Rate limiting remains separate work |
 | R-D4 | `/api/**` `authcBasic` breaks for CGIAR users — federated identities cannot use Basic auth | **OQ-4** | **No gate exists.** Discovery task before phase 1. TRD §8.4 also drifts (`MarloShiroConfiguration.java:113` says `authcBasic`, TRD says tokens) — fold that correction into the same task |
 | R-D5 | No frontend or visual test harness, so the wizard branch has no automated UI gate | D-5 | Manual keyboard/screen-reader walkthrough at the HITL pause + T6 review of a screenshot |
 | R-D6 | CGIAR IT may decline to federate | **OQ-3** | Blocks implementation, not specification |
