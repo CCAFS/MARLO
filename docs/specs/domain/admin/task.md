@@ -2,7 +2,7 @@
 
 **Spec ID:** DOMAIN-ADMIN-001
 **Status:** In Progress — T01…T09, T11 and T13 done; T12 triaged with issue creation pending epic confirmation;
-T10 (PMU review) is the only task waiting on someone else
+T10 (PMU decisions) deferred by the team
 **Owner:** IBD Team — Kenji Tanaka
 **Last Updated:** 2026-09-01
 **Target merge:** staging (then promoted to main per release process).
@@ -136,8 +136,13 @@ T10 (PMU review) is the only task waiting on someone else
 - **Files touched:** `roles-permissions-catalog.md` §12, `requirements.md` §8
 - **Constitutional checks:** review by IBD lead plus PMU or QA lead, per the story's acceptance criteria.
 - **Tests:** not applicable.
-- **Done when:** the five open questions are answered and the role purposes are confirmed by PMU.
-- **Verification:** review comments recorded in the Decision Log. **Pending.**
+- **Done when:** the seven open questions in the catalog §12 are answered and the role purposes are confirmed
+  by PMU.
+- **Verification:** review comments recorded in the Decision Log. **Deferred (2026-09-01)** — the team decided the
+  immediate goal is an accurate picture of the current configuration, which T01…T09, T11 and T13 deliver. These
+  decisions will be evaluated later; the questions stay recorded in the catalog §12. This task does not block the
+  spec, and the documentation is complete without it: everything published is descriptive, so nothing in it
+  changes depending on how the questions are answered.
 
 ### DOMAIN-ADMIN-001-T11 — Reconfirm the snapshot against production
 
@@ -244,6 +249,8 @@ Revert the documentation commit. Nothing else changes: no schema, no configurati
 - [x] Findings recorded with evidence, no configuration changed (FN-009, SEC-001).
 - [x] Snapshot environment and date stated in the header (NF-002).
 - [ ] Roles validated with system owners (T10) — the story's "All roles are validated with system owners".
+      **Deferred by the team on 2026-09-01**: understanding the current configuration takes priority; the seven
+      questions are recorded in the catalog §12 for later evaluation.
 - [x] Snapshot confirmed to reflect production data (T11).
 - [x] Findings triaged by real impact, with a documented reason for each one that gets no ticket (T12 triage).
 - [ ] Tickets created for the accepted findings, once the parent epic is confirmed (T12 creation).

@@ -148,6 +148,9 @@ the next global unit will be 48 and will be silently classified as AICCRA the mo
 
 Tracked as `task.md` T10. None of these is a defect; each needs a decision before any work exists.
 
+> **Deferred — 2026-09-01.** The team decided that understanding the configuration as it stands comes first.
+> These are recorded for later evaluation; nobody is waiting on them and no recommendation is offered.
+
 | Finding | Question | If the answer is "change it" |
 |---|---|---|
 | 11.8 | Should `PMU`/PMC reach the Admin module? It has the widest editorial reach (`crp:{0}:project:*`) but no `admin:canAcess`. | Grant read-only admin access, or document the exclusion as intended. |

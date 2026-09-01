@@ -604,6 +604,11 @@ is `PC`, not `CP` — the two acronyms are easy to transpose and their capabilit
 
 ## 12. Open questions for validation
 
+> **Status: deferred — 2026-09-01.** The team's position is that the priority for now is to understand the
+> configuration as it stands, which §1–§11 and §13 document. These questions are recorded so they are not lost;
+> they will be evaluated later. No recommendation is offered here, and none of them blocks the catalog: every
+> statement in this document describes the system as configured, not as it should be.
+
 1. `SL` is permission-less by platform convention (§11.1). Should the Admin UI say so, so administrators stop
    assigning it expecting access? And separately, why does `Genebank` carry 947 grants on that role?
 2. Should `PMU`/PMC gain read access to the Admin module (§11.8)?
