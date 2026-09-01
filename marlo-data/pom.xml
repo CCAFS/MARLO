@@ -33,6 +33,12 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
+		<!-- CHG-COGNITO-AUTH-001-T05: JWKS retrieval + ID-token signature/claim validation. Version is managed
+			by marlo-parent's dependencyManagement (nimbus-jose-jwt.version), added there by T03. -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+		</dependency>
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
