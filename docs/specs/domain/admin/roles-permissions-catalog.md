@@ -48,7 +48,10 @@ which is why reading the `role_permissions` table alone is not enough.
 
 ## 2. Role catalog
 
-20 roles per AICCRA global unit. `Perms` counts distinct rows in `role_permissions`.
+20 roles per AICCRA global unit. `Perms` counts distinct rows in `role_permissions`. **`Perms` is an upper
+bound, not what a user gets:** project- and program-scoped grants only materialize for the objects a user is
+actually attached to. Verified at runtime — `RPL` carries 102 configured grants but resolved to 38 effective rows
+for a user with no projects in the region (see §13.2).
 `AICCRA label` is what the UI actually renders (Admin → Users tabs and the header role list), produced by
 `Role.getAiccraAcronymDimanic()` (`marlo-data/.../data/model/Role.java`); when that method has no mapping it
 falls back to `roles.description`.
@@ -87,14 +90,14 @@ falls back to `roles.description`.
 | `CRP-Admin` | Program administrator for one global unit. | `crp:*` + `crp:{0}:*` | Admin module (`admin:*`), shared projects, impact pathway submit / unsubmit per program | Holds `crp:*`, i.e. the grant is not limited to its own global unit. Sole owner of the Admin module besides `SuperAdmin`. |
 | `PMU` (AICCRA label **PMC**) | Program Management Committee — program-wide editorial authority. | `crp:{0}:project:*` (every project) + program-level synthesis | All project sections, impact pathway, POWB synthesis, annual report synthesis, studies, publications, funding sources | **No Admin-module access.** Cannot manage users, phases or institutions. |
 | `FPL` (AICCRA label **Theme Leader**) | Leads one theme (flagship). | Projects and programs linked to the theme via `crp_program_leaders` | Impact pathway for the theme, all project sections, annual report synthesis, POWB, summaries | Project-level rows only materialize for projects mapped to the leader's program. |
-| `FPM` (AICCRA label **Theme Manager**) | Operational manager of a theme. | Same resolution path as `FPL` | Near-identical to `FPL` (132 vs 144 grants) | Lacks `impactPathway:{1}:submit` and `powbSynthesis:{1}:manage`; cannot submit the theme's impact pathway. |
+| `FPM` (AICCRA label **Theme Manager**) | Operational manager of a theme. | Same resolution path as `FPL` | Like `FPL` minus the 13 grants listed at right (132 vs 144) | Lacks, versus `FPL`: `impactPathway:{1}:*`, `:submit`, `:unsubmitted`; `powbSynthesis:{1}:manage:canSubmmit`; `reportSynthesis:{1}:submit`; the four `project:{1}:budgetByFlagship` flags (`bilateral`, `canEdit`, `center`, `w3`); `contributionsLP6` (+`:canEdit`); `impacts` (+`:canEdit`). Holds one grant `FPL` does not: `project:{1}:fundingSource:gender`. So it cannot submit or unsubmit the theme's impact pathway, nor submit the annual report synthesis. |
 | `RPL` | Leads one region. | Projects and programs mapped to the region | Project sections, impact pathway edit, publications, studies, POWB collaboration | No `budgetByFlagship`, no `budgetByCoAs`. |
 | `RPM` | Operational manager of a region. | Same resolution path as `RPL` | Project sections incl. full `budgetByPartners`, publications, studies | Only role with a wildcard on `budgetByPartners`. |
 | `PL` (AICCRA label **Cluster Leader**) | Leads one cluster / project. | Single project, resolved from `project_partner_persons` | All editable sections of that project + submit | Granted implicitly when the user is set as project leader in the Partners section; see §7. |
 | `PC` (AICCRA label **Cluster Coordinator**) | Coordinates one cluster / project. | Single project, same resolution as `PL` | Same sections as `PL` minus `manage` (submit), `partner`, `evaluation`, `deleteProject` | Cannot submit the project. Largest population in AICCRA (145 users on GU 45). |
 | `CP` (AICCRA label **Contact Point**) | Institutional contact point for a PPA partner. | Projects where the user's institution participates | Project sections; `unsubmitted` | Assigned from Admin → PPA Partners; gated by `crp_has_contact_point`. |
 | `ML` | Management Liaison for a liaison institution. | Projects attached to the liaison institution | Project sections, publications, summaries, `deleteProject` | 0 users in both AICCRA global units — inactive in practice. |
-| `CL` | Cluster Leader (parallel definition to `PL`). | Project-scoped | 58 grants, a subset of `PL` | 0 users in both AICCRA global units. Its label collides with `PL`'s AICCRA label — see §11.3. |
+| `CL` | Cluster Leader (parallel definition to `PL`). | Project-scoped | 58 grants: 57 shared with `PL`, 1 exclusive | **Not a subset of `PL`.** It uniquely holds `project:{1}:unsubmitted`, which `PL` lacks, and lacks 24 grants `PL` holds. Net effect: `CL` can unsubmit but not submit, `PL` can submit but not unsubmit (§11.11). 0 users in both AICCRA global units. Its label collides with `PL`'s AICCRA label — see §11.3. |
 | `FM` | Finance person. | Funding sources + project budget sections | `fundingSource:*`, `budgetByPartners`, `budgetByFlagship`, `partner`, `projectSwitch` | Explicitly excluded from the generic branch of `getPermissions` (`r.acronym != 'FM'`); resolved through dedicated branches keyed on the finance person of an institution. 0 users. |
 | `DM` | Data Manager. | Global unit | `admin:canAcess` (read-only entry to the Admin module), publication add, `synthesisProgram` | Second role with Admin-module visibility, without `admin:*`. 0 users. |
 | `SL` | Site Integration Leader. | — | **None** | 0 rows in `role_permissions`. The role is a label only; 13 distinct users hold it on GU 45. See §11.1. |
@@ -510,6 +513,25 @@ semantics that matches any global unit, so the role is effectively cross-tenant.
 `FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD` have 0 users on both AICCRA global units while carrying up to 132
 grants. They should be either retired, or documented as reserved so audits do not read them as active access.
 
+### 11.11 `PL` can submit but not unsubmit; `CL` is the mirror image
+
+`PL` holds `project:{1}:manage:submitProject` and **not** `project:{1}:unsubmitted`. `CL` holds
+`project:{1}:unsubmitted` and **not** the submit grant — it is the only project-scoped role with that shape, and
+the only grant it has that `PL` lacks. Since `CL` has no users, in practice a Cluster Leader (`PL`) can submit a
+project but cannot reopen it, and must ask a role with `unsubmitted` (`CP`, `FPL`, `FPM`, `RPL`, `RPM`, or `PMU`
+through its wildcard). Worth confirming this is the intended workflow rather than an artifact of `CL` being a
+half-finished duplicate of `PL`.
+
+### 11.12 Wildcard holders are invisible to naive audit queries
+
+Querying `role_permissions` for a specific action under-reports who can perform it, because wildcard grants match
+without appearing. Shiro's `WildcardPermission` treats a granted permission with fewer parts than the checked one
+as implying the remainder, so `crp:{0}:project:*` (held by `PMU`) implies
+`crp:<GU>:<phase>:project:<id>:manage:submitProject`, `…:unsubmitted` and `…:deleteProject` for **every** project,
+even though `PMU` holds none of those grants explicitly. The same applies to `CRP-Admin` (`crp:*`) and
+`SuperAdmin` (`*`). Any access audit must expand wildcards before drawing conclusions — see the rosters in §13.3,
+which are annotated accordingly.
+
 ---
 
 ## 12. Open questions for validation
@@ -519,6 +541,188 @@ grants. They should be either retired, or documented as reserved so audits do no
 3. Is `CRP-Admin`'s cross-tenant `crp:*` grant intended (§11.9)?
 4. Which of the eight unused roles should be retired for AICCRA III (§11.10)?
 5. Should the feedback matrix be seeded for global unit 47 before AICCRA III enables the module (§11.7)?
+6. Is it intended that a Cluster Leader (`PL`) can submit a project but not reopen it, while `CL` — which has no
+   users — is the only project role that can unsubmit without submitting (§11.11)?
+
+
+---
+
+## 13. Validation results (2026-09-01)
+
+This section records the technical validation of the catalog: every claim in §3 was turned into an assertion and
+evaluated against the database. It closes the acceptance criterion *"Permissions are verified against the current
+system configuration to ensure accuracy"*. The remaining criterion — *"All roles are validated with system owners"*
+— is a human review, tracked as `task.md` T10.
+
+### 13.1 Static assertions — 43 / 43 passed
+
+Assertions cover, per role: exact grant sets for the small roles (`SuperAdmin`, `E`, `G`, `AR`, `ARW`, `CD`, `DM`,
+`SL`), wildcard reach (`CRP-Admin`, `PMU`, `RPM`), documented exclusions (`RPL` budgets, `FM` project sections,
+`PMU` admin access, `PC` submit/partner/evaluation/delete), pairwise differences (`FPL` vs `FPM`, `PL` vs `PC`,
+`CL` vs `PL`), the admin-entry roster, and grant-set parity between global units 45 and 47.
+
+Two claims in the first draft of this catalog were **wrong and have been corrected**:
+
+| Claim as first written | What the database shows | Fixed in |
+|---|---|---|
+| "`CL` … 58 grants, a subset of `PL`" | `CL` is **not** a subset: 57 grants are shared, but `CL` uniquely holds `project:{1}:unsubmitted`, and it lacks 24 grants `PL` holds. | §3, §11.11 |
+| "`FPM` … lacks `impactPathway:{1}:submit` and `powbSynthesis:{1}:manage`" | Imprecise and incomplete. The grant is `powbSynthesis:{1}:manage:canSubmmit`, and `FPM` lacks 13 grants in total while holding one `FPL` does not (`project:{1}:fundingSource:gender`). | §3 |
+
+### 13.2 Runtime validation — `CALL getPermissions(user_id)`
+
+Executed for every role that has users on global unit 47, confirming placeholder expansion end to end.
+"Phase-qualified" counts rows carrying the `crp:AICCRA_III:Planning:2026:` prefix; "unresolved `{1}`" counts rows
+that reached the runtime with the placeholder still in place (finding §11.5).
+
+| Role | User | Configured grants | Effective rows | Phase-qualified | Project-scoped | Unresolved `{1}` |
+|---|---:|---:|---:|---:|---:|---:|
+| `SuperAdmin` | 3861 | 3 | 505 | 0 (holds bare `*`) | 0 | 4 |
+| `CRP-Admin` | 1082 | 9 | 4 | 4 | 0 | 0 |
+| `PMU` | 1 | 65 | 131 | 131 | 1 | 0 |
+| `FPL` | 1 | 144 | 170 | 167 | 0 | 4 |
+| `RPL` | 1 | 102 | 38 | 35 | 0 | 4 |
+| `FPM` | 3059 | 132 | 38 | 38 | 0 | 4 |
+| `RPM` | 3059 | 99 | 19 | 19 | 0 | 4 |
+| `PC` | 1 | 70 | 70 | 70 | 69 | 0 |
+
+What this confirms:
+
+- **Effective access is driven by attachments, not by grant count.** `RPL` (102 configured) resolved to 38 rows
+  for a user with no projects in the region, while `FPL` (144 configured) resolved to 170 rows because each
+  program-scoped grant expands once per program the user leads. The `Perms` column in §2 is a ceiling.
+- **Project scoping works as documented.** `PC` produced 69 project-scoped rows, all for the single project where
+  the user is coordinator (`102093`).
+- **Program scoping works as documented.** `FPM` produced `impactPathway:190:canEdit`, with the program id
+  resolved from `crp_program_leaders`.
+- **Finding §11.5 reproduces consistently.** Exactly four grant families reach the runtime with `{1}` unresolved,
+  for every role that holds them.
+
+Roles with no users on either AICCRA global unit (`FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD`, and `SL` which
+has no grants at all) cannot be runtime-validated here; their static grant sets were asserted instead. `SL` also
+has 13 users on global unit 45, but that global unit has no editable phase, so `getPermissions` emits nothing
+for it.
+
+### 13.3 Validated workflow capability rosters
+
+Who can perform each workflow action. **Explicit** lists roles holding the literal grant; **via wildcard** lists
+roles that also match through a broader grant, per §11.12.
+
+| Action | Explicit grant holders | Also allowed via wildcard |
+|---|---|---|
+| Submit a project | `CP`, `FPL`, `FPM`, `ML`, `PL`, `RPL`, `RPM` | `PMU`, `CRP-Admin`, `SuperAdmin` |
+| Unsubmit a project | `CL`, `CP`, `FPL`, `FPM`, `RPL`, `RPM` | `PMU`, `CRP-Admin`, `SuperAdmin` |
+| Delete a project | `FPL`, `FPM`, `ML`, `RPL`, `RPM` | `PMU`, `CRP-Admin`, `SuperAdmin` |
+| Submit an impact pathway | `CRP-Admin`, `FPL`, `RPL` | `PMU` (holds `impactPathway:*`), `SuperAdmin` |
+| Submit the annual report synthesis | `FPL`, `PMU` | `CRP-Admin`, `SuperAdmin` |
+| Reach Summaries | `FPL`, `FPM`, `ML`, `RPL`, `RPM` | `PMU` (via `crp_pmu_rol` role-id check in `canAcessSumaries()`), `CRP-Admin`, `SuperAdmin` |
+
+Note that `PL` is absent from the unsubmit roster and `PC` from the submit roster — both by configuration, see
+§11.11 and §3.
+
+### 13.4 What could not be validated in this environment
+
+| Item | Why | How to close |
+|---|---|---|
+| User populations per role | The local database is a copy; production may differ | Run §10.1 in production (`task.md` T11) |
+| Findings §11.1, §11.7, §11.10 | Depend on production state (users, feedback rows) | Same as above |
+| Runtime rows for 9 roles | No users on either AICCRA global unit locally | Re-run §10.4 in production for a user of each role |
+| Node-grant cascade (`base` implies `base:field`) | Shiro evaluation happens in the running application | Confirmed by code reading (`BaseAction.java:6348`); a UI walkthrough would confirm behaviourally |
+| Role purposes and intent | Not derivable from data | PMU / QA review (`task.md` T10) |
+
+### 13.5 Re-runnable assertion suite (SQL)
+
+The checks below were executed against `aiccradb1` on 2026-09-01 and all returned `PASS`. They need only the
+`mysql` client, so whoever holds production access can close `task.md` T11 by running them there. Set `@gu` to the
+global unit under review.
+
+```sql
+SET @gu = 47;
+
+SELECT 'Admin-module entry limited to CRP-Admin and DM' AS check_name,
+  CASE WHEN GROUP_CONCAT(DISTINCT r.acronym ORDER BY r.acronym) = 'CRP-Admin,DM'
+       THEN 'PASS' ELSE CONCAT('FAIL: ', GROUP_CONCAT(DISTINCT r.acronym ORDER BY r.acronym)) END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND p.permission = 'crp:{0}:admin:canAcess';
+
+SELECT 'PMU holds no admin grant' AS check_name,
+  CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE CONCAT('FAIL: ', COUNT(*), ' admin grants') END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'PMU' AND p.permission LIKE '%admin%';
+
+SELECT 'PMU holds the all-projects wildcard' AS check_name,
+  CASE WHEN COUNT(*) = 1 THEN 'PASS' ELSE 'FAIL: wildcard absent' END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'PMU' AND p.permission = 'crp:{0}:project:*';
+
+SELECT 'CRP-Admin holds the cross-tenant crp:* grant' AS check_name,
+  CASE WHEN COUNT(*) >= 1 THEN 'PASS (cross-tenant, see 11.9)' ELSE 'FAIL: absent' END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'CRP-Admin' AND p.permission = 'crp:*';
+
+SELECT 'SuperAdmin grant set is exactly {*, api:*, superadmin:canEdit}' AS check_name,
+  CASE WHEN GROUP_CONCAT(DISTINCT p.permission ORDER BY p.permission) = '*,api:*,superadmin:canEdit'
+       THEN 'PASS' ELSE CONCAT('FAIL: ', GROUP_CONCAT(DISTINCT p.permission ORDER BY p.permission)) END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'SuperAdmin';
+
+SELECT 'SL has zero grants' AS check_name,
+  CASE WHEN COUNT(rp.id) = 0 THEN 'PASS (see 11.1)' ELSE CONCAT('FAIL: ', COUNT(rp.id)) END AS result
+FROM roles r LEFT JOIN role_permissions rp ON rp.role_id = r.id
+WHERE r.global_unit_id = @gu AND r.acronym = 'SL';
+
+SELECT 'RPM is the only role with a budgetByPartners wildcard' AS check_name,
+  CASE WHEN GROUP_CONCAT(DISTINCT r.acronym ORDER BY r.acronym) = 'RPM'
+       THEN 'PASS' ELSE CONCAT('FAIL: ', GROUP_CONCAT(DISTINCT r.acronym ORDER BY r.acronym)) END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND p.permission = 'crp:{0}:project:{1}:budgetByPartners:*';
+
+SELECT 'PL can submit but not unsubmit' AS check_name,
+  CASE WHEN SUM(p.permission = 'crp:{0}:project:{1}:manage:submitProject') = 1
+        AND SUM(p.permission = 'crp:{0}:project:{1}:unsubmitted')          = 0
+       THEN 'PASS (see 11.11)' ELSE 'FAIL' END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'PL';
+
+SELECT 'CL can unsubmit but not submit' AS check_name,
+  CASE WHEN SUM(p.permission = 'crp:{0}:project:{1}:unsubmitted')          = 1
+        AND SUM(p.permission = 'crp:{0}:project:{1}:manage:submitProject') = 0
+       THEN 'PASS (see 11.11)' ELSE 'FAIL' END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'CL';
+
+SELECT 'PC cannot submit the project' AS check_name,
+  CASE WHEN SUM(p.permission = 'crp:{0}:project:{1}:manage:submitProject') = 0
+       THEN 'PASS' ELSE 'FAIL' END AS result
+FROM roles r JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id
+WHERE r.global_unit_id = @gu AND r.acronym = 'PC';
+
+SELECT 'Grant sets are identical on global units 45 and 47' AS check_name,
+  CASE WHEN COUNT(*) = 0 THEN 'PASS'
+       ELSE CONCAT('FAIL: ', COUNT(*), ' asymmetric grants') END AS result
+FROM (
+  SELECT g.acronym, g.permission
+  FROM (
+    SELECT r.acronym, p.permission, r.global_unit_id
+      FROM roles r
+      JOIN role_permissions rp ON rp.role_id = r.id
+      JOIN permissions p       ON p.id = rp.permission_id
+     WHERE r.global_unit_id IN (45, 47)
+     GROUP BY r.acronym, p.permission, r.global_unit_id
+  ) g
+  GROUP BY g.acronym, g.permission
+  HAVING COUNT(DISTINCT g.global_unit_id) <> 2
+) asymmetric;
+
+SELECT 'Roles held by nobody, per global unit' AS check_name,
+  CONCAT('GU45: ', IFNULL((SELECT GROUP_CONCAT(r.acronym ORDER BY r.acronym) FROM roles r
+           WHERE r.global_unit_id = 45 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.role_id = r.id)), 'none'),
+         ' | GU47: ', IFNULL((SELECT GROUP_CONCAT(r.acronym ORDER BY r.acronym) FROM roles r
+           WHERE r.global_unit_id = 47 AND NOT EXISTS (SELECT 1 FROM user_roles ur WHERE ur.role_id = r.id)), 'none')) AS result;
+```
+
+Result on the 2026-09-01 snapshot: every check `PASS`; the population check returned
+`GU45: AR,ARW,CD,CL,DM,E,FM,ML | GU47: AR,ARW,CD,CL,CP,DM,E,FM,G,ML,PL,SL`, which is the evidence behind
+finding §11.10.
 
 ---
 

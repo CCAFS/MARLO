@@ -66,6 +66,11 @@ Unused in AICCRA today: `FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD`.
   `fundingSource:{1}:canEdit`, `fundingSource:{1}:budget`, `crpIndicators:{1}:*`, `synthesisProgram:{1}:*`.
 - Feedback permissions exist for global unit 45 only; global unit 47 has none.
 - `permissions` contains `crp:{0}:fundingSource:*` twice (ids 450, 451).
+- `PL` can submit a project but **cannot** unsubmit it; `CL` is the mirror (unsubmit, no submit). `CL` is not a
+  subset of `PL` despite looking like a duplicate.
+- **Never audit access with a literal permission query.** Wildcard grants match without appearing in
+  `role_permissions`: `crp:{0}:project:*` (PMU) implies submit, unsubmit and delete on every project, because
+  Shiro treats a shorter granted permission as implying the remaining parts. Expand wildcards first.
 
 Details and evidence: `roles-permissions-catalog.md` §11.
 
@@ -82,6 +87,17 @@ SELECT id, description, year, editable FROM phases WHERE global_unit_id = 47 ORD
 -- Role ids for a global unit
 SELECT id, acronym, description, `order` FROM roles WHERE global_unit_id = 47 ORDER BY `order`;
 ```
+
+## Validated invariants
+
+Checked against the database on 2026-09-01, 43/43 assertions passing. Re-runnable SQL lives in
+`roles-permissions-catalog.md` §13.5 — run it before trusting any statement here in a new environment.
+
+- Grant sets per role are identical on global units 45 and 47.
+- Only `CRP-Admin` and `DM` hold `admin:canAcess`; `PMU` holds no admin grant at all.
+- Configured grant counts are an **upper bound**: `RPL` carries 102 grants but resolved to 38 effective rows for
+  a user with no projects in the region. Effective access depends on `crp_program_leaders`,
+  `project_partner_persons` and `liaison_institutions` attachments.
 
 ## Related docs
 

@@ -159,6 +159,22 @@
 - **Done when:** each accepted finding has a Jira issue linked back to A2-2022.
 - **Verification:** issue keys appended to the corresponding finding in the catalog. **Pending.**
 
+### DOMAIN-ADMIN-001-T13 — Validate every role against the database
+
+- **Depends on:** T09
+- **Module:** docs
+- **Files touched:** `roles-permissions-catalog.md` §2, §3, §11.11, §11.12, §13
+- **Constitutional checks:** read-only access; findings recorded, not fixed.
+- **Tests:** 43 static assertions plus runtime expansion checks — see §13.1 and §13.2.
+- **Done when:** every claim in §3 is expressed as an assertion and evaluated, and a re-runnable SQL suite exists
+  so the same checks can be executed in another environment.
+- **Verification:** 43/43 assertions pass. Two catalog claims were **wrong and were corrected**: `CL` is not a
+  subset of `PL` (it uniquely holds `project:{1}:unsubmitted`), and the `FPL` vs `FPM` difference is 13 grants,
+  not the two originally stated. Runtime validation covered the 8 roles that have users on global unit 47 and
+  showed configured grant counts are an upper bound (`RPL`: 102 configured, 38 effective). Two findings were
+  added (§11.11 PL/CL submit-unsubmit asymmetry, §11.12 wildcard holders invisible to naive audit queries) and
+  a re-runnable SQL suite published as §13.5. **Done.**
+
 ## 4. Dependency Graph
 
 ```
@@ -173,6 +189,7 @@ T01 (model in code)
         └── T06
 
 T04, T05, T07, T08 ──> T09 (findings + queries)
+                          ├── T13 (validate every role against the DB)
                           ├── T10 (validation with owners)
                           ├── T11 (production reconfirmation)
                           └── T12 (tickets)  [after T10, T11]
@@ -189,6 +206,9 @@ There is no code to unit-test. Verification is evidence-based:
 | Cross-check | Every AICCRA label in §3 traced to `Role.getAiccraAcronymDimanic()` | Matched |
 | Cross-check | Every reachability claim in §9 traced to a `custom_parameters` value or a menu definition | Matched |
 | Negative check | Confirm the authorization tables were not written | Only `SELECT` / `CALL` issued; no DDL/DML |
+| Assertions | 43 static assertions derived from every §3 claim | 43/43 pass; 2 catalog errors found and fixed (T13) |
+| Runtime | Placeholder expansion for all 8 roles with users on GU 47 | Matched; grant counts confirmed to be upper bounds |
+| Re-runnable suite | SQL assertion suite in §13.5 executed on the snapshot | All checks PASS |
 | Review | PMU / QA walkthrough of §3 and §12 | Pending (T10) |
 | Environment | Production reconfirmation of populations, phases and feedback rows | Pending (T11) |
 
@@ -217,5 +237,7 @@ Revert the documentation commit. Nothing else changes: no schema, no configurati
 - [ ] Roles validated with system owners (T10) — the story's "All roles are validated with system owners".
 - [ ] Snapshot reconfirmed against production (T11).
 - [ ] Tickets raised for accepted findings (T12).
+- [x] Every role validated against the database; 43/43 assertions pass and a re-runnable SQL suite is published
+      (T13). This closes the story's criterion "Permissions are verified against the current system configuration".
 - [x] Rendered summary published on Jira A2-2022 (comment `41599`).
 - [ ] Spec reviewed and merged into `staging`.

@@ -157,5 +157,9 @@ what a role can do. The practical consequences, all cited in the PRD problem are
   verified by query — the epic targets AICCRA III, and the distinct permission set per role is identical on both.
 - 2026-09-01 — Findings are recorded, not fixed, inside this spec — the story is explicitly documentation-only
   ("No changes will be made to roles or permissions"); each finding becomes its own ticket under A2-2017.
+- 2026-09-01 — Every §3 claim was turned into a database assertion rather than reviewed by reading — the pass
+  identified two wrong claims in the first draft (`CL` described as a subset of `PL`; the `FPL` vs `FPM` delta
+  understated as two grants instead of thirteen), which a re-read would not have caught. The suite is published
+  as SQL in the catalog §13.5 so it can be re-run in any environment.
 - 2026-09-01 — `docs/detailed-design/detailed-design.md` §8.2 is left untouched despite being inaccurate —
   editing it is a constitutional event requiring an epic proposal and review; the divergence is recorded in §2.
