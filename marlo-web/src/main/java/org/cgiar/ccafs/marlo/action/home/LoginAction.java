@@ -230,6 +230,22 @@ public class LoginAction extends BaseAction {
   }
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
+    return this.finishLogin(loggedUser, loggedCrp, ServletActionContext.getRequest().getHeader("Referer"));
+  }
+
+  /**
+   * Establishes the session for an already-authenticated user and decides where to send them.
+   * <p>
+   * Extracted from {@link #login(User, GlobalUnit)} so that an authentication flow which does not carry a
+   * {@code Referer} header can supply its own return URL (CHG-COGNITO-AUTH-001, DD-6). The only behavioral
+   * change made during the extraction is the null guard on {@code returnUrl}.
+   *
+   * @param loggedUser the authenticated user
+   * @param loggedCrp the Global Unit selected at login
+   * @param returnUrl the URL to return to after login, or {@code null} when the caller has none
+   * @return the Struts result name
+   */
+  protected String finishLogin(User loggedUser, GlobalUnit loggedCrp, String returnUrl) {
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
@@ -287,12 +303,15 @@ public class LoginAction extends BaseAction {
      * Save the user url with trying to enter the system to redirect after
      * loged.
      */
-    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    String urlAction = returnUrl;
     /*
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
+     * The null check is the one behavioral change in this extraction: a request with no Referer header
+     * (Referrer-Policy: no-referrer, curl, Postman, and every caller that has no header to send) used to
+     * throw NullPointerException here.
      */
-    if (urlAction.contains(".do") && !urlAction.contains("logout")) {
+    if (urlAction != null && urlAction.contains(".do") && !urlAction.contains("logout")) {
       this.url = urlAction;
       return LOGIN;
     } else {
