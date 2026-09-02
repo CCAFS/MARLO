@@ -2077,3 +2077,110 @@ cause here.
 inference — *the rework is broken* — was false. What §19.4 got wrong was the direction to look. The right
 first question after an inexplicable red in this repository is **"was anything else running?"**, before
 reaching for an environment blocker to explain it.
+
+---
+
+## 20. T09 — implemented, **FAILed audit on a CRITICAL finding**, reworked, verified — 2026-09-02
+
+The largest task in the spec. Implemented on `sonnet`, audited on `opus`. **FAIL**, with a defect that would
+have taken every CGIAR sign-in down in production.
+
+### 20.1 The CRITICAL finding: `session.stop()` destroyed the session that `finishLogin` writes to
+
+`session.stop()` at step 6 stops **and deletes** the Shiro session. `finishLogin` then writes through
+`BaseAction.getSession()` — which in production is **not** a `HashMap`. It is the Struts `SessionMap`, wrapping
+**the same Shiro session**. Every link verified by the Leader before the rework was dispatched:
+
+| Link | Evidence |
+|---|---|
+| Struts always sees a Shiro-wrapped request | `web.xml:22-25` maps `shiroFilter` to `/*` **before** struts2 (`:44-47`) |
+| Sessions are Shiro-**native**, not container | `MarloShiroConfiguration:100-114` wires `DefaultWebSessionManager` |
+| The map is bound at request start | Struts 6.8.0 `SessionMap` captures `request.getSession(false)` in its constructor |
+| A stopped session throws on write | `ShiroHttpSession.setAttribute` rethrows `InvalidSessionException` as `IllegalStateException` |
+
+**So the only outcome of a *successful* login was HTTP 500** — `LoginAction:254`
+`getSession().put(SESSION_USER, ...)`. The membership-failure branch died the same way at `:282`, and the
+`crpSession` expression reaching `BaseAction:3092` `session.isEmpty()` throws outside its own try/catch.
+
+**The decisive corroboration came from MARLO own code:** `LoginAction.logout():350-351` calls
+`getSession().clear()` **first**, then `subject.logout()`. The new code did the reverse.
+
+**Why ten green tests could not see it:** `CognitoCallbackActionTest:171` did
+`action.setSession(new HashMap<String, Object>())` — substituting away the only object that can express the
+defect. **This is the seventh occurrence in this spec** of *correct in isolation, dead through the real
+framework, certified green by a double gentler than production*. It FAILed T06 twice.
+
+**Fixed** by re-pointing the action session view at the **new** Shiro session after `Subject.login`, and
+rebinding the `ActionContext`. A detail that only compiling against the real version surfaces: the Struts 6.x
+`ActionContext` is **immutable** — there is no `setSession(Map)`, and `withSession(...)` returns a new instance.
+
+### 20.2 The mutation cycle, and a false reading the Leader nearly recorded
+
+The regression tests use `InvalidatedSessionMap`, a double that throws from **every** accessor — harsher than
+production, which is the correct direction for a double.
+
+| Condition | Result |
+|---|---|
+| Fix removed, **full suite** | **Deterministic JVM crash** — `The forked VM terminated without saying properly goodbye`, twice |
+| Fix removed, **single test isolated** | `Tests run: 1, Failures: 1` — `AssertionError: finishLogin must never write through the session step 6 already stopped: java.lang.IllegalStateException: session has been invalidated` |
+| Fix restored | **12/12**, and **122/122** on a clean full run |
+
+**The VM crash was nearly recorded as the result.** It is not evidence: a dead VM says *something* broke, not
+*what detected it* — and the audit own standard is that a mutation reddening everything proves nothing
+specific. Isolating one test produced the real evidence: it fails with **the exact production exception**.
+
+Three hypotheses were discarded **by checking, not by plausibility**: that the crash was environmental
+(refuted — the restored code runs 12/12 green); that the harsh double broke the Surefire error rendering
+(refuted — it overrides neither `toString` nor `hashCode`); and that `getSession()` recursed (refuted —
+`BaseAction:5993` is a bare field read). A fourth near-miss: the on-disk Surefire report said
+`Tests run: 12, Failures: 0` **from an earlier run by the implementer**, and reading it as the Leader own
+result would have certified a crashed run as green.
+
+### 20.3 One audit finding was FALSE, and the implementer refused to comply with it
+
+The audit reported that `listGlobalUnitTypes` has "no producer in Java anywhere", making a new XML comment a
+false claim. **`BaseAction:4627` declares `public List<GlobalUnitType> getListGlobalUnitTypes()`.**
+
+The cause is a case-sensitivity slip: the audit grepped `listGlobalUnitTypes`; the method is
+`getListGlobalUnitTypes` — capital L. The finding arrived with a `file:line` citation and a repo-wide-grep
+claim, and was wrong.
+
+**The implementer did not comply.** It re-read the source, produced the contradicting line, and reworded the
+comment to claim only what it could verify, rather than rewriting a true statement into a false "correction".
+**This is the second time in this spec that an implementer corrected the instruction it was given** — the
+first was the T07 `saveUser` Constitutional check, which was the Leader error. Both instructions were
+confident, cited, and wrong.
+
+### 20.4 The rest of the audit
+
+| # | Finding | Resolution |
+|---|---|---|
+| 2 | The FN-003 test was **vacuous** — it asserted that `CognitoCallbackAction` has no `setGlobalUnitId`, but **no class in that hierarchy ever had that name**; it exists only on the sibling `CognitoLoginAction`. It would pass on almost any class in the repo, while the inherited, genuinely Struts-bindable `setGlobalUnit(Long)` and `setCrp(String)` went unexamined | Replaced with a behavioural test: set `globalUnit=999` and `crp=EVIL`, assert `SESSION_CRP` is still the mint-time unit |
+| 3 | Token-exchange response body **unbounded** on an internet-reachable endpoint; the javadoc claimed it mirrored the three T05 bounds while carrying two | Streaming 64 KB cap that cancels the subscription and fails closed; javadoc corrected |
+| 4 | `global.properties` edited outside the T09 declared file set | **Judged justified** — hard rule 8 cannot be met without the key, and it was flagged, not hidden. Carried to T13 so it does not re-add the key |
+
+Four advisories were applied: `HttpClient` hoisted to `static final` (it was allocating a selector thread per
+login), `IllegalArgumentException` caught for a malformed `cognito.domain`, `Subject.login` guarded against
+`AuthenticationException`, and a null check after `getUser(userId)`.
+
+**Confirmed correct by the audit and left untouched:** the eight-step ordering on **all seven** early-return
+paths; **SEC-006 enforced at the rendering site**, discharging the obligation T07 carried forward;
+`agree_terms` written to the **managed** row rather than the DD-6 detached object; `cognitoUnloggedStack`
+registered correctly; the principal is the `Long` userId, so the twice-FAILed T06 clause holds; and no token,
+code, verifier, nonce, state, or secret reaches a log.
+
+### 20.5 Still open after T09
+
+- **The real-schema proof for `agree_terms` is not discharged**, and neither is the identical T07 obligation
+  for `users.username`. Both write through `saveLastLogin`; the tests prove a call, not a row. **The Leader
+  closes this against the live database** — `finishLogin` reaches `saveLastLogin` on the **local** login path,
+  so the mechanism can be proven without Cognito keys.
+- **A mechanism note the spec gets slightly wrong.** `saveLastLogin` and `saveUser` have **identical bodies** —
+  both call `super.update(user)`, which returns before `merge()` for a managed entity. The write is performed
+  by **Hibernate dirty checking at flush**, which `@Transactional` causes; it is not performed by `update()`.
+  The DAO comment says "the merge stays in memory", naming the symptom but not the mechanism: for a managed
+  entity there is no merge at all.
+- **FN-005 has no rendering site yet.** `login.ftl` and `loginForm.ftl` contain no `[@s.fielderror]`, so
+  `loginMessage` is rendered by nothing today. SEC-006 therefore holds trivially at the browser, but "the user
+  is shown an i18n message" is **not** met. That belongs to T12/T13 and must not be silently absorbed.
+- **Spring wiring of the two new constructor parameters is argued, not observed.** Fold it into the boot.

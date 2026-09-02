@@ -54,6 +54,28 @@
 			<result name="success" type="redirect">${authorizeUrl}</result>
 		</action>
 
+		<!--
+			CHG-COGNITO-AUTH-001-T09: the redirect target Cognito returns to. Registered with the same
+			cognitoUnloggedStack as cognitoLogin above, for the same reason (design.md 8): unloggedStack's
+			validCrp/validSessionCrp interceptors split the action name on "/" and 404 a flat name before the
+			action is ever entered. Result set mirrors "login" below (input/success/login) so the shared tail
+			(finishLogin, T01) routes identically regardless of which action called it, and the input result
+			exposes the same model surface as the "login" and "cognitoLogin" actions above (model=action, so
+			whatever loginForm.ftl reads off the action, such as crpSession or listGlobalUnitTypes, resolves
+			exactly as it does for them) so a refused callback renders login.ftl correctly instead of broken.
+		-->
+		<action name="cognitoCallback" class="org.cgiar.ccafs.marlo.action.home.CognitoCallbackAction">
+			<interceptor-ref name="cognitoUnloggedStack" />
+			<result name="input">
+				<param name="location">/WEB-INF/global/views/login/login.ftl</param>
+				<param name="model">action</param>
+			</result>
+			<result name="success" type="redirectAction">
+			   <param name="actionName">${crpSession}/crpDashboard</param>
+			</result>
+			<result name="login" type="redirect">${url}</result>
+		</action>
+
 		<action name="login" class="org.cgiar.ccafs.marlo.action.home.LoginAction"
 			method="login">
 			<result name="input">

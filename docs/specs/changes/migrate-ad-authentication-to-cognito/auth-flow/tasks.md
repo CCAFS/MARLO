@@ -349,6 +349,12 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T09 — `CognitoCallbackAction` — validate, gate, rotate, log in
+- **Status:** `[x]` — 2026-09-02, after an audit **FAIL** carrying a **CRITICAL** finding, and one rework round
+  (`execution.md` §20). Implemented on `sonnet`, audited on `opus`. **122/122 tests on a clean run** (EB-4);
+  the session-invalidation mutation **re-measured by the Leader**, not accepted from a report. **The audit
+  caught a defect that would have made every successful Cognito login return HTTP 500 in production**, which
+  ten green tests could not see because they substituted a `HashMap` for the session. One audit finding was
+  itself **false** and was refuted by the implementer with evidence — see §20.3.
 
 - **Depends on:** T01, T05, T06, T07, T08
 - **Module:** marlo-web
@@ -383,7 +389,7 @@
 - **Verification:** `mvn -q test -pl marlo-web -Dtest=CognitoCallbackActionTest`
 - **Fails when:** `session.stop()` is moved before step ① — the state-consumption tests must then fail with a missing entry. The ordering is the design; prove it is load-bearing.
 - **Not evidence when:** the tests use a mock that returns a pre-built `CognitoAssertion`, skipping T05's validator. At least one test must run the real validator end to end, or SEC-001 and SEC-003 are verified in isolation and never together.
-- **Done when:** eight tests pass, Checkstyle passes, and the ordering mutation reddens the expected tests.
+- **Done when:** **nine** tests pass (corrected 2026-09-02 — the clause said "eight" while the *Tests (new)* list above carries nine entries; `§5 Testing Plan`'s "~8" is stale the same way. Flagged by the implementer, confirmed by the auditor), Checkstyle passes, and the ordering mutation reddens the expected tests. **Delivered: 12 tests** — the nine listed, the SEC-006 rendering test that discharges T07's carried obligation, and two session-invalidation regression tests added after the audit.
 - **Skills:** `tdd`, `error-handling-patterns`
 
 ---
