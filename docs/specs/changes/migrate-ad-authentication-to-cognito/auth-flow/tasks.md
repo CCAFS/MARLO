@@ -30,10 +30,10 @@
 ## 2. Pre-flight Checklist
 
 - [ ] `requirements.md` and `design.md` approved by Tech lead + one of PMU/QA lead.
-- [ ] **OQ-9 answered** — which claim is the stable identifier (`sub` / `oid` / email). **Blocks T07.**
-- [ ] **OQ-3 answered** — CGIAR IT confirms they will federate MARLO. **Blocks T12 onward**; a "no" returns to the parent proposal, it does not patch this spec.
+- [x] **OQ-9 answered 2026-09-02** — the stable identifier is the corporate **`email`**, normalized (trim + lowercase). A different corporate email is a **different user**. **T07 unblocked.**
+- [x] **OQ-3 answered 2026-09-02 — dissolved.** No new federation is requested: the existing IBD Cognito setup is already integrated with the CGIAR corporate directory. MARLO reuses it via the 7 `cognito.*` environment variables. **T12–T14 unblocked**; the "returns to the parent proposal" branch cannot trigger.
 - [ ] `git pull` on `staging`; branch is `staging-cognito`.
-- [ ] A Cognito User Pool + app client exists in a dev account (may be a stub IdP until OQ-3 resolves).
+- [ ] A Cognito User Pool + app client exists in a dev account. **Superseded in shape by OQ-3's closure:** the pool exists and is not MARLO's to create. What is still needed is an **app client whose callback allowlist includes MARLO's redirect URI**, plus the 7 key values for the target environment — a request to the pool's owner, not a provisioning task in this spec.
 
 ---
 
@@ -262,10 +262,10 @@
 
 ### CHG-COGNITO-AUTH-001-T07 — Identity mapping: claim → `users` row, with four gates
 
-- **Depends on:** T05 · **BLOCKED until OQ-9 is answered**
+- **Depends on:** T05 · **UNBLOCKED 2026-09-02 — OQ-9 closed: the join key is the corporate `email`, normalized (trim + lowercase)**
 - **Module:** marlo-data
 - **Files touched:** mapping logic in `security/impl/CognitoTokenValidatorImpl.java` or a small collaborator (implementer's call, stated in the report)
-- **Scope:** resolve the assertion to a `users` row and apply, **in order**: (1) row exists — no auto-provisioning; (2) **`is_cgiar_user = 1`**; (3) `is_active`; (4) *(membership is gate 4 and lives in `finishLogin`)*. Also set `users.username` from the CGIAR login claim, lowercased.
+- **Scope:** resolve the assertion to a `users` row **by the `email` claim, normalized with trim + lowercase (OQ-9)**, and apply, **in order**: (1) row exists — no auto-provisioning; (2) **`is_cgiar_user = 1`**; (3) `is_active`; (4) *(membership is gate 4 and lives in `finishLogin`)*. Also set `users.username` from the CGIAR login claim, lowercased.
 - **Constitutional checks:** username write goes through `userManager.saveUser()` so the audit listener fires; **`users.email` is never overwritten**.
 - **Design refs:** §13.1, FN-002, FN-006
 - **Covers:** FN-002 (all three scenarios), FN-006, **SEC-006**
@@ -277,7 +277,7 @@
   - Unit: the refusal message for gate 2 is **indistinguishable** from the generic failure (SEC-006's `MUST NOT` reveal).
 - **Verification:** `mvn -q test -pl marlo-web -Dtest=CognitoIdentityMappingTest`
 - **Fails when:** gate 2 is removed — the `is_cgiar_user = 0` test must then **pass authentication**, which is the bypass Judgment Day found. Delete the gate once, watch it go green, restore it. That red-to-green-to-red cycle is the only proof the gate is doing work.
-- **Not evidence when:** OQ-9 is still open. Mapping on email when the answer turns out to be `sub` means every test here encodes the wrong join key.
+- **Not evidence when:** the join is written case- or whitespace-sensitively. OQ-9 resolved to `email` **normalized**, so a test that only ever passes an already-lowercase, already-trimmed claim proves nothing about the normalization the decision requires. At least one test MUST pass a claim with different casing and surrounding whitespace and still resolve the same row.
 - **Done when:** five tests pass, the gate-2 mutation demonstrably opens the bypass, Checkstyle passes.
 - **Skills:** `tdd`
 

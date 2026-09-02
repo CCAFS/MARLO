@@ -185,8 +185,8 @@ This prologue executes on **every** local login. The edit inserts an `instanceof
 > `finishLogin` returns `SUCCESS` → `struts-home.xml:33-35` redirects to the dashboard → `AddUserIdFilter`
 > throws. The dashboard is the only destination for Global Unit types 1/3/4/5, so the path cannot reach a page.
 >
-> **This is not OQ-9.** OQ-9 asks which Cognito *claim* joins to the `users` row. This asks what Shiro carries
-> afterwards, and the answer is fixed by the twenty existing consumers, not by CGIAR IT.
+> **This is not OQ-9.** OQ-9 asks which Cognito *claim* joins to the `users` row — **closed 2026-09-02 on `email`, normalized.** This asks what Shiro carries
+> afterwards, and the answer is fixed by the twenty existing consumers, not by CGIAR IT. **Both answers now stand and they are different by design:** the claim that *joins* is `email`; what Shiro *carries* is `users.id`. Collapsing them — carrying the email as the principal because that is now the identifier — would break every one of those twenty consumers.
 >
 > **Consequence for `CognitoAuthenticationToken` (T04):** it carries the resolved `users.id` alongside the
 > assertion, and requires it in its constructor. §13.3 already resolves identity and applies **gates 1-3** at
@@ -413,7 +413,7 @@ No `canEdit*` gates: nothing is edited. `doGetAuthorizationInfo()` is **not modi
 
 **Membership is still enforced** inside the shared tail (`existCrpUser`, `LoginAction.java:236`). A valid IdP authentication does not grant access to a Global Unit the user does not belong to.
 
-**Logout (FN-007) is satisfied by changing nothing.** `LoginAction.logout()` (`:326-343`), including the `clearCachedAuthorizationInfo` hack, is untouched, and **no RP-initiated logout is issued** to Cognito — so MARLO logout does not end the user's CGIAR SSO session elsewhere (OQ-8).
+**Logout (FN-007) is satisfied by changing nothing.** `LoginAction.logout()` (`:326-343`), including the `clearCachedAuthorizationInfo` hack, is untouched, and **no RP-initiated logout is issued** to Cognito — so MARLO logout does not end the user's CGIAR SSO session elsewhere (OQ-8). **Confirmed 2026-09-02:** OQ-8 closed with exactly this answer — local logout only, the CGIAR corporate SSO session left intact so unrelated CGIAR applications stay signed in. The design anticipated the decision, so FN-007 needs no change; what changes is that "no RP-initiated logout" is now a **requirement**, not a default. A later addition of RP-initiated logout would violate a recorded decision.
 
 ---
 
@@ -456,7 +456,7 @@ New user-facing strings are keys in `global.properties` (hard rule 8; DD-7).
 | System | Direction |
 |---|---|
 | Cognito User Pool | Outbound HTTPS (`/oauth2/token`, JWKS) + browser redirect (`/oauth2/authorize`) |
-| CGIAR IdP (ADFS / Entra ID) | Reached **only** through Cognito — **OQ-3** |
+| CGIAR corporate directory | Reached **only** through Cognito. **OQ-3 closed 2026-09-02:** the existing IBD Cognito setup is already integrated with it and already serves other applications, so MARLO adds no relying-party agreement and no direct dependency on the IdP’s protocol or vendor. Which IdP sits behind Cognito is, from MARLO’s side, now an implementation detail of the pool it consumes |
 | CGIAR Active Directory (LDAP) | Unchanged, still live for non-migrated units. Retired by child spec 2 |
 
 JWKS is fetched once and cached with a bounded TTL, re-fetched on an unknown `kid`. Fetching per login would make every sign-in depend on a second network call.
@@ -639,11 +639,11 @@ ADR-6 records *"Apache Shiro for authentication and authorization; CGIAR AD is t
 | ID | Risk | Source | Mitigation |
 |---|---|---|---|
 | R-D1 | The `finishLogin` extraction (DD-6) silently changes local-login behavior | Design | Its own task, its own review, done **first**. One declared change only (§2.2); Reviewer FAILs any other delta |
-| R-D2 | Identity claim unresolved — `sub`, `oid`, or email? Mapping on mutable email orphans accounts | **OQ-9** | Blocks the mapping task. Design supports any; the choice is CGIAR IT's |
+| ~~R-D2~~ | ~~Identity claim unresolved — mapping on mutable email orphans accounts~~ **RETIRED 2026-09-02.** OQ-9 closed on `email`, normalized. The orphaning this risk described is **not introduced**: `users.email` is already MARLO’s login identity and `getUser(String)` already resolves on `LOWER(email)`, so there is no new join key and no migration. **What survives is an operational obligation, not a design risk:** an email change re-links nothing automatically and must be an administrative edit to `users.email`. Recorded so no future reader mistakes silence for automatic re-linking |
 | R-D3 | `crpByEmail.do` becomes an authentication-type oracle for a known email — **and, since T10, an existence oracle for an account with zero Global Units** | Design §4 | Accepted, **acceptance widened 2026-08-31**. The original rationale ("existence and membership are already disclosed") was true for accounts *with* Global Units and **false** for accounts with none, which previously returned `user: null`, indistinguishable from an unknown email. Accepted anyway because `login.js:418` collapses both cases to the same `emailNotFound` UI state, so the disclosure is wire-only — see §4's amendment for the before/after payloads. Rate limiting remains separate work |
 | R-D4 | `/api/**` `authcBasic` breaks for CGIAR users — federated identities cannot use Basic auth | **OQ-4** | **No gate exists.** Discovery task before phase 1. TRD §8.4 also drifts (`MarloShiroConfiguration.java:113` says `authcBasic`, TRD says tokens) — fold that correction into the same task |
 | R-D5 | No frontend or visual test harness, so the wizard branch has no automated UI gate | D-5 | Manual keyboard/screen-reader walkthrough at the HITL pause + T6 review of a screenshot |
-| R-D6 | CGIAR IT may decline to federate | **OQ-3** | Blocks implementation, not specification |
+| ~~R-D6~~ | ~~CGIAR IT may decline to federate~~ **RETIRED 2026-09-02 — the risk cannot occur.** OQ-3 closed by dissolution: no new federation is requested, because the existing IBD Cognito setup is already integrated with the CGIAR corporate directory. **The residual dependency is narrower and worth naming:** MARLO does not own that pool, so adding its redirect URI to an app client’s callback allowlist is a request to the pool’s owner. That gates deployment, not implementation |
 | R-D7 | Clock skew causes spurious `exp` rejections | Design | Small, explicitly bounded leeway — tested, not an open window |
 | R-D8 | `docs/ux-ui/design.md` §4 Screen Inventory has **no login-screen entry**, so §7's palette rule has no screen-level baseline | Judgment round 1 | Adding it is a **constitutional edit** (§4 preamble) and is out of scope here. Recorded as an inventory gap |
 | R-D9 | The **local** login path still does not rotate its session id | DD-9 | Pre-existing exposure, deliberately not changed here. Separate work |

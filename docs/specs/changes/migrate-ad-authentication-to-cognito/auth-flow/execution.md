@@ -1904,3 +1904,70 @@ row under a real Hibernate session.
 No Cognito path was exercised — there are no keys, no User Pool, and OQ-3 is unanswered. `cognitoLogin.do`'s
 reachability through `cognitoUnloggedStack` remains argued from the interceptor sources, **not observed**.
 It becomes observable only once the flag is enabled for a unit, which needs T02's override and a real IdP.
+
+---
+
+## 18. OQ-3, OQ-9 and OQ-8 closed by decision — 2026-09-02
+
+Three blocking questions answered by the user. **T07, T09 and T12–T14 are unblocked**; four questions
+remain open (OQ-1, OQ-4, OQ-10, OQ-11) and none blocks a task.
+
+### 18.1 OQ-3 — closed by dissolution, which is a stronger outcome than a "yes"
+
+The existing IBD Cognito setup is already integrated with the CGIAR corporate directory and already serves
+other applications. MARLO reuses it. **No new relying-party agreement is requested, so R-D6's risk — "CGIAR
+IT may decline to federate" — cannot occur**, and the spec's "a no returns to the parent proposal" branch is
+unreachable. That is a better result than an approval, because an approval could still have been withdrawn.
+
+**Verified rather than assumed:** the 7 environment-variable names supplied match `APConfig`'s `@Value`
+fields and `marlo-test.properties` **exactly** — `cognito.user.pool.id`, `cognito.region`,
+`cognito.client.id`, `cognito.client.secret`, `cognito.domain`, `cognito.callback.url`,
+`cognito.jwks.uri`. T03 already implements this contract; nothing in it changes.
+
+**The residual dependency, named because dissolving a risk is not the same as having none.** MARLO does not
+own that pool. Adding MARLO's redirect URI to an app client's callback allowlist is a request to the pool's
+owner. **This gates deployment, not implementation** — T12–T14 can be written and tested against the
+configuration contract without it.
+
+### 18.2 OQ-9 — `email`, normalized, and why this is not the orphaning risk R-D2 warned about
+
+The identifier is the corporate `email`, normalized with trim + lowercase. A different corporate email is a
+**different user**, not the same user re-identified.
+
+R-D2 warned that mapping on mutable email orphans accounts. **It is retired rather than accepted, because
+the decision changes nothing:** `users.email` is already MARLO's login identity, and
+`UserMySQLDAO.getUser(String)` already resolves on `LOWER(email)` (`:93-101`). There is no new join key, no
+new column, and no data migration. The orphaning exposure after this decision is exactly the exposure MARLO
+has today.
+
+**What survives is an operational obligation, not a design risk:** an email change re-links nothing
+automatically and must remain an administrative edit to `users.email`. Recorded so no later reader mistakes
+the design's silence for automatic re-linking.
+
+**One real gap the decision exposes, and T07 must close it.** The existing lookup lowercases but **does not
+trim**:
+
+```java
+String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
+```
+
+A claim arriving with surrounding whitespace would fail to resolve a row that exists — a silent
+authentication failure for a valid user. T07's *Not evidence when* clause was rewritten accordingly: a test
+that only ever passes an already-clean claim proves nothing about the normalization this decision requires.
+
+**PS-17 is now on the authentication path, and its weight changed.** That line interpolates the email into
+native SQL by string concatenation. Until now it was reached with a form field; after T07 it is reached with
+the value of a *token claim*, and "trusted because the token is signed" is the reasoning that fails the day
+the pool accepts an identity MARLO did not anticipate. The sink is **pre-existing and already reachable
+unauthenticated** through `validateUser.do`, so T07 does not create it — but T07 must not add a second path
+into it, and the fix is one parameterized query. Escalated from a `staging` pending item to a **decision the
+user must take before T07 ships**.
+
+### 18.3 OQ-8 — local logout only
+
+MARLO ends only its own session and the Cognito application session; the CGIAR corporate SSO session stays
+intact so unrelated CGIAR applications remain signed in.
+
+`design.md:416` had already designed FN-007 this way, so **no code changes**. What changes is its status: "no
+RP-initiated logout" is now a **recorded requirement**, not a default. A later addition of RP-initiated
+logout would violate a decision rather than merely alter an implementation choice.
