@@ -2310,4 +2310,4 @@ extra queries added per login; and the named class reports **6 tests**, not mere
   for the oracle property but leaves OPS-001 "which gate rejected" unsatisfied for this path.
 - **`CognitoCallbackAction` declares two constructors with no `@Autowired`.** Pre-existing from T09, and
   §21 records that `cognitoCallback.do` was instantiated successfully in a live boot — but that boot predates
-  this constructor change. **Re-verify with one live GET before T12.**
+  this constructor change. **VERIFIED 2026-09-02 by a live boot after the T11b constructor change:** `login.do`, `cognitoCallback.do` and `cognitoLogin.do` all return **200**, with **0** instantiation or wiring failures (`Unable to instantiate Action`, `NoSuchBeanDefinition`, `UnsatisfiedDependency`, `No qualifying bean`) and **0** new exceptions. The two-constructor shape resolves at runtime with the added parameter.
