@@ -70,6 +70,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This action is part of the CRP admin backend.
@@ -387,18 +389,16 @@ public class CrpProgamRegionsAction extends BaseAction {
         inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        // The email is still sent, only without the manual attached, so this is the only trace of it.
+        LOG.error("The user manual {} was not found, so the email goes out without it", fileName, e);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("The user manual {} could not be read, so the email goes out without it", fileName, e);
       } finally {
         if (inputStream != null) {
           try {
             inputStream.close();
           } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn("Could not close the stream of the user manual {}", fileName, e);
           }
         }
       }

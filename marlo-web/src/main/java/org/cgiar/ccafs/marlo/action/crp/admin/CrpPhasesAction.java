@@ -31,7 +31,12 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CrpPhasesAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CrpPhasesAction.class);
 
   /**
    * 
@@ -98,7 +103,8 @@ public class CrpPhasesAction extends BaseAction {
         }
         phaseManager.savePhase(phase);
         if (phase.getId().equals(defaultPhaseID)) {
-          System.out.println(" phase ID " + defaultPhaseID);
+          LOG.info("The user {} is setting the phase {} as the default one of {}", this.getCurrentUser().getEmail(),
+            defaultPhaseID, loggedCrp.getAcronym());
           for (CustomParameter customParameter : loggedCrp.getCustomParameters().stream().filter(c -> c.isActive())
             .collect(Collectors.toList())) {
             if (customParameter.getParameter().getKey().equals(APConstants.CURRENT_PHASE_PARAM)) {

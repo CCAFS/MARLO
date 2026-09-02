@@ -38,11 +38,15 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  */
 public class IDOsAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(IDOsAction.class);
 
   private static final long serialVersionUID = -793652591843623397L;
 
@@ -142,13 +146,6 @@ public class IDOsAction extends BaseAction {
     idosList = new ArrayList<>();
     int maxIndex = 100;
 
-    System.out.println("=== BINDING DEBUG ===");
-    System.out.println("Total parameters received: " + parameterMap.size());
-    parameterMap.keySet().stream().filter(k -> k.startsWith("idosList")).forEach(k -> {
-      System.out.println("  " + k + " = " + java.util.Arrays.toString(parameterMap.get(k)));
-    });
-    System.out.println("=== END BINDING DEBUG ===");
-
     for (int index = 0; index < maxIndex; index++) {
       String prefix = IDOS_LIST_PREFIX + index;
       String idParam =
@@ -166,11 +163,8 @@ public class IDOsAction extends BaseAction {
         continue;
       }
 
-      System.out.println("Processing IDO index " + index + ": idParam=" + idParam + ", description=" + descriptionParam);
-
       // Skip if this is a new empty IDO (no ID, empty description)
       if ((idParam == null || idParam.isEmpty()) && (descriptionParam == null || descriptionParam.trim().isEmpty())) {
-        System.out.println("  Skipping empty new IDO");
         continue;
       }
 
@@ -181,18 +175,21 @@ public class IDOsAction extends BaseAction {
         try {
           Long idoId = Long.parseLong(idParam);
           ido = srfIdoManager.getSrfIdoById(idoId);
-          System.out.println("  Loaded existing IDO ID: " + idoId + ", found: " + (ido != null));
+          if (ido == null) {
+            LOG.warn("The IDO {} was submitted with the id {}, which is not in the database, so it is saved as a new"
+              + " one", index, idoId);
+          }
         } catch (NumberFormatException e) {
           // Invalid ID, create new
           ido = null;
-          System.out.println("  Invalid ID format: " + idParam);
+          LOG.warn("Discarding the id '{}' of the IDO {}, which is not a number, so it is saved as a new one", idParam,
+            index);
         }
       }
 
       // If no existing IDO found, create new one
       if (ido == null) {
         ido = new SrfIdo();
-        System.out.println("  Created new IDO");
       }
 
       // Set fields
@@ -209,7 +206,6 @@ public class IDOsAction extends BaseAction {
       if (crossCuttingIssueIdParam != null && !crossCuttingIssueIdParam.isEmpty()) {
         try {
           Long crossCuttingIssueId = Long.parseLong(crossCuttingIssueIdParam);
-          System.out.println("  Cross-cutting issue ID from form: " + crossCuttingIssueId);
           
           // Only update if a valid positive ID is provided
           if (crossCuttingIssueId > 0) {
@@ -218,10 +214,10 @@ public class IDOsAction extends BaseAction {
             
             if (crossCuttingIssue != null) {
               ido.setSrfCrossCuttingIssue(crossCuttingIssue);
-              System.out.println("  Set cross-cutting issue: " + crossCuttingIssueId);
             } else {
               // ID doesn't exist in database
-              System.out.println("  Cross-cutting issue ID not found in database: " + crossCuttingIssueId);
+              LOG.warn("The cross cutting issue {} submitted for the IDO {} is not in the database, so it is ignored",
+                crossCuttingIssueId, index);
               // For existing IDOs, don't modify; for new ones, leave as null
               if (ido.getId() == null) {
                 ido.setSrfCrossCuttingIssue(null);
@@ -229,18 +225,15 @@ public class IDOsAction extends BaseAction {
             }
           } else {
             // -1 or 0 means "no selection" - only clear for NEW IDOs, preserve for existing
-            System.out.println("  No cross-cutting issue selected (ID: " + crossCuttingIssueId + ")");
             if (ido.getId() == null) {
               // New IDO - ensure it's null
               ido.setSrfCrossCuttingIssue(null);
-              System.out.println("    New IDO, cleared cross-cutting issue");
-            } else {
-              // Existing IDO - don't touch it, preserve current value from database
-              System.out.println("    Existing IDO, preserving current cross-cutting issue from database");
             }
+            // Existing IDO - don't touch it, preserve current value from database
           }
         } catch (NumberFormatException e) {
-          System.out.println("  Invalid cross-cutting issue ID format: " + crossCuttingIssueIdParam);
+          LOG.warn("Discarding the cross cutting issue '{}' of the IDO {}, which is not a number",
+            crossCuttingIssueIdParam, index);
           // For new IDOs, ensure it's null
           if (ido.getId() == null) {
             ido.setSrfCrossCuttingIssue(null);
@@ -290,14 +283,8 @@ public class IDOsAction extends BaseAction {
       idosList.add(ido);
     }
 
-    System.out.println("=== BINDING SUMMARY ===");
-    System.out.println("Total IDOs bound: " + idosList.size());
-    idosList.forEach(ido -> System.out.println("  IDO: id=" + ido.getId() + ", description=" + ido.getDescription()));
-    System.out.println("pendingSloIdos entries: " + pendingSloIdos.size());
-    pendingSloIdos.forEach((k, v) -> System.out.println("  Key " + k + ": " + v.size() + " SLO-IDOs"));
-    System.out.println("pendingSubIdos entries: " + pendingSubIdos.size());
-    pendingSubIdos.forEach((k, v) -> System.out.println("  Key " + k + ": " + v.size() + " Sub-IDOs"));
-    System.out.println("=== END BINDING SUMMARY ===");
+    LOG.debug("Bound {} IDOs, {} pending SLO-IDO groups and {} pending Sub-IDO groups from the request",
+      idosList.size(), pendingSloIdos.size(), pendingSubIdos.size());
   }
 
   /**
@@ -355,11 +342,8 @@ public class IDOsAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
 
-    System.out.println("=== SAVE START ===");
-    System.out.println("idosList size: " + (idosList != null ? idosList.size() : "null"));
-    if (idosList != null) {
-      idosList.forEach(ido -> System.out.println("  Save IDO: id=" + ido.getId() + ", description=" + ido.getDescription()));
-    }
+    LOG.info("The user {} is saving {} IDOs", this.getCurrentUser().getEmail(),
+      idosList == null ? 0 : idosList.size());
 
     // ================== Save IDOs Pattern ==================
     // Step 1: Collect IDs submitted in form
@@ -385,21 +369,23 @@ public class IDOsAction extends BaseAction {
           if (crossCuttingIssueId == null || crossCuttingIssueId <= 0) {
             // Invalid ID - for new IDOs, clear to null; for existing, this shouldn't happen
             if (ido.getId() == null) {
-              System.out.println("  New IDO: Clearing invalid cross-cutting issue ID: " + crossCuttingIssueId);
+              LOG.warn("Clearing the invalid cross cutting issue {} of a new IDO", crossCuttingIssueId);
               ido.setSrfCrossCuttingIssue(null);
             } else {
               // Existing IDO with invalid incoming value: restore persisted relation to avoid identifier mutation errors
               SrfIdo persistedIdo = srfIdoManager.getSrfIdoById(ido.getId());
               if (persistedIdo != null) {
                 ido.setSrfCrossCuttingIssue(persistedIdo.getSrfCrossCuttingIssue());
-                System.out.println("  WARNING: Restored existing cross-cutting issue from database for IDO " + ido.getId());
+                LOG.warn("Restored the cross cutting issue of the IDO {} from the database, because the submitted one"
+                  + " was not usable", ido.getId());
               }
             }
           } else {
             // Verify it exists in database
-            SrfCrossCuttingIssue validated = srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(crossCuttingIssueId);
+            SrfCrossCuttingIssue validated =
+              srfCrossCuttingIssueManager.getSrfCrossCuttingIssueById(crossCuttingIssueId);
             if (validated == null) {
-              System.out.println("  WARNING: Cross-cutting issue ID doesn't exist in database: " + crossCuttingIssueId);
+              LOG.warn("The cross cutting issue {} is not in the database", crossCuttingIssueId);
               if (ido.getId() == null) {
                 // New IDO - clear it
                 ido.setSrfCrossCuttingIssue(null);
@@ -408,22 +394,18 @@ public class IDOsAction extends BaseAction {
                 SrfIdo persistedIdo = srfIdoManager.getSrfIdoById(ido.getId());
                 if (persistedIdo != null) {
                   ido.setSrfCrossCuttingIssue(persistedIdo.getSrfCrossCuttingIssue());
-                  System.out.println("  WARNING: Restored existing cross-cutting issue from database for IDO " + ido.getId());
+                  LOG.warn("Restored the cross cutting issue of the IDO {} from the database, because the submitted"
+                    + " one was not usable", ido.getId());
                 }
               }
             }
           }
         }
         
-        // Log before save to ensure ID is present
-        System.out.println("  Before save - IDO: id=" + ido.getId() + ", description=" + ido.getDescription() + 
-          ", cross_cutting_issue=" + (ido.getSrfCrossCuttingIssue() != null ? ido.getSrfCrossCuttingIssue().getId() : "null"));
-        
         // Save the IDO first (saveSrfIdo handles merge for existing entities via update())
+        LOG.debug("Saving the IDO {} with the cross cutting issue {}", ido.getId(),
+          ido.getSrfCrossCuttingIssue() == null ? null : ido.getSrfCrossCuttingIssue().getId());
         SrfIdo savedIdo = srfIdoManager.saveSrfIdo(ido);
-        
-        // Log after save
-        System.out.println("  After save - IDO: id=" + savedIdo.getId() + ", description=" + savedIdo.getDescription());
 
         // ========== SLO-IDOs: Take snapshot BEFORE any changes ==========
         List<SrfSloIdo> existingSloIdosBeforeSave = new ArrayList<>();
@@ -456,16 +438,13 @@ public class IDOsAction extends BaseAction {
         savedIdo.setSrfSloIdos(savedSloIdosSet);
 
         // Delete SLO-IDOs not in input
-        System.out.println("=== SLO-IDO Debug for IDO " + idoIndex + " ===");
-        System.out.println("Existing SLO-IDO IDs before save: " + existingSloIdosBeforeSave.stream().map(SrfSloIdo::getId).toList());
-        System.out.println("Input SLO-IDO IDs after save: " + inputSloIdoIds);
         for (SrfSloIdo existingSloIdo : existingSloIdosBeforeSave) {
           if (existingSloIdo.getId() != null && !inputSloIdoIds.contains(existingSloIdo.getId())) {
-            System.out.println("Deleting SLO-IDO with ID: " + existingSloIdo.getId());
+            LOG.debug("Deleting the SLO-IDO {} of the IDO {}, which was not submitted", existingSloIdo.getId(),
+              idoIndex);
             srfSloIdoManager.deleteSrfSloIdo(existingSloIdo.getId());
           }
         }
-        System.out.println("=== End SLO-IDO Debug ===");
 
         // Take snapshot of existing sub-idos for this IDO BEFORE save loop
         List<SrfSubIdo> existingSubIdosBeforeSave = new ArrayList<>();
@@ -520,7 +499,7 @@ public class IDOsAction extends BaseAction {
     pendingSubIdos.clear();
     pendingSloIdos.clear();
 
-    System.out.println("=== SAVE END (SUCCESS) ===");
+    LOG.info("The IDOs were saved by {}", this.getCurrentUser().getEmail());
 
     return SUCCESS;
   }
