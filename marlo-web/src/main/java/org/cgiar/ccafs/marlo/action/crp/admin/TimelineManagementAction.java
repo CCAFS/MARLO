@@ -29,8 +29,13 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class TimelineManagementAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TimelineManagementAction.class);
 
   private static final long serialVersionUID = -793652591843623397L;
 
@@ -100,7 +105,7 @@ public class TimelineManagementAction extends BaseAction {
               Long id = Long.parseLong(idParam);
               timeline.setId(id);
             } catch (NumberFormatException e) {
-              // Silent fail
+              LOG.warn("Discarding the id '{}' of the timeline activity {}, which is not a number", idParam, index);
             }
           }
 
@@ -112,7 +117,8 @@ public class TimelineManagementAction extends BaseAction {
             try {
               timeline.setStartDate(java.sql.Date.valueOf(startDateParam));
             } catch (Exception e) {
-              // Silent fail for invalid dates
+              LOG.warn("Discarding the start date '{}' of the timeline activity {}, which is not a valid date",
+                startDateParam, index);
             }
           }
 
@@ -121,7 +127,8 @@ public class TimelineManagementAction extends BaseAction {
             try {
               timeline.setEndDate(java.sql.Date.valueOf(endDateParam));
             } catch (Exception e) {
-              // Silent fail for invalid dates
+              LOG.warn("Discarding the end date '{}' of the timeline activity {}, which is not a valid date",
+                endDateParam, index);
             }
           }
 
@@ -130,13 +137,16 @@ public class TimelineManagementAction extends BaseAction {
             try {
               timeline.setOrder(Double.parseDouble(orderParam));
             } catch (NumberFormatException e) {
-              // Silent fail
+              LOG.warn("Discarding the order '{}' of the timeline activity {}, which is not a number", orderParam,
+                index);
             }
           }
 
           timelineActivities.add(timeline);
           index++;
         } catch (Exception e) {
+          LOG.error("Stopped reading the submitted timeline activities at index {}; the ones after it are not saved",
+            index, e);
           hasMore = false;
         }
       } else {
@@ -218,7 +228,8 @@ public class TimelineManagementAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          LOG.error("Could not delete the timeline activities of the global unit {}", this.getCurrentCrp() == null
+            ? null : this.getCurrentCrp().getAcronym(), e);
         }
       }
 

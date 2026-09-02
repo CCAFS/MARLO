@@ -312,7 +312,8 @@ public class FeedbackManagementAction extends BaseAction {
               Long id = Long.parseLong(idParam);
               field.setId(id);
             } catch (NumberFormatException e) {
-              // Silent fail
+              LOG.warn("Discarding the id '{}' of the feedback field {}, which is not a number, so it is saved as a new"
+                + " one", idParam, index);
             }
           }
 
@@ -337,6 +338,8 @@ public class FeedbackManagementAction extends BaseAction {
           feedbackFields.add(field);
           index++;
         } catch (Exception e) {
+          LOG.error("Stopped reading the submitted feedback fields at index {}; the ones after it are not saved", index,
+            e);
           hasMore = false;
         }
       } else {
