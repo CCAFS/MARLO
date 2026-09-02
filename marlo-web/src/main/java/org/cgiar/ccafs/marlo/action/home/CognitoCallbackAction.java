@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -368,10 +369,10 @@ public class CognitoCallbackAction extends LoginAction {
 
   // @Inject
   public CognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
     CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper) {
-    this(config, userManager, crpManager, crpUserManager, customParameterManager, tokenValidator, identityMapper,
-      new HttpTokenExchangeClient(config));
+    this(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager, tokenValidator,
+      identityMapper, new HttpTokenExchangeClient(config));
   }
 
   /**
@@ -380,10 +381,14 @@ public class CognitoCallbackAction extends LoginAction {
    * pattern (T05) for the same reason.
    */
   protected CognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
     CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
     TokenExchangeClient tokenExchangeClient) {
-    super(config, userManager, crpManager, crpUserManager, customParameterManager);
+    // CHG-COGNITO-AUTH-001-T11b: LoginAction's constructor gained a ParameterManager parameter to resolve
+    // cognito_auth_active through the shared CognitoAuthSpecificity resolver (PS-16). This class never calls
+    // LoginAction#login() (it authenticates via Subject.login(CognitoAuthenticationToken) instead), so the
+    // parameter is never read here -- it exists solely so this subclass keeps compiling against its parent.
+    super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
     this.crpManager = crpManager;
     this.tokenValidator = tokenValidator;
     this.identityMapper = identityMapper;

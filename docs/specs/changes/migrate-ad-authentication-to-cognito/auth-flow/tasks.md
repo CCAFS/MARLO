@@ -454,6 +454,52 @@
 
 ---
 
+
+### CHG-COGNITO-AUTH-001-T11b — Harden `login.do` against CGIAR credential relay
+
+- **Status:** `[x]` — 2026-09-02, audited **PASS-WITH-FINDINGS** (`execution.md` §22). **128/128 clean**; mutation re-measured by the Leader, reddening exactly the four refusal tests and leaving the two must-still-authenticate tests green. **SEC-005 is now true for both endpoints.** The audit found an error in the Leader own enumeration (§22.3) and a missing design amendment, both since fixed. Originally added 2026-09-02, approved by the user. T11 closed the AD credential relay on
+  `validateUser.do` and left the *same relay* open on `login.do`, which is also unauthenticated. Recorded as
+  **PS-21** at the time, with the note that it "needs a design amendment plus a named task **before T12 ships a
+  UI that assumes the server is protected**". This is that task. Verified still open 2026-09-02:
+  `LoginAction.login():187` calls `userManager.login(userEmail, user.getPassword())`, and `LoginAction` contains
+  **zero** references to `CognitoAuthSpecificity` while `ValidateUserAction` contains four.
+- **Depends on:** T02, T10, T11
+- **Module:** marlo-web
+- **Files touched:** `action/home/LoginAction.java` (modify)
+- **Scope:** in `login()` — **not** in `finishLogin()`, which runs after authentication and is shared with the
+  Cognito path — refuse to authenticate an `is_cgiar_user = 1` account whose selected Global Unit has the flag
+  enabled, **before** `userManager.login()` is reached. Return the **same generic failure** a wrong password
+  returns. Resolve the flag through the shared `CognitoAuthSpecificity` resolver (PS-16), never a re-implementation.
+- **Why this task exists:** `SEC-005` says **"any MARLO endpoint"**. After T11 it is still false. `design.md` §5.3
+  itself describes the local flow as **two** requests and hardened only one. T12's protection for this one is
+  **client-side only** — it removes the password input from the DOM — so the endpoint stays postable with `curl`.
+  A UI that assumes the server is protected must not ship before the server is protected.
+- **Constitutional checks:** Checkstyle; i18n keys for any message; **`finishLogin` is not touched** — it is T01's
+  extracted shared tail and the Cognito path depends on it.
+- **Design refs:** §5.3 · **Covers:** **SEC-005** (its remaining endpoint)
+- **Tests (new):**
+  - Unit: `is_cgiar_user = 1` + flag on → refused, **and `userManager.login()` is never called.** Assert on the
+    collaborator: make the double **throw** if `login()` is invoked, so a fall-through fails loudly instead of
+    passing on a well-shaped response.
+  - Unit: `is_cgiar_user = 1` + flag **off** → unchanged, still authenticates via LDAP.
+  - Unit: `is_cgiar_user = 0` → **unchanged in every case** (SEC-005's `BUT MUST NOT` clause).
+  - Unit: the refusal is indistinguishable from a wrong-password refusal — no new oracle.
+  - Unit: **the mixed-membership case MIG-001 forbids.** A CGIAR user in a migrated unit *X* and a non-migrated
+    unit *Y*, selecting *Y*, **must still authenticate via LDAP.** T11 FAILed its first audit on the inverse of
+    this, and its correction then FAILed on a bypass — read `execution.md` §15 before writing this one.
+- **Verification:** `mvn -q test -pl marlo-web -Dtest=LoginActionCgiarGuardTest`
+- **Fails when:** the guard is placed **after** `userManager.login()` — test 1 must then fail, because the LDAP
+  bind already happened. Prove the ordering, not just the response.
+- **Not evidence when:** a test asserts only the returned result string. A response can be shaped correctly while
+  the password has already left MARLO. **Assert the call never occurred.**
+- **Also required — the Leader must verify, not assume:** whether `login.do` reaches the relay by a second path.
+  T11's audit found the guard placed on "a correct statement guarding the wrong door". Enumerate every call into
+  `userManager.login(...)` on this action before declaring the endpoint closed.
+- **Done when:** five tests pass, the ordering mutation reddens test 1, Checkstyle passes, and `finishLogin` is
+  absent from the diff.
+- **Skills:** `tdd`, `error-handling-patterns`
+
+---
 ### CHG-COGNITO-AUTH-001-T12 — Login wizard: mode composition + DOM removal
 
 - **Depends on:** T08, T10

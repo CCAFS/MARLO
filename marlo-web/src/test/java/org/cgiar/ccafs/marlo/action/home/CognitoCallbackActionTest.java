@@ -22,10 +22,12 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
@@ -165,8 +167,8 @@ public class CognitoCallbackActionTest {
 
   private TestableCognitoCallbackAction newAction() {
     TestableCognitoCallbackAction action = new TestableCognitoCallbackAction(new APConfig(), this.userManager,
-      this.crpManager, this.crpUserManager, new NoCustomParametersManager(), this.realValidator,
-      this.realIdentityMapper, this.exchangeClient);
+      this.crpManager, this.crpUserManager, new NoCustomParametersManager(), new NoOpParameterManager(),
+      this.realValidator, this.realIdentityMapper, this.exchangeClient);
     action.setSession(new HashMap<String, Object>());
     return action;
   }
@@ -762,6 +764,44 @@ public class CognitoCallbackActionTest {
     }
   }
 
+  /**
+   * Unused by this suite: this action never calls {@code LoginAction#login()} (it authenticates via
+   * {@code Subject.login(CognitoAuthenticationToken)} instead), so {@code CognitoAuthSpecificity} is never
+   * resolved through this manager here. Present only to satisfy the constructor CHG-COGNITO-AUTH-001-T11b
+   * added to {@code LoginAction}.
+   */
+  private static final class NoOpParameterManager implements ParameterManager {
+
+    @Override
+    public void deleteParameter(long parameterId) {
+    }
+
+    @Override
+    public boolean existParameter(long parameterID) {
+      return false;
+    }
+
+    @Override
+    public List<Parameter> findAll() {
+      return new ArrayList<Parameter>();
+    }
+
+    @Override
+    public Parameter getParameterById(long parameterID) {
+      return null;
+    }
+
+    @Override
+    public Parameter getParameterByKey(String key, long globalUnitId) {
+      return null;
+    }
+
+    @Override
+    public Parameter saveParameter(Parameter parameter) {
+      return parameter;
+    }
+  }
+
   /** No custom parameters, so the session-population loop in {@code finishLogin} runs zero iterations. */
   private static final class NoCustomParametersManager implements CustomParameterManager {
 
@@ -896,10 +936,10 @@ public class CognitoCallbackActionTest {
 
     TestableCognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
-      CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
+      ParameterManager parameterManager, CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
       TokenExchangeClient tokenExchangeClient) {
-      super(config, userManager, crpManager, crpUserManager, customParameterManager, tokenValidator, identityMapper,
-        tokenExchangeClient);
+      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
+        tokenValidator, identityMapper, tokenExchangeClient);
     }
 
     @Override

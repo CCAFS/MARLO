@@ -334,14 +334,40 @@ FN-001's negative clause — *the password input must not be rendered, focusable
 
 **D-2's gate asserts node absence at submit time** — the check must be able to fail, so it asserts on the DOM, not on the code path.
 
-### 5.3 The local flow is two requests, and one of them needed hardening
+### 5.3 The local flow is two requests, and **both** needed hardening
 
-`login.js:542` posts email **and password** to `validateUser.do` before submitting `login.do`. That endpoint (`ValidateUserAction.java:71`) calls `userManager.login()` → realm → the LDAP branch for CGIAR users, and sits in `homeJson` with **no `requireUser`**.
+`login.js:542` posts email **and password** to `validateUser.do` before submitting `login.do`. That endpoint
+(`ValidateUserAction.java:71`) calls `userManager.login()` → realm → the LDAP branch for CGIAR users, and sits
+in `homeJson` with **no `requireUser`**.
 
-Left alone, it keeps accepting and relaying CGIAR passwords to Active Directory for flag-enabled units — **SEC-005 would be violated by an endpoint this document did not mention.**
+Left alone, it keeps accepting and relaying CGIAR passwords to Active Directory for flag-enabled units —
+**SEC-005 would be violated by an endpoint this document did not mention.**
 
-**Guard:** `ValidateUserAction` must refuse to authenticate an `is_cgiar_user = 1` account whose selected Global Unit has the flag enabled, returning the **same generic failure shape** as any other rejection (no new oracle).
+**Guard 1 (T11):** `ValidateUserAction` must refuse to authenticate an `is_cgiar_user = 1` account whose
+selected Global Unit has the flag enabled, returning the **same generic failure shape** as any other
+rejection (no new oracle).
 
+> **Amended 2026-09-02 — this section previously hardened only one of the two requests it names.**
+> Naming the flow as *two* requests and then guarding one is the shape of the defect itself. The second
+> request, `login.do`, calls the **same** `userManager.login()` through the **same** realm at
+> `LoginAction.java:273`, and is equally unauthenticated. §5.2's protection for it is **client-side only** —
+> it removes the password input from the DOM — and a removed input does not protect an endpoint that still
+> accepts a POST. Recorded as **PS-21** after T11 audit, which called for *"a design amendment plus a named
+> task"*; the task shipped as **T11b** and this is the amendment. Until both guards exist, SEC-005 says "any
+> MARLO endpoint" and is false.
+
+**Guard 2 (T11b):** `LoginAction.login()` must apply the identical refusal, resolved through the same shared
+`CognitoAuthSpecificity` resolver, **before** `userManager.login()` is reached — once that call executes the
+submitted password has already left MARLO. Both guards must be **indistinguishable from a wrong-password
+refusal**: same result, same field error, same message value. A distinguishable refusal turns either endpoint
+into an oracle for *is this account CGIAR and migrated*.
+
+**Enumerated 2026-09-02, because a guard is only as good as the door count.** `userManager.login(` appears at
+exactly three sites in `marlo-web/src/main/java`: `LoginAction:273` (Guard 2), `ValidateUserAction:101`
+(Guard 1), and `ClarisaPublicAccesFilter:79` — the last authenticates a **configured service account**
+(`config.getClarisaUser()`/`getClarisaPassword()`), never a user-submitted credential, so it is not a
+SEC-005 relay. It is recorded here anyway: if that service account is ever `is_cgiar_user = 1` in a unit that
+gets migrated, the Swagger public-access path breaks silently. T00 should carry it in its consumer list.
 ### 5.4 Terms of service
 
 `ValidateUserAction.java:87` (`user.setAgreeTerms(agree)`) is the **only** writer of `users.agree_terms`, and it is reached only from the password branch. A COGNITO user bypasses it entirely, so acceptance would silently stop being recorded.

@@ -20,12 +20,14 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
@@ -78,18 +80,21 @@ public class LoginAction extends BaseAction {
 
   private final CustomParameterManager customParameterManager;
 
+  private final ParameterManager parameterManager;
+
   private List<GlobalUnit> crpList;
   private List<GlobalUnit> centerList;
   private List<GlobalUnit> platformsList;
 
   // @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
   }
 
   @Override
@@ -111,6 +116,68 @@ public class LoginAction extends BaseAction {
 
   public Long getGlobalUnit() {
     return globalUnit;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T11b: {@code true} when {@code candidateEmail} resolves to an
+   * {@code is_cgiar_user = 1} account that belongs to at least one Global Unit with
+   * {@code cognito_auth_active} enabled.
+   * <p>
+   * This is {@code ValidateUserAction#isCgiarCredentialRelayBlocked()} (T11) adapted to this action's
+   * shape -- see that method's javadoc for the full MIG-001 reasoning, which applies unchanged here. The
+   * short version: refusing on "any membership is migrated" would lock a CGIAR user with a non-migrated
+   * membership out of that unit's local login entirely, which MIG-001's <i>Both paths coexist</i> scenario
+   * forbids. So when {@code selectedGlobalUnit} is a unit the account actually belongs to, that unit alone
+   * decides.
+   * <p>
+   * <b>{@code selectedGlobalUnit} is a REQUEST, not an authority.</b> It is resolved from the caller-supplied
+   * {@code crp} acronym ({@link GlobalUnitManager#findGlobalUnitByAcronym(String)}), which only proves the
+   * acronym exists -- not that this account belongs to it. T11's first correction FAILed its audit for
+   * exactly this shape: trusting a caller-named unit without checking it against real membership let
+   * {@code &globalUnitId=99999} switch the guard off entirely (execution.md 15.1). Here, a
+   * {@code selectedGlobalUnit} that matches no membership is therefore treated as no selection at all, and
+   * the method falls through to the fail-closed sweep across every membership.
+   *
+   * @param candidateEmail the trimmed, lowercased email the caller is attempting to authenticate as
+   * @param selectedGlobalUnit the Global Unit resolved from the {@code crp} acronym, or {@code null} when
+   *        none was supplied or none resolved
+   * @return {@code true} only when the account is CGIAR-authenticated AND the deciding Global Unit (the
+   *         selected one when it is a real membership, otherwise any membership) has the flag active;
+   *         {@code false} for every local ({@code is_cgiar_user = 0}) account and for an account this
+   *         action cannot resolve at all (SEC-005's {@code BUT MUST NOT} clause)
+   */
+  private boolean isCgiarCredentialRelayBlocked(String candidateEmail, GlobalUnit selectedGlobalUnit) {
+    if (candidateEmail == null || candidateEmail.trim().isEmpty()) {
+      return false;
+    }
+    User candidate = this.userManager.getUserByEmail(candidateEmail);
+    if (candidate == null) {
+      candidate = this.userManager.getUserByUsername(candidateEmail);
+    }
+    if (candidate == null || !candidate.isCgiarUser()) {
+      return false;
+    }
+    List<GlobalUnit> memberships = this.crpManager.crpUsers(candidateEmail);
+
+    // MIG-001: when the selected Global Unit is one the account actually belongs to, that unit alone
+    // decides -- a user in a migrated X and a non-migrated Y must still reach Y's local login. The
+    // membership check is the whole security of this branch; see the javadoc above for why
+    // `selectedGlobalUnit` cannot be trusted on its own.
+    if (selectedGlobalUnit != null) {
+      for (GlobalUnit membership : memberships) {
+        if (selectedGlobalUnit.getId().equals(membership.getId())) {
+          return CognitoAuthSpecificity.isActiveFor(membership, this.customParameterManager, this.parameterManager);
+        }
+      }
+      // Matched no membership: treat it as no selection at all and fall through to the fail-closed sweep.
+    }
+
+    for (GlobalUnit membership : memberships) {
+      if (CognitoAuthSpecificity.isActiveFor(membership, this.customParameterManager, this.parameterManager)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void getLoginMessages() {
@@ -184,6 +251,25 @@ public class LoginAction extends BaseAction {
       GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(crp);
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
+
+      // CHG-COGNITO-AUTH-001-T11b (SEC-005): the guard runs, and can refuse, BEFORE userManager.login() is
+      // reached -- once that call executes the submitted password has already left MARLO for the realm's
+      // LDAP branch. Mirrors ValidateUserAction#isCgiarCredentialRelayBlocked() (T11), the reference
+      // implementation corrected after two audits (execution.md 15-16): a caller-supplied Global Unit may
+      // only narrow the decision to a unit the account actually holds, it may never let the decision escape
+      // one, and the flag is never read except through the shared CognitoAuthSpecificity resolver (PS-16).
+      if (this.isCgiarCredentialRelayBlocked(userEmail, loggedCrp)) {
+        LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
+          + ADLoginMessages.ERROR_LOGON_FAILURE.getValue());
+        user.setPassword(null);
+        // Same generic shape a wrong password produces (design.md 5.3, matching T11's ValidateUserAction
+        // guard): no new oracle telling a caller which accounts are CGIAR-migrated (SEC-005's BUT MUST NOT
+        // clause). ADLoginMessages's literal-string values are used directly, not as i18n keys (DD-7) --
+        // this is the exact value APCustomRealm/LDAPAuthenticator leave behind for a genuine wrong password.
+        this.addFieldError("loginMessage", this.getText(ADLoginMessages.ERROR_LOGON_FAILURE.getValue()));
+        return BaseAction.INPUT;
+      }
+
       User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {

@@ -2240,3 +2240,74 @@ for a managed entity there is no merge.
 That distinction is why the T07 Constitutional check was wrong to demand `saveUser` "so the audit listener
 fires", and why a call-recording double could never have settled it. A call to either method looks identical;
 only the transaction boundary decides whether a row changes.
+
+---
+
+## 22. T11b — `login.do` hardened; SEC-005 is now true for both endpoints — 2026-09-02
+
+A task that **did not exist** until today. Added with the user approval after PS-21 was re-verified as still
+open, and implemented under the normal Implementer to Reviewer flow. Audit verdict: **PASS-WITH-FINDINGS**.
+
+### 22.1 Why it existed
+
+T11 closed the Active Directory credential relay on `validateUser.do` and left the **same relay** open on
+`login.do`, which is equally unauthenticated. T12 protection for it is **client-side only** — it removes the
+password input from the DOM — and a removed input does not protect an endpoint that still accepts a POST.
+`SEC-005` says **"any MARLO endpoint"**, so it was still false.
+
+Verified still open before the task was written: `LoginAction.login():187` called
+`userManager.login(userEmail, user.getPassword())`, and `LoginAction` contained **zero** references to
+`CognitoAuthSpecificity` while `ValidateUserAction` contained four.
+
+### 22.2 Gates, all measured by the Leader
+
+| Gate | Result |
+|---|---|
+| Tests, clean run, **no competing Maven** | **128 / 128**, 0 failures, 0 errors |
+| Mutation — guard disabled | `Tests run: 6, Failures: 4` — all four with `AssertionError: userManager.login() must not be called (SEC-005): the password would already have left MARLO for the realm LDAP branch` |
+| Mutation — which tests stayed **green** | The two that require authentication to **still happen** (flag off, and local account). The mutation separates the two halves of SEC-005 rather than reddening everything |
+| Restored | **6 / 6**, file confirmed byte-identical with `diff` |
+| `finishLogin` in any hunk | **0** — T01 shared tail untouched, as required |
+
+**The asymmetry is the evidence.** SEC-005 has two halves: refuse the migrated CGIAR account, and **leave
+everyone else unchanged**. A mutation that reddened all six tests would have proven neither. This one reddens
+exactly the four refusal tests and leaves the two must-still-authenticate tests green.
+
+### 22.3 The audit found an error in the Leader own enumeration
+
+The Leader enumerated `userManager.login(` and reported **two** call sites, adding "there is no third route".
+That search covered `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/` only. There is a **third**:
+`ClarisaPublicAccesFilter:79`.
+
+It is **not** a SEC-005 relay — it binds `config.getClarisaUser()`/`getClarisaPassword()`, a configured
+service account, never a user-submitted credential — so the security conclusion is unchanged. **The claim was
+still wrong**: it asserted a repo-wide property from a subtree search. This is the same overreach this log has
+repeatedly recorded in others, committed by the Leader, and it is recorded here for the same reason.
+
+`design.md` §5.3 now carries the full three-site enumeration, including why the third is not a relay and the
+operational risk it does carry: if that service account is ever `is_cgiar_user = 1` in a unit that gets
+migrated, the Swagger public-access path breaks silently. T00 should carry it.
+
+### 22.4 The other audit findings
+
+| # | Finding | Resolution |
+|---|---|---|
+| 1 | The diff touches `CognitoCallbackAction` (and its test), which T11b *Files touched* does not name | **Compelled, not scope creep** — it extends `LoginAction`, whose constructor gained a parameter. The auditor judged the alternative (an overload passing `null`) worse: a null resolver inside an already-audited action. Recorded rather than reverted |
+| 2 | **`design.md` §5.3 was not amended** — PS-21 called for "a design amendment **plus** a named task", and only the task shipped | **The Leader failure, now fixed.** §5.3 previously described the local flow as *two* requests and hardened *one*. The auditor correctly refused to fix it itself: it is not in T11b *Done when*, and an unrequested spec edit is the scope creep this process exists to prevent |
+
+The auditor also delegated four checks it could not run without `Bash`. All four resolved: `finishLogin`
+appears in no hunk; `.trim().toLowerCase()` at `:253` is **pre-existing**, not an undeclared behavioural
+change to what the realm receives; `crpList`/`centerList`/`platformsList` are **pre-existing**, not three
+extra queries added per login; and the named class reports **6 tests**, not merely a green build.
+
+### 22.5 Carried forward
+
+- **PS-23 now applies to `login.do` too.** `GlobalUnitMySQLDAO.crpUsers` filters `cpUser.active=1 and
+  cp.active=1 and cp.login=1`. A migrated CGIAR account whose membership rows are all filtered out yields an
+  empty list and relays to AD. Not attacker-controllable — a property of the account rows, not the request —
+  and it is the same boundary T11 accepted, but it is now a **second** endpoint carrying it.
+- **T14 owns the guard log line.** The refusal deliberately emits the generic failure message, which is right
+  for the oracle property but leaves OPS-001 "which gate rejected" unsatisfied for this path.
+- **`CognitoCallbackAction` declares two constructors with no `@Autowired`.** Pre-existing from T09, and
+  §21 records that `cognitoCallback.do` was instantiated successfully in a live boot — but that boot predates
+  this constructor change. **Re-verify with one live GET before T12.**

@@ -18,11 +18,13 @@ package org.cgiar.ccafs.marlo.action.home;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CrpUser;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -149,7 +151,7 @@ public class LoginActionFinishLoginTest {
   public void setUp() throws Exception {
     APConfig config = new APConfig();
     this.action = new TestableLoginAction(config, new FakeUserManager(), new NoOpGlobalUnitManager(),
-      new AlwaysMemberCrpUserManager(), new NoCustomParametersManager());
+      new AlwaysMemberCrpUserManager(), new NoCustomParametersManager(), new NoOpParameterManager());
     this.action.setSession(new HashMap<String, Object>());
     // The success log line dereferences the `user` FIELD, not the loggedUser argument. T01 leaves that
     // line alone (T08 is what makes the field non-null on the Cognito path), so the field must be set
@@ -401,6 +403,43 @@ public class LoginActionFinishLoginTest {
     }
   }
 
+  /**
+   * Unused on this path (T11b's guard is not exercised by these tests -- see
+   * {@code LoginActionCgiarGuardTest}); present only to satisfy the constructor CHG-COGNITO-AUTH-001-T11b
+   * added to resolve {@code cognito_auth_active} through the shared {@code CognitoAuthSpecificity} resolver.
+   */
+  private static final class NoOpParameterManager implements ParameterManager {
+
+    @Override
+    public void deleteParameter(long parameterId) {
+    }
+
+    @Override
+    public boolean existParameter(long parameterID) {
+      return false;
+    }
+
+    @Override
+    public List<Parameter> findAll() {
+      return new ArrayList<Parameter>();
+    }
+
+    @Override
+    public Parameter getParameterById(long parameterID) {
+      return null;
+    }
+
+    @Override
+    public Parameter getParameterByKey(String key, long globalUnitId) {
+      return null;
+    }
+
+    @Override
+    public Parameter saveParameter(Parameter parameter) {
+      return parameter;
+    }
+  }
+
   /** Unused on this path; present only to satisfy the constructor. */
   private static final class NoOpGlobalUnitManager implements GlobalUnitManager {
 
@@ -455,8 +494,9 @@ public class LoginActionFinishLoginTest {
     private static final long serialVersionUID = 1L;
 
     TestableLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-      CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
-      super(config, userManager, crpManager, crpUserManager, customParameterManager);
+      CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
+      ParameterManager parameterManager) {
+      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
     }
 
     @Override
