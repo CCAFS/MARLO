@@ -198,7 +198,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               Long id = Long.parseLong(idParam);
               permission.setId(id);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the id '{}' of the feedback permission {}, which is not a number, so it is saved"
+                + " as a new one", idParam, index);
             }
           }
 
@@ -213,7 +214,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
                 feedbackPermissionManager.getFeedbackPermissionById(feedbackPermissionId);
               permission.setFeedbackPermission(feedbackPermission);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the permission '{}' of the feedback permission {}, which is not a number",
+                feedbackPermissionIdParam, index);
             }
           }
 
@@ -224,7 +226,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               Role role = roleManager.getRoleById(roleId);
               permission.setRole(role);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the role '{}' of the feedback permission {}, which is not a number", roleIdParam,
+                index);
             }
           }
 
@@ -235,13 +238,16 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               ClusterType clusterType = clusterTypeManager.getClusterTypeById(clusterTypeId);
               permission.setClusterType(clusterType);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the cluster type '{}' of the feedback permission {}, which is not a number",
+                clusterTypeIdParam, index);
             }
           }
 
           feedbackRolesPermissions.add(permission);
           index++;
         } catch (Exception e) {
+          logger.error("Stopped reading the submitted feedback permissions at index {}; the ones after it are not"
+            + " saved", index, e);
           hasMore = false;
         }
       } else {

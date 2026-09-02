@@ -68,6 +68,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This action is part of the CRP admin backend.
@@ -75,6 +77,8 @@ import org.apache.commons.lang3.RandomStringUtils;
  * @author Christian Garcia
  */
 public class CrpAdminManagmentAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CrpAdminManagmentAction.class);
 
   private static final long serialVersionUID = 3355662668874414548L;
 
@@ -280,18 +284,18 @@ public class CrpAdminManagmentAction extends BaseAction {
         inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        // The welcome email is still sent, only without the manual attached, so this is the only trace of it.
+        LOG.error("The user manual {} was not found, so the welcome email of {} goes out without it", fileName,
+          user.getEmail(), e);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("The user manual {} could not be read, so the welcome email of {} goes out without it", fileName,
+          user.getEmail(), e);
       } finally {
         if (inputStream != null) {
           try {
             inputStream.close();
           } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn("Could not close the stream of the user manual {}", fileName, e);
           }
         }
       }
@@ -820,6 +824,21 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
   }
 
+  /**
+   * Records a change this section makes to a user role. The management section assigns and removes roles through the
+   * plain DAO save and delete, which carry no action name and therefore never reach the audit log, so this trace is
+   * the only record that the assignment changed.
+   * 
+   * @param change what is being done to the role, used to open the message.
+   * @param userRole the role assignment that changed.
+   */
+  private void logUserRoleChange(String change, UserRole userRole) {
+    User user = userRole.getUser();
+    LOG.info("{} the role {} for the user {} ({}) in the management section of {}", change,
+      userRole.getRole() == null ? null : userRole.getRole().getId(), user == null ? null : user.getId(),
+      user == null ? null : user.getEmail(), loggedCrp.getAcronym());
+  }
+
   private void programLeaderData(CrpProgram crpProgramDb, CrpProgram crpProgram) {
     if (crpProgram.getLeaders() != null) {
       for (CrpProgramLeader crpProgramLeader : crpProgram.getLeaders()) {
@@ -857,6 +876,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (!user.getUserRoles().contains(userRole)) {
             userRoleManager.saveUserRole(userRole);
             userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+            this.logUserRoleChange("Assigned", userRole);
             this.notifyNewUserCreated(userRole.getUser());
             // Notifiy user been asigned Program Leader to Flagship
             this.notifyRoleFlagshipAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
@@ -908,6 +928,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fplRole)).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(fplUserRoles)) {
               for (UserRole userRole : fplUserRoles) {
+                this.logUserRoleChange("Removing", userRole);
                 userRoleManager.deleteUserRole(userRole.getId());
                 userRole.setUser(userManager.getUser(userRole.getUser().getId()));
                 // Notifiy user been unasigned Program Leader to Flagship
@@ -951,6 +972,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               user.getUserRoles().stream().filter(ur -> ur.getRole().equals(fpmRole)).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(fplUserRoles)) {
               for (UserRole userRole : fplUserRoles) {
+                this.logUserRoleChange("Removing", userRole);
                 userRoleManager.deleteUserRole(userRole.getId());
                 userRole.setUser(userManager.getUser(userRole.getUser().getId()));
                 // Notifiy user been unasigned Program Leader to Flagship
@@ -993,6 +1015,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (!user.getUserRoles().contains(userRole)) {
             userRoleManager.saveUserRole(userRole);
             userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+            this.logUserRoleChange("Assigned", userRole);
             this.notifyNewUserCreated(userRole.getUser());
             // Notifiy user been asigned Program Leader to Flagship
             this.notifyRoleFlagshipManagerAssigned(userRole.getUser(), userRole.getRole(), crpProgram);
@@ -1009,6 +1032,8 @@ public class CrpAdminManagmentAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("*")) {
+      LOG.info("The user {} is saving the management section of {}", this.getCurrentUser().getEmail(),
+        loggedCrp.getAcronym());
       this.setUsersToActive(new ArrayList<>());
 
       this.savePmuRoleData();
@@ -1042,6 +1067,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
         if (rgProgramsRewiev != null) {
           for (CrpProgram crpProgram : rgProgramsRewiev) {
+            LOG.info("Removing the program {} of {}", crpProgram.getAcronym(), loggedCrp.getAcronym());
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
         }
@@ -1059,17 +1085,25 @@ public class CrpAdminManagmentAction extends BaseAction {
         for (String key : keys) {
 
           this.addActionMessage(key + ": " + this.getInvalidFields().get(key));
+          // These rejections are reported on the screen and the action still returns SUCCESS, so without this line
+          // a save the user saw fail leaves no trace in the log.
+          LOG.warn("The management section of {} rejected the field {} of the user {}: {}", loggedCrp.getAcronym(), key,
+            this.getCurrentUser().getEmail(), this.getInvalidFields().get(key));
         }
 
 
         // this.addActionWarning(this.getText("saving.saved") + Arrays.toString(this.getInvalidFields().toArray()));
       } else {
         this.addActionMessage("message:" + this.getText("saving.saved"));
+        LOG.info("The management section of {} was saved by {}", loggedCrp.getAcronym(),
+          this.getCurrentUser().getEmail());
       }
       messages = this.getActionMessages();
       
       return SUCCESS;
     } else {
+      LOG.warn("The user {} tried to save the management section of {} without the permission to do so",
+        this.getCurrentUser().getEmail(), loggedCrp.getAcronym());
       return NOT_AUTHORIZED;
     }
 
@@ -1089,6 +1123,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             .collect(Collectors.toList());
           if (liaisonUsers.isEmpty()) {
 
+            this.logUserRoleChange("Removing", userRole);
             userRoleManager.deleteUserRole(userRole.getId());
           } else {
             boolean deletePmu = true;
@@ -1113,6 +1148,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             if (deletePmu) {
 
               this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+              this.logUserRoleChange("Removing", userRole);
               userRoleManager.deleteUserRole(userRole.getId());
 
             }
@@ -1128,6 +1164,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           .collect(Collectors.toList());
         if (liaisonUsers.isEmpty()) {
 
+          this.logUserRoleChange("Removing", userRole);
           userRoleManager.deleteUserRole(userRole.getId());
         } else {
           boolean deletePmu = true;
@@ -1152,6 +1189,7 @@ public class CrpAdminManagmentAction extends BaseAction {
           if (deletePmu) {
 
             this.notifyRoleProgramManagementUnassigned(userRole.getUser(), userRole.getRole());
+            this.logUserRoleChange("Removing", userRole);
             userRoleManager.deleteUserRole(userRole.getId());
 
           }
@@ -1169,6 +1207,7 @@ public class CrpAdminManagmentAction extends BaseAction {
             .collect(Collectors.toList()).isEmpty()) {
             userRoleManager.saveUserRole(userRole);
             userRole.setUser(userManager.getUser(userRole.getUser().getId()));
+            this.logUserRoleChange("Assigned", userRole);
 
             this.addCrpUser(userRole.getUser());
             this.notifyNewUserCreated(userRole.getUser());
@@ -1235,6 +1274,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
             }
 
+            LOG.info("Removing the program {} of {}", crpProgram.getAcronym(), loggedCrp.getAcronym());
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           } else {
             for (CrpProgramLeader leader : activeLeaders) {
@@ -1245,6 +1285,7 @@ public class CrpAdminManagmentAction extends BaseAction {
                 .collect(Collectors.toList());
 
               for (UserRole userRole : userRoles) {
+                this.logUserRoleChange("Removing", userRole);
                 userRoleManager.deleteUserRole(userRole.getId());
               }
 
@@ -1271,6 +1312,7 @@ public class CrpAdminManagmentAction extends BaseAction {
               liaisonInstitutionManager.deleteLiaisonInstitution(institution.getId());
             }
 
+            LOG.info("Removing the program {} of {}", crpProgram.getAcronym(), loggedCrp.getAcronym());
             crpProgramManager.deleteCrpProgram(crpProgram.getId());
           }
         }
