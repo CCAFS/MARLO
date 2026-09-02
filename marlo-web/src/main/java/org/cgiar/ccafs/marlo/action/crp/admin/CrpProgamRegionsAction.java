@@ -1001,14 +1001,7 @@ public class CrpProgamRegionsAction extends BaseAction {
                 .collect(Collectors.toList()).isEmpty()) {
                 crpProgramLeaderManager.saveCrpProgramLeader(crpProgramLeader);
 
-                for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
-
-                  LiaisonUser liaisonUser = new LiaisonUser();
-                  liaisonUser.setCrp(loggedCrp);
-                  liaisonUser.setLiaisonInstitution(liasonInstitution);
-                  liaisonUser.setUser(crpProgramLeader.getUser());
-                  liaisonUserManager.saveLiaisonUser(liaisonUser);
-                }
+                this.saveLiaisonUsersForLeader(crpProgramPrevLeaders, crpProgramLeader.getUser());
 
                 for (CrpProgramCountry crpProgramCountry : crpProgramPrevLeaders.getCrpProgramCountries().stream()
                   .filter(pc -> pc.isActive()).collect(Collectors.toList())) {
@@ -1071,6 +1064,36 @@ public class CrpProgamRegionsAction extends BaseAction {
     }
 
   }
+
+  /**
+   * Creates one liaison user per liaison institution of the given program, so the leader keeps the liaison
+   * relationship the rest of the platform reads. liaison_users.institution_id is mandatory, so institutions without
+   * an identifier are skipped, and a program with no liaison institution is reported instead of silently leaving the
+   * leader without a liaison user.
+   *
+   * @param crpProgram the program the leader belongs to, read from the database.
+   * @param user the leader being assigned.
+   */
+  private void saveLiaisonUsersForLeader(CrpProgram crpProgram, User user) {
+    if (crpProgram.getLiaisonInstitutions() == null || crpProgram.getLiaisonInstitutions().isEmpty()) {
+      LOG.warn("The region {} ({}) has no liaison institution, so the leader {} was saved without a liaison user.",
+        crpProgram.getId(), crpProgram.getAcronym(), user == null ? null : user.getId());
+      return;
+    }
+
+    for (LiaisonInstitution liaisonInstitution : crpProgram.getLiaisonInstitutions()) {
+      if (liaisonInstitution == null || liaisonInstitution.getId() == null) {
+        continue;
+      }
+
+      LiaisonUser liaisonUser = new LiaisonUser();
+      liaisonUser.setCrp(loggedCrp);
+      liaisonUser.setLiaisonInstitution(liaisonInstitution);
+      liaisonUser.setUser(user);
+      liaisonUserManager.saveLiaisonUser(liaisonUser);
+    }
+  }
+
 
   private void saveSiteIntegration(LocElement locElement, CrpProgram crpProgram) {
     GlobalUnit crp = crpManager.getGlobalUnitById(loggedCrp.getId());

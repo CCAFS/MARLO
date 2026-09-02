@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
@@ -81,6 +82,9 @@ public class CrpAdminManagmentAction extends BaseAction {
   private static final Logger LOG = LoggerFactory.getLogger(CrpAdminManagmentAction.class);
 
   private static final long serialVersionUID = 3355662668874414548L;
+
+  /** Name and acronym used when the Program Management Unit liaison institution has to be created. */
+  private static final String PMU_LIAISON_INSTITUTION_NAME = "PMU";
 
 
   /**
@@ -755,6 +759,106 @@ public class CrpAdminManagmentAction extends BaseAction {
   }
 
 
+  /**
+   * Reads a numeric Global Unit parameter that Admin Management stores in the session. A non numeric value is
+   * reported as a configuration problem instead of leaking a NumberFormatException to the exception page.
+   */
+  private long parseSessionParameter(String key, String value) {
+    try {
+      return Long.parseLong(value.trim());
+    } catch (NumberFormatException e) {
+      throw new IllegalStateException("The CRP parameter " + key + " for Admin Management is not a valid identifier: '"
+        + value + "'. Fix the custom parameter for this Global Unit and re-login.", e);
+    }
+  }
+
+
+  /**
+   * Resolves the liaison institution that represents the Program Management Unit of the logged Global Unit, the one
+   * the {@code crp_cu} parameter points to. The parameter is seeded per Global Unit and can end up dangling (for
+   * instance when a database is cloned without its liaison_institutions rows), and every liaison user created here
+   * needs a non null institution. So when the parameter does not resolve, the PMU institution is looked up and, as a
+   * last resort, created the same way {@code GlobalUnitCreationManagerImpl} does it, and {@code crp_cu} is repaired.
+   *
+   * @return the liaison institution to use, or null when it could not be resolved nor created.
+   */
+  private LiaisonInstitution resolvePmuLiaisonInstitution() {
+    LiaisonInstitution liaisonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
+    if (liaisonInstitution != null) {
+      return liaisonInstitution;
+    }
+
+    LOG.warn("The parameter {}={} of the Global Unit {} does not point to an existing liaison institution. "
+      + "Trying to resolve the Program Management Unit institution.", APConstants.CRP_CU, cuId,
+      loggedCrp.getAcronym());
+
+    liaisonInstitution = liaisonInstitutionManager.findByAcronymAndCrp(PMU_LIAISON_INSTITUTION_NAME, loggedCrp.getId());
+
+    if (liaisonInstitution == null && loggedCrp.getLiaisonInstitutions() != null) {
+      liaisonInstitution = loggedCrp.getLiaisonInstitutions().stream()
+        .filter(c -> c.isActive() && c.getCrpProgram() == null).findFirst().orElse(null);
+    }
+
+    if (liaisonInstitution == null) {
+      liaisonInstitution = new LiaisonInstitution();
+      liaisonInstitution.setCrp(loggedCrp);
+      liaisonInstitution.setName(PMU_LIAISON_INSTITUTION_NAME);
+      liaisonInstitution.setAcronym(PMU_LIAISON_INSTITUTION_NAME);
+      liaisonInstitution = liaisonInstitutionManager.saveLiaisonInstitution(liaisonInstitution);
+      if (liaisonInstitution != null && liaisonInstitution.getId() != null) {
+        LOG.warn("Created the Program Management Unit liaison institution {} for the Global Unit {}.",
+          liaisonInstitution.getId(), loggedCrp.getAcronym());
+      }
+    }
+
+    if (liaisonInstitution == null || liaisonInstitution.getId() == null) {
+      return null;
+    }
+
+    this.repairCrpCuParameter(liaisonInstitution.getId());
+    return liaisonInstitution;
+  }
+
+
+  /**
+   * Points the {@code crp_cu} custom parameter of the logged Global Unit to the given liaison institution and
+   * refreshes the session, so the next requests no longer hit the dangling value.
+   */
+  private void repairCrpCuParameter(Long liaisonInstitutionId) {
+    String value = String.valueOf(liaisonInstitutionId);
+    CustomParameter customParameter = null;
+    if (loggedCrp.getCustomParameters() != null) {
+      customParameter = loggedCrp.getCustomParameters().stream()
+        .filter(c -> c.getParameter() != null && APConstants.CRP_CU.equals(c.getParameter().getKey()) && c.isActive())
+        .findFirst().orElse(null);
+    }
+
+    if (customParameter == null) {
+      Parameter parameter =
+        parameterManager.getParameterByKey(APConstants.CRP_CU, loggedCrp.getGlobalUnitType().getId());
+      if (parameter == null) {
+        LOG.error("The parameter {} is not defined for the Global Unit type {}. The value {} could not be persisted.",
+          APConstants.CRP_CU, loggedCrp.getGlobalUnitType().getId(), value);
+        cuId = liaisonInstitutionId;
+        this.getSession().put(APConstants.CRP_CU, value);
+        return;
+      }
+      customParameter = new CustomParameter();
+      customParameter.setCrp(loggedCrp);
+      customParameter.setParameter(parameter);
+    }
+
+    customParameter.setValue(value);
+    crpParameterManager.saveCustomParameter(customParameter);
+
+    LOG.warn("Repaired the parameter {} of the Global Unit {}: {} -> {}.", APConstants.CRP_CU, loggedCrp.getAcronym(),
+      cuId, value);
+
+    cuId = liaisonInstitutionId;
+    this.getSession().put(APConstants.CRP_CU, value);
+  }
+
+
   @Override
   public void prepare() throws Exception {
 
@@ -769,8 +873,8 @@ public class CrpAdminManagmentAction extends BaseAction {
         + APConstants.CRP_PMU_ROLE + " and/or " + APConstants.CRP_CU
         + ". Re-login after ensuring custom parameters are configured for this Global Unit.");
     }
-    pmuRol = Long.parseLong(pmuRoleParam);
-    cuId = Long.parseLong(cuParam);
+    pmuRol = this.parseSessionParameter(APConstants.CRP_PMU_ROLE, pmuRoleParam);
+    cuId = this.parseSessionParameter(APConstants.CRP_CU, cuParam);
     rolePmu = roleManager.getRoleById(pmuRol);
     if (rolePmu != null && rolePmu.getUserRoles() != null) {
       loggedCrp.setProgramManagmenTeam(new ArrayList<UserRole>(rolePmu.getUserRoles()));
@@ -851,7 +955,17 @@ public class CrpAdminManagmentAction extends BaseAction {
               && c.getUser().equals(crpProgramLeader.getUser()))
             .collect(Collectors.toList()).isEmpty()) {
 
+            if (crpProgramPrevLeaders.getLiaisonInstitutions() == null
+              || crpProgramPrevLeaders.getLiaisonInstitutions().isEmpty()) {
+              LOG.warn("The program {} ({}) has no liaison institution, so the leader {} was saved without a liaison "
+                + "user.", crpProgramPrevLeaders.getId(), crpProgramPrevLeaders.getAcronym(),
+                crpProgramLeader.getUser() == null ? null : crpProgramLeader.getUser().getId());
+            }
+
             for (LiaisonInstitution liasonInstitution : crpProgramPrevLeaders.getLiaisonInstitutions()) {
+              if (liasonInstitution == null || liasonInstitution.getId() == null) {
+                continue;
+              }
 
               LiaisonUser liaisonUser = new LiaisonUser();
               liaisonUser.setCrp(loggedCrp);
@@ -1201,6 +1315,23 @@ public class CrpAdminManagmentAction extends BaseAction {
     }
     // Add new Users roles
     if ((loggedCrp.getProgramManagmenTeam() != null)) {
+      /*
+       * liaison_users.institution_id is mandatory, so the liaison institution is resolved before any role is saved:
+       * a dangling crp_cu parameter must stop the assignment instead of leaving the role persisted and the
+       * notification sent behind a liaison user that could not be created.
+       */
+      boolean hasNewUsers = loggedCrp.getProgramManagmenTeam().stream().anyMatch(ur -> ur.getId() == null);
+      LiaisonInstitution cuLiasonInstitution = hasNewUsers ? this.resolvePmuLiaisonInstitution() : null;
+
+      if (hasNewUsers && cuLiasonInstitution == null) {
+        LOG.error("The Program Management Unit liaison institution of the Global Unit {} could not be resolved "
+          + "({}={}). No user was added to the Program Management Unit.", loggedCrp.getAcronym(), APConstants.CRP_CU,
+          cuId);
+        this.getInvalidFields().put("list-loggedCrp.programManagmenTeam",
+          this.getText("programManagement.pmuLiaisonInstitution.missing"));
+        return;
+      }
+
       for (UserRole userRole : loggedCrp.getProgramManagmenTeam()) {
         if (userRole.getId() == null) {
           if (rolePreview.getUserRoles().stream().filter(ur -> ur.getUser().equals(userRole.getUser()))
@@ -1214,9 +1345,6 @@ public class CrpAdminManagmentAction extends BaseAction {
             // Notifiy user been assigned to Program Management
             this.notifyRoleProgramManagementAssigned(userRole.getUser(), userRole.getRole());
 
-            LiaisonInstitution cuLiasonInstitution;
-
-            cuLiasonInstitution = liaisonInstitutionManager.getLiaisonInstitutionById(cuId);
             LiaisonUser liaisonUser = new LiaisonUser();
             liaisonUser.setCrp(loggedCrp);
             liaisonUser.setLiaisonInstitution(cuLiasonInstitution);
