@@ -2043,7 +2043,7 @@ out **what ran**, not a verdict.
 - **FN-006's write is not proven to reach the row.** The fix now uses `saveLastLogin` (`@Transactional`), which
   is the right mechanism, but **nothing in production calls `CognitoIdentityMapper` yet** — T09 is unbuilt. The
   evidence is inspection, not execution. A call-recording double proves a call, not a write. **T09 must prove
-  the row changed against a real schema.**
+  the row changed against a real schema.** **CLOSED 2026-09-02 — see §21.** The `saveLastLogin` persistence mechanism is now validated at runtime against a real schema. **Scope: the local login path only** (§21.3); the Cognito path itself remains unexercised.
 - **`tasks.md` claims T07 "Covers: SEC-006". That overstates what shipped.** `Result` returns distinct enum
   values; T07 *enables* indistinguishable refusals but cannot stop T09 from rendering
   `getRejectionReason().name()`. Timing was checked and is clean — gates 1 and 2 both return after exactly one
@@ -2174,7 +2174,7 @@ code, verifier, nonce, state, or secret reaches a log.
 - **The real-schema proof for `agree_terms` is not discharged**, and neither is the identical T07 obligation
   for `users.username`. Both write through `saveLastLogin`; the tests prove a call, not a row. **The Leader
   closes this against the live database** — `finishLogin` reaches `saveLastLogin` on the **local** login path,
-  so the mechanism can be proven without Cognito keys.
+  so the mechanism can be proven without Cognito keys. **CLOSED 2026-09-02 — see §21.** Validated at runtime against a real schema: `last_login` for the account used was written 96 seconds before the read, and the pre-boot baseline row was untouched. **Scope is the local login path only, not the Cognito flow** — §21.3.
 - **A mechanism note the spec gets slightly wrong.** `saveLastLogin` and `saveUser` have **identical bodies** —
   both call `super.update(user)`, which returns before `merge()` for a managed entity. The write is performed
   by **Hibernate dirty checking at flush**, which `@Transactional` causes; it is not performed by `update()`.
@@ -2184,3 +2184,59 @@ code, verifier, nonce, state, or secret reaches a log.
   `loginMessage` is rendered by nothing today. SEC-006 therefore holds trivially at the browser, but "the user
   is shown an i18n message" is **not** met. That belongs to T12/T13 and must not be silently absorbed.
 - **Spring wiring of the two new constructor parameters is argued, not observed.** Fold it into the boot.
+
+---
+
+## 21. Runtime persistence validation — 2026-09-02 · **local login path only**
+
+Performed by the user against the running application, at the user request and with the scope the user
+fixed. **Read the scope statement in 21.3 before citing this section for anything.**
+
+### 21.1 What was done
+
+The application was booted with **0 `cognito.*` keys** present. The user signed in manually through
+`http://localhost:8080/marlo-web/login.do` using a **local MARLO password stored in the database** — not an
+Active Directory or Cognito credential. **No password or password hash was created, modified, or read** at
+any point; the user explicitly instructed that none be touched, and none was.
+
+### 21.2 The evidence
+
+| Check | Result |
+|---|---|
+| Boot errors (`Dispatcher initialization failed` / `startup failed` / `SEVERE`) | **0** |
+| `GET /marlo-web/login.do` | **200** |
+| `users.last_login` for the account used (id **3797**) | **2026-09-02 14:08:01** |
+| MySQL server clock at read time | **2026-09-02 14:09:37** — the write is **96 seconds old** |
+| Next most recent `last_login` in the whole table | 2026-08-29 — more than **three days** older |
+| Baseline row captured before the boot (id 1, `2025-11-04 16:16:52`) | **unchanged** — nothing wrote indiscriminately |
+
+### 21.3 Scope — what this validates, and what it does NOT
+
+**Validates:** the **local successful-login path**, and **real persistence through `saveLastLogin`** against a
+real schema.
+
+**Does NOT validate the Cognito authentication flow.** No part of the federated path was exercised: not the
+code exchange, not token validation, not gates 1-3, and **not the CRITICAL `SessionMap` fix from T09**. That
+fix remains evidenced by its regression test — which fails with the exact production exception
+`IllegalStateException: session has been invalidated` — and by code reading, not by a live federated login.
+
+**One piece of partial cross-evidence, recorded as partial.** The local sign-in does traverse `finishLogin`,
+which is the shared tail where the T09 CRITICAL defect manifested. That it completed without a 500 shows the
+shared tail is healthy with the T07 and T09 changes in place. That is corroboration, not end-to-end
+validation, and must not be cited as the latter.
+
+### 21.4 Why this closes two evidence debts, and what the mechanism actually is
+
+This discharges the real-schema obligation left open by **both** §19.5 (T07, `users.username`) and §20.5
+(T09, `agree_terms`). Both write the same kind of field, on the same managed entity, through the same method.
+
+**The mechanism, now observed rather than inferred.** `saveLastLogin` and `saveUser` have **identical
+bodies** — both call `super.update(user)`, which returns before `merge()` when the entity is session-managed.
+The only difference between them is `@Transactional`, which switches the OSIV session from `FlushMode.MANUAL`
+to AUTO so that **Hibernate dirty checking at flush** performs the write. The write is not performed by
+`update()` at all. The DAO comment saying "the merge stays in memory" names the symptom, not the mechanism:
+for a managed entity there is no merge.
+
+That distinction is why the T07 Constitutional check was wrong to demand `saveUser` "so the audit listener
+fires", and why a call-recording double could never have settled it. A call to either method looks identical;
+only the transaction boundary decides whether a row changes.
