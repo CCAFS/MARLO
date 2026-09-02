@@ -501,13 +501,16 @@
 
 ---
 ### CHG-COGNITO-AUTH-001-T12 — Login wizard: mode composition + DOM removal
-- **Status:** `[~]` — 2026-09-02, code complete after **two audit FAIL rounds** (`execution.md` §23).
-  **128/128 Java tests clean** — which proves only that the backend was not broken; **zero** of them see the
-  DOM. **Not `[x]`: the seven manual checks have not been run**, and they are this task only real gate (D-5).
-  Round 1 found the LOCAL branch **permanently dead** after any COGNITO visit; round 2 found three more,
-  including one the auditor had itself recommended. **Check 7 was added because the original six could not see
-  the blocking defect**, and its first draft was not load-bearing either — see §23.3.
-
+- **Status:** `[x]` — 2026-09-02. Code complete after **two audit FAIL rounds** (`execution.md` §23), and
+  **all seven manual checks executed and passed** (§24). **128/128 Java tests clean** — which proves only that
+  the backend was not broken; zero of them see the DOM. Checks 1, 2 and 6 were run by the user in a browser;
+  checks 3, 4, 5 and 7 by the Leader through Chrome DevTools Protocol with **no dependency added to MARLO**.
+  **Manual validation found a defect no code review could see:** T12 changed `login.js` and `customLogin.css`
+  without bumping their cache-busting tokens, so every returning user would have silently kept the pre-T12
+  assets and the Cognito branch would never have appeared for them (§24.2).
+  **One named residual, deliberately NOT claimed as tested:** check 5 is proven only through the Chrome
+  accessibility tree — role, accessible name, focusability, exposure to assistive technology. **No real screen
+  reader (NVDA, JAWS, Narrator) was executed** (§24.6).
 - **Depends on:** T08, T10
 - **Module:** marlo-web
 - **Files touched:**

@@ -2504,3 +2504,73 @@ that belongs in the rollout runbook.
 | 6 | Single-unit user, step 2 auto-skipped, mode composes COGNITO | **FAIL, then PASS** after the cache fix — `#login-step-cgiar` visible, `#login-step-password` hidden, `#login-cgiar-button` `display: block`, shared submit hidden |
 | 2 | CGIAR user, flag on — password absent from DOM **and** FormData | **PASS** — `document.querySelector('#login-password')` → `null`; `FormData.has('user.password')` → `false`; asset loaded as `login.js?20260902v1` **after a normal F5**, which also proves the token fix works without a forced refresh |
 | 3, 4, 5, 7 | | not yet run |
+
+### 24.5 The remaining checks were executed by the Leader through Chrome DevTools Protocol
+
+At the user request, checks 3, 4, 5 and 7 were driven programmatically instead of by hand. **No dependency
+was added to MARLO and nothing was installed**: Chrome was already present, and Node 20.19.5 exposes a
+`WebSocket` global under `--experimental-websocket`, so CDP is reachable with built-in modules only. Chrome
+ran headless against a **throwaway user-data-dir in the scratchpad**, never the user profile or cookies.
+
+This matters for one clause in particular. `Input.dispatchKeyEvent` delivers **real key events**, so
+`:focus-visible` resolves by genuine keyboard modality. A synthetic `.click()` would not have distinguished an
+accessible control from one that merely looks like one — which is exactly the difference between `<button>`
+and `<a>` under the space bar.
+
+### 24.6 Results — all seven
+
+| # | Check | Result | Evidence |
+|---|---|---|---|
+| 1 | Local user, step 3 unchanged | **PASS** *(user)* | field and eye icon present; `#login-cgiar-button` in the DOM at `display: none` |
+| 2 | Flag on: password absent from DOM **and** FormData | **PASS** *(user)* | `querySelector('#login-password')` → `null`; `FormData.has('user.password')` → `false`; asset `login.js?20260902v1` fetched after a **normal** F5 |
+| 3 | Flag off: password step as today | **PASS** | `pwdNode:true, pwdInput:true, eye:true, inForm:true, cgiar:false` |
+| 4 | Keyboard | **PASS** | below |
+| 5 | Accessible name | **PASS, with a named residual** | below |
+| 6 | Single-unit auto-skip | **FAIL then PASS** after the cache fix | `#login-step-cgiar` visible, `#login-step-password` hidden, shared submit hidden |
+| 7 | Back-navigation | **PASS** | below |
+
+**Check 4, in full.** Button reached at tab position **6**; `terms` at position **4**, so the checkbox
+**precedes** it. `document.activeElement.id === 'login-cgiar-button'`. **`matches(':focus-visible')` → `true`**
+— real keyboard modality. Outline `solid 2px rgb(22,137,202)`. **`borderRadius: "10px"`**, which independently
+confirms the round-2 auditor was right to retract its own `4px` recommendation: had that shipped, this would
+read `4px` and the corners would deform on focus. **Enter** and **Space** both navigate to
+`cognitoLogin.do?email=c.gamboa%40cgiar.org&globalUnitId=45&agree=true` — correctly URL-encoded, carrying the
+migrated unit id — answering **HTTP 200** with **zero** exception or stack-trace matches in the body.
+
+**Check 7, with the four sub-steps the audit demanded.** After migrated to back to local: the field is
+restored (`pwdNode`, `pwdInput`, `eye` all true) and **real typed keystrokes** land in it. The eye icon
+toggles `password` to `text`, proving `.clone(true)` carried its handler. And the load-bearing one: submitting
+a deliberately wrong password produced **one POST to `validateUser.do`** and the visible error
+**`incorrectPassword`, not `voidPassword`**. Had `inputPassword` still pointed at the detached node, `val()`
+would be empty, the flow would have stopped at the required-password branch and **no request would have been
+sent at all**. Pressing **Enter** inside the restored field also fired the POST.
+
+**Check 5 — what is proven and what is NOT.** Chrome accessibility tree for `#login-cgiar-button`:
+`role = button`, `name = "Sign in with CGIAR"`, `ignored = false`, `focusable = true`. The AX tree is precisely
+what assistive technology consumes, so the role, the accessible name, focusability, and the fact that the
+control **is exposed to assistive technologies** are established.
+
+> **NOT covered, and not to be represented as tested: no real screen reader was executed.** NVDA, JAWS and
+> Narrator were all absent from this validation. How any specific reader verbalises the control — its role
+> prefix, its language, its ordering relative to the terms checkbox — remains **unverified**. This is a named
+> gap, not a pass.
+
+### 24.7 Test-data rollback — executed and verified
+
+```sql
+DELETE FROM crp_users         WHERE user_id=3797 AND global_unit_id=47;
+DELETE FROM custom_parameters WHERE parameter_id=393 AND global_unit_id=45;
+UPDATE users SET is_cgiar_user=0 WHERE id=3797;
+```
+
+Verified after rollback, against the pre-state captured in §24.1:
+
+| Row | Restored state |
+|---|---|
+| `users` 3797 | `is_cgiar_user=0`, `is_active=1`, `username=cgamboa`, `agree_terms=1` |
+| password hash | **`MD5(password) = d9b1d7db4cd6e70935368a1efb10e377`, length 32 — byte-identical to the value captured before Phase 2.** No password or hash was created, modified, or read at any point |
+| `crp_users` | **one** row again: id 5252, unit 45, `created_by=1082`, `active_since=2024-04-05 12:21:36` |
+| `custom_parameters` | **zero** rows for `cognito_auth_active` |
+
+`last_login` moved with each sign-in and was deliberately **not** restored: that movement is the evidence §21
+rests on, and editing an audit row to look untouched would be worse than the change itself.
