@@ -78,7 +78,7 @@
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">
-              <li id="login-selected-project-card" class="selected-project-card"></li>
+              <li class="selected-project-card"></li>
             </ul>
           </div>
           [#-- Complete name of the user (when the record has one) followed by what was typed in step 1 --]
@@ -95,6 +95,35 @@
           </div>
         </div>
 
+        [#-- Step 3 (COGNITO branch): CHG-COGNITO-AUTH-001-T12 / FN-001. A CGIAR user whose
+             selected Global Unit has the Cognito specificity enabled sees this single "Sign in
+             with CGIAR" control instead of a password field. The selected-project card and the
+             echoed identity are the same reused markup/classes as #login-step-password
+             (design.md 5.2: "both reused") so login.js's existing mirroring code
+             (secondForm/click handler, showPasswordStep) targets both blocks without change.
+             The password input is never rendered here -- it exists only inside
+             #login-step-password, and login.js additionally .remove()s it on this branch as the
+             DOM-removal measure design.md 5.2 requires (not .hide(), not disabled). The terms
+             checkbox and the CGIAR control itself live outside this block (.terms-container,
+             .login-button-container below), exactly as the password step's do, so no control is
+             ever duplicated between the two branches --]
+        <div class="login-step hidden" id="login-step-cgiar">
+          <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
+          <div class="selected-project-container">
+            <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
+            <ul class="selected-project-card-list">
+              <li class="selected-project-card"></li>
+            </ul>
+          </div>
+          [#-- Complete name of the user (when the record has one) followed by what was typed in step 1 --]
+          <div class="login-echoed-email-container">
+            <p class="login-field-label">[@s.text name="login.loggingInAs"/]</p>
+            <p class="login-echoed-email">
+              <span class="login-echoed-name"></span><span class="login-echoed-username"></span>
+            </p>
+          </div>
+        </div>
+
         [#-- Error messages. login.js shows exactly one of these at a time, selecting it by its
              second CSS class --]
         <p class="invalidField emailRequired hidden">[@s.text name="login.error.invalidField.emailRequired"/]</p>
@@ -105,6 +134,9 @@
         <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
         <p class="invalidField voidPassword hidden">[@s.text name="login.error.invalidField.voidPassword"/]</p>
         <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
+        [#-- CHG-COGNITO-AUTH-001-T12 fix (audit Issue 2): shown when "Log in" is pressed on step 2
+             with no card ever selected, so mode cannot be composed safely --]
+        <p class="invalidField selectProject hidden">[@s.text name="login.error.invalidField.selectProject"/]</p>
 
         [#-- Terms and conditions checkbox --]
         <div class="terms-container hidden">
@@ -123,6 +155,14 @@
           <span class="login-button-spinner hidden"></span>
           [#-- and This one to send login form --]
           [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
+          [#-- CHG-COGNITO-AUTH-001-T12: the COGNITO-branch control (FN-001). A real
+               <button type="button">, so Enter and Space both activate it for free and it never
+               submits #login-step-password's form -- it navigates to cognitoLogin.do instead
+               (design.md 5.5). Reuses .login-form-button, styled only as a descendant of
+               .login-button-container (customLogin.css), so it must live in this container --]
+          <button type="button" id="login-cgiar-button" class="login-form-button hidden">
+            [@s.text name="login.cgiarSignIn"/]
+          </button>
         </div>
 
         [#-- Go back to the previous step. A real <button> so it is in the tab order, exposes a

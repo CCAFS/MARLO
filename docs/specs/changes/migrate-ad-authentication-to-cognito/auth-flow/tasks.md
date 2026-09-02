@@ -501,6 +501,12 @@
 
 ---
 ### CHG-COGNITO-AUTH-001-T12 — Login wizard: mode composition + DOM removal
+- **Status:** `[~]` — 2026-09-02, code complete after **two audit FAIL rounds** (`execution.md` §23).
+  **128/128 Java tests clean** — which proves only that the backend was not broken; **zero** of them see the
+  DOM. **Not `[x]`: the seven manual checks have not been run**, and they are this task only real gate (D-5).
+  Round 1 found the LOCAL branch **permanently dead** after any COGNITO visit; round 2 found three more,
+  including one the auditor had itself recommended. **Check 7 was added because the original six could not see
+  the blocking defect**, and its first draft was not load-bearing either — see §23.3.
 
 - **Depends on:** T08, T10
 - **Module:** marlo-web
@@ -515,14 +521,20 @@
 - **Tests:** **no automated frontend harness exists** — see the gap note below.
 - **Verification (manual, at the HITL pause):**
   1. Local user → step 3 is today's password step, pixel-identical.
-  2. CGIAR user, flag on → password input is **absent from the DOM** (`document.querySelector('#login-password')` returns `null`) and absent from `new FormData(form)`.
+  2. CGIAR user, flag on → password input is **absent from the DOM** (`document.querySelector('#login-password')` returns `null`) and absent from `new FormData(form)`. **Re-run this one a second time after visiting a LOCAL step**, so the restore template exists: an edit that inserted the template eagerly would pass a first-visit check and fail only here.
   3. CGIAR user, flag **off** → password step, as today.
   4. Keyboard-only: tab to the control, activate with Enter and with Space.
   5. Screen reader announces the control with a meaningful name.
   6. Single-Global-Unit user (step 2 auto-skipped) → correct step 3.
+  7. **Back-navigation — added 2026-09-02 after the T12 audit, and it is four steps for a reason.** CGIAR user, migrated unit → step 3 → **Go back** → select a **non-migrated** unit → then, in order:
+     1. the password field is **present** and accepts typing;
+     2. type a **deliberately wrong** password and press "Log in" — the message must be *incorrect password*, **not** *password is required*. This is the step that distinguishes a live `inputPassword` from the stale detached node; **check 7 without it would pass with the reassignment deleted**;
+     3. click the **eye icon** and confirm the field toggles to plain text — the only step that catches a `.clone()` that lost its `true`;
+     4. press **Enter** in the field and confirm it submits.
+     > **Why this check exists.** The original six checks contain **no back-navigation**, so all six would have passed while the LOCAL branch was permanently dead after any COGNITO visit — the blocking defect the T12 audit found. The four sub-steps exist because the first one alone is **not load-bearing**: the field renders and accepts typing even when the form is dead, and the failure appears only on submit.
 - **Fails when:** `.remove()` is swapped for `.hide()` — check 2 must then find the node and find it in the FormData. **Run that swap once deliberately**; it is the exact defect Judgment Day found in revision 1.
 - **Not evidence when:** verified only by reading the JS. FN-001's clause is about the **DOM at submit time**, and a code read cannot see it. Run it in a browser.
-- **Done when:** all six manual checks pass and are recorded with screenshots in `execution.md`.
+- **Done when:** all **seven** manual checks pass (corrected 2026-09-02 — check 7 was added because the original six could not see the blocking defect the audit found) and are recorded with screenshots in `execution.md`.
 - **Skills:** `ui-ux-pro-max`
 
 > **Accepted gap (defect class D-5).** This repository has no frontend test runner and no E2E harness, so checks 1–6 have **no automated gate**. Substitutes: the manual walkthrough above, plus a **T6 multimodal review** of the screenshots. Recorded as an accepted risk, not as coverage. Standing up a JS test runner is a TRD stack decision, not an inner-loop improvisation.

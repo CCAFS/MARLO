@@ -2311,3 +2311,98 @@ extra queries added per login; and the named class reports **6 tests**, not mere
 - **`CognitoCallbackAction` declares two constructors with no `@Autowired`.** Pre-existing from T09, and
   §21 records that `cognitoCallback.do` was instantiated successfully in a live boot — but that boot predates
   this constructor change. **VERIFIED 2026-09-02 by a live boot after the T11b constructor change:** `login.do`, `cognitoCallback.do` and `cognitoLogin.do` all return **200**, with **0** instantiation or wiring failures (`Unable to instantiate Action`, `NoSuchBeanDefinition`, `UnsatisfiedDependency`, `No qualifying bean`) and **0** new exceptions. The two-constructor shape resolves at runtime with the added parameter.
+
+---
+
+## 23. T12 — login wizard; **two audit rounds, both FAIL**; the verification plan was the real defect — 2026-09-02
+
+The first task in this spec with **no automated gate**: no JS test runner, no E2E harness (accepted defect
+class D-5). The 128 Java tests confirm only that the backend was not broken; **zero** of them look at the DOM.
+That makes the audit the last adversarial check before a human walkthrough, and it earned its place twice.
+
+### 23.1 Round 1 — FAIL. `.remove()` left the LOCAL branch permanently dead.
+
+The implementer **flagged the risk itself** rather than patching around it. The audit then showed it was far
+worse than described:
+
+- **`login.js:6` caches `inputPassword` at file scope.** After `.remove()` that variable holds a **detached
+  node forever**, so the void-password check is permanently true: a later LOCAL user gets *password is
+  required* on **every** attempt and `checkPassword()` is never reached. The field is not merely missing — the
+  form is **dead**.
+- **`loginForm.ftl:91`'s label sits OUTSIDE `#login-password`**, so the poisoned step renders a label over
+  nothing. Visibly broken, not empty.
+- **The trigger is not only MIG-001 mixed-membership user.** `showEmailStep()` resets the globals, so **any**
+  email re-entered after a COGNITO step 3 — a typo, a shared machine, a support walkthrough — lands there.
+
+Also found: `mode` composed to **LOCAL** on a reachable path where no card was ever clicked, putting a
+password field in front of a migrated CGIAR user. Root cause is a pre-existing selector at `:508` with a
+trailing `_` that matches **zero** elements, so the auto-select never fires; T12 made the click handler the
+sole writer of the flag, turning a cosmetic gap into an FN-001 correctness gap. Fixed by making `mode`
+**fail-safe rather than fail-LOCAL**; the `_` was deliberately left for its own change.
+
+### 23.2 Round 2 — FAIL again, and the auditor retracted one of its own recommendations
+
+Issues 1-3 verified genuinely closed; **no sequence could be constructed that violates the FN-001 DOM-absence
+property**. Three new findings, all one line:
+
+| # | Finding |
+|---|---|
+| 4 | The `border-radius: 4px` **the auditor itself had recommended** in round 1. `.loginBack` is transparent with no radius, so `4px` is harmless there; `#login-cgiar-button` is a **filled pill** inheriting `border-radius: 10px`, so the focus rule made **its corners snap 10px to 4px on focus and back on blur** — on the one control NF-003 exists to make keyboard-usable. Retracted in its own words as *"my own bad advisory coming home"* |
+| 5 | The new fail-safe re-derived from `li.active` **without excluding hidden cards**. `showEmailStep()` hides every card but never strips `.active`, so user B could silently adopt user A card id and Cognito flag. Security held — the server sweep is fail-closed — but the fail-safe **succeeded with the wrong unit instead of refusing** |
+| 6 | The restore template was captured **before** three handlers bound to the password input, so every restored node lacked the Enter-to-submit relay. Benign today via native implicit submission, but FN-001 holds T12 to *"byte-for-byte the password step that exists today"* |
+
+**Two record corrections with no code change.** The implementer disclosed a deliberate deviation — gating the
+fail-safe on `crpSession == ''` — and its reasoning was **weaker than stated**: the branch it cited is
+**unreachable**, because `loadAvailableItems` only calls `secondForm` when `hasAccess || crpSession == ""`.
+The gate is kept as harmless defensive coding, but those lines must never again be cited as load-bearing. Its
+recaptcha argument reached the right conclusion by the wrong wording; the correct discriminator is recorded.
+
+### 23.3 The most transferable finding is about the plan, not the code
+
+**T12 six manual checks contained no back-navigation step.** All six would have passed while the LOCAL branch
+was permanently dead after any COGNITO visit. **The only gate this task has could not see its own blocking
+defect.**
+
+Worse, the Leader first draft of the new check 7 was **also not load-bearing**. *"Go back, the password field
+is present and accepts typing"* passes with the `inputPassword` reassignment deleted — the field renders and
+accepts input while the form is dead; the failure appears only on submit. The auditor caught that too.
+
+Check 7 is now **four steps**, each with a named target, and check 2 gained a second run:
+
+1. field present and accepts typing;
+2. **a deliberately wrong password must produce *incorrect password*, not *password is required*** — the only
+   step that distinguishes a live `inputPassword` from the stale detached node;
+3. **click the eye icon** — the only step that catches a `.clone()` that lost its `true`;
+4. **press Enter** — covers the handler set on the restored node.
+5. And **check 2 re-run after visiting a LOCAL step**, so an edit that inserted the template eagerly cannot
+   pass on a first visit and fail only later.
+
+### 23.4 Gates
+
+| Gate | Result |
+|---|---|
+| Java suite, clean run, no competing Maven | **128 / 128**, 0 failures, 0 errors — and it proves only that the backend was not broken |
+| Lines over 120 in the diff | **0** |
+| `.hide()` anywhere in `login.js` | **zero occurrences** — the revision-1 defect has not crept back |
+| Insertion sites for the template | exactly one, in the LOCAL arm; `appendTo` / `insertAfter` / `insertBefore` / `prepend` / `detach` / `createElement` all **zero** |
+| The seven manual checks | **NOT RUN.** They need a browser and a human. Named as unverified, never implied as covered |
+
+### 23.5 Two i18n keys were added to `global.properties`, which is T13 file
+
+`login.cgiarSignIn` and `login.error.invalidField.selectProject`. Both **flagged, not hidden**, both justified
+(hard rule 8 is unmeetable without them), and both preceded by an in-file comment warning T13 off. The audit
+verified neither duplicates an existing key and — worth noting — that
+`login.error.invalidField.selectProject` lives in `global.properties` rather than in a `custom/*.properties`,
+so it does **not** repeat the defect T13 exists to fix, where `login.error.invalidUserCrp` is defined only in
+`custom/ciat.properties`. **T13 must list both as already present.**
+
+### 23.6 Carried forward
+
+- **`login.js:508` selects `'#crp-' + acronym + "_"`** — a trailing underscore matching **zero** elements, so
+  the multi-unit auto-select never fires except for the AICCRA special case. Pre-existing, deliberately not
+  fixed inside T12, and now recorded as a pending item for `staging`.
+- **`.active` is never stripped on re-lookup.** `showEmailStep()` hides every card but leaves `.active` set,
+  and the `data-*` attributes of a previous lookup are never cleared. T12 works around it with
+  `:not(.hidden)`; the underlying staleness remains.
+- **The recaptcha inline `margin-top: -15px`** now also matches `#login-cgiar-button` and is never cleared.
+  Cosmetic, in a corner, and only reachable through a sequence that ends in a migrated CGIAR account.
