@@ -2406,3 +2406,101 @@ so it does **not** repeat the defect T13 exists to fix, where `login.error.inval
   `:not(.hidden)`; the underlying staleness remains.
 - **The recaptcha inline `margin-top: -15px`** now also matches `#login-cgiar-button` and is never cleared.
   Cosmetic, in a corner, and only reachable through a sequence that ends in a migrated CGIAR account.
+
+---
+
+## 24. T12 manual validation — in progress, user-executed — 2026-09-02
+
+Performed by the user in a browser against the running application. The Leader prepared the scenario and
+recorded the evidence; **every browser action and every observation is the user own**. No password or password
+hash was created, modified, or read at any point.
+
+### 24.1 Test scenario — exact pre-state and the changes applied
+
+Pre-state of every row touched, captured before any change:
+
+```
+users id=3797   email=c.gamboa@cgiar.org  is_cgiar_user=0  is_active=1
+                username=cgamboa  agree_terms=1  last_login=2026-09-02 14:08:01
+crp_users       ONE row: id=5252  user_id=3797  global_unit_id=45 (AICCRA)
+                is_active=1  created_by=1082  active_since=2024-04-05 12:21:36
+custom_parameters  ZERO rows for cognito_auth_active
+parameters      id=393 is the type-3 catalog row, default_value=false
+                (AICCRA=45 and AICCRA_III=47 are both type 3)
+```
+
+**Phase 1 applied** (the CGIAR branch is unreachable without both):
+```sql
+UPDATE users SET is_cgiar_user=1 WHERE id=3797;
+INSERT INTO custom_parameters (parameter_id, value, global_unit_id, is_active, created_by, active_since)
+VALUES (393, 'true', 45, 1, 3797, NOW());          -- became id 2339
+```
+
+**Phase 2 (not yet applied)** adds a second membership so unit 45 is migrated and 47 stays local — the
+minimum reversible change that produces MIG-001 mixed-membership user on this account.
+
+**Rollback**, to be run after validation:
+```sql
+DELETE FROM crp_users         WHERE user_id=3797 AND global_unit_id=47;
+DELETE FROM custom_parameters WHERE parameter_id=393 AND global_unit_id=45;
+UPDATE users SET is_cgiar_user=0 WHERE id=3797;
+```
+`last_login` is **not** restored: it moves with every sign-in, that movement is the evidence §21 rests on, and
+faking an audit row to look untouched would be worse than the change.
+
+### 24.2 A defect only a browser could find — stale cache-busting tokens
+
+**Check 6 FAILED on the first attempt**, with the backend precondition already verified: `crpByEmail.do`
+returned `isCgiarUser:true` and `cognitoEnabled:true`, yet the browser stayed on the LOCAL password path.
+
+The served `login.js` **did** contain the T12 code — all four markers present. The page asked for it as:
+
+```
+${baseUrlCdn}/global/js/login/login.js?20260803v2
+```
+
+**T12 changed `login.js` and did not bump the cache-busting token**, so every browser that had ever loaded
+MARLO served its **pre-T12 copy** from cache. Confirmed by the user: a hard refresh made check 6 pass
+immediately.
+
+**This is a production defect, not a test artifact.** Every returning user would silently get the old
+`login.js`, and the Cognito branch would simply never appear for them — no error, just the screen they always
+saw. `login.ftl:4` and `error/401.ftl:4` both carried the stale token.
+
+**`customLogin.css` had the same problem**, in `global.css:5` — and T12 delivers the button reset and the
+`:focus-visible` rules there. Searching only for `login.js` would have left that mine armed: check 4 would
+have tested keyboard focus against the **old** stylesheet and reported an accessibility failure that was
+really the same delivery defect.
+
+Fixed: `login.js?20260902v1` in both templates, `customLogin.css?20260902` in `global.css`. Verified in the
+served output, and then verified by the user with a **normal** F5 — the point being that a hard refresh is a
+diagnosis, never a deployment strategy.
+
+**Why no code review could have caught it.** The implementer and both audit rounds reasoned about the
+*contents* of the files. The defect was in **how the page asks for them**. A JS test runner would have missed
+it too, because the token is not in the JavaScript — it is in the template that requests it. This is the
+strongest argument in the whole spec that the manual gate is not a poor substitute for automation but a
+**different instrument**.
+
+### 24.3 A second finding, operational rather than code — the flag does not take effect immediately
+
+Between the user check 1 and the Phase 1 insert, the override lookup had already run and cached its result.
+`CustomParameterMySQLDAO:84-96` marks that query `.setCacheable(true)`, and `StandardQueryCache` carries
+`timeToLiveSeconds="3600"`. Hibernate invalidates that region on writes **it performs**; it knows nothing
+about a direct SQL `INSERT`. So the flag stayed invisible until a restart.
+
+The cache is heap-only (`overflowToDisk="false"`), so a restart clears it — but the rollout consequence is
+real: **T02 seeds this catalog through a Flyway migration**, which is exactly an out-of-band write. An
+operator enabling the first Global Unit that way would see nothing happen for up to an hour and could
+reasonably conclude the feature is broken. **Enabling a unit requires a restart, or the write must go through
+`saveCustomParameter`** (which is `@Transactional` and does invalidate). Not a defect of this spec; a note
+that belongs in the rollout runbook.
+
+### 24.4 Results so far
+
+| # | Check | Result |
+|---|---|---|
+| 1 | Local user, step 3 identical to today | **PASS** — `#login-password` present, eye icon present, `#login-cgiar-button` in the DOM with computed `display: none` |
+| 6 | Single-unit user, step 2 auto-skipped, mode composes COGNITO | **FAIL, then PASS** after the cache fix — `#login-step-cgiar` visible, `#login-step-password` hidden, `#login-cgiar-button` `display: block`, shared submit hidden |
+| 2 | CGIAR user, flag on — password absent from DOM **and** FormData | **PASS** — `document.querySelector('#login-password')` → `null`; `FormData.has('user.password')` → `false`; asset loaded as `login.js?20260902v1` **after a normal F5**, which also proves the token fix works without a forced refresh |
+| 3, 4, 5, 7 | | not yet run |
