@@ -80,6 +80,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CrpProgamRegionsAction extends BaseAction {
 
+  private static final Logger LOG = LoggerFactory.getLogger(CrpProgamRegionsAction.class);
 
   private static final long serialVersionUID = 3355662668874414548L;
 
