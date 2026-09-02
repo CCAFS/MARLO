@@ -2574,3 +2574,71 @@ Verified after rollback, against the pre-state captured in §24.1:
 
 `last_login` moved with each sign-in and was deliberately **not** restored: that movement is the evidence §21
 rests on, and editing an audit row to look untouched would be worse than the change itself.
+
+---
+
+## 25. T13 — i18n keys; audited PASS-WITH-FINDINGS; scope extended by the user — 2026-09-02
+
+### 25.1 The defect was wider than the spec described
+
+`tasks.md` called `login.error.invalidUserCrp` "the existing message" that lives only in
+`custom/ciat.properties:88`. Verified: it is referenced from `LoginAction:366`, the membership-failure branch
+of `finishLogin` — **and the Cognito callback reaches that same branch**. So every non-CIAT Global Unit was
+rendering the raw key to users on **both** paths, not one.
+
+### 25.2 The audit judged the narrowing legitimate, on a stronger ground than the implementer gave
+
+The implementer scanned only the `finishLogin` body rather than all of `LoginAction`, because
+`LoginAction:285` references `login.error.userOrPass`, which is **also** missing from `global.properties`. It
+reported that rather than fixing it, per instruction.
+
+The Leader initially characterised this to the user as leaving the test *"blind to exactly the defect class
+T13 exists to close"*. **That was wrong, and the audit corrected it:** `CognitoCallbackAction` calls
+`finishLogin(...)` **directly** and never enters `login()`, so `LoginAction:285` is unreachable from any
+Cognito path and excluding it hid **zero** FN-005 keys. That is narrowing to the flow under test. The audit
+also noted that `tasks.md` scopes the test to "the new actions", so including the inherited tail at all was
+going **beyond** the clause rather than falling short of it.
+
+### 25.3 Scope extension — approved by the user
+
+The user then chose to close the **defect class** rather than only the instances this spec touches: add
+`login.error.userOrPass` and widen the scan to the complete `LoginAction`.
+
+**Its blast radius is larger than the key T13 originally targeted.** `userOrPass` fires on a wrong password —
+the most frequent login failure in the product — while `invalidUserCrp` fires only on a wrong-unit selection.
+
+**Not a security issue, verified rather than assumed.** The T11b guard renders
+`ADLoginMessages.ERROR_LOGON_FAILURE`, the same value the AD-failure branch renders, and it only fires for
+`is_cgiar_user = 1` accounts, which always fail through that branch. No oracle is created.
+
+**The user set a hard boundary**: not permission to fix other missing keys; anything further must be
+**reported, and the test left red** rather than narrowed back to hide it. A **Leader pre-check** established
+that `LoginAction` references five literal keys and only `userOrPass` was absent, so the widened scan was
+expected green with no decision pending. The implementer confirmed the same after widening.
+
+### 25.4 Three durability findings — the test worked, but could have stopped checking
+
+| # | Finding | Fix |
+|---|---|---|
+| 1 | **The zero-discovery guard was aggregate-only.** Five sources fed one set, so if one stopped contributing nothing noticed. Concrete: hoisting the `CognitoLoginAction` refusal keys into `APConstants` — the direction the MARLO constant-over-literal convention pushes — would leave the two FN-005 keys this task protects checked by nothing, forever, green. **The comment in the test claimed the opposite** | `requireKeys(label, text, pattern)` per source, each asserting its own non-emptiness and naming itself; aggregate kept as a backstop; comment corrected |
+| 2 | **The FTL regex was anchored to `name="`**, so `[@s.submit key="login.logIn" .../]` and the `[#assign]` default were never checked. Both keys exist today — which is why it was worth closing: a shape the scan cannot see is a key it silently never checks | Replaced with a **shape-agnostic quoted-literal scan** shared with Java. **Better than what the Leader suggested**, which was to enumerate attribute names (`key`, `label`, `value`) — that would have failed on the next attribute nobody anticipated. `error/401.ftl` added to the scanned set |
+| 3 | **Comment stripping was not string-literal aware, and was already firing** on `URI.create("https://" ...)` in both Cognito actions. No key was being dropped, but any future line holding a URL and a key would lose the key silently | `stripJavaComments` is now a character-level state machine tracking string and char literals. The brace-matching that carried the sharper version of this risk was deleted outright when the scan widened |
+
+Advisory applied: the resolution check now requires a **non-blank value**, not merely `containsKey` —
+`login.error.cognitoFailed=` would otherwise pass while rendering nothing to the user.
+
+### 25.5 Gates, re-measured by the Leader
+
+| Gate | Result |
+|---|---|
+| Tests, clean run, no competing Maven | **129 / 129**, 0 failures, 0 errors |
+| Keys added | `global.properties:1572` `invalidUserCrp`, `:1576` `userOrPass` — each with an in-file comment naming its origin |
+| `custom/ciat.properties` | **untouched**, both overrides preserved |
+| Brace-matching machinery | **removed** — 0 occurrences of `finishLoginBody` |
+| Per-source guards | 6 sources, each guarded |
+| Mutation — delete a key | names `[login.error.userOrPass]` among 34 discovered |
+| Mutation — blank one source | names *"the scan of ...CognitoIdentityMapper.java discovered zero i18n keys"* |
+
+**Two mutations were required because the fixes assert two different properties.** Without the second, the
+per-source guard would be a claim with no evidence — which is precisely what finding 1 caught the comment in
+the test doing.

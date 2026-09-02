@@ -545,7 +545,32 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T13 — i18n keys, including one that is missing today
+- **Status:** `[x]` — 2026-09-02, audited **PASS-WITH-FINDINGS** (`execution.md` §25), three durability
+  findings fixed, plus a **user-approved scope extension**. **129/129 clean**; both mutations re-measured by
+  the Leader. The defect was wider than this task described — `invalidUserCrp` reaches users on **both** the
+  local and the Cognito paths — and the extension closed the sibling defect `login.error.userOrPass`, whose
+  blast radius is larger still.
 
+- **Scope extension — approved by the user 2026-09-02.** Also add **`login.error.userOrPass`** to
+  `global.properties`, and **remove the `finishLogin`-only restriction** so the test scans the complete
+  `LoginAction`.
+  **Why:** it is the *same defect class* this task exists to close — referenced from `LoginAction:285`,
+  defined **only** in `custom/ciat.properties:86`, so every non-CIAT Global Unit renders the raw key. Its
+  blast radius is **larger** than `invalidUserCrp`'s: it fires on a wrong password, the single most frequent
+  login failure in the product, while `invalidUserCrp` fires only on a wrong-unit selection.
+  **Not a security issue, verified rather than assumed:** T11b's guard renders
+  `ADLoginMessages.ERROR_LOGON_FAILURE`, the same value the AD-failure branch renders, and the guard only
+  fires for `is_cgiar_user = 1` accounts, which always fail through that branch. No oracle is created.
+  **The original narrowing was legitimate, not evasion** — the T13 audit established that
+  `CognitoCallbackAction` calls `finishLogin(...)` directly and never enters `login()`, so `LoginAction:285`
+  is unreachable from any Cognito path and excluding it hid **zero** FN-005 keys. The extension widens the
+  test beyond the Cognito flow deliberately, because the user chose to close the defect class rather than
+  only the instances this spec touches.
+  **Hard boundary, stated by the user:** this is **not** permission to fix other missing i18n keys. If the
+  full scan finds anything beyond `userOrPass`, it must be **reported, not fixed** — and the test left red
+  rather than narrowed back to hide it. **Leader pre-check, 2026-09-02:** `LoginAction` references five
+  literal keys (`duplicated`, `invalidUserCrp`, `selectCrp`, `userOrPass`, `validation.field.required`) and
+  **only `userOrPass` is absent**, so the widened scan is expected green with no further decision pending.
 - **Depends on:** T08, T09, T12
 - **Module:** marlo-web
 - **Files touched:** `resources/global.properties` (modify)
