@@ -1971,3 +1971,84 @@ intact so unrelated CGIAR applications remain signed in.
 `design.md:416` had already designed FN-007 this way, so **no code changes**. What changes is its status: "no
 RP-initiated logout" is now a **recorded requirement**, not a default. A later addition of RP-initiated
 logout would violate a decision rather than merely alter an implementation choice.
+
+---
+
+## 19. T07 — implemented, **FAILed audit**, reworked, verified — 2026-09-02
+
+Implemented on `sonnet`, audited on `opus`. **FAIL** on the first round with four blocking issues; all four
+fixed; every gate below re-measured **by the Leader**, not accepted from a report.
+
+### 19.1 The audit's most important finding was a defect in the spec, not in the code
+
+`tasks.md`'s Constitutional check for T07 read *"username write goes through `userManager.saveUser()` so the
+audit listener fires"*. **Both halves were false**, and the implementer complied with it faithfully.
+
+1. `saveUser` → `UserMySQLDAO.saveUser` → `AbstractMarloDAO.update(T)`, which **returns before `merge()`**
+   when `session.contains(entity)` is true. The `User` came from `session.get` via `getUser(String)`'s
+   two-step return, so it is managed: **the call is a no-op on this entity.**
+2. `HibernateAuditLogListener` is a `PostUpdateEventListener` / `FlushEventListener` — it fires on **flush**,
+   not on `saveUser()`. The plain `update(T)` overload never calls `addAuditLogFieldsToThreadStorage` at all.
+
+Verified independently before dispatching the rework. **The clause has been corrected in `tasks.md`** to
+require `saveLastLogin(...)` — identical to T09's constraint, which was already right because it came out of
+T08's audit. The spec contradicted itself and the implementer followed the wrong half.
+
+**What the defect actually was:** FN-006 was satisfied only by an **accidental coupling** to a
+`@Transactional` call in a *different* class three steps later in §13.3 (`LoginAction`'s `saveLastLogin`).
+Nothing in T07 tested, stated, or protected that coupling. Move that call and the username write silently
+disappears.
+
+### 19.2 The other three
+
+| # | Finding | Resolution |
+|---|---|---|
+| 2 | `LOWER(TRIM(u.email))` trimmed the **column**; only *input* normalization was authorized. `users.email` is unique on the **raw** value, and the query had no `ORDER BY` / `setMaxResults(1)` — two rows differing only by whitespace would make **identity resolution on the login path non-deterministic** | Predicate reverted to `LOWER(u.email) = :email`. This also removed `TRIM()`, which has **no precedent in any HQL in this codebase** |
+| 3 | `toDisplayMessage()` returned the raw English literal `"Invalid CGIAR email or password, please try again"` — `CLAUDE.md` hard rule 8, and substantively wrong: no password is typed on the Cognito path | Returns i18n **keys**: `login.error.cognitoNotEligible`, `login.error.inactive` (both verified present in `global.properties`) |
+| 4 | `differentCasingStillResolvesTheSameRow` called `allowCaseInsensitiveLookup()`, which made **the double** compare with `equalsIgnoreCase`. The test configured the double to supply the property under test, then asserted it — it passed even with `normalizeEmail` deleted | The double now calls the **real** `UserMySQLDAO.normalizeEmail` on both sides, so the test reddens if the normalizer regresses |
+
+**Two of the Leader's four findings did not survive the audit**, which is the point of having one. The
+`toDisplayMessage()` method was **not** scope creep — `tasks.md` requires a test on the refusal message, and
+that test cannot exist without a message-producing method; the defect was i18n. And the suspicion that the
+HQL carried T10's defect was **refuted by checking**: `email` *is* a mapped property (`Users.hbm.xml:21-23`),
+`findAll(Query<T>)` exists with a matching signature, and `createQuery(String, Class)` is Hibernate 5.2+
+against a POM pinning 5.6.15.
+
+### 19.3 Gates, all re-measured by the Leader
+
+| Gate | Result |
+|---|---|
+| Tests, clean run (EB-4) | **110 / 110**, 0 failures, 0 errors, 0 skipped |
+| Gate-2 mutation — **mutated** | `Tests run: 7, Failures: 1` — `nonCgiarAccountIsRefusedOnGateTwoNotMembership` fails with `AssertionError: a local account must not be unlocked by a federated identity`. **Only that one of the seven**, so the mutation is specific, not a general breakage that would redden everything |
+| Gate-2 mutation — **restored** | `Tests run: 7, Failures: 0`, `BUILD SUCCESS`; file verified **byte-identical** to the original with `diff` |
+| Mutation actually applied | Proven by occurrence count **before** trusting the result: 1 × `isCgiarUser` before, 1 × `MUTATION-T07` after, 0 after restore |
+
+### 19.4 Six consecutive red builds, none of them the code — worth recording as method
+
+Closing the *easy* half of the mutation cycle took six attempts. **Not one failure was the rework.** In
+order: a `grep` filter that swallowed the output; a cross-module incremental classpath (`class file for
+UserManager not found`); **`.class` files with `Unresolved compilation problems` baked in** — EB-4's exact
+signature; broken dependency resolution after a partial `clean -pl marlo-web`; a Windows **file lock** on
+`target/marlo-web` during WAR packaging (which the `test` phase never needed); and the wrong Surefire flag
+(`-DfailIfNoSpecifiedTests` instead of `-DfailIfNoTests` — 2.12.4).
+
+**The lesson is not "the environment is flaky".** It is that after three consecutive reds the tempting
+inference — *something in the rework is broken* — was **false**, and only survived scrutiny because the file
+had been verified byte-identical to a version already measured at 110/110. In a repository where the exit
+code and the final message routinely describe something other than what happened, a red is a prompt to find
+out **what ran**, not a verdict.
+
+### 19.5 What T07 does NOT establish — carried forward to T09
+
+- **FN-006's write is not proven to reach the row.** The fix now uses `saveLastLogin` (`@Transactional`), which
+  is the right mechanism, but **nothing in production calls `CognitoIdentityMapper` yet** — T09 is unbuilt. The
+  evidence is inspection, not execution. A call-recording double proves a call, not a write. **T09 must prove
+  the row changed against a real schema.**
+- **`tasks.md` claims T07 "Covers: SEC-006". That overstates what shipped.** `Result` returns distinct enum
+  values; T07 *enables* indistinguishable refusals but cannot stop T09 from rendering
+  `getRejectionReason().name()`. Timing was checked and is clean — gates 1 and 2 both return after exactly one
+  `getUserByEmail` call with no extra I/O, so there is no timing oracle.
+- **A caller-visible change beyond normalization:** `getUser(null)` previously threw NPE and now returns
+  `null`. That reaches three duplicate-check call sites (`SearchUserAction:82`, `ManageUsersAction:141`,
+  `CrpUsersAction:616`) which test `getUserByEmail(x) == null`. Strictly an improvement — a 500 becomes a
+  constraint violation — but it is a behavioral change and is recorded rather than left silent.

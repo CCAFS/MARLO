@@ -261,12 +261,43 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T07 — Identity mapping: claim → `users` row, with four gates
+- **Status:** `[x]` — 2026-09-02, after an audit **FAIL** and one rework round (`execution.md` §19).
+  Implemented on `sonnet`, audited on `opus`. **110/110 tests on a clean run** (EB-4); gate-2 mutation cycle
+  **re-measured by the Leader**, not accepted from a report. Four blocking findings fixed, **one of which was a
+  defect in this spec's own Constitutional check**, corrected above. **Two obligations carried to T09:** prove
+  FN-006's username write reaches the row against a real schema (nothing calls the mapper yet), and enforce
+  SEC-006 at the rendering site — T07 enables indistinguishable refusals but cannot enforce them.
 
 - **Depends on:** T05 · **UNBLOCKED 2026-09-02 — OQ-9 closed: the join key is the corporate `email`, normalized (trim + lowercase)**
 - **Module:** marlo-data
 - **Files touched:** mapping logic in `security/impl/CognitoTokenValidatorImpl.java` or a small collaborator (implementer's call, stated in the report)
 - **Scope:** resolve the assertion to a `users` row **by the `email` claim, normalized with trim + lowercase (OQ-9)**, and apply, **in order**: (1) row exists — no auto-provisioning; (2) **`is_cgiar_user = 1`**; (3) `is_active`; (4) *(membership is gate 4 and lives in `finishLogin`)*. Also set `users.username` from the CGIAR login claim, lowercased.
-- **Constitutional checks:** username write goes through `userManager.saveUser()` so the audit listener fires; **`users.email` is never overwritten**.
+- **Scope extension — approved by the user 2026-09-02, and justified rather than assumed.** `UserMySQLDAO.getUser(String)` (`:93-101`) is the lookup this task now depends on, and it violates the identity contract OQ-9 just defined in two ways. Both are fixed **inside T07**:
+  1. **Normalize with `trim()` + lowercase before lookup.** The current code lowercases but does not trim, so a claim arriving with surrounding whitespace silently fails to resolve a row that exists — an authentication failure for a valid user. Verified in the dev database: **0 stored emails have surrounding whitespace**, so trimming the *input* strictly widens matching and cannot change which row matches an already-clean value.
+  2. **Replace the concatenated native SQL with a parameterized query.** The value interpolated there is, after this task, a **token claim** rather than a form field. "Trusted because the token is signed" is the reasoning that fails the day the pool accepts an identity MARLO did not anticipate.
+  **Why not deferred to `staging` as PS-17 originally was:** the sink is pre-existing and already reachable unauthenticated through `validateUser.do`, so this task does not create it — but the user's instruction is explicit that the new authentication path must not ship while relying on it. Recorded as a justified scope extension, not silent scope creep.
+  **Preserve the return path.** `getUser(String)` currently resolves an id and then returns `this.getUser(Long)`, which is `super.find(User.class, id)`. Keep that two-step shape — parameterize and normalize the *lookup* only. Changing the return to a directly-queried entity is a behavioral change to a method with callers outside this spec, and it is not what was authorized.
+  **Blast radius, measured:** `getUser(String)` has exactly **one** caller, `UserManagerImp:104`. Verified in the dev database: **0 duplicate emails** under `LOWER(TRIM(email))`, so normalization introduces no identity collision.
+- **Constitutional checks:** **`users.email` is never overwritten.**
+  - **Username write — CORRECTED 2026-09-02 after the T07 audit.** This clause previously read *"username write
+    goes through `userManager.saveUser()` so the audit listener fires"*. **Both halves of that were false, and the
+    implementer complied with it faithfully — the defect was the spec's.** (1) `saveUser` → `UserMySQLDAO.saveUser`
+    → `AbstractMarloDAO.update(T)` **returns before `merge()`** when `session.contains(entity)` is true, and the
+    `User` here came from `session.get`, so it is managed: the call is a **no-op on this entity**. (2)
+    `HibernateAuditLogListener` is a `PostUpdateEventListener` / `FlushEventListener` — it fires on **flush**, not
+    on `saveUser()`, and the plain `update(T)` overload never calls `addAuditLogFieldsToThreadStorage` at all.
+  - **Constraint:** write through `userManager.saveLastLogin(...)`, **not** `saveUser(...)` — identical to T09's
+    constraint (below), which was already correct because it was derived from T08's audit. `UserMySQLDAO.saveLastLogin`
+    carries `@Transactional`; `saveUser` does not, and this checkout's OSIV session is `FlushMode.MANUAL`, so without
+    a transaction the change stays in memory.
+  - **Not evidence when:** a call-recording double asserts `saveUser` was invoked. That proves a call, not a write,
+    and this spec has already shipped two defects of that shape. **Prove the row changed against a real schema, as
+    T02 did** — or, if no schema-backed harness is reachable, record the gap explicitly rather than discharging the
+    clause with a presence assertion.
+  - **Why this matters beyond tidiness:** as written, FN-006 was satisfied only by an accidental coupling to a
+    `@Transactional` call in a *different* class three steps later in §13.3 (`LoginAction`'s `saveLastLogin`).
+    Nothing in T07 tested, stated, or protected that coupling. Move that call and the username write silently
+    disappears.
 - **Design refs:** §13.1, FN-002, FN-006
 - **Covers:** FN-002 (all three scenarios), FN-006, **SEC-006**
 - **Tests (new):**
@@ -276,7 +307,8 @@
   - Unit: valid CGIAR user → `users.username` set lowercased; **`users.email` unchanged**.
   - Unit: the refusal message for gate 2 is **indistinguishable** from the generic failure (SEC-006's `MUST NOT` reveal).
 - **Verification:** `mvn -q test -pl marlo-web -Dtest=CognitoIdentityMappingTest`
-- **Fails when:** gate 2 is removed — the `is_cgiar_user = 0` test must then **pass authentication**, which is the bypass Judgment Day found. Delete the gate once, watch it go green, restore it. That red-to-green-to-red cycle is the only proof the gate is doing work.
+- **Fails when:** gate 2 is removed. **Clarified 2026-09-02 — the original wording was ambiguous at the exact point where the task is decided.** It said *"watch it go green… that red-to-green-to-red cycle"*, but what goes green is the **account that should not get in**, not the test: the test asserts *refusal*, so removing the gate makes it **red**. Both the implementer and the Leader had to reason past that phrasing. The cycle to run and report is: **mutate → the guard test goes RED → restore → it goes GREEN again.** A mutation that reddens nothing means the test was never load-bearing; a mutation that reddens *everything* means it was too broad to prove anything about this gate specifically.
+- **Verified 2026-09-02 by the Leader:** mutated → `Tests run: 7, Failures: 1`, `nonCgiarAccountIsRefusedOnGateTwoNotMembership` fails with `AssertionError: a local account must not be unlocked by a federated identity`, **and only that one of the seven**; restored → `Tests run: 7, Failures: 0`, file confirmed byte-identical with `diff`. Mutation proven applied by occurrence count before the result was believed.
 - **Not evidence when:** the join is written case- or whitespace-sensitively. OQ-9 resolved to `email` **normalized**, so a test that only ever passes an already-lowercase, already-trimmed claim proves nothing about the normalization the decision requires. At least one test MUST pass a claim with different casing and surrounding whitespace and still resolve the same row.
 - **Done when:** five tests pass, the gate-2 mutation demonstrably opens the bypass, Checkstyle passes.
 - **Skills:** `tdd`

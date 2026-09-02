@@ -91,13 +91,59 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public User getUser(String email) {
-    // validate the email on lower charters
-    String query = "select * from users where LOWER(email)= '" + email.toLowerCase() + "'";
-    List<Map<String, Object>> users = super.findCustomQuery(query);
-    if (users.size() > 0) {
-      return this.getUser(Long.parseLong(users.get(0).get("id").toString()));
+    // CHG-COGNITO-AUTH-001-T07 scope extension (OQ-9): normalize the INPUT with trim() + lowercase before
+    // lookup. The previous implementation lowercased but did not trim, so a claim or credential arriving
+    // with surrounding whitespace silently failed to resolve a row that exists -- an authentication
+    // failure for a valid user. Verified in the dev database: 0 stored emails carry surrounding
+    // whitespace, so trimming the input strictly widens matching and cannot change which row matches an
+    // already-clean value.
+    //
+    // CORRECTED after the T07 audit: only the input is normalized -- the predicate below is
+    // LOWER(u.email), not LOWER(TRIM(u.email)). users.email is unique on the RAW value (Users.hbm.xml),
+    // so a TRIM() on the column could match two distinct rows (e.g. "a@x.org" and " a@x.org") and this
+    // method has no ORDER BY / setMaxResults(1) to make choosing between them deterministic. Restricting
+    // normalization to the input keeps this predicate's matching behavior byte-identical to the
+    // pre-existing LOWER(email) comparison for every row already in the table (0 of which carry
+    // whitespace), while still resolving a whitespace-carrying claim against an already-clean row.
+    String normalizedEmail = normalizeEmail(email);
+    if (normalizedEmail == null) {
+      return null;
+    }
+    // Parameterized HQL replaces the previous concatenated native SQL (PS-17), following the pattern
+    // ParameterMySQLDAO.getParameterByKey uses. The interpolated value used to be trusted because it came
+    // from a form field; after T07 it can be the value of a signed token claim, and "trusted because the
+    // token is signed" is the reasoning that fails the day the pool accepts an identity MARLO did not
+    // anticipate.
+    String queryString = "SELECT u FROM " + User.class.getName() + " u WHERE LOWER(u.email) = :email";
+    Query<User> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, User.class);
+    query.setParameter("email", normalizedEmail);
+    List<User> users = super.findAll(query);
+    // The id is resolved and getUser(Long) -- super.find(User.class, id) -- is called again on purpose:
+    // this preserves getUser(String)'s existing two-step return shape rather than returning the entity
+    // this query already loaded. getUser(String) has callers outside this spec's scope, and changing its
+    // return path was not authorized.
+    if (!users.isEmpty()) {
+      return this.getUser(users.get(0).getId());
     }
     return null;
+  }
+
+  /**
+   * Normalizes an email for a case- and whitespace-insensitive lookup: {@code trim()} then lowercase
+   * (CHG-COGNITO-AUTH-001-T07, OQ-9). Public and stateless so it can be unit-tested directly with no
+   * {@code SessionFactory} needed -- including from {@code CognitoIdentityMappingTest}, whose test double
+   * calls this same method so its normalization test reddens if this method regresses, rather than
+   * re-deciding for itself what "the same row" means.
+   *
+   * @param email the raw email to normalize, possibly {@code null} or blank
+   * @return the trimmed, lowercased email, or {@code null} when {@code email} is {@code null} or blank --
+   *         there is no row a blank value could resolve
+   */
+  public static String normalizeEmail(String email) {
+    if (email == null || email.trim().isEmpty()) {
+      return null;
+    }
+    return email.trim().toLowerCase();
   }
 
   @Override
