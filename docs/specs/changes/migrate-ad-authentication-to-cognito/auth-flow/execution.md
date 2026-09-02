@@ -2052,3 +2052,28 @@ out **what ran**, not a verdict.
   `null`. That reaches three duplicate-check call sites (`SearchUserAction:82`, `ManageUsersAction:141`,
   `CrpUsersAction:616`) which test `getUserByEmail(x) == null`. Strictly an improvement — a 500 becomes a
   constraint violation — but it is a behavioral change and is recorded rather than left silent.
+
+### 19.6 Correction to §19.4 — the Leader caused most of those six red builds
+
+§19.4 attributed six consecutive red builds to environment blockers. **That attribution was incomplete and
+partly wrong, and the correction matters more than the original entry.**
+
+The implementer's own report — delivered after the Leader had already measured and committed — diagnosed
+corrupted `marlo-utils` and `marlo-data` jars in the local `.m2`, and traced them to *"earlier overlapping
+background `mvn` invocations in this same session writing to the same jar concurrently."*
+
+**That was the Leader.** The rework was dispatched by message and the Leader began running its own Maven
+builds for the mutation cycle while that agent was still working. `CLAUDE.md`'s Concurrency section forbids
+exactly this — *"Never run a measurement command while a delegated agent is active"* — and its MARLO
+sharpener states that doing so does not merely perturb the other agent's environment, it **destroys its build
+output**.
+
+So `class file for UserManager not found`, the `.class` files with `Unresolved compilation problems` baked
+in, and the corrupted `.m2` artifacts were not ambient flakiness. **They were self-inflicted, by the one
+participant whose job is to serialise the work.** EB-4 describes the *symptoms* accurately; it was not the
+cause here.
+
+**The lesson §19.4 drew still stands and is now better grounded:** after three consecutive reds, the tempting
+inference — *the rework is broken* — was false. What §19.4 got wrong was the direction to look. The right
+first question after an inexplicable red in this repository is **"was anything else running?"**, before
+reaching for an environment blocker to explain it.
