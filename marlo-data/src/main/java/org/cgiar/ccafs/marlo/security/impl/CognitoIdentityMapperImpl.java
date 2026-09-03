@@ -23,6 +23,9 @@ import org.cgiar.ccafs.marlo.security.CognitoIdentityMapper;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * CHG-COGNITO-AUTH-001-T07: the identity-mapping collaborator named in {@link CognitoIdentityMapper}'s
  * javadoc.
@@ -34,6 +37,12 @@ import javax.inject.Named;
  */
 @Named
 public class CognitoIdentityMapperImpl implements CognitoIdentityMapper {
+
+  // CHG-COGNITO-AUTH-001-T14 (OPS-001): this class had no logger at all before -- every gate rejection was
+  // silent here, discoverable only at the caller (CognitoCallbackAction already logs the same
+  // RejectionReason, but design.md 11's "gate rejection (which gate)" requirement is this class's own gate,
+  // not only its caller's).
+  private static final Logger LOG = LoggerFactory.getLogger(CognitoIdentityMapperImpl.class);
 
   private final UserManager userManager;
 
@@ -55,6 +64,7 @@ public class CognitoIdentityMapperImpl implements CognitoIdentityMapper {
     // "MUST NOT auto-provision". No User is ever constructed here; only an existing row is read.
     User user = this.userManager.getUserByEmail(assertion.getEmail());
     if (user == null) {
+      LOG.info("Cognito identity mapping rejected: {}", RejectionReason.ACCOUNT_NOT_FOUND);
       return Result.rejected(RejectionReason.ACCOUNT_NOT_FOUND);
     }
 
@@ -62,11 +72,13 @@ public class CognitoIdentityMapperImpl implements CognitoIdentityMapper {
     // the gate whose removal is the authentication bypass Judgment Day found -- see
     // CognitoIdentityMappingTest's mutation proof.
     if (!user.isCgiarUser()) {
+      LOG.info("Cognito identity mapping rejected: {}", RejectionReason.NOT_CGIAR_ACCOUNT);
       return Result.rejected(RejectionReason.NOT_CGIAR_ACCOUNT);
     }
 
     // Gate 3: users.is_active is authoritative regardless of IdP state.
     if (!user.isActive()) {
+      LOG.info("Cognito identity mapping rejected: {}", RejectionReason.USER_DISABLED);
       return Result.rejected(RejectionReason.USER_DISABLED);
     }
 

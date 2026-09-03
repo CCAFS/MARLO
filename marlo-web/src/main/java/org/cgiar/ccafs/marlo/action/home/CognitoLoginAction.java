@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.io.Serializable;
 import java.net.URLEncoder;
@@ -208,16 +209,32 @@ public class CognitoLoginAction extends BaseAction {
     // Validated HERE, not in execute(): authorize(String) is the seam every caller and every test uses, so a
     // guard on one entry point would be bypassable by all the others. The check belongs with the value's use.
     String safeReturnUrl = this.sameOriginOrNull(returnUrl);
+
+    // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): "attempt started" -- the first event design.md 11
+    // names, logged before every gate below (including the environment check) so a rejection at any of
+    // them can be correlated back to this one line. Resolved here, once, and reused as `globalUnit` below
+    // rather than queried twice. "Resolved mode" is the literal COGNITO: this endpoint IS the Cognito path
+    // by construction (cognitoLogin.do) -- the wizard's client-side `mode` is never read or trusted here
+    // (design.md 9.2), so this is a fact about which endpoint was hit, not a value the caller told MARLO.
+    GlobalUnit requestedGlobalUnit =
+      this.globalUnitId == null ? null : this.crpManager.getGlobalUnitById(this.globalUnitId);
+    LOG.info("Cognito login attempt started for {} (Global Unit {}, mode COGNITO)",
+      LogSanitizer.sanitizeForLog(this.email),
+      requestedGlobalUnit == null ? "<unresolved>" : requestedGlobalUnit.getAcronym());
+
     if (!this.isCognitoConfigured()) {
       LOG.warn("Cognito login requested but the environment is not configured (design.md 9.3)");
       return this.refuse("login.error.cognitoUnavailable");
     }
 
     if (this.globalUnitId == null) {
+      // CHG-COGNITO-AUTH-001-T14 (OPS-001): this branch had no log line at all before.
+      LOG.info("Cognito login refused: no Global Unit was selected");
       return this.refuse("login.error.cognitoNotEligible");
     }
-    GlobalUnit globalUnit = this.crpManager.getGlobalUnitById(this.globalUnitId);
+    GlobalUnit globalUnit = requestedGlobalUnit;
     if (globalUnit == null) {
+      LOG.info("Cognito login refused: the selected Global Unit could not be resolved");
       return this.refuse("login.error.cognitoNotEligible");
     }
 

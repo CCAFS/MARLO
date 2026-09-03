@@ -587,6 +587,13 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T14 — Log hygiene + observability
+- **Status:** `[x]` — 2026-09-02, audited **PASS-WITH-FINDINGS** (`execution.md` §26). **152/152 clean**, and
+  **both halves of the mutation cycle measured by the Leader**: the rejection-branch leak reddens exactly one
+  test of fifteen, quoting the whole JWT; restored, byte-identical, green. The audit found the production log
+  statements **correct** and the **evidence** hollow — no rejection path was swept for secrets, so the task
+  own *Fails when* clause was satisfied only by where the first mutation happened to land. Also closed a CRLF
+  log-injection vector that would have let an unauthenticated POST write a **fabricated successful-login
+  record** into the authentication log. **This is the last code task in the spec.**
 
 - **Depends on:** T08, T09, T11
 - **Module:** marlo-web, marlo-data

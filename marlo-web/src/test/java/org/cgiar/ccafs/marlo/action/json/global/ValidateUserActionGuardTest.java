@@ -638,7 +638,16 @@ public class ValidateUserActionGuardTest {
 
     @Override
     public GlobalUnit getGlobalUnitById(long globalUnitID) {
-      throw new UnsupportedOperationException("not needed by this suite");
+      // CHG-COGNITO-AUTH-001-T14 (audit finding 3): ValidateUserAction's SEC-005 guard log line now
+      // resolves the Global Unit's acronym for observability (design.md 11 row 4). Resolved from the same
+      // `units` fixture every test in this suite already populates, rather than thrown, since the guard
+      // reaches this call on every blocked attempt -- not only in a test written to exercise it.
+      for (GlobalUnit unit : this.units) {
+        if (unit.getId().longValue() == globalUnitID) {
+          return unit;
+        }
+      }
+      return null;
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,8 @@ import java.util.Map;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andres Valencia - CIAT/CCAFS
@@ -41,6 +44,11 @@ import org.apache.struts2.ServletActionContext;
 public class ValidateUserAction extends BaseAction {
 
   private static final long serialVersionUID = 8993663508312484245L;
+
+  // CHG-COGNITO-AUTH-001-T14 (OPS-001): this action had no logger at all before -- every rejection here
+  // (the invalid-method guard, the SEC-005 relay guard, and a failed LDAP/DB login) was silent.
+  private static final Logger LOG = LoggerFactory.getLogger(ValidateUserAction.class);
+
   // Managers
   private UserManager userManager;
   /**
@@ -84,6 +92,7 @@ public class ValidateUserAction extends BaseAction {
       || !"POST".equalsIgnoreCase(ServletActionContext.getRequest().getMethod())) {
       userFound.put("loginSuccess", false);
       messageEror = "Invalid request method";
+      LOG.info("ValidateUserAction rejected: request method was not POST");
       return SUCCESS;
     }
 
@@ -91,8 +100,16 @@ public class ValidateUserAction extends BaseAction {
     // to Active Directory through this endpoint. The check runs, and can refuse, BEFORE userManager.login()
     // -- once that call is made the submitted password has already left MARLO for the realm's LDAP branch.
     if (this.isCgiarCredentialRelayBlocked()) {
-      // Same generic shape a wrong password produces (design.md 5.3): no new oracle telling a caller which
-      // accounts are CGIAR-migrated (SEC-005's BUT MUST NOT clause).
+      // CHG-COGNITO-AUTH-001-T14 (OPS-001, design.md 11 row 4: gate + user id + Global Unit -- audit
+      // finding): the LOG line names the gate AND the Global Unit, resolved from this.globalUnitId, which
+      // was already in hand and unused. The field error two lines below stays the byte-identical
+      // wrong-password message -- no new oracle (SEC-005's BUT MUST NOT clause).
+      GlobalUnit requestedGlobalUnit =
+        this.globalUnitId == null ? null : this.crpManager.getGlobalUnitById(this.globalUnitId.longValue());
+      LOG.info("User " + LogSanitizer.sanitizeForLog(this.userEmail)
+        + " denied by the SEC-005 CGIAR relay guard (local login blocked for a CGIAR-migrated account; "
+        + "Global Unit " + (requestedGlobalUnit == null ? "<none selected>" : requestedGlobalUnit.getAcronym())
+        + ").");
       userFound.put("loginSuccess", false);
       messageEror = ADLoginMessages.ERROR_LOGON_FAILURE.getValue();
       return SUCCESS;
@@ -111,6 +128,8 @@ public class ValidateUserAction extends BaseAction {
       }
     } else {
       userFound.put("loginSuccess", false);
+      LOG.info("User " + LogSanitizer.sanitizeForLog(this.userEmail) + " tried to log-in but failed. Message : "
+        + messageEror);
     }
 
     if (user != null) {

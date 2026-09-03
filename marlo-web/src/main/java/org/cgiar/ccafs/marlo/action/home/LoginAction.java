@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -249,6 +250,15 @@ public class LoginAction extends BaseAction {
       // Obtain the global unit selected
       // GlobalUnit loggedCrp = crpManager.getGlobalUnitById(globalUnit);
       GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(crp);
+
+      // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): "attempt started" -- the first event design.md
+      // 11 names, logged before either gate below (the T11b relay guard, then userManager.login()) so a
+      // rejection at either can be correlated back to this one line. "Resolved mode" is the literal LOCAL:
+      // this endpoint IS the local path by construction (login.do) -- a fact about which endpoint was hit,
+      // never a value the caller told MARLO.
+      LOG.info("Local login attempt started for " + LogSanitizer.sanitizeForLog(user.getEmail()) + " (Global Unit "
+        + (loggedCrp == null ? "<unresolved>" : loggedCrp.getAcronym()) + ", mode LOCAL).");
+
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
 
@@ -259,8 +269,13 @@ public class LoginAction extends BaseAction {
       // only narrow the decision to a unit the account actually holds, it may never let the decision escape
       // one, and the flag is never read except through the shared CognitoAuthSpecificity resolver (PS-16).
       if (this.isCgiarCredentialRelayBlocked(userEmail, loggedCrp)) {
-        LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
-          + ADLoginMessages.ERROR_LOGON_FAILURE.getValue());
+        // CHG-COGNITO-AUTH-001-T14 (OPS-001): the LOG line names the gate that actually rejected the
+        // attempt -- the T11b guard left this generic on purpose (execution.md 22.5). The field error two
+        // lines below stays the byte-identical wrong-password message; only the LOG line, never anything
+        // rendered to the caller, may say "SEC-005 relay guard".
+        LOG.info("User " + LogSanitizer.sanitizeForLog(user.getEmail())
+          + " denied by the SEC-005 CGIAR relay guard (local login blocked for a CGIAR-migrated account; "
+          + "Global Unit " + (loggedCrp == null ? "<none selected>" : loggedCrp.getAcronym()) + ").");
         user.setPassword(null);
         // Same generic shape a wrong password produces (design.md 5.3, matching T11's ValidateUserAction
         // guard): no new oracle telling a caller which accounts are CGIAR-migrated (SEC-005's BUT MUST NOT
@@ -363,6 +378,12 @@ public class LoginAction extends BaseAction {
          * }
          */
       } else {
+        // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): gate 4 (crp_users membership, design.md 13.1)
+        // rejecting here previously emitted no log line at all -- the exact gap design.md 11's correction
+        // names. This is the shared tail every authentication path uses (T01), so it covers the local AND
+        // the Cognito path alike.
+        LOG.info("User " + loggedUser.getEmail() + " denied: not a member of Global Unit "
+          + loggedCrp.getAcronym() + " (gate 4: crp_users membership).");
         this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
         this.setCrpSession(loggedCrp.getAcronym());
         this.getSession().clear();
@@ -372,6 +393,7 @@ public class LoginAction extends BaseAction {
         return BaseAction.INPUT;
       }
     } else {
+      LOG.info("User " + loggedUser.getEmail() + " denied: no Global Unit was selected.");
       this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
       user.setPassword(null);
       this.getSession().clear();
@@ -380,7 +402,10 @@ public class LoginAction extends BaseAction {
       return BaseAction.INPUT;
     }
 
-    LOG.info("User " + user.getEmail() + " logged in successfully.");
+    // CHG-COGNITO-AUTH-001-T14 (design.md 11): extended to include the Global Unit -- the pre-existing line
+    // logged only the email. loggedCrp is guaranteed non-null here: both branches above that leave it null
+    // or unresolved already returned.
+    LOG.info("User " + user.getEmail() + " logged in successfully for Global Unit " + loggedCrp.getAcronym() + ".");
 
 
     loggedUser = userManager.getUser(loggedUser.getId());

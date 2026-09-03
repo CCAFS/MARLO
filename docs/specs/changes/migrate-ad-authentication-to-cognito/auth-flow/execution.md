@@ -2642,3 +2642,120 @@ Advisory applied: the resolution check now requires a **non-blank value**, not m
 **Two mutations were required because the fixes assert two different properties.** Without the second, the
 per-source guard would be a claim with no evidence — which is precisely what finding 1 caught the comment in
 the test doing.
+
+---
+
+## 26. T14 — log hygiene; audited PASS-WITH-FINDINGS; the last code task — 2026-09-02
+
+### 26.1 What shipped
+
+Design §11 requires five events. All five now exist:
+
+| Event | Where |
+|---|---|
+| Attempt started (email, Global Unit, resolved mode) | `CognitoLoginAction` and `LoginAction`, **both paths** |
+| Validation failure — which check | `CognitoTokenValidatorImpl` (already compliant, now pinned by a regression test) |
+| State / nonce mismatch | `CognitoCallbackAction` (already compliant) |
+| Gate rejection — which gate | `CognitoIdentityMapperImpl`, `CognitoLoginAction`, `ValidateUserAction`, `LoginAction` |
+| Success — email **+ Global Unit** | `LoginAction`, extended |
+
+**Two classes had no logger at all** before this task: `ValidateUserAction` — an unauthenticated endpoint that
+accepts a password — and `CognitoIdentityMapperImpl`, the identity resolver. Not logging badly: not logging.
+
+**The T11b obligation is discharged on both doors.** The guard log line names the gate; the **user-facing**
+message stays byte-identical to a wrong-password refusal, so the SEC-005 no-oracle property T11 and T11b
+closed is untouched. The audit verified the rendered field error, not just the log.
+
+### 26.2 The attempt-started event was missed, and the implementer honest flag is what caught it
+
+The first delivery implemented four of the five rows and **said so**, calling it *"a narrow, deliberate gap
+against design.md §11's fuller table rather than burying it."* Its stated reason was that `tasks.md` does not
+name an attempt-started log.
+
+**That reason was wrong.** T14's Scope clause reads: *"per design §11 — **attempt started**, validation
+failure (which check), state/nonce mismatch, gate rejection (which gate), success."* It is the first item of
+five. The bolding sits on the two concrete edits (*"Extend `:281`"*, *"add a membership-failure line"*), and
+that emphasis appears to have pulled the reading away from the enumeration — a defect of the clause drafting
+as much as of the reading.
+
+**The behaviour was right even though the reasoning was not.** Nothing in the delivery would have revealed
+the gap; only the flag did. Four of five rows would have shipped and no gate would have noticed.
+
+### 26.3 The audit found the evidence hollow where it mattered most
+
+Verdict **PASS-WITH-FINDINGS**. The auditor enumerated **every** `LOG.*` call in all six classes and found
+no token, code, `state`, `nonce`, verifier or password reaching a log — directly, via `toString()`, or via a
+throwable. **The production code was correct. The evidence was not.**
+
+| # | Finding | Why it mattered |
+|---|---|---|
+| 1 | The leak sweep read only `getFormattedMessage()`, never `getThrowableProxy()` | A maintainer changing `LOG.warn("...", e.getClass().getSimpleName())` to `LOG.warn("... code " + code, e)` for a stack trace leaks the authorization code, and **all ten tests stay green** |
+| 2 | **No rejection path was ever swept for secrets.** All five sweep assertions sat inside the *successful* round trip | The task *Fails when* clause says a leak added **anywhere in the flow** must be caught. The original mutation landed where the sweep reached — **luck of placement, not coverage** |
+| 3 | Design §11 row 4 asks for gate **+ user id + Global Unit**; three lines carried the gate name only | Taken where the data was in hand (`ValidateUserAction`); the `marlo-data` mapper has no Global Unit in scope and its caller already logs the reason — narrowing recorded rather than left implicit |
+
+Finding 2 is the sharpest thing in this section. The uncovered half of the flow is **exactly where the
+temptation lives**: a `nonce` mismatch is the case an operator is debugging when dumping the whole token is
+most attractive.
+
+### 26.4 CRLF log injection — taken, and the highest-value item in the block
+
+Four of the new lines interpolated an **unsanitised, attacker-controlled** email on **unauthenticated**
+endpoints. A POST with a newline inside the email writes a **fabricated successful-login record into the
+authentication log** — into the very audit trail OPS-001 exists to make trustworthy.
+
+The class is pre-existing (`LoginAction:293`), but T14 was adding four new instances of it. Closed with a
+`LogSanitizer` helper (strips `\r`/`\n`, caps length) applied at all four sites plus a fifth the implementer
+found by applying the instruction rather than the letter of it. Pre-existing instances were **reported, not
+retrofitted**.
+
+### 26.5 The mutation cycle — seven attempts to obtain one measurement
+
+Both halves were measured **by the Leader**, on a reactor rebuilt from clean with `.m2` purged of `marlo-*`
+artifacts and zero Java processes running.
+
+| Condition | Result |
+|---|---|
+| **Mutated** — the auditor own example, `LOG.warn("Cognito ID token rejected ({}): {}", NONCE_MISMATCH, idToken)` at `CognitoTokenValidatorImpl:364` | **`Tests run: 15, Failures: 1`** — `tokenValidationRejectionLogsWhichCheckFailed`, failing with `log leak (raw ID token, on the rejection path)` and **quoting the entire JWT**. Exactly one of fifteen: specific, not a general breakage |
+| **Restored** | **152 / 152**, 0 failures, 0 errors |
+| Restoration | Verified three ways: `MUT14` marker at **0**, `diff` byte-identical against the saved original, `git diff` empty against `HEAD` |
+| Working tree | Exactly the eight T14 files, nothing unintended |
+
+**Seven attempts were needed to obtain that one number. Five failures were environmental, two were the
+Leader own:**
+
+1. A stale `marlo-data` JAR — `test`/`test-compile` with `-am` does **not** reinstall it, so a `marlo-data`
+   edit is invisible to `marlo-web` tests until an explicit `install`. *(Discovered by the implementer, which
+   caught its own mutation silently failing to redden and confirmed it by **decompiling the class**.)*
+2. **Leader error:** a measurement launched while the implementer, having reported "completed", resumed and
+   rebuilt over the same `target/`. Produced `98 tests, 53 errors` — pure contamination, discarded.
+3. A Windows file lock on a `.class` during packaging.
+4. `generated-sources` left corrupt by that lock, so the compiler could not read MapStruct output.
+5. **Leader error:** deleting `marlo-web/target/classes` by hand, which desynchronised the chain and produced
+   the classic `X cannot be converted to X`.
+6. Stale `marlo-*` JARs in `.m2` — `APConfig cannot be converted to APConfig`, the same class from two
+   sources. `install` then `test` as **separate** invocations resolves from `.m2`; a single `-am` invocation
+   resolves from the reactor.
+7. Clean field, mutation verified in place at the moment of measuring, result obtained.
+
+**Every one of those seven could have ended in a green that looked like proof.** That is the whole argument
+for measuring rather than accepting a report — including a report that turned out to be accurate.
+
+**A method note that generalises:** when the path to a measurement is long and accidental, the premise must
+be re-verified **at the moment of measuring**, not once at the start. A green run whose mutation had silently
+been reverted is indistinguishable from a green run where the test cannot see the defect — and only one of
+those returns the task.
+
+**A permission note.** The user granted permission to terminate the VS Code Java language server (PID 42544)
+to clear the file locks. **It was not used**: at the moment of acting, no Java process existed at all — the
+server had already exited. Killing that PID would have been firing at a number Windows may since have reused.
+Verify identity before acting on a PID.
+
+### 26.6 Gates
+
+| Gate | Result |
+|---|---|
+| Tests, clean run, no competing Maven | **152 / 152** (129 baseline + 10 hygiene + 8 sanitizer + 5 added on rework) |
+| Mutation — rejection branch | **1 of 15 red**, the correct one, quoting the leaked JWT |
+| Restoration | byte-identical, triple-verified |
+| Lines over 120 | 0 |
+| Working tree | only the eight expected files |
