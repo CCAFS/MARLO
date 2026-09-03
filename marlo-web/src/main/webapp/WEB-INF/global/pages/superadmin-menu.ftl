@@ -1,12 +1,18 @@
 [#ftl]
-[#if logged && action.isVisibleTop()]
+[#-- isVisibleTop() answers the permission question, and an administrator of a Global Unit with no editable
+     phase has no permissions at all: every permission of the role is emitted by phase-gated branches of the
+     getPermissions procedure. Administration is not phased data -- managing users, institutions, partners and
+     the phases themselves does not depend on a reporting cycle being open -- so role membership is asked as
+     well. isRole() reads the assignment for the Global Unit in session and never consults the phase. --]
+[#if logged && (action.isVisibleTop() || action.isRole("CRP-Admin"))]
   [#assign superAdminMenu =[
     { 'slug': 'superadmin',     'name': 'menu.superadmin',    'namespace': '/superadmin',     'action': 'marloBoard', 'visible': action.canAccessSuperAdmin(), 'active': true }
 
   ]/]
 
+    [#-- Same reasoning as the block condition above: the role decides when the phase leaves no permissions. --]
     [#assign superAdminMenu = superAdminMenu + [
-      { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/admin',            'action': '${(crpSession)!}/management',      'icon': 'cog',  'visible': action.canAcessCrpAdmin(),     'active': true }
+      { 'slug': 'admin',     'name': 'menu.admin',    'namespace': '/admin',            'action': '${(crpSession)!}/management',      'icon': 'cog',  'visible': action.canAcessCrpAdmin() || action.isRole("CRP-Admin"),     'active': true }
     ]/]
   <div id="superadminBlock">
     <div class="container">
