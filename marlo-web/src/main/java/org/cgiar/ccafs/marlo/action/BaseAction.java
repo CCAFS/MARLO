@@ -2248,7 +2248,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         } catch (Exception e) {
           LOG.debug("The {} parameter is not a valid phase id, so the current phase param is used",
             APConstants.PHASE_ID, e);
-          phase = this.phaseManager.getPhaseById(this.getCurrentPhaseParam());
+          phase = this.getPhaseFromCurrentPhaseParam();
         }
 
         if (phase != null) {
@@ -2265,13 +2265,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         if (phase.getId() != null) {
           phase = this.phaseManager.getPhaseById(phase.getId());
         } else {
-          phase = this.phaseManager.getPhaseById(this.getCurrentPhaseParam());
+          phase = this.getPhaseFromCurrentPhaseParam();
         }
         return phase;
 
       } else {
 
-        Phase phase = this.phaseManager.getPhaseById(this.getCurrentPhaseParam());
+        Phase phase = this.getPhaseFromCurrentPhaseParam();
 
         if (phase != null) {
           this.getSession().put(APConstants.CURRENT_PHASE, phase);
@@ -3167,12 +3167,37 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   private long getCurrentPhaseParam() {
-    try {
-      return new Long(Integer.parseInt(this.getSession().get(APConstants.CURRENT_PHASE_PARAM).toString()));
-    } catch (Exception e) {
-      LOG.debug("{} is not in the session, so the current phase param is 0", APConstants.CURRENT_PHASE_PARAM, e);
-      return new Long(0);
+    Object currentPhaseParam =
+      this.getSession() == null ? null : this.getSession().get(APConstants.CURRENT_PHASE_PARAM);
+
+    // The param is a custom parameter of the global unit, so it is missing on every page served without a CRP.
+    if (currentPhaseParam == null) {
+      LOG.debug("{} is not in the session, so the current phase param is 0", APConstants.CURRENT_PHASE_PARAM);
+      return 0L;
     }
+
+    try {
+      return Integer.parseInt(currentPhaseParam.toString());
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the current phase param is 0",
+        APConstants.CURRENT_PHASE_PARAM, e);
+      return 0L;
+    }
+  }
+
+  /**
+   * Resolves the phase pointed to by the current phase param of the session. There is no phase with id 0, so an
+   * absent param is answered without going to the database.
+   *
+   * @return the phase of the current phase param, or null when the session has no usable param.
+   */
+  private Phase getPhaseFromCurrentPhaseParam() {
+    long currentPhaseParam = this.getCurrentPhaseParam();
+    if (currentPhaseParam == 0L) {
+      return null;
+    }
+
+    return this.phaseManager.getPhaseById(currentPhaseParam);
   }
 
   /**
