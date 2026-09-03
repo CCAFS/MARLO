@@ -185,3 +185,17 @@ unless noted.
   as SQL in the catalog §13.5 so it can be re-run in any environment.
 - 2026-09-01 — `docs/detailed-design/detailed-design.md` §8.2 is left untouched despite being inaccurate —
   editing it is a constitutional event requiring an epic proposal and review; the divergence is recorded in §2.
+- 2026-09-03 — The audit was extended to compare the database against the **code**, not only against itself —
+  every check up to that point (§13.5 included) compares `role_permissions` with `permissions`, `roles` and the
+  runtime expansion, so none of them can see a grant whose string diverged from the string the application
+  tests: both sides look correct in isolation. The cross-check found that 67 of the 195 permission strings held
+  by AICCRA roles are never tested by any code path — 682 of 1,936 role-grant pairs — and that 30 of the 153
+  constants in `Permission.java` are never referenced. Recorded as catalog §11.15, script as §13.6, task as T14,
+  ticket as `proposed-backlog.md` B-03. No role loses access today, so this is inert configuration rather than an
+  incident; what it does invalidate is any reading of the configuration, including the §4 matrices as first
+  published.
+- 2026-09-03 — Two findings were confirmed by reading code rather than by the script — the script's model of
+  "what the code tests" is deliberately over-generous (every referenced template crossed with every
+  `hasPermission` field literal), which makes its output a floor rather than an exact list. Safeguards
+  (`SafeguardAction:500`, `:514`) and the absent evaluation section were traced end to end so that §11.15 rests
+  on read code, not on a diff.

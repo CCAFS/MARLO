@@ -109,7 +109,7 @@ falls back to `roles.description`.
 | `FM` | Finance person. | Funding sources + project budget sections | `fundingSource:*`, `budgetByPartners`, `budgetByFlagship`, `partner`, `projectSwitch` | Explicitly excluded from the generic branch of `getPermissions` (`r.acronym != 'FM'`); resolved through dedicated branches keyed on the finance person of an institution. 0 users. |
 | `DM` | Data Manager. | Global unit | `admin:canAcess` (read-only entry to the Admin module), publication add, `synthesisProgram` | Second role with Admin-module visibility, without `admin:*`. 0 users. |
 | `SL` | Site Integration Leader. | — | **None** | 0 rows in `role_permissions`. The role is a label only; 13 distinct users hold it on GU 45. See §11.1. |
-| `E` | External Evaluator. | Single project | `project:{1}:evaluation:canEdit` only | 0 users. Paired with `evaluation:accessEE` held by PMU/leaders. |
+| `E` | External Evaluator. | Single project | `project:{1}:evaluation:canEdit` only | 0 users. Paired with `evaluation:accessEE` held by PMU/leaders. **Grants nothing:** the evaluation section has no action, FTL or Struts mapping, and no code path tests the permission (§11.15). |
 | `G` | Guest | Global unit | `impactPathway:canAcess` — read-only visibility of the impact pathway menu | 37 users on GU 45. |
 | `CD` | CapDev Manager | Global unit | `capDev:*`, impact pathway view | CapDev is a Center-type module; `crp_capdev_active` is `true` on GU 47 but the CapDev menu entry only renders for Center global units. |
 | `AR` | API Read | REST API | `api:*:read` | Service account role; no UI access. |
@@ -132,6 +132,11 @@ falls back to `roles.description`.
 
 Columns follow `roles.order` (the order the Admin → Users screen uses). Roles with no grant in a given scope are
 omitted from that table.
+
+> **These matrices show what is configured, not what the application honours.** 682 of the 1,936 role-grant
+> pairs on the AICCRA global units name a permission string that no code path ever tests, so the cell is
+> populated but inert. The affected grants are listed in §11.15 and can be regenerated with §13.6. Read a cell
+> as "this grant is present in `role_permissions`", and check §11.15 before concluding that a role can act.
 
 ### 4.1 Global-unit scope (`permissions.type = 0`)
 
@@ -291,9 +296,11 @@ implied by a wildcard it holds (see §11.12), `·` no.
 - **View** means the role holds at least one grant that renders something in the UI. `SL` holds none, so it shows
   nothing; `AR` and `ARW` hold only `api:` grants and have no UI access at all.
 - **Edit** means the role can modify at least one section — it is deliberately broad, because several roles are
-  narrow specialists: `E` can edit only the project evaluation section, `FM` only funding sources plus the project
-  partner and budget sections, `CD` only CapDev, `DM` only publication creation and program synthesis. Their exact
-  reach is in §3 and Appendix A.
+  narrow specialists: `E` is granted only the project evaluation section, `FM` only funding sources plus the
+  project partner and budget sections, `CD` only CapDev, `DM` only publication creation and program synthesis.
+  Their exact reach is in §3 and Appendix A. **`E`'s single grant is inert**: no code path tests the
+  `project:{1}:evaluation:*` family and no evaluation screen exists, so the `●` in its row is configuration only
+  (§11.15).
 - **Delete project**, **Submit** and **Unsubmit** are the project workflow actions. `PMU`, `CRP-Admin` and
   `SuperAdmin` reach all three through wildcards without holding any of the grants explicitly.
 - **Approve comments** is the feedback subsystem (§5), which is a separate table and does **not** honour Shiro
@@ -513,7 +520,8 @@ reclassified two of them from "possible AICCRA defect" to "platform-wide design"
 | 11.11 | `PL` submits, `CL` unsubmits | **By design, platform-wide** — AICCRA never adopted `CL` |
 | 11.12 | Wildcard holders invisible to naive audits | **Methodology** — affects every future audit |
 | 11.13 | `PC` holds no workflow grant | **Decision** — largest population |
-| 11.14 | Administrators lose the Admin module when no phase is open | **Defect** — confirmed in AICCRA; fix specced under `docs/specs/bugfix/admin-menu-phase-lockout/` |
+| 11.14 | Administrators lose the Admin module when no phase is open | **Defect** — confirmed in AICCRA; specced and fixed on branch `A2-2022-admin-menu-phase-lockout`, not yet merged here |
+| 11.15 | A third of the AICCRA grant surface is never checked by any code path | **Defect (inert configuration)** — 682 of 1,936 role-grant pairs; no role loses access today |
 
 ### 11.1 `SL` is a role with users and no permissions — and that is the platform norm
 
@@ -688,8 +696,100 @@ qualification.
 **Requirement recorded by the team (2026-09-01):** administrators must be able to reach their menu regardless of
 phase state.
 
-Fix specced separately under `docs/specs/bugfix/admin-menu-phase-lockout/` — it changes the authorization
-procedure for every global unit, so it is out of scope for this documentation spec.
+Fix specced and implemented separately on branch `A2-2022-admin-menu-phase-lockout`
+(`docs/specs/bugfix/admin-menu-phase-lockout/`, commit `5a62b86bfb`) — it changes the authorization procedure for
+every global unit, so it is out of scope for this documentation spec. That branch is not merged into this one, so
+the folder is absent from this checkout.
+
+---
+
+### 11.15 A third of the AICCRA grant surface is never checked by any code path
+
+Every previous finding compares the database against itself. This one compares it against the code, and it is the
+only check that can catch a grant whose *string* has drifted away from the string the application tests.
+
+**Method.** `Permission.java` holds the permission templates; actions call `setBasePermission(...)` with one of
+them and then `hasPermission("<field>")`, which tests `base:field` (§1, layer 4). So the set of strings the
+application can ever test is bounded by the referenced templates crossed with the field literals passed to
+`hasPermission`. Comparing that set against the grants actually held, under Shiro's `implies` semantics, gives
+the grants that cannot influence any decision. The script is §13.6.
+
+**Result.**
+
+| Measure | Value |
+|---|---:|
+| Constants in `Permission.java` | 153 (151 distinct strings) |
+| …referenced anywhere outside `Permission.java` | 123 |
+| …declared and **never referenced** | **30** |
+| Rows in `permissions` | 245 (244 distinct — the 450/451 duplicate of §11.2) |
+| Distinct permission strings held by AICCRA roles (GU 45 + 47) | 195 |
+| …that imply **no** string the code tests | **67** |
+| Role-grant pairs those 67 account for | **682 of 1,936 (35%)** |
+
+The 67 split into two causes.
+
+**Cause A — the section name in the database is not the section name in the code.** A whole family is inert,
+because no substitution can bridge the two strings:
+
+| Section in `role_permissions` | Section in `Permission.java` | Dead rows | Roles holding it |
+|---|---|---:|---:|
+| `…:{1}:innovationsList` | `…:{1}:innovations` | 1 | 10 |
+| `…:{1}:studies` | `…:{1}:expectedStudies` | 1 | 10 |
+| `…:{1}:policyList` | `…:{1}:policies` | 1 | 9 |
+| `…:{1}:outcomes:*` | `…:{1}:outcomesPandR` | 4 | 9 |
+| `…:{1}:contributionCrps:milestones` | `…:{1}:contributionCrp` (singular) | 1 | 9 |
+| `…:{1}:contributionsCrpList:*` | — none | 1 | 9 |
+| `…:{1}:partner:{leader,cordinator}:canEdit` | `…:{1}:partners` (plural) | 2 | 7–8 |
+| `…:{1}:evaluation:*` | — none | 6 | 7 |
+| `…:{1}:safeguards:canEdit` | — none | 1 | 4 |
+| `crp:{0}:studies:add` | `crp:{0}:studies:{1}` | 1 | 5 |
+| `crp:{0}:summaries:*` | — none; gated by `canAcessSumaries()` (§6) | 1 | 5 |
+| `crp:{0}:impactPathway:{1}:canAcess` | `crp:{0}:impactPathway:canAcess` (no `{1}`) | 1 | 3 |
+| `superadmin:canEdit` | — none; gated by `hasAllPermissions("*")` | 1 | 1 |
+
+Two of these were traced end to end in code:
+
+- **Safeguards.** `SafeguardAction:500` sets its base to `PROJECT_DESCRIPTION_BASE_PERMISSION` and then calls
+  `hasPermission("canEdit")` at line 514, so the section is really gated by
+  `crp:{0}:project:{1}:description:canEdit`. There is no safeguards constant anywhere. `FPL` and `FPM` still
+  reach the section because they hold `description:*`; `PL` and `PC` because they hold `description:canEdit`.
+- **Evaluation.** There is no evaluation action, FTL or Struts mapping, and no evaluation permission constant.
+  The section does not exist. This makes `E` (External Evaluator) a second `SL`-shaped role: its **single** grant
+  grants nothing (§11.1, §3).
+
+**Cause B — the section base is checked, but the specific field is not.** The remaining rows are field-level
+grants (`description:workplan`, `highlights:addHighlight`, `activities:addActivity`, `outputs:briefSummary`, the
+five `otherContributions:*`, the four `budgetByFlagship:*`, the `budgetByPartners` annual/cofunded family) whose
+base *is* referenced, but which are never passed to `hasPermission` — the action only ever asks for `canEdit`.
+Field-level access control was configured for these sections and the code that consumed it is gone.
+
+**Impact: no role loses access today, and that is the only reason this is not an incident.** Verified per role:
+every holder of a Cause-A grant also holds a covering grant — `description:*` or `description:canEdit` for
+safeguards, `outcomesPandR` for outcomes, `partners…` for the partner pair. The single exception is `CL`, which
+holds the dead `outcomes:canEdit` without `outcomesPandR`, and `CL` has no users on either AICCRA global unit
+(§11.10). Cause-B rows are harmless by construction: the section-level `canEdit` the role also holds is broader
+than the field grant.
+
+**What it does break is every reading of this configuration**, including this catalog before this section
+existed. The §4 matrices and Appendix A show these grants as capability, and §4.5 showed `E` with View and Edit.
+They are entries in a table that nothing reads.
+
+Per-role share of dead grants on GU 47, for the roles that have any:
+
+| `E` | `ARW` | `CL` | `PL` | `PC` | `FM` | `CP` | `ML` | `RPM` | `RPL` | `FPM` | `FPL` | `PMU` | `CRP-Admin` |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 100% | 50% | 47% | 44% | 43% | 39% | 38% | 36% | 35% | 34% | 32% | 31% | 23% | 11% |
+
+`SuperAdmin` is excluded: 1 of its 3 grants is dead, but it holds `*`.
+
+**Caveat on the method.** The model of "what the code tests" is deliberately over-generous — it pairs *every*
+referenced template with *every* field literal, rather than the base each action actually sets. So the 67 are a
+floor, not a ceiling: everything listed is dead, and the true figure may be higher. It also cannot see a string
+assembled in a way the script does not model, which is why the two cases above were confirmed by reading the
+code rather than by the diff. All 137 `hasPermission` call sites that pass a string literal are covered — 96 in
+Java, 41 in FTL — and only one of the 42 FTL call sites passes anything else.
+
+**Not fixed here**, per the documentation-only scope. Triaged in `proposed-backlog.md` as **B-03**.
 
 ---
 
@@ -788,12 +888,14 @@ Note that `PL` is absent from the unsubmit roster and `PC` from the submit roste
 ### 13.4 What is validated, and what is not
 
 The audited database was confirmed to carry the same data as production, so populations, phases and the feedback
-matrix are production values rather than a possibly-stale copy. What remains outside the reach of a data audit:
+matrix are production values rather than a possibly-stale copy. What a pure data audit cannot reach, and what was
+done about it:
 
 | Item | Why | How to close |
 |---|---|---|
 | Runtime rows for 9 roles | No users hold them on either AICCRA global unit, so `getPermissions` emits nothing | Nothing to do — the static grant sets were asserted instead (§13.1) |
 | Node-grant cascade (`base` implies `base:field`) | Shiro evaluation happens in the running application | Confirmed by code reading (`BaseAction.java:6348`); a UI walkthrough would confirm behaviourally |
+| Whether a grant is checked by **any** code path | Invisible to a data audit — the string can drift away from the string the code tests | **Closed by §13.6**, which is what produced §11.15: 67 of 195 grants imply no code check |
 | Role purposes and intent | Not derivable from data at all | PMU / QA review (`task.md` T10) |
 | Whether each finding should be acted on | A judgement call, not a fact | Triaged in `proposed-backlog.md`; decisions listed there |
 
@@ -897,6 +999,109 @@ finding §11.10.
 
 ---
 
+### 13.6 Re-runnable code-to-database cross-check
+
+§13.5 checks the database against itself. This checks it against the code, which is what produced §11.15. Two
+steps: dump the grants, then run the script from the repository root.
+
+**Step 1 — dump the grants under audit.**
+
+```sql
+SELECT DISTINCT p.permission
+  FROM role_permissions rp
+  JOIN permissions p ON p.id = rp.permission_id
+  JOIN roles r       ON r.id = rp.role_id
+ WHERE r.global_unit_id IN (45, 47)
+ ORDER BY 1;   -- 195 rows on the 2026-09-01 snapshot
+```
+
+Write the output to a file, one permission string per line, with no header.
+
+**Step 2 — run the cross-check.**
+
+```python
+#!/usr/bin/env python3
+"""Cross-check the permission strings stored in the database against the strings the code checks.
+
+Usage:  crosscheck.py <repo-root> <grants-file>
+  <grants-file> is the output of, for the global units under audit:
+    SELECT DISTINCT p.permission FROM role_permissions rp
+      JOIN permissions p ON p.id = rp.permission_id
+      JOIN roles r ON r.id = rp.role_id
+     WHERE r.global_unit_id IN (45, 47);
+
+Reports grants that imply no permission string the code ever tests. The model of "what the code
+tests" is deliberately over-generous (any basePermission x any hasPermission field literal), so the
+output is a lower bound: everything listed is dead, but the real dead set may be larger.
+"""
+import re
+import subprocess
+import sys
+
+root, grants_file = sys.argv[1], sys.argv[2]
+PERM = root + '/marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/Permission.java'
+SRC = [root + '/marlo-web/src', root + '/marlo-data/src']
+
+
+def grep(pattern, *globs):
+  cmd = ['grep', '-rhoE', pattern] + ['--include=' + g for g in globs] + SRC
+  return subprocess.run(cmd, capture_output=True, text=True).stdout.splitlines()
+
+
+flat = re.sub(r'\s*\n\s*', ' ', open(PERM).read())
+consts = dict(re.findall(r'public static final String (\w+)\s*=\s*"([^"]+)"', flat))
+referenced = {m.split('.')[-1] for m in grep(r'Permission\.[A-Z0-9_]{4,}', '*.java', '*.ftl')}
+fields = {re.search(r'"([^"]*)"', l).group(1)
+          for l in grep(r'hasPermission\(\s*"[^"]*"', '*.java', '*.ftl')}
+
+live = [v for k, v in consts.items() if k in referenced]
+checks = set(live) | {b + ':' + f for b in live for f in fields}
+
+
+def implies(granted, required):
+  """Shiro WildcardPermission semantics: does `granted` satisfy `required`?"""
+  g, r = granted.split(':'), required.split(':')
+  for i, part in enumerate(r):
+    if i > len(g) - 1:
+      return True
+    if g[i] != '*' and g[i] != part:
+      return False
+  return all(part == '*' for part in g[len(r):])
+
+
+grants = [l.strip() for l in open(grants_file) if l.strip()]
+dead = [g for g in grants if not any(implies(g, c) for c in checks)]
+unused = sorted(k for k in consts if k not in referenced)
+
+print('Permission.java  : %d constants, %d referenced, %d never referenced'
+      % (len(consts), len(consts) - len(unused), len(unused)))
+print('code checks       : %d modelled (%d bases x %d field literals)'
+      % (len(checks), len(live), len(fields)))
+print('grants audited    : %d' % len(grants))
+print('grants with no code check: %d' % len(dead))
+for g in dead:
+  print('  DEAD  ' + g)
+for k in unused:
+  print('  UNUSED CONSTANT  %-50s %s' % (k, consts[k]))
+sys.exit(1 if dead or unused else 0)
+```
+
+Output on the 2026-09-01 snapshot:
+
+```
+Permission.java  : 153 constants, 123 referenced, 30 never referenced
+code checks       : 4213 modelled (123 bases x 34 field literals)
+grants audited    : 195
+grants with no code check: 67
+```
+
+It exits non-zero when anything is dead or unused, so it can gate a build. Two ways to read a change in the
+numbers: a **rise** after a code change means a permission string was renamed in `Permission.java` without a
+matching migration; a **rise** after a data change means grants were seeded for a section the code does not
+have. Either way, reconcile the two sides before updating §11.15.
+
+---
+
 ## 14. Keeping this document current
 
 The story assumes future permission updates follow this structure. What to update, and when:
@@ -910,15 +1115,17 @@ The story assumes future permission updates follow this structure. What to updat
 | The feedback matrix changes | §5 |
 | `getPermissions` is modified | §1 model description and §13.2 runtime table |
 | A `BaseAction` access gate is added or changed | §6 |
-| Anything at all | Re-run §13.5, then refresh the snapshot date in the header |
+| A permission string is added, renamed or removed in `Permission.java` | Re-run §13.6, then §11.15 |
+| Anything at all | Re-run §13.5 **and** §13.6, then refresh the snapshot date in the header |
 
 **The mechanical part is generated, not written by hand.** §2, the §4 matrices and Appendix A are derived from two
 queries — the role catalog (§10.1) and the full grant list (§10.2) — so regenerating them is a matter of re-running
 those and reformatting, not re-reading the database by eye. §3 and §6 are the only sections that need human
 judgement.
 
-**Before trusting this document in a new environment**, run §13.5. It is 12 assertions and takes seconds; it is
-what caught the three errors listed in §13.1.
+**Before trusting this document in a new environment**, run §13.5 and §13.6. §13.5 is 12 SQL assertions and takes
+seconds; it is what caught the two errors listed in §13.1. §13.6 is the code-to-database cross-check, and it is
+what caught §11.15.
 
 ---
 

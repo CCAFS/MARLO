@@ -1,22 +1,25 @@
 # Admin — Backlog Triage from the Roles & Permissions Audit
 
 **Spec:** DOMAIN-ADMIN-001 · task `DOMAIN-ADMIN-001-T12`
-**Source:** `roles-permissions-catalog.md` §11 (findings) and §13 (validation results)
+**Source:** `roles-permissions-catalog.md` §11 (findings, 11.1–11.15) and §13 (validation results, including
+the §13.6 code cross-check)
 **Status:** Draft — **no Jira issue created yet.**
-**Last Updated:** 2026-09-01
+**Last Updated:** 2026-09-03
 
 The team confirmed that the audited database carries the same data as production, so the findings are production
 facts and no reconfirmation step is pending (`task.md` T11 closed on that basis).
 
 ## Conclusion first
 
-Of the 13 findings, **one justifies a ticket now and one is a cheap fix worth doing opportunistically.** The rest
-are either latent with no current impact, conditional on a decision that has not been taken, or discretionary.
+Of the 15 findings, **two justify a ticket now and one is a cheap fix worth doing opportunistically.** The rest
+are either already fixed, latent with no current impact, conditional on a decision that has not been taken, or
+discretionary.
 
 | Verdict | Items |
 |---|---|
-| **Create now** | B-01 — duplicate rows and missing unique constraints |
+| **Create now** | B-01 — duplicate rows and missing unique constraints · B-03 — grants no code path checks |
 | **Cheap, low urgency** | B-02 — `isAiccra()` misclassifies global unit 46 |
+| **Already fixed elsewhere** | Admin-module phase lockout (11.14) — specced and fixed on branch `A2-2022-admin-menu-phase-lockout` |
 | **No ticket: latent, fold into a decision** | `PL`/`CL` label collision (11.3), feedback seed migration (11.6), feedback matrix for GU 47 (11.7) |
 | **No ticket: no impact today** | `{1}`-unresolved grants (11.5), `Genebank` `SL` outlier (11.1 outlier) |
 | **No ticket: discretionary** | Admin-UI hint for permission-less roles (11.1) |
@@ -102,7 +105,78 @@ the next global unit will be 48 and will be silently classified as AICCRA the mo
 
 ---
 
+## B-03 — Reconcile the permission strings in the database with the strings the code checks
+
+- **Type:** Bug / Technical debt · **Priority:** Medium · **Closes:** finding 11.15
+- **Component:** database + `marlo-data` / `Permission.java`
+- **Verdict: create this one.** It is the second finding with a measured production cost, and the only one that
+  makes the access configuration actively misleading.
+
+**Description.** 67 of the 195 distinct permission strings held by AICCRA roles imply no string the application
+ever tests — **682 of 1,936 role-grant pairs, 35%**. Two causes:
+
+- **The section name diverged.** `role_permissions` says `outcomes`, `Permission.java` says `outcomesPandR`.
+  Also `partner` vs `partners`, `contributionCrps` vs `contributionCrp`, `innovationsList` vs `innovations`,
+  `policyList` vs `policies`, `studies` vs `expectedStudies`, and `crp:{0}:impactPathway:{1}:canAcess` vs
+  `crp:{0}:impactPathway:canAcess`. Two families have no counterpart at all: `project:{1}:evaluation:*` (no
+  action, FTL or Struts mapping exists) and `project:{1}:safeguards:canEdit` (`SafeguardAction:500` gates the
+  section on `description:canEdit` instead).
+- **The field is no longer checked.** Field-level grants such as `description:workplan`,
+  `highlights:addHighlight`, `outputs:briefSummary` and the five `otherContributions:*` sit under a base the
+  code does reference, but the action only ever asks for `canEdit`. Field-level control was configured and the
+  code that consumed it is gone.
+
+Separately, **30 of the 153 constants in `Permission.java` are declared and never referenced** — 17 of them the
+REST API family (`api:institutions:*`, `api:crps:*`, `api:crpProgram:*`).
+
+**Why it matters even though nothing is broken.** No role loses access today: every holder of a dead grant also
+holds a covering grant (`description:*` or `description:canEdit`, `outcomesPandR`, `partners…`), and the one
+exception, `CL`, has no users. The cost is elsewhere:
+
+- **The configuration cannot be read correctly.** An administrator granting `safeguards:canEdit` believes they
+  granted something. The first draft of the catalog made exactly that mistake, and so does the Admin UI.
+- **It inflates `getPermissions`.** These rows are materialised into the `user_permission` temp table on every
+  authorization cache miss, on top of the duplicates in B-01.
+- **A rename can silently revoke access.** The next time a section is renamed in `Permission.java` without a
+  matching migration, the failure is invisible: both sides look correct in isolation. That is how these 67 got
+  here.
+
+**Evidence.** Catalog §11.15, reproducible with the script in §13.6, which exits non-zero on any dead grant.
+
+**Acceptance criteria.**
+- Each of the 67 strings is classified: rename the database row to match the code, delete it, or add the code
+  check that was intended. A row may also be explicitly kept with a recorded reason.
+- Renames ship as a Flyway migration that updates `permissions.permission` in place, so `role_permissions` and
+  `user_roles` are untouched.
+- **No role gains or loses an effective grant.** Compare `CALL getPermissions(<user_id>)` output before and
+  after for at least one holder of each affected role; the §13.5 suite passes unchanged.
+- The 30 unreferenced constants are removed or documented as reserved.
+- §13.6 is added to CI, or its expected counts are recorded so a future rise is noticed.
+- The catalog §4 matrices and Appendix A are regenerated afterwards.
+
+**Risk.** Medium-high, and higher than B-01 despite touching fewer rows. Renaming a permission string changes
+authorization behaviour: get one wrong in the direction of *more* reach and it is a privilege escalation, in the
+direction of *less* and a role silently loses a section. Do it family by family, each with a before/after
+`getPermissions` diff, not as one migration. The safest first slice is the two families with no code counterpart
+at all (`evaluation`, `safeguards`), where deletion cannot grant anything new.
+
+**Suggested sequencing.** Land B-01 first. De-duplicating and adding the unique constraints shrinks the surface
+this ticket has to reason about, and both touch the same two tables.
+
+---
+
 ## Why the other findings do not need a ticket
+
+### Already fixed elsewhere
+
+- **Admin-module phase lockout (11.14).** `CRP-Admin` holders on AICCRA cannot reach the Admin module — or the
+  top bar at all — because the role's nine grants are phase-gated and AICCRA has no editable phase, which puts
+  the only screen that can reopen a phase behind the phase that is closed. This is the most severe finding in the
+  catalog, and it is **already specced and fixed** on branch `A2-2022-admin-menu-phase-lockout`
+  (`docs/specs/bugfix/admin-menu-phase-lockout/`, commit `5a62b86bfb`), because it changes the authorization
+  procedure for every global unit and so did not belong to a documentation spec. No ticket is needed from this
+  triage; link that branch's issue to A2-2022 instead.
+
 
 ### Latent — fold into the decision that would activate them
 
@@ -112,8 +186,8 @@ the next global unit will be 48 and will be silently classified as AICCRA the mo
   ticket.
 - **Feedback seed migration `cluster_type_id` (11.6).** Production already holds the correct rows, and the
   migration is a no-op wherever AICCRA roles 420–433 are absent. The divergence would only surface in a new
-  environment that later seeds those roles. Fix it inside B-08 below if feedback is ever enabled for GU 47; a
-  standalone ticket buys nothing.
+  environment that later seeds those roles. Fix it as part of enabling feedback on GU 47 — the 11.7 bullet
+  immediately below — if that decision is ever taken; a standalone ticket buys nothing.
 - **Feedback matrix missing for GU 47 (11.7).** `feedback_active` is `false` on GU 47, so nothing is broken. This
   is a prerequisite of enabling the module, not an open defect. When that decision is taken, the ticket is: seed
   the GU 47 matrix with the correct cluster-type ids, guarded by a join against `global_units` and `roles`.
@@ -156,7 +230,7 @@ Tracked as `task.md` T10. None of these is a defect; each needs a decision befor
 | 11.8 | Should `PMU`/PMC reach the Admin module? It has the widest editorial reach (`crp:{0}:project:*`) but no `admin:canAcess`. | Grant read-only admin access, or document the exclusion as intended. |
 | 11.9 | Is `CRP-Admin`'s unqualified `crp:*` intended? It matches every global unit, making the role cross-tenant. | Replace with `crp:{0}:*`. Security-sensitive — review who holds the role first. |
 | 11.10 | Which roles should be deactivated for AICCRA? `FM`, `DM`, `CL`, `ML`, `E`, `AR`, `ARW`, `CD` have no users on either AICCRA global unit. | **AICCRA rows only.** `CL` alone has users in nine other global units, and the `permissions` catalog is shared. |
-| 11.11 | AICCRA never assigns `CL`, so no cluster-level role can reopen a submitted project. Adopt `CL`, or keep reopening above the cluster? | Admin configuration, plus B-05-style label disambiguation if `CL` is adopted. |
+| 11.11 | AICCRA never assigns `CL`, so no cluster-level role can reopen a submitted project. Adopt `CL`, or keep reopening above the cluster? | Admin configuration, plus the label disambiguation described under 11.3 above, which only becomes visible if `CL` is adopted. |
 | 11.13 | Should `PC` — 145 users, the largest population — hold no workflow grant at all? | Grant one, or document the exclusion. |
 
 ---
@@ -164,7 +238,9 @@ Tracked as `task.md` T10. None of these is a defect; each needs a decision befor
 ## Creation checklist
 
 1. Confirm the parent epic (proposed: **A2-2017** — AICCRA III · Improvements for admin module).
-2. Create **B-01**. Add **B-02** if the epic has room for a low-priority cleanup.
+2. Create **B-01**, then **B-03** (which is easier to scope once B-01 has landed). Add **B-02** if the epic has
+   room for a low-priority cleanup.
 3. Issues are written in English, in project `A2`.
-4. Link each new issue to **A2-2022** so the trail back to the catalog survives.
+4. Link each new issue to **A2-2022** so the trail back to the catalog survives. Also link the existing
+   `A2-2022-admin-menu-phase-lockout` issue, so 11.14 is visibly accounted for rather than looking untriaged.
 5. Append the issue key to the corresponding finding in `roles-permissions-catalog.md` §11.

@@ -1,10 +1,10 @@
 # Admin — Roles & Permissions Documentation — Task Plan
 
 **Spec ID:** DOMAIN-ADMIN-001
-**Status:** In Progress — T01…T09, T11 and T13 done; T12 triaged with issue creation pending epic confirmation;
-T10 (PMU decisions) deferred by the team
+**Status:** In Progress — T01…T09, T11, T13 and T14 done; T12 triaged with issue creation pending epic
+confirmation; T10 (PMU decisions) deferred by the team
 **Owner:** IBD Team — Kenji Tanaka
-**Last Updated:** 2026-09-01
+**Last Updated:** 2026-09-03
 **Target merge:** staging (then promoted to main per release process).
 
 ---
@@ -26,7 +26,7 @@ T10 (PMU decisions) deferred by the team
 - [x] Confirmed no `docs/specs/domain/admin/` spec existed before (the folder was absent).
 - [x] Confirmed the AICCRA role catalog is absent from repo migrations, so a database snapshot is required.
 - [x] Latest `staging` pulled.
-- [ ] Feature branch created off `staging` (`A2-2022-document-all-user-roles-profiles-and-permissions`).
+- [x] Feature branch created off `staging` (`A2-2022-document-all-user-roles-profiles-and-permissions`).
 - [ ] `requirements.md` and `design.md` approved by a reviewer.
 
 ## 3. Task List
@@ -39,7 +39,8 @@ T10 (PMU decisions) deferred by the team
 - **Constitutional checks:** English-only notes; no source modified.
 - **Tests:** not applicable.
 - **Done when:** the four authorization layers are identified with file references.
-- **Verification:** `Permission.java` (245 templates), `APCustomRealm.doGetAuthorizationInfo()`,
+- **Verification:** `Permission.java` (153 constants, 151 distinct permission strings — the 245 figure belongs to
+  the `permissions` table, not to this file), `APCustomRealm.doGetAuthorizationInfo()`,
   `UserMySQLDAO.getPermission():68` → `getPermissions` procedure, `BaseAction.hasPermission():6348`. **Done.**
 
 ### DOMAIN-ADMIN-001-T02 — Extract the role catalog from the database
@@ -166,11 +167,12 @@ T10 (PMU decisions) deferred by the team
 - **Tests:** not applicable.
 - **Done when:** each accepted finding has a Jira issue linked back to A2-2022, or a recorded reason for not
   raising one.
-- **Verification:** triage complete in `proposed-backlog.md`. Of the 13 findings, one justifies a ticket now
-  (duplicate rows and missing unique constraints, with 15,608 duplicate grant rows and up to 80% wasted rows per
-  user), one is a cheap low-urgency fix (`isAiccra()` and global unit 46), five are latent or impact-free, two are
-  platform-wide design rather than defects, and five are PMU decisions rather than work. **Issue creation pending
-  confirmation of the parent epic.**
+- **Verification:** triage complete in `proposed-backlog.md`. Of the 15 findings, two justify a ticket now
+  (B-01 duplicate rows and missing unique constraints, with 15,608 duplicate grant rows and up to 80% wasted rows
+  per user; B-03 the 682 role-grant pairs no code path checks, from T14), one is a cheap low-urgency fix
+  (`isAiccra()` and global unit 46), one is already fixed on its own branch (§11.14), five are latent or
+  impact-free, two are platform-wide design rather than defects, and five are PMU decisions rather than work.
+  **Issue creation pending confirmation of the parent epic.**
 
 ### DOMAIN-ADMIN-001-T13 — Validate every role against the database
 
@@ -188,6 +190,30 @@ T10 (PMU decisions) deferred by the team
   added (§11.11 PL/CL submit-unsubmit asymmetry, §11.12 wildcard holders invisible to naive audit queries) and
   a re-runnable SQL suite published as §13.5. **Done.**
 
+### DOMAIN-ADMIN-001-T14 — Cross-check the database grants against the code
+
+- **Depends on:** T01, T13
+- **Module:** docs (reads marlo-data, marlo-web)
+- **Files touched:** `roles-permissions-catalog.md` §3, §4, §4.5, §11.15, §13.4, §13.6, §14
+- **Constitutional checks:** read-only; findings recorded, not fixed. Script is English-only and lives in the
+  catalog, not in the build.
+- **Tests:** the cross-check script itself, published as §13.6 and exiting non-zero on any dead grant.
+- **Done when:** every permission string held by an AICCRA role is confirmed to be tested by some code path, or
+  recorded as one that is not.
+- **Rationale:** T01…T13 compare the database against itself and against runtime expansion. None of them can
+  catch a grant whose *string* diverged from the string the application tests, because both sides look correct
+  in isolation.
+- **Verification:** `Permission.java` holds 153 constants (151 distinct strings), of which **123 are referenced
+  and 30 never are**. Of the **195** distinct permission strings held by AICCRA roles, **67 imply no code check**
+  under Shiro `implies` semantics, accounting for **682 of 1,936 role-grant pairs (35%)**. Two causes: the
+  section name diverged (`outcomes` vs `outcomesPandR`, `partner` vs `partners`, `contributionCrps` vs
+  `contributionCrp`, `innovationsList` vs `innovations`, `policyList` vs `policies`, `studies` vs
+  `expectedStudies`), or the field is never passed to `hasPermission`. Two cases traced end to end in code:
+  `SafeguardAction:500`/`:514` proves Safeguards is gated by `description:canEdit`, and the
+  `project:{1}:evaluation:*` family has no action, FTL or Struts mapping at all — which makes `E`'s single grant
+  inert. **No role loses access today**: every holder also holds a covering grant, the sole exception being `CL`,
+  which has no users. Recorded as catalog §11.15 and triaged as `proposed-backlog.md` B-03. **Done.**
+
 ## 4. Dependency Graph
 
 ```
@@ -203,9 +229,10 @@ T01 (model in code)
 
 T04, T05, T07, T08 ──> T09 (findings + queries)
                           ├── T13 (validate every role against the DB)
+                          │     └── T14 (cross-check grants against the code)  [also needs T01]
                           ├── T10 (validation with owners)
                           ├── T11 (production reconfirmation)
-                          └── T12 (tickets)  [after T10, T11]
+                          └── T12 (tickets)  [after T10, T11, T14]
 ```
 
 ## 5. Testing Plan
@@ -222,6 +249,8 @@ There is no code to unit-test. Verification is evidence-based:
 | Assertions | 43 static assertions derived from every §3 claim | 43/43 pass; 2 catalog errors found and fixed (T13) |
 | Runtime | Placeholder expansion for all 8 roles with users on GU 47 | Matched; grant counts confirmed to be upper bounds |
 | Re-runnable suite | SQL assertion suite in §13.5 executed on the snapshot | All checks PASS |
+| Code cross-check | §13.6 run against this checkout and the snapshot grant list | 67 of 195 grants imply no code check; 30 constants unreferenced (T14) |
+| Cross-check | Two dead families traced to their action and Struts mapping by reading code | Confirmed: Safeguards gated by `description:canEdit`; no evaluation screen exists (T14) |
 | Review | PMU / QA walkthrough of §3 and §12 | Pending (T10) |
 | Environment | Production values for populations, phases and feedback rows | Confirmed — audited database carries production data (T11) |
 | Triage | Impact assessment per finding, including runtime cost measurement | Complete — see `proposed-backlog.md` (T12) |
@@ -256,5 +285,8 @@ Revert the documentation commit. Nothing else changes: no schema, no configurati
 - [ ] Tickets created for the accepted findings, once the parent epic is confirmed (T12 creation).
 - [x] Every role validated against the database; 43/43 assertions pass and a re-runnable SQL suite is published
       (T13). This closes the story's criterion "Permissions are verified against the current system configuration".
+- [x] Every grant cross-checked against the code that would test it, with a re-runnable script (T14). This is the
+      code half of the same criterion: §13.5 proves the data is described correctly, §13.6 proves whether the
+      application honours it.
 - [x] Rendered summary published on Jira A2-2022 (comment `41599`).
 - [ ] Spec reviewed and merged into `staging`.
