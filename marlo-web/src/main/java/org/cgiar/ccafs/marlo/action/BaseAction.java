@@ -717,9 +717,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     String permission =
       this.generatePermissionCenter(Permission.RESEARCH_AREA_FULL_PRIVILEGES, this.getCenterSession());
-    LOG.debug(permission);
-    LOG.debug(String.valueOf(this.securityContext.hasPermission(permission)));
-    return this.securityContext.hasPermission(permission);
+    boolean hasPermission = this.securityContext.hasPermission(permission);
+    LOG.debug("The permission {} of the current user is {}", permission, hasPermission);
+    return hasPermission;
   }
 
   public boolean canAcessCrp() {
@@ -821,7 +821,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       User currentUser = this.getCurrentUser();
       if (currentUser == null || this.getCurrentGlobalUnit() == null) {
-        LOG.warn("Current user or their global unit is null");
+        LOG.debug("There is no user or global unit in the session, so the comments of the project {} cannot be"
+          + " approved", projectID);
         return false;
       }
 
@@ -1513,7 +1514,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       User currentUser = this.getCurrentUser();
       if (currentUser == null) {
-        LOG.warn("Current user or their global unit is null");
+        LOG.debug("There is no user in the session, so no comment can be left on the project {}", projectID);
         return false;
       }
 
@@ -1578,7 +1579,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       User currentUser = this.getCurrentUser();
       if (currentUser == null || this.getCurrentGlobalUnit() == null) {
-        LOG.warn("Current user or their global unit is null");
+        LOG.debug("There is no user or global unit in the session, so the feedback of the project {} cannot be"
+          + " managed", projectID);
         return false;
       }
 
@@ -1653,14 +1655,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         User currentUser = this.getCurrentUser();
         if (currentUser == null || currentUser.getId() == null) {
-          LOG.warn("Current user is null or has no ID");
+          LOG.debug("There is no user in the session, so the feedback of the project {} cannot be managed", projectID);
           return false;
         }
 
         Phase currentPhase = this.getActualPhase();
         Long phaseId = (currentPhase != null) ? currentPhase.getId() : null;
         if (phaseId == null) {
-          LOG.warn("Actual phase is null or has no ID");
+          LOG.debug("There is no actual phase, so the feedback of the project {} cannot be managed", projectID);
           return false;
         }
 
@@ -1669,7 +1671,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, phaseId);
 
         if (projectPartners == null || projectPartners.isEmpty()) {
-          LOG.info("No project partners found for project ID: {}", projectID);
+          LOG.debug("The project {} has no partners in the phase {}, so the feedback cannot be managed", projectID,
+            phaseId);
           return false;
         }
 
@@ -1742,7 +1745,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
       if (this.getCurrentGlobalUnit() == null) {
-        LOG.warn("Global unit is null for user");
+        LOG.debug("There is no global unit in the session, so the comments cannot be tracked");
         return false;
       }
 
@@ -2611,7 +2614,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
         this.centerID = center.getId();
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the user center in the session.");
+        LOG.warn("Could not read the center id from the session", e);
       }
     } else {
 
@@ -2784,7 +2787,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         // one.
         this.centerSession = center.getAcronym();
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the user's center in the session.");
+        LOG.warn("Could not read the center acronym from the session", e);
       }
     } else {
       String actionName = this.getActionName();
@@ -2878,7 +2881,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     } catch (Exception e) {
-      LOG.error("Error retrieving clusterTypeId for project ID: " + projectID, e);
+      LOG.error("Could not get the cluster type of the project {}, so no cluster type is returned", projectID, e);
     }
     return null;
   }
@@ -2983,7 +2986,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         this.crpID = crp.getId();
       }
     } catch (Exception e) {
-      LOG.warn("There was a problem trying to find the user crp in the session.", e);
+      LOG.warn("Could not read the CRP id from the session", e);
     }
     return this.crpID;
   }
@@ -3040,7 +3043,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
         this.crpSession = crp.getAcronym();
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the user crp in the session.");
+        LOG.warn("Could not read the CRP acronym from the session", e);
       }
     } else {
       String actionName = this.getActionName();
@@ -3101,7 +3104,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
         this.currentCrp = crp;
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the user crp in the session.");
+        LOG.warn("Could not read the current CRP from the session", e);
       }
     } else {
 
@@ -3134,7 +3137,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
         this.currentCrp = crp;
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the Global Unit in the session.");
+        LOG.warn("Could not read the Global Unit from the session", e);
       }
     } else {
 
@@ -3164,7 +3167,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         u =
           this.session.get(APConstants.SESSION_USER) != null ? (User) this.session.get(APConstants.SESSION_USER) : null;
       } catch (Exception e) {
-        LOG.warn("There was a problem trying to find the user in the session.");
+        LOG.warn("Could not read the user from the session", e);
       }
     }
     return u;
@@ -3533,7 +3536,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
             }
           } catch (Exception e) {
-            LOG.error("unable to get shared deliverables", e);
+            LOG.error("Could not get the deliverables shared with the project {}, so they are left out", projectID, e);
           }
         }
       }
@@ -4103,7 +4106,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           .filter(c -> c.getAcronym() != null && seenAcronyms.add(c.getAcronym())).collect(Collectors.toList());
       }
     } catch (Exception e) {
-      LOG.error("Error getting global unit crp outcomes: " + e.getMessage(), e);
+      LOG.error("Could not get the outcomes of the global unit, so an empty list is returned", e);
     }
     return outcomes;
   }
@@ -4229,7 +4232,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     } catch (Exception e) {
-      LOG.error("unable to get shared innovations", e);
+      LOG.error("Could not get the innovations shared with the project outcome {}, so they are left out", id, e);
     }
 
     return innovations;
@@ -4361,8 +4364,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return this.auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());
     } catch (Exception e) {
+      // object itself can be null here, so the class and the id are resolved defensively.
       LOG.error("Could not read the audit log of {} with id {}, so an empty history is shown",
-        object.getClass().getSimpleName(), object.getId(), e);
+        object == null ? "null" : object.getClass().getSimpleName(), object == null ? null : object.getId(), e);
       return new ArrayList<Auditlog>();
     }
   }
@@ -4834,7 +4838,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
       } catch (Exception e) {
-        LOG.error("Project outcome relation impact ", e);
+        LOG.error("Could not get the outcome {} of the project {} in the phase {}, so no project outcome is returned",
+          outcomeId, projectId, phaseId, e);
       }
     }
     return projectOutcome;
@@ -4957,7 +4962,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       }
     } catch (Exception e) {
-      LOG.error("Project outcome status ", e);
+      LOG.error("Could not get the projects related to the {} with id {}, so an empty list is returned", className, id,
+        e);
     }
 
     List<Project> avaliableProjects = new ArrayList<>();
@@ -5163,7 +5169,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               quantityMissingDeliverables = deliverableManager
                 .getQuantityDeliverablesWithActivities(this.getActualPhase().getId(), project.getId());
             } catch (Exception e) {
-              LOG.error("unable to get deliverables without activities Quantity", e);
+              LOG.error("Could not count the deliverables of the project {} without activities, so none is reported",
+                projectID, e);
               prevMissingActivity = new ArrayList<>();
             }
 
@@ -5181,7 +5188,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                     .collect(Collectors.toList());
                 }
               } catch (Exception e) {
-                LOG.error("unable to get deliverables without activities", e);
+                LOG.error("Could not get the deliverables of the project {} without activities, so none is reported",
+                  projectID, e);
                 prevMissingActivity = new ArrayList<>();
               }
 
@@ -5343,7 +5351,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
             returnValue = true;
             } catch (Exception e) {
-            LOG.error("Error validating innovations section for project " + projectID, e);
+            LOG.error("Could not validate the innovations section of the project {}, so it is reported as invalid",
+              projectID, e);
             returnValue = false;
             }
 
@@ -5741,16 +5750,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public long getStartAFPhase() {
     long startAFPhase = 423;
 
-    if (APConstants.CRP_AICCRA_AF_START_PHASE != null
-      && this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE) != null) {
+    if (this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE) != null) {
       try {
         startAFPhase = Long.parseLong((String) this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE));
       } catch (NumberFormatException e) {
-        LOG.error("The session value of {} is not a number, so the default start AF phase is used",
-          APConstants.CRP_AICCRA_AF_START_PHASE, e);
+        LOG.error("The session value of {} is not a number, so the default start AF phase {} is used",
+          APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase, e);
       }
     } else {
-      LOG.error("CRP_AICCRA_AF_START_PHASE is null or not found in session.");
+      // This parameter only exists for AICCRA, so any other global unit falls back to the default phase.
+      LOG.debug("{} is not in the session, so the default start AF phase {} is used",
+        APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase);
     }
     return startAFPhase;
   }
@@ -5822,7 +5832,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         prop.load(ServletActionContext.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF"));
         version = prop.getProperty("Implementation-Version");
       } catch (IOException e) {
-        LOG.warn("MAINFEST file Does not exist");
+        LOG.warn("Could not read the MANIFEST file, so the implementation version is unknown", e);
       }
     }
     return version;
@@ -6339,13 +6349,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return Boolean object with the value
    */
   public boolean isAFPhase(long phaseID) {
-    long startAFPhase = 423;
-
-    try {
-      startAFPhase = this.getStartAFPhase();
-    } catch (NumberFormatException e) {
-      LOG.error("Could not resolve the start AF phase, so the default {} is used", startAFPhase, e);
-    }
+    // getStartAFPhase() already handles a malformed session value and falls back to the default phase.
+    long startAFPhase = this.getStartAFPhase();
 
     if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
       return true;
@@ -7530,7 +7535,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
-      LOG.error("Deliverable AllYears ", e);
+      LOG.error("Could not read the specificity {}, so the all years selection is hidden",
+        APConstants.IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE, e);
     }
 
     return isVisible;
@@ -7596,8 +7602,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new",
-          fundingSourceID, e);
+        LOG.error("Could not tell whether the funding source {} is new in the reporting phase, so it is reported as"
+          + " not new", fundingSourceID, e);
         return false;
       }
 
@@ -7611,8 +7617,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new",
-          fundingSourceID, e);
+        LOG.error("Could not tell whether the funding source {} is new in the planning phase, so it is reported as"
+          + " not new", fundingSourceID, e);
         return false;
       }
 
@@ -8040,7 +8046,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
       } catch (Exception e) {
-        LOG.error("Error getting project partners ", e);
+        LOG.error("Could not get the partners of the project {}, so the user is reported as not the project leader",
+          projectID, e);
       }
     }
 
@@ -8074,7 +8081,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
+        LOG.error("Could not tell whether the project {} is new in the reporting phase, so it is reported as not new",
+          project.getId(), e);
         return false;
       }
 
@@ -8089,7 +8097,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
+        LOG.error("Could not tell whether the project {} is new in the planning phase, so it is reported as not new",
+          project.getId(), e);
         return false;
       }
 
@@ -9374,7 +9383,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return result;
     } catch (Exception e) {
-      LOG.error(" error in validateIsProgressAndNotStatus function [BaseAction]");
+      LOG.error("Could not tell whether the progress status {} is complete, so it is reported as valid", status, e);
       return result;
     }
   }
