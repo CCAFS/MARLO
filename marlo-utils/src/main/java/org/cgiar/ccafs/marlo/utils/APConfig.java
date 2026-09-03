@@ -198,6 +198,8 @@ public class APConfig {
   private String COGNITO_CALLBACK_URL;
   @Value("${cognito.jwks.uri:}")
   private String COGNITO_JWKS_URI;
+  @Value("${cognito.identity.provider:}")
+  private String COGNITO_IDENTITY_PROVIDER;
 
   public APConfig() {
   }
@@ -925,6 +927,14 @@ public class APConfig {
    */
   public String getCognitoDomain() {
     return this.cognitoSetting(COGNITO_DOMAIN);
+  }
+
+  /**
+   * @return the identity provider name to append to the authorize request so Cognito routes straight to the
+   *         corporate IdP instead of its own Hosted UI provider-selection screen, or empty when unset
+   */
+  public String getCognitoIdentityProvider() {
+    return this.cognitoSetting(COGNITO_IDENTITY_PROVIDER);
   }
 
   /**
