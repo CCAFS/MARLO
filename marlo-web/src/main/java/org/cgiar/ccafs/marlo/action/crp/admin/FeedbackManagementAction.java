@@ -116,6 +116,27 @@ public class FeedbackManagementAction extends BaseAction {
     return projectSections;
   }
 
+  /**
+   * The human-readable name of a project section, for the Section Name dropdown.
+   * <p>
+   * What is stored -- and what the runtime matches against the page's `#sectionNameToFeedback` marker -- is the
+   * `ProjectSectionsEnum` slug, which is a technical value an administrator does not necessarily recognise. The
+   * label comes from `feedbackManagement.section.&lt;slug&gt;`, so a program can rename it in its
+   * `custom/*.properties` the same way it renames the menu entries. When there is no key for the slug, the slug
+   * itself is returned, which keeps a section added to the enum from rendering an untranslated key.
+   *
+   * @param sectionName the section slug as declared by {@link ProjectSectionsEnum#getStatus()}
+   * @return the label to display, never null
+   */
+  public String getProjectSectionLabel(String sectionName) {
+    if (sectionName == null || sectionName.trim().isEmpty()) {
+      return "";
+    }
+
+    String slug = sectionName.trim();
+    return this.getText("feedbackManagement.section." + slug, slug);
+  }
+
   @Override
   public void prepare() throws Exception {
     ProjectSectionsEnum[] projectSectionsArray = ProjectSectionsEnum.values();
