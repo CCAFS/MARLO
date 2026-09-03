@@ -7442,16 +7442,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     // [start] 19/06/2024 cgamboa This fragment contributes to reducing the number of queries executed, executing two of
     // the conditions for all the deliverables, in a single moment (prepare from the dashboard)
-    try {
-      int result = 0;
-      int deliveableInteger = (int) (long) deliverableID;
-      result = this.getCompletedeliverableListbyPhase().get(deliveableInteger);
-      if (result != 0) {
+    if (deliverableID != null) {
+      // The prepared list only holds the completed deliverables, so a miss means this one is checked one by one.
+      Integer result = this.getCompletedeliverableListbyPhase().get((int) (long) deliverableID);
+      if (result != null && result != 0) {
         return true;
       }
-    } catch (Exception e) {
-      LOG.debug("The deliverable {} is not in the prepared completed list, so it is checked one by one",
-        deliverableID, e);
     }
 
     // [end] 19/06/2024 cgamboa
@@ -7510,26 +7506,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return validation result
    */
   public Boolean isDeliverableNewDashboard(Long deliverableID) {
-    try {
-      if (deliverableID == null) {
-        return false;
-      }
-      int result = 0;
-      int deliveableInteger = (int) (long) deliverableID;
-      result = this.getDeliverableListbyPhase().get(deliveableInteger);
-
-      if (result == 0) {
-        return false;
-      } else {
-        return true;
-      }
-
-
-    } catch (Exception e) {
-      LOG.debug("The deliverable {} is not in the prepared list, so it is reported as not new", deliverableID, e);
+    if (deliverableID == null) {
       return false;
     }
 
+    // The prepared list only holds the new deliverables, so a miss means this one is not new.
+    Integer result = this.getDeliverableListbyPhase().get((int) (long) deliverableID);
+
+    return result != null && result != 0;
   }
 
   public boolean isDraft() {
