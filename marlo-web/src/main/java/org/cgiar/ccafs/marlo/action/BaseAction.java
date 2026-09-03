@@ -1919,16 +1919,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the section is Active.
    */
   public boolean centerCapDevActive() {
-    try {
-      final boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CRP_CAP_DEV_ACTIVE).toString());
-      return sectionActive;
-    } catch (final Exception e) {
-      LOG.debug("{} is not in the session, so the center CapDev section is hidden",
-        APConstants.CRP_CAP_DEV_ACTIVE, e);
+    final String sectionActive = this.getSessionValue(APConstants.CRP_CAP_DEV_ACTIVE);
+    if (sectionActive == null) {
+      LOG.debug("{} is not in the session, so the center CapDev section is hidden", APConstants.CRP_CAP_DEV_ACTIVE);
       return false;
     }
 
+    return Boolean.parseBoolean(sectionActive);
   }
 
   /**
@@ -1939,16 +1936,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the section is Active.
    */
   public boolean centerImpactPathwayActive() {
-    try {
-      boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE).toString());
-      return sectionActive;
-    } catch (Exception e) {
+    String sectionActive = this.getSessionValue(APConstants.CENTER_IMPACT_PATHWAY_ACTIVE);
+    if (sectionActive == null) {
       LOG.debug("{} is not in the session, so the center Impact Pathway section is hidden",
-        APConstants.CENTER_IMPACT_PATHWAY_ACTIVE, e);
+        APConstants.CENTER_IMPACT_PATHWAY_ACTIVE);
       return false;
     }
 
+    return Boolean.parseBoolean(sectionActive);
   }
 
   /**
@@ -1959,16 +1954,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the section is Active.
    */
   public boolean centerMonitoringActive() {
-    try {
-      boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_ACTIVE).toString());
-      return sectionActive;
-    } catch (Exception e) {
+    String sectionActive = this.getSessionValue(APConstants.CENTER_MONITORING_ACTIVE);
+    if (sectionActive == null) {
       LOG.debug("{} is not in the session, so the center Monitoring section is hidden",
-        APConstants.CENTER_MONITORING_ACTIVE, e);
+        APConstants.CENTER_MONITORING_ACTIVE);
       return false;
     }
 
+    return Boolean.parseBoolean(sectionActive);
   }
 
   /**
@@ -1979,16 +1972,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the section is Active.
    */
   public boolean centerMonitoringOutcomeActive() {
-    try {
-      boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_MONITORING_OUTCOME_ACTIVE).toString());
-      return sectionActive;
-    } catch (Exception e) {
+    String sectionActive = this.getSessionValue(APConstants.CENTER_MONITORING_OUTCOME_ACTIVE);
+    if (sectionActive == null) {
       LOG.debug("{} is not in the session, so the center Monitoring Outcomes section is hidden",
-        APConstants.CENTER_MONITORING_OUTCOME_ACTIVE, e);
+        APConstants.CENTER_MONITORING_OUTCOME_ACTIVE);
       return false;
     }
 
+    return Boolean.parseBoolean(sectionActive);
   }
 
   /**
@@ -1999,16 +1990,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return true if the section is Active.
    */
   public boolean centerSummariesActive() {
-    try {
-      boolean sectionActive =
-        Boolean.parseBoolean(this.getSession().get(APConstants.CENTER_SUMMARIES_ACTIVE).toString());
-      return sectionActive;
-    } catch (Exception e) {
+    String sectionActive = this.getSessionValue(APConstants.CENTER_SUMMARIES_ACTIVE);
+    if (sectionActive == null) {
       LOG.debug("{} is not in the session, so the center Summaries section is hidden",
-        APConstants.CENTER_SUMMARIES_ACTIVE, e);
+        APConstants.CENTER_SUMMARIES_ACTIVE);
       return false;
     }
 
+    return Boolean.parseBoolean(sectionActive);
   }
 
   public HistoryDifference changedField(String field) {
@@ -2848,10 +2837,16 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return the actual year
    */
   public int getCenterYear() {
+    String centerYear = this.getSessionValue(APConstants.CENTER_YEAR);
+    if (centerYear == null) {
+      LOG.debug("{} is not in the session, so the center year is 0", APConstants.CENTER_YEAR);
+      return 0;
+    }
+
     try {
-      return Integer.parseInt(this.getSession().get(APConstants.CENTER_YEAR).toString());
-    } catch (Exception e) {
-      LOG.debug("{} is not in the session, so the center year is 0", APConstants.CENTER_YEAR, e);
+      return Integer.parseInt(centerYear);
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the center year is 0", APConstants.CENTER_YEAR, e);
       return 0;
     }
     // return Calendar.getInstance().get(Calendar.YEAR);
@@ -5761,6 +5756,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.session;
   }
 
+  /**
+   * Reads a value of the session as text. The keys read this way are custom parameters of the global unit, so they
+   * are simply absent on the pages served without a CRP.
+   *
+   * @param key the key of the session value.
+   * @return the value as text, or null when the session has no value under that key.
+   */
+  private String getSessionValue(String key) {
+    try {
+      Map<String, Object> currentSession = this.getSession();
+      Object value = currentSession == null ? null : currentSession.get(key);
+      return value == null ? null : value.toString();
+    } catch (Exception e) {
+      LOG.warn("Could not read {} from the session, so it is treated as absent", key, e);
+      return null;
+    }
+  }
+
   public List<Deliverable> getShfrmActionDeliverablesRelation(Long shfrmPrimaryActionId) {
 
     List<Deliverable> deliverablesRelated = new ArrayList<>();
@@ -6288,13 +6301,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasProgramnsRegions() {
-    try {
-      return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_HAS_REGIONS).toString());
-    } catch (Exception e) {
-      LOG.debug("{} is not in the session, so the CRP is reported as having no regions",
-        APConstants.CRP_HAS_REGIONS, e);
+    String hasRegions = this.getSessionValue(APConstants.CRP_HAS_REGIONS);
+    if (hasRegions == null) {
+      LOG.debug("{} is not in the session, so the CRP is reported as having no regions", APConstants.CRP_HAS_REGIONS);
       return false;
     }
+
+    return Boolean.parseBoolean(hasRegions);
   }
 
   public boolean hasProjectOutcomeRelationImpact(long phaseId, long projectId, long outcomeId) {
@@ -6324,14 +6337,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean hasSpecificities(String specificity) {
-    try {
-      boolean param = Boolean.parseBoolean(this.getSession().get(specificity).toString());
-      return param;
-    } catch (Exception e) {
-      LOG.debug("The specificity {} is not in the session, so it is reported as disabled", specificity, e);
+    String param = this.getSessionValue(specificity);
+    if (param == null) {
+      LOG.debug("The specificity {} is not in the session, so it is reported as disabled", specificity);
       return false;
     }
 
+    return Boolean.parseBoolean(param);
   }
 
   /**
@@ -8297,13 +8309,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isShfrmSpecificityActive() {
-    try {
-      return Boolean.parseBoolean(this.getSession().get(APConstants.SHFRM_CONTRIBUTION_ACTIVE).toString());
-    } catch (Exception e) {
+    String shfrmActive = this.getSessionValue(APConstants.SHFRM_CONTRIBUTION_ACTIVE);
+    if (shfrmActive == null) {
       LOG.debug("{} is not in the session, so the SHFRM contribution is hidden",
-        APConstants.SHFRM_CONTRIBUTION_ACTIVE, e);
+        APConstants.SHFRM_CONTRIBUTION_ACTIVE);
       return false;
     }
+
+    return Boolean.parseBoolean(shfrmActive);
   }
 
   public boolean isSubmit(long projectID) {
@@ -9207,14 +9220,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String specificityValue(String specificity) {
-    try {
-      String value = this.getSession().get(specificity).toString();
-      return value;
-    } catch (Exception e) {
-      LOG.debug("The specificity {} is not in the session, so no value is returned", specificity, e);
-      return null;
+    String value = this.getSessionValue(specificity);
+    if (value == null) {
+      LOG.debug("The specificity {} is not in the session, so no value is returned", specificity);
     }
 
+    return value;
   }
 
   public String submit() {
