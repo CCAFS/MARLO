@@ -71,12 +71,14 @@ public class ProjectHighligthManagerImpl implements ProjectHighligthManager {
   }
 
   @Override
+  @Transactional
   public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight) {
 
     return projectHighligthDAO.save(projectHighlight);
   }
 
   @Override
+  @Transactional
   public ProjectHighlight saveProjectHighligth(ProjectHighlight projectHighlight, String section,
     List<String> relationsName, Phase phase) {
     return projectHighligthDAO.save(projectHighlight, section, relationsName, phase);
