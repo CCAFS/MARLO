@@ -45,6 +45,14 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T00 — Discovery: enumerate `/api/**` Basic-auth consumers
+- **Status:** `[ ]` — **OPEN and explicitly UNRESOLVED as of 2026-09-02.** Not code: an inventory owned by
+  IBD, gated on **OQ-4** (*who calls `/api/**` with Basic auth, and are any of them CGIAR users?*). **It
+  cannot be closed from this checkout and must not be closed by assumption.** The risk is real and silent:
+  federated identities **cannot use Basic auth**, so if any consumer is a CGIAR user in a migrated Global
+  Unit, that surface stops authenticating the day the flag is enabled, with no error visible in the login
+  flow. A second consumer found during T11b belongs on this list: `ClarisaPublicAccesFilter:79` binds a
+  configured service account through the same realm — not a SEC-005 relay, but it breaks silently if that
+  account is ever `is_cgiar_user = 1` in a migrated unit. See `execution.md` §27.3.
 
 - **Depends on:** none — **runs first, in parallel with T01**
 - **Module:** investigation only, no code

@@ -3,7 +3,7 @@
 **Spec ID:** `CHG-COGNITO-AUTH-001`
 **Spec path:** `changes/migrate-ad-authentication-to-cognito/auth-flow`
 **Harness:** none — **direct single-agent implementation**, not the `/akili-execute` triad. See §1.2.
-**Working branch:** `staging-cognito-impl` · **Target merge:** `staging`
+**Working branch:** `staging-cognito-impl` — **the authoritative branch for this migration.** · **Target merge: NONE.** Superseded 2026-09-02: no promotion is authorised. The next step is a **dedicated migration environment**, where this branch is deployed and the federated path is validated for the first time. See §27.
 **Baseline commit:** `5ff42642e9`
 
 ---
@@ -64,9 +64,9 @@ gap explicitly and record it.
 |---|---|---|---|
 | **EB-1** | **`mvn checkstyle:check` cannot run in this checkout.** `marlo-parent/pom.xml:827-833` pins `maven-checkstyle-plugin:2.9.1` against `checkstyle:8.18`. Plugin 2.9.1 calls `Checker.setClassloader(ClassLoader)`, removed in Checkstyle 8.x, so the goal dies with `NoSuchMethodError` **before reading a single source file** | The root guides list Checkstyle as a **Required hard gate**. It is currently unrunnable as configured, repo-wide and independent of any spec | **Open.** Not fixed here: `marlo-parent/pom.xml` is child 2's file only for the AWS SDK and JOSE additions in T03, and a plugin re-pin is outside T01's scope. Worked around per below |
 | **EB-2** | `JAVA_HOME` on this machine points at `jdk1.8.0_202` while `java` on `PATH` is 17. Maven follows `JAVA_HOME`, so every `mvn` invocation compiled under Java 8 and failed with `invalid flag: --release` | A `mvn install -DskipTests` run can report success while compiling **nothing** ("Nothing to compile - all classes are up to date"), which is how the first baseline in this session came back falsely green | **Worked around.** Every command in §3 is prefixed `JAVA_HOME="/c/Program Files/Java/jdk-17"`. Any future session on this machine must do the same or its gates are worthless |
-| **EB-3** | **Checkstyle enforces nothing.** `configuration/marlo-checkstyle.xml:7` sets `severity=warning` for every module and `LineLength` (`:41-43`) does not override it, so `checkstyle:check` **exits 0 over real violations** — verified against a 149-character line | Every "Checkstyle: 0 violations" recorded in §3 for T01–T06 means only "the goal ran"; it is **not** evidence that hard rule 7 holds. Found by the T06 audit | **Open.** A `severity=error` flip is a shared-config change and would surface pre-existing violations across the repository; sized and decided on `staging`. Until then, line length is measured directly (`awk 'length>120'`), not via the plugin |
+| **EB-3** | **Checkstyle enforces nothing.** `configuration/marlo-checkstyle.xml:7` sets `severity=warning` for every module and `LineLength` (`:41-43`) does not override it, so `checkstyle:check` **exits 0 over real violations** — verified against a 149-character line | Every "Checkstyle: 0 violations" recorded in §3 for T01–T06 means only "the goal ran"; it is **not** evidence that hard rule 7 holds. Found by the T06 audit | **Open.** A `severity=error` flip is a shared-config change and would surface pre-existing violations across the repository; sized and decided separately from this migration (§27.4 Category B). Until then, line length is measured directly (`awk 'length>120'`), not via the plugin |
 | **EB-4** | **Incremental build state produces both false reds and false greens in this checkout.** Observed in one session: a `cannot find symbol` in a file nobody touched; a `.class` with *"Unresolved compilation problems"* baked in; an installed `marlo-utils` missing methods its source has; and a run reporting **`Tests run: 0`**. All cleared by targeted `rm -rf target/…`, none related to any change. Reported independently by the T08 implementer | **A test count from this repository is only trustworthy after a `clean`.** An intermediate green or red says nothing on its own | **Open.** Every count recorded from T08 onward is taken after `mvn clean -pl marlo-web`. Earlier counts in this log were not, and should be read as indicative |
-| **EB-5** | **`pkill` does not exist in this environment, and `scripts/run-marlo-java17.sh` depends on it.** The script's "stop any previous container" step fails silently, so a prior `cargo:run` keeps running, holds port 8080, and leaves `marlo-web/target/cargo/configurations/tomcat9x` populated. The next boot then dies on `Invalid configuration dir [...] must point to an empty directory` while still printing `BUILD SUCCESS` and `Press Ctrl-C to stop the container...` | **A boot can report success without ever starting a container**, and a `curl` against 8080 then answers from the *stale* one. Both readings of that state — "it built but does not serve", and "it serves" — are wrong | **Open**, worked around. Substitute: `Get-NetTCPConnection -LocalPort 8080` to find the PID, then `taskkill //PID <pid> //F`, then `rm -rf marlo-web/target/cargo`. Pending item for `staging`: make the script's kill step portable. **Sharpened 2026-09-02:** stopping the *launcher* does not stop the container either — the background shell running the script was killed and the Maven JVM kept listening on 8080 regardless. A live port 8080 is therefore never evidence that the boot you just ran succeeded; check the PID against the boot you intended |
+| **EB-5** | **`pkill` does not exist in this environment, and `scripts/run-marlo-java17.sh` depends on it.** The script's "stop any previous container" step fails silently, so a prior `cargo:run` keeps running, holds port 8080, and leaves `marlo-web/target/cargo/configurations/tomcat9x` populated. The next boot then dies on `Invalid configuration dir [...] must point to an empty directory` while still printing `BUILD SUCCESS` and `Press Ctrl-C to stop the container...` | **A boot can report success without ever starting a container**, and a `curl` against 8080 then answers from the *stale* one. Both readings of that state — "it built but does not serve", and "it serves" — are wrong | **Open**, worked around. Substitute: `Get-NetTCPConnection -LocalPort 8080` to find the PID, then `taskkill //PID <pid> //F`, then `rm -rf marlo-web/target/cargo`. Item for the migration environment (§27.4 Category B): make the script kill step portable. **Sharpened 2026-09-02:** stopping the *launcher* does not stop the container either — the background shell running the script was killed and the Maven JVM kept listening on 8080 regardless. A live port 8080 is therefore never evidence that the boot you just ran succeeded; check the PID against the boot you intended |
 
 **EB-1 workaround, and its limit.** Style was verified by invoking a *compatible* plugin against MARLO's own
 config, without editing any POM:
@@ -165,7 +165,7 @@ proof the seam T08 and T09 depend on is actually usable. It is labelled as such 
 
 The 44 figure is consistent with the kaizen entry's independent measurement of **39** passing tests before this
 task: 39 + 5 new = 44. It also re-confirms that root `CLAUDE.md`'s "3 JUnit 4 test files" claim is stale
-(kaizen **P7**, still pending for `staging`).
+(kaizen **P7** — recorded, not owned by this spec; §27.4 Category C).
 
 #### Not done, deliberately
 
@@ -1026,7 +1026,11 @@ only moment it can still be got right.
 
 ---
 
-## 5. Pending items for `staging`
+## 5. Pending items — **RECLASSIFIED 2026-09-02**
+> **This section was headed "Pending items for `staging`". That framing is superseded.** No promotion is
+> authorised. These items are carried forward to the **dedicated migration environment** (§27.4), where this
+> branch will be deployed and the federated path validated for the first time. Nothing below is a staging
+> task, and nothing below authorises a merge, a rebase, a cherry-pick, or a deployment.
 
 *(Supersedes the earlier §4 numbering; PS-1 and PS-2 are unchanged.)*
 
@@ -1037,7 +1041,7 @@ only moment it can still be got right.
 | PS-4 | Kaizen **P8** (the two `.gitignore` hunks) must be **committed separately** from T01/T02, referencing P8 | Audit finding 1; see §4.5 |
 | PS-3 | **`CRP_BI_MODULE_ACTIVE` is missing from `marlo-data`'s `APConstants`**, violating Hard rule 4, while its key has 3 live rows in the database. Found by the repaired verifier | Pre-existing and unrelated to this spec. Fixing it here would repeat exactly the scope error finding 1 identifies |
 | PS-5 | **`marlo-test.properties` does not declare `email.pmu` or `clarisa.wos.link2`**, which `APConfig` requires with no default, so an environment bootstrapped from the template per hard rule 12 fails Spring startup on them. Pinned as `KNOWN_TEMPLATE_GAPS` in `APConfigCognitoDefaultsTest` | Pre-existing; outside T03's scope. Two lines to fix, but in a file T03 already touches — deliberately not ridden along (audit finding 1) |
-| PS-6 | **`tasks.md` assigns T03 the `aws-serverless` skill, while root `CLAUDE.md`'s Skill Map lists it among skills that "do not apply" to MARLO** | `CLAUDE.md` is a shared file. The contradiction needs resolving once, on `staging`, not re-litigated per task |
+| PS-6 | **`tasks.md` assigns T03 the `aws-serverless` skill, while root `CLAUDE.md`'s Skill Map lists it among skills that "do not apply" to MARLO** | `CLAUDE.md` is a shared file. The contradiction needs resolving once, outside this migration, not re-litigated per task |
 | PS-7 | **T03's live boot verification** — start the app with no Cognito keys present and confirm it boots | Needs `scripts/run-marlo-java17.sh`, which deletes `target/` and rewrites `marlo-dev.properties`. Left for the user to authorise; see the T03 entry |
 | PS-9 | **`marlo-data` carries `jackson-annotations:2.9.5` against `jackson-core`/`jackson-databind` at `2.18.9`.** The old copy arrives transitively from `io.swagger:swagger-models:1.5.21`, and `jackson-annotations` is not managed in `marlo-parent` at all | Pre-existing; found while discharging PS-8 and unrelated to any task here |
 | PS-8 | **DISCHARGED for T05** — the tree was diffed and `nimbus-jose-jwt:9.48` proved to be a leaf: pure addition, no version changed anywhere. **Still binding on any future task that declares an AWS artifact**, since it is the BOM that manages a wide GA set, and T05 declared no AWS dependency at all | Audit finding 3 (§6.3) |
@@ -1960,7 +1964,7 @@ native SQL by string concatenation. Until now it was reached with a form field; 
 the value of a *token claim*, and "trusted because the token is signed" is the reasoning that fails the day
 the pool accepts an identity MARLO did not anticipate. The sink is **pre-existing and already reachable
 unauthenticated** through `validateUser.do`, so T07 does not create it — but T07 must not add a second path
-into it, and the fix is one parameterized query. Escalated from a `staging` pending item to a **decision the
+into it, and the fix is one parameterized query. Escalated from a deferred pending item to a **decision the
 user must take before T07 ships**.
 
 ### 18.3 OQ-8 — local logout only
@@ -2400,7 +2404,7 @@ so it does **not** repeat the defect T13 exists to fix, where `login.error.inval
 
 - **`login.js:508` selects `'#crp-' + acronym + "_"`** — a trailing underscore matching **zero** elements, so
   the multi-unit auto-select never fires except for the AICCRA special case. Pre-existing, deliberately not
-  fixed inside T12, and now recorded as a pending item for `staging`.
+  fixed inside T12, and carried to the migration environment (§27.4 Category B).
 - **`.active` is never stripped on re-lookup.** `showEmailStep()` hides every card but leaves `.active` set,
   and the `data-*` attributes of a previous lookup are never cleared. T12 works around it with
   `:not(.hidden)`; the underlying staleness remains.
@@ -2759,3 +2763,98 @@ Verify identity before acting on a PID.
 | Restoration | byte-identical, triple-verified |
 | Lines over 120 | 0 |
 | Working tree | only the eight expected files |
+
+---
+
+## 27. Implementation-phase closure — 2026-09-02
+
+**This section closes the implementation phase only.** Nothing in this spec has been moved, merged,
+promoted, or deployed, and nothing is authorised to be.
+
+### 27.1 Status
+
+| Dimension | Status |
+|---|---|
+| **Code implementation** | **COMPLETE** |
+| **Authoritative branch** | **`staging-cognito-impl`** — the branch holding the migration changes |
+| **T01–T14 + T11b** | **CLOSED** (15 tasks) |
+| **T00 / OQ-4** | **OPEN and explicitly UNRESOLVED** |
+| **Environment validation** | **PENDING** — awaits creation of the dedicated migration environment |
+| **Staging promotion** | **NOT STARTED and NOT AUTHORISED** |
+| **Production readiness** | **NOT CLAIMED** |
+
+### 27.2 What "code implementation complete" does and does not mean
+
+**It means:** every task in the approved task list has shipped, been independently audited, and had its
+mutation clause measured. 152 tests pass on a clean reactor.
+
+**It does not mean the migration works.** No part of the federated path has ever executed:
+
+- **No Cognito credential exists in this environment.** Every boot in this log ran with **0 `cognito.*`
+  keys** — deliberately, because T03 exists to prove the application starts without them.
+- **No token has ever been exchanged**, no authorization code redeemed, no JWKS fetched from a real endpoint.
+- **No real IdP has authenticated anybody.** OQ-3 was closed by reusing an existing CGIAR-integrated Cognito
+  setup that **MARLO does not own** and has never contacted.
+- Everything about the federated path is evidenced by unit tests, hand-rolled doubles, code reading, and one
+  local-path browser walkthrough. That is the strongest evidence obtainable **here**. It is not evidence that
+  the migration works **there**.
+
+### 27.3 T00 / OQ-4 — open, and not closable from here
+
+T00 is an inventory: **who calls `/api/**` with Basic auth, and are any of them CGIAR users?** It is owned by
+IBD and cannot be answered from this checkout.
+
+**The risk it carries is real and silent.** Federated identities **cannot use Basic auth**. If any `/api/**`
+consumer turns out to be a CGIAR user in a migrated Global Unit, that surface stops authenticating on the day
+the flag is enabled — with no error visible to anyone watching the login flow. Nothing in this spec detects
+that, and no amount of work on this branch can.
+
+A second consumer was found during T11b and belongs on T00's list: `ClarisaPublicAccesFilter:79` binds a
+**configured service account** through the same realm. It is not a SEC-005 relay, but if that account is ever
+`is_cgiar_user = 1` in a unit that gets migrated, the Swagger public-access path breaks silently.
+
+### 27.4 Items to validate in the dedicated migration environment
+
+**Reclassification, 2026-09-02.** Several items in this log were recorded as "pending for `staging`". That
+framing is **superseded**: the next step is a **dedicated migration environment**, and these are the things
+that environment exists to validate. **None of them is a staging task, and none authorises a promotion.**
+
+**Category A — cannot be validated anywhere else. These are the reason the environment is being built.**
+
+| Item | What must be observed |
+|---|---|
+| The **entire federated path** | A real sign-in end to end: authorize redirect, IdP authentication, code exchange, JWKS fetch, token validation, gates 1–4, session rotation, `finishLogin` |
+| **`cognitoUnloggedStack` reachability** | §17.5 and §20 record this as *argued from the interceptor sources, not observed*. `cognitoCallback.do` has only ever been hit with no `state`. A real callback is the first time the stack is exercised |
+| **The `SessionMap` fix (T09's CRITICAL)** | Evidenced by a regression test and code reading. A real successful login is the first time the production `SessionMap` participates |
+| **`agree_terms` written on the Cognito path** | §21 validated `saveLastLogin` on the **local** path only, and said so explicitly. The Cognito write has never run |
+| **`users.username` set from the CGIAR claim** (FN-006) | Same: the mechanism is proven, this specific write is not |
+| **SEC-006 as rendered to a browser** | §20 records that `login.ftl` has no `[@s.fielderror]`, so `loginMessage` is rendered by **nothing** today. SEC-006 holds trivially; FN-005's *"the user is shown an i18n message"* is **not met** and needs a real refusal on screen |
+| **OQ-9's `email` claim in a real token** | The join key was decided from CGIAR's answer, never seen in an actual ID token |
+| **Clock skew, `exp`, real JWKS rotation** | R-D7's leeway has only met synthetic tokens |
+
+**Category B — environment behaviours discovered here that the migration environment must account for.**
+
+| Item | Why it matters there |
+|---|---|
+| **Enabling the flag by SQL or migration does not take effect for up to an hour** (§24.3) | The override lookup is a cacheable query with a 3600s TTL and Hibernate cannot see out-of-band writes. **T02 seeds through Flyway, which is exactly that.** An operator enabling the first unit will see nothing happen and may conclude the feature is broken. Either restart after enabling, or write through `saveCustomParameter` |
+| **Cache-busting tokens must be bumped on every asset change** (§24.2) | Fixed for T12's assets. The class of defect is repo-wide: a returning user silently keeps the old script |
+| **`login.js:508`'s trailing-underscore selector** | Multi-unit auto-select never fires except for AICCRA. Pre-existing, deliberately not fixed inside T12 |
+| **`.active` is never stripped on re-lookup** | Worked around with `:not(.hidden)`; the underlying staleness remains |
+| **PS-23 — `crpUsers` filters `cp.login=1`** | A migrated CGIAR account whose membership rows are all filtered out relays to AD. Not attacker-controllable; now present on **two** endpoints |
+| **PS-17 — `getUserByUsername` concatenates into HQL** | No new capability (the realm reaches the same sink), but it is on an authentication path |
+| **EB-3 — Checkstyle enforces nothing** (`severity=warning` repo-wide) | A `severity=error` flip is a shared-config change that would surface pre-existing violations across the repository. **Sized and decided separately from this migration** |
+| **EB-5 — `pkill` absent; the run script's kill step is a silent no-op** | Makes the script's own cleanup unreliable on Windows. A live port 8080 never proves the boot you just ran succeeded |
+| **Reactor and `.m2` staleness** (§26.5) | `install` then `test` as separate invocations resolves from `.m2`; a single `-am` invocation resolves from the reactor. Two of seven measurement attempts died on this |
+
+**Category C — recorded, not owned by this spec.**
+
+Kaizen **P7** and the shared-file items this branch deliberately did not touch, per `CLAUDE.md`'s
+shared-file write discipline. They remain pending and are **not** part of the migration environment's scope.
+
+### 27.5 What is explicitly NOT done
+
+- **No merge, no rebase, no cherry-pick.** `staging-cognito-impl` has not been moved onto anything.
+- **No staging deployment**, and no staging-related status has been changed anywhere.
+- **No promotion is proposed.** The next decision point is the user's, after the dedicated migration
+  environment is built, this branch is deployed there, and the Category A validations above are executed.
+- **Production readiness is not claimed** and no statement in this log should be read as claiming it.
