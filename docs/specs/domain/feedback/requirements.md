@@ -4,7 +4,7 @@
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
 **Reviewers:** PMU lead, QA lead, Tech lead
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-09-03
 **Related PRD sections:** docs/prd.md — quality assurance / review workflows
 **Related System Design sections:** docs/system-design/design.md — project section layout, component inventory
 **Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3 (data model), §5 (save pipeline), §security model
@@ -34,13 +34,19 @@ need to respond to each observation individually. Free-text section comments wer
 be counted, tracked, or reported per field, and there was no record of whether a project team agreed,
 disagreed, or needed clarification.
 
-The operational pain today is on the configuration side. An administrator opening **Feedback Fields
-Management** sees five text inputs labelled Section Name, Section Description, Field Name, Field Description,
+The operational pain is on the configuration side. As delivered, an administrator opening **Feedback Fields
+Management** saw five text inputs labelled Section Name, Section Description, Field Name, Field Description,
 and Parent Field Description, with no help text. Four of the five are technical identifiers that must match
 strings living in FreeMarker templates and a Java enum. A wrong value produces **no error at any layer** —
-the comment icon simply never renders. This makes the screen effectively unusable without reading the source.
-The same is true of **Feedback Permissions Management**, where a `NULL` Cluster Type means "all clusters" in
-one code path and "cluster-agnostic only" in another.
+the comment icon simply never renders. This made the screen effectively unusable without reading the source.
+
+Partly remediated since: FN-013 help text now labels each control as a human label or a technical identifier,
+and Section Name is a dropdown of `ProjectSectionsEnum` values showing the section's real name with the slug in
+parentheses, so it can neither be mistyped nor read as an opaque code. The remaining gap on this screen is the
+absence of server-side validation (NF-006, FN-022): the four free-text identifiers still accept any string, and
+an empty section still persists silently. **Feedback Permissions Management** has had neither treatment — no
+help text, and a `NULL` Cluster Type still means "all clusters" in one code path and "cluster-agnostic only" in
+another.
 
 ## 3. In-Scope Requirements
 
@@ -51,6 +57,10 @@ one code path and "cluster-agnostic only" in another.
   as an accordion of editable blocks.
 - **DOMAIN-FEEDBACK-001-FN-002** — `sectionName` MUST hold a section slug that is simultaneously (a) a value of
   `ProjectSectionsEnum.getStatus()` and (b) the value of the target page's `#sectionNameToFeedback` hidden input.
+  It MUST be offered as a dropdown of those slugs, and each option MUST read `<label> (<slug>)`, the label coming
+  from the i18n key `feedbackManagement.section.<slug>` with the slug itself as fallback. The label is
+  presentational: the option `value`, and therefore what is posted and persisted, MUST remain the bare slug.
+  A stored slug outside the enum MUST keep its own option so that saving the row does not discard it.
 - **DOMAIN-FEEDBACK-001-FN-003** — `sectionDescription` MUST hold the human-readable section name used in
   reports and in the admin block title. It has no runtime behaviour.
 - **DOMAIN-FEEDBACK-001-FN-004** — `fieldName` MUST hold the human-readable field label. It is served to the
@@ -329,6 +339,38 @@ one code path and "cluster-agnostic only" in another.
    original intent.
 
 ## 9. Decision Log
+
+- 2026-09-03 — Delete `ProjectSectionsEnum.DELIVERABLESLIST("deliverablesList")` rather than label it in the
+  dropdown. It is an unreferenced duplicate of `DELIVERABLES("deliverableList")`: no Struts route, no
+  `#sectionNameToFeedback`, no reference to the constant, no string literal, no OGNL use in a view and no test.
+  A field configured against it could never render a comment icon, so offering it was a trap with no upside, and
+  labelling it kept the trap while adding a permanent explanatory string. Verified safe by compiling all three
+  modules from source before and after (3452 files, 0 errors both ways) and diffing the bytecode: exactly one
+  class file changes, `ProjectSectionsEnum.class`. Enum switches are immune because javac sizes the synthetic
+  `$SwitchMap` from `values().length` at runtime and fills it under `catch (NoSuchFieldError)`, so even a
+  partial jar swap cannot shift ordinals. The enum is not persisted — no `@Enumerated`, no HBM mapping, lookup
+  is by the `status` string — so no migration is involved. Data check: 0 rows in
+  `feedback_qa_commentable_fields`, `section_statuses` and every text column of the feedback tables, across the
+  four local databases, plus 0 orphan comments. **Confirmed against production on 2026-09-03**: 0 rows in
+  `feedback_qa_commentable_fields` and 0 in `section_statuses`, so unlike the 2026-08-25 measurements this one
+  carries no development-database caveat. Dropped the three now-dead
+  `feedbackManagement.section.deliverablesList` keys with it. Residual: the *center*
+  `ValidateProjectSectionAction` switches on `getValue(...)` without a null check (its second switch, outside
+  the `validSection` guard), so `deliverablesList` joins the set of slugs that would NPE there — unreachable,
+  since that action's allowlist is `projectDescription` / `projectPartners` / `deliverableList` and no Struts
+  action carries the removed name. `ProjectSectionStatusEnum` holds the same dead duplicate; left alone,
+  it has more consumers and deserves its own check.
+
+- 2026-09-03 — Make the Section Name dropdown legible by rendering `<label> (<slug>)` instead of the bare slug,
+  with the label in a new `feedbackManagement.section.<slug>` i18n key per `ProjectSectionsEnum` value. Chose a
+  label resolved through `getText(key, slug)` over hardcoding a `Map` in the action or adding a `label` field to
+  the enum: the enum lives in `marlo-data` and is shared with validators that have no `TextProvider`, and the
+  i18n route is what lets a tenant rename a section in `custom/*.properties` exactly as it renames menu entries.
+  Kept the slug visible in parentheses rather than hiding it — it is the value administrators must match against
+  a page's `#sectionNameToFeedback`, and the help text (FN-013) tells them so. Only the option text changed;
+  `value` is still the bare slug, so `feedback_qa_commentable_fields.section_name` is untouched and no migration
+  is involved. Shipped AICCRA overrides in `custom/aicrra.properties` and `custom/aiccra3.properties` in the same
+  change, since the module is AICCRA-only in practice and the tenant renames Project → Cluster throughout.
 
 - 2026-08-26 — Close OQ-006 by aligning `safeguard.ftl` with the enum (`safeguards`), not by adding a
   `SAFEGUARD("safeguard")` constant or migrating data. The Struts route is `{crp}/safeguards`, the enum is

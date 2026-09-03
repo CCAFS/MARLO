@@ -3,7 +3,7 @@
 **Spec ID:** DOMAIN-FEEDBACK-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-09-03
 **Implements design:** docs/specs/domain/feedback/design.md
 **Branching:** feature branch from `staging`, named `feedback-module-hardening` (or `<TICKET-ID>-<Description>` once ticketed)
 **Target merge:** `staging` (then promoted to `main` per release process)
@@ -84,18 +84,21 @@
 
 ### DOMAIN-FEEDBACK-001-T09 — Add administrator help text to both screens (FN-013)
 
+**Partly shipped.** Feedback Fields Management is done: `help=` / `[@customForm.helpLabel]` on all five
+controls, the `feedbackManagement.*.help` keys, and the Section Name dropdown now reading `<label> (<slug>)`
+off the `feedbackManagement.section.<slug>` keys (FN-002). What remains is the permissions screen.
+
 - **Module:** marlo-web
 - **Files touched:**
-  - `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` — `help=` on all five controls
   - `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` — `help=` on all four controls
-  - `resources/global.properties` — new `feedbackManagement.*.help` and `feedbackPermissions.*.help` keys
+  - `resources/global.properties` — new `feedbackPermissions.*.help` keys
 - **Constitutional checks:** all strings i18n-keyed (constitutional rule 8); English only; also add the keys to
   `custom/*.properties` only where a tenant needs an override.
 - **Acceptance:** each help text states whether the value is a human label or a technical identifier and what it
-  must match — in particular that **Field Description** is the form control's `name` attribute and
-  **Field Name** is the label shown in the popup.
-- **Verification:** an administrator who has not read this spec configures one new commentable field correctly
-  on the first attempt.
+  must match. On the permissions screen the one that matters is **Cluster Type**: blank means the grant applies
+  to every cluster type, and `canTrackComments()` only ever matches blank rows.
+- **Verification:** an administrator who has not read this spec configures one new grant correctly on the first
+  attempt.
 
 ### DOMAIN-FEEDBACK-001-T12 — Harden the save on Feedback Fields Management (FN-010)
 
