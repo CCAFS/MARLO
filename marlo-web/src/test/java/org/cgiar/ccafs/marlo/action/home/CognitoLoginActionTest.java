@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.lang.reflect.Field;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -385,6 +386,144 @@ public class CognitoLoginActionTest {
   }
 
   /**
+   * CHG-COGNITO-AUTH-001-T15, test 1. When {@code cognito.identity.provider} is configured, the authorize URL
+   * must carry {@code identity_provider} so Cognito routes straight to the corporate IdP instead of its own
+   * Hosted UI provider-selection screen (execution.md {@code 28.4}).
+   */
+  @Test
+  public void identityProviderParameterIsIncludedWhenConfigured() throws Exception {
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(new ConfiguredApConfigWithProvider("CGIAR-AzureAD"));
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_EMAIL);
+    action.setAgree(Boolean.TRUE);
+
+    String result = action.authorize(null);
+
+    assertEquals(Action.SUCCESS, result);
+    Map<String, String> params = queryParams(action.getAuthorizeUrl());
+    assertEquals("CGIAR-AzureAD", params.get("identity_provider"));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T15, test 2. <b>Not evidence when asserted with {@code CGIAR-AzureAD}</b> -- that
+   * string url-encodes to itself, so a test using it would pass whether or not {@code urlEncode(...)} is
+   * actually called. The provider name here carries a space, which {@link java.net.URLEncoder} turns into
+   * {@code +}; the assertion is made against the RAW, un-decoded URL for exactly that reason -- routing the
+   * raw value through this suite's {@code queryParams} decode helper would silently undo a dropped encoding
+   * step and let the test pass regardless (a decoded literal space is indistinguishable from a decoded
+   * {@code +}-turned-back-into-space).
+   */
+  @Test
+  public void identityProviderValueIsUrlEncoded() {
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(new ConfiguredApConfigWithProvider("CGIAR AD"));
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_EMAIL);
+    action.setAgree(Boolean.TRUE);
+
+    String result = action.authorize(null);
+
+    assertEquals(Action.SUCCESS, result);
+    String url = action.getAuthorizeUrl();
+    assertTrue("the space must be encoded (URLEncoder turns it into '+'): " + url,
+      url.contains("&identity_provider=CGIAR+AD"));
+    assertFalse("the raw, un-encoded provider name must never appear in the redirect: " + url,
+      url.contains("&identity_provider=CGIAR AD"));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T15, test 3. An absent {@code cognito.identity.provider} (the state of every
+   * environment today -- design.md 9.3's phase-0 default) must omit the parameter entirely, not append it
+   * with an empty value. {@code identity_provider=} with no value is not the same as an absent parameter, and
+   * Cognito may treat it as an unknown provider rather than falling back to its own selection screen.
+   */
+  @Test
+  public void identityProviderParameterIsOmittedWhenPropertyIsEmpty() {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = action.authorize(null);
+
+    assertEquals(Action.SUCCESS, result);
+    String url = action.getAuthorizeUrl();
+    assertFalse("no identity_provider parameter -- present or empty -- may appear when unconfigured: " + url,
+      url.contains("identity_provider"));
+  }
+
+  /**
+   * Advisory from the T15 audit. {@link ConfiguredApConfigWithProvider} returns its constructor argument
+   * verbatim, bypassing {@code APConfig.cognitoSetting(...)} entirely -- so nothing proved that a
+   * whitespace-only configured value (a plausible operator typo, e.g. {@code cognito.identity.provider=   })
+   * trims to empty and is therefore treated as unset rather than appended as a blank-looking provider name.
+   * <p>
+   * This drives the field Spring's {@code @Value} would populate via reflection into a REAL {@link APConfig},
+   * so the actual production trimming path in {@code cognitoSetting(...)} is what gets exercised, not a test
+   * double standing in for it.
+   */
+  @Test
+  public void aWhitespaceOnlyConfiguredValueTrimsToEmptyAndIsOmitted() throws Exception {
+    ConfiguredApConfig config = new ConfiguredApConfig();
+    Field identityProviderField = APConfig.class.getDeclaredField("COGNITO_IDENTITY_PROVIDER");
+    identityProviderField.setAccessible(true);
+    identityProviderField.set(config, "   ");
+
+    assertEquals("cognitoSetting(...) must trim a whitespace-only value to empty, matching every other "
+      + "Cognito getter's contract", "", config.getCognitoIdentityProvider());
+
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(config);
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_EMAIL);
+    action.setAgree(Boolean.TRUE);
+
+    String result = action.authorize(null);
+
+    assertEquals(Action.SUCCESS, result);
+    assertFalse("a whitespace-only configured value must be treated as unset, not appended: "
+      + action.getAuthorizeUrl(), action.getAuthorizeUrl().contains("identity_provider"));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T15, test 4. Appending {@code identity_provider} must not disturb any of the eight
+   * parameters the live authorize redirect captured in execution.md {@code 28.4} already carries.
+   * <p>
+   * <b>This proves presence, exact value, and exact count -- not order.</b> {@code queryParams} parses into a
+   * {@link HashMap}, so any permutation of the same nine parameters yields an identical map and an identical
+   * pass here; a genuine drop is still caught by the {@code params.size() == 9} assertion below. That is a
+   * deliberate scope, not an oversight: OAuth 2.0 authorization requests do not carry ordering semantics, and
+   * pinning one here would assert a constraint the protocol does not impose (audit finding 2, corrected after
+   * the T15 review pass).
+   */
+  @Test
+  public void everyOtherAuthorizeParameterIsUnchangedByIdentityProvider() throws Exception {
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(new ConfiguredApConfigWithProvider("CGIAR-AzureAD"));
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_EMAIL);
+    action.setAgree(Boolean.TRUE);
+
+    String result = action.authorize("https://marlo.example.org/testcrp/projectList.do");
+
+    assertEquals(Action.SUCCESS, result);
+    String url = action.getAuthorizeUrl();
+    assertTrue("must still redirect to the configured Cognito domain's authorize endpoint: " + url,
+      url.startsWith("https://test-pool.auth.us-east-1.amazoncognito.com/oauth2/authorize?"));
+
+    Map<String, String> params = queryParams(url);
+    assertEquals("code", params.get("response_type"));
+    assertEquals("test-client-id", params.get("client_id"));
+    assertEquals("https://marlo.example.org/cognitoCallback.do", params.get("redirect_uri"));
+    assertEquals("openid email", params.get("scope"));
+    assertTrue(params.containsKey("state"));
+    assertTrue(params.containsKey("nonce"));
+    assertTrue(params.containsKey("code_challenge"));
+    assertEquals("S256", params.get("code_challenge_method"));
+    assertEquals("CGIAR-AzureAD", params.get("identity_provider"));
+    assertEquals("exactly nine parameters must be present -- the eight baseline plus identity_provider", 9,
+      params.size());
+  }
+
+  /**
    * Not one of T08's five named tests, but directly required by the launcher's own instructions: an
    * unconfigured environment (every {@link APConfig} Cognito getter returns {@code ""}, never {@code null} --
    * design.md 9.3) must fail closed rather than build a broken redirect.
@@ -630,7 +769,7 @@ public class CognitoLoginActionTest {
   }
 
   /** A fully-configured Cognito environment -- the opposite of design.md 9.3's phase-0 default. */
-  private static final class ConfiguredApConfig extends APConfig {
+  private static class ConfiguredApConfig extends APConfig {
 
     @Override
     public String getCognitoCallbackUrl() {
@@ -645,6 +784,23 @@ public class CognitoLoginActionTest {
     @Override
     public String getCognitoDomain() {
       return "test-pool.auth.us-east-1.amazoncognito.com";
+    }
+  }
+
+  /**
+   * {@link ConfiguredApConfig} with {@code cognito.identity.provider} also set -- CHG-COGNITO-AUTH-001-T15.
+   */
+  private static final class ConfiguredApConfigWithProvider extends ConfiguredApConfig {
+
+    private final String identityProvider;
+
+    ConfiguredApConfigWithProvider(String identityProvider) {
+      this.identityProvider = identityProvider;
+    }
+
+    @Override
+    public String getCognitoIdentityProvider() {
+      return this.identityProvider;
     }
   }
 }

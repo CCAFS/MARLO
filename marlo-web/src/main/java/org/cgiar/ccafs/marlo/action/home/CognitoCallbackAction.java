@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.security.CognitoAssertion;
 import org.cgiar.ccafs.marlo.security.CognitoAuthenticationToken;
 import org.cgiar.ccafs.marlo.security.CognitoIdentityMapper;
 import org.cgiar.ccafs.marlo.security.CognitoTokenValidator;
+import org.cgiar.ccafs.marlo.security.ShiroRequestSessionCacheResetter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
@@ -502,6 +503,17 @@ public class CognitoCallbackAction extends LoginAction {
       LOG.warn("Cognito callback refused: the realm rejected the resolved identity ({})",
         e.getClass().getSimpleName());
       return this.refuse(GENERIC_FAILURE_KEY);
+    }
+
+    // CHG-COGNITO-AUTH-001-T16 (V-2): drop the request-level cache of the OLD, now-stopped session wrapper
+    // BEFORE anything reads the request's session again. Must run strictly after Subject.login() has
+    // established the new session -- see ShiroRequestSessionCacheResetter's javadoc for why this ordering
+    // is the fix, not tidiness.
+    // ActionContext.getContext() is checked FIRST -- ServletActionContext.getRequest() derefs it
+    // unconditionally in this Struts version and NPEs when none is bound (see freshSessionMap()'s javadoc,
+    // and this class's own noRequestBoundAtAllDoesNotThrow test).
+    if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
+      ShiroRequestSessionCacheResetter.clearCachedSession(ServletActionContext.getRequest());
     }
 
     // CRITICAL FIX (review Issue 1): re-point this action's session view -- and ActionContext's -- at the

@@ -298,6 +298,12 @@ public class CognitoLoginAction extends BaseAction {
       .append(this.urlEncode(OAUTH_SCOPE)).append("&state=").append(this.urlEncode(state)).append("&nonce=")
       .append(this.urlEncode(nonce)).append("&code_challenge=").append(this.urlEncode(codeChallenge))
       .append("&code_challenge_method=S256");
+    // CHG-COGNITO-AUTH-001-T15: omitted entirely when unset, so Cognito falls back to its own Hosted UI
+    // provider-selection screen -- an empty-valued parameter is not the same as an absent one.
+    String identityProvider = this.config.getCognitoIdentityProvider();
+    if (!identityProvider.isEmpty()) {
+      url.append("&identity_provider=").append(this.urlEncode(identityProvider));
+    }
     return url.toString();
   }
 

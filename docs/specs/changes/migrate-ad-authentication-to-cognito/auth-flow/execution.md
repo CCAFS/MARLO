@@ -2986,3 +2986,141 @@ Application running on `http://localhost:8080/marlo-web/login.do`, test data in 
 **no code changed**. The next validations — code exchange, JWKS fetch, token validation, identity mapping,
 membership gates, session establishment — begin with the user own browser login and stop at the first
 reproducible failure.
+
+---
+
+## 29. V-2 — the stale request-level Shiro session, and T16 — 2026-09-03
+
+### 29.1 The failure, in production, on the first real corporate login
+
+Corporate authentication **succeeded**. Cognito returned to `cognitoCallback.do?code&state`. The action
+**completed** — `Cognito sign-in succeeded for Global Unit AICCRA` at `15:17:38.718` — and **33 ms later** the
+response died with **HTTP 500**:
+
+```
+UnknownSessionException: There is no session with id [78a503ec-eebe-46db-ac00-5e69b335633e]
+  at ShiroHttpSession.setAttribute            (shiro-web 1.13.0:210)
+  at DefaultCspSettings.addCspHeadersWithSession (struts2-core 6.8.0:84)
+```
+
+### 29.2 Root cause, read from bytecode rather than inferred
+
+`ShiroHttpServletRequest` caches its `ShiroHttpSession` in a **`protected HttpSession session`** field. The
+decompiled `getSession(boolean)` is decisive:
+
+```
+47: Subject.getSession(false)   -> existing
+62: getfield session
+65: ifnull 72                    -> field null -> build a new wrapper
+68: iload_3 / 69: ifne 136       -> existing -> RETURN THE CACHED ONE
+```
+
+It returns the cached wrapper whenever the field is non-null **and the Subject reports that *some* session
+exists**. The test is *"does a session exist"*, **never** *"is the cached wrapper's session the current
+one"*. So after `session.stop()` destroys the pre-auth session and `Subject.login()` creates a new one, the
+Subject does hold a session, the check passes, and **the dead wrapper is handed back**.
+
+### 29.3 Why T09's fix could not reach it, and why no test caught it
+
+`freshSessionMap()` does `new SessionMap(request)` — re-deriving from **the same request whose cache is
+stale**. T09 changed the container, not the contents. And `DefaultCspSettings` never reads `ActionContext`
+anyway: it **captures the request reference into a `PreResultListener` lambda before the action runs**, so
+nothing the action rebinds afterwards can reach it.
+
+**No test caught it because `InvalidatedSessionMap` is a hand-written double.** It simulates a stopped session
+and never exercises the real `ShiroHttpServletRequest` caching that *is* the mechanism. §27.4 Category A
+predicted exactly this: *"a real successful login is the first time the production `SessionMap`
+participates."* Two audits passed T09; the first real login did not.
+
+### 29.4 No supported alternative exists — demonstrated before reflection was approved
+
+The user declined to approve reflection until this was shown rather than asserted. Each was checked against
+the actual jars:
+
+| Candidate | Result |
+|---|---|
+| `Subject` | Only `login`, `logout`, `getSession(boolean)`. **No renewal API** |
+| `WebUtils` | Path and request helpers. **Nothing touches the cached wrapper** |
+| `DefaultWebSecurityManager` | No public hook |
+| **`subject.logout()`** instead of `stop()` | `removeRequestIdentity` only sets the `IDENTITY_REMOVED_KEY` **request attribute** — and `getSession(boolean)` has **zero references to it** |
+| `HttpServletRequest.changeSessionId()` (Servlet 3.1) | Delegates to the *container* session; MARLO uses Shiro **native** sessions |
+| Rotating at a different lifecycle point | The cache is populated on the **first** `getSession()`, which happens at step ① reading the pending state — before rotation |
+
+The field is `protected`, with no setter, and no public API clears or invalidates it.
+
+**A supported alternative did exist and was rejected on merit:** removing the CSP interceptor from the
+callback's stack. It fixes the **first observed consumer** and leaves the others — and §29.6 shows there is at
+least one more. It would also drop a security header. The user rejected it for exactly those reasons.
+
+### 29.5 The fix, and the conditions that make it a managed workaround rather than a hack
+
+`ShiroRequestSessionCacheResetter` — one isolated helper, called **after** `Subject.login()` and before
+`freshSessionMap()`. It walks the `ServletRequestWrapper` chain to the real `ShiroHttpServletRequest` and
+nulls the cached field, so Shiro rebuilds the wrapper through **its own** construction path against the
+session `Subject.login()` just created.
+
+`session.stop()` is untouched. **SEC-003 rotation is preserved.** CSP is untouched — verified: zero changes to
+any interceptor stack.
+
+The conditions the user set, and what discharges each:
+
+| Condition | Discharged by |
+|---|---|
+| Fail soft, never worse | `catch (ReflectiveOperationException \| RuntimeException e)` + a warning |
+| **A future Shiro upgrade cannot silently disable it** | A compatibility test asserting the field's **declaring class, name, type, and `protected` modifier** — a retype, a move to a superclass, or a widening each redden it |
+| Real-mechanism tests, no doubles for the class under test | An actual `ShiroHttpServletRequest` in every relevant test |
+| Reflection documented and tied to Shiro 1.13.0 | The helper javadoc enumerates all five rejected alternatives |
+
+### 29.6 Two Leader errors this task exposed, both corrected
+
+**The `Fails when` clause was wrong.** It asserted that moving the helper call **before** `Subject.login()`
+would redden test 2 — *"the ordering is the fix; prove it."* The implementer applied exactly that mutation,
+ran the suite **twice**, got green both times, and **investigated instead of accepting a pass that
+contradicted the premise**. `Subject.login()`'s session creation runs through `SecurityManager` machinery
+independent of the request's cached field, and nothing between the two call sites reads `request.getSession()`.
+The Leader asserted an ordering guarantee Shiro does not create. Corrected in `tasks.md`, with the caveat the
+audit added: the empirical half was obtained in a harness using `DefaultSecurityManager`, so the conclusion
+**survives on analysis, not on the green run**, and must not be cited as empirically proved.
+
+**The mutation that actually proves the fix reveals a second consumer.** Removing the helper entirely reddens
+test 4 with the exact production exception — thrown through `SessionMap.put` → **`LoginAction.finishLogin`**,
+*not* the CSP interceptor. The stale wrapper has **at least two** consumers.
+
+The audit strengthened this beyond the harness: `struts.xml:540-546` declares a global
+`<exception-mapping exception="java.lang.Exception">`, so an `IllegalStateException` from `finishLogin` is
+mapped to a result, after which `DefaultActionInvocation` runs its `PreResultListener`s — and CSP then throws
+on the same stale wrapper, **masking the first failure**. That reconciles the live trace (a CSP frame, no
+`finishLogin` frame) with the harness, and is the decisive argument against removing the CSP interceptor:
+doing so would have left `finishLogin` failing into a generic 500 with **no frame pointing at the cause**.
+
+### 29.7 One audit finding was FALSE, and the Leader refuted it
+
+F5 claimed the helper javadoc misdescribed `getSession(boolean)` — specifically the clause *"and the current
+Subject reports that some session currently exists"*. The auditor stated plainly that it **could not
+decompile the jar** and was reasoning from published source.
+
+**The bytecode in §29.2 shows the javadoc is exactly right.** Offsets 47-69 evaluate `existing` from
+`Subject.getSession(false)` and consult it before returning the cached field. The implementer was told not to
+act on it.
+
+**This is the second false finding in this spec from an audit reasoning about something it could not
+verify** — the first claimed a method had no producer, having grepped a lowercase variant of a capitalised
+name. Both times the audit **declared its uncertainty**, which is what made the refutation cheap. An audit
+that had asserted either with confidence would have caused a wrong correction.
+
+### 29.8 Gates
+
+| Gate | Result |
+|---|---|
+| Tests, verified by the Leader | **165 / 165**, 0 failures, 0 errors |
+| Mutation — helper removed | Test 4 reddens with `IllegalStateException: UnknownSessionException` through `finishLogin` |
+| `session.stop()` / SEC-003 | **unchanged** |
+| Interceptor stacks / CSP | **zero changes** |
+| Lines over 120 | 0 |
+
+### 29.9 Still open — only a real browser login can close it
+
+**T16's `Done when` is not satisfied by any test in this repository.** It requires the real corporate login to
+complete without the exception, in a browser, against the live pool. That is the user's to run. Until then the
+fix is evidenced by a real-`ShiroHttpServletRequest` harness and by bytecode — which is the strongest evidence
+obtainable here, and is not the same as evidence that it works there.

@@ -40,6 +40,9 @@ import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl.JwksSource;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +52,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -60,16 +66,20 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.util.ThreadContext;
+import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
+import org.apache.struts2.ServletActionContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -157,6 +167,10 @@ public class CognitoCallbackActionTest {
   public void tearDown() {
     SecurityUtils.setSecurityManager(null);
     ThreadContext.remove();
+    // CHG-COGNITO-AUTH-001-T16: only the new post-action-access test below binds an ActionContext /
+    // ServletActionContext request; clearing unconditionally here is a no-op for every other test and
+    // prevents that ThreadLocal binding from leaking into whichever test method runs next.
+    ActionContext.clear();
   }
 
   /** Same shape as {@code APCustomRealmDispatchTest}: the Cognito dispatch performs no I/O. */
@@ -283,6 +297,149 @@ public class CognitoCallbackActionTest {
     }
 
     assertEquals(Action.INPUT, result);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T16 test 4 (post-action access) -- V-2, reproduced against the live Cognito pool
+   * ({@code execution.md} 28) and fixed by {@link org.cgiar.ccafs.marlo.security.ShiroRequestSessionCacheResetter}.
+   * <p>
+   * {@code InvalidatedSessionMap} above proves {@code SessionMap} is re-pointed correctly (T09's fix); it says
+   * nothing about the SEPARATE cache {@link ShiroHttpServletRequest} keeps on the request object itself, which
+   * is exactly the mechanism {@code SessionMap}'s own constructor reads from (T16's <i>Not evidence when</i>
+   * clause). This test captures a REAL {@link ShiroHttpServletRequest} -- bound through
+   * {@link ServletActionContext} before {@code callback(...)} runs, precisely how Struts' CSP interceptor
+   * captures its own request reference into a {@code PreResultListener} lambda before the action executes --
+   * runs the full callback, and then reads through that SAME captured reference afterwards, matching the real
+   * failure path {@code DefaultCspSettings.addCspHeadersWithSession} takes.
+   */
+  @Test
+  public void postActionAccessThroughTheRealShiroWrappedRequestDoesNotThrow() throws Exception {
+    this.userManager.register(cgiarUser(9001L));
+    TestableCognitoCallbackAction action = this.newAction();
+
+    ShiroHttpServletRequest shiroRequest = new ShiroHttpServletRequest(newFakeHttpServletRequest(), null, false);
+    ActionContext.of(new HashMap<String, Object>()).bind();
+    ServletActionContext.setRequest(shiroRequest);
+    // Forces the request to cache a wrapper of the PRE-AUTH session -- exactly what Struts' own SessionMap
+    // construction does before execute() runs (T09's javadoc), and the state this callback's step 1 already
+    // depends on (the pending authorization lives in that same pre-auth session).
+    assertNotNull("forcing the cache must succeed", shiroRequest.getSession(true));
+
+    PendingAuthorization pending = this.seedPending(action, "state-t16", GLOBAL_UNIT_ID, null, "nonce-t16");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-t16", "state-t16", null);
+
+    assertEquals(Action.SUCCESS, result);
+
+    // The real CSP path, through the SAME request reference captured before the action ran: getSession()
+    // (create=true, matching addCspHeadersWithSession's own call) then setAttribute -- must not throw.
+    HttpSession sessionAfter = shiroRequest.getSession();
+    assertNotNull(sessionAfter);
+    try {
+      sessionAfter.setAttribute("cspProbe", "value");
+    } catch (IllegalStateException e) {
+      fail("a post-action access through the captured request must not hit the stale, stopped session: " + e);
+    }
+    assertEquals("value", sessionAfter.getAttribute("cspProbe"));
+  }
+
+  /**
+   * Review finding F3. The test above only covers the success branch. Two post-{@code stop()} paths had no
+   * real-{@link ShiroHttpServletRequest} coverage; this closes the gate-4 (membership) one.
+   * <p>
+   * {@code finishLogin}'s non-member branch ({@code LoginAction:383-391}) calls {@code this.getSession().clear()}
+   * then {@code SecurityUtils.getSubject().logout()} -- <b>after</b> this task's helper already ran and
+   * {@code freshSessionMap()} already re-pointed the request's cache at the correct, freshly-authenticated
+   * session. {@code Subject.logout()} stops that session in turn, so the request is left holding a cache of a
+   * session that is <i>now</i> gone too -- a second rotation this task's fix was never asked to cover. The
+   * auditor deliberately did not assert a 500 here on an incomplete model (MARLO's own {@code logout()} action
+   * does the identical {@code clear()} + {@code logout()} sequence and is not known to 500), so this closes
+   * the evidence gap rather than assuming the residual is real.
+   */
+  @Test
+  public void postActionAccessOnTheNonMemberBranchDoesNotThrow() throws Exception {
+    this.userManager.register(cgiarUser(9002L));
+    TestableCognitoCallbackAction action = this.newAction();
+
+    ShiroHttpServletRequest shiroRequest = new ShiroHttpServletRequest(newFakeHttpServletRequest(), null, false);
+    ActionContext.of(new HashMap<String, Object>()).bind();
+    ServletActionContext.setRequest(shiroRequest);
+    assertNotNull("forcing the cache must succeed", shiroRequest.getSession(true));
+
+    PendingAuthorization pending = this.seedPending(action, "state-t16-f3", GLOBAL_UNIT_ID, null, "nonce-t16-f3");
+    this.crpUserManager.isMember = false;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-t16-f3", "state-t16-f3", null);
+
+    assertEquals("the non-member branch must still be reached (gate 4)", Action.INPUT, result);
+
+    // The real CSP path, through the SAME request reference captured before the action ran, AFTER
+    // finishLogin's own getSession().clear() + Subject.logout() ran on the non-member branch.
+    HttpSession sessionAfter = shiroRequest.getSession();
+    assertNotNull(sessionAfter);
+    try {
+      sessionAfter.setAttribute("cspProbe", "value");
+    } catch (IllegalStateException e) {
+      fail("F3: post-action access on the non-member branch threw -- this is a NEW defect, report it, do "
+        + "not fix the production path: " + e);
+    }
+    assertEquals("value", sessionAfter.getAttribute("cspProbe"));
+  }
+
+  /**
+   * A minimal, real {@link HttpServletRequest} built as a JDK dynamic proxy over an attribute map -- the same
+   * technique {@code LoginActionFinishLoginTest#setReferer} already uses in this repository (MARLO has no
+   * mocking framework; DEC-005 is PENDING). The attribute store must be real, not stubbed: {@code
+   * ShiroHttpServletRequest.getSession(true)} calls {@code this.setAttribute(REFERENCED_SESSION_IS_NEW, TRUE)}
+   * on a freshly-created session (bytecode confirmed -- see
+   * {@code ShiroRequestSessionCacheResetter}'s class javadoc), which {@code HttpServletRequestWrapper}
+   * delegates straight through to the wrapped request.
+   */
+  private static HttpServletRequest newFakeHttpServletRequest() {
+    final Map<String, Object> attributes = new HashMap<String, Object>();
+    InvocationHandler handler = new InvocationHandler() {
+
+      @Override
+      public Object invoke(Object proxy, Method method, Object[] args) {
+        String name = method.getName();
+        if ("setAttribute".equals(name)) {
+          attributes.put((String) args[0], args[1]);
+          return null;
+        }
+        if ("getAttribute".equals(name)) {
+          return attributes.get(args[0]);
+        }
+        if ("removeAttribute".equals(name)) {
+          attributes.remove(args[0]);
+          return null;
+        }
+        if ("equals".equals(name)) {
+          return Boolean.valueOf(proxy == args[0]);
+        }
+        if ("hashCode".equals(name)) {
+          return Integer.valueOf(System.identityHashCode(proxy));
+        }
+        if ("toString".equals(name)) {
+          return "FakeHttpServletRequest";
+        }
+        Class<?> returnType = method.getReturnType();
+        if (returnType == boolean.class) {
+          return Boolean.FALSE;
+        }
+        if (returnType == int.class) {
+          return Integer.valueOf(0);
+        }
+        if (returnType == long.class) {
+          return Long.valueOf(0L);
+        }
+        return null;
+      }
+    };
+    return (HttpServletRequest) Proxy.newProxyInstance(CognitoCallbackActionTest.class.getClassLoader(),
+      new Class<?>[] {HttpServletRequest.class}, handler);
   }
 
   /**

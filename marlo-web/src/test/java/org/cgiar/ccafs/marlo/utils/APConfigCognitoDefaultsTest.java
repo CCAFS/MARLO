@@ -87,7 +87,9 @@ public class APConfigCognitoDefaultsTest {
     }
     // Guards the guard: if the template ever stops carrying the Cognito keys, this test would silently
     // become a no-op that proves nothing about stripping them.
-    assertEquals("marlo-test.properties must declare the 7 Cognito keys T03 adds", 7, cognitoKeys.size());
+    // CHG-COGNITO-AUTH-001-T15 raised this from 7 to 8: cognito.identity.provider joined the other seven,
+    // following the exact same @Value(...:}) + cognitoSetting(...) pattern.
+    assertEquals("marlo-test.properties must declare the 8 Cognito keys T03/T15 add", 8, cognitoKeys.size());
     for (String key : cognitoKeys) {
       properties.remove(key);
     }
@@ -138,6 +140,7 @@ public class APConfigCognitoDefaultsTest {
       assertEquals("", config.getCognitoDomain());
       assertEquals("", config.getCognitoCallbackUrl());
       assertEquals("", config.getCognitoJwksUri());
+      assertEquals("", config.getCognitoIdentityProvider());
     }
   }
 

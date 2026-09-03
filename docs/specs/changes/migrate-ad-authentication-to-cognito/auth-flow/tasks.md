@@ -752,3 +752,131 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 - The specificity constant value **must equal** `parameters.key`, in **both** `APConstants.java` files.
 - Never commit `marlo-dev.properties`.
 - **Do not touch** `DBAuthenticator`, `LDAPAuthenticator`, `Authenticator.java`, `AuthenticationManager`, `MD5Convert`, or `users.password`. Their appearance in any diff is a FAIL.
+
+---
+
+### CHG-COGNITO-AUTH-001-T15 — `identity_provider`: route straight to the corporate IdP
+
+- **Status:** `[ ]` — **added 2026-09-03. A new requirement identified during real E2E validation, not a
+  defect.** The implementation does exactly what the spec asked; the spec never asked for this.
+- **Why it exists:** clicking *Sign in with CGIAR* currently lands the user on **Cognito's Hosted UI
+  provider-selection screen**. That is Cognito's correct default when `/oauth2/authorize` names no provider:
+  it lists every IdP enabled on the app client. The team's other applications route **straight** to the
+  corporate IdP, and MARLO must match. `design.md:78-79` draws *"Cognito User Pool └─ SAML/OIDC ──► CGIAR
+  IdP"* and §9 says only *"redirect to `/oauth2/authorize`"* — **the design assumed direct routing and never
+  specified the mechanism.** A repo-wide search of `requirements.md`, `design.md` and `tasks.md` finds no
+  mention of *Hosted UI*, *identity_provider*, *provider selection*, or the provider name. Same shape as V-1:
+  the intent was described, the contract was not.
+- **Depends on:** T03 (config surface), T08 (`buildAuthorizeUrl`)
+- **Module:** marlo-utils, marlo-web
+- **Files touched:** `utils/APConfig.java` (add the eighth setting), `action/home/CognitoLoginAction.java`
+  (append the parameter), `config/marlo-test.properties` (blank key, as T03 did for the other seven)
+- **Scope:** add `cognito.identity.provider` following the **exact** pattern of the existing seven —
+  `@Value("${cognito.identity.provider:}")`, a getter delegating to `cognitoSetting(...)` so `null` becomes
+  `""` and the value is trimmed. Append `&identity_provider=<url-encoded value>` to the authorize URL
+  **only when the configured value is non-empty**.
+- **Constitutional checks:** **no literal provider name in any `.java`** — T03's verification clause and
+  SEC-004; the value is configuration, and it differs per pool and per environment. Checkstyle; English only.
+- **Deployment note — required, and it must be written down:** the property is optional **at code level** so
+  an environment without federation keeps working unchanged. **For any MARLO environment where CGIAR Cognito
+  authentication is enabled it is REQUIRED**: without it Cognito renders its Hosted UI and the expected direct
+  corporate SSO flow does not happen. Absent ≠ safe default; absent = wrong screen.
+- **Tests (new/updated):**
+  - The parameter **is included** when the property is configured.
+  - The value is **URL-encoded** — assert with a provider name containing a character that must encode
+    (a space or `&`), not with a name that is already URL-safe, which would prove nothing.
+  - The parameter is **omitted entirely** when the property is empty — not `identity_provider=`, absent.
+  - **Every other authorize parameter is unchanged**: `response_type`, `client_id`, `redirect_uri`, `scope`,
+    `state`, `nonce`, `code_challenge`, `code_challenge_method=S256`. Assert the full parameter set, so an
+    accidental reordering or drop is caught.
+- **Verification:** `mvn -q test -pl marlo-web -Dtest=CognitoLoginActionTest`
+- **Fails when:** the parameter is appended unconditionally — the empty-property test must then find
+  `identity_provider=` with no value in the URL.
+- **Not evidence when:** the encoding test uses an already-URL-safe provider name. `CGIAR-AzureAD` encodes to
+  itself, so a test using it proves the parameter is present, never that it is encoded.
+- **Done when:** four tests pass, Checkstyle passes, no literal provider name in any `.java`, and the
+  authorize redirect observed live carries the parameter.
+- **Skills:** `tdd`
+
+---
+
+### CHG-COGNITO-AUTH-001-T16 — V-2: the stale request-level Shiro session after rotation
+- **Status:** `[~]` — 2026-09-03, code complete and audited **PASS-WITH-FINDINGS** (`execution.md` §29); all
+  four findings fixed. **165/165 verified by the Leader.** **Not `[x]`: the `Done when` requires the real
+  corporate login to complete without the exception, in a browser, against the live pool** — only the user can
+  run it. One audit finding (F5) was **false** and was refuted from bytecode; the Leader's own `Fails when`
+  clause was also wrong and is corrected below.
+
+- **Status:** `[ ]` — **added 2026-09-03. A real E2E defect (V-2), reproduced against the live Cognito pool.**
+- **The failure, observed:** corporate authentication succeeded, Cognito returned to `cognitoCallback.do?code&state`,
+  the action **completed** (`Cognito sign-in succeeded for Global Unit AICCRA`), and **33 ms later** the response
+  died with `HTTP 500` — `UnknownSessionException: There is no session with id [78a503ec-...]` thrown from
+  `DefaultCspSettings.addCspHeadersWithSession` → `ShiroHttpSession.setAttribute`.
+- **Root cause, verified in bytecode, not inferred:** `ShiroHttpServletRequest` caches its `ShiroHttpSession`
+  in a **`protected HttpSession session`** field, and `getSession(boolean)` does `getfield session` and returns
+  it **without revalidating** — it only constructs a new wrapper when that field is `null`. `session.stop()`
+  destroys the underlying Shiro session; `Subject.login()` creates a new one; **nothing clears the cache**. Any
+  component reaching the request afterwards gets the dead wrapper. Struts' CSP interceptor does exactly that on
+  every response, and — decisively — it **captures the request reference into a `PreResultListener` lambda
+  before the action runs**, so nothing the action rebinds afterwards can reach it.
+- **Why T09's fix did not cover it:** T09 re-points the **action's** `SessionMap` and rebinds `ActionContext`.
+  `freshSessionMap()` calls `new SessionMap(request)`, which re-derives from the **same request whose cache is
+  stale** — the container changed, the contents did not. And `DefaultCspSettings` never reads `ActionContext`.
+- **Why no test caught it:** `InvalidatedSessionMap` is a hand-written double. It simulates a stopped session
+  but never exercises the real `ShiroHttpServletRequest` caching that *is* the mechanism. §27.4 Category A
+  predicted this in these words: *"a real successful login is the first time the production `SessionMap`
+  participates."*
+- **Depends on:** T09 · **Module:** marlo-web
+- **Files touched:** `action/home/CognitoCallbackAction.java`, plus a new isolated helper and its tests
+- **Scope — the narrowly scoped compatibility workaround, approved by the user 2026-09-03:**
+  - **Preserve `session.stop()` and SEC-003 rotation.** The pre-auth session must still be destroyed before
+    the new one is established. This task does **not** change when or whether rotation happens.
+  - Clear **only** the stale cached request-session reference, and only **after** `Subject.login()` has
+    established the new session.
+  - Keep the reflection **isolated in one clearly documented helper**, not scattered at the call site.
+  - **Fail soft** at runtime: if the field is absent, renamed, or inaccessible (sealed jar, security manager,
+    JPMS), log a warning and continue. Degrading to today's behaviour is acceptable; degrading to something
+    worse is not.
+  - **Do not weaken or remove CSP.** Removing the interceptor would hide the first observed consumer of the
+    stale session and introduce a security regression; other consumers would still fail later with an
+    unrelated-looking trace.
+  - **Document why reflection is necessary**, tied explicitly to the Shiro 1.13.0 constraint: `Subject` exposes
+    no renewal API; `WebUtils` exposes nothing that touches the cached wrapper; `DefaultWebSecurityManager`
+    offers no hook; `subject.logout()` only sets the `IDENTITY_REMOVED_KEY` **request attribute**, and
+    `getSession(boolean)` **never consults it** (zero references in its bytecode); `changeSessionId()` does not
+    apply to Shiro native sessions.
+- **Tests (new) — the point is to exercise the mechanism, not to re-simulate the symptom:**
+  1. **Compatibility test.** Fails if Shiro's expected internal structure changes — the field's declaring
+     class, name, and type. A future Shiro upgrade must produce a **red test**, never a silently disabled
+     workaround. This is the condition that turns a fragile hack into a managed one.
+  2. **Real-mechanism test.** Build an actual `ShiroHttpServletRequest`, force it to cache its
+     `ShiroHttpSession`, stop the session, invoke the helper, and assert `getSession(false)` resolves the
+     **new** session without throwing. **No hand-written doubles.**
+  3. **The test that bites.** The same scenario **without** the helper must throw `UnknownSessionException`.
+     Without this, test 2 proves nothing.
+  4. **Post-action access.** Capture the request **before** the callback runs, run the full callback, then
+     `setAttribute` through `request.getSession()` — the reproduction of the real failure path the CSP
+     interceptor takes.
+  5. **Fail-soft.** A request that is not a `ShiroHttpServletRequest` must not break anything.
+- **Verification:** `mvn -q test -pl marlo-web -Dminify.skip=true`
+- **Fails when — CORRECTED 2026-09-03, the original clause was wrong and the implementer proved it.** This
+  clause read: *"the helper is called **before** `Subject.login()` — test 2 must then fail... The ordering is
+  the fix; prove it."* **It does not fail.** The implementer applied that exact mutation, ran the suite twice
+  cleanly, and got green both times — then investigated instead of accepting a pass that contradicted the
+  premise. Reason: `Subject.login()`'s eager session creation runs through `SecurityManager`/`SessionManager`
+  machinery entirely independent of the request's cached field, and **nothing between the two call sites
+  touches `request.getSession()`**, so clearing either side rebuilds identically. The Leader asserted an
+  ordering guarantee that Shiro's internals do not create.
+  **The mutation that does bite, and is the real proof:** remove the helper call entirely. Test 4 then fails
+  with `IllegalStateException: UnknownSessionException: There is no session with id [...]`, thrown through
+  `ShiroHttpSession.getAttribute` → `SessionMap.put` → `LoginAction.finishLogin` → `CognitoCallbackAction`.
+  **Note what that path reveals:** the failing consumer in the test is `finishLogin`'s own `SessionMap.put`,
+  **not** the CSP interceptor. So the stale wrapper has **at least two** consumers, which independently
+  vindicates rejecting "just remove the CSP interceptor" — that would have hidden one and left the other.
+  The call site stays **after** `Subject.login()` regardless: it is the position that matches the intent, even
+  though Shiro does not enforce it.
+- **Not evidence when:** any test substitutes a double for `ShiroHttpServletRequest`. That is precisely the
+  substitution that let V-2 reach production.
+- **Done when:** five tests pass, Checkstyle passes, and **the real corporate login completes without the
+  exception** — which only the user can confirm, in a browser.
+- **Skills:** `tdd`
