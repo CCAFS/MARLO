@@ -351,7 +351,9 @@ another.
   partial jar swap cannot shift ordinals. The enum is not persisted — no `@Enumerated`, no HBM mapping, lookup
   is by the `status` string — so no migration is involved. Data check: 0 rows in
   `feedback_qa_commentable_fields`, `section_statuses` and every text column of the feedback tables, across the
-  four local databases, plus 0 orphan comments. Dropped the three now-dead
+  four local databases, plus 0 orphan comments. **Confirmed against production on 2026-09-03**: 0 rows in
+  `feedback_qa_commentable_fields` and 0 in `section_statuses`, so unlike the 2026-08-25 measurements this one
+  carries no development-database caveat. Dropped the three now-dead
   `feedbackManagement.section.deliverablesList` keys with it. Residual: the *center*
   `ValidateProjectSectionAction` switches on `getValue(...)` without a null check (its second switch, outside
   the `validSection` guard), so `deliverablesList` joins the set of slugs that would NPE there — unreachable,
