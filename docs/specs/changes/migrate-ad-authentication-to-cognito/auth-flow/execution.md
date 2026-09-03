@@ -2858,3 +2858,131 @@ shared-file write discipline. They remain pending and are **not** part of the mi
 - **No promotion is proposed.** The next decision point is the user's, after the dedicated migration
   environment is built, this branch is deployed there, and the Category A validations above are executed.
 - **Production readiness is not claimed** and no statement in this log should be read as claiming it.
+
+---
+
+## 28. Dedicated-environment validation — Category A — 2026-09-02
+
+**Baseline:** implementation-phase commit `e3fbb4672d` on `staging-cognito-impl`. **This is validation, not
+promotion.** No merge, rebase, cherry-pick, staging deployment, or production-readiness claim is authorised,
+and none has been made.
+
+**Protocol, set by the user:** do not fix a failure immediately. **Reproduce it, identify which requirement or
+spec claim it violates, record the evidence, and only then propose the smallest corrective change.** Stop at
+the first reproducible failure.
+
+### 28.1 The environment finally exists
+
+Seven `cognito.*` keys arrived with real values — the first time in this spec that anything but blanks has
+been present. Pool `us-east-1_o9y9Yq5pO`, region `us-east-1`, hosted domain `ost-toc.auth.us-east-1.amazoncognito.com`,
+callback `http://localhost:8080/marlo-web/cognitoCallback.do`, and a JWKS URI on the pool.
+
+Everything recorded in §27.2 as never-executed becomes reachable for the first time.
+
+### 28.2 FINDING V-1 — the `cognito.domain` configuration contract was never specified
+
+**Found statically, before booting**, by reading how the value is consumed rather than assuming it.
+
+**Reproduction (static, decisive):** `APConfig.getCognitoDomain()` returns the configured value **verbatim**;
+it normalises nothing. Both consumers prepend the scheme themselves — `CognitoLoginAction:295`
+(`new StringBuilder("https://").append(getCognitoDomain())`) and `CognitoCallbackAction:304`
+(`URI.create("https://" + domain + "/oauth2/token")`). With the value as supplied
+(`https://ost-toc.auth...`), the authorize URL becomes:
+
+```
+https://https://ost-toc.auth.us-east-1.amazoncognito.com/oauth2/authorize
+```
+
+`URI.create` throws `IllegalArgumentException`, which **T14's own reliability fix** catches and renders as
+`login.error.cognitoUnavailable`. The user would press the CGIAR button and be told the service is
+unavailable, never reaching the IdP.
+
+**Which claim it violates: none in the code — the defect is in the specification, and it is the Leader's.**
+`execution.md` §18.1 closed OQ-3 by recording the seven key **names** and verifying they matched `APConfig`
+exactly. **It never recorded their formats.** A contract that pins names and omits value shape is only half a
+contract, and this is the half that broke.
+
+**Configuration contract, now recorded:** `cognito.domain` must be the **hostname only, without a scheme** —
+the application supplies `https://` when constructing both the authorize and token URLs. Any leading
+`https://` in the configured value produces a malformed URL and a service-unavailable refusal.
+
+**Corrective change applied — the smallest one, and configuration only.** Per the user's instruction, option
+(a): the local value was changed to `ost-toc.auth.us-east-1.amazoncognito.com`. **No application code was
+modified.** `APConfig` is untouched.
+
+**Residual, not fixed and not authorised:** a configuration value that breaks depending on whether it carries
+a prefix, with no validation and no message explaining it, is a trap for whoever deploys this to the
+dedicated environment or beyond. Normalising in `APConfig.getCognitoDomain()` (strip a leading scheme) or
+validating at startup would close it. That is a **new, small task on this branch** and awaits explicit
+authorisation.
+
+### 28.3 Environment incident — a transient database failure, not a defect
+
+The first boot with real keys failed: `Context [/marlo-web] startup failed`, root cause
+`HikariPool$PoolInitializationException: Could not create connection to database server. Attempted reconnect
+3 times.` The whole Shiro bean chain hangs off the `DataSource`, so the context died with it.
+
+**No Cognito exception appeared anywhere in that boot.** Four hypotheses were checked and all four refuted:
+MySQL was up (PID 7176 on 3306); the credentials in the file connected fine; the compiled copy of
+`marlo-dev.properties` was byte-identical to source with all seven keys present; and `localhost` resolves to
+`::1` with IPv6 listeners on 3306, so a resolution mismatch was not it either.
+
+A retry started cleanly with zero Hikari failures. **Recorded as a transient environment incident, not a code
+or configuration defect** — and deliberately not written up as a finding, because it was observed once and
+every plausible cause was eliminated. Worth carrying to the dedicated environment runbook: a DB blip during
+startup takes the whole context down, and the failure text names Shiro, not the database, three frames up.
+
+### 28.4 VALIDATED — the authorize redirect is real, well-formed, and freshly minted
+
+**Preconditions applied and verified** (temporary, reversible, no password or hash touched — the MD5 of the
+password column was identical before and after): `users.id=3797` set `is_cgiar_user=1`; **exactly one**
+active `cognito_auth_active=true` override for Global Unit 45 (row 2340); the existing `crp_users` membership
+(row 5252, `created_by=1082`, `active_since=2024-04-05`) untouched.
+
+**MARLO was restarted before testing**, per §24.3 — the override lookup is a cacheable query with a 3600s TTL
+and Hibernate cannot see an out-of-band `INSERT`. Skipping that step would have measured against a flag the
+application could not see.
+
+**Resolution confirmed through the real API:** `crpByEmail.do` returned `isCgiarUser: true` and AICCRA (45)
+with `cognitoEnabled: true`.
+
+**`cognitoLogin.do` answered `302` with:**
+
+```
+https://ost-toc.auth.us-east-1.amazoncognito.com/oauth2/authorize
+  ?response_type=code
+  &client_id=6kb9tcirtqn1kpm8vt8h6f7d3p
+  &redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fmarlo-web%2FcognitoCallback.do
+  &scope=openid+email
+  &state=uc5TRNObLVeERwoagraN4fXlbc_9wJ7JfSRRnoiqQAs
+  &nonce=FoL3QTNifBYU8sbeQoXs_xHQurkivtqejOjS6j81I_o
+  &code_challenge=YxlYHwvy4WYz71sBZGQdm6gsGk9FakbgSt4Lg-6XjXw
+  &code_challenge_method=S256
+```
+
+| Check | Result |
+|---|---|
+| Host appears **once** — no `https://https://` | **V-1 closed, and now observed rather than reasoned** |
+| `response_type` | `code` |
+| `client_id` | matches the configured value |
+| `redirect_uri` | encoded, **identical** to `cognito.callback.url` |
+| `state`, `nonce`, `code_challenge` | all three present, 43 chars each (32 bytes base64url) |
+| `code_challenge_method` | **`S256`**, not `plain` |
+| **Freshly minted** | A second identical request produced **different** `state`, `nonce` and `code_challenge` |
+
+**That last row is what turns "the URL is built" into "the URL is correct."** A constant `state` would pass
+any visual inspection while silently disabling both the callback CSRF protection and the replay protection
+T05 validates — and a fixed `code_challenge` makes PKCE decorative.
+
+**Category A item CLOSED: `cognitoUnloggedStack` reachability.** §17.5 and §20 recorded it as *argued from the
+interceptor sources, not observed*. The action has now executed for real, traversed its stack, resolved
+configuration, Global Unit and user, and emitted a genuine redirect.
+
+**Not followed, not authenticated.** The redirect was captured and reviewed; no IdP interaction was performed.
+
+### 28.5 State held for the user manual authentication
+
+Application running on `http://localhost:8080/marlo-web/login.do`, test data in place as described above,
+**no code changed**. The next validations — code exchange, JWKS fetch, token validation, identity mapping,
+membership gates, session establishment — begin with the user own browser login and stop at the first
+reproducible failure.
