@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -47,6 +48,7 @@ public class CenterAreaManager implements ICenterAreaManager {
    * @see org.cgiar.ccafs.marlo.data.service.ICenterAreaManager#deleteResearchArea(long)
    */
   @Override
+  @Transactional
   public void deleteResearchArea(long researchAreaId) {
     researchAreaDao.deleteResearchArea(researchAreaId);
   }

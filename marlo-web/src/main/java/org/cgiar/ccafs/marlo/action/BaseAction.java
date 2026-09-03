@@ -148,7 +148,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.SessionAware;
-import org.jfree.util.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -1193,7 +1192,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
             }
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not check the deliverables of the project outcome {}, so the deletion is decided on"
+              + " incomplete information", id, e);
           }
 
           try {
@@ -1220,7 +1220,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
             }
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not check the expected studies of the project outcome {}, so the deletion is decided on"
+              + " incomplete information", id, e);
           }
 
           try {
@@ -1245,7 +1246,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
             }
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not check the innovations of the project outcome {}, so the deletion is decided on"
+              + " incomplete information", id, e);
           }
 
           return canDelete;
@@ -1289,7 +1291,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return true;
     } catch (Exception e) {
-      Log.error("error getting class " + e);
+      LOG.error("Could not decide whether the {} with id {} can be deleted, so the deletion is allowed", className, id,
+        e);
       return true;
     }
 
@@ -2301,7 +2304,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return service.generateAIReportObject(indicatorName, year);
     } catch (Exception e) {
       this.addActionError("Error generating AI report for: " + indicatorName);
-      e.printStackTrace();
+      LOG.error("Could not generate the AI report of the indicator {} for the year {}", indicatorName, year, e);
       return null;
     }
   }
@@ -2928,7 +2931,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     } catch (Exception e) {
-      LOG.error("error in getCountProjectFlagships " + e);
+      LOG.error("Could not count the flagships of the project {}", projectID, e);
       return false;
     }
     return false;
@@ -3085,7 +3088,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not resolve the current center phase, falling back to an empty one", e);
       return new Phase(null, "", -1);
     }
 
@@ -3179,7 +3182,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
       }
     } catch (Exception e) {
-      LOG.error("error getting custom text header " + e);
+      LOG.error("Could not read the custom login header text from the session", e);
     }
     return customTextHeader;
   }
@@ -3261,7 +3264,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the deliverables related to the {} with id {}", className, id, e);
 
     }
     return deliverables;
@@ -3374,7 +3377,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   && d.getDeliverableInfo(this.getActualPhase()).getStatus() == 3).collect(Collectors.toList());
             }
           } catch (Exception e) {
-            Log.error("error getting deliverables temp " + e);
+            LOG.error("Could not filter the reporting deliverables of the project {}", projectID, e);
           }
 
           // Shared with others
@@ -3536,7 +3539,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the deliverables of the project {} related to the {} with id {}", projectID, className,
+        id, e);
 
     }
     return deliverables;
@@ -3602,7 +3606,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           try {
             deliverableDissemination = deliverable.getDissemination(this.getActualPhase());
           } catch (Exception e) {
-            Log.info(e);
+            LOG.debug("The deliverable {} has no dissemination in this phase", deliverable.getId(), e);
           }
           // Dissemination URL
           if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
@@ -3638,7 +3642,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
                 .findFirst().orElse(null).getElementValue();
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("The deliverable {} has no DOI metadata element", deliverable.getId(), e);
             }
 
             try {
@@ -3647,7 +3651,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                   && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
                 .findFirst().orElse(null).getElementValue();
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("The deliverable {} has no handle metadata element", deliverable.getId(), e);
             }
 
             try {
@@ -3665,7 +3669,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
 
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("Could not check the DOI of the deliverable {} for duplicates", deliverable.getId(), e);
             }
 
             try {
@@ -3685,7 +3689,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               }
 
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("Could not check the handle of the deliverable {} for duplicates", deliverable.getId(), e);
             }
           }
 
@@ -3732,8 +3736,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .collect(Collectors.toList());
             if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
               if (deliverablePartnershipResponsibles.size() > 1) {
-                Log.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
-                  + this.getActualPhase().toString());
+                LOG.warn("The deliverable {} has more than one responsible partner in the phase {}",
+                  deliverable.getId(), this.getActualPhase());
               }
               DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
 
@@ -3939,7 +3943,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not collect the expected studies of the outcome {}", id, e);
       }
 
       try {
@@ -3968,17 +3972,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not collect the shared expected studies of the outcome {}", id, e);
       }
 
       // 10/10/2024 add functionality to avoid no active oicr
       try {
         expectedStudies = expectedStudies.stream().filter(o -> o.isActive()).collect(Collectors.toList());
       } catch (Exception e) {
-        LOG.error(" error in function getexpectedCrpOutcomes - unable to extract inactive oicr");
+        LOG.error("Could not filter out the inactive expected studies of the outcome {}", id, e);
       }
     } catch (Exception e) {
-      Log.error("error in getexpectedCrpOutcomes " + e);
+      LOG.error("Could not get the expected studies of the outcome {}", id, e);
     }
     return expectedStudies;
   }
@@ -4022,7 +4026,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         allYears.add(this.getActualPhase().getYear());
       }
     } catch (Exception e) {
-      LOG.error(" unable to get years" + e.getMessage());
+      LOG.error("Could not get the years of the expected study {}", expectedStudy, e);
     }
     return allYears;
   }
@@ -4038,7 +4042,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         feedbackBIReportName = (String) this.getSession().get(APConstants.CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME);
       }
     } catch (Exception e) {
-      LOG.error("error getting custom text header " + e);
+      LOG.error("Could not read the feedback BI report name from the session", e);
     }
     return feedbackBIReportName;
   }
@@ -4077,7 +4081,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.fileDBManager.saveFileDB(dbFile);
       return dbFile;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not store the uploaded file {} under {}, so no file is attached", fileFileName, path, e);
       return null;
     }
 
@@ -4190,7 +4194,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the innovations of the project outcome {}", id, e);
     }
 
     try {
@@ -4357,7 +4361,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return this.auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not read the audit log of {} with id {}, so an empty history is shown",
+        object.getClass().getSimpleName(), object.getId(), e);
       return new ArrayList<Auditlog>();
     }
   }
@@ -5709,7 +5714,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && d.getPhase().getId().equals(this.getActualPhase().getId()))
           .collect(Collectors.toList());
       } catch (Exception e) {
-        Log.error("error getting shfrm " + e);
+        LOG.error("Could not get the deliverables related to the SHFRM priority action {}", shfrmPrimaryActionId, e);
       }
       if (deliverableShfrmPriorityActions != null && !deliverableShfrmPriorityActions.isEmpty()) {
         for (DeliverableShfrmPriorityAction deliverableShfrmPriorityAction : deliverableShfrmPriorityActions) {
@@ -5741,7 +5746,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       try {
         startAFPhase = Long.parseLong((String) this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE));
       } catch (NumberFormatException e) {
-        LOG.error("Error parsing start AF phase to long: " + e);
+        LOG.error("The session value of {} is not a number, so the default start AF phase is used",
+          APConstants.CRP_AICCRA_AF_START_PHASE, e);
       }
     } else {
       LOG.error("CRP_AICCRA_AF_START_PHASE is null or not found in session.");
@@ -6338,7 +6344,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       startAFPhase = this.getStartAFPhase();
     } catch (NumberFormatException e) {
-      LOG.error("Error parsing start AF phase to long: " + e);
+      LOG.error("Could not resolve the start AF phase, so the default {} is used", startAFPhase, e);
     }
 
     if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
@@ -7590,7 +7596,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new",
+          fundingSourceID, e);
         return false;
       }
 
@@ -7604,7 +7611,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new",
+          fundingSourceID, e);
         return false;
       }
 
@@ -8066,7 +8074,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
         return false;
       }
 
@@ -8081,7 +8089,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
         return false;
       }
 
@@ -8696,7 +8704,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
       return canBeDeleted;
     } catch (Exception e) {
-      System.out.println(e + "error");
+      LOG.error("Could not decide whether the outcome {} can be deleted, so the deletion is blocked", id, e);
       return false;
     }
 

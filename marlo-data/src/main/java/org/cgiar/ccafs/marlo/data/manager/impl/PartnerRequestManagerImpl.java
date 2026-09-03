@@ -70,6 +70,7 @@ public class PartnerRequestManagerImpl implements PartnerRequestManager {
   }
 
   @Override
+  @Transactional
   public PartnerRequest savePartnerRequest(PartnerRequest partnerRequest) {
 
     return partnerRequestDAO.save(partnerRequest);

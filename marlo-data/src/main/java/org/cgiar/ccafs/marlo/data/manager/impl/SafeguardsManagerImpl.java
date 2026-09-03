@@ -70,6 +70,7 @@ public class SafeguardsManagerImpl implements SafeguardsManager {
   }
 
   @Override
+  @Transactional
   public Safeguards saveSafeguards(Safeguards safeguards) {
 
     return safeguardsDAO.save(safeguards);
