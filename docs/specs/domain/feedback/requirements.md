@@ -340,6 +340,25 @@ another.
 
 ## 9. Decision Log
 
+- 2026-09-03 — Delete `ProjectSectionsEnum.DELIVERABLESLIST("deliverablesList")` rather than label it in the
+  dropdown. It is an unreferenced duplicate of `DELIVERABLES("deliverableList")`: no Struts route, no
+  `#sectionNameToFeedback`, no reference to the constant, no string literal, no OGNL use in a view and no test.
+  A field configured against it could never render a comment icon, so offering it was a trap with no upside, and
+  labelling it kept the trap while adding a permanent explanatory string. Verified safe by compiling all three
+  modules from source before and after (3452 files, 0 errors both ways) and diffing the bytecode: exactly one
+  class file changes, `ProjectSectionsEnum.class`. Enum switches are immune because javac sizes the synthetic
+  `$SwitchMap` from `values().length` at runtime and fills it under `catch (NoSuchFieldError)`, so even a
+  partial jar swap cannot shift ordinals. The enum is not persisted — no `@Enumerated`, no HBM mapping, lookup
+  is by the `status` string — so no migration is involved. Data check: 0 rows in
+  `feedback_qa_commentable_fields`, `section_statuses` and every text column of the feedback tables, across the
+  four local databases, plus 0 orphan comments. Dropped the three now-dead
+  `feedbackManagement.section.deliverablesList` keys with it. Residual: the *center*
+  `ValidateProjectSectionAction` switches on `getValue(...)` without a null check (its second switch, outside
+  the `validSection` guard), so `deliverablesList` joins the set of slugs that would NPE there — unreachable,
+  since that action's allowlist is `projectDescription` / `projectPartners` / `deliverableList` and no Struts
+  action carries the removed name. `ProjectSectionStatusEnum` holds the same dead duplicate; left alone,
+  it has more consumers and deserves its own check.
+
 - 2026-09-03 — Make the Section Name dropdown legible by rendering `<label> (<slug>)` instead of the bare slug,
   with the label in a new `feedbackManagement.section.<slug>` i18n key per `ProjectSectionsEnum` value. Chose a
   label resolved through `getText(key, slug)` over hardcoding a `Map` in the action or adding a `label` field to
