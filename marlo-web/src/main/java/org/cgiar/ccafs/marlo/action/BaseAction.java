@@ -4652,8 +4652,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public int getPlanningYear() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+    String planningYear = this.getSessionValue(APConstants.CRP_PLANNING_YEAR);
+    if (planningYear == null) {
+      LOG.debug("{} is not in the session, so the planning year is 0", APConstants.CRP_PLANNING_YEAR);
+      return 0;
+    }
 
+    try {
+      return Integer.parseInt(planningYear);
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the planning year is 0",
+        APConstants.CRP_PLANNING_YEAR, e);
+      return 0;
+    }
   }
 
   public List<GlobalUnit> getPlatformsList() {
@@ -5559,7 +5570,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public int getReportingYear() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+    String reportingYear = this.getSessionValue(APConstants.CRP_REPORTING_YEAR);
+    if (reportingYear == null) {
+      LOG.debug("{} is not in the session, so the reporting year is 0", APConstants.CRP_REPORTING_YEAR);
+      return 0;
+    }
+
+    try {
+      return Integer.parseInt(reportingYear);
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the reporting year is 0",
+        APConstants.CRP_REPORTING_YEAR, e);
+      return 0;
+    }
   }
 
   /**
@@ -7790,7 +7813,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isLessonsActive() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
+    String lessonsActive = this.getSessionValue(APConstants.CRP_LESSONS_ACTIVE);
+    if (lessonsActive == null) {
+      LOG.debug("{} is not in the session, so the lessons are hidden", APConstants.CRP_LESSONS_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(lessonsActive);
   }
 
   /**
@@ -7880,7 +7909,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActiveParam() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
+    String planningActive = this.getSessionValue(APConstants.CRP_PLANNING_ACTIVE);
+    if (planningActive == null) {
+      LOG.debug("{} is not in the session, so the planning is reported as inactive",
+        APConstants.CRP_PLANNING_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(planningActive);
   }
 
   public boolean isPMU() {
@@ -8276,8 +8312,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
       return true;
     }
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
+    String reportingActive = this.getSessionValue(APConstants.CRP_REPORTING_ACTIVE);
+    if (reportingActive == null) {
+      LOG.debug("{} is not in the session, so the reporting is reported as inactive",
+        APConstants.CRP_REPORTING_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(reportingActive);
   }
 
   public boolean isRole(String roleAcronym) {
