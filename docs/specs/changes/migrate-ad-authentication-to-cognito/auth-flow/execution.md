@@ -3124,3 +3124,130 @@ that had asserted either with confidence would have caused a wrong correction.
 complete without the exception, in a browser, against the live pool. That is the user's to run. Until then the
 fix is evidenced by a real-`ShiroHttpServletRequest` harness and by bytecode — which is the strongest evidence
 obtainable here, and is not the same as evidence that it works there.
+
+---
+
+## 30. T16 CLOSED by real E2E evidence — 2026-09-03
+
+The user authenticated through the corporate IdP, Cognito returned to `cognitoCallback.do`, and MARLO landed
+on `/AICCRA/crpDashboard.do` with the authenticated user displayed. **No HTTP 500. No
+`UnknownSessionException`.**
+
+| # | Requirement | Evidence from the server log |
+|---|---|---|
+| 1 | Callback received | Four times: `17:22:51`, `17:23:14`, `17:23:30`, `17:25:16` |
+| 2 | Code/token processing completed | `Cognito sign-in succeeded for Global Unit AICCRA` on all four |
+| 3 | Identity mapped to the MARLO user | `User C.Gamboa@cgiar.org logged in successfully for Global Unit AICCRA` |
+| 4 | Success event recorded | Yes — 182 ms after each callback |
+| 5 | **`UnknownSessionException`** | **0 occurrences** |
+| 6 | Authentication ERROR/SEVERE | **0** |
+| 7 | Request continued to the dashboard | `user_permission` lookups and `DownloadGlobalUnitLogoAction` for **AICCRA**, 2.4 s after login |
+
+**Also closed by this run, from §27.4 Category A:** `saveLastLogin` on the **Cognito** path — `last_login`
+moved to `2026-09-03 17:25:16`. §21 had validated that mechanism on the local path only and said so.
+
+**An unplanned validation, and a valuable one.** The IdP returned the email as **`C.Gamboa@cgiar.org`** —
+different casing from the stored `c.gamboa@cgiar.org` — and it still resolved the row. That is **OQ-9's
+normalization working against a real token**, where until now it had only met synthetic values.
+
+**A Leader misreading, corrected within the same turn:** the first callback appeared to lack a success line.
+It did not — a `tail -3` had truncated it. All four completed.
+
+---
+
+## 31. U-3 — `users.username` overwritten with Cognito's federated identifier
+
+**Observed:** after the real login, `users.username` for id 3797 changed from **`cgamboa`** to
+**`cgiar-azuread_c.gamboa@cgiar.org`**. Recorded as a finding separate from T16; no code or test data changed.
+
+### 31.1 Which claim produced it, and which claim T07 maps
+
+`CognitoTokenValidatorImpl:116` declares `CLAIM_USERNAME_CLAIM = "cognito:username"` and reads it at `:375`
+into the assertion. `CognitoIdentityMapperImpl:96-100` lowercases that value and writes it to
+`users.username`.
+
+**For a federated principal, `cognito:username` is Cognito's own internal username** — the provider name,
+lowercased, prefixed to the subject: `cgiar-azuread_` + `c.gamboa@cgiar.org`. It is **not** a CGIAR login
+identifier. It is an artifact of how Cognito names federated users inside its own pool.
+
+### 31.2 The requirement, and the premise nobody verified
+
+FN-006 reads: *"**GIVEN** a CGIAR user whose ID token carries **their CGIAR login identifier** … `users.username`
+**MUST** be set from that claim, lowercased — **matching today's `getCgiarNickname()` behavior**."*
+
+And today's behaviour, at `APCustomRealm:334/338`, is `user.setUsername(ldapUser.getLogin().toLowerCase())` —
+the **Active Directory login**, i.e. `cgamboa`.
+
+**So FN-006's intent is unambiguous and T07 does not meet it.** This is a **claim-selection error**, not a
+coding error: `cognito:username` is not the CGIAR login identifier, and the requirement's `GIVEN` clause
+*assumed a claim carrying that identifier exists in the token* without anyone verifying that it does. That
+assumption held only as long as no real token was ever seen.
+
+### 31.3 Which claims are actually present — what is known, and what is not
+
+**Known, because the code reads them:** `token_use`, `nonce`, `email`, `cognito:username`. Plus the identity
+claim used for the join (OQ-9 settled that on `email`).
+
+**NOT known, and it must not be guessed:** whether this pool's ID token carries any claim holding `cgamboa` —
+`preferred_username`, a `custom:` attribute, or `identities[0].userId`. **The validator does not read them, so
+nothing in this checkout can answer it.** No raw token, authorization code, or secret was inspected, and none
+should be.
+
+**Two safe ways to answer it, both the user's to choose:** read the User Pool's *attribute mapping* for the
+`CGIAR-AzureAD` provider in the AWS console — which claim, if any, receives the AD `sAMAccountName`; or
+capture one ID token's **claim names and the single value of the candidate claim**, never the token itself.
+Until one of those is done, **any correction is guesswork.**
+
+### 31.4 Consumers of `users.username`, and what each does with a federated value
+
+| Consumer | Effect of `cgiar-azuread_c.gamboa@cgiar.org` |
+|---|---|
+| **`APCustomRealm:172`** — the LDAP bind | **Self-repairing.** `getCgiarNickname` runs first and looks AD up **by email** (`searchUserByEmail`), then **unconditionally overwrites** `user.setUsername(ldapUser.getLogin().toLowerCase())` on both branches (`:333-338`). The bind uses the freshly-corrected value |
+| **`APCustomRealm:161`** — `getUserByUsername(username)` | **BREAKS.** This is the branch taken when a user types a login **without** `@`. Typing `cgamboa` finds no row, because the stored value is now the federated string. Email login is unaffected — `:152` uses `getUserByEmail` |
+| `ManageUsersAction:262`, `SearchUserAction:91` | Admin JSON exposes the federated string as the user's username |
+| **`FeedbackQACommentsAction:180`, `:403`** | Renders `getUsername() + " " + getLastName()` as a **display name** in QA comments — a user-visible `cgiar-azuread_c.gamboa@cgiar.org Gamboa` |
+| `ManageUsersAction:159`, `CrpUsersAction:641`, `center/ManageUsersAction:261` | Admin **creation** paths, all setting from `person.getLogin()`. Unaffected, but they establish the convention: `username` is an AD login |
+
+### 31.5 The rollback and coexistence question — the answer is nuanced, and half of it is reassuring
+
+**Rollback by email login: SAFE, and self-healing.** If a unit returns to the local path, a user signing in
+with their **email** reaches `getUserByEmail`, then `getCgiarNickname` re-derives the username from AD **by
+email** and overwrites the federated value. The AD lookup never keys on the stored username, so a corrupted
+one cannot prevent it.
+
+**Rollback by username login: BROKEN.** A user typing `cgamboa` hits `getUserByUsername`, which finds nothing.
+They are refused with no indication why. Their own email still works, so the account is recoverable — but the
+failure is silent and looks like a wrong password.
+
+**And the repair does not persist.** At `:337-338`, the non-null branch sets the corrected username **in
+memory only** — `saveUser` is called solely in the `null` branch at `:334-336`. So even after a successful
+email login repairs it for that request, the database keeps the federated value and the next username login
+fails again. (Note that `saveUser` is itself the no-op §19.1 documented, so the `null` branch may not persist
+either.)
+
+### 31.6 Does `users.username` need writing at all during Cognito login?
+
+**A fair question, and the answer is not obviously yes.**
+
+- **OQ-9 made the normalized corporate email the stable identity.** The Cognito path joins on email and never
+  needs `username` to authenticate.
+- FN-006's stated purpose is *"maintain `users.username` … **without an LDAP lookup**"* — keeping it fresh so
+  the value is available when something else needs it.
+- **Today's behaviour is strictly worse than not writing:** it replaces a correct AD login with a value that
+  is correct for nothing, and breaks username login until an email login repairs it in memory.
+
+### 31.7 Candidate corrections — compared, none implemented
+
+| # | Correction | Assessment |
+|---|---|---|
+| **A** | **Map the claim that actually carries the AD login** (`preferred_username`, a `custom:` attribute, or a mapped `identities` value) | **Meets FN-006 as written.** Requires knowing which claim carries it — §31.3. If none does, this option does not exist |
+| **B** | **Do not write `username` on the Cognito path at all** | Smallest, safest, and preserves the existing correct value. Leaves FN-006 unmet and needs a requirement amendment. Consistent with OQ-9 making email the identity |
+| **C** | **Write only when `users.username` is null** | Never corrupts a good value; still writes a wrong one for new users. A half-measure |
+| **D** | **Strip the `cgiar-azuread_` prefix** | **Explicitly not assumed correct, per the user's instruction — and the evidence says it is wrong.** Stripping yields `c.gamboa@cgiar.org`, an **email**, not `cgamboa`. The prefix conceals that the suffix is the wrong value too. It would look fixed and stay broken |
+
+**Recommendation deferred until §31.3 is answered.** If a claim carries the AD login, **A** meets the
+requirement as written. If none does, the honest choice is **B** plus an FN-006 amendment recording that the
+pool does not expose the identifier the requirement assumed — which would be the third contract gap this
+environment has surfaced, after V-1 and T15.
+
+**No code, no test data, and no configuration was changed. The E2E environment is untouched.**

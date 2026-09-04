@@ -801,7 +801,7 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 ---
 
 ### CHG-COGNITO-AUTH-001-T16 — V-2: the stale request-level Shiro session after rotation
-- **Status:** `[~]` — 2026-09-03, code complete and audited **PASS-WITH-FINDINGS** (`execution.md` §29); all
+- **Status:** `[x]` — **CLOSED 2026-09-03 by real E2E evidence** (`execution.md` §30): the corporate login completed through the live pool, landed on the AICCRA dashboard, and produced **0** `UnknownSessionException` and **0** authentication errors. Also closed `saveLastLogin` on the Cognito path. Audited **PASS-WITH-FINDINGS** (`execution.md` §29); all
   four findings fixed. **165/165 verified by the Leader.** **Not `[x]`: the `Done when` requires the real
   corporate login to complete without the exception, in a browser, against the live pool** — only the user can
   run it. One audit finding (F5) was **false** and was refuted from bytecode; the Leader's own `Fails when`
