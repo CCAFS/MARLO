@@ -1661,35 +1661,6 @@ span.icon-20 {
 .opi-matrix__sub { font: 400 12px Figtree, sans-serif; color: var(--opi-muted); }
 .opi-cell__hint.is-required { color: var(--opi-warn); }
 
-/* ---------- Placeholder field (design field with no column behind it yet) ---------- */
-
-.opi-pendingField { display: flex; flex-direction: column; }
-
-.opi-page .opi-card__body .opi-pendingField label {
-  font: 600 12.5px Figtree, sans-serif;
-  color: var(--opi-ink);
-  margin-bottom: 4px;
-}
-
-.opi-page .opi-card__body .opi-pendingField__input {
-  width: 100%;
-  height: 36px;
-  padding: 0 11px;
-  border: 1px solid var(--opi-border-strong);
-  border-radius: var(--opi-radius-sm);
-  background: #fff;
-  font: 400 13.5px Figtree, sans-serif;
-  color: var(--opi-ink);
-  text-align: right;
-  cursor: not-allowed;
-}
-
-.opi-pendingField__note {
-  margin-top: 4px;
-  font: 400 11.5px/1.35 Figtree, sans-serif;
-  color: var(--opi-muted);
-}
-
 /* Codes are generated, so they read as text rather than an editable box.
    Needs the element selector to outweigh `.opi-page .opi-card__body input[type=text]`. */
 .opi-page .opi-card__body input.opi-dis__codeInput[readonly] {
@@ -1700,3 +1671,7 @@ span.icon-20 {
 
 .opi-dis__delete[disabled] { opacity: .35; cursor: not-allowed; color: var(--opi-border-strong); }
 .opi-dis__delete[disabled]:hover { background: #fff; }
+
+/* Baseline value is a plain optional number; it keeps the shared field box but
+   must stay empty when nothing was captured, so it is not a .targetValue. */
+.opi-page .opi-card__body input.opi-baselineValue { text-align: right; }

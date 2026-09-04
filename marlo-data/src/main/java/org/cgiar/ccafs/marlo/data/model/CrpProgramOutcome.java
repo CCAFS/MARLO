@@ -63,6 +63,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   private Integer orderIndex;
   @Expose
   private BigDecimal value;
+
+  private BigDecimal baselineValue;
   @Expose
   private Portfolio portfolio;
 
@@ -112,6 +114,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setModifiedBy(other.getModifiedBy());
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
+    this.setBaselineValue(other.getBaselineValue());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
@@ -139,6 +142,7 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setModifiedBy(other.getModifiedBy());
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
+    this.setBaselineValue(other.getBaselineValue());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
@@ -279,6 +283,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return subIdos;
   }
 
+  public BigDecimal getBaselineValue() {
+    return baselineValue;
+  }
+
   public BigDecimal getValue() {
     return this.value;
   }
@@ -373,6 +381,10 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setSubIdos(List<CrpOutcomeSubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  public void setBaselineValue(BigDecimal baselineValue) {
+    this.baselineValue = baselineValue;
   }
 
   public void setValue(BigDecimal value) {

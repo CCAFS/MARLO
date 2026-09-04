@@ -17,6 +17,11 @@ function init() {
   /* Numeric Inputs */
   $('input.targetValue , input.targetYear').numericInput();
 
+  // Baseline value is optional and nullable, so it stays out of numericInput():
+  // that helper rewrites an empty field to 0, which would store a real 0 for an
+  // indicator whose baseline was simply never captured.
+  $('.opi-page input.opi-baselineValue').on('keydown', function(e) { isNumber(e); });
+
   /* Percentage Inputs */
   $('.outcomes-list input.contribution').percentageInput();
 

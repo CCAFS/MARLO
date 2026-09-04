@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026083118",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?202609042",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026083119",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?202609042",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -330,15 +330,9 @@
       <div class="opi-grid5 target-block">
         [#-- Baseline (start) year --]
         <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
-        [#-- Baseline value: present in the design but with no column behind it yet, so it
-             is rendered read-only and carries no name — nothing is submitted or lost. --]
+        [#-- Baseline value: optional for now, until the existing indicators have one captured. --]
         [#if isAiccraUI]
-        <div class="opi-pendingField">
-          <label>[@s.text name="outcome.baselineValue"/]</label>
-          <input type="text" class="opi-pendingField__input" value="" readonly
-            title="[@s.text name="outcomes.baselineValue.pending"/]" aria-describedby="opi-baselineValue-note-${index}" />
-          <span class="opi-pendingField__note" id="opi-baselineValue-note-${index}">[@s.text name="outcomes.baselineValue.pending"/]</span>
-        </div>
+        <div>[@customForm.input name="${outcomeCustomName}.baselineValue" i18nkey="outcome.baselineValue" placeholder="outcome.inputTargetValue.placeholder" className="opi-baselineValue" required=false editable=editable /]</div>
         [/#if]
         [#-- Closing (target) year --]
         <div>[@customForm.select name="${outcomeCustomName}.year" value="${(outcome.year)!-1}" i18nkey="${isAiccraUI?string('outcome.closingYear','outcome.targetYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
