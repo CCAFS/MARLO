@@ -1430,7 +1430,10 @@ public class OutcomesAction extends BaseAction {
             milestone.setSrfTargetUnit(null);
         }
 
-        milestone.copyFields(incomingMilestone);
+        // copyFields() copies nulls and `milestone` is the row loaded from the DB, so any
+        // column the form does not bind would be wiped. The AICCRA matrix only submits the
+        // fields its design shows, so carry the rest over from what is stored.
+        this.preserveUnboundMilestoneFields(milestone, incomingMilestone);
 
         milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
         milestone.setModifiedBy(this.getCurrentUser());
@@ -1448,6 +1451,71 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneManager.replicate(milestone, nextPhase);
       }
     }
+  }
+
+  /**
+   * Carries over the milestone columns the submitted form did not bind.
+   * <p>
+   * {@link CrpMilestone#copyFields(CrpMilestone)} copies nulls, and the entity it is applied to
+   * is the row loaded from the database, so a field absent from the form is silently cleared.
+   * The AICCRA period-target matrix only submits what its design shows, which would wipe the
+   * POWB and DAC columns the other global units still write.
+   * <p>
+   * Only an absent field (null) is restored. A field that was submitted empty binds as an empty
+   * String or -1 rather than null, so clearing a value from the legacy form still works.
+   *
+   * @param stored the milestone loaded from the database, already updated by copyFields
+   * @param incoming the milestone bound from the submitted form
+   * @param before a snapshot of stored taken before copyFields ran
+   */
+  protected static void restoreUnboundMilestoneFields(CrpMilestone stored, CrpMilestone incoming,
+    CrpMilestone before) {
+    if (incoming.getPowbMilestoneVerification() == null) {
+      stored.setPowbMilestoneVerification(before.getPowbMilestoneVerification());
+    }
+    if (incoming.getPowbMilestoneOtherRisk() == null) {
+      stored.setPowbMilestoneOtherRisk(before.getPowbMilestoneOtherRisk());
+    }
+    if (incoming.getGenderFocusLevel() == null) {
+      stored.setGenderFocusLevel(before.getGenderFocusLevel());
+    }
+    if (incoming.getYouthFocusLevel() == null) {
+      stored.setYouthFocusLevel(before.getYouthFocusLevel());
+    }
+    if (incoming.getCapdevFocusLevel() == null) {
+      stored.setCapdevFocusLevel(before.getCapdevFocusLevel());
+    }
+    if (incoming.getClimateFocusLevel() == null) {
+      stored.setClimateFocusLevel(before.getClimateFocusLevel());
+    }
+    if (incoming.getPowbIndFollowingMilestone() == null) {
+      stored.setPowbIndFollowingMilestone(before.getPowbIndFollowingMilestone());
+    }
+    if (incoming.getPowbIndAssesmentRisk() == null) {
+      stored.setPowbIndAssesmentRisk(before.getPowbIndAssesmentRisk());
+    }
+    if (incoming.getPowbIndMilestoneRisk() == null) {
+      stored.setPowbIndMilestoneRisk(before.getPowbIndMilestoneRisk());
+    }
+    if (incoming.getOrderIndex() == null) {
+      stored.setOrderIndex(before.getOrderIndex());
+    }
+    if (incoming.getIsPowb() == null) {
+      stored.setIsPowb(before.getIsPowb());
+    }
+  }
+
+  /**
+   * Snapshots the milestone, applies copyFields and restores whatever the form did not bind.
+   *
+   * @param stored the milestone loaded from the database
+   * @param incoming the milestone bound from the submitted form
+   */
+  private void preserveUnboundMilestoneFields(CrpMilestone stored, CrpMilestone incoming) {
+    CrpMilestone before = new CrpMilestone();
+    before.copyFields(stored);
+    stored.copyFields(incoming);
+    restoreUnboundMilestoneFields(stored, incoming, before);
   }
 
   public void saveSubIdo(CrpProgramOutcome oldOutcome, CrpProgramOutcome incomingOutcome) {
