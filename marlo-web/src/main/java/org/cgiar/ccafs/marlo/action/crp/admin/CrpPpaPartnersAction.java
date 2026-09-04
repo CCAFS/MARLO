@@ -368,15 +368,16 @@ public class CrpPpaPartnersAction extends BaseAction {
         inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
         buffer = readFully(inputStream);
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
+        // The email is still sent, only without the manual attached, so this is the only trace of it.
+        LOG.error("The user manual {} was not found, so the email goes out without it", fileName, e);
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.error("The user manual {} could not be read, so the email goes out without it", fileName, e);
       } finally {
         if (inputStream != null) {
           try {
             inputStream.close();
           } catch (IOException e) {
-            e.printStackTrace();
+            LOG.warn("Could not close the stream of the user manual {}", fileName, e);
           }
         }
       }

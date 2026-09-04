@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -45,6 +46,7 @@ public class CapdevTargetgroupService implements ICapdevTargetgroupService {
   }
 
   @Override
+  @Transactional
   public void deleteCapdevTargetgroup(long capdevTargetgroupId) {
 
     capdevTargetgroupDAO.deleteCapdevTargetgroup(capdevTargetgroupId);

@@ -33,7 +33,8 @@ Both menu entries are rendered **only inside the `action.isAiccra()` branch** of
 - Comment icon markup: `marlo-web/src/main/webapp/WEB-INF/global/macros/forms.ftl` (`qaComment` img in `input`, `textArea`, `select`, …; `qaPopUpMultiple` macro)
 - Entities: `FeedbackQACommentableFields`, `FeedbackQAComment`, `FeedbackQAReply`, `FeedbackPermission`, `FeedbackRolesPermission`, `FeedbackStatus`
 - HBM mappings: `marlo-data/src/main/resources/xmls/Feedback*.hbm.xml`
-- i18n: `global.properties` keys `feedbackManagement.*`, `feedbackPermissions.*`, `CRPAdmin.menu.feedback*`
+- i18n: `global.properties` keys `feedbackManagement.*` (including one `feedbackManagement.section.<slug>`
+  per `ProjectSectionsEnum` value), `feedbackPermissions.*`, `CRPAdmin.menu.feedback*`
 
 ## Feedback Fields Management — What Each Field Means
 
@@ -41,7 +42,7 @@ One row = one commentable form field. Table `feedback_qa_commentable_fields`.
 
 | Admin label (i18n) | Entity property | Column | What it actually does |
 |---|---|---|---|
-| Section Name (`feedbackManagement.sectionName`) | `sectionName` | `section_name` | Section slug. Must match the page's `<input id="sectionNameToFeedback">` value **and** a `ProjectSectionsEnum.getStatus()` value. Used to filter fields in `fieldsBySectionAndParent.do` and to build the comment deep link in `SaveFeedbackCommentsAction`. |
+| Section Name (`feedbackManagement.sectionName`) | `sectionName` | `section_name` | Section slug. Must match the page's `<input id="sectionNameToFeedback">` value **and** a `ProjectSectionsEnum.getStatus()` value. Used to filter fields in `fieldsBySectionAndParent.do` and to build the comment deep link in `SaveFeedbackCommentsAction`. Rendered as a dropdown whose option text is `<label> (<slug>)` — see "The Section Name dropdown" below; the stored value is always the bare slug. |
 | Section Description (`…sectionDescription`) | `sectionDescription` | `section_description` | Human-readable section name for reports and for the admin block title. Not read by the runtime JS. |
 | Field Name (`…fieldName`) | `fieldName` | `field_name` | **Human-readable label.** Served to the browser as JSON key `description`; rendered as the popup title (`Comment on <label>`) and used in notification emails. |
 | Field Description (`…fieldDescription`) | `fieldDescription` | `field_Description` | **The technical DOM name — the join key.** Must be the exact `name` attribute (OGNL expression) of the instrumented form control, e.g. `deliverable.deliverableInfo.title`. Served as JSON key `fieldName`; used as the selector `img.qaComment[name="…"]` to attach the icon, and echoed as `frontName` in comment payloads. |
@@ -53,6 +54,24 @@ One row = one commentable form field. Table `feedback_qa_commentable_fields`.
 **The `fieldName` / `fieldDescription` naming is inverted twice.** `CommentableFieldsBySectionNameAndParents`
 maps `field_description → JSON "fieldName"` and `field_name → JSON "description"`, and the 2022 migration's
 column comments describe the reverse of current behaviour. Trust this table and the JS, not the column comments.
+
+### The Section Name dropdown
+
+The slug is what everything matches on, but it is not what an administrator recognises, so the option text is
+the human name with the slug in parentheses — `Deliverable (deliverable)`. Only the text changes: `value` is the
+bare slug, which is what `bindFeedbackFieldsFromRequest` reads and stores.
+
+- Options come from `FeedbackManagementAction.getProjectSections()` — every `ProjectSectionsEnum.getStatus()`.
+- The label comes from `FeedbackManagementAction.getProjectSectionLabel(slug)`, which resolves
+  `feedbackManagement.section.<slug>` and **falls back to the slug itself** when there is no key. Adding a
+  constant to the enum therefore never renders a raw key; it just renders the slug twice until a key is added.
+- A tenant renames a section the same way it renames menu entries: override the key in `custom/*.properties`.
+  `aicrra.properties` and `aiccra3.properties` already carry the full block, wording it as the rest of those
+  files does — Cluster rather than Project, `study` = `OICR`, `caseStudies` = Outcome Impact Case Reports.
+- A stored slug outside the enum keeps its own extra option, flagged with
+  `feedbackManagement.sectionName.unknown`, so it survives the save instead of being reset to the placeholder.
+- The options are hand-written in the FTL rather than through `[@customForm.select]`: that macro hands the
+  current value to `[@s.select]` as an OGNL expression, which never matches a string slug.
 
 ## Feedback Permissions Management — What Each Field Means
 

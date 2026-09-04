@@ -91,6 +91,7 @@ public class LiaisonInstitutionManagerImpl implements LiaisonInstitutionManager 
   }
 
   @Override
+  @Transactional
   public LiaisonInstitution saveLiaisonInstitution(LiaisonInstitution liaisonInstitution) {
 
     return liaisonInstitutionDAO.save(liaisonInstitution);

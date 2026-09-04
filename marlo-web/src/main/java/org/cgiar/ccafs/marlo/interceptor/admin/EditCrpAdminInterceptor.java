@@ -77,6 +77,11 @@ public class EditCrpAdminInterceptor extends AbstractInterceptor implements Seri
       if (baseAction
         .hasPermission(baseAction.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, crp.getAcronym()))) {
         canEdit = true;
+      } else {
+        // CRP_ADMIN_EDIT_PRIVILEGES is phase-qualified, so an administrator of a Global Unit with no editable
+        // phase never satisfies it and the screens render read-only -- including crpPhases, the only place a
+        // phase can be reopened. Administration is not phased data, so role membership decides instead.
+        canEdit = baseAction.isRole("CRP-Admin");
       }
     }
 

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class CenterSubmissionManager implements ICenterSubmissionManager {
   }
 
   @Override
+  @Transactional
   public void deleteSubmission(long submissionId) {
 
     submissionDAO.deleteSubmission(submissionId);

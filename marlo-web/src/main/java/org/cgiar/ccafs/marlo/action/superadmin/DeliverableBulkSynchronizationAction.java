@@ -199,7 +199,7 @@ public class DeliverableBulkSynchronizationAction extends BaseAction {
             try {
               this.deliverableMetadataByWOS.saveInfo(selectedPhaseID, deliverableId, link, handle);
             } catch (IOException ioe) {
-              ioe.printStackTrace();
+              LOG.error("Could not synchronize the deliverable {}", deliverableId, ioe);
             }
           } else {
             LOG.debug("There was a problem on deliverable " + id + " sync");

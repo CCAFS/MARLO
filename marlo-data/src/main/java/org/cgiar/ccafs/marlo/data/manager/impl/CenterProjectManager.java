@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class CenterProjectManager implements ICenterProjectManager {
   }
 
   @Override
+  @Transactional
   public void deleteCenterProject(long projectId) {
 
     projectDAO.deleteCenterProject(projectId);
