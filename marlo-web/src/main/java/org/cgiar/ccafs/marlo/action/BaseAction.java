@@ -406,7 +406,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected boolean dataSaved;
 
-  private GlobalUnit currentCrp;
+  private GlobalUnit currentGlobalUnit;
   protected boolean delete;
 
   @Autowired
@@ -2924,21 +2924,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Alias of {@link #getCurrentGlobalUnit()}, kept because both names are read from the templates. Prefer the other
+   * one: the entity is a GlobalUnit, and not every global unit is a CRP.
+   *
+   * @return the global unit of the session.
+   */
   public GlobalUnit getCurrentCrp() {
-    if (this.session != null && !this.session.isEmpty()) {
-      try {
-        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.currentCrp = crp;
-      } catch (Exception e) {
-        LOG.warn("Could not read the current CRP from the session", e);
-      }
-    } else {
-
-      this.currentCrp = null;
-
-    }
-    return this.currentCrp;
+    return this.getCurrentGlobalUnit();
   }
 
   public String getCurrentCycle() {
@@ -2961,18 +2954,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public GlobalUnit getCurrentGlobalUnit() {
     if (this.session != null && !this.session.isEmpty()) {
       try {
-        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.currentCrp = crp;
+        this.currentGlobalUnit = (GlobalUnit) this.session.get(APConstants.SESSION_CRP);
       } catch (Exception e) {
         LOG.warn("Could not read the Global Unit from the session", e);
       }
     } else {
-
-      this.currentCrp = null;
-
+      this.currentGlobalUnit = null;
     }
-    return this.currentCrp;
+
+    return this.currentGlobalUnit;
   }
 
   private long getCurrentPhaseParam() {
@@ -7490,37 +7480,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     FundingSource fundingSource = this.fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new in the reporting phase, so it is reported as"
-          + " not new", fundingSourceID, e);
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new in the planning phase, so it is reported as"
-          + " not new", fundingSourceID, e);
-        return false;
-      }
-
+    // Whether the phase is a reporting one makes no difference here: both branches of the previous version ran this
+    // same comparison against the start date of the actual phase.
+    try {
+      Date reportingDate = this.getActualPhase().getStartDate();
+      return fundingSource.getCreateDate().compareTo(reportingDate) >= 0;
+    } catch (Exception e) {
+      LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new", fundingSourceID,
+        e);
+      return false;
     }
   }
 
@@ -7971,39 +7939,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate() != null && reportingDate != null
-          && project.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new in the reporting phase, so it is reported as not new",
-          project.getId(), e);
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate() != null && reportingDate != null
-          && project.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new in the planning phase, so it is reported as not new",
-          project.getId(), e);
-        return false;
-      }
-
+    // Whether the phase is a reporting one makes no difference here: both branches of the previous version ran this
+    // same comparison against the start date of the actual phase.
+    try {
+      Date reportingDate = this.getActualPhase().getStartDate();
+      return project.getCreateDate() != null && reportingDate != null
+        && project.getCreateDate().compareTo(reportingDate) >= 0;
+    } catch (Exception e) {
+      LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
+      return false;
     }
   }
 
