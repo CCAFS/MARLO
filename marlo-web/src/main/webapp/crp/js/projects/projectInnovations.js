@@ -3,6 +3,11 @@ $(document).ready(function () {
   // Add select2
   addSelect2();
 
+  // Fills the unit chip on the anticipated-users counts. There is no Target
+  // Unit on this section, so '-1' names the count unit ('#') explicitly. The
+  // organizations template is stamped too, so rows cloned from it inherit it.
+  setFormatInput('input.targetValueNumber', {}, '-1');
+
 
   // Add Geographic Scope
   /*   $('select.elementType-repIndGeographicScope ').on("addElement removeElement", function(event,id,name) {

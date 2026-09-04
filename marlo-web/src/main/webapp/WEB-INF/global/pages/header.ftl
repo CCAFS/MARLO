@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
 
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260826" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260904" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
