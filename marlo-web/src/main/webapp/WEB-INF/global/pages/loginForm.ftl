@@ -66,9 +66,12 @@
               </ul>
             </div>
           </div>
-          [#-- CRP Image (kept for compatibility with existing JS, not shown in the card layout) --]
+          [#-- CRP Image (kept for compatibility with existing JS, not shown in the card layout).
+               No src here on purpose: loadSelectedImage() in login.js sets it once a Global Unit is actually
+               selected. A src built at render time asked globalUnitLogo.do for the acronym of a unit nobody
+               had chosen yet, and the browser fetched it even though the container is hidden. --]
           <div class="form-group text-center hidden">
-            <img id="crpSelectedImage" width="300px" src="${baseUrl}/data/globalUnitLogo.do?acronym=${(element.acronym)!'default'}" alt="${(element.name)!}" />
+            <img id="crpSelectedImage" width="300px" alt="" />
           </div>
         </div>
 

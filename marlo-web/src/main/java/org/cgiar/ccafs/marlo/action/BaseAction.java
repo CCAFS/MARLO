@@ -406,7 +406,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected boolean dataSaved;
 
-  private GlobalUnit currentCrp;
+  private GlobalUnit currentGlobalUnit;
   protected boolean delete;
 
   @Autowired
@@ -843,60 +843,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       LOG.error("Error checking comment approval permissions", e);
       return false;
     }
-  }
-
-
-  /**
-   * Validate if the current user can approve feedback draft comments
-   * 
-   * @param projectID
-   * @return yes if the user has a role that allows approve comments
-   */
-  public boolean canApproveCommentsOld(Long projectID) {
-    try {
-      if (this.canAccessSuperAdmin()) {
-        return true;
-      }
-
-      List<Role> roles = this.getRolesList();
-      if (roles == null || roles.isEmpty() || projectID == null) {
-        return false;
-      }
-
-      Project project = projectManager.getProjectById(projectID);
-      if (project == null) {
-        return false;
-      }
-
-      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-
-      String clusterType = Optional.ofNullable(project.getProjectInfo()).map(ProjectInfo::getClusterType)
-        .map(ClusterType::getName).orElse(null);
-
-      if (clusterType == null) {
-        return false;
-      }
-
-      return roles.stream().anyMatch(role -> {
-        if (role == null || role.getAcronym() == null) {
-          return false;
-        }
-
-        switch (role.getAcronym()) {
-          case "PMU":
-            return clusterType.equalsIgnoreCase("Theme") || clusterType.equalsIgnoreCase("Regional");
-          case "RPL":
-            return clusterType.equalsIgnoreCase("Country");
-          default:
-            return false;
-        }
-      });
-
-    } catch (Exception e) {
-      LOG.error("Error checking approval permissions", e);
-    }
-
-    return false;
   }
 
   public boolean canBeDeleted(long id, String className) {
@@ -1538,29 +1484,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Validate if the user has a role that allows leave initial comments
-   * 
-   * @return true if the user can leave draft comments
-   */
-  public boolean canLeaveCommentsOld() {
-    try {
-      if (this.canAccessSuperAdmin()) {
-        return true;
-      }
-
-      List<Role> roles = this.getRolesList();
-      Set<String> allowedRoles = new HashSet<>(Arrays.asList("FPL", "FPM", "RPL", "RPM"));
-
-      return roles != null && roles.stream().anyMatch(role -> role != null && allowedRoles.contains(role.getAcronym()));
-
-    } catch (Exception e) {
-      LOG.error("Error checking comment permissions", e);
-    }
-
-    return false;
-  }
-
-  /**
    * Checks if the current user can manage feedback for a given project.
    * A user can manage feedback if:
    * - They are a super admin, OR
@@ -1621,100 +1544,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-
-  /**
-   * Validate the user permission to replay or react to a comment
-   * note: The difference with the function canManageFeedbackOld is that the code block
-   * that starts with the conditional if (projectID != null && response) is eliminated.
-   * This conditional was not intervening in the function
-   * 
-   * @param projectID
-   * @return true if the current user rol is PL or PC
-   */
-  public boolean canManageFeedbackOld(Long projectID) {
-    // Default to no permission
-    boolean response = false;
-
-    try {
-      // Super admin has full access
-      if (this.canAccessSuperAdmin()) {
-        return true;
-      }
-
-      // Check if user has role PL or PC
-      List<Role> roles = this.getRolesList();
-      if (roles != null && roles.stream()
-        .anyMatch(role -> role != null && ("PL".equals(role.getAcronym()) || "PC".equals(role.getAcronym())))) {
-        response = true;
-      }
-    } catch (Exception e) {
-      LOG.error("Error checking feedback management permissions", e);
-    }
-
-    // If user has a valid role and a project ID is provided, validate user-partner association
-    if (response && projectID != null) {
-      try {
-        User currentUser = this.getCurrentUser();
-        if (currentUser == null || currentUser.getId() == null) {
-          LOG.debug("There is no user in the session, so the feedback of the project {} cannot be managed", projectID);
-          return false;
-        }
-
-        Phase currentPhase = this.getActualPhase();
-        Long phaseId = (currentPhase != null) ? currentPhase.getId() : null;
-        if (phaseId == null) {
-          LOG.debug("There is no actual phase, so the feedback of the project {} cannot be managed", projectID);
-          return false;
-        }
-
-        // Get project partners with active persons for the current phase
-        List<ProjectPartner> projectPartners =
-          projectPartnerManager.getProjectPartnersForProjectWithActiveProjectPhasePartnerPersons(projectID, phaseId);
-
-        if (projectPartners == null || projectPartners.isEmpty()) {
-          LOG.debug("The project {} has no partners in the phase {}, so the feedback cannot be managed", projectID,
-            phaseId);
-          return false;
-        }
-
-        for (ProjectPartner partner : projectPartners) {
-          if (partner == null || partner.getId() == null) {
-            continue;
-          }
-
-          // Get active persons for the current project partner
-          List<ProjectPartnerPerson> persons =
-            projectPartnerPersonManager.findAllActiveForProjectPartner(partner.getId());
-
-          if (persons == null || persons.isEmpty()) {
-            continue;
-          }
-
-          for (ProjectPartnerPerson person : persons) {
-            if (person == null || person.getUser() == null || person.getContactType() == null) {
-              continue;
-            }
-
-            // Match user ID
-            if (!currentUser.getId().equals(person.getUser().getId())) {
-              continue;
-            }
-
-            // Check contact type (must be PL or PC)
-            String contactType = person.getContactType();
-            if ("PL".equals(contactType) || "PC".equals(contactType)) {
-              return true; // User is associated with the project with a valid contact type
-            }
-          }
-        }
-      } catch (Exception e) {
-        LOG.error("Error checking partner-person association for project ID: {}", projectID, e);
-      }
-    }
-
-    return response;
-  }
-
   public boolean canModifiedProjectStatus() {
     String actionName = this.getActionName();
     if (actionName.contains(ProjectSectionStatusEnum.DESCRIPTION.getStatus()) && this.hasPermission("statusDescription")
@@ -1766,21 +1595,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return false;
-  }
-
-  /**
-   * Validate if the user has a role that allows tracking comments
-   * 
-   * @return true if the user can leave draft comments
-   */
-  public boolean canTrackCommentsOld() {
-    // TODO: Update the permissions for track feedback comments
-    if (this.canAccessSuperAdmin()) {
-      return true;
-    }
-
-    return this.getRolesList().stream().filter(Objects::nonNull).map(Role::getAcronym).filter(Objects::nonNull)
-      .anyMatch(acronym -> Arrays.asList("FPL", "FPM", "RPL", "RPM").contains(acronym));
   }
 
   /**
@@ -3110,21 +2924,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * Alias of {@link #getCurrentGlobalUnit()}, kept because both names are read from the templates. Prefer the other
+   * one: the entity is a GlobalUnit, and not every global unit is a CRP.
+   *
+   * @return the global unit of the session.
+   */
   public GlobalUnit getCurrentCrp() {
-    if (this.session != null && !this.session.isEmpty()) {
-      try {
-        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.currentCrp = crp;
-      } catch (Exception e) {
-        LOG.warn("Could not read the current CRP from the session", e);
-      }
-    } else {
-
-      this.currentCrp = null;
-
-    }
-    return this.currentCrp;
+    return this.getCurrentGlobalUnit();
   }
 
   public String getCurrentCycle() {
@@ -3147,18 +2954,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public GlobalUnit getCurrentGlobalUnit() {
     if (this.session != null && !this.session.isEmpty()) {
       try {
-        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.currentCrp = crp;
+        this.currentGlobalUnit = (GlobalUnit) this.session.get(APConstants.SESSION_CRP);
       } catch (Exception e) {
         LOG.warn("Could not read the Global Unit from the session", e);
       }
     } else {
-
-      this.currentCrp = null;
-
+      this.currentGlobalUnit = null;
     }
-    return this.currentCrp;
+
+    return this.currentGlobalUnit;
   }
 
   private long getCurrentPhaseParam() {
@@ -4652,8 +4456,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public int getPlanningYear() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_PLANNING_YEAR).toString());
+    String planningYear = this.getSessionValue(APConstants.CRP_PLANNING_YEAR);
+    if (planningYear == null) {
+      LOG.debug("{} is not in the session, so the planning year is 0", APConstants.CRP_PLANNING_YEAR);
+      return 0;
+    }
 
+    try {
+      return Integer.parseInt(planningYear);
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the planning year is 0",
+        APConstants.CRP_PLANNING_YEAR, e);
+      return 0;
+    }
   }
 
   public List<GlobalUnit> getPlatformsList() {
@@ -5559,7 +5374,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public int getReportingYear() {
-    return Integer.parseInt(this.getSession().get(APConstants.CRP_REPORTING_YEAR).toString());
+    String reportingYear = this.getSessionValue(APConstants.CRP_REPORTING_YEAR);
+    if (reportingYear == null) {
+      LOG.debug("{} is not in the session, so the reporting year is 0", APConstants.CRP_REPORTING_YEAR);
+      return 0;
+    }
+
+    try {
+      return Integer.parseInt(reportingYear);
+    } catch (NumberFormatException e) {
+      LOG.debug("The session value of {} is not a number, so the reporting year is 0",
+        APConstants.CRP_REPORTING_YEAR, e);
+      return 0;
+    }
   }
 
   /**
@@ -7653,37 +7480,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     FundingSource fundingSource = this.fundingSourceManager.getFundingSourceById(fundingSourceID);
 
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new in the reporting phase, so it is reported as"
-          + " not new", fundingSourceID, e);
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (fundingSource.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the funding source {} is new in the planning phase, so it is reported as"
-          + " not new", fundingSourceID, e);
-        return false;
-      }
-
+    // Whether the phase is a reporting one makes no difference here: both branches of the previous version ran this
+    // same comparison against the start date of the actual phase.
+    try {
+      Date reportingDate = this.getActualPhase().getStartDate();
+      return fundingSource.getCreateDate().compareTo(reportingDate) >= 0;
+    } catch (Exception e) {
+      LOG.error("Could not tell whether the funding source {} is new, so it is reported as not new", fundingSourceID,
+        e);
+      return false;
     }
   }
 
@@ -7790,7 +7595,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isLessonsActive() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_LESSONS_ACTIVE).toString());
+    String lessonsActive = this.getSessionValue(APConstants.CRP_LESSONS_ACTIVE);
+    if (lessonsActive == null) {
+      LOG.debug("{} is not in the session, so the lessons are hidden", APConstants.CRP_LESSONS_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(lessonsActive);
   }
 
   /**
@@ -7880,7 +7691,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isPlanningActiveParam() {
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_PLANNING_ACTIVE).toString());
+    String planningActive = this.getSessionValue(APConstants.CRP_PLANNING_ACTIVE);
+    if (planningActive == null) {
+      LOG.debug("{} is not in the session, so the planning is reported as inactive",
+        APConstants.CRP_PLANNING_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(planningActive);
   }
 
   public boolean isPMU() {
@@ -7995,25 +7813,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         return true;
       }
       // }
-
-    }
-
-    return false;
-  }
-
-  public boolean isPPAOld(Institution institution) {
-    if (institution == null) {
-      return false;
-    }
-
-    if (institution.getId() != null) {
-      institution = this.institutionManager.getInstitutionById(institution.getId());
-      if (institution != null) {
-        if (institution.getCrpPpaPartners().stream().filter(c -> c.getCrp().getId().longValue() == this.getCrpID()
-          && c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()).size() > 0) {
-          return true;
-        }
-      }
 
     }
 
@@ -8140,39 +7939,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    if (this.isReportingActive()) {
-
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate() != null && reportingDate != null
-          && project.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new in the reporting phase, so it is reported as not new",
-          project.getId(), e);
-        return false;
-      }
-
-    } else {
-      try {
-        Date reportingDate = this.getActualPhase().getStartDate();
-        if (project.getCreateDate() != null && reportingDate != null
-          && project.getCreateDate().compareTo(reportingDate) >= 0) {
-          return true;
-        } else {
-          return false;
-        }
-
-      } catch (Exception e) {
-        LOG.error("Could not tell whether the project {} is new in the planning phase, so it is reported as not new",
-          project.getId(), e);
-        return false;
-      }
-
+    // Whether the phase is a reporting one makes no difference here: both branches of the previous version ran this
+    // same comparison against the start date of the actual phase.
+    try {
+      Date reportingDate = this.getActualPhase().getStartDate();
+      return project.getCreateDate() != null && reportingDate != null
+        && project.getCreateDate().compareTo(reportingDate) >= 0;
+    } catch (Exception e) {
+      LOG.error("Could not tell whether the project {} is new, so it is reported as not new", project.getId(), e);
+      return false;
     }
   }
 
@@ -8276,8 +8051,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
       return true;
     }
-    return Boolean.parseBoolean(this.getSession().get(APConstants.CRP_REPORTING_ACTIVE).toString());
 
+    String reportingActive = this.getSessionValue(APConstants.CRP_REPORTING_ACTIVE);
+    if (reportingActive == null) {
+      LOG.debug("{} is not in the session, so the reporting is reported as inactive",
+        APConstants.CRP_REPORTING_ACTIVE);
+      return false;
+    }
+
+    return Boolean.parseBoolean(reportingActive);
   }
 
   public boolean isRole(String roleAcronym) {
