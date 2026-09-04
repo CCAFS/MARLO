@@ -114,8 +114,10 @@ Note the constant name and the value disagree for `CAN_MANAGE_FEEDBACK` (`can_re
 - `canManageFeedback` additionally requires, for users holding role acronym `PL` or `PC`, that the user be an
   active project partner person on that project whose `contactType` is one of the acronyms returned by
   `findRoleAcronymsByPermissionName("can_react_comments", globalUnitId)`.
-- `*Old()` variants (`canManageFeedbackOld`, `canApproveCommentsOld`, `canLeaveCommentsOld`, `canTrackCommentsOld`)
-  are the pre-database, acronym-hardcoded implementations. Dead but retained; do not extend them.
+- The `*Old()` variants (`canManageFeedbackOld`, `canApproveCommentsOld`, `canLeaveCommentsOld`,
+  `canTrackCommentsOld`, `isPPAOld`) were the pre-database, acronym-hardcoded implementations. Removed from
+  `BaseAction` on 2026-09-04 (d66a98cf94) after checking for callers in the Java sources of every module, in
+  the FreeMarker templates and in the Struts configuration.
 
 ## Runtime Wiring
 
@@ -239,8 +241,9 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
     an empty list, so the `catch` fallbacks are not hit routinely.
 8. **Dead code that looks live.** `DeliverableListAction.getCommentStatusesOld` / `getCommentStatusesOld2`
     (no callers; only `getCommentStatuses` at line 218 runs), `FeedbackQACommentableFieldsMySQLDAO
-    .findBySectionName`, `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its missing
-    `frp` alias was fixed, but nothing calls it) and the four `*Old()` capability methods in `BaseAction`.
+    .findBySectionName` and `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its
+    missing `frp` alias was fixed, but nothing calls it). The `*Old()` capability methods of `BaseAction` were
+    on this list until they were removed on 2026-09-04.
 9. **Configured sections do not match the enum.** Verified against `aiccradb1` on 2026-08-26, global unit 45
     has 91 active fields across `innovation` (34), `study` (22), `deliverable` (20), `projectContributionCrp`
     (13), `contributionsCrpList` (1) and `test` (1). **`test` is not a `ProjectSectionsEnum` value**, so field
