@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?202609042",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?202609045",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?202609042",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?202609045",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -148,14 +148,23 @@
 
             [#-- Section Buttons--]
             <div class="opi-saveBar">
-              [#-- Save state only means something while the form can be edited. --]
-              [#if editable]
-              <span class="opi-saveBar__state">
-                <span class="opi-saveBar__dot"></span>
-                <span data-opi-save-state>[@s.text name="outcomes.saveBar.saved"/]</span>
-              </span>
-              <span class="opi-saveBar__detail" data-opi-save-detail></span>
-              [/#if]
+              [#-- Left group: save state plus the shared last-edit message, which
+                   opiGroupSaveBar() moves in here from the buttons include. --]
+              <div class="opi-saveBar__info">
+                [#-- Save state only means something while the form can be edited. --]
+                [#if editable]
+                <span class="opi-saveBar__state">
+                  <span class="opi-saveBar__dot"></span>
+                  <span data-opi-save-state>[@s.text name="outcomes.saveBar.saved"/]</span>
+                </span>
+                <span class="opi-saveBar__detail" data-opi-save-detail></span>
+                [/#if]
+                [#-- Holds the last-edit message's slot until opiGroupSaveBar()
+                     places it. The script drops this whether or not the message
+                     exists, so it never outlives the load. --]
+                <span class="opi-saveBar__ghost" data-opi-save-ghost aria-hidden="true"></span>
+              </div>
+              [#-- Right group: every action button the section offers. --]
               <div class="opi-saveBar__actions">
                 [#include "/WEB-INF/crp/views/impactPathway/buttons-impactPathway.ftl" /]
               </div>

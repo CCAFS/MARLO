@@ -775,6 +775,8 @@ $(document).ready(function() {
   }
   opiAttachHelpToggle();
   opiDecorateCheckButton();
+  opiGroupSaveBar();
+  opiDecorateSaveButton();
   if (!opiIsEditable()) {
     return;
   }
@@ -984,6 +986,35 @@ function opiDecorateCheckButton() {
   if ($btn.exists() && !$btn.find('svg').exists()) {
     $btn.prepend('<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="#fff" stroke-width="1.5"></circle><path d="M5.2 8.2 7.1 10l3.7-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg> ');
   }
+}
+
+/**
+ * Moves the shared last-edit message into the save bar's left group, next to
+ * the save state, so the bar reads "state + last edit" on the left and the
+ * action buttons on the right. The message is rendered by
+ * buttons-impactPathway.ftl, which every impact pathway section reuses, so it
+ * is relocated here instead of being re-rendered for this section alone.
+ */
+function opiGroupSaveBar() {
+  var $info = $('.opi-saveBar__info');
+  if (!$info.exists()) { return; }
+  var $message = $('.opi-saveBar__actions #lastUpdateMessage');
+  if ($message.exists()) {
+    $info.append($message);
+  }
+  // Always drops the placeholder: a section with no history log never gets a
+  // message, and the slot must not keep shimmering for it.
+  $info.find('[data-opi-save-ghost]').remove();
+}
+
+/**
+ * Replaces the shared glyphicon on the save button with the design's outline
+ * save icon, the way opiDecorateCheckButton() does for the validate button.
+ */
+function opiDecorateSaveButton() {
+  var $icon = $('.opi-saveBar .button-save .glyphicon');
+  if (!$icon.exists()) { return; }
+  $icon.replaceWith('<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3h7.2L13 5.8V13H3V3Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"></path><path d="M5.6 3v3.4h4.2V3M5.6 13v-3.2h4.8V13" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"></path></svg>');
 }
 
 /**

@@ -1540,17 +1540,49 @@ span.icon-20 {
   padding: 12px 18px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 14px;
   margin-top: 16px;
+  /* The bar follows the scroll instead of the shared positionFixedBot hack, so
+     the state, the last-edit message and the buttons stay together as one card.
+     It floats 12px off the viewport bottom and settles into place at the end of
+     the section. Every ancestor keeps overflow: visible, which sticky needs. */
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+}
+
+/* Left group: save state, its dirty hint and the shared last-edit message that
+   opiGroupSaveBar() moves in from the buttons include. They sit on one line
+   while there is room and wrap onto separate lines once there is not. */
+.opi-saveBar__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 14px;
 }
 
 .opi-saveBar__state { display: flex; align-items: center; gap: 8px; font: 600 13px Figtree, sans-serif; color: var(--opi-ok); }
-.opi-saveBar__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--opi-ok); display: block; }
+.opi-saveBar__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--opi-ok); display: block; flex: none; }
 .opi-saveBar.is-dirty .opi-saveBar__state { color: var(--opi-warn); }
 .opi-saveBar.is-dirty .opi-saveBar__dot { background: #C08A2E; }
 .opi-saveBar__detail { font: 400 12.5px Figtree, sans-serif; color: var(--opi-muted); }
-.opi-saveBar__actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.opi-saveBar__detail:empty { display: none; }
+
+/* Right group: the action buttons, kept together and pinned to the far edge. */
+.opi-saveBar__actions {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The buttons include ends with a float clearer that the flex layout does not
+   need; left in place it would only widen the gap between buttons. */
+.opi-page .opi-saveBar .clearfix { display: none; }
 
 .opi-page .opi-saveBar .buttons,
 .opi-page .opi-saveBar .buttons-content {
@@ -1575,12 +1607,26 @@ span.icon-20 {
   background: var(--opi-primary);
   color: #fff;
   font: 600 14px Figtree, sans-serif;
-  line-height: 38px;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
+/* global.css paints .button-save green; the base rule above overrides it but the
+   hover / focus / active states have to re-declare the background or the green
+   comes back through. brightness(1.06) is the canvas hover. */
 .opi-page .opi-saveBar .button-save:hover,
-.opi-page .opi-saveBar .button-edit:hover { filter: brightness(1.06); color: #fff; }
+.opi-page .opi-saveBar .button-save:focus,
+.opi-page .opi-saveBar .button-save:active,
+.opi-page .opi-saveBar .button-edit:hover,
+.opi-page .opi-saveBar .button-edit:focus,
+.opi-page .opi-saveBar .button-edit:active {
+  background: var(--opi-primary);
+  border: 0;
+  color: #fff;
+  filter: brightness(1.06);
+}
 
 .opi-page .opi-saveBar .button-cancel,
 .opi-page .opi-saveBar .button-history {
@@ -1591,19 +1637,86 @@ span.icon-20 {
   background: #fff;
   color: var(--opi-ink-soft);
   font: 600 13px Figtree, sans-serif;
-  line-height: 36px;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.opi-page #lastUpdateMessage {
+/* The message reads as the state's caption, so it drops the shared global.css
+   italics and the pull-right float and lines up next to it. */
+.opi-page .opi-saveBar #lastUpdateMessage {
   display: block;
-  width: 100%;
-  margin-top: 6px;
-  font: 400 12px Figtree, sans-serif;
+  width: auto;
+  margin: 0;
+  font: 400 12.5px Figtree, sans-serif;
+  font-style: normal;
   color: var(--opi-muted);
   float: none !important;
-  text-align: right;
+  text-align: left;
 }
+
+/* The message ships inside the buttons include, so the server paints it on the
+   right of the bar and opiGroupSaveBar() only then moves it into the left group
+   - an 824px jump on every load. Kept out of the layout until it lands, with
+   the placeholder below holding its slot, so nothing shifts. display: none
+   rather than visibility so it claims no width in the actions group either. */
+.opi-page .opi-saveBar .opi-saveBar__actions #lastUpdateMessage { display: none; }
+
+.opi-saveBar__ghost {
+  flex: none;
+  width: 190px;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #EDF1F5 25%, #F7F9FB 37%, #EDF1F5 63%);
+  background-size: 400% 100%;
+  animation: opiSaveBarGhost 1.2s ease-in-out infinite;
+}
+
+@keyframes opiSaveBarGhost {
+  from { background-position: 100% 50%; }
+  to { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opi-saveBar__ghost { animation: none; }
+}
+
+/* Like the canvas, the muted caption is a single slot: while there are unsaved
+   changes the dirty hint replaces the last-edit message instead of joining it. */
+.opi-page .opi-saveBar.is-dirty #lastUpdateMessage { display: none; }
+
+/* Narrow viewports: the state keeps the first line of the left group and the
+   last-edit message wraps underneath it. The bar itself no longer wraps, so the
+   buttons stay on the right and only the left group reflows. */
+@media (max-width: 767px) {
+  .opi-saveBar__state { flex: 1 1 100%; }
+  .opi-saveBar__detail { flex: 1 1 100%; }
+  .opi-page .opi-saveBar #lastUpdateMessage { flex: 1 1 100%; }
+}
+
+/* global.css hangs a 27x27 unit chip off every .input wrapper holding a
+   .targetValueNumber field: setFormatInput() in global/js/utils.js stamps
+   data-targetunit with '#', '%' or '?' from the selected Target Unit and the
+   ::after renders it. The chip is absolutely positioned but .input is static,
+   and none of the redesign's cards are positioned either, so it anchors to
+   .container - where bottom: 0 stacks every chip on this bar as one stray grey
+   square. projectContributionCrp is spared because its fields sit inside a
+   position: relative .borderBox. Dropped here because the redesign already
+   states the unit in its own select and in .opi-cell__affix. */
+.opi-page .input:has(input[type="text"].targetValueNumber)::after,
+.opi-page .input:has(input[type="number"].targetValueNumber)::after {
+  content: none;
+}
+
+/* 5) global.js pins .buttons-content to the viewport bottom on scroll, which
+   would tear the buttons out of the sticky bar. Neutralised inside the bar. */
+.opi-page .opi-saveBar .buttons-content.positionFixedBot {
+  position: static;
+  bottom: auto;
+}
+
+.opi-page .opi-saveBar .buttons-content.animated { animation: none; }
 
 /* ---------- Mockup parity pass ---------- */
 
