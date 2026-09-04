@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -45,6 +46,7 @@ public class CenterOutcomeManager implements ICenterOutcomeManager {
   }
 
   @Override
+  @Transactional
   public void deleteResearchOutcome(long researchOutcomeId) {
 
     researchOutcomeDAO.deleteResearchOutcome(researchOutcomeId);

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class CenterTopicManager implements ICenterTopicManager {
   }
 
   @Override
+  @Transactional
   public void deleteResearchTopic(long researchTopicId) {
 
     researchTopicDAO.deleteResearchTopic(researchTopicId);

@@ -50,11 +50,13 @@ public interface BiParametersDAO {
   public BiParameters find(long id);
 
   /**
-   * This method gets a list of biParameters that are active
+   * This method gets the list of biParameters visible for the given global unit. It returns the parameters configured
+   * for that global unit plus the ones with no global unit, which act as the platform-wide defaults.
    * 
+   * @param globalUnitId is the global unit identifier.
    * @return a list from BiParameters null if no exist records
    */
-  public List<BiParameters> findAll();
+  public List<BiParameters> findAll(long globalUnitId);
 
 
   /**

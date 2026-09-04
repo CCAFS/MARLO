@@ -3,14 +3,14 @@
 **Spec ID:** DOMAIN-FEEDBACK-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-09-03
 **Implements design:** docs/specs/domain/feedback/design.md
 **Branching:** feature branch from `staging`, named `feedback-module-hardening` (or `<TICKET-ID>-<Description>` once ticketed)
 **Target merge:** `staging` (then promoted to `main` per release process)
 
-> T01 is documentation only and is already complete. T02 is a decision gate: **T10–T16 must not start until the
-> open questions in `requirements.md` §8 are answered.** T03–T09 are behaviour-preserving and can proceed in
-> parallel with that gate.
+> Completed tasks are removed from this list once shipped; git history holds them. T02 is a decision gate:
+> **T12–T17 and T20 must not start until the open questions in `requirements.md` §8 are answered.** T03–T09 are
+> behaviour-preserving and can proceed in parallel with that gate.
 
 ---
 
@@ -32,45 +32,27 @@
 ## 2. Pre-flight Checklist
 
 - [ ] `requirements.md` and `design.md` reviewed and moved to **Approved**.
-- [ ] `requirements.md` §8 open questions OQ-001 … OQ-006 answered and recorded in the Decision Log.
+- [ ] `requirements.md` §8 open questions OQ-001 … OQ-007 answered and recorded in the Decision Log.
 - [ ] `git checkout staging && git pull` then branch from `staging` (never from `main`, never commit to `main`).
 - [ ] Local instance runs and the two admin screens load for the AICCRA global unit.
 - [ ] Baseline capture: for the target database, export
       `feedback_qa_commentable_fields`, `feedback_roles_permissions`, and the `section_name` distribution —
-      needed for R-01, R-02, and R-03 in `design.md` §16.
+      needed for R-01, R-02, and R-03 in `design.md` §16. Also export `cluster_types` and each grant's
+      resolved cluster-type name beside its `description` — needed for R-07 / FN-040.
 - [ ] Confirm no other branch is mid-flight on `feedbackAutoImplementation.js`.
 
 ## 3. Task List
 
-### DOMAIN-FEEDBACK-001-T01 — Document the module as-built (this spec)
+### DOMAIN-FEEDBACK-001-T02 — Resolve open questions OQ-001 … OQ-007
 
-- **Depends on:** —
-- **Module:** docs
-- **Files touched:**
-  - `docs/specs/domain/feedback/agent-context.md` (new)
-  - `docs/specs/domain/feedback/requirements.md` (new)
-  - `docs/specs/domain/feedback/design.md` (new)
-  - `docs/specs/domain/feedback/task.md` (new)
-- **Constitutional checks:** spec folder carries all three mandated files plus `agent-context.md`;
-  English only; commit subject prefixed `[SPEC:docs/specs/domain/feedback]`.
-- **Acceptance:** every configuration field of both admin screens has a documented meaning; every gap is a
-  numbered requirement.
-- **Verification:** read `agent-context.md` cold and configure one new commentable field without opening any
-  Java or JS file.
-- **Status:** Done — 2026-08-25.
-
-### DOMAIN-FEEDBACK-001-T02 — Resolve open questions OQ-001 … OQ-006
-
-- **Depends on:** T01
 - **Module:** docs
 - **Files touched:** `docs/specs/domain/feedback/requirements.md` (§8, §9)
 - **Constitutional checks:** each answer appended to the Decision Log as `YYYY-MM-DD — decision — rationale`.
-- **Acceptance:** all six questions answered; T10–T16 unblocked or explicitly deferred.
+- **Acceptance:** all remaining questions answered; T12–T17 and T20 unblocked or explicitly deferred.
 - **Verification:** IBD team lead plus one of PMU lead / QA lead / Tech lead sign off.
 
 ### DOMAIN-FEEDBACK-001-T03 — Bind DAO query parameters (NF-003, NF-004)
 
-- **Depends on:** T01
 - **Module:** marlo-data
 - **Files touched:**
   - `data/dao/mysql/FeedbackQACommentableFieldsMySQLDAO.java` — `findBySectionName`, `findAllByGlobalUnit`
@@ -81,16 +63,13 @@
   gates return identical results to the baseline.
 - **Verification:** capability matrix from the Testing Plan re-run and diffed against the pre-change run;
   `getAnsweredCommentByPhaseToStudy` / `getCommentStatusByPhaseToStudy` still return the same rows.
-
-### DOMAIN-FEEDBACK-001-T04 — Fix the HBM column name (NF-005)
-
-- **Depends on:** T01
-- **Module:** marlo-data
-- **Files touched:** `resources/xmls/FeedbackRolesPermissions.hbm.xml`
-- **Constitutional checks:** no schema change; mapping only.
-- **Acceptance:** `<column name="requires_project_association"/>` with no trailing space.
-- **Verification:** application boots; the Permissions screen lists rows; `requires_project_association`
-  round-trips through a read.
+- **Note (2026-08-26):** two of the four methods in scope turned out to be unreachable, which changes the
+  approach from convert to delete. `findBySectionName` has no callers — `CommentableFieldsBySectionNameAndParents`
+  filters in memory — so its `String` concatenation is not a reachable injection. `findObjectsByRoleIdsAndPermissionName`
+  already carries the `frp` alias the task asked for, and has no callers either. What remains is genuine but
+  numeric-only: `findAllByGlobalUnit` here and in `FeedbackQACommentMySQLDAO`. Separately, the null-on-empty
+  contract of this DAO was corrected on 2026-08-26; five methods in the comment/reply/status DAOs still return
+  `null` and are listed in `agent-context.md` defect 5.
 
 ### DOMAIN-FEEDBACK-001-T05 — Remove the dead `*Old()` capability methods (FN-031)
 
@@ -103,104 +82,38 @@
 - **Acceptance:** `grep -rn "canManageFeedbackOld\|canApproveCommentsOld\|canLeaveCommentsOld\|canTrackCommentsOld" marlo-web/src marlo-data/src` returns nothing.
 - **Verification:** full compile; capability matrix unchanged.
 
-### DOMAIN-FEEDBACK-001-T06 — Clean the two admin JS files (NF-007)
-
-- **Depends on:** T01
-- **Module:** marlo-web
-- **Files touched:**
-  - `webapp/crp/js/admin/feedbackManagement.js` — drop `addIndicator`, `addTargets`, `addCrossCuttingIssue`,
-    `datePickerConfig`, `date`, and the `console.log` calls; keep `addIdo`, `removeElement`, `updateIndexes`,
-    the accordion handler
-  - `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` — same removals; also de-duplicate the
-    `#feedbackPermissionFilter` change handler, which is bound twice with two different matching strategies
-    (`.feedbackPermission` value vs `data-permission-id`)
-- **Constitutional checks:** `updateIndexes()` behaviour preserved exactly — the server-side manual binder
-  depends on contiguous indexes (NF-002, ADR-FB-002).
-- **Acceptance:** add / edit / remove / save round-trips on both screens with identical persisted results;
-  no console output; the permission filter works from a single handler.
-- **Verification:** on each screen, create 5 blocks, remove the 3rd, save, reload; confirm 4 rows persisted
-  with the expected values.
-
-### DOMAIN-FEEDBACK-001-T07 — Add the missing cache-buster (NF-008)
-
-- **Depends on:** T06
-- **Module:** marlo-web
-- **Files touched:** `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (add `?YYYYMMDD` to the
-  `js/admin/feedbackManagement.js` entry); bump `?YYYYMMDD` on
-  `feedbackRolesPermissionsManagement.ftl` and on every FTL referencing
-  `crp/js/feedback/feedbackAutoImplementation.js` (`projectDeliverable.ftl`, `projectInnovation.ftl`,
-  `projectStudy.ftl`, `projectContributionCrp.ftl`, `safeguard.ftl`)
-- **Constitutional checks:** repository convention — bump the `?YYYYMMDD` param whenever a CSS/JS asset changes.
-- **Acceptance:** every feedback JS reference carries a cache-buster matching the edit date.
-- **Verification:** hard-reload each page and confirm the browser requests the new query string.
-
-### DOMAIN-FEEDBACK-001-T08 — Silence the runtime permission logging (NF-007)
-
-- **Depends on:** T01
-- **Module:** marlo-web
-- **Files touched:** `webapp/crp/js/feedback/feedbackAutoImplementation.js` — remove the five
-  `console.log` calls for `userCanManageFeedback`, `userCanLeaveComments`, `userCanApproveFeedback`,
-  `usercanTrackComments`, `isSuperAdmin`
-- **Constitutional checks:** no behaviour change; cache-buster bump via T07.
-- **Acceptance:** clean console on an instrumented section page.
-- **Verification:** open a deliverable with feedback active; console shows no feedback output.
-
 ### DOMAIN-FEEDBACK-001-T09 — Add administrator help text to both screens (FN-013)
 
-- **Depends on:** T01
+**Partly shipped.** Feedback Fields Management is done: `help=` / `[@customForm.helpLabel]` on all five
+controls, the `feedbackManagement.*.help` keys, and the Section Name dropdown now reading `<label> (<slug>)`
+off the `feedbackManagement.section.<slug>` keys (FN-002). What remains is the permissions screen.
+
 - **Module:** marlo-web
 - **Files touched:**
-  - `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` — `help=` on all five controls
   - `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` — `help=` on all four controls
-  - `resources/global.properties` — new `feedbackManagement.*.help` and `feedbackPermissions.*.help` keys
+  - `resources/global.properties` — new `feedbackPermissions.*.help` keys
 - **Constitutional checks:** all strings i18n-keyed (constitutional rule 8); English only; also add the keys to
   `custom/*.properties` only where a tenant needs an override.
 - **Acceptance:** each help text states whether the value is a human label or a technical identifier and what it
-  must match — in particular that **Field Description** is the form control's `name` attribute and
-  **Field Name** is the label shown in the popup.
-- **Verification:** an administrator who has not read this spec configures one new commentable field correctly
-  on the first attempt.
+  must match. On the permissions screen the one that matters is **Cluster Type**: blank means the grant applies
+  to every cluster type, and `canTrackComments()` only ever matches blank rows.
+- **Verification:** an administrator who has not read this spec configures one new grant correctly on the first
+  attempt.
 
-### DOMAIN-FEEDBACK-001-T10 — Reconcile the Safeguard section slug (FN-038)
-
-- **Depends on:** T02 (OQ-006)
-- **Module:** marlo-web (+ marlo-web migrations if OQ-006 chooses the data path)
-- **Files touched:** depends on the OQ-006 answer —
-  (a) `webapp/WEB-INF/crp/views/projects/safeguard.ftl` (`sectionNameToFeedback` → `safeguards`), or
-  (b) `marlo-data/.../model/ProjectSectionsEnum.java` (add `SAFEGUARD("safeguard")`), or
-  (c) `resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__NormalizeFeedbackSafeguardSectionName.sql`
-- **Constitutional checks:** migration naming `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`
-  under `marlo-web/src/main/resources/database/migrations/`; forward-only.
-- **Acceptance:** the Safeguard section resolves its commentable fields, and saving a comment there persists
-  with a working deep link.
-- **Verification:** save a comment on a safeguard field; confirm the row in `feedback_qa_comments` and that its
-  `link` resolves back to the field.
-
-### DOMAIN-FEEDBACK-001-T11 — Make section resolution null-safe (FN-038)
-
-- **Depends on:** T10
-- **Module:** marlo-web
-- **Files touched:** `action/json/project/SaveFeedbackCommentsAction.java` — guard
-  `switch (ProjectSectionsEnum.getValue(sectionName))` against a `null` enum and fall through to the generic
-  link builder with a logged warning
-- **Constitutional checks:** no swallowed exception; log at WARN with the offending slug.
-- **Acceptance:** an unrecognised `section_name` produces a logged warning and a generic link, never a 500.
-- **Verification:** temporarily configure a field with a bogus slug, save a comment, confirm the warning and
-  a persisted comment.
-
-### DOMAIN-FEEDBACK-001-T12 — Fix delete semantics on Feedback Fields Management (FN-009, FN-010)
+### DOMAIN-FEEDBACK-001-T12 — Harden the save on Feedback Fields Management (FN-010)
 
 - **Depends on:** T02
 - **Module:** marlo-web
-- **Files touched:** `action/crp/admin/FeedbackManagementAction.java` — move the delete loop outside the
-  `!feedbackFields.isEmpty()` guard (mirroring `FeedbackRolesPermissionsManagementAction`), wrap each upsert and
-  delete in `try/catch`, add an SLF4J logger, and translate a `field_id` `ON DELETE RESTRICT` violation into an
-  i18n action message naming the blocked field
+- **Files touched:** `action/crp/admin/FeedbackManagementAction.java` — wrap **each upsert** in `try/catch` so one
+  failing row cannot abort the whole save, and translate a `field_id` `ON DELETE RESTRICT` violation into an i18n
+  action message naming the blocked field
 - **Constitutional checks:** two-pass save with the pre-save snapshot preserved (ADR-FB-003); writes stay on the
   manager chain; new i18n keys added to `global.properties`.
-- **Acceptance:** AC-005 and AC-006 in `requirements.md` §6 pass.
-- **Verification:** (a) delete all rows, save, confirm zero rows remain; (b) attempt to delete a field that has
-  comments, confirm an actionable message and that all other rows still saved.
+- **Acceptance:** AC-006 in `requirements.md` §6 passes.
+- **Verification:** attempt to delete a field that has comments; confirm an actionable message and that all other
+  rows still saved.
+- **Note:** the delete pass already runs outside the `isEmpty()` guard, and the delete side is already wrapped and
+  logged. Only the per-row upsert `try/catch` is outstanding.
 
 ### DOMAIN-FEEDBACK-001-T13 — Add validators to both admin screens (NF-006, FN-022)
 
@@ -219,22 +132,9 @@
 - **Verification:** submit each invalid combination and confirm a field-level message and no persisted row;
   submit a valid form and confirm it still saves.
 
-### DOMAIN-FEEDBACK-001-T14 — Turn Section Name into a select (FN-011)
-
-- **Depends on:** T10, T13
-- **Module:** marlo-web
-- **Files touched:** `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` — replace the
-  `sectionName` `[@customForm.input]` with a `[@customForm.select listName="projectSections"]` driven by the
-  list `FeedbackManagementAction.prepare()` already builds
-- **Constitutional checks:** must not silently drop a configured value outside `ProjectSectionsEnum` — render
-  any such value as a preserved, flagged option (see R-02).
-- **Acceptance:** administrators can only choose a valid section; pre-existing out-of-enum values remain visible
-  and are not lost on save.
-- **Verification:** run T10 first; confirm every existing row still round-trips with its section intact.
-
 ### DOMAIN-FEEDBACK-001-T15 — Honour `requiresProjectAssociation` (FN-021)
 
-- **Depends on:** T02 (OQ-004), T04, T13
+- **Depends on:** T02 (OQ-004), T13
 - **Module:** marlo-web, marlo-data
 - **Files touched:**
   - `action/BaseAction.java` — `canManageFeedback` reads the grant's `requiresProjectAssociation` instead of
@@ -248,22 +148,6 @@
   flag cleared no longer requires project association.
 - **Verification:** capability matrix re-run with the flag set and cleared for a PL user on a project they are
   and are not associated with.
-
-### DOMAIN-FEEDBACK-001-T16 — Scope grant matching to the tenant (FN-030)
-
-- **Depends on:** T02 (and T03, so the query is already parameterised)
-- **Module:** marlo-data, marlo-web
-- **Files touched:**
-  - `data/dao/mysql/FeedbackRolesPermissionMySQLDAO.java` — add
-    `AND (frp.global_unit_id IS NULL OR frp.global_unit_id = :globalUnitID)` to
-    `existsByRoleIdsAndPermissionName`, and the same to `findRoleAcronymsByPermissionName` /
-    `findRoleIdsByPermissionName`
-  - a one-off pre-flight query (not committed) listing grants whose `global_unit_id` differs from their role's `crp`
-- **Constitutional checks:** this **revokes** capabilities that currently work via the leak — do not ship without
-  the pre-flight report and PMU/QA sign-off (R-01).
-- **Acceptance:** AC-011 passes; no tenant loses a capability that its own grant rows legitimately confer.
-- **Verification:** run the pre-flight report on a production-like dump; for every affected role, confirm an
-  equivalent grant exists under the correct global unit before deploying.
 
 ### DOMAIN-FEEDBACK-001-T17 — Retire `parentFieldIdentifier` and `feedbackParent.do` (FN-012, FN-039)
 
@@ -283,7 +167,6 @@
 
 ### DOMAIN-FEEDBACK-001-T18 — i18n the runtime prompt strings (NF-010)
 
-- **Depends on:** T08
 - **Module:** marlo-web
 - **Files touched:** `webapp/crp/js/feedback/feedbackAutoImplementation.js` (read labels from a
   data-attribute or a JS i18n bundle instead of literals such as `"Reason for disagreement:"`,
@@ -294,9 +177,40 @@
 - **Acceptance:** no user-visible English literal remains in the feedback JS.
 - **Verification:** exercise all six statuses and confirm every prompt renders from `global.properties`.
 
+### DOMAIN-FEEDBACK-001-T20 — Reconcile the cluster-type catalog with the seeded grants (FN-040)
+
+- **Depends on:** T02 (OQ-007)
+- **Module:** marlo-web (migration)
+- **Reframed 2026-08-25 after reading `aiccradb1`:** the live data is **correct** — `cluster_types` id 2 is
+  `Theme` and every grant matches its description. The real defect is that the migration history produces
+  `Flagship` for id 2, so a fresh environment does not reproduce production. Scope is now: align the catalog
+  migration with the live values, and stop using description-based `LIKE` backfill (which silently skips
+  `'thematic'`). No production data change is needed.
+- **Files touched:**
+  - a read-only pre-flight query (not committed) joining `feedback_roles_permissions` to `cluster_types` and
+    listing each row's `description` beside the resolved `cluster_types.name`
+  - `resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__ReconcileFeedbackGrantClusterTypes.sql` —
+    per the OQ-007 answer, either insert the missing cluster type or repoint the `FPL`/`FPM`
+    `can_react_comments` grants, **scoped by explicit `id` list**, never by description matching
+- **Constitutional checks:** migration naming and location per constitutional rule 5; forward-only. If OQ-007
+  chooses to insert a `cluster_types` row, note that the catalog is shared with `projects_info.type_id` and every
+  other cluster-type consumer — that is a wider change than it looks and needs its own impact check.
+- **Acceptance:** AC-016 passes — every grant's resolved cluster-type name is consistent with its description.
+- **Verification:** re-run the pre-flight query; then re-run the capability matrix for `FPL` and `FPM` on
+  projects of each cluster type and confirm the reaction controls appear where intended and only there.
+- **Note:** the defect is inferred from the migration chain, not from a database read. Confirm the live state
+  first — the admin screen has been able to correct these rows by hand since 2025-06 (R-07).
+
+### DOMAIN-FEEDBACK-001-T23 — Spot-check the study capability markers
+
+- **Module:** marlo-web (verification only — the four markers are already rendered by
+  `webapp/WEB-INF/global/macros/studiesTemplates.ftl`)
+- **Verification:** open a study with a `PL`/`PC` user and confirm no tracking icon is offered on their own
+  comment, matching the deliverable and innovation sections.
+
 ### DOMAIN-FEEDBACK-001-T19 — Update the ai-context companions
 
-- **Depends on:** T12, T13, T16
+- **Depends on:** T12, T13, T20
 - **Module:** docs
 - **Files touched:** `reports/ai-context/save-validation-matrix.md` (the two new validators),
   `reports/ai-context/struts-critical-routing-catalog.md` (if T17 removes a route),
@@ -310,31 +224,27 @@
 ## 4. Dependency Graph
 
 ```
-T01 (done)
- ├─ T02 ── decision gate ──┬─ T10 ─ T11
- │                         ├─ T12 ─ T13 ─┬─ T14   (also needs T10)
- │                         │             └─ T15   (also needs T04, OQ-004)
- │                         ├─ T16        (also needs T03)
- │                         └─ T17        (OQ-005)
- ├─ T03 ─┬─ T05
- │       └─ T16
- ├─ T04 ─── T15
- ├─ T06 ─── T07
- ├─ T08 ─── T18
- └─ T09
+T02 ── decision gate ──┬─ T12 ─ T13 ─── T15   (also needs OQ-004)
+                       ├─ T17                 (OQ-005)
+                       └─ T20                 (OQ-007)
+T03 ─── T05
+T18
+T09
+T23   (code done, UI spot-check pending)
 
-T19 ← T12, T13, T16
+T19 ← T12, T13, T20
 ```
 
-Parallel-safe from day one: **T03, T04, T06→T07, T08, T09**.
-Blocked on T02: **T10–T17**.
+Parallel-safe from day one: **T03, T09, T18**.
+Blocked on T02: **T12, T13, T15, T17, T20**.
+T12 is partly shipped: the delete semantics are closed; FN-010 and the per-row upsert `try/catch` are not.
 
 ## 5. Testing Plan
 
 ### Unit
 
 - New validators (T13): one test per rule, valid and invalid, including the uniqueness rules.
-- `ProjectSectionsEnum.getValue` null path used by T11.
+- `ProjectSectionsEnum.getValue` null path in the comment-link and tracking-email builders.
 - DAO parameter binding (T03): assert the four capability queries return identical results to the
   string-concatenated versions for a fixed fixture.
 
@@ -346,7 +256,7 @@ Blocked on T02: **T10–T17**.
 - `recentlyCreatedFRP` session flag: after a save that creates rows, the next render badges exactly those rows
   and the session attribute is cleared.
 
-### Capability matrix (the core regression suite — run before and after T03, T05, T15, T16)
+### Capability matrix (the core regression suite — run before and after T03, T05, T15)
 
 For each of `PMU`, `FPL`, `FPM`, `RPL`, `RPM`, `PL`, `PC`, `SuperAdmin` × each cluster type
 (`Country`, `Regional`, `Theme`, `Management`, and a project with no cluster type) × each of the four gates,
@@ -368,16 +278,12 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 ### Cross-cutting
 
 - `mvn -q checkstyle:check`.
-- Console clean on every instrumented page (T08).
-- Cache-busters bumped on every touched asset (T07).
+- Console clean on every instrumented page.
+- Cache-busters bumped on every touched asset.
 
 ## 6. Operational Steps
 
-- **Migrations:** at most one (T10 option c). Apply via the standard Flyway path on deploy; capture the
-  pre-change `section_name` distribution first.
-- **Pre-flight for T16:** run the cross-tenant grant report against a production-like dump and circulate it to
-  PMU and QA before the deploy that ships T16. If any affected role has no equivalent grant under its own
-  global unit, insert the missing grants (as a migration) **before** T16 ships.
+- **Migrations:** none.
 - **Specificities:** no new keys. Verify per-tenant `custom_parameters` values for `feedback_active`,
   `feedback_draft_active`, `feedback_clarification_needed_active`, `feedback_new_comment_field_active`, and
   `crp_cluster_bi_feedback_report_name` are unchanged after deploy.
@@ -388,11 +294,9 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 
 ## 7. Rollback Plan
 
-- Code: revert the feature branch merge commit. Every task is code-only except T10 option c.
-- T10 option c: reverse migration `UPDATE feedback_qa_commentable_fields SET section_name = 'safeguard'
-  WHERE section_name = 'safeguards'`, scoped by the captured pre-change id list.
-- T16 is the only task that removes access. If a tenant reports lost capability after deploy, the immediate
-  mitigation is to insert the correctly scoped grant rows, not to revert the query fix.
+- Code: revert the feature branch merge commit. Every remaining task is code-only.
+- The tenant-scoping predicate on grant matching is the only shipped change that removes access. If a tenant
+  reports lost capability, the mitigation is to insert the correctly scoped grant rows, not to revert the query.
 - T13 is the only task that can block a previously working save. If administrators are blocked, relax the
   specific rule rather than reverting the whole validator.
 - Assets: bumping the cache-buster back is not required on rollback; browsers will fetch the reverted file
@@ -400,10 +304,10 @@ Deliverable, Innovation, Study, Outcome (`projectContributionCrp`), Safeguard:
 
 ## 8. Definition of Done
 
-- [ ] T01 and T02 complete; all six open questions answered and recorded in the Decision Log.
+- [ ] T02 complete; all seven open questions answered and recorded in the Decision Log.
 - [ ] Every task either merged to `staging` or explicitly deferred with a reason in `requirements.md` §9.
-- [ ] Every acceptance criterion AC-001 … AC-015 in `requirements.md` §6 verified, or recorded as deferred.
-- [ ] Capability matrix diffed against the baseline, with every intentional change traced to T15 or T16.
+- [ ] Every acceptance criterion AC-001 … AC-017 in `requirements.md` §6 verified, or recorded as deferred.
+- [ ] Capability matrix diffed against the baseline, with every intentional change traced to T15 or T20.
 - [ ] Runtime regression passed on all five instrumented sections.
 - [ ] `mvn -q checkstyle:check` clean; no new Checkstyle suppressions.
 - [ ] Constitutional rule 2 deviation closed by T13, or the deviation re-affirmed with a new Decision Log entry.

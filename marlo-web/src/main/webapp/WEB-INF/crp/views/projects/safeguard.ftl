@@ -7,7 +7,7 @@
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20251113"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826"
   ]
 /]
 [#assign customCSS = [
@@ -51,7 +51,7 @@
 
 <section class="container">
   <input type="hidden"  name="safeguardsID" value="${(project.projectInfo.id)!}" />
-  <input type="hidden" id="sectionNameToFeedback" value="safeguard" />
+  <input type="hidden" id="sectionNameToFeedback" value="safeguards" />
   <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
   <span id="phaseID" style="display: none;">${phaseID!}</span>
   <span id="parentID" style="display: none;">${projectID!}</span>

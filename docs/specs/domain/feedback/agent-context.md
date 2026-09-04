@@ -33,7 +33,8 @@ Both menu entries are rendered **only inside the `action.isAiccra()` branch** of
 - Comment icon markup: `marlo-web/src/main/webapp/WEB-INF/global/macros/forms.ftl` (`qaComment` img in `input`, `textArea`, `select`, …; `qaPopUpMultiple` macro)
 - Entities: `FeedbackQACommentableFields`, `FeedbackQAComment`, `FeedbackQAReply`, `FeedbackPermission`, `FeedbackRolesPermission`, `FeedbackStatus`
 - HBM mappings: `marlo-data/src/main/resources/xmls/Feedback*.hbm.xml`
-- i18n: `global.properties` keys `feedbackManagement.*`, `feedbackPermissions.*`, `CRPAdmin.menu.feedback*`
+- i18n: `global.properties` keys `feedbackManagement.*` (including one `feedbackManagement.section.<slug>`
+  per `ProjectSectionsEnum` value), `feedbackPermissions.*`, `CRPAdmin.menu.feedback*`
 
 ## Feedback Fields Management — What Each Field Means
 
@@ -41,7 +42,7 @@ One row = one commentable form field. Table `feedback_qa_commentable_fields`.
 
 | Admin label (i18n) | Entity property | Column | What it actually does |
 |---|---|---|---|
-| Section Name (`feedbackManagement.sectionName`) | `sectionName` | `section_name` | Section slug. Must match the page's `<input id="sectionNameToFeedback">` value **and** a `ProjectSectionsEnum.getStatus()` value. Used to filter fields in `fieldsBySectionAndParent.do` and to build the comment deep link in `SaveFeedbackCommentsAction`. |
+| Section Name (`feedbackManagement.sectionName`) | `sectionName` | `section_name` | Section slug. Must match the page's `<input id="sectionNameToFeedback">` value **and** a `ProjectSectionsEnum.getStatus()` value. Used to filter fields in `fieldsBySectionAndParent.do` and to build the comment deep link in `SaveFeedbackCommentsAction`. Rendered as a dropdown whose option text is `<label> (<slug>)` — see "The Section Name dropdown" below; the stored value is always the bare slug. |
 | Section Description (`…sectionDescription`) | `sectionDescription` | `section_description` | Human-readable section name for reports and for the admin block title. Not read by the runtime JS. |
 | Field Name (`…fieldName`) | `fieldName` | `field_name` | **Human-readable label.** Served to the browser as JSON key `description`; rendered as the popup title (`Comment on <label>`) and used in notification emails. |
 | Field Description (`…fieldDescription`) | `fieldDescription` | `field_Description` | **The technical DOM name — the join key.** Must be the exact `name` attribute (OGNL expression) of the instrumented form control, e.g. `deliverable.deliverableInfo.title`. Served as JSON key `fieldName`; used as the selector `img.qaComment[name="…"]` to attach the icon, and echoed as `frontName` in comment payloads. |
@@ -53,6 +54,24 @@ One row = one commentable form field. Table `feedback_qa_commentable_fields`.
 **The `fieldName` / `fieldDescription` naming is inverted twice.** `CommentableFieldsBySectionNameAndParents`
 maps `field_description → JSON "fieldName"` and `field_name → JSON "description"`, and the 2022 migration's
 column comments describe the reverse of current behaviour. Trust this table and the JS, not the column comments.
+
+### The Section Name dropdown
+
+The slug is what everything matches on, but it is not what an administrator recognises, so the option text is
+the human name with the slug in parentheses — `Deliverable (deliverable)`. Only the text changes: `value` is the
+bare slug, which is what `bindFeedbackFieldsFromRequest` reads and stores.
+
+- Options come from `FeedbackManagementAction.getProjectSections()` — every `ProjectSectionsEnum.getStatus()`.
+- The label comes from `FeedbackManagementAction.getProjectSectionLabel(slug)`, which resolves
+  `feedbackManagement.section.<slug>` and **falls back to the slug itself** when there is no key. Adding a
+  constant to the enum therefore never renders a raw key; it just renders the slug twice until a key is added.
+- A tenant renames a section the same way it renames menu entries: override the key in `custom/*.properties`.
+  `aicrra.properties` and `aiccra3.properties` already carry the full block, wording it as the rest of those
+  files does — Cluster rather than Project, `study` = `OICR`, `caseStudies` = Outcome Impact Case Reports.
+- A stored slug outside the enum keeps its own extra option, flagged with
+  `feedbackManagement.sectionName.unknown`, so it survives the save instead of being reset to the placeholder.
+- The options are hand-written in the FTL rather than through `[@customForm.select]`: that macro hands the
+  current value to `[@s.select]` as an OGNL expression, which never matches a string slug.
 
 ## Feedback Permissions Management — What Each Field Means
 
@@ -85,8 +104,9 @@ Note the constant name and the value disagree for `CAN_MANAGE_FEEDBACK` (`can_re
 `existsByRoleIdsAndPermissionName(roleIds, permissionName, globalUnitId, clusterTypeId)`:
 
 - Super admin (`canAccessSuperAdmin()`) short-circuits to `true` in all four gates.
-- Joins `feedback_roles_permissions → feedback_permissions → roles`, filters `roles.global_unit_id`
-  (**not** `feedback_roles_permissions.global_unit_id`).
+- Joins `feedback_roles_permissions → feedback_permissions → roles` and requires **both**
+  `frp.global_unit_id = :globalUnitID` and `r.global_unit_id = frp.global_unit_id`, so a grant and its role must
+  belong to the same tenant.
 - `clusterTypeId` comes from `getClusterTypeIDFromProject(projectID)` → `ProjectInfo.clusterType` of the actual phase.
 - `clusterTypeId == null` → matches **only** rows with `cluster_type_id IS NULL`.
   `clusterTypeId != null` → matches `cluster_type_id IS NULL OR = clusterTypeId`.
@@ -112,6 +132,10 @@ A page opts into feedback with these hidden markers (see `projectDeliverable.ftl
 ```
 
 plus `feedbackAutoImplementation.js` in `customJS` and `[@customForm.qaPopUpMultiple …]` for the popup templates.
+
+The JS guards compare against the **string** `'false'` (`usercanTrackComments == 'false'`), so a marker that is
+absent reads as `undefined`, matches neither branch and leaves the gate simply off. Always render all four spans
+and always default them to `"false"`.
 
 Sections currently instrumented: `projectDeliverable.ftl`, `projectInnovation.ftl`, `projectStudy.ftl`
 (via `studiesTemplates.ftl`), `projectContributionCrp.ftl`, `safeguard.ftl`.
@@ -169,31 +193,60 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
 - Adding a new permission requires an insert into `feedback_permissions` (there is no UI for the catalog)
   **and** a new `FeedbackPermissionsEnum` constant **and** a gate method in `BaseAction`.
 - After editing `feedbackAutoImplementation.js` or either admin JS, bump the `?YYYYMMDD` cache-buster in every
-  FTL that references it. `feedbackManagement.ftl` currently has **no** cache-buster on its `customJS` entry.
+  FTL that references it.
 
 ## Known Defects / Traps (as-built)
-
-1. `FeedbackManagementAction.save()` nests the delete loop inside `if (feedbackFields != null && !feedbackFields.isEmpty())`,
-   so removing **all** rows and saving deletes nothing. `FeedbackRolesPermissionsManagementAction` does not have
-   this bug (its delete loop is outside the guard).
-2. `safeguard.ftl` publishes `sectionNameToFeedback = "safeguard"`, but the enum constant is `SAFEGUARDS("safeguards")`.
-   Rows configured as `safeguard` return no fields from the enum-based paths; rows configured as `safeguards`
-   never match the page. Verify the actual `section_name` data before touching this section.
-3. `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` / `findAllByGlobalUnit` interpolate arguments into HQL
-   strings, and `existsByRoleIdsAndPermissionName` interpolates into native SQL. Do not extend that pattern.
-4. `existsByRoleIdsAndPermissionName` filters on `roles.global_unit_id`, ignoring
-   `feedback_roles_permissions.global_unit_id`; a grant row saved under one global unit can match through a role
-   that belongs to another.
-5. `findObjectsByRoleIdsAndPermissionName` emits `AND frp.cluster_type_id …` without ever aliasing
-   `feedback_roles_permissions AS frp` — it would fail if called. No caller today.
-6. `FeedbackRolesPermissions.hbm.xml` maps `<column name="requires_project_association " …>` with a trailing space.
-7. `FeedbackManagementAction.prepare()` builds `projectSections` from `ProjectSectionsEnum`, but
-   `feedbackManagement.ftl` renders Section Name as a free-text `input` and never uses the list.
-8. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
-   there is no server-side validation and no `Validator` class for either screen.
-9. Both admin JS files are copies of the SLO admin script and carry dead handlers (`addIndicator`, `addTargets`,
-   `addCrossCuttingIssue`, datepicker config) plus `console.log` calls.
-10. `feedbackAutoImplementation.js` ships `console.log` of every permission flag on page load.
+1. `FeedbackQACommentableFieldsMySQLDAO` still interpolates into HQL: `findAllByGlobalUnit` concatenates the
+   numeric global unit id, and `findBySectionName` concatenates a caller-supplied `String`. The second one has
+   **no callers** — `CommentableFieldsBySectionNameAndParents` filters in memory instead — so it is dead code,
+   not a reachable injection. Do not extend the pattern; prefer deleting the dead method over converting it.
+   (`FeedbackRolesPermissionMySQLDAO` was converted to bound parameters on 2026-08-25.)
+2. `validate()` in both admin actions is `if (save) { }` — empty. `required=true` in the FTL is cosmetic;
+   there is no server-side validation and no `Validator` class for either screen. Concretely: the Section Name
+   dropdown stops typos but a field saved with no section still persists `section_name = ''` and is silently
+   non-functional.
+3. **The migration history does not reproduce the database for `cluster_types`.**
+    `V2_6_0_20210604_1444` sets id 2 = `Flagship`; the live database has id 2 = `Theme` (renamed outside
+    Flyway). Live grant data is correct and self-consistent — `FPL`/`FPM` `can_react_comments` do sit on
+    `Theme` — but a fresh environment built from migrations gets `Flagship` there and those grants land wrong.
+    Also: `V2_6_0_20250618_1700` backfills `cluster_type_id` by `LIKE`-matching `cluster_types.name` inside
+    `description`, and `'thematic'` does not contain `'theme'` — so it silently skips the rows it appears to
+    cover. Never backfill by description again.
+4. **`AICCRA_III` (global unit 47) has feedback entirely unconfigured:** zero commentable fields and
+    zero grants. Verified against `aiccradb1` on 2026-08-26 — all 25 rows of `feedback_roles_permissions`
+    are ids 14–38 and belong to global unit 45. Nobody in unit 47 holds any feedback capability at all, not
+    even leaving a comment. Check which global unit you are actually working in before concluding the module
+    is broken. It is also the tenant that exercises every empty-result path below.
+5. **The DAO list contract is split.** Corrected on 2026-08-26 to return `Collections.emptyList()`:
+    `FeedbackQACommentableFieldsMySQLDAO.findAll` / `findAllByGlobalUnit`, `ClusterTypeMySQLDAO.findAll`,
+    `FeedbackRolesPermissionMySQLDAO.findAll`. **Still returning `null` when empty:**
+    `FeedbackQACommentMySQLDAO.findAll` / `findAllByPhase` / `getFeedbackQACommentsByParentId`,
+    `FeedbackCommentMySQLDAO.findAll`, `FeedbackStatusMySQLDAO.findAll`. Null-check those; eleven callers in
+    this module chain `.stream()` straight onto a DAO result, and every one sits in a `try/catch(Exception)`
+    that only logs (`DeliverableAction:2461` has an empty catch body), so the NPE is swallowed and the block
+    stops halfway. That is what blanked every dropdown on Feedback Permissions Management.
+6. **Cross-tenant fallback in four JSON actions.** `FeedbackParentIdAction`,
+    `CommentableFieldsBySectionNameAndParents`, `FeedbackQACommentsAction` and
+    `FeedbackQACommentsMultipleAction` recover from a failed `findAllByGlobalUnit` by calling `findAll()`,
+    which filters on `is_active` only and carries **no `global_unit_id` predicate** — it returns every
+    tenant's field definitions. The empty-result trigger was closed by defect 5, but the fallback itself is
+    still there and will leak if `findAllByGlobalUnit` throws for any other reason. Do not copy this shape.
+7. **`commentManager.findAll()` loads the whole comments table.** `FeedbackQACommentsAction:101` and
+    `FeedbackQANumberCommentsAction:73` guard with `commentManager.findAll() != null`, inside the loop over
+    commentable fields — so `from FeedbackQAComment`, unfiltered by tenant, phase or project, runs once per
+    field on every `getCommentStatus.do` request, purely to test non-emptiness. The guard is redundant with
+    the `try/catch` inside it. The primary path (`getFeedbackQACommentsByPhaseAndParentId`) already returns
+    an empty list, so the `catch` fallbacks are not hit routinely.
+8. **Dead code that looks live.** `DeliverableListAction.getCommentStatusesOld` / `getCommentStatusesOld2`
+    (no callers; only `getCommentStatuses` at line 218 runs), `FeedbackQACommentableFieldsMySQLDAO
+    .findBySectionName`, `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its missing
+    `frp` alias was fixed, but nothing calls it) and the four `*Old()` capability methods in `BaseAction`.
+9. **Configured sections do not match the enum.** Verified against `aiccradb1` on 2026-08-26, global unit 45
+    has 91 active fields across `innovation` (34), `study` (22), `deliverable` (20), `projectContributionCrp`
+    (13), `contributionsCrpList` (1) and `test` (1). **`test` is not a `ProjectSectionsEnum` value**, so field
+    id 198 renders in the admin dropdown as a flagged "kept as stored" option — that row is the regression
+    case for the unknown-slug path. No `safeguards` field is configured; `safeguard.ftl` does publish the
+    matching marker, so the section is configurable, it simply has no rows yet.
 
 ## Verification Shortlist
 

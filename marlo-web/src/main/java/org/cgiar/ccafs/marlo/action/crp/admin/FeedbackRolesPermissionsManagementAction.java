@@ -93,44 +93,74 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
   public void prepare() throws Exception {
     feedbackRolesPermissions = new ArrayList<>();
     feedbackPermissionsList = new ArrayList<>();
+    roleList = new ArrayList<>();
+    clusterTypeList = new ArrayList<>();
+
+    Long globalUnitId = this.getCurrentGlobalUnit() != null ? this.getCurrentGlobalUnit().getId() : null;
+    if (globalUnitId == null) {
+      logger.error("Current global unit is null, feedback roles permissions cannot be prepared");
+      return;
+    }
+
+    /*
+     * The catalogs feeding the form dropdowns are loaded independently from the grant list. Sharing a single try
+     * block used to leave every select empty whenever reading the grants failed, which is what happened for a
+     * global unit with no grants yet: the form could not be filled until the first row existed.
+     */
+    try {
+      feedbackPermissionsList = feedbackPermissionManager.findAll();
+      if (feedbackPermissionsList == null) {
+        feedbackPermissionsList = new ArrayList<>();
+      }
+    } catch (Exception e) {
+      logger.error("unable to load the feedback permissions catalog", e);
+    }
 
     try {
-
-      long globalUnitId = this.getCurrentGlobalUnit().getId();
-
-      if (!this.isHttpPost()) {
-        // For GET: Load feedback roles permissions from DB
-        List<Long> newIds = (List<Long>) this.getRequest().getSession().getAttribute("recentlyCreatedFRP");
-
-        feedbackRolesPermissions =
-          feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId).stream()
-            .sorted(Comparator.comparing(
-              frp -> frp.getFeedbackPermission() != null ? frp.getFeedbackPermission().getId() : Long.MAX_VALUE))
-            .peek(frp -> {
-              if (newIds != null && newIds.contains(frp.getId())) {
-                frp.setRecentlyCreated(true);
-              }
-            }).collect(Collectors.toList());
-
-        if (newIds != null) {
-          this.getRequest().getSession().removeAttribute("recentlyCreatedFRP");
-        }
-      } else {
-        // For POST: Will bind feedback roles permissions manually from request in save()
-        feedbackRolesPermissions = new ArrayList<>();
-      }
-
-      feedbackPermissionsList = feedbackPermissionManager.findAll();
-
-      roleList = roleManager.findAll().stream()
-        .filter(r -> r.getCrp() != null && Objects.equals(r.getCrp().getId(), globalUnitId))
+      roleList = roleManager.findAllByGlobalUnit(globalUnitId).stream().filter(Objects::nonNull)
         .sorted(Comparator.comparing(Role::getAcronym, Comparator.nullsLast(String::compareToIgnoreCase)))
         .collect(Collectors.toList());
-
-      clusterTypeList = clusterTypeManager.findAll();
-
     } catch (Exception e) {
-      roleList = new ArrayList<>();
+      logger.error("unable to load the roles of global unit {}", globalUnitId, e);
+    }
+
+    try {
+      clusterTypeList = clusterTypeManager.findAll();
+      if (clusterTypeList == null) {
+        clusterTypeList = new ArrayList<>();
+      }
+    } catch (Exception e) {
+      logger.error("unable to load the cluster types catalog", e);
+    }
+
+    if (this.isHttpPost()) {
+      // For POST: feedback roles permissions are bound manually from the request in save()
+      return;
+    }
+
+    // For GET: Load feedback roles permissions from DB
+    try {
+      List<Long> newIds = (List<Long>) this.getRequest().getSession().getAttribute("recentlyCreatedFRP");
+
+      List<FeedbackRolesPermission> grants =
+        feedbackRolesPermissionManager.getFeedbackRolesPermissionByGlobalUnitID(globalUnitId);
+
+      if (grants != null) {
+        feedbackRolesPermissions = grants.stream()
+          .sorted(Comparator.comparing(
+            frp -> frp.getFeedbackPermission() != null ? frp.getFeedbackPermission().getId() : Long.MAX_VALUE))
+          .peek(frp -> {
+            if (newIds != null && newIds.contains(frp.getId())) {
+              frp.setRecentlyCreated(true);
+            }
+          }).collect(Collectors.toList());
+      }
+
+      if (newIds != null) {
+        this.getRequest().getSession().removeAttribute("recentlyCreatedFRP");
+      }
+    } catch (Exception e) {
+      logger.error("unable to load the feedback roles permissions of global unit {}", globalUnitId, e);
     }
   }
 
@@ -168,7 +198,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               Long id = Long.parseLong(idParam);
               permission.setId(id);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the id '{}' of the feedback permission {}, which is not a number, so it is saved"
+                + " as a new one", idParam, index);
             }
           }
 
@@ -183,7 +214,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
                 feedbackPermissionManager.getFeedbackPermissionById(feedbackPermissionId);
               permission.setFeedbackPermission(feedbackPermission);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the permission '{}' of the feedback permission {}, which is not a number",
+                feedbackPermissionIdParam, index);
             }
           }
 
@@ -194,7 +226,8 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               Role role = roleManager.getRoleById(roleId);
               permission.setRole(role);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the role '{}' of the feedback permission {}, which is not a number", roleIdParam,
+                index);
             }
           }
 
@@ -205,13 +238,16 @@ public class FeedbackRolesPermissionsManagementAction extends BaseAction {
               ClusterType clusterType = clusterTypeManager.getClusterTypeById(clusterTypeId);
               permission.setClusterType(clusterType);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the cluster type '{}' of the feedback permission {}, which is not a number",
+                clusterTypeIdParam, index);
             }
           }
 
           feedbackRolesPermissions.add(permission);
           index++;
         } catch (Exception e) {
+          logger.error("Stopped reading the submitted feedback permissions at index {}; the ones after it are not"
+            + " saved", index, e);
           hasMore = false;
         }
       } else {

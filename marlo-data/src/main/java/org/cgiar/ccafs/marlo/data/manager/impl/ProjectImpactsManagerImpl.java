@@ -197,6 +197,7 @@ public class ProjectImpactsManagerImpl implements ProjectImpactsManager {
   }
 
   @Override
+  @Transactional
   public ProjectImpacts saveProjectImpacts(ProjectImpacts projectImpacts) {
 
     return projectImpactsDAO.save(projectImpacts);

@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -45,6 +46,7 @@ public class CenterDeliverableCrosscutingThemeManager implements ICenterDelivera
   }
 
   @Override
+  @Transactional
   public void deleteDeliverableCrosscutingTheme(long deliverableCrosscutingThemeId) {
 
     deliverableCrosscutingThemeDAO.deleteDeliverableCrosscutingTheme(deliverableCrosscutingThemeId);
