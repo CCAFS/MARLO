@@ -1107,3 +1107,56 @@ symptom is reasoned through end to end: a rejected return URL yields `null` → 
 → `${crpSession}/crpDashboard`.
 
 - **Skills:** `tdd`, `systematic-debugging`
+
+#### T19 — declared coverage extension (approved by the user 2026-09-05)
+
+- **Status:** `[ ]` — **test hardening only. No behavioural change.** T19's production code is audited PASS and
+  stays as it is. This locks down behaviour it **already implements** but that nothing currently proves.
+- **Why:** T19's mutation (test 8) removes the whole guard. **Six weaker mutations leave the suite entirely
+  green**, and four of them reopen bypass classes T19's own `Fails when` list names (`execution.md` §35.2).
+  The gap is between the task's required-coverage list and its `Fails when` list — a **specification** defect,
+  not an implementation one. The implementer wrote exactly the eight tests it was given.
+- **Module:** marlo-web · **Files touched:** `CognitoLoginActionTest.java` only
+
+**The rule that governs this extension, and it is absolute:**
+
+> **Do not change production behaviour to make a test pass.** If any new test fails against the current
+> implementation, **STOP and report the discrepancy** before touching `CognitoLoginAction.java`. A failing test
+> here means one of two things — the test is wrong, or T19 has a real defect the audit missed — and **which one
+> it is, is not the implementer's call to make silently.**
+
+**Tests to add.** Each is named with the mutation it must kill:
+
+| # | Input | Expected | Mutation it kills |
+|---|---|---|---|
+| E1 | `…/cognitoCallback%2Edo` | rejected | `getPath()` → `getRawPath()` |
+| E2 | `…/x/../cognitoCallback.do` | rejected | delete `.normalize()` |
+| E3 | `…/cognitoCallback.do;jsessionid=ABC` | rejected | delete the `;` strip |
+| E4 | `…/cognitoCallback.do/` | rejected | delete the trailing-slash loop |
+| E5 | a URL `new URI(...)` cannot parse (e.g. a raw space) | rejected → `null` | `return true` → `false` on `URISyntaxException` |
+| E6 | a case-variant that only a locale-sensitive `toLowerCase()` would mishandle | rejected | `Locale.ROOT` → default locale |
+| E7 | `…/cognitoCallback.do/../projects.do` | **accepted** | — |
+
+**E7 is not optional and is not symmetry for its own sake.** It is the single case that distinguishes this
+implementation from a `contains()` one: a substring check rejects it, and the correct implementation accepts it
+because the URL resolves to `/projects.do`. Without E7 the suite cannot tell the two apart.
+
+**E6 needs care.** `Locale.ROOT` matters for the Turkish dotted-I: under `tr-TR`, `"I".toLowerCase()` yields
+`ı` (dotless), so `COGNITOCALLBACK.DO` would not match the set. A test that merely varies case proves nothing
+about the locale — **it must actually exercise the locale**, or state plainly in a comment that it does not and
+that the mutation therefore survives. **Do not pretend.** If it cannot be done cleanly in this harness, say so
+and leave E6 out with the reason recorded — an honest gap beats a test that looks like coverage.
+
+**The acceptance direction and the `getBaseUrl()` double.** `TestableCognitoLoginAction.getBaseUrl()` returns a
+fixed value, which hides a real production risk: `APConfig.getBaseUrl()` returns `null` on an unconfigured
+`BASE_URL` and force-prefixes `http://` onto a scheme-less value, so an http/https mismatch behind a proxy
+would make the same-origin check discard **every** deep link — **with the suite still green** (`execution.md`
+§35.3). Add coverage that varies the base URL through the double rather than relying on the one fixed value:
+at minimum a `null` base URL, and a base URL with and without a trailing slash. **State clearly in the report
+what these can and cannot prove** — a unit test cannot verify `APConfig`'s real behaviour, and claiming
+otherwise would be exactly the "certified green by a double gentler than production" pattern this spec has hit
+nine times.
+
+**Verification:** every new test passes **against the unmodified production code**; the full suite is
+`174 + new`, no regressions; each mutation in the table above is **measured** red, one at a time, not asserted.
+Report T19's status as PASS only if all of that holds.
