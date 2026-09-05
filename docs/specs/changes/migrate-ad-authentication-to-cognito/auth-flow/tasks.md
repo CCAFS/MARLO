@@ -885,7 +885,7 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 
 ### CHG-COGNITO-AUTH-001-T17 — U-3: stop writing `users.username` on the Cognito path
 
-- **Status:** `[ ]` — **added 2026-09-04 after real E2E evidence.** Not a coding error: T07 did exactly what
+- **Status:** `[x]` — **CLOSED 2026-09-04 by real E2E evidence.** One real corporate login with `users.username` restored to `cgamboa`: the value stayed **byte-identical**, `last_login` advanced `11:37:26 → 21:15:58`, the AICCRA dashboard was reached, and there were **0** `UnknownSessionException` and **0** authentication errors. Audited **PASS-WITH-FINDINGS** (three LOW documentation items). **167/167** clean, mutation reddening exactly the three T17 tests. Originally added 2026-09-04 after real E2E evidence. Not a coding error: T07 did exactly what
   FN-006 asked. **The requirement's premise was false**, and only a real federated token could show it.
 - **The evidence, from one real corporate login** (`execution.md` §31, §32): the ID token carries **16
   claims** and the CGIAR/AD login `cgamboa` is in **none** of them. `username` **absent**;

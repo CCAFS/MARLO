@@ -60,12 +60,17 @@ import static org.junit.Assert.fail;
  * production -- only {@code UserMySQLDAO.normalizeEmail} sees the un-trimmed value a non-Cognito caller
  * (e.g. the local-login username field) can still supply.
  * <p>
- * <b>Residual evidence gap, recorded rather than papered over (audit correction on Issue 1).</b> {@link
- * #validCgiarUserGetsUsernameLoweredAndEmailUnchanged()} asserts that {@code saveLastLogin} was
- * <i>called</i> with the mutated entity. That proves a call was made, not that a row changed in a
- * database -- this test tree has no schema-backed Hibernate harness to prove the latter (no mocking
- * framework, no {@code SessionFactory} in any existing test). The username-persists-to-the-database claim
- * itself is left for verification against a live schema, the way T02 verified its migration.
+ * <b>CHG-COGNITO-AUTH-001-T17 (U-3), 2026-09-04 -- FN-006 amended, this class's username write removed.</b>
+ * A real corporate login proved the {@code cognito:username} claim T07 mapped is Cognito's own federated
+ * identifier ({@code cgiar-azuread_c.gamboa@cgiar.org}), never the CGIAR/AD login T07's requirement assumed
+ * ({@code cgamboa}) -- see {@code requirements.md} FN-006's amendment and {@code execution.md} 31. The
+ * mapper now leaves {@code users.username} exactly as it found it; the LDAP path
+ * ({@code APCustomRealm.getCgiarNickname()}) remains the only writer, resolving Active Directory **by
+ * email** on a local login. The T07 test that asserted the write happened,
+ * {@code validCgiarUserGetsUsernameLoweredAndEmailUnchanged}, is **updated, not deleted**: it survives
+ * below as {@link #populatedUsernameIsPreservedByteForByte()}, its assertions inverted from "the claim
+ * overwrites the username" to "the prior value is untouched". {@link #nullUsernameStaysNull()} and
+ * {@link #blankUsernameStaysBlank()} are new, covering FN-006's other two amended scenarios.
  */
 public class CognitoIdentityMappingTest {
 
@@ -289,34 +294,87 @@ public class CognitoIdentityMappingTest {
   }
 
   /**
-   * T07 test 4: a valid CGIAR user gets {@code users.username} set from the claim, lowercased, through
-   * {@code userManager.saveLastLogin()} -- {@code saveUser()} would be a no-op on this session-managed
-   * entity (audit correction on Issue 1) -- and {@code users.email} is left exactly as it was (FN-006's
-   * "MUST NOT overwrite users.email").
+   * CHG-COGNITO-AUTH-001-T17, test 1 -- a populated {@code users.username} is preserved **byte-for-byte**
+   * across a successful Cognito login. Formerly {@code validCgiarUserGetsUsernameLoweredAndEmailUnchanged},
+   * which asserted the opposite: that the claim overwrote the username. That assertion is inverted here,
+   * not deleted -- FN-006's amendment records that the write it proved was the U-3 defect, not the
+   * contract. The assertion carries a realistic **federated** {@code usernameClaim}
+   * ({@code cgiar-azuread_c.gamboa@cgiar.org}, the exact shape U-3's real token produced) specifically so
+   * this test cannot pass by accident on a claim that happens to already equal the stored value -- if the
+   * write ever returns, this claim would silently clobber {@code cgamboa} with the federated string, and
+   * this assertion must catch it.
    * <p>
-   * See the class javadoc's residual-gap note: this proves the call was made, not that a database row
-   * changed. No schema-backed harness is reachable from this test tree.
+   * {@code users.email} is also asserted unchanged (FN-006's "MUST NOT overwrite users.email"), and no
+   * {@code saveLastLogin} call is made -- this mapper no longer writes anything for a valid, active
+   * account.
    */
   @Test
-  public void validCgiarUserGetsUsernameLoweredAndEmailUnchanged() {
-    User validCgiarUser = cgiarUser(99L, "carlos.cgiar@cgiar.org", null, true);
+  public void populatedUsernameIsPreservedByteForByte() {
+    User validCgiarUser = cgiarUser(99L, "carlos.cgiar@cgiar.org", "cgamboa", true);
     RecordingUserManager userManager = new RecordingUserManager();
     userManager.register(validCgiarUser);
     CognitoIdentityMapper mapper = new CognitoIdentityMapperImpl(userManager);
 
-    CognitoAssertion assertion =
-      new CognitoAssertion("sub-carlos-99", "carlos.cgiar@cgiar.org", "CCGIAR", ISSUED_AT);
+    CognitoAssertion assertion = new CognitoAssertion("sub-carlos-99", "carlos.cgiar@cgiar.org",
+      "cgiar-azuread_c.gamboa@cgiar.org", ISSUED_AT);
 
     Result result = mapper.map(assertion);
 
     assertTrue("a valid, active CGIAR account must be accepted", result.isAccepted());
     assertEquals(Long.valueOf(99L), result.getUserId());
-    assertEquals("username must be set from the claim, lowercased", "ccgiar", validCgiarUser.getUsername());
+    assertEquals("username must be left exactly as it was -- no claim, federated or otherwise, may "
+      + "overwrite it", "cgamboa", validCgiarUser.getUsername());
     assertEquals("email must never be overwritten", "carlos.cgiar@cgiar.org", validCgiarUser.getEmail());
-    assertEquals("the write must go through userManager.saveLastLogin(), not saveUser()", 1,
-      userManager.lastLoginSaves.size());
-    assertTrue("the saved instance must be the same row that was read",
-      userManager.lastLoginSaves.contains(validCgiarUser));
+    assertTrue("nothing about username is written any more, so saveLastLogin must not be called here",
+      userManager.lastLoginSaves.isEmpty());
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T17, test 2 -- a {@code null} {@code users.username} stays {@code null}. The
+   * claim carries a federated value, exactly as in the previous test, to prove nothing is invented from
+   * it.
+   */
+  @Test
+  public void nullUsernameStaysNull() {
+    User cgiarUserWithNoUsername = cgiarUser(101L, "noname.cgiar@cgiar.org", null, true);
+    RecordingUserManager userManager = new RecordingUserManager();
+    userManager.register(cgiarUserWithNoUsername);
+    CognitoIdentityMapper mapper = new CognitoIdentityMapperImpl(userManager);
+
+    CognitoAssertion assertion = new CognitoAssertion("sub-noname-101", "noname.cgiar@cgiar.org",
+      "cgiar-azuread_no.name@cgiar.org", ISSUED_AT);
+
+    Result result = mapper.map(assertion);
+
+    assertTrue("a valid, active CGIAR account must be accepted", result.isAccepted());
+    assertEquals("a null username must stay null -- nothing is invented", null,
+      cgiarUserWithNoUsername.getUsername());
+    assertTrue("no write must occur for a null username either",
+      userManager.lastLoginSaves.isEmpty());
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T17, test 3 -- a blank {@code users.username} stays blank: a distinct case from
+   * {@code null} above, and one FN-006's amendment calls out explicitly so a blank does not quietly become
+   * a derived value.
+   */
+  @Test
+  public void blankUsernameStaysBlank() {
+    User cgiarUserWithBlankUsername = cgiarUser(102L, "blank.cgiar@cgiar.org", "", true);
+    RecordingUserManager userManager = new RecordingUserManager();
+    userManager.register(cgiarUserWithBlankUsername);
+    CognitoIdentityMapper mapper = new CognitoIdentityMapperImpl(userManager);
+
+    CognitoAssertion assertion = new CognitoAssertion("sub-blank-102", "blank.cgiar@cgiar.org",
+      "cgiar-azuread_blank@cgiar.org", ISSUED_AT);
+
+    Result result = mapper.map(assertion);
+
+    assertTrue("a valid, active CGIAR account must be accepted", result.isAccepted());
+    assertEquals("a blank username must stay blank, distinct from null, and must not be derived either",
+      "", cgiarUserWithBlankUsername.getUsername());
+    assertTrue("no write must occur for a blank username either",
+      userManager.lastLoginSaves.isEmpty());
   }
 
   /**

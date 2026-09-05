@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
  * {@code UserMySQLDAO.getUser(String)}, whose {@code trim()} + lowercase normalization and parameterized
  * lookup are this same task's scope extension. This class does not repeat that normalization; doing so
  * here as well would let the two copies drift.
+ * <p>
+ * <b>CHG-COGNITO-AUTH-001-T17 (U-3), 2026-09-04:</b> this class no longer writes {@code users.username}.
+ * FN-006 was amended after a real corporate login proved its premise false -- see {@link #map} below.
  */
 @Named
 public class CognitoIdentityMapperImpl implements CognitoIdentityMapper {
@@ -82,25 +85,23 @@ public class CognitoIdentityMapperImpl implements CognitoIdentityMapper {
       return Result.rejected(RejectionReason.USER_DISABLED);
     }
 
-    // FN-006: users.username is kept current from the CGIAR login claim, lowercased, with no LDAP call.
-    // users.email is never written here -- it is the key gate 1 just resolved BY, not a field an
-    // unverified claim (until gate 1 found a row) gets to overwrite.
+    // CHG-COGNITO-AUTH-001-T17 (U-3), 2026-09-04: users.username is deliberately NOT touched here any
+    // more. FN-006 originally read "set users.username from the CGIAR login claim, lowercased" on the
+    // premise that the ID token carries that identifier. A real corporate login proved it does not: the
+    // only candidate claim, cognito:username, is Cognito's own federated identifier for this pool
+    // (provider name + subject, e.g. "cgiar-azuread_c.gamboa@cgiar.org"), never the AD login
+    // ("cgamboa") getCgiarNickname() would have set. Writing it was worse than writing nothing -- it
+    // replaced a correct AD login with a value correct for nothing, breaking username-based local login
+    // (APCustomRealm:161, getUserByUsername -- the branch taken when a user types a login without "@")
+    // and surfacing as a display name in QA comments (FeedbackQACommentsAction:180, :403).
     //
-    // CORRECTED after the T07 audit (tasks.md's amended Constitutional checks): this write goes through
-    // userManager.saveLastLogin(...), NOT saveUser(...). saveUser -> UserMySQLDAO.saveUser ->
-    // AbstractMarloDAO.update(T) returns before merge() when the session already contains the entity --
-    // and `user` here came from a session.get()-backed lookup, so it IS managed, making saveUser a no-op
-    // on it. saveLastLogin carries @Transactional, which this OSIV session's FlushMode.MANUAL setup
-    // requires for the change to leave memory at all -- identical to T09's constraint on this same write
-    // path in LoginAction, and to why ValidateUserAction uses saveLastLogin rather than saveUser.
-    String usernameClaim = assertion.getUsernameClaim();
-    if (usernameClaim != null) {
-      String loweredUsername = usernameClaim.toLowerCase();
-      if (!loweredUsername.equals(user.getUsername())) {
-        user.setUsername(loweredUsername);
-        this.userManager.saveLastLogin(user);
-      }
-    }
+    // OQ-9 already made the normalized corporate email the identity key, and the Cognito path never
+    // needed users.username to authenticate. So: no derivation from the email, no stripping the
+    // provider prefix, no persisting cognito:username -- a null or blank users.username stays null or
+    // blank, nothing is invented. The LDAP path remains the only writer: APCustomRealm.getCgiarNickname()
+    // looks Active Directory up BY EMAIL and sets the username from ldapUser.getLogin(), so a local login
+    // repairs or populates it. users.email is still never written here -- it is the key gate 1 just
+    // resolved BY, not a field an unverified claim gets to overwrite.
 
     // Gate 4 (crp_users membership) is deliberately not applied here -- design.md 13.1 places it inside
     // finishLogin, once the session for the selected Global Unit exists.
