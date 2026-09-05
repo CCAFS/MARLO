@@ -283,6 +283,11 @@ public class CognitoCallbackActionTest {
    * Same defect, the membership-failure branch. {@code finishLogin}'s non-member path calls {@code
    * getSession().clear()} -- if the fix only re-points the session before the success branch, this reddens
    * exactly the way the success-path test above does.
+   * <p>
+   * <b>Updated for CHG-COGNITO-AUTH-001-T21 (V-7):</b> the membership branch used to surface as {@code
+   * INPUT} (rendering {@code login.ftl} in place at the callback URL); the call site now adapts that to a
+   * {@code LOGIN} redirect to the canonical {@code login.do}. The session-reuse assertion this test exists
+   * for is unaffected -- only the expected result and target url changed.
    */
   @Test
   public void theOldSessionIsNeverReusedOnTheMembershipFailureBranchEither() throws Exception {
@@ -301,7 +306,11 @@ public class CognitoCallbackActionTest {
       return;
     }
 
-    assertEquals(Action.INPUT, result);
+    assertEquals(Action.LOGIN, result);
+    assertTrue("T21: the membership-failure branch must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do"));
+    assertFalse("T21: no loop -- the redirect target must never be the callback URL",
+      action.getUrl().contains("cognitoCallback"));
   }
 
   /**
@@ -379,7 +388,11 @@ public class CognitoCallbackActionTest {
 
     String result = action.callback("auth-code-t16-f3", "state-t16-f3", null);
 
-    assertEquals("the non-member branch must still be reached (gate 4)", Action.INPUT, result);
+    // CHG-COGNITO-AUTH-001-T21 (V-7): the non-member branch used to surface as INPUT; the call site now
+    // adapts it to a LOGIN redirect to the canonical login.do. Reached either way -- only the result name
+    // and target changed.
+    assertEquals("the non-member branch must still be reached (gate 4)", Action.LOGIN, result);
+    assertTrue("T21: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
 
     // The real CSP path, through the SAME request reference captured before the action ran, AFTER
     // finishLogin's own getSession().clear() + Subject.logout() ran on the non-member branch.
@@ -557,9 +570,16 @@ public class CognitoCallbackActionTest {
    * cleared, and -- because DD-6 populated the inherited {@code user} field with a detached, email-only
    * {@link User} -- neither {@code user.getEmail()} (the success/failure log lines) nor
    * {@code user.setPassword(null)} (called twice on this branch) throws.
+   * <p>
+   * <b>This is also CHG-COGNITO-AUTH-001-T21's Route A</b> (V-7, tasks.md, execution.md 40.1): {@code
+   * finishLogin} returns {@code INPUT} here, which used to render {@code login.ftl} in place at
+   * {@code cognitoCallback.do?code=...&state=...}. The call site now adapts that to a {@code LOGIN}
+   * redirect to the canonical {@code login.do} -- the field error and session-clear this test already
+   * asserted are unaffected, because they run inside {@code finishLogin} before the adaptation ever sees
+   * the result.
    */
   @Test
-  public void userNotInCrpUsersIsRefusedWithInvalidUserCrpAndClearsTheSessionWithNoNpe() throws Exception {
+  public void gate4MembershipFailureRouteARedirectsToLoginDo() throws Exception {
     this.userManager.register(cgiarUser(9001L));
     TestableCognitoCallbackAction action = this.newAction();
     PendingAuthorization pending = this.seedPending(action, "state-6", GLOBAL_UNIT_ID, null, "nonce-6");
@@ -574,7 +594,10 @@ public class CognitoCallbackActionTest {
       return;
     }
 
-    assertEquals(Action.INPUT, result);
+    assertEquals("T21 Route A: gate 4 (crp_users membership) must redirect, not render", Action.LOGIN, result);
+    assertTrue("T21 Route A: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertFalse("T21: no loop -- the redirect target must never be the callback URL",
+      action.getUrl().contains("cognitoCallback"));
     assertTrue("finishLogin's membership-failure branch clears the session", action.getSession().isEmpty());
     assertTrue("the refusal message must be the invalidUserCrp key",
       action.getFieldErrors().get("loginMessage").contains("login.error.invalidUserCrp"));
@@ -854,6 +877,115 @@ public class CognitoCallbackActionTest {
     assertTrue("a fresh PendingAuthorization must be issued", pendingAfter instanceof PendingAuthorization);
     assertNotEquals("the fresh authorization must mint a NEW state, not the consumed one", "state-fresh",
       ((PendingAuthorization) pendingAfter).getState());
+  }
+
+  // ---------------------------------------------------------------------------------------------------
+  // CHG-COGNITO-AUTH-001-T21 (V-7): three MORE refusals -- returned as INPUT from LoginAction.finishLogin,
+  // the shared tail T01 created, rather than from this class's own refuse() -- also left the browser
+  // parked at cognitoCallback.do?code=...&state=... execution.md 40.1 names them Routes A, B and C. Route
+  // A is covered above (gate4MembershipFailureRouteARedirectsToLoginDo, T09 test 6); B and C are new. Both
+  // pass-through proofs below close the "redirect-everything" failure mode this task's own Fails when
+  // clause names as the most likely mistake.
+  // ---------------------------------------------------------------------------------------------------
+
+  /**
+   * Route B (execution.md 40.1: "a STATE condition"). {@code crpManager.getGlobalUnitById(...)} resolves
+   * to {@code null} for a Global Unit id nothing registered, so {@code finishLogin}'s {@code loggedCrp ==
+   * null} branch fires -- it never even reaches {@code crpUserManager}, so this is NOT a rejected user
+   * (gate 4), it is an unresolvable unit. Easiest of the three to miss for exactly that reason.
+   */
+  @Test
+  public void routeBUnresolvableGlobalUnitRedirectsToLoginDo() throws Exception {
+    long unresolvableGlobalUnitId = 999999L;
+    this.userManager.register(cgiarUser(9020L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-b", unresolvableGlobalUnitId, null, "nonce-b");
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-b", "state-b", null);
+
+    assertEquals("T21 Route B: an unresolvable Global Unit must redirect, not render", Action.LOGIN, result);
+    assertTrue("T21 Route B: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertFalse("T21: no loop -- the redirect target must never be the callback URL",
+      action.getUrl().contains("cognitoCallback"));
+    assertTrue("finishLogin's no-Global-Unit branch clears the session", action.getSession().isEmpty());
+    assertTrue("the refusal message must be the selectCrp key",
+      action.getFieldErrors().get("loginMessage").contains("login.error.selectCrp"));
+  }
+
+  /**
+   * Route C (execution.md 40.1: "a DATA condition"). A Global Unit whose {@code GlobalUnitType} id is
+   * outside {1,2,3,4,5} falls into {@code finishLogin}'s {@code default:} arm.
+   * <p>
+   * <b>Route C's pre-existing session/state inconsistency is deliberately NOT fixed here</b> (execution.md
+   * 40.1, 40.5, tasks.md "Recorded, and explicitly NOT fixed here"): this branch fires AFTER the session
+   * is populated and {@code saveLastLogin} has already run, so the user IS authenticated even though the
+   * browser lands on {@code login.do}. T21 changes WHERE the browser lands, nothing else -- asserted below
+   * by confirming the session is still populated.
+   */
+  @Test
+  public void routeCUnmappedGlobalUnitTypeRedirectsToLoginDo() throws Exception {
+    long unmappedTypeGlobalUnitId = 888L;
+    this.crpManager.register(globalUnit(unmappedTypeGlobalUnitId, 42));
+    this.userManager.register(cgiarUser(9021L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-c", unmappedTypeGlobalUnitId, null, "nonce-c");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-c", "state-c", null);
+
+    assertEquals("T21 Route C: an unmapped GlobalUnitType must redirect, not render", Action.LOGIN, result);
+    assertTrue("T21 Route C: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertFalse("T21: no loop -- the redirect target must never be the callback URL",
+      action.getUrl().contains("cognitoCallback"));
+    assertFalse("route C leaves the session authenticated -- a pre-existing inconsistency, not fixed here",
+      action.getSession().isEmpty());
+  }
+
+  /**
+   * Pass-through proof 1 (tasks.md "Pass-through, both shapes"). A successful login must still return
+   * {@code SUCCESS}, completely unaffected by the {@code INPUT} adaptation T21 adds -- proving the
+   * adaptation inspects the tail's result and does not redirect indiscriminately.
+   */
+  @Test
+  public void t21PassThroughSuccessfulLoginStillReturnsSuccess() throws Exception {
+    this.userManager.register(cgiarUser(9022L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending =
+      this.seedPending(action, "state-success21", GLOBAL_UNIT_ID, null, "nonce-success21");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-success21", "state-success21", null);
+
+    assertEquals("T21 pass-through: a successful login must still return SUCCESS", Action.SUCCESS, result);
+    assertNull("T21 pass-through: SUCCESS carries no url", action.getUrl());
+  }
+
+  /**
+   * Pass-through proof 2 (tasks.md "Pass-through, both shapes") -- <b>the most likely way to get this task
+   * wrong</b>. A type-2 Global Unit's {@code LOGIN} result carries the tail's OWN
+   * {@code centerDashboard.do} url ({@code LoginAction:434}); the adaptation must not overwrite it with
+   * {@code login.do}, or a centre user would be sent to the login page instead of their dashboard.
+   */
+  @Test
+  public void t21PassThroughType2CentreDashboardUrlIsNotOverwritten() throws Exception {
+    long centreGlobalUnitId = 777L;
+    this.crpManager.register(globalUnit(centreGlobalUnitId, 2));
+    this.userManager.register(cgiarUser(9023L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-t2", centreGlobalUnitId, null, "nonce-t2");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-t2", "state-t2", null);
+
+    assertEquals("T21 pass-through: a type-2 unit must still return LOGIN", Action.LOGIN, result);
+    assertTrue("T21 pass-through: the url must be the tail's OWN centerDashboard.do url, not overwritten",
+      action.getUrl().endsWith("/centerDashboard.do"));
+    assertFalse("T21 pass-through: must NOT be overwritten with the login.do redirect",
+      action.getUrl().endsWith("/login.do"));
   }
 
   /** Throws on every call. Used to prove the Cognito dispatch path performs no LDAP/DB I/O in the realm. */

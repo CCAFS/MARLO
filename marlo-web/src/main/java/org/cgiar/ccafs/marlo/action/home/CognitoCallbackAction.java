@@ -533,7 +533,25 @@ public class CognitoCallbackAction extends LoginAction {
 
     // Step 8: the shared tail (T01). Applies gate 4 (crp_users membership), session attributes, custom
     // parameters, saveLastLogin, and post-login routing -- identical to the local path.
-    return this.finishLogin(loggedUser, loggedCrp, returnUrl);
+    String tail = this.finishLogin(loggedUser, loggedCrp, returnUrl);
+    if (INPUT.equals(tail)) {
+      // CHG-COGNITO-AUTH-001-T21 (V-7): three of finishLogin's own refusals -- gate 4 (:393, not a
+      // crp_users member), an unresolvable Global Unit (:402, loggedCrp == null), and an unmapped
+      // GlobalUnitType (:447, the default: arm) -- still return INPUT, which would render login.ftl IN
+      // PLACE at cognitoCallback.do?code=...&state=..., the same parked-URL defect T20 closed for the nine
+      // refuse() branches above. finishLogin is LoginAction's shared tail (T01) and is not touched here --
+      // every side effect it performs (the log line, the field error, setCrpSession, getSession().clear(),
+      // Subject.logout(), user.setPassword(null)) already ran before this line returned, so nothing here
+      // re-runs, reorders, or re-decides any of them. This adaptation only converts WHERE the browser
+      // lands; it does not fix route C's pre-existing session/state inconsistency (execution.md 40.1) nor
+      // route A's lost setCrpSession context (execution.md 40.4) -- both remain open, by design.
+      this.setUrl(this.getBaseUrl() + "/login.do");
+      return LOGIN;
+    }
+    // Any other result -- SUCCESS, or the LOGIN a type-2 Global Unit returns with its own
+    // centerDashboard.do url (LoginAction:434) -- passes through unchanged. Overwriting a url the tail
+    // already set would send a centre user to the login page instead of their dashboard.
+    return tail;
   }
 
   @Override

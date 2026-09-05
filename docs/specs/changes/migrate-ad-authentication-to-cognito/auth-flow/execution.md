@@ -4042,3 +4042,68 @@ recorded rather than quietly fixed:
 
 Neither changed any code or any conclusion. Both meant **the task ledger disagreed with reality**, which is the
 one thing it exists not to do — and a count taken from it would have been wrong in both directions at once.
+
+---
+
+## 41. T21 audited PASS — pending the live gate-4 check — 2026-09-05
+
+### 41.1 The pass-through half, proven by enumeration
+
+The risk in T21 was never the redirect; it was **redirecting something that should not be**. The audit settled
+it by reading every exit of `finishLogin` (`LoginAction:349-453`) — **eight returns, no others**:
+
+| Result | Sites |
+|---|---|
+| `INPUT` | `:393` (A), `:402` (B), `:447` (C) — **and nowhere else** |
+| `LOGIN` + its own url | `:427` (deep link), `:435` (type-2 centre dashboard) |
+| `SUCCESS` | `:431`, `:438`, `:441`, `:444` (types 1, 3, 4, 5) |
+
+**No success-ish path returns `INPUT`**, so nothing is silently redirected. The type-2 url is preserved on both
+sides: the call site sets no url on that path, and the test asserts the url both **ends** `/centerDashboard.do`
+and **does not end** `/login.do`.
+
+One precision the audit added: **route C is not a rejection.** The user is authenticated, `saveLastLogin` has
+run, the session is populated — it is an *unroutable-unit* failure. Redirecting it is intended and named in the
+contract, not collateral.
+
+### 41.2 Branch localization proven without leaning on the mutation
+
+T20's audit raised the concern that `LOGIN` + `/login.do` is true for every branch, so an assertion alone
+localizes nothing. Here each test carries a discriminator **only its own branch can produce**:
+
+- **A** asserts `login.error.invalidUserCrp` — emitted at exactly one place in the repository,
+  `LoginAction:387`.
+- **B** asserts `login.error.selectCrp` — exactly one place, `LoginAction:397` — and its Global Unit id is
+  never registered, so the resolve genuinely returns `null` and `crpUserManager` is never consulted.
+- **C** asserts `getSession()` is **not** empty. That is only possible if `finishLogin`'s success population
+  ran: A and B both `clear()`, and every `refuse()` branch leaves the session map empty.
+
+And `finishLogin` is **not** overridden by the test double, so the real shared tail runs in all three.
+
+### 41.3 The three modified pre-existing tests were strengthened, not weakened
+
+Each kept its substance and gained assertions: the `InvalidatedSessionMap` installation and its
+`catch (IllegalStateException) → fail`; the CSP probe through the captured `ShiroHttpServletRequest` with its
+read-back; the NPE catch, the session-empty check and the `invalidUserCrp` check. No test still asserts
+`INPUT` from `callback(...)`.
+
+**The contract's local-path requirement was discharged by a test nobody had to write.**
+`LoginActionFinishLoginTest:251` already asserts `finishLogin` returns `INPUT` on a refusal, and it is
+unmodified. The right answer to "prove the local path is unchanged" turned out to be an existing assertion
+still running, not a new one.
+
+### 41.4 ADVISORY carried
+
+`struts-home.xml:69-75` still maps `input` → `login.ftl` for `cognitoCallback`. `callback(...)` can no longer
+return `INPUT`, but **that mapping must not be deleted as dead config** without first checking whether
+`cognitoUnloggedStack` contains a workflow or validation interceptor that can produce `input` independently.
+**This matters for V-6**: that mapping is the mechanism a server-side message fix would otherwise reach for.
+
+### 41.5 Status
+
+**T21 is NOT closed.** Audited PASS, suite **195**, mutation measured at five reddened tests distributed three
+/ one / one across A / B / C, with both pass-through tests staying green. The closing evidence is a real
+Cognito login refused by **gate 4** landing on `login.do` with no code and no state — the user's to perform,
+and the natural hand-test that once looked like a T20 failure.
+
+**V-6 remains open and untouched.**
