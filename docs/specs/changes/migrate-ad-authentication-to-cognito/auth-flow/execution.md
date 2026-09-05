@@ -4358,3 +4358,66 @@ instrument for catching it.
 
 **T22 is NOT closed.** Suite **201**, audited PASS round 2. The closing evidence is a real refused Cognito
 login showing a comprehensible message, and a later unrelated login showing none — the user's to perform.
+
+---
+
+## 45. T22 / V-6 CLOSED on real E2E evidence — 2026-09-05
+
+### 45.1 The evidence
+
+```
+17:01:59.477  LoginAction            logout succesfully
+17:02:12.035  CognitoCallbackAction  Cognito callback refused: no pending authorization for this session
+17:02:12.215  BaseAction  [WARN] no user crp in the session  (x8)   -> the login page composing
+17:02:12.317  DownloadGlobalUnitLogoAction  AICCRA / AICCRA_III / DEFAULT
+```
+
+A consumed callback reopened after logout — a `refuse()` branch carrying `GENERIC_FAILURE_KEY`, so the
+collapse resolves to `cognitoFailed`.
+
+**Observed by the user in the browser:** the rejection message **displayed correctly and stayed visible**, and
+a subsequent normal `login.do` flow showed **no** message.
+
+Zero `UnknownSessionException`, `ExpiredSessionException`, `StoppedSessionException` or `ShiroException` in the
+window. Zero `ERROR` or `SEVERE`.
+
+**The autofill watch-item did not reproduce.** The message did not disappear on its own, so no task is opened —
+the observation stays recorded in §44.3 and nothing more.
+
+### 45.2 Verified on the running server before the user tested
+
+`curl` against the real deployment, measuring the HTTP status as well as the rendered slots:
+
+```
+cognitoFailed        -> HTTP 200 | visible slots: 1 | 'alert(1)' reflected: 0
+cognitoUnavailable   -> HTTP 200 | visible slots: 1 | reflected: 0
+empty                -> HTTP 200 | visible slots: 0 | reflected: 0
+unknown              -> HTTP 200 | visible slots: 0 | reflected: 0
+script payload       -> HTTP 200 | visible slots: 0 | reflected: 0
+duplicated parameter -> HTTP 200 | visible slots: 0 | reflected: 0
+no parameter         -> HTTP 200 | visible slots: 0
+```
+
+> **The first attempt at that probe was worthless and was caught.** It sent the script payload unencoded and
+> reported "0 slots" — which could equally have meant the request failed. Re-run with proper encoding **and
+> the HTTP status measured**, the result means what it claims. **A negative result from a request you did not
+> confirm succeeded is not a negative result.** The third instance of this lesson in two days, after `strings`
+> (§39.1) and the `BaseAction` discriminator (§42.3).
+
+### 45.3 A loose end from §42.3, closed
+
+§42.3 recorded that I proposed the eight `BaseAction` "no user crp in the session" warnings as the signature
+of a `login.do` render, then falsified it: a plain `login.do` GET emitted **zero** log lines.
+
+**This window shows the warnings present.** The difference is the session, not the action: my `curl` probe
+carried no cookie, so `BaseAction` had no session state to complain about; a browser with a session cookie
+does. The discriminator was not merely unproven — it measured session state and not which action rendered.
+**Discarding it was right, and now the reason is on the record.**
+
+### 45.4 Status
+
+**T22 / V-6: CLOSED.** Audited PASS round 2 after a round-1 FAIL on the `inactive` coverage hole, suite
+**201**, and validated end to end in a real browser: a refused Cognito login shows a comprehensible message,
+and a later unrelated login shows none.
+
+**No implementation task remains open in this spec.**
