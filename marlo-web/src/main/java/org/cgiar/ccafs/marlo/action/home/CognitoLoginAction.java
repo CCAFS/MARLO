@@ -187,6 +187,14 @@ public class CognitoLoginAction extends BaseAction {
 
   private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The only i18n key this class ever passes to {@link #refuse(String)}
+   * that means "infrastructure, not account" -- matches {@code LoginAction#AUTH_ERROR_UNAVAILABLE}'s
+   * meaning exactly. Kept as its own literal (rather than importing LoginAction's) because this class does
+   * not extend {@code LoginAction} and the comparison is purely internal to this method.
+   */
+  private static final String UNAVAILABLE_KEY = "login.error.cognitoUnavailable";
+
   // Managers
   private final UserManager userManager;
   private final GlobalUnitManager crpManager;
@@ -200,6 +208,16 @@ public class CognitoLoginAction extends BaseAction {
 
   // Result
   private String authorizeUrl;
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). Unlike {@code CognitoCallbackAction}, a refusal here never redirects --
+   * {@code struts-home.xml}'s {@code input} result renders {@code login.ftl} in the SAME request, with
+   * {@code model=action} -- so the visible category is exposed directly off this instance rather than
+   * through a URL parameter. Set exactly once, inside {@link #refuse(String)}, from a hardcoded i18n key
+   * literal this class's own call sites choose -- never from anything caller-controlled.
+   */
+  private boolean cognitoUnavailable;
+  private boolean cognitoFailed;
 
   // @Inject
   public CognitoLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
@@ -239,7 +257,7 @@ public class CognitoLoginAction extends BaseAction {
 
     if (!this.isCognitoConfigured()) {
       LOG.warn("Cognito login requested but the environment is not configured (design.md 9.3)");
-      return this.refuse("login.error.cognitoUnavailable");
+      return this.refuse(UNAVAILABLE_KEY);
     }
 
     if (this.globalUnitId == null) {
@@ -435,6 +453,25 @@ public class CognitoLoginAction extends BaseAction {
   }
 
   /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only on the ONE refusal branch that is an infrastructure
+   * condition (environment not configured) -- see {@link #refuse(String)}. Never derived from anything on
+   * the request; {@code false} on every other path, including a request that never called
+   * {@link #authorize(String)} at all.
+   */
+  public boolean isCognitoUnavailable() {
+    return this.cognitoUnavailable;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} on every OTHER refusal this class produces --
+   * {@code cognitoNotEligible}'s five branches -- collapsed into the single generic public category so
+   * none of them is distinguishable from an ordinary failure (SEC-006).
+   */
+  public boolean isCognitoFailed() {
+    return this.cognitoFailed;
+  }
+
+  /**
    * @return the full {@code https://<domain>/oauth2/authorize?...} URL to redirect to, populated only when
    *         {@link #authorize(String)} returned {@link #SUCCESS}
    */
@@ -486,6 +523,11 @@ public class CognitoLoginAction extends BaseAction {
 
   private String refuse(String i18nKey) {
     this.addFieldError("loginMessage", this.getText(i18nKey));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): collapse the granular key into exactly one of the two public
+    // categories -- UNAVAILABLE_KEY alone is "infrastructure, not account"; every other key this class
+    // passes here (only cognitoNotEligible) is account-shaped and MUST NOT be distinguishable (SEC-006).
+    this.cognitoUnavailable = UNAVAILABLE_KEY.equals(i18nKey);
+    this.cognitoFailed = !this.cognitoUnavailable;
     return INPUT;
   }
 

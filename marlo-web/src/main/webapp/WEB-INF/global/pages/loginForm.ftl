@@ -144,6 +144,15 @@
              with no card ever selected, so mode cannot be composed safely --]
         <p class="invalidField selectProject hidden">[@s.text name="login.error.invalidField.selectProject"/]</p>
 
+        [#-- CHG-COGNITO-AUTH-001-T22 (V-6): the ONLY two categories a refused Cognito login may ever
+             render, selected server-side by LoginAction/CognitoLoginAction's own isCognitoUnavailable()/
+             isCognitoFailed() booleans -- never by echoing the authError parameter's own value. Every
+             other rejection reason (cognitoNotEligible, inactive, invalidUserCrp, route C's own
+             no-message branch) collapses into the "cognitoFailed" outcome server-side, before this
+             template ever runs (SEC-005, SEC-006) --]
+        <p class="invalidField cognitoUnavailable${(cognitoUnavailable!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoUnavailable"/]</p>
+        <p class="invalidField cognitoFailed${(cognitoFailed!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoFailed"/]</p>
+
         [#-- Terms and conditions checkbox --]
         <div class="terms-container hidden">
           <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>

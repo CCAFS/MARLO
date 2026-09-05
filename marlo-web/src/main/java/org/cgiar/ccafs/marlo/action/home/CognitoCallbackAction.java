@@ -545,7 +545,10 @@ public class CognitoCallbackAction extends LoginAction {
       // re-runs, reorders, or re-decides any of them. This adaptation only converts WHERE the browser
       // lands; it does not fix route C's pre-existing session/state inconsistency (execution.md 40.1) nor
       // route A's lost setCrpSession context (execution.md 40.4) -- both remain open, by design.
-      this.setUrl(this.getBaseUrl() + "/login.do");
+      // CHG-COGNITO-AUTH-001-T22 (V-6): routes A, B and C all collapse into the single generic public
+      // category -- route C in particular computes NO message of its own (execution.md 43.1/43.2), so
+      // AUTH_ERROR_FAILED is the only literal that could ever be correct here.
+      this.setUrl(this.getBaseUrl() + "/login.do?authError=" + AUTH_ERROR_FAILED);
       return LOGIN;
     }
     // Any other result -- SUCCESS, or the LOGIN a type-2 Global Unit returns with its own
@@ -615,17 +618,23 @@ public class CognitoCallbackAction extends LoginAction {
   }
 
   private String refuse(String i18nKey) {
-    // CHG-COGNITO-AUTH-001-T20 (V-5): kept for V-6 (execution.md 37.2), a separate, still-open finding --
-    // the login view never renders a field error today, so this call is inert. It stays inert here on
-    // purpose: deleting it would erase the branch-to-message mapping V-6's future fix needs, and building
-    // a display mechanism for it is explicitly out of this task's scope.
+    // CHG-COGNITO-AUTH-001-T20 (V-5): kept computed for T22 (V-6, execution.md 43) -- addFieldError's
+    // "loginMessage" never survives the redirect below (a new request handles /login.do) and is not what
+    // renders the visible message; it stays here only because deleting it would erase the granular
+    // branch-to-key mapping this method still needs to decide the PUBLIC category two lines down.
     this.addFieldError("loginMessage", this.getText(i18nKey));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): collapse the granular key into exactly one of the two public
+    // categories LoginAction exposes -- UNAVAILABLE_KEY is the only i18n key this class ever passes here
+    // that means "infrastructure, not account"; every other key (cognitoNotEligible, inactive,
+    // invalidUserCrp, cognitoFailed) is account-shaped and MUST NOT be distinguishable, per SEC-006.
+    String publicAuthError = UNAVAILABLE_KEY.equals(i18nKey) ? AUTH_ERROR_UNAVAILABLE : AUTH_ERROR_FAILED;
     // V-5: redirect to the canonical login URL instead of rendering login.ftl in place at
     // cognitoCallback.do?code=...&state=... -- that parked URL, with the authorization code and state
     // still in it, is what poisoned the Referer and produced V-4. Reuses the existing "login" result
     // already mapped at struts-home.xml (redirect ${url}) -- the same this.url = getBaseUrl() + "/..."
     // concatenation LoginAction already uses (LoginAction:312, :434). No new result, no new mechanism.
-    this.setUrl(this.getBaseUrl() + "/login.do");
+    // The appended parameter SELECTS one of two literals; it never carries the caller's own text.
+    this.setUrl(this.getBaseUrl() + "/login.do?authError=" + publicAuthError);
     return LOGIN;
   }
 

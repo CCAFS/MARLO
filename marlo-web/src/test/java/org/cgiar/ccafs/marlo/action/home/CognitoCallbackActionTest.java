@@ -307,8 +307,10 @@ public class CognitoCallbackActionTest {
     }
 
     assertEquals(Action.LOGIN, result);
-    assertTrue("T21: the membership-failure branch must redirect to the canonical login URL",
-      action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): the membership-failure branch (invalidUserCrp) is an account-shaped
+    // reason and MUST collapse into the generic public category (SEC-006) -- see LoginAction.AUTH_ERROR_FAILED.
+    assertTrue("T21/T22: the membership-failure branch must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertFalse("T21: no loop -- the redirect target must never be the callback URL",
       action.getUrl().contains("cognitoCallback"));
   }
@@ -392,7 +394,9 @@ public class CognitoCallbackActionTest {
     // adapts it to a LOGIN redirect to the canonical login.do. Reached either way -- only the result name
     // and target changed.
     assertEquals("the non-member branch must still be reached (gate 4)", Action.LOGIN, result);
-    assertTrue("T21: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): invalidUserCrp is account-shaped and collapses to the generic category.
+    assertTrue("T21/T22: must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
 
     // The real CSP path, through the SAME request reference captured before the action ran, AFTER
     // finishLogin's own getSession().clear() + Subject.logout() ran on the non-member branch.
@@ -560,8 +564,9 @@ public class CognitoCallbackActionTest {
     // shape (tasks.md T20): a replayed callback must stay refused AND now redirect, never render
     // cognitoCallback.do in place with the stale code/state still on the URL.
     assertEquals(Action.LOGIN, second);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): "no pending authorization" is GENERIC_FAILURE_KEY -- the generic category.
     assertTrue("a replayed callback must still redirect to the canonical login URL",
-      replay.getUrl().endsWith("/login.do"));
+      replay.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
   }
 
   /**
@@ -595,7 +600,9 @@ public class CognitoCallbackActionTest {
     }
 
     assertEquals("T21 Route A: gate 4 (crp_users membership) must redirect, not render", Action.LOGIN, result);
-    assertTrue("T21 Route A: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): invalidUserCrp is account-shaped and collapses to the generic category.
+    assertTrue("T21/T22 Route A: must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertFalse("T21: no loop -- the redirect target must never be the callback URL",
       action.getUrl().contains("cognitoCallback"));
     assertTrue("finishLogin's membership-failure branch clears the session", action.getSession().isEmpty());
@@ -681,7 +688,10 @@ public class CognitoCallbackActionTest {
     // computed and kept (inert today -- see refuse()'s own comment, V-6, execution.md 37.2), but the
     // result is now a redirect to the canonical login URL, never a rendered view at cognitoCallback.do.
     assertEquals(Action.LOGIN, result);
-    assertTrue("the redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): the ONE infrastructure-shaped reason -- the only branch that may
+    // ever render the distinct, actionable "unavailable" public category.
+    assertTrue("the redirect target must be the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_UNAVAILABLE));
     assertTrue(action.getFieldErrors().get("loginMessage").contains("login.error.cognitoUnavailable"));
   }
 
@@ -705,7 +715,10 @@ public class CognitoCallbackActionTest {
     // guarantee is unaffected by the redirect -- the field error is still computed identically; only the
     // result/routing changed.
     assertEquals(Action.LOGIN, gate1Result);
-    assertTrue("gate 1's redirect target must be the canonical login URL", gate1Action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): cognitoNotEligible is account-shaped and MUST collapse into the
+    // generic public category -- the SEC-006 disclosure this whole task exists to close.
+    assertTrue("gate 1's redirect target must be the canonical login URL",
+      gate1Action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     String gate1Message = gate1Action.getFieldErrors().get("loginMessage").get(0);
 
     // Gate 2: a row exists but is_cgiar_user = 0.
@@ -720,12 +733,17 @@ public class CognitoCallbackActionTest {
     this.exchangeClient.idTokenToReturn = this.validIdToken(gate2Pending.getNonce(), CGIAR_EMAIL);
     String gate2Result = gate2Action.callback("auth-code-g2", "state-g2", null);
     assertEquals(Action.LOGIN, gate2Result);
-    assertTrue("gate 2's redirect target must be the canonical login URL", gate2Action.getUrl().endsWith("/login.do"));
+    assertTrue("gate 2's redirect target must be the canonical login URL",
+      gate2Action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     String gate2Message = gate2Action.getFieldErrors().get("loginMessage").get(0);
 
     assertEquals("gate 1 and gate 2 refusals must be indistinguishable as rendered by this action", gate1Message,
       gate2Message);
     assertEquals("login.error.cognitoNotEligible", gate1Message);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): SEC-006's actual test -- both gates must redirect to the
+    // byte-identical URL, not merely produce the identical internal key.
+    assertEquals("gate 1 and gate 2 must redirect to the byte-identical URL", gate1Action.getUrl(),
+      gate2Action.getUrl());
   }
 
   // ---------------------------------------------------------------------------------------------------
@@ -751,7 +769,8 @@ public class CognitoCallbackActionTest {
     String result = action.callback(null, "state-433", "access_denied");
 
     assertEquals("branch :433 (IdP returned an error) must redirect, not render", Action.LOGIN, result);
-    assertTrue("branch :433's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertTrue("branch :433's redirect target must be the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertFalse("branch :433 must never target cognitoCallback.do again (no loop)",
       action.getUrl().contains("cognitoCallback"));
   }
@@ -766,7 +785,8 @@ public class CognitoCallbackActionTest {
     String result = action.callback(null, "state-438", null);
 
     assertEquals("branch :438 (no authorization code) must redirect, not render", Action.LOGIN, result);
-    assertTrue("branch :438's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertTrue("branch :438's redirect target must be the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
   }
 
   /** Branch :455 -- the exchanged ID token fails validation (here: a nonce that does not match the pending one). */
@@ -783,7 +803,8 @@ public class CognitoCallbackActionTest {
     String result = action.callback("auth-code-455", "state-455", null);
 
     assertEquals("branch :455 (token validation failed) must redirect, not render", Action.LOGIN, result);
-    assertTrue("branch :455's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertTrue("branch :455's redirect target must be the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
   }
 
   /**
@@ -808,7 +829,8 @@ public class CognitoCallbackActionTest {
     String result = action.callback("auth-code-482", "state-482", null);
 
     assertEquals("branch :482 (resolved user vanished) must redirect, not render", Action.LOGIN, result);
-    assertTrue("branch :482's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertTrue("branch :482's redirect target must be the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
   }
 
   /**
@@ -840,7 +862,7 @@ public class CognitoCallbackActionTest {
     assertEquals("branch :505 (realm rejected the identity, after session.stop()) must redirect, not render",
       Action.LOGIN, result);
     assertTrue("branch :505's redirect target must be the canonical login URL, even with no session to read from",
-      action.getUrl().endsWith("/login.do"));
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
   }
 
   /**
@@ -857,7 +879,7 @@ public class CognitoCallbackActionTest {
 
     String rejectedResult = rejectedAction.callback(null, "state-fresh", "access_denied");
     assertEquals(Action.LOGIN, rejectedResult);
-    assertTrue(rejectedAction.getUrl().endsWith("/login.do"));
+    assertTrue(rejectedAction.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
 
     // Same thread-bound Subject/session as the rejection above -- cognitoLogin.do's own authorize() must
     // still mint a NEW PendingAuthorization and a NEW authorize URL, not be blocked by anything the refusal
@@ -905,7 +927,10 @@ public class CognitoCallbackActionTest {
     String result = action.callback("auth-code-b", "state-b", null);
 
     assertEquals("T21 Route B: an unresolvable Global Unit must redirect, not render", Action.LOGIN, result);
-    assertTrue("T21 Route B: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): selectCrp is account-shaped (reveals no unit was selected) and
+    // collapses to the generic public category.
+    assertTrue("T21/T22 Route B: must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertFalse("T21: no loop -- the redirect target must never be the callback URL",
       action.getUrl().contains("cognitoCallback"));
     assertTrue("finishLogin's no-Global-Unit branch clears the session", action.getSession().isEmpty());
@@ -936,11 +961,93 @@ public class CognitoCallbackActionTest {
     String result = action.callback("auth-code-c", "state-c", null);
 
     assertEquals("T21 Route C: an unmapped GlobalUnitType must redirect, not render", Action.LOGIN, result);
-    assertTrue("T21 Route C: must redirect to the canonical login URL", action.getUrl().endsWith("/login.do"));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): route C computes NO message of its own and must still land on the
+    // generic public category -- this is the specific "route C has no key of its own" test.
+    assertTrue("T21/T22 Route C: must redirect to the canonical login URL",
+      action.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertFalse("T21: no loop -- the redirect target must never be the callback URL",
       action.getUrl().contains("cognitoCallback"));
     assertFalse("route C leaves the session authenticated -- a pre-existing inconsistency, not fixed here",
       action.getSession().isEmpty());
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6) -- the consolidated SEC-006 proof this task exists for. Five genuinely
+   * different internal reasons -- gate 4 membership (route A), an unresolvable Global Unit (route B), an
+   * unmapped {@code GlobalUnitType} that computes NO message at all (route C), the identity mapper's
+   * {@code cognitoNotEligible} (gate 1), and the identity mapper's {@code inactive} (gate 3) -- must all
+   * redirect to the byte-identical URL. Not "each shows a message", but the same URL, character for
+   * character: that is what makes them indistinguishable to anything reading the response, including an
+   * attacker probing which of several accounts exists.
+   * <p>
+   * <b>Gate 3 closes a coverage hole an audit found</b>: {@code login.error.inactive} is the only one of
+   * the three unsafe keys with its own distinct i18n key ({@code CognitoIdentityMappingTest} deliberately
+   * asserts it differs from {@code cognitoNotEligible}), so it is the one internal distinction most likely
+   * to leak through a future edit to {@link CognitoCallbackAction#refuse(String)}'s ternary. This case
+   * drives a genuinely disabled CGIAR account through the real {@link CognitoIdentityMapperImpl} -- not an
+   * enum-level assertion -- and additionally checks the computed {@code loginMessage} to prove gate 3, not
+   * some other branch, actually produced the outcome.
+   */
+  @Test
+  public void fiveUnrelatedRejectionReasonsRedirectToTheByteIdenticalUrl() throws Exception {
+    // Route A: gate 4, membership.
+    this.userManager.register(cgiarUser(9101L));
+    TestableCognitoCallbackAction routeA = this.newAction();
+    PendingAuthorization pendingA = this.seedPending(routeA, "state-consolidated-a", GLOBAL_UNIT_ID, null, "nonce-a");
+    this.crpUserManager.isMember = false;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pendingA.getNonce(), CGIAR_EMAIL);
+    assertEquals(Action.LOGIN, routeA.callback("auth-code-a", "state-consolidated-a", null));
+
+    // Route B: unresolvable Global Unit.
+    TestableCognitoCallbackAction routeB = this.newAction();
+    PendingAuthorization pendingB =
+      this.seedPending(routeB, "state-consolidated-b", 999998L, null, "nonce-b2");
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pendingB.getNonce(), CGIAR_EMAIL);
+    assertEquals(Action.LOGIN, routeB.callback("auth-code-b2", "state-consolidated-b", null));
+
+    // Route C: unmapped GlobalUnitType -- computes no message of its own.
+    long unmappedTypeGlobalUnitId = 889L;
+    this.crpManager.register(globalUnit(unmappedTypeGlobalUnitId, 42));
+    TestableCognitoCallbackAction routeC = this.newAction();
+    PendingAuthorization pendingC =
+      this.seedPending(routeC, "state-consolidated-c", unmappedTypeGlobalUnitId, null, "nonce-c2");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pendingC.getNonce(), CGIAR_EMAIL);
+    assertEquals(Action.LOGIN, routeC.callback("auth-code-c2", "state-consolidated-c", null));
+
+    // Gate 1: no users row at all -- the identity mapper's own cognitoNotEligible.
+    TestableCognitoCallbackAction gate1 = this.newAction();
+    PendingAuthorization pendingG1 =
+      this.seedPending(gate1, "state-consolidated-g1", GLOBAL_UNIT_ID, null, "nonce-g1b");
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pendingG1.getNonce(), "stranger@cgiar.org");
+    assertEquals(Action.LOGIN, gate1.callback("auth-code-g1b", "state-consolidated-g1", null));
+
+    // Gate 3: a real users row, CGIAR-authenticated, but is_active = 0 -- the identity mapper's own
+    // distinct "inactive" key, the only one of the three unsafe keys with its own i18n key.
+    String disabledEmail = "disabled.cgiar@cgiar.org";
+    User disabledUser = new User();
+    disabledUser.setId(Long.valueOf(9103L));
+    disabledUser.setEmail(disabledEmail);
+    disabledUser.setCgiarUser(true);
+    disabledUser.setActive(false);
+    this.userManager.register(disabledUser);
+    TestableCognitoCallbackAction gate3 = this.newAction();
+    PendingAuthorization pendingG3 =
+      this.seedPending(gate3, "state-consolidated-g3", GLOBAL_UNIT_ID, null, "nonce-g3");
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pendingG3.getNonce(), disabledEmail);
+    assertEquals(Action.LOGIN, gate3.callback("auth-code-g3", "state-consolidated-g3", null));
+
+    String expected = "https://marlo.example.org/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED;
+    assertEquals("route A", expected, routeA.getUrl());
+    assertEquals("route B", expected, routeB.getUrl());
+    assertEquals("route C -- has no message of its own, yet must still match exactly", expected, routeC.getUrl());
+    assertEquals("gate 1", expected, gate1.getUrl());
+    assertEquals("gate 3 -- inactive has its OWN distinct i18n key and is the likeliest one to leak", expected,
+      gate3.getUrl());
+    // Proves gate 3, not some other branch, actually produced this outcome -- without this, the test above
+    // could pass while never reaching gate 3 at all.
+    assertTrue("gate 3 must actually compute the distinct inactive key internally",
+      gate3.getFieldErrors().get("loginMessage").contains("login.error.inactive"));
   }
 
   /**

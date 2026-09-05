@@ -59,6 +59,21 @@ public class LoginAction extends BaseAction {
   // Logging
   private static final Logger LOG = LoggerFactory.getLogger(LoginAction.class);
 
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). One of exactly two public disclosure categories a refused Cognito
+   * login may surface through {@code ?authError=<code>} on the {@code /login.do} redirect target
+   * {@code CognitoCallbackAction} (T20/T21) already builds -- an infrastructure condition, safe to show
+   * distinctly because it says nothing about any account (execution.md 43.2).
+   */
+  public static final String AUTH_ERROR_UNAVAILABLE = "cognitoUnavailable";
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The generic public rejection -- every other reason, including
+   * {@code cognitoNotEligible}, {@code inactive}, {@code invalidUserCrp} and route C's own no-message
+   * branch, collapses here so none of them is distinguishable from an ordinary failure (SEC-005, SEC-006).
+   */
+  public static final String AUTH_ERROR_FAILED = "cognitoFailed";
+
   // Variables
   private User user;
 
@@ -66,6 +81,17 @@ public class LoginAction extends BaseAction {
   private String url;
 
   private String crp;
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). Bound from the {@code authError} query parameter on a GET
+   * {@code /login.do} -- the value {@code CognitoCallbackAction}'s redirect appends. A pure selector:
+   * {@link #isCognitoUnavailable()} and {@link #isCognitoFailed()} only ever compare it with
+   * {@code equals(...)} against the two closed-set literals above, and neither getter -- nor
+   * {@code loginForm.ftl} -- ever renders this field's own value as text. Anything outside the closed set
+   * (unknown, empty, malformed, markup, a duplicated query parameter) fails both comparisons and shows
+   * nothing.
+   */
+  private String authError;
 
 
   private Long globalUnit;
@@ -117,6 +143,39 @@ public class LoginAction extends BaseAction {
 
   public Long getGlobalUnit() {
     return globalUnit;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The raw {@code authError} query parameter, exposed only so it can be
+   * bound and re-read -- {@code loginForm.ftl} must never render this value; it reads
+   * {@link #isCognitoUnavailable()} / {@link #isCognitoFailed()} instead.
+   */
+  public String getAuthError() {
+    return this.authError;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only when {@code authError} is exactly
+   * {@link #AUTH_ERROR_UNAVAILABLE} -- an exact-match closed-set check, never a substring test, so nothing
+   * outside the two approved literals can select a visible message.
+   */
+  public boolean isCognitoUnavailable() {
+    return AUTH_ERROR_UNAVAILABLE.equals(this.authError);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only when {@code authError} is exactly
+   * {@link #AUTH_ERROR_FAILED} -- an independent exact-match check, not the negation of
+   * {@link #isCognitoUnavailable()}. An unknown, empty, or malformed value -- and a plain
+   * {@code login.do} with no parameter at all -- must make both getters {@code false}, not fall through to
+   * this one.
+   */
+  public boolean isCognitoFailed() {
+    return AUTH_ERROR_FAILED.equals(this.authError);
+  }
+
+  public void setAuthError(String authError) {
+    this.authError = authError;
   }
 
   /**

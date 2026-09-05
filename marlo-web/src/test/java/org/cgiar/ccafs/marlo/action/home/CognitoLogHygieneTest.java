@@ -397,8 +397,9 @@ public class CognitoLogHygieneTest {
     // of rendering login.ftl in place -- updated from the old Action.INPUT assertion, which was exactly the
     // contract that left the authorization code and state parked in the address bar (execution.md 37.1).
     assertEquals(Action.LOGIN, result);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): a state mismatch is GENERIC_FAILURE_KEY -- the generic public category.
     assertTrue("the redirect target must be the canonical login URL, not a rendered view",
-      callbackAction.getUrl().endsWith("/login.do"));
+      callbackAction.getUrl().endsWith("/login.do?authError=" + LoginAction.AUTH_ERROR_FAILED));
     assertLoggerFired(appender, CognitoCallbackAction.class);
     assertMessageContaining(appender, "state mismatch");
 

@@ -4299,3 +4299,62 @@ authorization material, so it is far milder than V-5 was — but it is a real pa
 T21, and **the `input` mapping is what keeps it rendering a correct page instead of a Struts error.**
 
 **Do not delete that mapping.** Recorded here so the next reader does not rediscover it the hard way.
+
+---
+
+## 44. T22 audited — FAIL then PASS — pending the live check — 2026-09-05
+
+### 44.1 Round 1: everything hard passed, one real hole
+
+The item flagged as highest-risk **cleared, and for the stated reason.** `cleanWrongData()`
+(`login.js:874-879`) hides **every** `.invalidField`, including the two new slots, and is called from seven
+sites — but the audit traced `init()`'s whole body and every function it calls and found **none** of them
+reaches it. The cookie prefill uses `.val()`, which dispatches no `change`. The visibility mechanism is also
+correct: `customLogin.css:656` sets no `display`, and `wrongData` shows an element solely with
+`removeClass("hidden")`, so rendering without ` hidden` is sufficient rather than a no-op.
+
+**The FAIL was a coverage hole on `login.error.inactive`** — the only one of the three unsafe keys with a
+distinct i18n key of its own, and one `CognitoIdentityMappingTest:404` *deliberately asserts differs* from
+`cognitoNotEligible`. The only thing collapsing it was the **untested** ternary at
+`CognitoCallbackAction:630`. Verified independently: `grep` for `inactive|USER_DISABLED|setActive(false)`
+across `CognitoCallbackActionTest` returned **zero**. A future `|| INACTIVE_KEY.equals(i18nKey)` there would
+have shipped a **SEC-006 account-status oracle with a fully green suite**.
+
+### 44.2 Round 2: closed, and I was corrected again
+
+The consolidated identity test grew a fifth case: a real CGIAR user with `setActive(false)`, driven through
+the **real** `CognitoIdentityMapperImpl`, asserting the byte-identical URL **and** that the distinct internal
+key was actually produced. All five are now `assertEquals`'d against one expected literal — **strengthened,
+not loosened.** No production code changed.
+
+> **My remediation instruction was wrong, and the implementer said so with the reasoning shown.** I told it to
+> re-run the "collapse the two categories" mutation. That mutation cannot test this case: `inactive` is
+> *already* destined for the generic bucket, which is the collapse target. The auditor went further —
+> the collapse mutant is **structurally incapable** of it. Always-FAILED leaves the case green; always-UNAVAILABLE
+> reddens all five for reasons unrelated to whether gate 3 was reached. **A mutation cannot detect a
+> distinction it erases.**
+>
+> The mutant that works is the one my prose actually described — the ternary gaining an `inactive` special
+> case, i.e. `inactive` *escaping* the generic bucket. It reddened **exactly 1 of 25**, which proves not only
+> that the assertion fires but that it is *uniquely* responsible.
+
+**This is the fifth time an implementer corrected an instruction it was given, and the fourth time the
+instruction was mine.** The pattern is consistent: I describe the defect correctly and then name the wrong
+instrument for catching it.
+
+### 44.3 Two advisories carried, neither gating
+
+- **Browser credential autofill** on `/login.do?authError=…` may dispatch a `change` event on
+  `input.login-input`, firing `login.js:88` → `cleanWrongData()` and hiding the freshly rendered message.
+  MARLO's own code does not do this — verified — but the DOM contract permits it. **A watch-item for the live
+  check:** message present at first paint, gone a beat later without the user typing. The cheap fix would be a
+  marker class plus a `:not(...)` in the selector — a new task, not T22 rework.
+- **`LoginAction.getAuthError()` is dead** and returns raw user-controlled text next to templates that do not
+  auto-escape. Nothing reads it; Struts binds through the setter alone. The javadoc forbids rendering it, which
+  is discipline rather than impossibility. Deleting it would make the class structurally incapable of the
+  mistake.
+
+### 44.4 Status
+
+**T22 is NOT closed.** Suite **201**, audited PASS round 2. The closing evidence is a real refused Cognito
+login showing a comprehensible message, and a later unrelated login showing none — the user's to perform.

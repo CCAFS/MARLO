@@ -1367,7 +1367,13 @@ lost context are both recorded as still-open, not silently fixed.
 
 ### CHG-COGNITO-AUTH-001-T22 — V-6: a refused user must be told something, and only what is safe
 
-- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-6** (`execution.md` §37.2, analysed in §43).
+- **Status:** `[~]` — added 2026-09-05, **audited PASS round 2** the same day (`execution.md` §44). Fixes
+  **V-6** (`execution.md` §37.2, analysed in §43). Suite **201**. Round 1 FAILed on a coverage hole: nothing
+  drove `login.error.inactive` through the rendering site, so a single untested ternary was all that stopped
+  a SEC-006 account-status oracle. Closed by a fifth identity case. **No i18n key added — no T13 crossing.**
+  **Open until the live check**: a real refused Cognito login must show a comprehensible message, and a later
+  unrelated login must show none. **Watch for the autofill risk in §44.3** — message present at first paint,
+  gone a beat later without typing.
 - **Depends on:** T20, T21 · **Module:** marlo-web
 - **The problem:** fifteen rejection sites compute a message through `addFieldError("loginMessage", …)` and the
   login view renders **no server-side field error at all**. A refused user sees a blank login form with no

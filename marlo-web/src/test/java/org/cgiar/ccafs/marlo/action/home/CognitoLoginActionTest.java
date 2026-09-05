@@ -210,6 +210,11 @@ public class CognitoLoginActionTest {
     assertEquals(Action.INPUT, result);
     assertNull("no redirect target may be produced for a disabled Global Unit", action.getAuthorizeUrl());
     assertFalse("terms must not be recorded on a refused attempt", this.userManager.saveUserCalled);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): cognitoNotEligible is account-shaped (reveals the flag is off for
+    // this account/unit pair) and MUST collapse into the generic public category, never the distinct
+    // "unavailable" one.
+    assertTrue("a disabled-flag refusal must render the generic public category", action.isCognitoFailed());
+    assertFalse("a disabled-flag refusal must NOT render the unavailable category", action.isCognitoUnavailable());
   }
 
   /**
@@ -230,6 +235,10 @@ public class CognitoLoginActionTest {
     assertEquals(Action.INPUT, result);
     assertNull(action.getAuthorizeUrl());
     assertFalse("terms must not be recorded on a refused attempt", this.userManager.saveUserCalled);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): reveals the account is not CGIAR-authenticated -- account-shaped,
+    // must collapse into the generic public category.
+    assertTrue("a non-CGIAR refusal must render the generic public category", action.isCognitoFailed());
+    assertFalse("a non-CGIAR refusal must NOT render the unavailable category", action.isCognitoUnavailable());
   }
 
   /**
@@ -914,6 +923,26 @@ public class CognitoLoginActionTest {
     assertEquals(Action.INPUT, result);
     assertNull(action.getAuthorizeUrl());
     assertFalse("no state may be minted on a configuration failure", this.userManager.saveUserCalled);
+    // CHG-COGNITO-AUTH-001-T22 (V-6): the ONE infrastructure-shaped reason this class ever produces -- the
+    // only branch that may render the distinct, actionable "unavailable" public category (execution.md 43.2).
+    assertTrue("an unconfigured environment must render the unavailable category", action.isCognitoUnavailable());
+    assertFalse("an unconfigured environment must NOT render the generic category", action.isCognitoFailed());
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). Neither public category may ever be set on a request this class never
+   * refused -- a successful {@code authorize(...)} must leave both getters {@code false}, so a later
+   * unrelated render off the same action instance shows nothing.
+   */
+  @Test
+  public void aSuccessfulAuthorizeSetsNeitherPublicCategory() {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = action.authorize(null);
+
+    assertEquals(Action.SUCCESS, result);
+    assertFalse("a successful authorize must not render the unavailable category", action.isCognitoUnavailable());
+    assertFalse("a successful authorize must not render the generic category", action.isCognitoFailed());
   }
 
   /** Always resolves to the one configured Global Unit; explodes on any other id (test-authoring error). */

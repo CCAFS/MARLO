@@ -47,7 +47,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -263,6 +265,67 @@ public class LoginActionFinishLoginTest {
     // would make this test un-runnable against the pre-extraction code and destroy its equivalence value.
     setReferer("https://marlo.example.org/home");
     return this.action.login(loggedUser(), globalUnitOfType(typeId));
+  }
+
+  // ---------------------------------------------------------------------------------------------------
+  // CHG-COGNITO-AUTH-001-T22 (V-6): the closed-set ?authError=<code> selector CognitoCallbackAction's
+  // redirect appends to this exact /login.do target. Exactly two literals may ever select a visible
+  // message; everything else -- unknown, empty, malformed, markup, or a value one of the sensitive
+  // internal keys (cognitoNotEligible, inactive, invalidUserCrp) might otherwise have leaked as -- must
+  // leave both getters false, which is what lets loginForm.ftl show nothing.
+  // ---------------------------------------------------------------------------------------------------
+
+  /** No parameter at all -- the plain {@code login.do} entry point -- must select nothing. */
+  @Test
+  public void noAuthErrorParameterSelectsNothing() {
+    assertFalse(this.action.isCognitoUnavailable());
+    assertFalse(this.action.isCognitoFailed());
+  }
+
+  /** The two literals {@code CognitoCallbackAction} and {@code CognitoLoginAction} may ever produce. */
+  @Test
+  public void exactlyTheTwoApprovedLiteralsAreRecognizedAndMutuallyExclusive() {
+    this.action.setAuthError(LoginAction.AUTH_ERROR_UNAVAILABLE);
+    assertTrue(this.action.isCognitoUnavailable());
+    assertFalse("the unavailable literal must not also select the generic category", this.action.isCognitoFailed());
+
+    this.action.setAuthError(LoginAction.AUTH_ERROR_FAILED);
+    assertTrue(this.action.isCognitoFailed());
+    assertFalse("the generic literal must not also select the unavailable category",
+      this.action.isCognitoUnavailable());
+  }
+
+  /**
+   * SEC-006's closed-set proof at the selector itself: none of the sensitive internal keys this spec's
+   * fifteen rejection sites compute -- nor an attacker-crafted value, including markup and a script
+   * fragment -- may select ANY visible message. Both getters must stay {@code false} for every one of
+   * these, exactly as they do for a value nobody has ever seen.
+   */
+  @Test
+  public void everyValueOutsideTheClosedSetSelectsNothing() {
+    String[] unapproved = {"", "cognitoNotEligible", "inactive", "invalidUserCrp", "selectCrp", "unknown",
+      "cognitoFailed ", " cognitoFailed", "COGNITOFAILED", "cognitoUnavailablecognitoFailed",
+      "<script>alert(1)</script>", "\"><img src=x onerror=alert(1)>", "true", "null"};
+
+    for (String candidate : unapproved) {
+      this.action.setAuthError(candidate);
+      assertFalse("must not select the unavailable category: " + candidate, this.action.isCognitoUnavailable());
+      assertFalse("must not select the generic category: " + candidate, this.action.isCognitoFailed());
+    }
+  }
+
+  /**
+   * A duplicated {@code ?authError=a&authError=b} query string binds whatever the params interceptor
+   * resolves the field to -- this test does not depend on which of the two Struts happens to pick. Any
+   * value that is not byte-identical to one of the two approved literals must still select nothing.
+   */
+  @Test
+  public void aDuplicatedQueryParameterBoundToAnUnapprovedValueSelectsNothing() {
+    this.action.setAuthError(LoginAction.AUTH_ERROR_FAILED);
+    this.action.setAuthError("<script>alert(1)</script>");
+
+    assertFalse(this.action.isCognitoUnavailable());
+    assertFalse(this.action.isCognitoFailed());
   }
 
   /** Always reports the user as a member, so the happy path reaches the routing tail under test. */
