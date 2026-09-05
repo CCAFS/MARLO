@@ -1169,12 +1169,13 @@ Report T19's status as PASS only if all of that holds.
 
 ### CHG-COGNITO-AUTH-001-T20 — V-5: a refused callback must leave the callback URL
 
-- **Status:** `[~]` — added 2026-09-05, **audited PASS** the same day. Fixes **V-5** (`execution.md` §34.5,
-  analysed in §37, audited in §38). Nine production lines inside `refuse()`; suite **191**; all nine branch
-  mutations measured red one at a time. **Open until the live check**: the symptom is a browser address bar,
-  and no unit test asserting a result name proves it. **The live check must use a `refuse()` branch** —
-  cancel at the IdP, or re-open a consumed callback URL — because gate-4 membership returns `INPUT` from
-  `finishLogin` and is **V-7**, not V-5 (see §38.2).
+- **Status:** `[x]` — added and **closed 2026-09-05.** Fixes **V-5** (`execution.md` §34.5, analysed in §37,
+  audited in §38, closed on real E2E evidence in §39). Nine production lines inside `refuse()`; suite **191**;
+  all nine branch mutations measured red one at a time; audited **PASS** round 1.
+  **Validated end to end in a real browser**: a consumed callback reopened while logged out redirects to
+  `login.do` with no authorization code and no state in the active URL. The same branch while *authenticated*
+  correctly reaches Home, because `login.do` forwards a live session (`LoginAction:304-325`) — the contrast
+  between the two is the evidence, not either alone.
 - **Depends on:** T19 · **Module:** marlo-web
 - **Files touched:** `action/home/CognitoCallbackAction.java` (one private method), plus tests
 - **The problem:** all nine rejection branches return `INPUT`, which renders `login.ftl` **at

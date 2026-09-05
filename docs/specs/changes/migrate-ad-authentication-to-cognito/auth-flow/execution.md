@@ -3889,3 +3889,71 @@ Two things worth recording from doing it:
   editing, left alone.
 - **I broke the build on the first attempt.** The replacement span for the test's message swallowed the line
   carrying `);`. Caught by the compile gate, which is what it is for.
+
+---
+
+## 39. T20 / V-5 CLOSED on real E2E evidence — 2026-09-05
+
+### 39.1 The attempt that failed, and why it was not a code defect
+
+At **14:22:29** the user reopened a consumed callback and the browser stayed on `cognitoCallback.do`. The log
+line was `Cognito callback refused: no pending authorization for this session` — branch `:420`, a genuine
+`refuse()` branch, so **the test method was right**. The binary was not.
+
+| | |
+|---|---|
+| Deployed class, compiled | 07:44 — **0** occurrences of `login.do` |
+| T20 source modified / committed | 09:39 / 09:52 |
+| Test performed | 14:22 |
+
+**The running instance predated T20**, along with T19 and the coverage extension, all compiled into
+`target/classes` but never deployed since the 07:45 redeploy. Redeployed at 14:32; the new class carries the
+string, verified on the extracted binary.
+
+> **A method note that cost me a false conclusion.** My first check used `strings`, which **does not exist in
+> this environment**. The command failed silently, `grep -c` counted zero for want of input, and both the
+> deployed *and* the freshly built class read as "0" — which I was about to report as evidence. `grep` on the
+> binary gives the real contrast, 0 versus 1. **A tool that is absent returns the same answer as a tool that
+> found nothing.**
+
+### 39.2 The validation, correlated
+
+```
+14:41:08.961  CognitoLoginAction     attempt started (AICCRA, mode COGNITO)
+14:41:49.204  CognitoCallbackAction  Cognito sign-in succeeded for Global Unit AICCRA
+14:41:49.356  LoginAction            logged in successfully -> dashboard
+14:42:37.585  CognitoCallbackAction  callback refused: no pending authorization   [authenticated]
+14:42:37.916  RequireUserInterceptor => ... <=                                    -> Home
+14:44:38.447  LoginAction            logout succesfully
+14:44:43.222  CognitoCallbackAction  callback refused: no pending authorization   [NOT authenticated]
+14:44:43.281  BaseAction  [WARN] There was a problem trying to find the user crp in the session  (x8)
+14:44:43.413  DownloadGlobalUnitLogoAction  AICCRA / AICCRA_III / DEFAULT         -> the login page
+```
+
+**The same branch, two session states, two correct outcomes — and the contrast is the proof.**
+
+- **Authenticated (14:42:37):** `refuse()` redirects to `login.do`; `login.do` recognises the live session and
+  forwards to Home (`LoginAction:304-325`). `RequireUserInterceptor` fires **and completes**, which only
+  happens on an authenticated page. The user diagnosed this themselves before asking.
+- **Not authenticated (14:44:43):** `refuse()` redirects to `login.do`, which renders the form — the eight
+  "no user crp in the session" warnings and the three project-card logos are the unauthenticated login page
+  composing. **No `RequireUserInterceptor`. No dashboard.**
+
+Browser confirmed by the user at `http://localhost:8080/marlo-web/login.do`, **with no authorization code and
+no state in the active URL**.
+
+Zero `UnknownSessionException`, `ExpiredSessionException`, `StoppedSessionException` or `ShiroException` across
+the whole post-redeploy window. One `[ERROR]`: the pre-existing, self-healing `AuditLogContextProvider`.
+
+### 39.3 Status
+
+**T20 / V-5: CLOSED.** Audited PASS, nine branch mutations measured, and now validated end to end in a real
+browser against the live Cognito pool.
+
+**V-6 and V-7 remain open and untouched**, as scoped:
+
+- **V-6** — the Cognito refusal messages are computed and discarded; the login view renders no server-side
+  error at all.
+- **V-7** — three `INPUT` returns in `LoginAction.finishLogin` reachable from the callback still render in
+  place. Gate-4 membership is the most natural way to hand-test a refusal, so any future live check must name
+  a `refuse()` branch, as this one did.
