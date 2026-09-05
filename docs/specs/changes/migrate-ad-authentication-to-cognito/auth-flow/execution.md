@@ -3456,3 +3456,87 @@ file's md5 **unchanged** (`46a3760…`), the three URL values having already bee
 
 The script's own kill step is a silent no-op here (**EB-5**: `pkill` does not exist in this shell), so the
 running JVM was terminated explicitly by PID first.
+
+---
+
+## 34. V-4 and V-5 — the post-authentication return URL — 2026-09-05
+
+### 34.1 What the user saw
+
+A real corporate login completed, and MARLO rendered the login page instead of the AICCRA dashboard. **Not**
+the V-2 shape: no HTTP 500, no `UnknownSessionException`.
+
+### 34.2 What the log proves
+
+```
+07:48:50 / :55 / :59  CognitoCallbackAction  token exchange failed (ConnectException)   x3
+07:50:06.163  [exec-5]  onPostUpdate  User [id=3797, username=cgamboa]
+07:50:06.202  [exec-5]  CognitoCallbackAction  Cognito sign-in succeeded for Global Unit AICCRA
+07:50:06.321  [exec-5]  LoginAction   User ...@cgiar.org logged in successfully for Global Unit AICCRA
+07:50:06.358  [exec-4]  CognitoCallbackAction  Cognito callback refused: no pending authorization
+```
+
+**Authentication succeeded completely.** Code validated, state matched, token exchange and ID-token validation
+passed, the normalized email resolved user `3797`, the Global Unit was recovered as AICCRA, and
+`username=cgamboa` was preserved — **T17 holds in production**. `CognitoCallbackAction extends LoginAction`,
+so `.321` is the inherited `finishLogin` running inside the same request, not a second one.
+
+Then a **second** `cognitoCallback.do` request arrived 37 ms later and hit the single-use
+`PendingAuthorization` gate. That refusal returns `INPUT`, which renders the login form.
+
+### 34.3 V-4 — the root cause chain
+
+| # | Fact | Location |
+|---|---|---|
+| 1 | `returnUrl` is the `Referer` of the GET navigation to `cognitoLogin.do` | `CognitoLoginAction:323-324` |
+| 2 | The only filter, `sameOriginOrNull()`, compares **origin only** | `CognitoLoginAction:346-363` |
+| 3 | Stored verbatim in `PendingAuthorization`, read back in the callback | `CognitoCallbackAction:474`, `:536` |
+| 4 | `finishLogin` accepts **any** URL containing `.do` and not containing `logout` | `LoginAction:425-428` |
+| 5 | Returns `LOGIN` → `<result name="login" type="redirect">${url}</result>` | `struts-home.xml:76` |
+
+The stored value is not logged — that is T14's hygiene, working as intended. Only one value is possible: the
+button navigates same-origin (`login.js:242-247`) and MARLO sends no `Referrer-Policy` header and no
+`<meta referrer>` (verified with `curl -D`), so the browser default sends the **full URL with path and query**.
+The page it was sent from was `cognitoCallback.do?code=…&state=…`, because the three `ConnectException`
+refusals rendered `INPUT` **in place at that URL**.
+
+### 34.4 Why eleven previous successful logins never hit it
+
+The question that broke my first explanation. The archived 09-03 and 09-04 logs show **eleven** successful
+sign-ins, **none** followed by a second callback.
+
+In a normal flow the `Referer` is `login.do`, so `finishLogin` **also** returns `LOGIN` and **also** redirects.
+The difference is at `LoginAction:304-325`:
+
+```java
+} else {                                   // no form bean: this is a redirected GET
+  if (this.getCurrentUser() != null) {     // ...but the session already exists
+    switch (...) { case 1: return SUCCESS; // -> redirectAction ${crpSession}/crpDashboard
+```
+
+**`login.do` recognises an already-authenticated user and forwards them to the dashboard. `cognitoCallback.do`
+has no such rescue** — it goes straight into the OIDC state machine. Proven empirically, not by reading: the
+second callback logged *no pending authorization*, so it reached that gate rather than bouncing.
+
+> **The defect has been latent since T09.** Nothing in the code changed today. Three network failures parked
+> the browser on a callback URL, and that was enough. **Unrelated to T18** (one `<p>` and one i18n key, not on
+> this path) and unrelated to T17.
+
+### 34.5 V-5 — recorded, deliberately NOT fixed in T19
+
+**The refusal path renders the login form at the callback's own URL rather than redirecting to `login.do`.**
+That is what poisons the next attempt's `Referer`, and it also leaves `code` and `state` in the address bar
+and in browser history.
+
+It is **not** folded into T19 on the user's explicit instruction, and the reason is sound: changing it means
+preserving the field-error message across a redirect, which is a different problem with a different failure
+mode. Fixing V-4 alone is sufficient to make the reported symptom impossible.
+
+### 34.6 The pattern, again
+
+This is the fourth finding in this spec that **the code did exactly what it was told** and the instruction was
+wrong — after V-1 (names without formats), T15 (a mechanism drawn but not specified) and U-3 (a requirement on
+an unverifiable premise). Only V-2 was a genuine code defect.
+
+V-4 is a fifth variant: **a pre-existing heuristic, correct for every input it had ever seen, meeting its first
+single-use URL.** No test could have caught it, because no test knew that class of URL existed.

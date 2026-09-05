@@ -996,3 +996,99 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
   fine in source. **Look at the screen.**
 - **Done when:** the five manual checks pass, the Java suite stays at **167/167**, Checkstyle-relevant style
   holds, and T12's checks 1 and 3 are updated in `tasks.md` to match.
+
+---
+
+### CHG-COGNITO-AUTH-001-T19 — V-4: a return URL may never be an authentication endpoint
+
+- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-4** (`execution.md` §34), found in the live environment.
+  **Not** an authentication defect: authentication succeeded completely and the session was established. This
+  is post-authentication routing.
+- **Depends on:** T09 (the defect is latent since then) · **Module:** marlo-web
+- **Files touched:** `action/home/CognitoLoginAction.java` (one private method), plus tests
+- **Root cause, already confirmed — do not re-derive it:** `returnUrl` is the `Referer` of the GET navigation
+  to `cognitoLogin.do` (`CognitoLoginAction:323-324`), filtered only by `sameOriginOrNull()` (`:346-363`),
+  which compares **origin only**. A same-origin `cognitoCallback.do?code=…&state=…` therefore passes, is
+  stored in `PendingAuthorization`, and after a successful login is consumed by `LoginAction:425-428`
+  (`contains(".do") && !contains("logout")`) → `LOGIN` → redirect **back into the callback** → the single-use
+  `PendingAuthorization` is gone → refusal → login page.
+
+#### Scope
+
+- A `returnUrl` **MUST NOT** resolve to an authentication endpoint. Reject **at least**: `cognitoLogin.do`,
+  `cognitoCallback.do`, `validateUser.do`.
+- **Preserve same-origin validation exactly as it is.** This adds a rejection; it removes none.
+- **Validate the normalized path, never a substring.** `contains()` is the very idiom that produced this
+  defect — `!urlAction.contains("logout")` is its sibling. Parse the URL, take the path, normalize it, and
+  compare its final segment against a **closed set**, case-insensitively.
+- **When rejected, store `null`** — not `""`, not a rewritten URL. `null` is what makes `finishLogin` fall
+  through to its `switch` and return `SUCCESS`, which is the existing, already-validated route to the
+  dashboard. Do not add a new branch to `finishLogin`.
+- **Preserve legitimate same-origin deep links.** A user deep-linked to `…/aiccra/projects.do?id=1` and sent
+  through login must still land there. This is real functionality, not incidental behaviour.
+- **Preserve every existing Cognito authentication and session behaviour**: the six `CognitoLoginAction`
+  gates, PKCE, `state`/`nonce`, T11/T11b, T15, T16, T17. Nothing outside this one method changes.
+
+#### Explicitly NOT in scope
+
+- **V-5 — the refusal path rendering the login form at the callback's own URL.** Recorded separately in
+  `execution.md` §34.5 on the user's explicit instruction. It needs the field-error message preserved across a
+  redirect, which is a different problem with a different failure mode. **Do not touch it here.** Fixing V-4
+  alone makes the reported symptom impossible.
+- `finishLogin`'s `.do` heuristic itself. It is shared with the local login path, which has worked for years
+  because `login.do` rescues an authenticated user at `LoginAction:304-325`. Narrowing it is a larger,
+  riskier change than this defect requires.
+- No backend gate, no session handling, no frontend, no i18n.
+
+#### Where the guard goes, and why
+
+Inside `sameOriginOrNull()`, which is called from `authorize(String)`. That method's own comment (`:209-211`)
+records why: *"authorize(String) is the seam every caller and every test uses, so a guard on one entry point
+would be bypassable by all the others."* The same reasoning binds this guard. Do not add it at
+`execute()`.
+
+Log a rejection distinctly from the off-site case, and — as that line already does — **without echoing the
+URL**.
+
+#### Tests
+
+- `sameOriginOrNull` / `authorize`: **(1)** callback URL **with query** rejected; **(2)** `cognitoLogin.do`
+  rejected; **(3)** a **case-variant** endpoint rejected; **(4)** a legitimate deep link still **accepted**;
+  **(5)** an external origin still rejected; **(6)** `null` and blank still return `null`.
+- **(7) Integration-level, through `authorize(returnUrl)`, asserting the stored
+  `PendingAuthorization.getReturnUrl()` is `null`** — not the helper in isolation. **This one is the point of
+  the task.** Nine times in this spec the defect shape has been *correct in isolation, dead through the real
+  framework, certified green by a double gentler than production* (`execution.md` §27). A test that only calls
+  the private helper is that shape exactly.
+- **(8) Mutation:** removing the auth-endpoint rejection **MUST** turn at least one test red. Measure it; do
+  not assert it. Test 7 is the one that should catch it.
+
+#### Verification
+
+- `mvn -q install -DskipTests -pl marlo-web -am`; suite **≥ 167 + new**, no regressions.
+- **Check for a live Maven JVM before measuring.** Six red builds in T07/T11b came from ignoring this.
+- `checkstyle:check` is expected to fail on pre-existing **EB-1**; report it, do not chase it.
+
+#### Fails when
+
+- The check is a substring match, so `…/notCognitoLogin.do` or a query parameter containing the literal
+  `cognitoCallback.do` is rejected — a legitimate deep link silently becomes a dashboard redirect.
+- Path normalization is skipped, so `…/x/../cognitoCallback.do`, a URL-encoded path, a `;jsessionid` suffix,
+  or a trailing `/` slips through. **Normalize, then compare.**
+- A malformed URL throws instead of being rejected. `null` is the safe answer for anything unparseable.
+- Rejection stores `""` instead of `null` — `finishLogin`'s guard is `urlAction != null && …`, so `""` takes
+  the same fall-through, but only by accident. Be explicit.
+
+#### Not evidence when
+
+- Verified only against the helper. See test 7.
+- Verified only by a green suite. The suite was green **while this defect was live**, through eleven real
+  corporate logins.
+
+#### Done when
+
+Tests 1–8 pass, the mutation in test 8 is **measured** red, the suite has no regressions, and V-4's reported
+symptom is reasoned through end to end: a rejected return URL yields `null` → `finishLogin` returns `SUCCESS`
+→ `${crpSession}/crpDashboard`.
+
+- **Skills:** `tdd`, `systematic-debugging`
