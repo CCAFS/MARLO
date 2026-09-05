@@ -3650,3 +3650,68 @@ branch behaves identically with and without one — **entirely inside the double
 and nothing about the http/https-behind-a-proxy risk in §35.3. That is Spring-injected configuration, and no
 unit test against a hand-rolled double can reach it. Recorded in the test javadoc too, so the next reader does
 not mistake the one for the other.
+
+---
+
+## 36. Real manual E2E — both coexistence paths, in one incognito session — 2026-09-05
+
+Performed by the user in an incognito browser, on the same MARLO account, flipping `users.is_cgiar_user`
+between the two runs. Correlated against `C:/logs/marlo-test-env.log` by the Leader; sensitive values are
+never quoted.
+
+### 36.1 `is_cgiar_user = 1` → CGIAR/Cognito → **PASS**
+
+```
+09:05:54.685  CognitoLoginAction     Cognito login attempt started (AICCRA, mode COGNITO)
+09:06:29.253  CognitoCallbackAction  Cognito sign-in succeeded for Global Unit AICCRA
+09:06:29.263  LoginAction            User ...@cgiar.org logged in successfully for Global Unit AICCRA
+09:06:29.675  RequireUserInterceptor => RequireUserInterceptor
+```
+
+A **second** clean run at `09:06:36.623 → 09:06:37.140` (0.5 s, the corporate SSO session already established,
+so no re-authentication) with the same shape.
+
+**T19 / V-4 confirmed against every condition the user named:**
+
+| Condition | Result |
+|---|---|
+| Callback succeeded | **Yes**, twice |
+| Dashboard reached | **Yes** — `RequireUserInterceptor` fires **and completes** (`=>` then `<=`) after each login. It runs only on authenticated pages, so its completion is the evidence; `crpDashboard` itself logs nothing |
+| No redirect back to an authentication endpoint | **Confirmed** |
+| No second callback from the return URL | **Confirmed** — no `no pending authorization` follows either success. Before T19, that line appeared 37 ms after the success |
+| No `UnknownSessionException` | **Zero** — grep for `UnknownSessionException`, `ExpiredSessionException`, `StoppedSessionException`, `AuthenticationException`, `ShiroException` across the window returns **0** |
+| No authentication ERROR/SEVERE | **None.** The only `[ERROR]` in the window is the pre-existing, self-healing `AuditLogContextProvider: No AuditLogContext has been pushed to the thread` (4×), which is unrelated to authentication |
+
+### 36.2 `is_cgiar_user = 0` → External/local password → **PASS**
+
+```
+09:07:15.631  UserManagerImp  Trying to log in the user ... against the database.
+09:07:15.758  LoginAction     Local login attempt started for ... (Global Unit AICCRA, mode LOCAL).
+09:07:15.761  UserManagerImp  Already logged in
+09:07:15.766  LoginAction     User ... logged in successfully for Global Unit AICCRA.
+09:07:15.812  RequireUserInterceptor  => RequireUserInterceptor
+```
+
+**No Cognito path was invoked.** Neither `CognitoLoginAction` nor `CognitoCallbackAction` appears anywhere
+between the local attempt and the logout at `09:07:18.302` — the whole flow is `validateUser.do` →
+`login.do` → authenticated page, 135 ms end to end, through the unmodified `DBAuthenticator` path.
+
+**This is the coexistence claim of FN-001 validated in a running system, on one account, in one session, in
+both directions.** Every prior E2E run exercised one direction only.
+
+### 36.3 Two observations that are not defects
+
+**Replay protection demonstrated by accident.** At `09:05:02.306` — the first request of the incognito
+session, **before any `cognitoLogin.do`** — a callback URL was opened and refused with *no pending
+authorization*. It cannot be a return-URL redirect: nothing preceded it. **A stale callback URL in a fresh
+session is refused rather than honoured**, which is exactly what the single-use `PendingAuthorization` is for.
+
+**Intermittent connectivity to the Cognito token endpoint.** `token exchange failed (ConnectException)`
+occurred 4× today (`07:48:50`, `07:48:55`, `07:48:59`, `09:05:15`), each time followed by a successful retry.
+The rejection path behaves correctly — refuse, log, render the login form. **This is an environment condition,
+not a code defect**, but it is worth naming: it was three of these that parked the browser on a callback URL
+and exposed V-4 in the first place.
+
+### 36.4 Status
+
+**V-5 remains open and untouched**, as scoped. No code changed on the basis of this validation.
