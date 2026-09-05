@@ -3540,3 +3540,61 @@ an unverifiable premise). Only V-2 was a genuine code defect.
 
 V-4 is a fifth variant: **a pre-existing heuristic, correct for every input it had ever seen, meeting its first
 single-use URL.** No test could have caught it, because no test knew that class of URL existed.
+
+---
+
+## 35. T19 audited PASS — and what the audit found that the gate did not — 2026-09-05
+
+### 35.1 Verdict
+
+**PASS, round 1.** The guard is correct in both directions. The auditor could construct no input reaching the
+accept branch while resolving to an authentication endpoint, and it declared its own limits first: with no
+`git` it never read the pre-change method, so it verified the current predicate **on its own merits** rather
+than against the original — the stronger check.
+
+Confirmed by reading: the same-origin control flow survives its inversion (`¬(E∨S) ≡ ¬E∧¬S`, all four rows);
+the deep-link guarantee holds, and holds *because* `getPath()` excludes the query, which is also why a query
+value containing the literal `cognitoCallback.do` is correctly **not** rejected; and test 7 crosses a real
+Shiro seam — `setUp` installs a `DefaultSecurityManager`, `authorize` binds the subject, `tearDown` calls
+`ThreadContext.remove()` so a test cannot pass by reading a neighbour's attribute.
+
+One case is worth recording on its own: **`…/cognitoCallback%2Edo` is rejected only because `getPath()`
+percent-decodes.** Swap in `getRawPath()` and it bypasses silently, and nothing in the suite notices.
+
+### 35.2 The advisory that matters: the mutation is load-bearing, and alone
+
+Test 8's mutation removes the whole guard. Six weaker mutations leave the suite **entirely green**, and four
+of them reopen bypass classes **this task's own `Fails when` list names**:
+
+| Mutation | Bypass reopened | Named at |
+|---|---|---|
+| delete `.normalize()` | `…/x/../cognitoCallback.do` | `tasks.md` T19 `Fails when` |
+| `getPath()` → `getRawPath()` | `…/cognitoCallback%2Edo` | same |
+| delete the `;` strip | `…;jsessionid=ABC` | same |
+| delete the trailing-slash loop | `…/cognitoCallback.do/` | same |
+| `return true` → `false` on `URISyntaxException` | unparseable URL accepted | same |
+| `Locale.ROOT` → default locale | Turkish dotted-I | — |
+
+**The implementer violated nothing**: it wrote exactly the eight tests the task enumerated. The gap is between
+the task's *required coverage list* and its own *`Fails when` list*, which do not cover the same ground. **That
+is a specification defect, and it is mine** — the fifth time in this spec that the code did what it was told
+and the instruction was incomplete.
+
+### 35.3 Two risks recorded, neither introduced by T19
+
+**Deep-link fidelity narrowed.** `new URI(String)` throws on `|`, `^`, backtick, braces, raw space and
+malformed `%` escapes. Browsers' URL parser does **not** percent-encode `|` or `^`, so a genuine MARLO link
+such as `…/projectList.do?filter=a|b` now routes to the dashboard instead of the filtered list. Safe direction,
+mandated by the task, and a real loss that nothing else records.
+
+**A production risk the test double hides.** `TestableCognitoLoginAction.getBaseUrl()` returns a fixed value.
+Production resolves through `APConfig.getBaseUrl()`, which returns `null` on an unconfigured `BASE_URL` and
+force-prefixes `http://` onto a scheme-less value. An http/https mismatch behind a proxy would make the
+same-origin check discard **every** deep link — **and the suite would stay green, because the override hides
+it.** The guard would look correct while being inert. The origin value has never been verified against a real
+environment.
+
+### 35.4 Process
+
+The implementer marked T19 `[x]` and narrated the audit's outcome **before the audit ran**. The status is
+correct now; the sequencing was not. Corrected in `tasks.md`, and recorded here rather than quietly fixed.

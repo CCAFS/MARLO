@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -140,6 +141,17 @@ public class CognitoLoginActionTest {
       params.put(key, value);
     }
     return params;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test helper. {@code sameOriginOrNull} is private, so tests 1, 2, 3 and 6 below
+   * reach it through reflection to isolate the helper's own logic. Test 7 deliberately does <b>not</b> use
+   * this helper -- see its javadoc for why that distinction is the point of the task.
+   */
+  private static String invokeSameOriginOrNull(CognitoLoginAction action, String candidate) throws Exception {
+    Method method = CognitoLoginAction.class.getDeclaredMethod("sameOriginOrNull", String.class);
+    method.setAccessible(true);
+    return (String) method.invoke(action, candidate);
   }
 
   @Before
@@ -383,6 +395,113 @@ public class CognitoLoginActionTest {
 
     assertEquals(Action.SUCCESS, result);
     assertFalse("terms are recorded by the callback, not here", this.userManager.saveUserCalled);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 1 (V-4). The exact defect shape from execution.md 34: a same-origin
+   * {@code cognitoCallback.do?code=...&state=...} -- carrying the query string a real callback redirect always
+   * has -- must be rejected by the helper, not merely by the origin check it already passes.
+   */
+  @Test
+  public void aCallbackUrlWithAQueryStringIsRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result =
+      invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoCallback.do?code=abc123&state=xyz789");
+
+    assertNull("a same-origin callback URL must be rejected even though it is same-origin", result);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 2 (V-4). {@code cognitoLogin.do} itself -- the endpoint that mints the
+   * pending authorization in the first place -- must never be accepted as a destination to return to.
+   */
+  @Test
+  public void theLoginEndpointItselfIsRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoLogin.do");
+
+    assertNull(result);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 3 (V-4). The comparison is case-insensitive: a differently-cased
+   * authentication endpoint must be rejected exactly as the lowercase form is, for both {@code cognitoCallback}
+   * and {@code validateUser}.
+   */
+  @Test
+  public void aCaseVariantAuthenticationEndpointIsRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    assertNull(invokeSameOriginOrNull(action, "https://marlo.example.org/CognitoCallback.DO?code=abc"));
+    assertNull(invokeSameOriginOrNull(action, "https://marlo.example.org/VALIDATEUSER.do"));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 4 (V-4). A legitimate same-origin deep link -- the exact functionality this
+   * task must not break -- is still accepted, unchanged, by the helper.
+   */
+  @Test
+  public void aLegitimateSameOriginDeepLinkIsStillAccepted() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+    String candidate = "https://marlo.example.org/aiccra/projects.do?id=1";
+
+    String result = invokeSameOriginOrNull(action, candidate);
+
+    assertEquals("a legitimate deep link must survive unchanged", candidate, result);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 5 (V-4). Off-site rejection is untouched by this task -- this is the same
+   * guarantee {@link #anOffSiteReturnUrlIsDiscardedAndAnOnSiteOneSurvives()} already proves at the
+   * {@code authorize(...)} level; this asserts it at the helper level too, including an external URL that
+   * happens to end in an authentication-endpoint-looking path.
+   */
+  @Test
+  public void anExternalOriginIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    assertNull(invokeSameOriginOrNull(action, "https://evil.example/anything.do"));
+    assertNull(invokeSameOriginOrNull(action, "https://evil.example/cognitoCallback.do"));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 6 (V-4). {@code null} and a blank {@code Referer} must still return
+   * {@code null} -- unchanged pre-existing behaviour, re-asserted here so the new rejection branch cannot be
+   * reached for either input.
+   */
+  @Test
+  public void nullAndBlankReturnUrlsStillReturnNull() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    assertNull(invokeSameOriginOrNull(action, null));
+    assertNull(invokeSameOriginOrNull(action, "   "));
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 test 7 (V-4) -- <b>the point of this task.</b> Every test above reaches
+   * {@code sameOriginOrNull} through reflection, isolating the helper from the real seam every caller actually
+   * uses. execution.md 27 names that exact shape as the pattern this spec has shipped nine times before:
+   * correct in isolation, dead through the real framework, certified green by a double gentler than
+   * production. This test instead drives {@link CognitoLoginAction#authorize(String)} -- the seam
+   * {@code authorize}'s own comment (:209-211) says every caller and every test must use -- and reads the
+   * result back out of the very {@link PendingAuthorization} {@code CognitoCallbackAction} consumes in
+   * production, proving the rejection is wired all the way through, not merely correct on paper.
+   */
+  @Test
+  public void anAuthenticationEndpointReturnUrlIsRejectedThroughTheRealAuthorizeSeam() {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = action.authorize("https://marlo.example.org/cognitoCallback.do?code=abc123&state=xyz789");
+
+    assertEquals(Action.SUCCESS, result);
+    PendingAuthorization pending = (PendingAuthorization) SecurityUtils.getSubject().getSession()
+      .getAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION);
+    assertNull("V-4: a return URL resolving to the callback endpoint must be stored as null, not the poisoned "
+      + "callback URL -- null is what makes finishLogin fall through to the dashboard route instead of "
+      + "redirecting back into an already-consumed, single-use PendingAuthorization",
+      pending.getReturnUrl());
   }
 
   /**

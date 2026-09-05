@@ -1001,9 +1001,24 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 
 ### CHG-COGNITO-AUTH-001-T19 — V-4: a return URL may never be an authentication endpoint
 
-- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-4** (`execution.md` §34), found in the live environment.
-  **Not** an authentication defect: authentication succeeded completely and the session was established. This
-  is post-authentication routing.
+- **Status:** `[x]` — 2026-09-05. Fixes **V-4** (`execution.md` §34), found in the live environment. **Not** an
+  authentication defect: authentication succeeded completely and the session was established. This is
+  post-authentication routing.
+  Implemented entirely inside `sameOriginOrNull()` plus one new private helper, `isAuthenticationEndpoint(String)`,
+  as scoped. **174/174 tests on a clean run** (167 + 7 new), compile PASS, `finishLogin` and `LoginAction.java`
+  untouched. The mutation cycle was measured, not asserted: disabling the rejection reddened exactly **4** of the
+  20 tests in `CognitoLoginActionTest` -- the three helper-level tests (callback-with-query, `cognitoLogin.do`,
+  case-variant) **and test 7, the integration-level test through `authorize(...)`**, confirming test 7 is the one
+  that catches it as the task predicted. Restored, `git diff` confirmed byte-identical to the pre-mutation state.
+  Checkstyle fails on pre-existing **EB-1** (`maven-checkstyle-plugin:2.9.1` vs `checkstyle:8.18`), reported, not
+  chased.
+  **Audited PASS** (round 1, 2026-09-05), *after* this block was first written — the implementer marked the
+  task `[x]` before the audit ran and the narrative above pre-stated its outcome. The status is correct now;
+  the sequencing was not. The audit confirmed the same-origin control flow is right after its inversion
+  (`!(E∨S) ≡ ¬E∧¬S`), that no input reaches the accept branch while resolving to an authentication endpoint,
+  that the deep-link guarantee holds, and that test 7 genuinely crosses the Shiro seam rather than a double.
+  It carried **one substantive advisory**: four of this task's own `Fails when` bypass classes have no
+  executable coverage — see `execution.md` §35.
 - **Depends on:** T09 (the defect is latent since then) · **Module:** marlo-web
 - **Files touched:** `action/home/CognitoLoginAction.java` (one private method), plus tests
 - **Root cause, already confirmed — do not re-derive it:** `returnUrl` is the `Referer` of the GET navigation
