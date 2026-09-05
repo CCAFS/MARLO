@@ -320,18 +320,19 @@ The client composes `mode = user.isCgiarUser && card.cognitoEnabled`. This is th
 
 ### 5.2 The actual mechanism
 
-> **AMENDED 2026-09-04 — presentation only; the branch condition is unchanged.** Step 3 no longer jumps
-> straight to a field. It presents an **explicitly labelled method**, and only the one the backend can accept:
-> *Sign in with CGIAR* when `is_cgiar_user AND cognito_auth_active`, *External user* otherwise. That predicate
-> is byte-identical to the `mode` composition T12 already ships — **no selection logic changes.**
+> **AMENDED 2026-09-04, then RE-AMENDED the same day — presentation only; the branch condition is unchanged.**
+> Step 3 **names** the method it is presenting instead of leaving it implicit: *Sign in with CGIAR* when
+> `is_cgiar_user AND cognito_auth_active`, *External user* otherwise. That predicate is byte-identical to the
+> `mode` composition T12 already ships — **no selection logic changes.**
 >
-> **Two consequences worth stating.**
->
-> **FN-001's absence guarantee gets stronger, not weaker.** Today the password input is rendered and then
-> `.remove()`d on the Cognito branch. Under this amendment it is **never created** on that path — absence by
-> construction rather than by correction. The clone-and-restore mechanism T12 built for back-navigation
-> becomes the **primary** creation path rather than a recovery path, which raises its importance: manual
-> check 7's sub-steps (type a wrong password, the eye toggle, Enter) stop being edge cases.
+> **What the re-amendment withdrew.** The first version of this amendment required the method to be *chosen*
+> through a control, with the password field revealed only afterwards, and strengthened FN-001 into absence
+> **by construction** — the password input never created on the Cognito path, making T12's clone-and-restore
+> the primary creation path rather than a recovery path. **Both are withdrawn** (Decision Log, 2026-09-04).
+> A selection step offering a single valid method is artificial navigation, and inverting T12's validated
+> mechanism would put a real corporate login's worth of evidence at risk to buy nothing. The method is a
+> **heading**, not a gate, and FN-001 keeps its original guarantee: the password input is created, then
+> removed from the DOM once CGIAR mode resolves, and is never focusable or submitted on that path.
 >
 > **Terms stay shared.** The checkbox lives in `.terms-container` (`loginForm.ftl:142-144`), outside both
 > step blocks and alongside the recaptcha and button containers, and gates **both** methods. It is not

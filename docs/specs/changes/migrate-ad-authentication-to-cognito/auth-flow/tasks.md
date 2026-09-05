@@ -531,9 +531,13 @@
 - **Covers:** FN-001 (all clauses), NF-003, NF-004
 - **Tests:** **no automated frontend harness exists** — see the gap note below.
 - **Verification (manual, at the HITL pause):**
-  1. Local user → step 3 is today's password step, pixel-identical.
+  1. ~~Local user → step 3 is today's password step, pixel-identical.~~ **Superseded by T18** (added
+     2026-09-04): T18 puts an *External user* label on `#login-step-password`, so step 3 is deliberately no
+     longer pixel-identical to this pre-Cognito baseline. Re-stated by T18 check 1: the label is visible and
+     the password field, eye icon and Log in button all behave exactly as before.
   2. CGIAR user, flag on → password input is **absent from the DOM** (`document.querySelector('#login-password')` returns `null`) and absent from `new FormData(form)`. **Re-run this one a second time after visiting a LOCAL step**, so the restore template exists: an edit that inserted the template eagerly would pass a first-visit check and fail only here.
-  3. CGIAR user, flag **off** → password step, as today.
+  3. ~~CGIAR user, flag **off** → password step, as today.~~ **Superseded by T18** (added 2026-09-04): re-stated
+     by T18 check 3 — password step **with** the *External user* label.
   4. Keyboard-only: tab to the control, activate with Enter and with Space.
   5. Screen reader announces the control with a meaningful name.
   6. Single-Global-Unit user (step 2 auto-skipped) → correct step 3.
@@ -674,7 +678,7 @@ T03 (deps + config) ──┐         │  │
 | Requirement | Scenario / clause | Owning task |
 |---|---|---|
 | FN-001 | CGIAR reaches step 3; `MUST NOT` render/focus/submit password | **T12** (mechanism) + T10 (mode data) |
-| FN-001 | Local reaches step 3 — byte-for-byte unchanged | **T12** check 1 |
+| FN-001 | Local reaches step 3 under an explicit *External user* heading | **T12** (mechanism) + **T18** check 1 |
 | FN-001 | Email not found; `MUST NOT` disclose path | **T10** test 3 |
 | FN-002 | Successful sign-in; `MUST NOT` auto-provision | **T07** test 1, **T09** test 1 |
 | FN-002 | Not a member → `invalidUserCrp`, session cleared | **T09** test 5 + **T13** |
@@ -929,3 +933,66 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 - **Done when:** the tests pass, the full clean suite passes, no diagnostic code remains anywhere, and **a
   real corporate login leaves `users.username` unchanged in the database** — which only the user can confirm.
 - **Skills:** `tdd`
+
+---
+
+### CHG-COGNITO-AUTH-001-T18 — Make the external path explicit in the UI
+
+- **Status:** `[~]` — **added 2026-09-04.** A UX requirement, not a defect. Deliberately **minimal**: the flow
+  is not redesigned. **Code complete and audited PASS on round 3** (2026-09-05); the FTL, the key, the four
+  document corrections and checks 1, 2, 3 and 5 are done. **Only check 4 remains** — the label renders as the
+  raw key `login.externalUser` until the app is redeployed, because `struts.devMode=false` and
+  `global.properties` is bundled in `WEB-INF/lib/marlo-web-4.5.1-SNAPSHOT.jar`. Deployment staleness, not code.
+- **Why it exists:** step 3's local block shows a password field with no statement of *which* authentication
+  method the user is on. During a migration where two methods coexist, that is ambiguous. The CGIAR path
+  already announces itself through its labelled button; the external path announces nothing.
+- **Depends on:** T12 · **Module:** marlo-web
+- **Governing documents re-amended 2026-09-04, before this task closed.** FN-001 and `design.md` §5.2 had
+  been amended earlier the same day to require an *External user* **control** revealing the password only
+  once chosen, plus absence **by construction** on the CGIAR path. The first T18 audit FAILed against that
+  text. Both clauses are now withdrawn with a Decision Log entry — the method is a **heading**, not a gate.
+  This task implements the re-amended text.
+- **Files touched:** `webapp/WEB-INF/global/pages/loginForm.ftl`, `resources/global.properties` (one key)
+- **Scope — small on purpose:**
+  - Add a clear, **i18n-backed** *External user* label or heading to `#login-step-password`.
+  - `#login-step-password` and `#login-step-cgiar` are structurally identical today — headline, selected
+    project, echoed email — so place the label consistently with that structure. Reuse existing classes
+    (`login-subtext` — the class steps 1 and 2 already pair with `login-headline`); introduce **no new**
+    **colour, spacing or type scale**.
+  - Add the key to `global.properties`. That file is **T13's** declared deliverable; adding one key here is a
+    crossing, so **flag it in the report** exactly as T09 and T12 did, and check it duplicates nothing.
+- **Explicitly NOT in scope — do not do these:**
+  - **Do not** change `mode = isCgiarUser && cognitoEnabled`. It is correct and stays byte-identical.
+  - **Do not** add a method-selection step or any extra click. The matrix resolves to exactly one valid method,
+    so an intermediate choice would be an artificial navigation step.
+  - **Do not** rewrite T12's password creation/restoration mechanism. It cost two audit rounds and a blocking
+    defect (a permanently dead form, `execution.md` §23) and is validated by a real corporate login. **The
+    password field may remain in the DOM during steps 1 and 2** — the requirement is that it is removed before
+    the CGIAR path continues, which `.remove()` already guarantees.
+  - **Do not** touch `login.js` structurally. The local branch already reaches the block and already creates
+    the field.
+  - **Do not** touch any backend: `CognitoLoginAction`'s six gates, T11/T11b's relay guards, T15, T16, T17,
+    `crpByEmail.do`, `cognitoLogin.do`, `validateUser.do` all stay exactly as they are.
+- **Constitutional checks:** hard rule 8 — the label is an i18n key, never a literal. Light theme only,
+  existing palette (`docs/ux-ui/design.md` §7, §11). Keyboard reachability unchanged (§10).
+- **Must be preserved, and each is already validated:** back navigation, keyboard focus order, the password
+  visibility toggle, Enter submission, and the **shared** `.terms-container` gating both paths.
+- **Tests:** **no automated frontend harness exists** (accepted defect class D-5). Verification is manual.
+- **Verification (manual):**
+  1. **Local user reaches step 3** → the *External user* label is visible, the password field, eye icon and
+     Log in button all behave exactly as before. **This supersedes T12's check 1**, which required step 3 to
+     be *pixel-identical* to today — it deliberately is not any more.
+  2. **CGIAR user, flag on** → the CGIAR block is shown, the label does **not** appear there, and
+     `document.querySelector('#login-password')` is still `null` and absent from `new FormData(form)`.
+  3. **CGIAR user, flag off** → the password step **with** the label. **Supersedes T12's check 3.**
+  4. The label text is **rendered, not a raw key** — a missing entry would surface as
+     `login.externalUser` on screen, which is exactly the class of defect T13 exists to close.
+  5. **Back-navigation (T12's check 7) re-run unchanged**, including its four sub-steps: field present, a
+     deliberately wrong password produces *incorrect password* and not *password is required*, the eye icon
+     toggles, and Enter submits.
+- **Fails when:** the label is added to the shared region rather than to `#login-step-password` — check 2 must
+  then find it on the CGIAR path, where it is wrong.
+- **Not evidence when:** verified only by reading the FTL. A missing i18n key renders as the raw key and looks
+  fine in source. **Look at the screen.**
+- **Done when:** the five manual checks pass, the Java suite stays at **167/167**, Checkstyle-relevant style
+  holds, and T12's checks 1 and 3 are updated in `tasks.md` to match.

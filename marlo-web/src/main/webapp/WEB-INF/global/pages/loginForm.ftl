@@ -75,6 +75,12 @@
         [#-- Step 3: Password --]
         <div class="login-step hidden" id="login-step-password">
           <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
+          [#-- CHG-COGNITO-AUTH-001-T18 / FN-001: names the authentication method for this block, the
+               way #login-step-cgiar announces itself through its own labelled control. Uses the
+               headline/subtext pair steps 1 and 2 already use (loginForm.ftl:25, :38), so it reads as
+               this step's heading rather than as a field label of the card below it. Placed before
+               #login-password, which login.js restores with append() and must stay the last child --]
+          <p class="login-subtext">[@s.text name="login.externalUser"/]</p>
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">

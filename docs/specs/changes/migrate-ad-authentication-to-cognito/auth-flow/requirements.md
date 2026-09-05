@@ -71,13 +71,17 @@ Addresses `docs/prd.md` §7.2 (quality and security acceptance).
 
 ### 3.1 Functional
 
-#### CHG-COGNITO-AUTH-001-FN-001 — Branch the login wizard by user type — **AMENDED 2026-09-04**
+#### CHG-COGNITO-AUTH-001-FN-001 — Branch the login wizard by user type — **AMENDED, then RE-AMENDED 2026-09-04**
 
-> **AMENDED after a UX decision taken by the user 2026-09-04.** The **selection logic is unchanged**: the
-> method offered is still exactly `is_cgiar_user AND cognito_auth_active`. What changes is **presentation**.
-> Step 3 no longer jumps straight to a password field or a CGIAR control; it presents an **explicitly
-> labelled authentication method**, and the password input is created **on demand** when the user chooses the
-> external path rather than rendered up front and removed.
+> **AMENDED after a UX decision taken by the user 2026-09-04, then RE-AMENDED the same day.** The **selection**
+> **logic is unchanged**: the method offered is still exactly `is_cgiar_user AND cognito_auth_active`, and it is
+> resolved **automatically**. What changes is **presentation**. Step 3 still opens directly on the resolved
+> method — the password field for an external user, the CGIAR control for a CGIAR user — but it now **names**
+> that method with an explicit heading instead of leaving it implicit. The password input is still created up
+> front and removed on the CGIAR branch, which is T12's validated mechanism; the earlier wording — step 3 "no
+> longer jumps straight to a password field" and the input "created **on demand** when the user chooses the
+> external path rather than rendered up front and removed" — is **withdrawn** (see Decision Log, 2026-09-04).
+> **The heading names the method; it does not gate it.**
 >
 > **Only methods the backend can actually accept are offered:**
 >
@@ -102,8 +106,10 @@ as an **explicitly labelled method** rather than as an implicit branch.
 - **GIVEN** a user whose `users.is_cgiar_user = 1` and whose selected Global Unit has the Cognito specificity enabled
 - **WHEN** they complete wizard step 1 (email) and step 2 (project selection)
 - **THEN** step 3 **MUST** present a single, labelled **"Sign in with CGIAR"** control and **no** external option
-- **AND** the password input **MUST NOT** be rendered, focusable, or present in the submitted form —
-  **strengthened by this amendment**: it is now **never created** on this path, rather than created and removed
+- **AND** once CGIAR mode is resolved the password input **MUST** be removed from the DOM before the flow
+  continues, and **MUST NOT** be focusable or present in the submitted form — **RE-AMENDED 2026-09-04**: this
+  restores the original T12 guarantee. The stronger "never created on this path, rather than created and
+  removed" wording introduced earlier the same day is **withdrawn** (see Decision Log, 2026-09-04)
 - **AND** the user **MUST NOT** be required to enter a password at any point
 - **BUT** it **MUST NOT** change what step 1 or step 2 look like or how they behave
 - **AND IT MUST** keep the selected Global Unit visible in step 3, exactly as today
@@ -112,8 +118,10 @@ as an **explicitly labelled method** rather than as an implicit branch.
 
 - **GIVEN** a user whose `users.is_cgiar_user = 0`, **or** whose selected Global Unit has the specificity disabled
 - **WHEN** they complete steps 1 and 2
-- **THEN** step 3 **MUST** present a single, labelled **"External user"** control and **no** CGIAR option
-- **AND** the password field **MUST** be revealed only after that control is chosen
+- **THEN** step 3 **MUST** present the local password step under an explicit **"External user"** heading, and
+  **no** CGIAR option — **RE-AMENDED 2026-09-04**: the *selection control* and the clause requiring the
+  password field to be "revealed only after that control is chosen" are **withdrawn** (see Decision Log,
+  2026-09-04). Method resolution stays automatic; the heading names the method, it does not gate it
 - **AND** the email entered in step 1 **MUST** be preserved — the user does not retype it
 - **AND** once revealed, the password step **MUST** behave exactly as today, authenticating through the
   unmodified `DBAuthenticator` MD5 path
@@ -485,3 +493,4 @@ Per the AKILI rule that a gate blind to the dominant defect class is not a gate:
 | 2026-09-02 | **OQ-3 CLOSED — reuse the existing CGIAR Cognito setup; no new federation** | The IBD Cognito setup is already integrated with the CGIAR corporate directory and already serves other applications. MARLO integrates with it rather than establishing its own relying-party agreement. **This closes OQ-3 by dissolving it, not by answering it** — the risk R-D6 named ("CGIAR IT may decline to federate") cannot occur because no new federation is requested. Deployed environments supply the 7 `cognito.*` keys as environment variables; verified 2026-09-02 that those 7 names match `APConfig`'s `@Value` fields and `marlo-test.properties` exactly, so T03 already implements this contract |
 | 2026-09-02 | **OQ-9 CLOSED — the stable identifier is the corporate `email`, normalized (trim + lowercase)** | Each CGIAR user has a unique corporate email; for MARLO's identity model it is treated as stable. A different corporate email is a **different user**, not the same user re-identified. **This is not the orphaning risk R-D2 warned about, because it is not a change:** `UserMySQLDAO.getUser(String)` already resolves on `LOWER(email)`, and `users.email` is already MARLO's login identity, so no new join key and no data migration are introduced. What the decision does require is that an email change stay an **administrative** act on `users.email` — nothing re-links automatically, and no code should imply it does |
 | 2026-09-02 | **OQ-8 CLOSED — local logout only; never terminate the CGIAR SSO session** | Ending the IdP session would sign the user out of unrelated CGIAR applications open in the same browser (corporate email among them). MARLO ends only its own session and the Cognito application session. FN-007 must therefore **not** perform RP-initiated logout |
+| 2026-09-04 | **The step-3 method is announced by a heading, not chosen through a control** — FN-001 and `design.md` §5.2 re-amended the same day they were amended | The earlier amendment required an *External user* control that revealed the password only once chosen, and an absence-by-construction guarantee on the CGIAR path. Both are withdrawn. **A selection step offering only one valid method is artificial navigation and unnecessary friction**: the matrix above resolves every account to exactly one method the server can accept, so the "choice" has a single option and the click buys nothing. Automatic resolution (`mode = isCgiarUser && cognitoEnabled`) is kept byte-identical, and T12's validated create-then-remove mechanism is kept rather than inverted into a primary creation path — it is exercised by a real corporate login. **The server remains authoritative either way** (SEC-005/SEC-006, T11/T11b): the UI decides what to offer, never what to permit |

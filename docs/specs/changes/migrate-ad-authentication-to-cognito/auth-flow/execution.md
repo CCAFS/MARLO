@@ -3348,3 +3348,82 @@ hide a condition that could have invalidated its own numbers.
 | **V-2** stale session | The one genuine code defect — and it slipped past two audits because the test double simulated the symptom instead of the mechanism |
 
 The code did what it was asked. What it was asked was wrong, and only the running system could say so.
+
+---
+
+## 33. T18 — the external path names itself; and a self-inflicted spec contradiction — 2026-09-05
+
+### 33.1 What the user asked for
+
+A UX requirement, not a defect. During a migration where two authentication methods coexist, step 3's local
+block showed a password field with **no statement of which method the user was on**. The CGIAR block announces
+itself through its labelled button; the external block announced nothing.
+
+The user's constraints were explicit and narrow: keep the automatic `mode` resolution, add **no** extra click,
+do **not** rewrite T12's password creation/restoration mechanism, no backend change, no staging promotion.
+
+### 33.2 The change
+
+Two lines of production content.
+
+```ftl
+<p class="login-subtext">[@s.text name="login.externalUser"/]</p>
+```
+```properties
+login.externalUser=External user
+```
+
+`login-subtext` was not the first choice. The implementer used `login-field-label`, and the auditor's advisory
+caught that it then rendered identically to `Selected project` directly beneath it — readable as the *label of*
+the project card rather than as the block's heading. The auditor proposed `login-headline`; that would have put
+**two** competing centered 16px bold headings in one block, since `:77` already carries one.
+
+`login-subtext` is what the file already does: `loginForm.ftl:25` and `:38` pair `login-headline` + `login-subtext`
+in steps 1 and 2. The local step-3 block was simply missing that second line. Centered at 12px, it separates
+visually from the left-aligned `login-field-label` column. **No CSS was added.**
+
+### 33.3 The real finding: FAIL, twice, both times against documents I wrote
+
+The code passed every code check in round 1 — placement, `mode` byte-identity, hard rule 8, no duplicate key,
+comment density, scope. It FAILed anyway, on the artifact set.
+
+`requirements.md` FN-001 and `design.md` §5.2 had been amended **earlier the same day** to require an
+*External user* **control** that revealed the password only once chosen, plus absence **by construction** on the
+CGIAR path. The user then narrowed the decision — *avoid the extra click when there is only one valid method* —
+and T18 was written to the narrowed decision. **The governing documents were never re-amended.** Two documents
+asserted behaviour the code deliberately did not implement.
+
+This is the **PS-21 defect inverted**: there, a task shipped without its design amendment; here, an amendment
+survived without its task.
+
+Round 2 FAILed too. The re-amendment fixed both FN-001 *scenarios* and the Decision Log — and left the
+**preamble blockquote that frames them** intact at `:78-80`, still asserting that step 3 "no longer jumps
+straight to a password field" and that the input is "created **on demand** when the user chooses the external
+path". FN-001 contradicted itself within thirty lines, and the surviving sentence was the one a future reader
+meets first.
+
+> **The lesson, stated plainly: a withdrawal checked scenario-by-scenario is not checked.** The frame carries
+> assertions too. Round 3 passed only after sweeping all four `.md` files for every withdrawn phrase and
+> classifying each surviving hit as description-of-withdrawal or unrelated.
+
+### 33.4 Where the evidence was thinner than it read
+
+The implementer reported reaching the LOCAL branch by flipping `data-cognito-enabled` and re-invoking
+`showPasswordStep()`. The auditor read `login.js` and showed those two steps **could not** have produced the
+password step: `cognitoEnabled` is captured in the click handler at `:80`, and the re-read at `:401` is fenced
+at `:397` by `selectedGlobalUnitId == null`.
+
+Put to the implementer, it quoted the script still on disk: the IIFE contains `setAttribute`, then **`card.click()`**,
+then `showPasswordStep()`. Its *prose summary* had dropped the click that its own inline code comment described.
+The evidence stands at full strength; the report of it did not. **Verified independently by reading the file.**
+
+### 33.5 What the withdrawal cost — nothing
+
+The CGIAR absence guarantee now rests on T12's create-then-remove rather than absence by construction. Audited
+directly against `login.js:444-463`: `.remove()` runs at `:450` synchronously and **first** — before the CGIAR
+block is revealed (`:453`), before the button is unhidden (`:458`) and focused (`:463`). The button starts
+`hidden` in markup. There is no window in which the CGIAR flow is reachable with the input still in the
+document; the detached node is out of the tab order and out of the form's element collection.
+
+**The weaker wording describes the mechanism that has a real corporate login behind it.** The stronger wording
+described one that did not exist.
