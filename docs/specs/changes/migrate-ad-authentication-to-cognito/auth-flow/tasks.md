@@ -1164,3 +1164,87 @@ nine times.
 **Verification:** every new test passes **against the unmodified production code**; the full suite is
 `174 + new`, no regressions; each mutation in the table above is **measured** red, one at a time, not asserted.
 Report T19's status as PASS only if all of that holds.
+
+---
+
+### CHG-COGNITO-AUTH-001-T20 — V-5: a refused callback must leave the callback URL
+
+- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-5** (`execution.md` §34.5, analysed in §37).
+- **Depends on:** T19 · **Module:** marlo-web
+- **Files touched:** `action/home/CognitoCallbackAction.java` (one private method), plus tests
+- **The problem:** all nine rejection branches return `INPUT`, which renders `login.ftl` **at
+  `cognitoCallback.do?code=…&state=…`**. The code and state stay in the address bar and in browser history as
+  the active page URL, and that parked URL is what poisoned the `Referer` and produced V-4.
+
+#### Scope
+
+- **Every** Cognito callback rejection redirects to the canonical MARLO login URL instead of rendering the
+  login view in place. All nine branches (`execution.md` §37.1), **including the one at `:505`**, which is the
+  only one that runs after `session.stop()`.
+- Implement through the **existing** `LOGIN` result — `<result name="login" type="redirect">${url}</result>`,
+  already mapped at `struts-home.xml:76` — with `this.url = this.getBaseUrl() + "/login.do"`. `APConfig`
+  strips every trailing slash from the base URL, and this is the concatenation `LoginAction:312` and `:434`
+  already use. **No new result, no new mapping, no new mechanism.**
+- The redirect **MUST NOT** carry `code`, `state`, or any other authorization parameter. That is the point.
+
+#### Explicitly NOT in scope
+
+- **No session or flash state.** Analysed and rejected in `execution.md` §37.3: branch `:505` runs *after*
+  `session.stop()` and *after* `Subject.login` threw, and `ShiroRequestSessionCacheResetter` runs only on the
+  success path — writing a flash there is the **V-2 shape exactly**. A mechanism correct for eight of nine
+  branches, failing the ninth only in the live environment, is this spec's most expensive recurring defect.
+- **V-6 is a separate finding and stays separate.** `addFieldError("loginMessage", …)` is **never rendered by
+  the login view** (`execution.md` §37.2). **Keep the existing `addFieldError` call** — do not delete it and do
+  not build a display mechanism. It is inert today and stays inert; deleting it would erase the
+  branch-to-message mapping that V-6 needs. Add a comment naming V-6.
+- **Do not touch the local authentication flow**: `login.do`, `validateUser.do`, `DBAuthenticator`,
+  `LoginAction`, or `login.js`'s client-side error handling.
+- Preserve unchanged: PKCE, `state`, `nonce`, token validation, **one-time `PendingAuthorization` consumption
+  and replay protection**, T15 IdP routing, **T16** session handling, T17 username preservation, **T19** return
+  URL protection, and Cognito/local coexistence.
+
+#### Never log or expose
+
+Authorization codes, state values, tokens, client secrets, the PKCE verifier, nonces. The existing log lines
+already avoid these — keep it that way.
+
+#### Tests
+
+- **All nine rejection branches**, each asserting the result is `LOGIN` **and** `url` ends with `/login.do` —
+  not merely that it is not `INPUT`. Name the branch in each test.
+- **The `:505` branch explicitly**, since it is the one that runs after `session.stop()`. It must produce the
+  same redirect as the other eight without touching the stopped session.
+- **Replay:** a second callback with an already-consumed `PendingAuthorization` still refuses **and** now
+  redirects — this is the exact V-4 shape, and it must stay refused.
+- **A fresh Cognito login starts normally after a rejection** — `authorize(...)` still issues a new
+  `PendingAuthorization` and a new authorize URL.
+- **No loop:** assert the redirect target is `login.do` and never `cognitoCallback.do`.
+- **Existing tests that assert `INPUT` on a rejection will fail, and that is correct.** Update them to the new
+  contract. **Do not weaken an assertion to make it pass** — if an existing test asserted something beyond the
+  result name, it must still assert it.
+- **Mutation:** reverting any single branch to `INPUT` must redden at least one test. **Measure it, one branch
+  at a time.**
+
+#### Fails when
+
+- `getBaseUrl()` returns `null` (unconfigured `BASE_URL` — `APConfig:243-246` logs and returns null), so the
+  redirect target becomes the literal `"null/login.do"`. Decide and state what should happen; do not leave it
+  to chance.
+- One branch is missed. There are **nine**, and the ninth is in a different method region from the other
+  eight.
+- The redirect is built by string-appending to the incoming request URL rather than from `getBaseUrl()`,
+  re-attaching `code` and `state`.
+- `refuse()` starts returning `LOGIN` but some branch bypasses `refuse()` and still returns `INPUT` directly.
+
+#### Not evidence when
+
+Verified only by unit tests asserting a result name. **The symptom is a browser address bar.** The closing
+evidence is a real refused callback whose resulting URL is `login.do` — the user's call, not the
+implementer's.
+
+#### Done when
+
+All nine branches redirect, the mutation is **measured**, the suite has no regressions, replay protection and
+a fresh login after rejection both still work, and `execution.md` records that V-6 remains open.
+
+- **Skills:** `tdd`

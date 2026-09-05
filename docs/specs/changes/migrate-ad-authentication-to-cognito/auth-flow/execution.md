@@ -3715,3 +3715,74 @@ and exposed V-4 in the first place.
 ### 36.4 Status
 
 **V-5 remains open and untouched**, as scoped. No code changed on the basis of this validation.
+
+---
+
+## 37. V-5 analysis — and V-6, found while doing it — 2026-09-05
+
+### 37.1 The nine rejection branches
+
+Every one calls `refuse(key)` → `addFieldError("loginMessage", getText(key))` → `INPUT` → `login.ftl`,
+rendered **at `cognitoCallback.do?code=…&state=…`**, which is what leaves the code and state in the address bar
+and history, and what poisoned the `Referer` that produced V-4.
+
+| Line | Branch | Key | Relative to session rotation |
+|---|---|---|---|
+| 420 | no pending authorization | generic | before |
+| 426 | state mismatch | generic | before |
+| 433 | IdP returned an error | generic | before |
+| 438 | no authorization code | generic | before |
+| 448 | token exchange failed | unavailable | before |
+| 455 | token validation failed | generic | before |
+| 464 | identity mapping rejected | mapper's key | before |
+| 482 | resolved user vanished | generic | before |
+| **505** | **realm rejected the identity** | generic | **AFTER `session.stop()` (:495) and a failed `Subject.login` (:501)** |
+
+### 37.2 V-6 — the refusal messages are never displayed
+
+**Verified, not inferred.** The login page renders **no** server-side error at all:
+
+- `[@s.fielderror …]` is used in **14** MARLO views. **None** of them is `login.ftl`, `loginForm.ftl`,
+  `header.ftl`, `boardMessage.ftl` or `footer.ftl` — the page's entire include chain.
+- `loginForm.ftl` uses exactly three Struts tags: `[@s.form]` and two `[@s.submit]`. **No `[@s.textfield]` or
+  `[@s.password]`**, so no theme renders a field error for any input; every input is raw HTML.
+- Its errors are a fixed set of pre-rendered hidden `<p class="invalidField …">` elements that **`login.js`
+  toggles client-side** from XHR responses (`wrongData("serverError")`, `"deniedAccess"`, …).
+- The three Cognito message keys (`login.error.cognitoNotEligible`, `login.error.cognitoUnavailable`,
+  `login.error.inactive`) appear in **zero** view files.
+
+**So `addFieldError("loginMessage", …)` computes a message and discards it.** All nine Cognito refusals — and
+`login.error.userOrPass`, added as T13's scope extension — are invisible. A user refused by the eligibility
+gate sees a bare login form with no explanation.
+
+> **This inverts V-5's stated blocker.** V-5 was held back because *"changing it requires preserving
+> error-message behaviour across a redirect."* **There is no error-message behaviour on this path to
+> preserve.** The redirect loses nothing that is displayed today.
+
+V-6 is recorded as its own finding. It is a real gap, and it must **not** be quietly folded into V-5: fixing it
+means deciding *how* the login page shows a server-originated message, which is a design decision, and doing
+that inside a redirect task would repeat exactly the mistake T18 was FAILed for.
+
+### 37.3 Why a session-backed flash is the wrong mechanism
+
+Eight of the nine branches precede `session.stop()` and could write to the session safely. **Branch 505 cannot:
+it runs after the session was stopped and after `Subject.login` threw.** `ShiroRequestSessionCacheResetter`
+runs only on the success path (:516), so on that branch the request still caches the dead session wrapper —
+this is the **V-2 shape exactly**.
+
+A mechanism that is correct for eight of nine branches, with the ninth failing only in the live environment, is
+the defect class this spec has hit nine times. **A session-backed flash is rejected on that ground**, not on
+taste.
+
+### 37.4 Loop and interference analysis
+
+- **No loop.** `login.do` bounces an **authenticated** user to the dashboard (`LoginAction:304-325`). On every
+  refusal the user is *not* authenticated — branch 505 included, where `Subject.login` threw — so `login.do`
+  renders the form and stops.
+- **No V-4 regression.** T19 now guarantees `cognitoCallback.do` can never be stored as a `returnUrl`, so the
+  redirect cannot be re-entered through that route.
+- **No local-path interference.** `login.do` is the local path's own page; nothing in the redirect touches
+  `validateUser.do`, `DBAuthenticator`, or the client-side error mechanism.
+- **Replay protection unchanged.** The `PendingAuthorization` is consumed before any refusal is decided;
+  redirecting afterwards changes no consumption semantics. The redirect must of course **not** carry `code` or
+  `state` — that is the point of the task.
