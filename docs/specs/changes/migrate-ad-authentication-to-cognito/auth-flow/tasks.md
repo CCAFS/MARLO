@@ -938,11 +938,11 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 
 ### CHG-COGNITO-AUTH-001-T18 — Make the external path explicit in the UI
 
-- **Status:** `[~]` — **added 2026-09-04.** A UX requirement, not a defect. Deliberately **minimal**: the flow
-  is not redesigned. **Code complete and audited PASS on round 3** (2026-09-05); the FTL, the key, the four
-  document corrections and checks 1, 2, 3 and 5 are done. **Only check 4 remains** — the label renders as the
-  raw key `login.externalUser` until the app is redeployed, because `struts.devMode=false` and
-  `global.properties` is bundled in `WEB-INF/lib/marlo-web-4.5.1-SNAPSHOT.jar`. Deployment staleness, not code.
+- **Status:** `[x]` — added 2026-09-04, **closed 2026-09-05.** A UX requirement, not a defect. Deliberately
+  **minimal**: the flow was not redesigned. Audited **PASS** on round 3; rounds 1 and 2 FAILed against the
+  governing documents, not the code (see `execution.md` §33). All five manual checks pass, the last one
+  after a redeploy — `global.properties` is bundled in `WEB-INF/lib/marlo-web-*.jar` and `struts.devMode=false`,
+  so the key could not resolve until the jar was rebuilt.
 - **Why it exists:** step 3's local block shows a password field with no statement of *which* authentication
   method the user is on. During a migration where two methods coexist, that is ambiguous. The CGIAR path
   already announces itself through its labelled button; the external path announces nothing.

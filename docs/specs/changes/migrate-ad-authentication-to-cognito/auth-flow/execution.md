@@ -3427,3 +3427,32 @@ document; the detached node is out of the tab order and out of the form's elemen
 
 **The weaker wording describes the mechanism that has a real corporate login behind it.** The stronger wording
 described one that did not exist.
+
+### 33.6 Check 4 closed — and why it could not have been closed by reading
+
+After the redeploy, `login.do` returns **zero** occurrences of `login.externalUser` and one of `External user`:
+
+```
+<p class="login-subtext">Use your organization email or username to easily connect</p>
+<p class="login-subtext">Please select the project</p>
+<p class="login-subtext">External user</p>
+```
+
+One per step — the idiom the file already had, now complete. Placement re-verified against the **rendered**
+output rather than the template: `External user` is present inside `#login-step-password` alongside
+`id="login-password"`, and absent from `#login-step-cgiar` and everything that follows it.
+
+**The check earned its place.** Before the redeploy the source was already correct and the page still showed
+the raw key, because `global.properties` ships inside `WEB-INF/lib/marlo-web-*.jar` and `struts.devMode=false`
+caches the bundle at classloader level. **Every code review, every audit round, and the FTL itself looked
+perfectly fine throughout.** This is the defect class D-5 exists to name and the reason T13 exists at all.
+
+### 33.7 Redeploy hygiene
+
+`scripts/run-marlo-java17.sh` rewrites `marlo-dev.properties`, which holds the live Cognito credentials, so the
+file was inspected **before** the run rather than after: `update-marlo-dev-java17.sh` sets exactly three URL
+keys via `sed -i` and touches nothing else. Verified after the run — all 8 `cognito.*` keys intact and the
+file's md5 **unchanged** (`46a3760…`), the three URL values having already been correct.
+
+The script's own kill step is a silent no-op here (**EB-5**: `pkill` does not exist in this shell), so the
+running JVM was terminated explicitly by PID first.
