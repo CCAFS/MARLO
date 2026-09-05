@@ -4107,3 +4107,88 @@ Cognito login refused by **gate 4** landing on `login.do` with no code and no st
 and the natural hand-test that once looked like a T20 failure.
 
 **V-6 remains open and untouched.**
+
+---
+
+## 42. T21 / V-7 CLOSED on real E2E evidence — 2026-09-05
+
+### 42.1 The evidence
+
+```
+15:55:08.245  LoginAction            logout succesfully
+15:55:46.810  CognitoLoginAction     attempt started (Global Unit AICCRA_III, mode COGNITO)
+15:55:47.347  CognitoCallbackAction  Cognito sign-in succeeded for Global Unit AICCRA_III
+15:55:47.349  LoginAction            denied: not a member of Global Unit AICCRA_III (gate 4: crp_users membership)
+```
+
+**Observed by the user in DevTools:** the callback returned **HTTP 302** with
+`Location: http://localhost:8080/marlo-web/login.do`.
+
+That is the whole chain: authorization started for GU 47, the `PendingAuthorization` was recovered for GU 47,
+the token validated, the identity resolved, `Subject.login` succeeded, **gate 4 refused on `crp_users`
+membership**, `finishLogin` returned `INPUT`, and **T21 converted it into the existing `LOGIN` redirect**. The
+login page was not rendered in place, and no authorization code or state remained in the active URL.
+
+### 42.2 The two earlier attempts that looked like failures were not
+
+At 15:45 and 15:47 the same rejection fired correctly and the browser still ended at the AICCRA dashboard.
+Cause, from the log: a **new, complete** Cognito login started 3.4 s later —
+
+```
+15:45:45.040  denied: not a member of AICCRA_III (gate 4)
+15:45:48.674  Cognito login attempt started … (Global Unit AICCRA)   <- new, complete
+15:45:49.179  logged in successfully -> dashboard
+```
+
+After the rejection the login page was shown, the email was prefilled from the cookie, the user belongs to
+**exactly one** Global Unit so step 2 auto-skips, step 3 resolved to COGNITO and the CGIAR button took focus. A
+click or Enter started a fresh login, and because the corporate SSO session was still live the whole round trip
+took half a second and looked instantaneous. **The dashboard was never reached by a redirect from the
+rejection.**
+
+### 42.3 A discriminator I proposed and then falsified myself
+
+While diagnosing, I claimed the eight `BaseAction` "problem trying to find the user crp in the session"
+warnings were the signature of a `login.do` render, and that their absence proved T21 had not run. **I tested
+the claim before reporting it: a plain `login.do` GET emits zero log lines.** The warnings come from elsewhere.
+
+The reasoning was discarded, and the question was answered the only way it could be — from the browser's own
+network trace. **A signature inferred from two coincidences is not a signature.** The same lesson as `strings`
+in §39.1, one day apart: a signal that has never been tested against a known negative is not evidence.
+
+### 42.4 Test condition and its removal
+
+Gate 4 is unreachable through the UI: `CrpByUserEmailAction:113` builds step 2 from
+`crpManager.crpUsers(userEmail)`, so the wizard only ever offers units the user belongs to. The test therefore
+required a Global Unit with the Cognito flag that the user is **not** a member of, and none existed — GU 45 was
+the only flagged unit and the user is a member of it.
+
+One temporary row enabled `cognito_auth_active` on **GU 47 (AICCRA_III)**, type 3 like GU 45 so the test could
+not stray into route C, and reached by a direct `cognitoLogin.do?globalUnitId=47` URL since step 2 would never
+offer it.
+
+> **The guarded INSERT inserted three rows, not one.** The `parameters` table holds **three** rows for
+> `cognito_auth_active` — ids 392, 393, 394, one per Global Unit type — and the guard compared per
+> `parameter_id`, so each produced a row. Caught immediately because the statement asked for `ROW_COUNT()`,
+> which returned `3`. The two rows for the wrong types were deleted by explicit id, leaving the one matching
+> GU 47's type. **The guard the user asked for is what made the mistake visible; it is not what prevented it.**
+
+Cache was verified rather than assumed: `CustomParameterMySQLDAO:90` sets `setCacheable(true)`, and an
+out-of-band SQL insert does not invalidate that cache — but nothing had ever queried GU 47, so no stale entry
+existed. Confirmed by probing `cognitoLogin.do` for GU 45 (control) and GU 47; both redirected to the
+configured Cognito domain.
+
+### 42.5 Rollback verified
+
+```
+rows carrying the T21 test justification : 0
+GU 47 rows with a cognito parameter id   : 0
+MAX(custom_parameters.id)                : 2340   <- the pre-test high-water mark
+units with the flag active               : 45 (AICCRA) only
+GU 45 row                                : 2340 | 393 | true | 1   (identical)
+user 3797                                : cgamboa | c.gamboa@cgiar.org | is_cgiar_user=1 | password present
+memberships 3797                         : 45
+```
+
+The inserted rows were 2341-2343; `MAX(id)` back at **2340** is the cleanest available proof that none
+survives. GU 45, the user record, the password and the memberships were never written to.

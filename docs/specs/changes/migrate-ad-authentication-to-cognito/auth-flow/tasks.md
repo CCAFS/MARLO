@@ -1262,11 +1262,12 @@ a fresh login after rejection both still work, and `execution.md` records that V
 
 ### CHG-COGNITO-AUTH-001-T21 — V-7: the shared tail's refusals must also leave the callback URL
 
-- **Status:** `[~]` — added 2026-09-05, **audited PASS** the same day (`execution.md` §41). Fixes **V-7**
-  (`execution.md` §38.2, analysed in §40). One call site in `CognitoCallbackAction`; `LoginAction.java`
-  absent from the diff; suite **195**; the mutation reddened five tests across A/B/C with both
-  pass-through tests green. **Open until the live check**: a real Cognito login refused by **gate 4** must
-  land on `login.do` with no code and no state in the active URL — the user performs it.
+- **Status:** `[x]` — added and **closed 2026-09-05.** Fixes **V-7** (`execution.md` §38.2, analysed in §40,
+  audited in §41, closed on real E2E evidence in §42). One call site in `CognitoCallbackAction`;
+  `LoginAction.java` absent from the diff; suite **195**; mutation reddened five tests across A/B/C with
+  both pass-through tests green. **Validated end to end**: a real corporate login refused by gate 4 on GU 47
+  returned **HTTP 302 → `/login.do`**, observed by the user in DevTools, with no code or state in the
+  active URL. The temporary GU 47 test row was reverted and the database verified back to its prior state.
 - **Depends on:** T20 · **Module:** marlo-web
 - **Files touched:** `action/home/CognitoCallbackAction.java` (the `finishLogin` call site), plus tests
 - **The problem:** T20 fixed the nine `refuse()` branches. Three more refusals return `INPUT` from
