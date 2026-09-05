@@ -23,8 +23,11 @@ package org.cgiar.ccafs.marlo.security;
  * deliberately I/O-narrow: it fetches JWKS and performs cryptographic checks, and every one of its tests
  * runs fully offline with no network and no database (its own javadoc and test suite make that a design
  * constraint, not an accident). Identity mapping is a different concern -- it reads the {@code users}
- * table through {@link org.cgiar.ccafs.marlo.data.manager.UserManager} and, on gate success, writes
- * {@code users.username} through it. Folding that into the token validator would make "pure unit, no
+ * table through {@link org.cgiar.ccafs.marlo.data.manager.UserManager}. <b>It writes nothing.</b>
+ * (T17 removed the {@code users.username} write this javadoc used to describe: the federated ID token
+ * carries no CGIAR login, so what was being written was Cognito's own federated identifier. See
+ * execution.md 32.) Folding this into the token validator would still make "pure unit, no network"
+ * false for a class whose own contract promises it, because the read alone reaches the database.
  * network" false for a class whose own contract promises it. It is design.md 13.3's step ③, distinct from
  * step ② (token validation, T05) and step ⑥ ({@code Subject.login}, T06) -- {@link CognitoAuthenticationToken}
  * already requires a resolved {@code users.id} in its constructor, which makes this resolution a

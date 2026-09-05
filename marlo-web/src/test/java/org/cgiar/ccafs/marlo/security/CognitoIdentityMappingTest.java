@@ -149,8 +149,10 @@ public class CognitoIdentityMappingTest {
     @Override
     public User saveUser(User user) {
       throw new AssertionError(
-        "the username write must go through saveLastLogin(), not saveUser() -- see tasks.md's "
-          + "corrected Constitutional check: saveUser() is a no-op on a session-managed entity");
+        "no write may go through saveUser() -- see tasks.md's corrected Constitutional check: "
+          + "saveUser() is a no-op on a session-managed entity. Since T17 the Cognito identity path "
+          + "writes nothing to users at all; saveLastLogin() on the success path is the only write, "
+          + "and it does not run here.");
     }
 
     @Override

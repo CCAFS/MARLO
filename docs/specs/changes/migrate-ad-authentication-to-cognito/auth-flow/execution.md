@@ -3864,3 +3864,28 @@ The audit reported a five-file working tree including `global.properties` and `l
 tree is three files.** Those two were T18's, committed at `f4592e070d`; the audit was reading the git status
 snapshot from its own session start. It declared the uncertainty and asked the Leader to confirm, which is
 exactly why it cost thirty seconds to dismiss rather than a rework round.
+
+### 38.5 The three T17 LOW findings closed — comments only
+
+Documentation drift left by T17, carried open since 2026-09-04. All three said the code writes
+`users.username`; it has not since T17 removed that write.
+
+| Site | Was | Now |
+|---|---|---|
+| `CognitoIdentityMapper.java:26-27` | "reads the `users` table … and, on gate success, writes `users.username` through it" | "**It writes nothing.**", with the reason and a pointer to §32 |
+| `CognitoIdentityMappingTest.java:151` | guard message: "the username write must go through `saveLastLogin()`" | "no write may go through `saveUser()`", plus what the Cognito path writes today |
+| `CognitoAssertion.getUsernameClaim()` | "the corporate username claim" | records that **no production code reads it** — verified: all 8 references are inside `CognitoAssertion` itself — and why it is retained |
+
+Comments only; zero behavioural change. Compile clean, suite **191/191**.
+
+**Not independently audited, and that is a deliberate proportionality call:** the diff is 16 added lines, all
+inside comments and one test's failure message, and the gates plus a read are adequate evidence for that. Said
+plainly rather than left to be assumed.
+
+Two things worth recording from doing it:
+
+- **A fourth stale-looking site was a false positive.** `CognitoIdentityMapperImpl.java:38` says this class
+  "no longer writes `users.username`" — my grep matched the phrase and missed the negation. Checked before
+  editing, left alone.
+- **I broke the build on the first attempt.** The replacement span for the test's message swallowed the line
+  carrying `);`. Caught by the compile gate, which is what it is for.

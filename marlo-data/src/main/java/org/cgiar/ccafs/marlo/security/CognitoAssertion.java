@@ -118,7 +118,13 @@ public final class CognitoAssertion implements Serializable {
   }
 
   /**
-   * @return the corporate username claim, or {@code null} when the provider mapped none (OQ-18)
+   * <b>No production code reads this.</b> T17 removed its only consumer when it established that
+   * Cognito must not modify {@code users.username} -- the federated ID token carries no CGIAR login,
+   * so this claim held Cognito's own federated identifier (execution.md 32). It is retained because it
+   * is part of the validated token surface and the mapper's tests assert on it; do not reintroduce a
+   * caller that writes it to {@code users}.
+   *
+   * @return the claim the provider mapped, or {@code null} when it mapped none (OQ-18)
    */
   public String getUsernameClaim() {
     return this.usernameClaim;
