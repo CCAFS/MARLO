@@ -3251,3 +3251,100 @@ pool does not expose the identifier the requirement assumed — which would be t
 environment has surfaced, after V-1 and T15.
 
 **No code, no test data, and no configuration was changed. The E2E environment is untouched.**
+
+---
+
+## 32. U-3 resolved — the ID token does not carry a CGIAR login, and T17 stops pretending it does — 2026-09-04
+
+### 32.1 The evidence, from one real corporate login
+
+A temporary, local-only diagnostic was added after the token was validated, logging **claim names only** plus
+the values of four identity candidates. It never touched the raw token, the authorization code, any secret,
+or the `nonce` value — and it was **run through T14's log-hygiene test before booting** (15/15), because a
+diagnostic that leaked a secret would have been worse than the problem it investigated.
+
+**The real token carries 16 claims:**
+
+```
+at_hash, aud, auth_time, cognito:groups, cognito:username, email, email_verified,
+exp, iat, identities, iss, jti, nonce, origin_jti, sub, token_use
+```
+
+| Claim | Result |
+|---|---|
+| `username` | **ABSENT** |
+| `preferred_username` | **ABSENT** |
+| `cognito:username` | present — `cgiar-azuread_c.gamboa@cgiar.org` |
+| `email` | present — `C.Gamboa@cgiar.org` |
+| Any other login-shaped value | only `at_hash` and `token_use`; neither is a username |
+
+**`cgamboa` is in none of them.**
+
+### 32.2 What the pool's attribute mapping actually does
+
+The console shows *"User pool attribute: **username** ← .../identity/claims/username"*, which reads like it
+should produce a `username` claim. **It does not.** It feeds the pool's **own** username attribute, which
+Cognito prefixes with the provider name and emits as `cognito:username`. And the AD claim being mapped
+returns the **UPN**, not the `sAMAccountName`.
+
+**So option A from §31.7 — "map the correct claim" — does not exist.** There is no correct claim to map. No
+change inside MARLO can produce `cgamboa` from this token.
+
+### 32.3 FN-006 was amended, because its premise was false
+
+FN-006 said: *"GIVEN a CGIAR user whose ID token **carries their CGIAR login identifier**."* It does not. The
+requirement was **unsatisfiable as written**, and nobody could know that until a real federated token existed.
+
+It now reads **"The system SHALL NOT modify `users.username` during Cognito authentication"**, with two
+scenarios: a populated username is preserved exactly, and a null or blank one stays null or blank — **no
+value is invented**.
+
+### 32.4 T17 — the correction
+
+The write at `CognitoIdentityMapperImpl` is removed. The mapper resolves by normalized email (OQ-9), applies
+gates 1-3, and **touches `username` at all**. `users.email` is still never written. `saveLastLogin` inside the
+mapper went with it — there was nothing left for it to persist; `agree_terms` and `last_login` are still
+written by `CognitoCallbackAction:485` and `finishLogin`, verified unchanged.
+
+**Why the old behaviour was worse than doing nothing**, and why this is a fix rather than a retreat: it
+replaced a correct AD login with a value correct for nothing, breaking username-based local login
+(`APCustomRealm:161`, the branch taken when a user types a login without `@`) and rendering as a display name
+in QA comments (`FeedbackQACommentsAction:180`, `:403`). `APCustomRealm.getCgiarNickname()` remains the sole
+writer and repairs the value by looking Active Directory up **by email**.
+
+**The inverted test matters as much as the deletion.** `validCgiarUserGetsUsernameLoweredAndEmailUnchanged`
+became `populatedUsernameIsPreservedByteForByte`: its assertion flipped from *"the claim overwrites the
+username"* to *"the prior value is untouched"*, fed with the **real federated shape** the live token produced.
+Deleting it would have left the contract unguarded; inverting it makes a return of the write a red test.
+
+| Gate | Result |
+|---|---|
+| Tests, clean reactor, no container competing — **verified by the Leader** | **167 / 167** |
+| Mutation — restore `setUsername` | **exactly** tests 1-3 redden, the other six stay green |
+| Diagnostic code remaining | **zero** — `CognitoTokenValidatorImpl` byte-identical to `HEAD`; never committed |
+| `saveLastLogin` on the callback path | intact at `CognitoCallbackAction:485` |
+
+### 32.5 A Leader error the implementer caught — the seventh in this spec
+
+The brief stated *"MARLO is stopped right now."* **It was not** — PID 45052 was running `cargo:run`, the
+container the Leader had booted for the diagnostic login and then forgotten. The implementer verified the
+claim instead of accepting it, **declined to kill a process it had no authorization to kill** ("it may be the
+user's own session"), worked around it by deleting only `target/classes` and `target/test-classes`, and
+reported that its measurement had occurred alongside a live process — citing `CLAUDE.md`'s Concurrency rule
+against itself.
+
+Three correct decisions in one: it did not trust the brief, it did not exceed its authority, and it did not
+hide a condition that could have invalidated its own numbers.
+
+### 32.6 The pattern this validation phase established
+
+**Three of the four findings from the real environment were not implementation defects.**
+
+| Finding | What it actually was |
+|---|---|
+| **V-1** `cognito.domain` | A configuration contract whose key **names** were recorded and whose **value formats** were not |
+| **T15** `identity_provider` | A mechanism the design **drew** but never **specified** |
+| **U-3** `users.username` | A requirement built on a premise **nobody could verify** without a real token |
+| **V-2** stale session | The one genuine code defect — and it slipped past two audits because the test double simulated the symptom instead of the mechanism |
+
+The code did what it was asked. What it was asked was wrong, and only the running system could say so.

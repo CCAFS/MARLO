@@ -320,6 +320,29 @@ The client composes `mode = user.isCgiarUser && card.cognitoEnabled`. This is th
 
 ### 5.2 The actual mechanism
 
+> **AMENDED 2026-09-04 — presentation only; the branch condition is unchanged.** Step 3 no longer jumps
+> straight to a field. It presents an **explicitly labelled method**, and only the one the backend can accept:
+> *Sign in with CGIAR* when `is_cgiar_user AND cognito_auth_active`, *External user* otherwise. That predicate
+> is byte-identical to the `mode` composition T12 already ships — **no selection logic changes.**
+>
+> **Two consequences worth stating.**
+>
+> **FN-001's absence guarantee gets stronger, not weaker.** Today the password input is rendered and then
+> `.remove()`d on the Cognito branch. Under this amendment it is **never created** on that path — absence by
+> construction rather than by correction. The clone-and-restore mechanism T12 built for back-navigation
+> becomes the **primary** creation path rather than a recovery path, which raises its importance: manual
+> check 7's sub-steps (type a wrong password, the eye toggle, Enter) stop being edge cases.
+>
+> **Terms stay shared.** The checkbox lives in `.terms-container` (`loginForm.ftl:142-144`), outside both
+> step blocks and alongside the recaptcha and button containers, and gates **both** methods. It is not
+> duplicated per block.
+>
+> **No backend change.** `crpByEmail.do` already returns `isCgiarUser` and per-unit `cognitoEnabled`;
+> `cognitoLogin.do` already takes `email`, `globalUnitId` and `agree`; `validateUser.do` already receives
+> `globalUnitId` (PS-20). Every `CognitoLoginAction` gate stays, so the unauthenticated endpoint refuses a
+> directly-posted ineligible request exactly as before — **the UI decides what to offer, the server decides
+> what to permit, never the reverse.**
+
 `loginForm.ftl` emits **both** step-3 blocks; `login.js` selects one at runtime:
 
 | Block | Shown when | Content |
@@ -400,7 +423,7 @@ The redirect is always user-initiated. Nothing navigates on its own.
 
 ## 6. Persistence & Phase Replication Plan
 
-**Not applicable.** Authentication writes no phased data. The writes are `users.username`, `users.last_login`, and `users.agree_terms` — phase-independent columns on a non-phased table. No `phase.getNext()` recursion, no past-phase concern.
+**Not applicable.** Authentication writes no phased data. The writes are `users.last_login` and `users.agree_terms` (**`users.username` removed 2026-09-04 — FN-006 amended: the Cognito path must not modify it, see `execution.md` §32**) — phase-independent columns on a non-phased table. No `phase.getNext()` recursion, no past-phase concern.
 
 ---
 

@@ -71,35 +71,71 @@ Addresses `docs/prd.md` §7.2 (quality and security acceptance).
 
 ### 3.1 Functional
 
-#### CHG-COGNITO-AUTH-001-FN-001 — Branch the login wizard by user type
+#### CHG-COGNITO-AUTH-001-FN-001 — Branch the login wizard by user type — **AMENDED 2026-09-04**
 
-The system **SHALL** determine, after the user submits their email in wizard step 1 and before any password is requested, whether the account authenticates against CGIAR or locally, and present the corresponding step 3.
+> **AMENDED after a UX decision taken by the user 2026-09-04.** The **selection logic is unchanged**: the
+> method offered is still exactly `is_cgiar_user AND cognito_auth_active`. What changes is **presentation**.
+> Step 3 no longer jumps straight to a password field or a CGIAR control; it presents an **explicitly
+> labelled authentication method**, and the password input is created **on demand** when the user chooses the
+> external path rather than rendered up front and removed.
+>
+> **Only methods the backend can actually accept are offered:**
+>
+> | `is_cgiar_user` | `cognito_auth_active` | Method shown |
+> |---|---|---|
+> | 1 | **true** | **Sign in with CGIAR** only |
+> | 1 | false | **External user** only — MIG-001 coexistence |
+> | 0 | any | **External user** only |
+>
+> **Why never both.** For `is_cgiar_user = 1` on a migrated unit, the local password path is **refused by the
+> server** — that is SEC-005, enforced by T11 on `validateUser.do` and T11b on `login.do`, and the refusal is
+> deliberately indistinguishable from a wrong password (SEC-006). Offering *External user* there would present
+> a control that **cannot succeed** and whose failure is designed to be unexplainable. **The UI offers only
+> what the server can accept; the server remains authoritative regardless.**
 
-##### Scenario: CGIAR user reaches step 3
+The system **SHALL** determine, after the user submits their email in wizard step 1 and before any password is
+requested, whether the account authenticates against CGIAR or locally, and present the corresponding step 3
+as an **explicitly labelled method** rather than as an implicit branch.
 
-- **GIVEN** a user whose `users.is_cgiar_user = 1` and whose Global Unit has the Cognito specificity enabled
+##### Scenario: CGIAR user on a migrated unit reaches step 3
+
+- **GIVEN** a user whose `users.is_cgiar_user = 1` and whose selected Global Unit has the Cognito specificity enabled
 - **WHEN** they complete wizard step 1 (email) and step 2 (project selection)
-- **THEN** step 3 **MUST** present a single "Sign in with CGIAR" control instead of a password field
-- **AND** the password input **MUST NOT** be rendered, focusable, or present in the submitted form
+- **THEN** step 3 **MUST** present a single, labelled **"Sign in with CGIAR"** control and **no** external option
+- **AND** the password input **MUST NOT** be rendered, focusable, or present in the submitted form —
+  **strengthened by this amendment**: it is now **never created** on this path, rather than created and removed
+- **AND** the user **MUST NOT** be required to enter a password at any point
 - **BUT** it **MUST NOT** change what step 1 or step 2 look like or how they behave
 - **AND IT MUST** keep the selected Global Unit visible in step 3, exactly as today
 
-##### Scenario: Local user reaches step 3 — unchanged
+##### Scenario: External user reaches step 3
 
-- **GIVEN** a user whose `users.is_cgiar_user = 0`
+- **GIVEN** a user whose `users.is_cgiar_user = 0`, **or** whose selected Global Unit has the specificity disabled
 - **WHEN** they complete steps 1 and 2
-- **THEN** step 3 **MUST** be byte-for-byte the password step that exists today
-- **AND IT MUST** authenticate through the unmodified `DBAuthenticator` MD5 path
+- **THEN** step 3 **MUST** present a single, labelled **"External user"** control and **no** CGIAR option
+- **AND** the password field **MUST** be revealed only after that control is chosen
+- **AND** the email entered in step 1 **MUST** be preserved — the user does not retype it
+- **AND** once revealed, the password step **MUST** behave exactly as today, authenticating through the
+  unmodified `DBAuthenticator` MD5 path
 - **BUT** it **MUST NOT** contact Cognito, construct an authorize URL, or read any Cognito configuration
 
-##### Scenario: Email not found
+##### Scenario: Terms and Conditions are shared by both paths
 
-- **GIVEN** an email matching no `users` row
-- **WHEN** the user submits step 1
-- **THEN** the existing `emailNotFound` message **MUST** be shown
-- **BUT** the response **MUST NOT** disclose whether an unknown email would have been CGIAR or local
+- **GIVEN** either authentication method
+- **WHEN** the user starts Cognito authentication **or** submits the local login
+- **THEN** acceptance of the Terms and Conditions **MUST** already have been given
+- **AND** the checkbox **MUST NOT** be duplicated per method unless technically necessary — it lives in the
+  shared `.terms-container`, alongside the recaptcha and button containers, and applies to both
+- **AND** the server-side obligation is unchanged: `cognitoLogin.do` still refuses without `agree`, and
+  `users.agree_terms` is still written **only** after the callback (T09), never from the unauthenticated
+  redirect endpoint
 
----
+##### Unchanged by this amendment
+
+Global Unit discovery stays **before** authentication; `cognito_auth_active` is still evaluated **per selected
+unit, before** the redirect; and every backend gate in `CognitoLoginAction` remains, so a directly-posted
+request to the unauthenticated endpoint is refused exactly as before. **T08, T11, T11b, T15, T16 and T17
+behaviour is preserved.**
 
 #### CHG-COGNITO-AUTH-001-FN-002 — Authenticate a CGIAR user through Cognito
 
@@ -182,20 +218,57 @@ The system **SHALL** return the user to the MARLO login page with an actionable 
 
 ---
 
-#### CHG-COGNITO-AUTH-001-FN-006 — Username synchronization
+#### CHG-COGNITO-AUTH-001-FN-006 — Username synchronization — **AMENDED 2026-09-04**
 
-The system **SHALL** maintain `users.username` for CGIAR users without an LDAP lookup.
+> **AMENDED after real E2E evidence (U-3, `execution.md` §31). The original requirement rested on a premise
+> the real token disproved.** It read: *"The system SHALL maintain `users.username` for CGIAR users without an
+> LDAP lookup… GIVEN a CGIAR user whose ID token **carries their CGIAR login identifier**."* **No such claim
+> exists.** A real federated ID token from the CGIAR-AzureAD provider carries **16 claims**, and the CGIAR/AD
+> login (`cgamboa`) is in **none** of them:
+>
+> - `username` — **absent**
+> - `preferred_username` — **absent**
+> - `cognito:username` — present, but it is **Cognito's own federated identifier**: the provider name,
+>   lowercased, prefixed to the mapped value (`cgiar-azuread_c.gamboa@cgiar.org`)
+> - `email` — present
+> - the remaining claims (`at_hash`, `aud`, `auth_time`, `cognito:groups`, `email_verified`, `exp`, `iat`,
+>   `identities`, `iss`, `jti`, `nonce`, `origin_jti`, `sub`, `token_use`) carry no login identifier
+>
+> The pool's attribute mapping *"User pool attribute: username"* does **not** produce a separate `username`
+> claim — it feeds the pool's own username, which Cognito prefixes and emits as `cognito:username`. The AD
+> claim being mapped returns the **UPN**, not the `sAMAccountName`. **MARLO cannot obtain `cgamboa` from this
+> token by any mapping**, so the original requirement was unsatisfiable as written.
 
-##### Scenario: Username kept current
+**The system SHALL NOT modify `users.username` during Cognito authentication.**
 
-- **GIVEN** a CGIAR user whose ID token carries their CGIAR login identifier
-- **WHEN** they sign in successfully
-- **THEN** `users.username` **MUST** be set from that claim, lowercased — matching today's `getCgiarNickname()` behavior
-- **AND IT MUST NOT** perform any LDAP call to obtain it
-- **BUT** it **MUST NOT** overwrite `users.email`, which remains the identity key inside MARLO
+##### Scenario: An existing username is preserved
+
+- **GIVEN** a CGIAR user with a populated `users.username` (for example `cgamboa`, set by `getCgiarNickname()`
+  from Active Directory on a previous local login)
+- **WHEN** they sign in successfully through Cognito
+- **THEN** `users.username` **MUST** be left **exactly as it was**
+- **AND** the user **MUST** still be resolved by their normalized corporate email (OQ-9), which is sufficient
+- **AND IT MUST NOT** be derived from the email, and **MUST NOT** be `cognito:username`, with or without the
+  provider prefix stripped
+
+##### Scenario: A null or blank username stays null or blank
+
+- **GIVEN** a CGIAR user whose `users.username` is `null` or blank
+- **WHEN** they sign in successfully through Cognito
+- **THEN** it **MUST** remain `null` or blank — **no value is invented**
+- **AND** the LDAP path remains the only writer: `APCustomRealm.getCgiarNickname()` looks Active Directory up
+  **by email** and sets the username from `ldapUser.getLogin()`, so a local login repairs or populates it
+
+##### Why this is safe, and why the previous behaviour was not
+
+`users.username` is **not** MARLO's identity key — OQ-9 settled that on the normalized corporate email, and
+the Cognito path never needs the username to authenticate. Writing `cognito:username` there was **strictly
+worse than not writing**: it replaced a correct AD login with a value correct for nothing, breaking
+username-based local login (`APCustomRealm:161`, `getUserByUsername`) and rendering as a display name in QA
+comments (`FeedbackQACommentsAction:180`, `:403`). **AND IT MUST NOT** overwrite `users.email`, which remains
+the identity key inside MARLO.
 
 ---
-
 #### CHG-COGNITO-AUTH-001-FN-007 — Logout
 
 The system **SHALL** terminate the MARLO session on logout and **SHALL NOT** silently re-authenticate the user.
@@ -370,7 +443,7 @@ Per the AKILI rule that a gate blind to the dominant defect class is not a gate:
 
 ## 7. Constitutional Compliance Checklist
 
-- [x] **Phase replication:** Not applicable — authentication writes no phased data. `users.last_login` and `users.username` are phase-independent.
+- [x] **Phase replication:** Not applicable — authentication writes no phased data. `users.last_login` and ~~`users.username`~~ (**removed 2026-09-04, FN-006 amended**) are phase-independent.
 - [x] **Save validation:** Not applicable — no `Action.validate()` save pipeline. The login action's existing `validate()` is preserved unchanged.
 - [x] **Permissions:** both new actions declare `unloggedStack` (`struts.xml:198-203`) — reachable unauthenticated, and named per TRD §4.3 rule 1. See `design.md` §8.
 - [ ] **Specificity:** flag added via `parameters` + `custom_parameters`, constant in **both** `APConstants.java` files, value identical to `parameters.key`.

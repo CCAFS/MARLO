@@ -880,3 +880,52 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 - **Done when:** five tests pass, Checkstyle passes, and **the real corporate login completes without the
   exception** — which only the user can confirm, in a browser.
 - **Skills:** `tdd`
+
+---
+
+### CHG-COGNITO-AUTH-001-T17 — U-3: stop writing `users.username` on the Cognito path
+
+- **Status:** `[ ]` — **added 2026-09-04 after real E2E evidence.** Not a coding error: T07 did exactly what
+  FN-006 asked. **The requirement's premise was false**, and only a real federated token could show it.
+- **The evidence, from one real corporate login** (`execution.md` §31, §32): the ID token carries **16
+  claims** and the CGIAR/AD login `cgamboa` is in **none** of them. `username` **absent**;
+  `preferred_username` **absent**; `cognito:username` present but it is Cognito's own federated identifier
+  (`cgiar-azuread_c.gamboa@cgiar.org`); `email` present. The pool mapping *"User pool attribute: username"*
+  feeds the pool's username — Cognito prefixes it and emits it as `cognito:username` — and the AD claim
+  returns the **UPN**, not the `sAMAccountName`. **No mapping inside MARLO can produce `cgamboa`.**
+- **Depends on:** T07 · **Module:** marlo-data
+- **Files touched:** `security/impl/CognitoIdentityMapperImpl.java`
+- **Scope — the decision, taken by the user 2026-09-04:**
+  - **Do not modify `users.username` during Cognito authentication.** Remove the write at
+    `CognitoIdentityMapperImpl:96-100`.
+  - Keep resolving the MARLO user by **normalized corporate email** (OQ-9). It is sufficient and is the
+    identity key.
+  - **Do not** derive a username from the email. **Do not** strip the provider prefix. **Do not** persist
+    `cognito:username`.
+  - A `null` or blank `users.username` **stays** null or blank — no value is invented.
+  - `users.email` is still never overwritten.
+- **Why the previous behaviour was worse than doing nothing:** it replaced a correct AD login with a value
+  correct for nothing — breaking username-based local login (`APCustomRealm:161`, `getUserByUsername`, which
+  is the branch taken when a user types a login without `@`) and surfacing as a display name in QA comments
+  (`FeedbackQACommentsAction:180`, `:403`). The LDAP path remains the only writer and repairs the value by
+  looking Active Directory up **by email** (`APCustomRealm:333-338`).
+- **Constitutional checks:** `users.email` untouched; gates 1-3 and their ordering unchanged; SEC-006's
+  indistinguishable refusals unchanged; no change to what the user sees.
+- **Tests (new/updated):**
+  1. **A populated username is preserved byte-for-byte** across a successful Cognito login — assert the exact
+     prior value, not merely "not null".
+  2. **A `null` username stays `null`** — nothing is invented.
+  3. **A blank username stays blank** — the trimmed-empty case is distinct from `null` and must not become a
+     derived value either.
+  4. **The email is still never overwritten**, and the user is still resolved by the normalized email.
+  5. **Existing T07 tests that asserted the username WAS set must be updated, not deleted** — their intent
+     (the write happens) is inverted by this decision, and the updated assertion must fail if the write
+     returns.
+- **Verification:** `mvn -q clean test -pl marlo-web -Dminify.skip=true`
+- **Fails when:** the write is restored — tests 1-3 must all redden. Re-adding `user.setUsername(...)` is a
+  one-line regression and the suite must catch it.
+- **Not evidence when:** a test asserts only that the username is "not corrupted". Assert the **exact** prior
+  value; a test that would pass on any non-federated string does not pin the contract.
+- **Done when:** the tests pass, the full clean suite passes, no diagnostic code remains anywhere, and **a
+  real corporate login leaves `users.username` unchanged in the database** — which only the user can confirm.
+- **Skills:** `tdd`
