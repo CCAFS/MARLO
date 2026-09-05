@@ -3957,3 +3957,88 @@ browser against the live Cognito pool.
 - **V-7** — three `INPUT` returns in `LoginAction.finishLogin` reachable from the callback still render in
   place. Gate-4 membership is the most natural way to hand-test a refusal, so any future live check must name
   a `refuse()` branch, as this one did.
+
+---
+
+## 40. V-7 analysis — the three tail refusals — 2026-09-05
+
+### 40.1 The three paths
+
+All three are in `LoginAction.finishLogin`, the shared tail T01 created, so **all three are reachable from
+local authentication as well as Cognito.** That is the whole difficulty.
+
+| | **A — `:393` gate 4** | **B — `:402` no Global Unit** | **C — `:447` unmapped type** |
+|---|---|---|---|
+| **Condition** | `loggedCrp != null` and `!existCrpUser(user, crp)` — authenticated, but not a member of the selected Global Unit | `loggedCrp == null` | `loggedCrp.getGlobalUnitType().getId()` is outside `{1,2,3,4,5}` |
+| **Nature** | a **user** condition | a **state** condition | a **data** condition |
+| **From Cognito** | yes — the account is valid, the unit is not theirs | only if the unit is deleted or unresolvable *between* authorize and callback (`pending.getGlobalUnitId()` is non-null by gate 2) | yes, on a unit whose type is unmapped |
+| **From local** | yes | yes — form posts no crp | yes |
+| **Side effects before returning** | field error `invalidUserCrp`, `setCrpSession(acronym)`, `getSession().clear()`, `Subject.logout()` | field error `selectCrp`, `getSession().clear()`, `Subject.logout()` | **none** — session already populated, `saveLastLogin` already ran, "logged in successfully" already logged |
+| **Result** | `INPUT` → `login.ftl` rendered **in place** | same | same |
+
+**C is the odd one.** It fires *after* the session was populated and the success line logged, and it neither
+clears the session nor logs out. The user is authenticated and is shown the login page. That is a pre-existing
+oddity on **both** paths, not something V-7 introduces or should fix.
+
+**`user.setPassword(null)` is safe on the Cognito path**: `CognitoCallbackAction:491` calls
+`setUser(detachedUser)` before `finishLogin` at `:536`, so the bean is never null. Checked, because a NPE there
+would have been a live defect.
+
+### 40.2 Why changing `finishLogin` is the wrong move
+
+Every one of the three is shared with `login.do`. Editing them means arguing that local behaviour is
+unaffected. **Arguing is weaker than not touching it.**
+
+### 40.3 The smallest safe design
+
+Convert the tail's rejection **at the Cognito caller**, in `CognitoCallbackAction` only:
+
+```java
+String tail = this.finishLogin(loggedUser, loggedCrp, returnUrl);
+if (INPUT.equals(tail)) {
+  this.setUrl(this.getBaseUrl() + "/login.do");
+  return LOGIN;
+}
+return tail;
+```
+
+**`LoginAction` stays byte-identical, so the local path cannot change — structurally, not by argument.**
+`login.do` maps to `LoginAction`; nothing in that mapping reaches this code. This is the same shape T20 used,
+reusing the same already-mapped `login` result.
+
+**Business rejection semantics are preserved by construction**, because they all happen *inside* `finishLogin`
+before the result is returned: the log line, the field error, `getSession().clear()`, `Subject.logout()`.
+Nothing is skipped, reordered, or re-decided.
+
+### 40.4 The one real semantic difference, and it must be stated
+
+Path A calls `this.setCrpSession(loggedCrp.getAcronym())` to feed the in-place render. **After a redirect that
+context is gone**, so the login page will not pre-select the project the user had chosen.
+
+The messages themselves lose nothing — they are already never rendered (**V-6**). So the visible change is
+**one lost pre-selection on one branch**, weighed against an authorization code sitting in the address bar and
+in history. If V-6 is later fixed by rendering server-side, **it must be designed to survive this redirect** —
+the same dependency already recorded for T20.
+
+### 40.5 No loop
+
+Path C leaves the session authenticated. Redirecting to `login.do` reaches `LoginAction:304-325`, which sees
+`getCurrentUser() != null` and switches on the same unmapped type → its own `default:` → `INPUT` → the login
+form. **Lands on `login.do`, renders, stops.** Paths A and B cleared the session, so `login.do` renders the
+form directly.
+
+### 40.6 A ledger defect found while counting
+
+Producing an accurate count of pending work exposed two errors in `tasks.md` itself. Both are corrected, and
+recorded rather than quietly fixed:
+
+- **T16 carried two `Status` lines** — the `[x]` closure, and beneath it the original `[ ]` that was never
+  removed. Worse, the `[x]` line still contained the sentence *"**Not `[x]`**: the `Done when` requires the
+  real corporate login … only the user can run it"*, written before the user ran it. The closure prefix had
+  been prepended without retiring the caveat it contradicted.
+- **T15 was still `[ ]`** although it shipped in `5944f056b0`, its four tests pass, the live authorize redirect
+  was observed carrying the parameter, and **eleven real corporate logins** have since routed straight to the
+  CGIAR IdP. The status line was simply never flipped.
+
+Neither changed any code or any conclusion. Both meant **the task ledger disagreed with reality**, which is the
+one thing it exists not to do — and a count taken from it would have been wrong in both directions at once.

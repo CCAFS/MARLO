@@ -761,7 +761,12 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 
 ### CHG-COGNITO-AUTH-001-T15 — `identity_provider`: route straight to the corporate IdP
 
-- **Status:** `[ ]` — **added 2026-09-03. A new requirement identified during real E2E validation, not a
+- **Status:** `[x]` — added 2026-09-03, **closed 2026-09-05.** A new requirement identified during real E2E
+  validation, not a defect: the design drew the mechanism but never specified it. **The status line was left
+  at `[ ]` by mistake when the task shipped** (commit `5944f056b0`) and is corrected here rather than
+  quietly. Evidence: four tests, no literal provider name in any `.java`, the value configuration-driven
+  only, the live authorize redirect observed carrying the parameter, and **eleven real corporate logins**
+  since, each routed straight to the CGIAR IdP.
   defect.** The implementation does exactly what the spec asked; the spec never asked for this.
 - **Why it exists:** clicking *Sign in with CGIAR* currently lands the user on **Cognito's Hosted UI
   provider-selection screen**. That is Cognito's correct default when `/oauth2/authorize` names no provider:
@@ -806,12 +811,10 @@ The flag is the rollback. Everything else is a fallback for a defect the flag ca
 
 ### CHG-COGNITO-AUTH-001-T16 — V-2: the stale request-level Shiro session after rotation
 - **Status:** `[x]` — **CLOSED 2026-09-03 by real E2E evidence** (`execution.md` §30): the corporate login completed through the live pool, landed on the AICCRA dashboard, and produced **0** `UnknownSessionException` and **0** authentication errors. Also closed `saveLastLogin` on the Cognito path. Audited **PASS-WITH-FINDINGS** (`execution.md` §29); all
-  four findings fixed. **165/165 verified by the Leader.** **Not `[x]`: the `Done when` requires the real
-  corporate login to complete without the exception, in a browser, against the live pool** — only the user can
-  run it. One audit finding (F5) was **false** and was refuted from bytecode; the Leader's own `Fails when`
+  four findings fixed. **165/165 verified by the Leader.** The `Done when` required a real corporate login to
+  complete without the exception, in a browser, against the live pool — **the user ran it, and it passed**
+  (`execution.md` §30). One audit finding (F5) was **false** and was refuted from bytecode; the Leader's own
   clause was also wrong and is corrected below.
-
-- **Status:** `[ ]` — **added 2026-09-03. A real E2E defect (V-2), reproduced against the live Cognito pool.**
 - **The failure, observed:** corporate authentication succeeded, Cognito returned to `cognitoCallback.do?code&state`,
   the action **completed** (`Cognito sign-in succeeded for Global Unit AICCRA`), and **33 ms later** the response
   died with `HTTP 500` — `UnknownSessionException: There is no session with id [78a503ec-...]` thrown from
@@ -1252,5 +1255,105 @@ implementer's.
 
 All nine branches redirect, the mutation is **measured**, the suite has no regressions, replay protection and
 a fresh login after rejection both still work, and `execution.md` records that V-6 remains open.
+
+- **Skills:** `tdd`
+
+---
+
+### CHG-COGNITO-AUTH-001-T21 — V-7: the shared tail's refusals must also leave the callback URL
+
+- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-7** (`execution.md` §38.2, analysed in §40).
+- **Depends on:** T20 · **Module:** marlo-web
+- **Files touched:** `action/home/CognitoCallbackAction.java` (the `finishLogin` call site), plus tests
+- **The problem:** T20 fixed the nine `refuse()` branches. Three more refusals return `INPUT` from
+  `LoginAction.finishLogin`, the shared tail, and still render `login.ftl` **in place** at the callback URL
+  with the authorization code and state in it.
+
+#### The change — and where it goes
+
+**In `CognitoCallbackAction` only**, adapt the tail's result at the call site:
+
+```java
+String tail = this.finishLogin(loggedUser, loggedCrp, returnUrl);
+if (INPUT.equals(tail)) {
+  this.setUrl(this.getBaseUrl() + "/login.do");
+  return LOGIN;
+}
+return tail;
+```
+
+- If the tail returns `INPUT`, redirect to the canonical `login.do` through the **existing** `LOGIN` result
+  (`struts-home.xml:76`), the same one T20 reuses.
+- **Any other result passes through byte-unchanged** — `SUCCESS`, and the `LOGIN` that path `:434` sets for a
+  centre dashboard with its own `url`. **Do not overwrite a `url` the tail already set.**
+
+#### Hard constraints
+
+- **`LoginAction.java` and `finishLogin` stay byte-identical. Do not touch them.** This is the whole design:
+  all three refusals are shared with `login.do`, so editing them would require *arguing* that local behaviour
+  is unaffected. Leaving the file untouched makes it **structural** — `login.do` maps to `LoginAction`, and
+  nothing in that mapping reaches this call site.
+- **The local authentication path must remain behaviourally unchanged**, and must be shown to be, not assumed.
+- **Every side effect inside `finishLogin` is preserved by construction** — the log line, the field error,
+  `setCrpSession`, `getSession().clear()`, `Subject.logout()`, `user.setPassword(null)` — because they all run
+  *before* the result is returned. **Do not re-run, reorder, or re-decide any of them at the call site.**
+- Preserve **T16** (session handling), **T17** (username preservation), **T19** (return-URL protection),
+  **T20** (the nine `refuse()` branches), PKCE, `state`, `nonce`, token validation, one-time
+  `PendingAuthorization` consumption and replay protection.
+- Never log or expose authorization codes, state values, tokens, client secrets, the PKCE verifier or nonces.
+
+#### Recorded, and explicitly NOT fixed here
+
+- **Route C (`LoginAction:447`, unmapped `GlobalUnitType`) has a pre-existing session/state inconsistency.** It
+  fires *after* the session is populated, `saveLastLogin` has run and "logged in successfully" has been logged,
+  and it neither clears the session nor logs out — so the user is authenticated and shown the login page. This
+  is true on the **local** path too and predates this spec. **T21 changes where the browser lands, nothing
+  else. Do not fix it.**
+- **Route A loses the selected Global Unit context.** `LoginAction:392` calls
+  `setCrpSession(loggedCrp.getAcronym())` to feed the in-place render; after a redirect that is gone, so the
+  login page will not pre-select the project. **Do not solve this inside T21.** The messages themselves lose
+  nothing — they are already never rendered (**V-6**). **V-6 must account for post-redirect messaging and
+  context**, for T20's nine branches and these three alike.
+
+#### Tests
+
+- **All three tail paths, driven through the Cognito callback**, each asserting `LOGIN` **and** that `url` ends
+  with `/login.do`:
+  - **A** — gate 4: the resolved user is not in `crp_users` for the pending Global Unit.
+  - **B** — the pending Global Unit does not resolve, so the tail receives `loggedCrp == null`.
+  - **C** — a Global Unit whose `GlobalUnitType` id is outside `{1,2,3,4,5}`.
+- **Pass-through, both shapes** — this is the half that a redirect-everything mistake would break:
+  - a successful login still returns `SUCCESS`;
+  - a **type-2** unit still returns `LOGIN` with the tail's **own** `centerDashboard.do` url, **not**
+    overwritten with `/login.do`.
+- **The local path is unchanged.** `LoginAction.java` must not appear in the diff at all — state that, and back
+  it with a test that drives `LoginAction`'s own tail to a refusal and asserts it still returns `INPUT`.
+- **No loop:** route C leaves the session authenticated, so assert the target is `login.do` and never
+  `cognitoCallback.do`.
+- **T20 is intact:** the nine `refuse()` branches still redirect. Re-run those tests unchanged.
+- **Mutation:** removing the `INPUT` adaptation must redden at least one test per path. **Measure it, one path
+  at a time.**
+
+#### Fails when
+
+- The adaptation overwrites a `url` the tail already set, sending a type-2 centre user to `login.do` instead of
+  their centre dashboard. **This is the most likely way to get this wrong.**
+- `INPUT.equals(tail)` is written `tail == INPUT` or `tail.equals(INPUT)` — the first is a reference comparison,
+  the second NPEs if the tail ever returns null.
+- A side effect is duplicated at the call site "to be safe" — a second `logout()` or `getSession().clear()`.
+- Only two of the three paths are covered. Route B is the easiest to miss because it needs an unresolvable
+  Global Unit, not a rejected user.
+
+#### Not evidence when
+
+Verified only by unit tests asserting a result name. **The symptom is a browser address bar.** The closing
+evidence is a real Cognito login refused by gate 4 — the natural hand-test, and the one that looked like a T20
+failure — landing on `login.do` with no code and no state. That is the user's to perform.
+
+#### Done when
+
+All three paths redirect, both pass-through shapes are proven, `LoginAction.java` is absent from the diff, the
+mutation is **measured**, the suite has no regressions, and route C's pre-existing inconsistency plus route A's
+lost context are both recorded as still-open, not silently fixed.
 
 - **Skills:** `tdd`
