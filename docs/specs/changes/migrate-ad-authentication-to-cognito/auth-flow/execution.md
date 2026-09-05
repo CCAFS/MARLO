@@ -3598,3 +3598,55 @@ environment.
 
 The implementer marked T19 `[x]` and narrated the audit's outcome **before the audit ran**. The status is
 correct now; the sequencing was not. Corrected in `tasks.md`, and recorded here rather than quietly fixed.
+
+### 35.5 The coverage extension — and a test I specified that proved nothing
+
+Eleven tests added, **production code untouched** (`git diff` on `CognitoLoginAction.java` is empty). Suite
+**185/185**, verified independently in a window checked for competing Maven builds — the only live JVMs were
+MARLO's own `cargo:run` and VS Code's Java language server.
+
+Each of the six mutations was **measured one at a time**, reverted and confirmed clean between runs:
+
+| Mutation | Tests reddened |
+|---|---|
+| `getPath()` → `getRawPath()` | E1 only |
+| delete `.normalize()` | the **corrected** E2 only |
+| delete the `;` strip | E3 only |
+| delete the trailing-slash loop | E4 **and** the corrected E2 (both legitimately depend on it) |
+| `URISyntaxException` → accept | E5 only |
+| `Locale.ROOT` → default locale | E6 only |
+
+E6 genuinely exercises the locale rather than merely varying case: it sets `Locale.setDefault(tr-TR)` in a
+`try`/`finally`, and the candidate carries two `I` characters that a Turkish `toLowerCase()` maps to dotless
+`ı`. Without that, the test would have looked like coverage and killed nothing.
+
+#### The specification defect the implementer caught
+
+**My E2 candidate did not discriminate.** `…/x/../cognitoCallback.do` is rejected **with or without**
+`.normalize()`, because the `../` sits *before* the final segment and `lastIndexOf('/')` is indifferent to it.
+Verified independently rather than taken on report:
+
+```
+/x/../cognitoCallback.do        without normalize -> seg=cognitocallback.do  rejected=true
+                                with    normalize -> seg=cognitocallback.do  rejected=true
+/cognitoCallback.do/foo/..      without normalize -> seg=..                  rejected=false
+                                with    normalize -> seg=cognitocallback.do  rejected=true
+```
+
+The discriminating case puts the traversal **after** the callback segment. The implementer kept the original
+E2 as a true-but-inert assertion, documented why, and added the one that actually reddens.
+
+> **Both the auditor and I got this row wrong** — §35.2's table lists `…/x/../cognitoCallback.do` as the
+> killer for the `.normalize()` mutation, and it is not. A test table written by reasoning about what a
+> mutation *should* catch is not evidence. **Only running the mutation is.** This is the seventh time on this
+> spec that an implementer has corrected an instruction it was given, and the third time the instruction was
+> mine.
+
+#### What the base-URL tests do not prove
+
+They prove `sameOriginOrNull` fails **closed** when the double returns `null`, and that the trailing-slash
+branch behaves identically with and without one — **entirely inside the double**. They prove **nothing** about
+`APConfig.getBaseUrl()` in a live deployment: not that an unconfigured `BASE_URL` really returns `null` there,
+and nothing about the http/https-behind-a-proxy risk in §35.3. That is Spring-injected configuration, and no
+unit test against a hand-rolled double can reach it. Recorded in the test javadoc too, so the next reader does
+not mistake the one for the other.

@@ -1110,7 +1110,11 @@ symptom is reasoned through end to end: a rejected return URL yields `null` → 
 
 #### T19 — declared coverage extension (approved by the user 2026-09-05)
 
-- **Status:** `[ ]` — **test hardening only. No behavioural change.** T19's production code is audited PASS and
+- **Status:** `[x]` — **closed 2026-09-05. Test hardening only. No behavioural change.** 11 tests added,
+  production code byte-identical, suite **185/185**, all six mutations measured red one at a time.
+  **The E2 row of this table was wrong** and the implementer caught it: `…/x/../cognitoCallback.do` is
+  rejected with or without `.normalize()`. The discriminating case puts the traversal *after* the callback
+  segment (`…/cognitoCallback.do/foo/..`). See `execution.md` §35.5.
   stays as it is. This locks down behaviour it **already implements** but that nothing currently proves.
 - **Why:** T19's mutation (test 8) removes the whole guard. **Six weaker mutations leave the suite entirely
   green**, and four of them reopen bypass classes T19's own `Fails when` list names (`execution.md` §35.2).

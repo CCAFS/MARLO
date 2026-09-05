@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -504,6 +505,259 @@ public class CognitoLoginActionTest {
       pending.getReturnUrl());
   }
 
+  // ---------------------------------------------------------------------------------------------------------
+  // CHG-COGNITO-AUTH-001-T19 -- declared coverage extension (approved by the user 2026-09-05, tasks.md).
+  //
+  // T19's production code is audited PASS and is not touched here. execution.md 35.2 found that test 8's
+  // mutation (delete the whole guard) is the only one of seven the original eight tests catch: six weaker
+  // mutations -- each one narrower than "delete the guard" -- left the suite entirely green, and four of them
+  // reopen bypass classes T19's own "Fails when" list already names. The tests below close that gap, one per
+  // named mutation. Every one of them is expected to pass against the CURRENT, unmodified
+  // CognitoLoginAction -- if any had failed, the rule this extension carries is to stop and report the
+  // discrepancy rather than adjust production code to fit the test.
+  // ---------------------------------------------------------------------------------------------------------
+
+  /**
+   * T19 coverage extension, E1. {@code getPath()} percent-decodes; {@code getRawPath()} does not. A candidate
+   * whose final segment is the callback path written as {@code cognitoCallback%2Edo} -- {@code %2E} being the
+   * percent-encoded {@code .} -- must still be recognized as {@code cognitoCallback.do} and rejected. Swapping
+   * {@code getPath()} for {@code getRawPath()} in {@link CognitoLoginAction#isAuthenticationEndpoint(String)}
+   * would let this candidate bypass silently -- confirmed against a scratch harness before this test was
+   * written: {@code new URI("https://marlo.example.org/cognitoCallback%2Edo").normalize().getPath()} yields
+   * {@code /cognitoCallback.do}.
+   */
+  @Test
+  public void aPercentEncodedDotInTheCallbackPathIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoCallback%2Edo");
+
+    assertNull("a percent-encoded '.' must decode before the endpoint comparison, exactly as a literal '.' "
+      + "would: getPath() must be used, never getRawPath()", result);
+  }
+
+  /**
+   * T19 coverage extension, E2, exactly as named in the task's table. Still rejected today, and this test
+   * still asserts that -- but it does <b>not</b> kill the mutation the table names it against.
+   * <p>
+   * <b>Verified with a standalone mutation harness before writing this test</b>: the final path segment
+   * this method compares is extracted with {@code lastIndexOf('/')} over the (possibly normalized) path
+   * string. For {@code .../x/../cognitoCallback.do}, that final segment is {@code cognitoCallback.do}
+   * whether or not {@link URI#normalize()} runs -- the leading {@code x/../} only ever affects segments
+   * BEFORE the last one, never the last segment's own text. Deleting {@code .normalize()} and re-running
+   * this exact candidate through the harness still rejects it; the mutation survives this test completely
+   * unnoticed.
+   * <p>
+   * The candidate that genuinely distinguishes the two is
+   * {@link #aTraversalThatCancelsBackIntoTheCallbackIsStillRejected()} below, where the {@code ../} sits
+   * <b>after</b> the callback segment and cancels a segment that follows it -- only {@code .normalize()}
+   * resolves that back down to {@code /cognitoCallback.do}. Both tests are kept: this one because the task
+   * named it explicitly and it is still a true, if non-load-bearing, assertion; the other because it is the
+   * one that actually reddens under this row's mutation.
+   */
+  @Test
+  public void aDotDotTraversalPrefixBeforeTheCallbackIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/x/../cognitoCallback.do");
+
+    assertNull("still correctly rejected today, but -- see this test's javadoc -- deleting .normalize() does "
+      + "NOT turn this assertion red; it is not the mutation-killing case despite being named as one",
+      result);
+  }
+
+  /**
+   * T19 coverage extension, E2 corrected. This is the candidate that actually reddens when
+   * {@link URI#normalize()} is deleted: the {@code ../} sits AFTER the callback segment
+   * ({@code /cognitoCallback.do/foo/..}), so a browser resolving it lands back on
+   * {@code /cognitoCallback.do/} -- exactly what {@code URI#normalize()} computes
+   * ({@code /cognitoCallback.do/foo/..} normalizes to {@code /cognitoCallback.do/}). Without normalization,
+   * the raw final segment is the bare token {@code ..}, which matches nothing in the closed set, so the
+   * candidate would be silently ACCEPTED -- a same-origin URL that resolves straight back to the callback
+   * endpoint, stored as a legitimate return URL.
+   */
+  @Test
+  public void aTraversalThatCancelsBackIntoTheCallbackIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoCallback.do/foo/..");
+
+    assertNull("a trailing '../' that resolves back onto the callback endpoint must be rejected -- this is "
+      + "what URI#normalize() actually protects, proven by deleting it and watching this assertion redden",
+      result);
+  }
+
+  /**
+   * T19 coverage extension, E3. A trailing {@code ;jsessionid=...} matrix parameter -- a real artifact of
+   * URL-rewriting session tracking, not a contrived input -- must be stripped from the final path segment
+   * before the comparison, exactly as the callback path's own javadoc documents. Deleting that strip would
+   * let {@code cognitoCallback.do;jsessionid=ABC} bypass, because the raw last segment would no longer equal
+   * any entry in {@link CognitoLoginAction#AUTHENTICATION_ENDPOINT_PATHS}.
+   */
+  @Test
+  public void aTrailingJsessionidMatrixParameterOnTheCallbackIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoCallback.do;jsessionid=ABC");
+
+    assertNull("a trailing ';jsessionid=...' matrix parameter must be stripped before the endpoint comparison",
+      result);
+  }
+
+  /**
+   * T19 coverage extension, E4. A trailing {@code /} on the callback path must not let it escape the
+   * comparison as an empty final segment. Deleting the trailing-slash trim loop would leave {@code lastSlash}
+   * pointing at the segment boundary right before the trailing slash, producing an empty {@code lastSegment}
+   * that matches nothing in the closed set.
+   */
+  @Test
+  public void aTrailingSlashOnTheCallbackPathIsStillRejected() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognitoCallback.do/");
+
+    assertNull("a trailing '/' must not defeat the endpoint comparison", result);
+  }
+
+  /**
+   * T19 coverage extension, E5. A same-origin candidate that {@link URI#URI(String)} cannot parse at all --
+   * here, a raw, un-encoded space in the path, which the same-origin string comparison above does not itself
+   * reject because it runs before any URI parsing -- must be rejected as unparseable, not merely swallowed
+   * into an accept. Confirmed against a scratch harness: this exact input throws
+   * {@code URISyntaxException: Illegal character in path}. If the catch block's {@code return true} were
+   * changed to {@code return false}, an unparseable candidate would be treated as NOT an authentication
+   * endpoint and would be accepted and stored verbatim -- the one input class this guard exists to fail
+   * closed on, per the method's own javadoc ("null is the safe answer for anything unparseable").
+   */
+  @Test
+  public void anUnparseableSameOriginCandidateIsRejectedNotAccepted() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+
+    String result = invokeSameOriginOrNull(action, "https://marlo.example.org/cognito Callback.do");
+
+    assertNull("a URI the parser rejects outright must be treated as an authentication endpoint, per "
+      + "isAuthenticationEndpoint's own javadoc contract", result);
+  }
+
+  /**
+   * T19 coverage extension, E6. {@code AUTHENTICATION_ENDPOINT_PATHS} holds lowercase-ASCII entries and the
+   * comparison lowercases the candidate with {@link Locale#ROOT} before matching. This test genuinely
+   * exercises the locale rather than merely varying the candidate's case: {@code "COGNITOLOGIN.DO"} contains
+   * two uppercase {@code I} characters (from {@code cognIto} and {@code logIn}), and under the Turkish
+   * default locale {@code String#toLowerCase()} (no {@link Locale} argument) maps {@code 'I'} to the dotless
+   * {@code 'ı'} rather than {@code 'i'} -- confirmed against a scratch harness:
+   * {@code "COGNITOLOGIN.DO".toLowerCase()} under {@code new Locale("tr", "TR")} as the JVM default yields
+   * {@code "cognıtologın.do"}, which does not equal the set's {@code "cognitologin.do"} entry.
+   * <p>
+   * The JVM's default locale is process-global state. It is changed here deliberately, and restored in a
+   * {@code finally} block so no other test in this suite -- or in the same JVM run -- observes the change.
+   * <p>
+   * <b>What this proves and does not prove.</b> With the production code unchanged (it calls
+   * {@code toLowerCase(Locale.ROOT)} explicitly), this candidate is rejected regardless of the JVM default
+   * locale, and this test asserts exactly that. If a future change replaced {@code Locale.ROOT} with the
+   * no-argument overload, this test would go red under a Turkish default locale and green under most others
+   * -- which is why the mutation table names it "Locale.ROOT -> default locale" rather than "case-insensitive
+   * comparison removed": a naive case-variant test using only the JVM's already-installed default locale
+   * would not have caught that mutation, since most environments (including this one, absent this override)
+   * default to a locale where 'I'.toLowerCase() already yields 'i'.
+   */
+  @Test
+  public void aTurkishLocaleCaseVariantIsStillRejectedBecauseTheComparisonUsesLocaleRoot() throws Exception {
+    Locale previousDefault = Locale.getDefault();
+    Locale.setDefault(new Locale("tr", "TR"));
+    try {
+      TestableCognitoLoginAction action = this.eligibleAction();
+
+      String result = invokeSameOriginOrNull(action, "https://marlo.example.org/COGNITOLOGIN.DO");
+
+      assertNull("Locale.ROOT must reject this endpoint regardless of the JVM's default locale", result);
+    } finally {
+      Locale.setDefault(previousDefault);
+    }
+  }
+
+  /**
+   * T19 coverage extension, E7 -- <b>not optional, and not symmetry for its own sake.</b> This is the single
+   * case that distinguishes this implementation from a {@code contains()} substring check: a substring match
+   * would find the literal {@code cognitoCallback.do} inside this candidate and reject it, while the correct,
+   * URI-normalizing implementation resolves the {@code ../} traversal PAST the callback segment down to
+   * {@code /projects.do} and must ACCEPT it. Without this test the suite cannot tell the two implementations
+   * apart. Confirmed against a scratch harness:
+   * {@code new URI("https://marlo.example.org/cognitoCallback.do/../projects.do").normalize().getPath()}
+   * yields {@code /projects.do}, whose last segment is not in the closed set.
+   */
+  @Test
+  public void aTraversalThatResolvesPastTheCallbackToALegitimateDeepLinkIsAccepted() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+    String candidate = "https://marlo.example.org/cognitoCallback.do/../projects.do";
+
+    String result = invokeSameOriginOrNull(action, candidate);
+
+    assertEquals("a traversal that resolves to a legitimate path must survive, exactly like any other deep "
+      + "link -- this is what tells this implementation apart from a plain contains() check", candidate, result);
+  }
+
+  /**
+   * T19 coverage extension -- the {@code getBaseUrl()} double, varied rather than left fixed.
+   * {@code TestableCognitoLoginAction.getBaseUrl()} normally returns one constant value, which hides a real
+   * production risk recorded in execution.md 35.3: {@code APConfig.getBaseUrl()} returns {@code null} on an
+   * unconfigured {@code BASE_URL}, and a caller with no configured base would silently discard every deep
+   * link. This test varies the value THROUGH the double instead of relying on the fixed one.
+   * <p>
+   * <b>What this proves and does not prove.</b> It proves that {@code sameOriginOrNull} itself fails closed
+   * -- rejects everything, including a same-origin-looking candidate -- when {@code getBaseUrl()} returns
+   * {@code null}. It does <b>not</b> prove anything about whether {@code APConfig.getBaseUrl()} actually
+   * returns {@code null} in a given deployment, nor about the http/https mismatch risk execution.md 35.3
+   * names: that is real {@code APConfig} behaviour reading a Spring-injected property, and no unit test
+   * against this hand-rolled double can exercise it. Asserting otherwise would be exactly the "certified green
+   * by a double gentler than production" pattern this spec has hit repeatedly.
+   */
+  @Test
+  public void aNullBaseUrlDiscardsEveryReturnUrlIncludingALegitimateDeepLink() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+    action.setStubBaseUrl(null);
+
+    assertNull("a null base URL must fail closed on an otherwise-legitimate deep link",
+      invokeSameOriginOrNull(action, "https://marlo.example.org/aiccra/projects.do?id=1"));
+    assertNull("a null base URL must also fail closed on an off-site URL (belt and braces, not a new gap)",
+      invokeSameOriginOrNull(action, "https://evil.example/anything.do"));
+  }
+
+  /**
+   * T19 coverage extension -- the {@code getBaseUrl()} double, varied with a trailing slash. Same caveat as
+   * {@link #aNullBaseUrlDiscardsEveryReturnUrlIncludingALegitimateDeepLink()}: this proves the trailing-slash
+   * normalization branch inside {@code sameOriginOrNull} itself, nothing about {@code APConfig}'s real value.
+   */
+  @Test
+  public void aBaseUrlWithATrailingSlashStillAcceptsADeepLinkAndRejectsOffSite() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+    action.setStubBaseUrl("https://marlo.example.org/");
+
+    assertEquals("a legitimate deep link must still be accepted when the configured base carries a trailing "
+      + "slash", "https://marlo.example.org/aiccra/projects.do?id=1",
+      invokeSameOriginOrNull(action, "https://marlo.example.org/aiccra/projects.do?id=1"));
+    assertNull("an off-site URL must still be rejected when the configured base carries a trailing slash",
+      invokeSameOriginOrNull(action, "https://evil.example/anything.do"));
+  }
+
+  /**
+   * T19 coverage extension -- the {@code getBaseUrl()} double, varied WITHOUT a trailing slash. This is the
+   * form every other test in this class already depends on via {@link TestableCognitoLoginAction}'s default;
+   * stated here explicitly, alongside its trailing-slash counterpart above, so the pairing named in the task
+   * ("with and without a trailing slash") exists as two named tests rather than one implicit default.
+   */
+  @Test
+  public void aBaseUrlWithoutATrailingSlashStillAcceptsADeepLinkAndRejectsOffSite() throws Exception {
+    TestableCognitoLoginAction action = this.eligibleAction();
+    action.setStubBaseUrl("https://marlo.example.org");
+
+    assertEquals("a legitimate deep link must still be accepted when the configured base carries no trailing "
+      + "slash", "https://marlo.example.org/aiccra/projects.do?id=1",
+      invokeSameOriginOrNull(action, "https://marlo.example.org/aiccra/projects.do?id=1"));
+    assertNull("an off-site URL must still be rejected when the configured base carries no trailing slash",
+      invokeSameOriginOrNull(action, "https://evil.example/anything.do"));
+  }
+
   /**
    * CHG-COGNITO-AUTH-001-T15, test 1. When {@code cognito.identity.provider} is configured, the authorize URL
    * must carry {@code identity_provider} so Cognito routes straight to the corporate IdP instead of its own
@@ -866,6 +1120,14 @@ public class CognitoLoginActionTest {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * CHG-COGNITO-AUTH-001-T19 coverage extension. Mutable so a test can vary the base URL THROUGH this
+     * double -- a null value, a trailing slash, no trailing slash -- instead of relying on the one fixed
+     * value every other test in this class depends on. Defaults to that same fixed value, so nothing above
+     * this field's introduction changes behaviour.
+     */
+    private String baseUrl = "https://marlo.example.org";
+
     TestableCognitoLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CustomParameterManager customParameterManager, ParameterManager parameterManager) {
       super(config, userManager, crpManager, customParameterManager, parameterManager);
@@ -878,12 +1140,17 @@ public class CognitoLoginActionTest {
      */
     @Override
     public String getBaseUrl() {
-      return "https://marlo.example.org";
+      return this.baseUrl;
     }
 
     @Override
     public String getText(String aTextName) {
       return aTextName;
+    }
+
+    /** CHG-COGNITO-AUTH-001-T19 coverage extension: overrides the default base URL for one test. */
+    void setStubBaseUrl(String baseUrl) {
+      this.baseUrl = baseUrl;
     }
   }
 
