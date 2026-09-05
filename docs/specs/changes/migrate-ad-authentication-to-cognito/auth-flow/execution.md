@@ -4192,3 +4192,110 @@ memberships 3797                         : 45
 
 The inserted rows were 2341-2343; `MAX(id)` back at **2340** is the cleanest available proof that none
 survives. GU 45, the user record, the password and the memberships were never written to.
+
+---
+
+## 43. V-6 analysis — the invisible rejection messages — 2026-09-05
+
+### 43.1 The complete key inventory, by branch
+
+| Producer | Key | Branches |
+|---|---|---|
+| `CognitoLoginAction` (pre-authorize) | `login.error.cognitoUnavailable` | environment not configured (`:242`) |
+| | `login.error.cognitoNotEligible` | **five** — no `globalUnitId`, unresolvable unit, flag off, user null or not CGIAR, terms not accepted (`:248, :253, :261, :269, :283`) |
+| `CognitoCallbackAction` (T20's nine) | `login.error.cognitoFailed` | **seven** generic branches |
+| | `login.error.cognitoUnavailable` | token exchange failed |
+| | mapper's key → `login.error.cognitoNotEligible` **or** `login.error.inactive` | identity mapping rejected |
+| `finishLogin` (T21's three) | `login.error.invalidUserCrp` | route A, gate 4 |
+| | `login.error.selectCrp` | route B |
+| | **none at all** | **route C sets no message** |
+
+**Fifteen rejection sites, six distinct keys, and one route that produces no message whatsoever.** Route C is
+not a display bug — there is nothing to display, so it must fall back to the generic text.
+
+### 43.2 The finding that changes what V-6 *is*
+
+**V-6 is not a UX fix. It is a disclosure decision, and SEC-005 and SEC-006 constrain it.**
+
+- **SEC-005** requires a rejection to *"return the same generic failure shape as any other rejection,
+  **disclosing nothing new**"*.
+- **SEC-006** requires that a refusal *"**MUST NOT** reveal that the account exists under a different
+  authentication mode"*.
+
+Today those clauses are satisfied **by accident**: the messages are computed and discarded, so nothing is
+disclosed. **Making them visible is what creates the risk**, and a naive "just render the field error" fix
+would breach both. Concretely:
+
+| Key | Safe to show distinctly? | Why |
+|---|---|---|
+| `cognitoUnavailable` | **Yes** | An infrastructure condition. Says nothing about any account, and is the one message a user can act on — retry later |
+| `cognitoFailed` | **Yes** | Already generic by construction |
+| `cognitoNotEligible` | **No** | Distinguishing it from a generic failure reveals the account exists but is not eligible — SEC-006's exact prohibition |
+| `inactive` | **No** | Reveals the account exists **and** its status. An enumeration oracle |
+| `invalidUserCrp` | **No** | Reveals the account exists and is not a member of that unit — a membership disclosure |
+| `selectCrp` | Not reachable from the UI | Route B needs a unit that fails to resolve *after* authorize |
+
+**Recommended: exactly two visible outcomes on the Cognito door** — *unavailable* (retry) and *generic
+failure*. That satisfies SEC-005 and SEC-006 by construction while still fixing the real defect, which is that
+a refused user currently sees a blank login form with **no explanation at all**.
+
+### 43.3 The existing MARLO mechanism, and whether it can be reused
+
+The login page's errors are eight pre-rendered hidden `<p class="invalidField …">` elements — `emailRequired`,
+`invalidEmail`, `emailNotFound`, `serverError`, `deniedAccess`, `voidPassword`, `incorrectPassword`,
+`selectProject` — toggled by `login.js`'s `wrongData(type)` from **XHR** responses.
+
+**It can be reused, and should be.** The elements and the CSS already exist; what is missing is a way to show
+one after a *full-page redirect* rather than an XHR.
+
+> **One trap inside it.** `wrongData(type, customMessage)` sets `$invalidField.text(customMessage)`. **That
+> second parameter must never be fed from a URL** — it is a direct text-reflection vector. The design must
+> select a **pre-existing element**, never carry text.
+
+### 43.4 Why a session flash is the wrong mechanism — again
+
+Already established in §37.3 and unchanged by T20/T21: **branch `:505` runs after `session.stop()` and after
+`Subject.login` threw**, and `ShiroRequestSessionCacheResetter` runs only on the success path. Routes A and B
+additionally call `getSession().clear()` and `Subject.logout()` *before* returning. A flash written on those
+paths is written to a session that is being destroyed — **the V-2 shape**. A mechanism correct on thirteen of
+fifteen sites, failing the other two only in the live environment, is this spec's most expensive defect class.
+
+Struts' `MessageStoreInterceptor` is the same objection plus a new one: it is **used nowhere in MARLO**, so it
+would introduce a framework rather than reuse one.
+
+### 43.5 The smallest safe design
+
+**A sanitized redirect parameter validated against a closed set, carrying no text.**
+
+T20 and T21 already redirect to `getBaseUrl() + "/login.do"`. That becomes
+`getBaseUrl() + "/login.do?authError=<code>"` where `<code>` is one of exactly **two** literals. `LoginAction`
+maps the code to a **pre-existing i18n key** and exposes a flag the view reads; `loginForm.ftl` renders the
+matching `<p>` without `hidden`. **The parameter value is never echoed** — it selects, it does not carry.
+
+Why this and not the alternatives:
+
+- **No session state**, so T16, V-2 and the `session.stop()` paths are irrelevant by construction.
+- **Stale messages are impossible.** The parameter exists only on that one redirect; any later `login.do`
+  without it shows nothing. No storage means nothing to expire or clear.
+- **No reflection.** A closed set of two literals; anything else is ignored and shows nothing.
+- **Local authentication is untouched.** `login.do` without the parameter behaves exactly as today, and the
+  client-side `wrongData` path is not modified.
+- **It survives the redirect**, which is the whole requirement, without undoing T20 or T21.
+
+An attacker can of course craft `login.do?authError=unavailable` by hand. That discloses nothing: both
+messages are account-independent, which is precisely why only those two were chosen.
+
+### 43.6 The `input` → `login.ftl` mapping is still required — and now we know why
+
+The T21 audit flagged that `struts-home.xml` still maps `input` for `cognitoCallback` and warned against
+deleting it as dead config. **Checked: it is not dead.** `cognitoUnloggedStack` is `i18nFile` +
+**`defaultStack`**, and `defaultStack` contains Struts' `validation` and `workflow` interceptors. `workflow`
+returns `input` **before the action executes** when field errors already exist — for example from a parameter
+conversion failure.
+
+That is reachable: `CognitoLoginAction.globalUnitId` is a `Long`, so `cognitoLogin.do?globalUnitId=abc`
+produces a conversion error and renders `login.ftl` **in place** without the action ever running. It carries no
+authorization material, so it is far milder than V-5 was — but it is a real path, it is *not* covered by T20 or
+T21, and **the `input` mapping is what keeps it rendering a correct page instead of a Struts error.**
+
+**Do not delete that mapping.** Recorded here so the next reader does not rediscover it the hard way.

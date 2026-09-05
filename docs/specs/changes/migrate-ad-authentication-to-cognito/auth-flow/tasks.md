@@ -1362,3 +1362,98 @@ mutation is **measured**, the suite has no regressions, and route C's pre-existi
 lost context are both recorded as still-open, not silently fixed.
 
 - **Skills:** `tdd`
+
+---
+
+### CHG-COGNITO-AUTH-001-T22 — V-6: a refused user must be told something, and only what is safe
+
+- **Status:** `[ ]` — **added 2026-09-05.** Fixes **V-6** (`execution.md` §37.2, analysed in §43).
+- **Depends on:** T20, T21 · **Module:** marlo-web
+- **The problem:** fifteen rejection sites compute a message through `addFieldError("loginMessage", …)` and the
+  login view renders **no server-side field error at all**. A refused user sees a blank login form with no
+  explanation. One of the fifteen — route C — computes no message at all.
+
+#### This is a disclosure decision, not a UX task — read this before designing anything
+
+**SEC-005** requires a rejection to *"return the same generic failure shape as any other rejection, disclosing
+nothing new"*. **SEC-006** requires that it *"**MUST NOT** reveal that the account exists under a different
+authentication mode"*. Today both hold **by accident**, because nothing is displayed. **Making messages visible
+is what creates the risk.**
+
+**Exactly two outcomes may be visible on the Cognito door:**
+
+| Shown | When |
+|---|---|
+| **unavailable** — the corporate sign-in service is not available, try again | `login.error.cognitoUnavailable`: environment not configured, token exchange failed |
+| **generic failure** | everything else, **including route C, which produces no message of its own** |
+
+**`cognitoNotEligible`, `inactive` and `invalidUserCrp` MUST NOT be distinguishable from the generic failure.**
+Each reveals that the account exists and something about its state — eligibility, active status, or Global Unit
+membership. They stay computed (V-6 does not delete them) and stay invisible.
+
+#### The design
+
+Extend T20's and T21's existing redirect target from `getBaseUrl() + "/login.do"` to
+`getBaseUrl() + "/login.do?authError=<code>"`, where `<code>` is one of **exactly two literals**.
+
+- `LoginAction` (or the login view's model) maps the code to a **pre-existing i18n key** and exposes a flag.
+- `loginForm.ftl` renders the matching **pre-existing** `<p class="invalidField …">` without `hidden`.
+- **The parameter selects; it never carries text.** Any value outside the closed set shows nothing.
+- Prefer the existing `serverError` slot and existing keys. Add a key only if none fits, and flag it as a
+  **T13 crossing** the way T09, T12, T15 and T18 did.
+
+#### Hard constraints
+
+- **No session or flash state.** `execution.md` §43.4: branch `:505` runs after `session.stop()` and a thrown
+  `Subject.login`; routes A and B call `getSession().clear()` and `Subject.logout()` before returning. A flash
+  on those paths writes to a session being destroyed — **the V-2 shape**. Struts' `MessageStoreInterceptor` is
+  the same objection plus it exists nowhere in MARLO.
+- **Never pass text through the URL.** `wrongData(type, customMessage)` sets `.text(customMessage)` — a direct
+  reflection vector. **Do not reach it from a parameter.**
+- **Do not undo the clean redirects.** T20 and T21 keep redirecting; this only adds a query parameter.
+- **Do not touch the local path.** `login.do` without the parameter must behave **exactly** as today, and
+  `login.js`'s XHR-driven `wrongData` path is not modified.
+- **Do not delete the `input` → `login.ftl` mapping.** `execution.md` §43.6: it is **not** dead config.
+  `cognitoUnloggedStack` includes `defaultStack`, whose `workflow` interceptor returns `input` before the
+  action runs when a parameter conversion fails — `cognitoLogin.do?globalUnitId=abc` reaches it.
+- Never expose authorization codes, state, tokens, nonce, PKCE material, exception details, membership ids, or
+  any internal identifier.
+- Preserve **T16**, **T17**, **T19**, **T20**, **T21**.
+
+#### Tests
+
+- **Every rejection category maps to the right visible outcome**: the two `unavailable` sites → *unavailable*;
+  all thirteen others → *generic*, **including route C**, which has no message of its own.
+- **`cognitoNotEligible`, `inactive` and `invalidUserCrp` are indistinguishable from the generic outcome** —
+  assert the rendered result is byte-identical, not merely "an error is shown". **This is the SEC-006 test and
+  it is the point of the task.**
+- **Shown once after the redirect**, and **absent on a later unrelated `login.do`** — no storage, so this
+  should be true by construction; prove it anyway.
+- **A value outside the closed set shows nothing** — try an unknown code, an empty one, and one carrying markup
+  or a script fragment; assert nothing is reflected into the page.
+- **Local authentication unchanged**: `login.do` with no parameter renders exactly as today; the client-side
+  `wrongData` path still works.
+- **No redirect loop**; **no callback URL parameters retained** — re-run T20's and T21's assertions unchanged.
+- **No session or Shiro regression**: re-run T16's session tests and the `:505` branch test unchanged.
+- **Mutation:** collapsing the two outcomes into one, or widening the closed set to admit a third value, must
+  redden at least one test each. **Measure it.**
+
+#### Fails when
+
+- The parameter value is echoed anywhere in the page, in an attribute, or into `wrongData`'s second argument.
+- A distinct message leaks for `inactive`, `cognitoNotEligible` or `invalidUserCrp` — **a SEC-006 breach, and
+  the most damaging way to get this wrong.**
+- Route C is forgotten because it has no key of its own.
+- The message survives into a later login because it was stored somewhere.
+
+#### Not evidence when
+
+Verified only by unit tests. **The symptom is what a refused user sees.** The closing evidence is a real
+refused Cognito login showing a comprehensible message, and a second, unrelated login afterwards showing none.
+
+#### Done when
+
+The two outcomes render, the three unsafe keys are proven indistinguishable from generic, nothing is
+reflected, the local path is unchanged, T16/T19/T20/T21 tests still pass, and the mutation is **measured**.
+
+- **Skills:** `tdd`
