@@ -31,6 +31,7 @@ import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.CognitoAuthenticationToken;
 import org.cgiar.ccafs.marlo.security.CognitoIdentityMapper;
 import org.cgiar.ccafs.marlo.security.CognitoTokenValidator;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
@@ -68,6 +69,9 @@ import com.nimbusds.jwt.SignedJWT;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.util.ThreadContext;
@@ -78,6 +82,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -538,7 +543,12 @@ public class CognitoCallbackActionTest {
     TestableCognitoCallbackAction replay = this.newAction();
     String second = replay.callback("auth-code-5", "state-5", null);
 
-    assertEquals(Action.INPUT, second);
+    // CHG-COGNITO-AUTH-001-T20 (V-5), branch :420 ("no pending authorization"). This is also the exact V-4
+    // shape (tasks.md T20): a replayed callback must stay refused AND now redirect, never render
+    // cognitoCallback.do in place with the stale code/state still on the URL.
+    assertEquals(Action.LOGIN, second);
+    assertTrue("a replayed callback must still redirect to the canonical login URL",
+      replay.getUrl().endsWith("/login.do"));
   }
 
   /**
@@ -644,7 +654,11 @@ public class CognitoCallbackActionTest {
 
     String result = action.callback("auth-code-9", "state-9", null);
 
-    assertEquals(Action.INPUT, result);
+    // CHG-COGNITO-AUTH-001-T20 (V-5), branch :448 ("token exchange failed"). The field error is still
+    // computed and kept (inert today -- see refuse()'s own comment, V-6, execution.md 37.2), but the
+    // result is now a redirect to the canonical login URL, never a rendered view at cognitoCallback.do.
+    assertEquals(Action.LOGIN, result);
+    assertTrue("the redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
     assertTrue(action.getFieldErrors().get("loginMessage").contains("login.error.cognitoUnavailable"));
   }
 
@@ -664,7 +678,11 @@ public class CognitoCallbackActionTest {
     PendingAuthorization gate1Pending = this.seedPending(gate1Action, "state-g1", GLOBAL_UNIT_ID, null, "nonce-g1");
     this.exchangeClient.idTokenToReturn = this.validIdToken(gate1Pending.getNonce(), "unknown@cgiar.org");
     String gate1Result = gate1Action.callback("auth-code-g1", "state-g1", null);
-    assertEquals(Action.INPUT, gate1Result);
+    // CHG-COGNITO-AUTH-001-T20 (V-5), branch :464 ("identity mapping rejected"). SEC-006's message-identity
+    // guarantee is unaffected by the redirect -- the field error is still computed identically; only the
+    // result/routing changed.
+    assertEquals(Action.LOGIN, gate1Result);
+    assertTrue("gate 1's redirect target must be the canonical login URL", gate1Action.getUrl().endsWith("/login.do"));
     String gate1Message = gate1Action.getFieldErrors().get("loginMessage").get(0);
 
     // Gate 2: a row exists but is_cgiar_user = 0.
@@ -678,12 +696,164 @@ public class CognitoCallbackActionTest {
     PendingAuthorization gate2Pending = this.seedPending(gate2Action, "state-g2", GLOBAL_UNIT_ID, null, "nonce-g2");
     this.exchangeClient.idTokenToReturn = this.validIdToken(gate2Pending.getNonce(), CGIAR_EMAIL);
     String gate2Result = gate2Action.callback("auth-code-g2", "state-g2", null);
-    assertEquals(Action.INPUT, gate2Result);
+    assertEquals(Action.LOGIN, gate2Result);
+    assertTrue("gate 2's redirect target must be the canonical login URL", gate2Action.getUrl().endsWith("/login.do"));
     String gate2Message = gate2Action.getFieldErrors().get("loginMessage").get(0);
 
     assertEquals("gate 1 and gate 2 refusals must be indistinguishable as rendered by this action", gate1Message,
       gate2Message);
     assertEquals("login.error.cognitoNotEligible", gate1Message);
+  }
+
+  // ---------------------------------------------------------------------------------------------------
+  // CHG-COGNITO-AUTH-001-T20 (V-5): a refused callback must leave the callback URL. execution.md 37.1's
+  // nine branches. Four are already covered above, updated from the old Action.INPUT contract:
+  //   :420 (no pending authorization)  -- replayingAConsumedStateIsRefusedOnTheMissingEntry
+  //   :426 (state mismatch)            -- CognitoLogHygieneTest#callbackRejectionPathIsAlsoSweptForSecrets
+  //   :448 (token exchange failed)     -- anUnreachableCognitoFailsClosedWithTheServiceUnavailableMessage
+  //   :464 (identity mapping rejected) -- gateOneAndGateTwoRejectionsRenderTheIdenticalMessage
+  // The five below close the remaining branches, each asserting the result is LOGIN and that the url ends
+  // with "/login.do" -- not merely that it is no longer INPUT.
+  // ---------------------------------------------------------------------------------------------------
+
+  /** Branch :433 -- the identity provider itself returned an error (user cancelled, or IdP denied). */
+  @Test
+  public void theIdentityProviderReturnedAnErrorRefusesAndRedirects() throws Exception {
+    this.userManager.register(cgiarUser(9011L));
+    TestableCognitoCallbackAction action = this.newAction();
+    this.seedPending(action, "state-433", GLOBAL_UNIT_ID, null, "nonce-433");
+
+    // idpError is non-empty; returnedCode is null exactly as Cognito would send it on a denial -- the
+    // idpError check (:429) must fire first, on branch :433, never falling through to :438.
+    String result = action.callback(null, "state-433", "access_denied");
+
+    assertEquals("branch :433 (IdP returned an error) must redirect, not render", Action.LOGIN, result);
+    assertTrue("branch :433's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+    assertFalse("branch :433 must never target cognitoCallback.do again (no loop)",
+      action.getUrl().contains("cognitoCallback"));
+  }
+
+  /** Branch :438 -- no authorization code was returned, and no IdP error either. */
+  @Test
+  public void noAuthorizationCodeReturnedRefusesAndRedirects() throws Exception {
+    this.userManager.register(cgiarUser(9012L));
+    TestableCognitoCallbackAction action = this.newAction();
+    this.seedPending(action, "state-438", GLOBAL_UNIT_ID, null, "nonce-438");
+
+    String result = action.callback(null, "state-438", null);
+
+    assertEquals("branch :438 (no authorization code) must redirect, not render", Action.LOGIN, result);
+    assertTrue("branch :438's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+  }
+
+  /** Branch :455 -- the exchanged ID token fails validation (here: a nonce that does not match the pending one). */
+  @Test
+  public void tokenValidationFailedRefusesAndRedirects() throws Exception {
+    this.userManager.register(cgiarUser(9013L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-455", GLOBAL_UNIT_ID, null, "nonce-455");
+    this.crpUserManager.isMember = true;
+    // The embedded nonce deliberately does not match pending.getNonce() -- the real validator (SEC-001)
+    // must reject this on the nonce check, landing on branch :455, not on a signature/claims defect.
+    this.exchangeClient.idTokenToReturn = this.validIdToken("not-the-pending-nonce", CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-455", "state-455", null);
+
+    assertEquals("branch :455 (token validation failed) must redirect, not render", Action.LOGIN, result);
+    assertTrue("branch :455's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+  }
+
+  /**
+   * Branch :482 -- gate 1 (identity mapping) resolves a {@code userId}, but the row is gone by the time this
+   * class re-reads it with {@code getUserManager().getUser(userId)}. A different method region from the other
+   * eight (tasks.md T20's own "Fails when" flag) -- it sits after step 5's Global Unit/return-URL capture,
+   * still before session rotation.
+   */
+  @Test
+  public void resolvedUserVanishedBetweenTheIdentityGateAndThisReadRefusesAndRedirects() throws Exception {
+    UserVanishesAfterMappingUserManager vanishingUserManager = new UserVanishesAfterMappingUserManager();
+    vanishingUserManager.register(cgiarUser(9014L));
+    CognitoIdentityMapperImpl mapperOverVanishingManager = new CognitoIdentityMapperImpl(vanishingUserManager);
+    TestableCognitoCallbackAction action = new TestableCognitoCallbackAction(new APConfig(), vanishingUserManager,
+      this.crpManager, this.crpUserManager, new NoCustomParametersManager(), new NoOpParameterManager(),
+      this.realValidator, mapperOverVanishingManager, this.exchangeClient);
+    action.setSession(new HashMap<String, Object>());
+    PendingAuthorization pending = this.seedPending(action, "state-482", GLOBAL_UNIT_ID, null, "nonce-482");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-482", "state-482", null);
+
+    assertEquals("branch :482 (resolved user vanished) must redirect, not render", Action.LOGIN, result);
+    assertTrue("branch :482's redirect target must be the canonical login URL", action.getUrl().endsWith("/login.do"));
+  }
+
+  /**
+   * Branch :505 -- the ONLY branch that runs after {@code session.stop()} (:495) and a failed
+   * {@code Subject.login} (:501), which is exactly why execution.md 37.3 rejects a session-backed flash for
+   * this task: {@code ShiroRequestSessionCacheResetter} only runs on the success path, so on this branch the
+   * pre-auth session is already gone and nothing re-establishes a fresh one. This test proves the redirect
+   * itself needs no session at all -- it is built from {@code getBaseUrl()}, not from anything the stopped
+   * session held.
+   */
+  @Test
+  public void realmRejectingTheResolvedIdentityAfterSessionStopStillRedirects() throws Exception {
+    // Swapped in BEFORE anything calls SecurityUtils.getSubject() -- Shiro lazily binds a Subject to
+    // ThreadContext on first access, tied to whichever SecurityManager is active at that moment, and a
+    // later setSecurityManager(...) does not rebind an already-created Subject. Doing this after
+    // seedPending(...) (as an earlier version of this test did) silently keeps using setUp()'s no-op
+    // realm, and the realm swap this test depends on never takes effect -- the exact failure mode
+    // measured while writing this test (see the implementer's report).
+    SecurityUtils.setSecurityManager(new DefaultSecurityManager(new RealmRejectingCognitoLogin()));
+
+    this.userManager.register(cgiarUser(9015L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-505", GLOBAL_UNIT_ID, null, "nonce-505");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-505", "state-505", null);
+
+    assertEquals("branch :505 (realm rejected the identity, after session.stop()) must redirect, not render",
+      Action.LOGIN, result);
+    assertTrue("branch :505's redirect target must be the canonical login URL, even with no session to read from",
+      action.getUrl().endsWith("/login.do"));
+  }
+
+  /**
+   * Not one of the nine branches, but explicitly required by tasks.md T20: a fresh {@code cognitoLogin.do}
+   * attempt on the SAME Shiro session must still work normally after a rejected callback -- proving
+   * {@code refuse()}'s new redirect writes no session state that could block re-entry (execution.md 37.3's
+   * concern, applied in the other direction).
+   */
+  @Test
+  public void aFreshCognitoLoginStartsNormallyAfterARejectedCallback() throws Exception {
+    this.userManager.register(cgiarUser(9016L));
+    TestableCognitoCallbackAction rejectedAction = this.newAction();
+    this.seedPending(rejectedAction, "state-fresh", GLOBAL_UNIT_ID, null, "nonce-fresh");
+
+    String rejectedResult = rejectedAction.callback(null, "state-fresh", "access_denied");
+    assertEquals(Action.LOGIN, rejectedResult);
+    assertTrue(rejectedAction.getUrl().endsWith("/login.do"));
+
+    // Same thread-bound Subject/session as the rejection above -- cognitoLogin.do's own authorize() must
+    // still mint a NEW PendingAuthorization and a NEW authorize URL, not be blocked by anything the refusal
+    // above touched.
+    TestableCognitoLoginAction loginAction = new TestableCognitoLoginAction(new ConfiguredCognitoApConfig(),
+      this.userManager, this.crpManager, new ActiveOverrideCustomParameterManager(), new NoOpParameterManager());
+    loginAction.setEmail(CGIAR_EMAIL);
+    loginAction.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    loginAction.setAgree(Boolean.TRUE);
+
+    String loginResult = loginAction.authorize(null);
+
+    assertEquals("authorize(...) must still succeed after a rejected callback", Action.SUCCESS, loginResult);
+    assertNotNull("a fresh authorize URL must be issued", loginAction.getAuthorizeUrl());
+    Object pendingAfter =
+      SecurityUtils.getSubject().getSession().getAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION);
+    assertTrue("a fresh PendingAuthorization must be issued", pendingAfter instanceof PendingAuthorization);
+    assertNotEquals("the fresh authorization must mint a NEW state, not the consumed one", "state-fresh",
+      ((PendingAuthorization) pendingAfter).getState());
   }
 
   /** Throws on every call. Used to prove the Cognito dispatch path performs no LDAP/DB I/O in the realm. */
@@ -1117,6 +1287,183 @@ public class CognitoCallbackActionTest {
     @Override
     protected String callback(String returnedCode, String returnedState, String idpError) {
       return super.callback(returnedCode, returnedState, idpError);
+    }
+  }
+
+  /**
+   * T20 test support: an unconditionally-active {@code cognito_auth_active} override, so
+   * {@link CognitoLoginAction#authorize(String)} resolves eligible without needing a catalog {@link Parameter}
+   * row too. Every other method is unused by that test and throws.
+   */
+  private static final class ActiveOverrideCustomParameterManager implements CustomParameterManager {
+
+    @Override
+    public void deleteCustomParameter(long customParameterId) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public boolean existCustomParameter(long customParameterID) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<CustomParameter> findAll() {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<CustomParameter> getAllCustomParametersByGlobalUnitId(long globalUnitId) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public CustomParameter getCustomParameterById(long customParameterID) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public CustomParameter getCustomParameterByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId) {
+      CustomParameter override = new CustomParameter();
+      override.setValue("true");
+      override.setActive(true);
+      return override;
+    }
+
+    @Override
+    public CustomParameter saveCustomParameter(CustomParameter customParameter) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+  }
+
+  /**
+   * T20 test support ({@link #aFreshCognitoLoginStartsNormallyAfterARejectedCallback}): a fully-configured
+   * Cognito environment for {@code CognitoLoginAction#authorize(String)}, matching {@code
+   * CognitoLoginActionTest}'s own {@code ConfiguredApConfig} double.
+   */
+  private static class ConfiguredCognitoApConfig extends APConfig {
+
+    @Override
+    public String getCognitoCallbackUrl() {
+      return "https://marlo.example.org/cognitoCallback.do";
+    }
+
+    @Override
+    public String getCognitoClientId() {
+      return "test-client-id";
+    }
+
+    @Override
+    public String getCognitoDomain() {
+      return "test-pool.auth.us-east-1.amazoncognito.com";
+    }
+  }
+
+  /**
+   * T20 test support ({@link #realmRejectingTheResolvedIdentityAfterSessionStopStillRedirects}): accepts a
+   * {@link CognitoAuthenticationToken} at {@code supports(...)} -- matching the real {@code APCustomRealm}'s
+   * T06 dispatch -- but rejects it inside {@code doGetAuthenticationInfo}, the only way to reach branch :505
+   * ({@code Subject.login} throwing {@link AuthenticationException}) without a live Cognito pool, since the
+   * production realm never rejects a well-formed {@link CognitoAuthenticationToken} by design (DD-5).
+   */
+  private static final class RealmRejectingCognitoLogin extends APCustomRealm {
+
+    RealmRejectingCognitoLogin() {
+      super(new ExplodingAuthenticator(), new ExplodingAuthenticator(), new ExplodingUserManager(), new APConfig());
+    }
+
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+      if (token instanceof CognitoAuthenticationToken) {
+        throw new AuthenticationException("simulated realm rejection for branch :505 (test-only)");
+      }
+      return super.doGetAuthenticationInfo(token);
+    }
+  }
+
+  /** Overrides only {@code getText}, matching {@code CognitoLoginActionTest}'s and {@code CognitoLogHygieneTest}'s. */
+  private static final class TestableCognitoLoginAction extends CognitoLoginAction {
+
+    private static final long serialVersionUID = 1L;
+
+    TestableCognitoLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
+      CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+      super(config, userManager, crpManager, customParameterManager, parameterManager);
+    }
+
+    @Override
+    public String getText(String aTextName) {
+      return aTextName;
+    }
+
+    @Override
+    protected String authorize(String returnUrl) {
+      return super.authorize(returnUrl);
+    }
+  }
+
+  /**
+   * T20 test support ({@link #resolvedUserVanishedBetweenTheIdentityGateAndThisReadRefusesAndRedirects}):
+   * {@code getUserByEmail} resolves a row (so gate 1 in {@link CognitoIdentityMapperImpl} accepts), but
+   * {@code getUser(Long)} always returns {@code null} -- simulating the row being deleted in the window
+   * between the identity gate and {@code CognitoCallbackAction}'s own re-read (branch :482).
+   */
+  private static final class UserVanishesAfterMappingUserManager implements UserManager {
+
+    private final Map<String, User> byEmail = new HashMap<String, User>();
+
+    void register(User user) {
+      this.byEmail.put(user.getEmail(), user);
+    }
+
+    @Override
+    public User getActiveSuperAdminUserByUsernameOccurrence() {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<String> getCenterPermission(int userId, String crp) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<String> getPermission(int userId, String crp) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public User getUser(Long userId) {
+      return null;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+      return this.byEmail.get(email);
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public User login(String email, String password) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public boolean saveLastLogin(User user) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public User saveUser(User user) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<User> searchUser(String searchValue) {
+      throw new UnsupportedOperationException("not needed by this suite");
     }
   }
 }

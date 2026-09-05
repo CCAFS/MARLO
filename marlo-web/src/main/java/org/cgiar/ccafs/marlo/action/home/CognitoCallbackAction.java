@@ -597,8 +597,18 @@ public class CognitoCallbackAction extends LoginAction {
   }
 
   private String refuse(String i18nKey) {
+    // CHG-COGNITO-AUTH-001-T20 (V-5): kept for V-6 (execution.md 37.2), a separate, still-open finding --
+    // the login view never renders a field error today, so this call is inert. It stays inert here on
+    // purpose: deleting it would erase the branch-to-message mapping V-6's future fix needs, and building
+    // a display mechanism for it is explicitly out of this task's scope.
     this.addFieldError("loginMessage", this.getText(i18nKey));
-    return INPUT;
+    // V-5: redirect to the canonical login URL instead of rendering login.ftl in place at
+    // cognitoCallback.do?code=...&state=... -- that parked URL, with the authorization code and state
+    // still in it, is what poisoned the Referer and produced V-4. Reuses the existing "login" result
+    // already mapped at struts-home.xml (redirect ${url}) -- the same this.url = getBaseUrl() + "/..."
+    // concatenation LoginAction already uses (LoginAction:312, :434). No new result, no new mechanism.
+    this.setUrl(this.getBaseUrl() + "/login.do");
+    return LOGIN;
   }
 
   public void setCode(String code) {

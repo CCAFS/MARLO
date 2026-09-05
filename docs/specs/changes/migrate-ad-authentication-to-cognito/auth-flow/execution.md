@@ -3786,3 +3786,81 @@ taste.
 - **Replay protection unchanged.** The `PendingAuthorization` is consumed before any refusal is decided;
   redirecting afterwards changes no consumption semantics. The redirect must of course **not** carry `code` or
   `state` — that is the point of the task.
+
+---
+
+## 38. T20 audited PASS — and V-7, the tenth refusal my analysis could not see — 2026-09-05
+
+### 38.1 Verdict
+
+**PASS, round 1.** Nine production lines inside `refuse(String)`. The audit traced all four calls that path
+makes — `addFieldError` (a map on the action instance), `getText` (whose only environmental dependency is
+`BaseAction`'s hardcoded `Locale.ENGLISH`), `getBaseUrl()` (a properties value) and `setUrl` (a field write) —
+and found **no session access on any branch, `:505` included**.
+
+> The auditor's sharpest observation: **`:505` is now *less* session-coupled than before the change.** The old
+> `INPUT` return rendered `login.ftl` with `model=action`, which reads `crpSession` off the action's session
+> view. The redirect reads nothing. This is the V-2 shape's *absence*, not its dilution.
+
+The `:505` test genuinely reaches `:505`, and for a reason the implementer did not have to add: `tearDown()`
+calls `ThreadContext.remove()`, so no Subject bound by an earlier test survives to make `setSecurityManager`
+a no-op again. Both halves are needed; either alone re-arms the failure.
+
+All four modified tests keep every prior assertion verbatim — the `cognitoUnavailable` field error, the SEC-006
+identical-message check, and all six secret sweeps. The hygiene test **gained** the two strongest assertions in
+the diff: the redirect target contains neither the authorization code nor the state.
+
+One correction to my own framing, from the audit: `struts-home.xml:76` was **not** newly reached by the success
+path — it was already declared for `cognitoCallback` and already used by `finishLogin`'s deep-link return. T20
+adds the refusal path as a *second* consumer of an existing result.
+
+### 38.2 V-7 — three refusals §37.1 structurally could not see
+
+**§37.1 enumerated the nine callers of `refuse()`. It could not see refusals that return from the shared
+tail.** Three `INPUT` returns in `LoginAction.finishLogin` are reachable from `cognitoCallback.do` — because
+`CognitoCallbackAction extends LoginAction` and ends by calling it — and still render `login.ftl` **in place**:
+
+| Line | Branch |
+|---|---|
+| `LoginAction:393` | gate 4 — the user is not in `crp_users` for the selected Global Unit |
+| `LoginAction:402` | `loggedCrp == null` |
+| `LoginAction:447` | the `default:` arm of the `GlobalUnitType` switch |
+
+**The implementer was right not to touch them.** T20 says in terms: *do not touch the local authentication
+flow — `LoginAction` included*. The boundary was drawn at specify time, where it was reviewable. Fixing this
+inside T20 would have been the scope violation, not the diligence.
+
+**This is my enumeration error, and it is the same shape as the one I made in T11b** — where I said "no third
+route" having searched only `action/`, and there was a third in `ClarisaPublicAccesFilter`. Both times I
+enumerated *one mechanism* and reported it as *all routes*.
+
+#### Why it matters operationally, today
+
+**The most natural way to hand-test a refused Cognito login is gate 4** — sign in with a valid CGIAR account
+that is not a member of the selected Global Unit. That is `LoginAction:393`, still `INPUT`. A tester doing the
+obvious thing would land back on the callback URL and conclude T20 did not work.
+
+**The live check must name a `refuse()` branch.** The two easiest to trigger reliably: cancel at the identity
+provider (`:433`), or re-open a consumed callback URL (`:420`).
+
+### 38.3 Three advisories carried, none gating
+
+- **The `:505` test localizes its branch by fixture construction, not by assertion.** `LOGIN` + `/login.do`
+  hold for all nine branches, so fixture drift would leave it green while testing nothing. The measured
+  mutation discharges this — reverting `:505` alone reddened exactly that test — but a one-line structural
+  witness (`saveLastLogin` was called) would close it permanently.
+- **No test can distinguish a real target from a degenerate one.** `endsWith("/login.do")` is satisfied by
+  both, and no test overrides `getBaseUrl()`. One test asserting the full expected URL would also pin the
+  trailing-slash contract.
+- **The `null` base-URL decision was judged correct on its merits**, with a real reservation: on a failure
+  path, an unconfigured `BASE_URL` turns "wrong URL, correct page" into a 404. Conditional on a configuration
+  state under which MARLO is already broken for every other reason, so the right disposition is the
+  implementer's choice plus this note — not a one-off guard whose policy would have to be invented inside a
+  redirect task.
+
+### 38.4 Not a finding
+
+The audit reported a five-file working tree including `global.properties` and `loginForm.ftl`. **Checked: the
+tree is three files.** Those two were T18's, committed at `f4592e070d`; the audit was reading the git status
+snapshot from its own session start. It declared the uncertainty and asked the Leader to confirm, which is
+exactly why it cost thirty seconds to dismiss rather than a rework round.

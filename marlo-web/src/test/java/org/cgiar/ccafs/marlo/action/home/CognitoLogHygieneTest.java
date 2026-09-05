@@ -393,7 +393,12 @@ public class CognitoLogHygieneTest {
 
     String result = callbackAction.callback(AUTH_CODE_SECRET, "a-completely-wrong-state-value", null);
 
-    assertEquals(Action.INPUT, result);
+    // CHG-COGNITO-AUTH-001-T20 (V-5): a refused callback now redirects to the canonical login URL instead
+    // of rendering login.ftl in place -- updated from the old Action.INPUT assertion, which was exactly the
+    // contract that left the authorization code and state parked in the address bar (execution.md 37.1).
+    assertEquals(Action.LOGIN, result);
+    assertTrue("the redirect target must be the canonical login URL, not a rendered view",
+      callbackAction.getUrl().endsWith("/login.do"));
     assertLoggerFired(appender, CognitoCallbackAction.class);
     assertMessageContaining(appender, "state mismatch");
 
@@ -401,6 +406,11 @@ public class CognitoLogHygieneTest {
     assertNoMessageContains(appender, pending.getState(), "state, on a rejection path");
     assertNoMessageContains(appender, pending.getNonce(), "nonce, on a rejection path");
     assertNoMessageContains(appender, pending.getVerifier(), "PKCE verifier, on a rejection path");
+    // V-5's own point: the redirect target itself must never carry the code or state either.
+    assertFalse("the redirect target must not carry the authorization code",
+      callbackAction.getUrl().contains(AUTH_CODE_SECRET));
+    assertFalse("the redirect target must not carry the state value",
+      callbackAction.getUrl().contains(pending.getState()));
   }
 
   /**
