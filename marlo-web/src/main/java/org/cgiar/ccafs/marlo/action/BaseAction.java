@@ -7840,6 +7840,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
 
+      /**
+       * findByProjectId only returns the origin Global Unit of the project, and only while it is active, so it
+       * answers null for every project that has none. The callers cannot absorb a failure here: the project list
+       * asks this for each of its rows and the FreeMarker default operator does not catch a Java exception, so a
+       * single project without an origin Global Unit used to break the whole page.
+       */
+      if (globalUnitProject == null || globalUnitProject.getGlobalUnit() == null
+        || globalUnitProject.getGlobalUnit().getGlobalUnitType() == null) {
+        LOG.debug("The project {} has no active origin Global Unit, so it is not reported as a Center project",
+          projectID);
+        return false;
+      }
+
       if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
         return true;
       }
