@@ -502,9 +502,19 @@ span.icon-20 {
 .opi-sidebar { width: 262px; flex: none; }
 .opi-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
 
+/* Stacked layout. Turning the row into a column also turns the cross axis
+   horizontal, so the row-mode `align-items: flex-start` stops stretching the
+   children and shrink-to-fits them instead. .opi-sidebar is spared by its
+   explicit width, but .opi-main has none: it then resolves to its own
+   min-content, which the period-targets matrix drives to ~1550px (the matrix
+   scroller only starts scrolling once something above it is narrower than the
+   grid), and the whole page picks up a horizontal scrollbar. Stretch the
+   children back and pin .opi-main to the column width; `flex: none` drops the
+   `flex: 1` that now means "grow vertically". */
 @media (max-width: 991px) {
-  .opi-layout { flex-direction: column; }
+  .opi-layout { flex-direction: column; align-items: stretch; }
   .opi-sidebar { width: 100%; }
+  .opi-main { width: 100%; flex: none; }
 }
 
 /* ---------- Sidebar: the design's Components card ----------
@@ -852,7 +862,11 @@ span.icon-20 {
 
 .opi-fieldRow { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
 .opi-fieldRow__acronym { width: 150px; flex: none; }
-.opi-fieldRow__statement { flex: 1; min-width: 240px; }
+/* 240px is the point at which the statement stops sharing the row with the
+   acronym and wraps below it, so it belongs in flex-basis. As a min-width it
+   was also a floor the field could not go under, and below ~330px of viewport
+   the card is narrower than that - it overflowed by ~20px instead of shrinking. */
+.opi-fieldRow__statement { flex: 1 1 240px; min-width: 0; }
 
 .opi-grid5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
 
@@ -1069,13 +1083,31 @@ span.icon-20 {
 
 /* ---------- Disaggregations table ---------- */
 
-.opi-dis__table { border: 1px solid var(--opi-border); border-radius: 10px; overflow: hidden; background: #fff; }
+/* Scrolls like .opi-matrix rather than clipping: the six fixed columns below
+   add up to 498px, so under ~640px of viewport the Unit / Rule / delete cells
+   fell outside an `overflow: hidden` box with no way to reach them. */
+.opi-dis__table {
+  /* The sum of the tracks below (30 + 34 + 88 + 160 + 130 + 180 + 36). The head
+     and the rows are separate grids, so a shared floor is what keeps their
+     columns lined up once the table is scrolling, and what makes the row
+     backgrounds span the whole scroll width instead of stopping at the fold. */
+  --opi-dis-minw: 658px;
+  border: 1px solid var(--opi-border);
+  border-radius: 10px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+/* Both direct children of the scroller carry the floor; .opi-dis__row then just
+   fills .opi-dis__rows, which is also where outcomes.js appends new rows. */
+.opi-dis__rows { min-width: var(--opi-dis-minw); }
 
 .opi-dis__thead,
 .opi-dis__row {
   display: grid;
-  grid-template-columns: 30px 34px 88px 1fr 130px 180px 36px;
+  grid-template-columns: 30px 34px 88px minmax(160px, 1fr) 130px 180px 36px;
   align-items: center;
+  min-width: var(--opi-dis-minw);
 }
 
 .opi-dis__thead { background: var(--opi-surface-head); border-bottom: 1px solid var(--opi-border); }
@@ -1338,10 +1370,14 @@ span.icon-20 {
 .opi-q__addNote { font: 400 12px Figtree, sans-serif; color: var(--opi-muted); }
 
 /* Baseline instructions (PDF) panel */
-.opi-page .fileUploadContainer .fileUpload { display: inline-block; }
-.opi-page .fileUploadContainer input.upload { font: 400 12.5px Figtree, sans-serif; color: var(--opi-ink-soft); }
-.opi-page .fileUploaded { margin: 0; display: inline-flex; align-items: center; gap: 8px; }
-.opi-page .fileUploaded a { font: 500 12.5px Figtree, sans-serif; color: var(--opi-primary); }
+/* A native file input carries an intrinsic width (~273px) and .opi-panel is a
+   wrapping flex row, so without a ceiling the control hung outside the panel
+   below ~390px of viewport. Same guard on the uploaded-file line, where a long
+   PDF name would do it. */
+.opi-page .fileUploadContainer .fileUpload { display: inline-block; min-width: 0; max-width: 100%; }
+.opi-page .fileUploadContainer input.upload { max-width: 100%; font: 400 12.5px Figtree, sans-serif; color: var(--opi-ink-soft); }
+.opi-page .fileUploaded { margin: 0; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+.opi-page .fileUploaded a { font: 500 12.5px Figtree, sans-serif; color: var(--opi-primary); overflow-wrap: anywhere; }
 
 .opi-page .opi-fileRemove {
   display: inline-block;
@@ -1686,10 +1722,14 @@ span.icon-20 {
    changes the dirty hint replaces the last-edit message instead of joining it. */
 .opi-page .opi-saveBar.is-dirty #lastUpdateMessage { display: none; }
 
-/* Narrow viewports: the state keeps the first line of the left group and the
-   last-edit message wraps underneath it. The bar itself no longer wraps, so the
-   buttons stay on the right and only the left group reflows. */
+/* Narrow viewports: the left group's three lines stack. Below the tablet step
+   the actions are `flex: none` and the info group is the only thing that can
+   give, so at 375px the text was being squeezed into ~67px beside the buttons
+   (and the last-edit message spilled a couple of pixels out of it). The bar
+   wraps here instead and the buttons take their own row, still right-aligned. */
 @media (max-width: 767px) {
+  .opi-page .opi-saveBar { flex-wrap: wrap; }
+  .opi-saveBar__info { flex: 1 1 100%; }
   .opi-saveBar__state { flex: 1 1 100%; }
   .opi-saveBar__detail { flex: 1 1 100%; }
   .opi-page .opi-saveBar #lastUpdateMessage { flex: 1 1 100%; }
