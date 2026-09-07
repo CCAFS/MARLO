@@ -144,6 +144,7 @@ import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -846,6 +847,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean canBeDeleted(long id, String className) {
+    // The list templates render the hidden "new row" with an empty class name and the id -1, so a blank name means
+    // there is no entity to decide about. Reaching Class.forName with it costs a ClassNotFoundException per row.
+    if (StringUtils.isBlank(className)) {
+      LOG.debug("There is no class name for the id {}, so the deletion is allowed", id);
+      return true;
+    }
+
     Class<?> clazz;
     try {
       clazz = Class.forName(className);
@@ -1609,6 +1617,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    *         delete button.
    */
   public boolean centerCanBeDeleted(long id, String className) {
+    // A blank class name means the center list templates are rendering their "new row" template, not an entity.
+    // The catch below blocks the deletion, so the guard does the same without paying for an exception.
+    if (StringUtils.isBlank(className)) {
+      LOG.debug("There is no class name for the id {}, so the deletion is blocked", id);
+      return false;
+    }
+
     Class clazz;
     try {
 
@@ -2007,11 +2022,30 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public Phase getActualPhase() {
     try {
+      /**
+       * Invoked from a struts2 interceptor the session has not been set on the BaseAction yet. The session is read
+       * five times below, so the check belongs here: guarding only the first read moves the failure to the next
+       * one. There is nothing to resolve without a session, and the empty phase is what the callers already read
+       * as "no phase".
+       */
+      if (this.getSession() == null) {
+        LOG.debug("There is no session on the action, so an empty phase is returned");
+        return new Phase(null, "", -1);
+      }
+
       Map<Long, Phase> allPhases = null;
-      if (this.getSession() != null && !this.getSession().isEmpty()) {
+      if (!this.getSession().isEmpty()) {
         if (!this.getSession().containsKey(APConstants.ALL_PHASES)) {
+          // The pages served without a global unit have no CRP, so there are no phases to collect. Reading the id
+          // inside this block matters: once ALL_PHASES is cached a null id never reaches the filter below.
+          Long currentCrpID = this.getCrpID();
+          if (currentCrpID == null || currentCrpID.longValue() == 0L) {
+            LOG.debug("There is no CRP in the session, so an empty phase is returned");
+            return new Phase(null, "", -1);
+          }
+
           List<Phase> phases = this.phaseManager.findAll().stream()
-            .filter(c -> c.getCrp().getId().longValue() == this.getCrpID().longValue()).collect(Collectors.toList());
+            .filter(c -> c.getCrp().getId().longValue() == currentCrpID.longValue()).collect(Collectors.toList());
           phases.sort((p1, p2) -> p1.getStartDate().compareTo(p2.getStartDate()));
           Map<Long, Phase> allPhasesMap = new HashMap<>();
           for (Phase phase : phases) {
@@ -2021,12 +2055,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         }
 
       }
-      /**
-       * This throws a null pointer exception if invoked from a struts2
-       * interceptor as the session has not been set on the BaseAction.
-       * I've made the RequireUserInterceptor set the session on the
-       * baseAction now but this seems a little hacky.
-       */
       allPhases = (Map<Long, Phase>) this.getSession().get(APConstants.ALL_PHASES);
 
       Long phaseID = this.getPhaseID();
@@ -2043,16 +2071,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       Map<String, Parameter> parameters = this.getParameters();
       if (parameters != null && parameters.containsKey(APConstants.PHASE_ID)) {
-        Phase phase;
-        try {
-          phaseID = Long.parseLong(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
-          phase = allPhases.get(new Long(phaseID));
-          return phase;
-        } catch (Exception e) {
-          LOG.debug("The {} parameter is not a valid phase id, so the current phase param is used",
-            APConstants.PHASE_ID, e);
-          phase = this.getPhaseFromCurrentPhaseParam();
+        // A request that carries the param with no usable value is an everyday case and not an anomaly: the
+        // templates render phaseID with an empty value whenever the phase they were given has no id. Parsing it
+        // inside a try block turned each of those requests into a thrown exception, and this method is called
+        // once per row by the lists that read it, so a single page could throw and log hundreds of times.
+        String[] phaseIDValues = parameters.get(APConstants.PHASE_ID).getMultipleValues();
+        String phaseIDParam =
+          phaseIDValues == null || phaseIDValues.length == 0 ? null : StringUtils.trim(phaseIDValues[0]);
+        long requestedPhaseID = NumberUtils.toLong(phaseIDParam, 0L);
+
+        // There is no phase with id 0, so anything that does not parse falls back to the current phase param.
+        if (requestedPhaseID != 0L && allPhases != null) {
+          return allPhases.get(requestedPhaseID);
         }
+
+        LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
+          APConstants.PHASE_ID, phaseIDParam);
+        Phase phase = this.getPhaseFromCurrentPhaseParam();
 
         if (phase != null) {
           this.getSession().put(APConstants.CURRENT_PHASE, phase);
@@ -3483,22 +3518,24 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           if (deliverableMetadataElements != null) {
 
+            // A deliverable with no DOI or no handle is the everyday case, so the value is read as an absent
+            // Optional instead of dereferencing null. Both variables are already initialised to null above.
             try {
               deliverableDOI = deliverableMetadataElements.stream()
                 .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
                   && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
-                .findFirst().orElse(null).getElementValue();
+                .findFirst().map(DeliverableMetadataElement::getElementValue).orElse(null);
             } catch (Exception e) {
-              LOG.debug("The deliverable {} has no DOI metadata element", deliverable.getId(), e);
+              LOG.debug("Could not read the DOI metadata element of the deliverable {}", deliverable.getId(), e);
             }
 
             try {
               deliverableHandle = deliverableMetadataElements.stream()
                 .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
                   && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
-                .findFirst().orElse(null).getElementValue();
+                .findFirst().map(DeliverableMetadataElement::getElementValue).orElse(null);
             } catch (Exception e) {
-              LOG.debug("The deliverable {} has no handle metadata element", deliverable.getId(), e);
+              LOG.debug("Could not read the handle metadata element of the deliverable {}", deliverable.getId(), e);
             }
 
             try {
@@ -6213,6 +6250,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
+      // The deliverable list templates call this once per row, so a deliverable with no dissemination record must
+      // not cost an exception. The catch below answers the same way.
+      if (deliverableBD == null || deliverableBD.getDissemination() == null) {
+        return null;
+      }
 
       if (deliverableBD.getDissemination().getIsOpenAccess() != null
         && deliverableBD.getDissemination().getIsOpenAccess().booleanValue()) {
@@ -7177,13 +7219,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       // return
       // Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString())
       // == 1;
-      CustomParameter crpClosed = this.customParameterManager
-        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CLOSED, this.getCrpID());
+      Long currentCrpID = this.getCrpID();
+      CustomParameter crpClosed = currentCrpID == null ? null
+        : this.customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CLOSED,
+          currentCrpID);
+      if (crpClosed == null) {
+        LOG.debug("The custom parameter {} is not defined for the CRP {}, so it is reported as not closed",
+          APConstants.CRP_CLOSED, currentCrpID);
+        return false;
+      }
 
       return Boolean.parseBoolean(crpClosed.getValue());
     } catch (Exception e) {
-      LOG.debug("The custom parameter {} is not defined for the CRP {}, so it is reported as not closed",
-        APConstants.CRP_CLOSED, this.getCrpID(), e);
+      LOG.debug("Could not read the custom parameter {}, so it is reported as not closed", APConstants.CRP_CLOSED, e);
       return false;
     }
   }
@@ -7193,16 +7241,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       // return
       // Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString())
       // == 1;
-      CustomParameter crpRefresh = this.customParameterManager
-        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_REFRESH, this.getCrpID());
-      // return
-      // Integer.parseInt(this.getSession().get(APConstants.CRP_CLOSED).toString())
-      // == 1;
+      Long currentCrpID = this.getCrpID();
+      CustomParameter crpRefresh = currentCrpID == null ? null
+        : this.customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_REFRESH,
+          currentCrpID);
+      if (crpRefresh == null) {
+        LOG.debug("The custom parameter {} is not defined for the CRP {}, so no refresh is reported",
+          APConstants.CRP_REFRESH, currentCrpID);
+        return false;
+      }
+
       return Boolean.parseBoolean(crpRefresh.getValue());
 
     } catch (Exception e) {
-      LOG.debug("The custom parameter {} is not defined for the CRP {}, so no refresh is reported",
-        APConstants.CRP_REFRESH, this.getCrpID(), e);
+      LOG.debug("Could not read the custom parameter {}, so no refresh is reported", APConstants.CRP_REFRESH, e);
       return false;
     }
   }
@@ -7441,6 +7493,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
+      // Called once per row of the deliverable list; an absent dissemination record is the everyday case.
+      if (deliverableBD == null || deliverableBD.getDissemination() == null) {
+        return null;
+      }
+
       if (deliverableBD.getDissemination().getAlreadyDisseminated() != null) {
         if (deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
           if (deliverableBD.getDissemination().getDisseminationChannel() != null) {
@@ -7503,6 +7560,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
+      // Called once per row of the deliverable list; an absent dissemination record is the everyday case. The
+      // catch stays because getDisseminationUrl() is still dereferenced below and can be null on its own.
+      if (deliverableBD == null || deliverableBD.getDissemination() == null) {
+        return null;
+      }
+
       if (deliverableBD.getDissemination().getAlreadyDisseminated() != null
         && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
@@ -8034,13 +8097,19 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Boolean isR(long deliverableID) {
     try {
       Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);
-      if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense() == null) {
+      DeliverableInfo deliverableInfo =
+        deliverableBD == null ? null : deliverableBD.getDeliverableInfo(this.getActualPhase());
+      // A deliverable that was not reported in the actual phase has no info, which is what the catch answered as
+      // false. Reading it once also saves two getActualPhase() calls on every row of the deliverable list.
+      if (deliverableInfo == null) {
+        return false;
+      }
+
+      if (deliverableInfo.getAdoptedLicense() == null) {
         return null;
       }
-      if (deliverableBD.getDeliverableInfo(this.getActualPhase()).getAdoptedLicense()) {
-        return true;
-      }
-      return false;
+
+      return deliverableInfo.getAdoptedLicense();
     } catch (Exception e) {
       LOG.debug("The deliverable {} has no info in the actual phase, so the adopted license is reported as false",
         deliverableID, e);
@@ -8715,14 +8784,28 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean sendEmailJustToSupport() {
+    // The manager takes a primitive, so a null id fails while unboxing here, before the lookup is even attempted.
+    Long currentCrpID = this.getCrpID();
+    if (currentCrpID == null) {
+      LOG.debug("There is no CRP in the session, so the emails are not restricted to the support team");
+      return false;
+    }
+
     try {
       CustomParameter sendEmailSupport = this.customParameterManager
-        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_SUPPORT_TEAM, this.getCrpID());
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_SUPPORT_TEAM, currentCrpID);
+      if (sendEmailSupport == null) {
+        LOG.debug("The custom parameter {} is not defined for the CRP {}, so the emails are not restricted to the"
+          + " support team", APConstants.CRP_EMAIL_SUPPORT_TEAM, currentCrpID);
+        return false;
+      }
+
       return Boolean.parseBoolean(sendEmailSupport.getValue());
 
     } catch (Exception e) {
-      LOG.debug("The custom parameter {} is not defined for the CRP {}, so the emails are not restricted to the"
-        + " support team", APConstants.CRP_EMAIL_SUPPORT_TEAM, this.getCrpID(), e);
+      // Both everyday causes are handled above, so anything reaching here is a real failure worth the trace.
+      LOG.warn("Could not read the custom parameter {} for the CRP {}, so the emails are not restricted to the"
+        + " support team", APConstants.CRP_EMAIL_SUPPORT_TEAM, currentCrpID, e);
       return false;
     }
   }
