@@ -9,10 +9,15 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * URL Shortener
  */
 public class URLShortener {
+
+  private static final Logger LOG = LoggerFactory.getLogger(URLShortener.class);
 
   private static final int LENGTH_LINK = 80;
 
@@ -99,7 +104,7 @@ public class URLShortener {
               try {
                 shortURL = this.getShortUrlService(url);
               } catch (Exception e) {
-                System.out.println(e);
+                LOG.error("Could not shorten the link {}", url, e);
               }
 
               if (shortURL != null) {
@@ -181,7 +186,7 @@ public class URLShortener {
               try {
                 shortURL = this.getShortUrlService(url);
               } catch (Exception e) {
-                System.out.println(e);
+                LOG.error("Could not shorten the link {}", url, e);
               }
 
               if (shortURL != null) {
@@ -215,7 +220,7 @@ public class URLShortener {
         try {
           shortURL = this.getShortUrlService(url);
         } catch (Exception e) {
-          System.out.println(e);
+          LOG.error("Could not shorten the link {}", url, e);
         }
         if (shortURL != null) {
           referenceText.replace(matcher.start(1), matcher.end(1), shortURL);
@@ -255,10 +260,10 @@ public class URLShortener {
 
       } catch (MalformedURLException e) {
         shortUrl = link;
-        e.printStackTrace();
+        LOG.error("The link {} sent to the URL shortener service is malformed", link, e);
       } catch (IOException e) {
         shortUrl = link;
-        e.printStackTrace();
+        LOG.error("The URL shortener service could not be reached for the link {}", link, e);
       }
     } else {
       shortUrl = link;

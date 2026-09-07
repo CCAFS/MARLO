@@ -42,7 +42,6 @@ import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1132,7 +1131,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
               }
             } catch (Exception e) {
-              Log.error("error validating actors " + e);
+              LOG.error("Could not validate the actors of the innovation", e);
             }
 
             // Validate organizations
@@ -1165,7 +1164,7 @@ public class ProjectInnovationValidator extends BaseValidator {
 
               }
             } catch (Exception e) {
-              Log.error("error validating actors " + e);
+              LOG.error("Could not validate the actors of the innovation", e);
             }
           }
         }
@@ -1173,7 +1172,7 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
 
     } catch (Exception e) {
-      Log.error("error validating rights tab ");
+      LOG.error("Could not validate the intellectual property rights tab", e);
     }
   }
 

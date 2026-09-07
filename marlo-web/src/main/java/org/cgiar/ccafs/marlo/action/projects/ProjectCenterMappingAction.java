@@ -20,13 +20,13 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ICenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectCenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectFocusManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInfoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
-import org.cgiar.ccafs.marlo.data.manager.impl.CenterOutcomeManager;
 import org.cgiar.ccafs.marlo.data.model.CenterOutcome;
 import org.cgiar.ccafs.marlo.data.model.CenterTopic;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
@@ -95,7 +95,7 @@ public class ProjectCenterMappingAction extends BaseAction {
   private List<LiaisonInstitution> liaisonInstitutions;
   private LiaisonInstitutionManager liaisonInstitutionManager;
   private ProjectCenterOutcomeManager projectCenterOutcomeManager;
-  private CenterOutcomeManager centerOutcomeManager;
+  private ICenterOutcomeManager centerOutcomeManager;
   private List<CenterOutcome> centerOutcomes;
 
   @Inject
@@ -103,7 +103,7 @@ public class ProjectCenterMappingAction extends BaseAction {
     GlobalUnitManager crpManager, ProjectFocusManager projectFocusManager, AuditLogManager auditLogManager,
     ProjectInfoManager projectInfoManager, ProjectCenterMappingValidator validator, PhaseManager phaseManager,
     LiaisonInstitutionManager liaisonInstitutionManager, ProjectCenterOutcomeManager projectCenterOutcomeManager,
-    CenterOutcomeManager centerOutcomeManager) {
+    ICenterOutcomeManager centerOutcomeManager) {
     super(config);
     this.projectManager = projectManager;
     this.programManager = programManager;

@@ -59,11 +59,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /***
  * Christian Garcia
  */
 public class ProjectCCAFSOutcomesAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectCCAFSOutcomesAction.class);
 
 
   /**
@@ -567,7 +571,7 @@ public class ProjectCCAFSOutcomesAction extends BaseAction {
                 }
               }
             } catch (Exception e) {
-              e.printStackTrace();
+              LOG.error("Could not load the outcome of the project indicator {}", ipProjectIndicator.getId(), e);
             }
 
 

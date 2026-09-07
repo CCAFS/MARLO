@@ -350,9 +350,8 @@ public class ProjectSubmissionAction extends BaseAction {
         contentType = "application/pdf";
         //
       } catch (Exception e) {
-        e.printStackTrace();
         // // Do nothing.
-        LOG.error("There was an error trying to get the URL to download the PDF file: " + e.getMessage());
+        LOG.error("There was an error trying to get the URL to download the PDF file", e);
       }
     }
     if (this.validateEmailNotification()) {
