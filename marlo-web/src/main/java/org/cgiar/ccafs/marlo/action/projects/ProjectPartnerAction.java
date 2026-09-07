@@ -395,7 +395,8 @@ public class ProjectPartnerAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+      LOG.error("Could not get the activities led by the user {} on the project {}, so none are reported",
+        userID, projectID, e);
     }
     return activities;
 
@@ -414,7 +415,8 @@ public class ProjectPartnerAction extends BaseAction {
 
 
     } catch (Exception e) {
-      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+      LOG.error("Could not filter the activities led by the user {} on the project {}, so none are reported",
+        userID, projectID, e);
     }
     return activities;
 

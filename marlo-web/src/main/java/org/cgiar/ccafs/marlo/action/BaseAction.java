@@ -3478,7 +3478,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (Deliverable deliverable : deliverables) {
           if (deliverable != null && deliverable.getId() != null) {
-            deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+            // find() resolves to session.get(), which answers null for a row that no longer exists. Assigning
+            // that straight back to the loop variable left every reader below dereferencing null, including the
+            // catch blocks that report them, so the report threw out of the handler meant to contain the failure.
+            Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverable.getId());
+            if (deliverableDB != null) {
+              deliverable = deliverableDB;
+            }
           }
           DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
           boolean isDOIDuplicated = false;
