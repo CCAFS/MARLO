@@ -2819,18 +2819,39 @@ A second consumer was found during T11b and belongs on T00's list: `ClarisaPubli
 framing is **superseded**: the next step is a **dedicated migration environment**, and these are the things
 that environment exists to validate. **None of them is a staging task, and none authorises a promotion.**
 
-**Category A — cannot be validated anywhere else. These are the reason the environment is being built.**
+**Category A — REVISED 2026-09-07.** These were "the reason the environment is being built". **Seven of the
+eight no longer are**: six were validated incidentally by the V-1…V-7 live work, and one was dissolved when a
+requirement turned out to rest on a false premise. Each row below is one of three distinct states — do not
+flatten them:
 
-| Item | What must be observed |
-|---|---|
-| The **entire federated path** | A real sign-in end to end: authorize redirect, IdP authentication, code exchange, JWKS fetch, token validation, gates 1–4, session rotation, `finishLogin` |
-| **`cognitoUnloggedStack` reachability** | §17.5 and §20 record this as *argued from the interceptor sources, not observed*. `cognitoCallback.do` has only ever been hit with no `state`. A real callback is the first time the stack is exercised |
-| **The `SessionMap` fix (T09's CRITICAL)** | Evidenced by a regression test and code reading. A real successful login is the first time the production `SessionMap` participates |
-| **`agree_terms` written on the Cognito path** | §21 validated `saveLastLogin` on the **local** path only, and said so explicitly. The Cognito write has never run |
-| **`users.username` set from the CGIAR claim** (FN-006) | Same: the mechanism is proven, this specific write is not |
-| **SEC-006 as rendered to a browser** | §20 records that `login.ftl` has no `[@s.fielderror]`, so `loginMessage` is rendered by **nothing** today. SEC-006 holds trivially; FN-005's *"the user is shown an i18n message"* is **not met** and needs a real refusal on screen |
-| **OQ-9's `email` claim in a real token** | The join key was decided from CGIAR's answer, never seen in an actual ID token |
-| **Clock skew, `exp`, real JWKS rotation** | R-D7's leeway has only met synthetic tokens |
+- **VALIDATED** — observed in a running system, with the evidence named.
+- **SUPERSEDED** — the thing to validate stopped existing because the requirement was corrected. **Not a PASS.**
+- **NOT OBSERVED** — still pending a dedicated environment. **Not a FAIL, and never to be recorded as a PASS**
+  on the strength of reasoning.
+
+| # | Item | State | Evidence |
+|---|---|---|---|
+| 1 | The **entire federated path** | **VALIDATED** | Eleven-plus real corporate sign-ins: §30, §36, §42 |
+| 2 | **`cognitoUnloggedStack` reachability** | **VALIDATED** | The fear was that the stack would 404 a flat action name before the action was entered. Real callbacks carrying a real `state` have been served repeatedly (§29, §42) |
+| 3 | **The `SessionMap` fix** (T09's CRITICAL) | **VALIDATED** | Stronger than hoped: **V-2 was found through this path**, fixed by T16, and confirmed by real logins afterwards (§29, §30) |
+| 4 | **`agree_terms` written on the Cognito path** | **VALIDATED 2026-09-07** | Read from the database: `users.id=3797` has `agree_terms=1` and `last_login=2026-09-05 17:01:57`, matching the Cognito sign-in logged at `17:01:57.250`. §21 had validated `saveLastLogin` on the **local** path only and said so; this closes the Cognito half |
+| 5 | **`users.username` set from the CGIAR claim** (FN-006) | **SUPERSEDED** | **Not a PASS.** T17 / U-3 (§31, §32) established the premise was false: the federated ID token carries no CGIAR login, so what was being written was Cognito's own federated identifier. FN-006 was re-amended and the write removed. **The thing this row asked us to validate no longer exists** |
+| 6 | **SEC-006 as rendered to a browser** | **VALIDATED** | This row is exactly what became **V-6**, and T22 closed it (§43, §44, §45). The row correctly predicted that `login.ftl` rendered `loginMessage` by nothing — it took until §37.2 to notice |
+| 7 | **OQ-9's `email` claim in a real token** | **VALIDATED** | The U-3 diagnostic read the claim set of a real federated ID token (§32), and email-based resolution has since carried every production sign-in |
+| **8** | **Clock skew, `exp`, real JWKS rotation** | **NOT OBSERVED** | Split below. R-D7's leeway has still met only synthetic tokens |
+
+**Item 8, split.** Concrete values from `CognitoTokenValidatorImpl`: `EXPIRY_LEEWAY_SECONDS = 60`,
+`JWKS_CACHE_TTL = 15 minutes`, plus a re-fetch-on-unknown-`kid` path.
+
+| Sub-item | What must be observed | Type | Owner | Notes |
+|---|---|---|---|---|
+| **8a — expiry leeway** | A token whose `exp` has just passed **inside** the 60 s leeway is accepted; one outside it is refused | **Functional QA**, with DevOps for the configuration | DevOps/IBD + QA | Reachable by shortening the ID token lifetime on the Cognito **app client**. **Do not shift the server clock to reach it** — that perturbs Hibernate timestamps, audit logs and TLS validation |
+| **8b — clock synchronisation** | Both ends synchronise against NTP and the observed skew is far below 60 s | **Technical environment** | Infrastructure | A property of the environment, not of the application. No application change, and no deliberate skew should be introduced |
+| **8c — JWKS rotation** | A successful sign-in **after** an observed AWS key rotation, with the log showing the JWKS was re-fetched | **Technical environment**, passive observation | DevOps/IBD | **Cannot be forced** — Cognito rotates on its own schedule and exposes no API to trigger it. If no rotation occurs within the project window, **record it as NOT OBSERVED. Do not record a PASS from reasoning or from a unit test.** |
+
+> **None of the remaining Category A work requires manual validation from the user.** Every item that did —
+> the federated path, both coexistence directions, V-4, V-5, V-6, V-7 — is closed with real evidence. 8a is a
+> QA exercise, 8b and 8c belong to infrastructure.
 
 **Category B — environment behaviours discovered here that the migration environment must account for.**
 
@@ -4421,3 +4442,32 @@ does. The discriminator was not merely unproven — it measured session state an
 and a later unrelated login shows none.
 
 **No implementation task remains open in this spec.**
+
+---
+
+## 46. Category A reclassified against verified reality — 2026-09-07
+
+§27.4's Category A had listed eight items as pending since 2026-09-02. **Seven no longer are.** The list was
+never wrong when written; it simply was not revisited while the V-1…V-7 live work quietly discharged most of
+it. **A pending list that is not re-read is a list that lies** — the same defect the T15/T16 ledger errors
+showed (§40.6), and the reason the count was re-derived from the files rather than from memory.
+
+Each item was checked rather than assumed. The one that needed real work was **item 4**: `agree_terms` on the
+Cognito path had never been verified, because §21 deliberately validated `saveLastLogin` on the **local** path
+only and said so. Read from the database today: `users.id=3797` carries `agree_terms=1` and
+`last_login=2026-09-05 17:01:57`, matching the Cognito sign-in logged at `17:01:57.250`.
+
+**Item 5 is recorded as SUPERSEDED, not PASS**, and the distinction matters: T17/U-3 did not validate that
+`users.username` is written from the CGIAR claim — it established that **the claim does not exist**, corrected
+FN-006, and removed the write. Recording that as a pass would assert something false about the system.
+
+**Item 8 stays NOT OBSERVED** and is split into 8a (expiry leeway, functional QA), 8b (NTP synchronisation,
+infrastructure) and 8c (JWKS rotation, passive observation). **8c cannot be forced** — Cognito rotates on its
+own schedule with no API to trigger it — so if no rotation occurs within the project window the honest outcome
+is to record it as not observed. **A unit test against a synthetic rotation does not discharge it, and neither
+does reasoning.**
+
+**No remaining Category A item requires manual validation from the user.** Everything that did is closed.
+
+**T00 / OQ-4 remains separate and open**: an inventory of `/api/**` Basic-auth consumers, owned by IBD. Not
+code, not an environment validation, and not closable from this branch.
