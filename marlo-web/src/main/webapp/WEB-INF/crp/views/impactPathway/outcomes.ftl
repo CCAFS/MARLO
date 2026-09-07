@@ -76,7 +76,9 @@
         data-collapse-all="[@s.text name="outcomes.collapseAll"/]"
         data-expand-all="[@s.text name="outcomes.expandAll"/]"
         data-save-unsaved="[@s.text name="outcomes.saveBar.unsaved"/]"
-        data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"></span>
+        data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"
+        data-dis-clear-confirm="[@s.text name="outcomes.disaggregations.clear.confirm"/]"
+        data-dis-clear-blocked="[@s.text name="outcomes.disaggregations.clear.blocked"/]"></span>
 
       [#-- How this section works --]
       <div class="opi-help" id="opiHelp">

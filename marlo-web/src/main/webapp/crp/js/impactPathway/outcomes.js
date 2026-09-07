@@ -831,14 +831,20 @@ $(document).ready(function() {
 
   // ---- Yes / No disaggregations toggle ----
   $page.on('click', '.opi-dis__yes, .opi-dis__no', function() {
-    var yes = $(this).hasClass('opi-dis__yes');
     var $card = $(this).closest('.outcome');
-    $card.find('.opi-dis__yes').toggleClass('is-on', yes).attr('aria-pressed', String(yes));
-    $card.find('.opi-dis__no').toggleClass('is-on', !yes).attr('aria-pressed', String(!yes));
-    $card.find('.opi-dis').toggle(yes);
-    $card.find('.opi-matrix__row').not('.is-principal').toggle(yes);
-    var $note = $card.find('[data-opi-disnote]');
-    $note.text($note.data(yes ? 'yes' : 'no'));
+    var yes = $(this).hasClass('opi-dis__yes');
+    if (yes) {
+      opiSetDisAnswer($card, true);
+      // The answer has no column: outcomes.ftl derives it from the rows. "Yes" with no
+      // row would come back as "No" on reload, so open the first one for it.
+      if (!$card.find('.opi-dis__row').not('.is-principal').exists()) {
+        opiAddDisRow($card);
+      }
+    } else if (opiClearDisRows($card)) {
+      // Only paint "No" once the rows are gone. Hiding them would keep them submitting,
+      // and the answer would flip back to "Yes" on the next reload.
+      opiSetDisAnswer($card, false);
+    }
   });
 
   // ---- drag & drop reorder ----
@@ -869,22 +875,14 @@ $(document).ready(function() {
     $from.insertBefore(this);
     var $mFrom = opiMatrixRow($card, fromKey);
     $mFrom.insertBefore(opiMatrixRow($card, toKey));
-    opiRecodeRows($card);
-    updateAllIndexes();
-    opiRefreshCardStatus($card);
+    opiAfterDisChange($card);
   });
 
   // ---- delete a disaggregation row (all its milestones) ----
   $page.on('click', '.opi-dis__delete', function() {
     var $card = $(this).closest('.outcome');
-    var $row = $(this).closest('.opi-dis__row');
-    var key = $row.attr('data-opi-row');
-    opiMatrixRow($card, key).remove();
-    $row.remove();
-    opiRecodeRows($card);
-    updateAllIndexes();
-    opiRenumberDis($card);
-    opiRefreshCardStatus($card);
+    opiDropDisRow($card, $(this).closest('.opi-dis__row'));
+    opiAfterDisChange($card);
   });
 
   // ---- add a disaggregation row ----
@@ -908,6 +906,7 @@ $(document).ready(function() {
     $ph.replaceWith($cell);
     updateAllIndexes();
     opiRefreshCardStatus($card);
+    opiMarkDirty();
     $cell.find('.opi-cell__value').trigger('focus');
   });
 
@@ -1018,17 +1017,23 @@ function opiDecorateSaveButton() {
 }
 
 /**
+ * Flips the save bar to its "unsaved changes" state.
+ * Typing raises it through the listener below, but adding or removing rows, years and
+ * cells changes the form without any field firing an event, so those call this directly.
+ */
+function opiMarkDirty() {
+  var $bar = $('.opi-saveBar');
+  if ($bar.hasClass('is-dirty')) { return; }
+  $bar.addClass('is-dirty');
+  $bar.find('[data-opi-save-state]').text(opiLabel('saveUnsaved'));
+  $bar.find('[data-opi-save-detail]').text(opiLabel('saveUnsavedDetail'));
+}
+
+/**
  * Flips the save bar to its "unsaved changes" state on the first edit.
  */
 function opiAttachDirtyTracking() {
-  $('.opi-page').on('change keyup', 'input, textarea, select', function() {
-    var $bar = $('.opi-saveBar');
-    if (!$bar.hasClass('is-dirty')) {
-      $bar.addClass('is-dirty');
-      $bar.find('[data-opi-save-state]').text(opiLabel('saveUnsaved'));
-      $bar.find('[data-opi-save-detail]').text(opiLabel('saveUnsavedDetail'));
-    }
-  });
+  $('.opi-page').on('change keyup', 'input, textarea, select', opiMarkDirty);
 }
 
 /**
@@ -1150,6 +1155,69 @@ function opiAddYear($card) {
   opiApplyGrid($card);
   updateAllIndexes();
   opiRefreshCardStatus($card);
+  opiMarkDirty();
+}
+
+/**
+ * Paints the Yes / No answer of "Does this indicator have disaggregations?".
+ * The answer has no column of its own -- outcomes.ftl recomputes it from the number of
+ * distinct milestone statements -- so callers must make the rows match the answer before
+ * painting it, or it will not survive a reload.
+ * @param {jQuery} $card the .outcome card
+ * @param {boolean} yes whether the indicator has disaggregations
+ */
+function opiSetDisAnswer($card, yes) {
+  $card.find('.opi-dis__yes').toggleClass('is-on', yes).attr('aria-pressed', String(yes));
+  $card.find('.opi-dis__no').toggleClass('is-on', !yes).attr('aria-pressed', String(!yes));
+  $card.find('.opi-dis').toggle(yes);
+  $card.find('.opi-matrix__row').not('.is-principal').toggle(yes);
+  var $note = $card.find('[data-opi-disnote]');
+  $note.text($note.data(yes ? 'yes' : 'no'));
+}
+
+/**
+ * Drops one disaggregation row and the matrix row holding its milestones. The milestones
+ * stop being submitted, which is what makes OutcomesAction delete them on save.
+ * Callers refresh once with opiAfterDisChange when they are done removing.
+ * @param {jQuery} $card the .outcome card
+ * @param {jQuery} $row the .opi-dis__row to drop
+ */
+function opiDropDisRow($card, $row) {
+  opiMatrixRow($card, $row.attr('data-opi-row')).remove();
+  $row.remove();
+}
+
+/**
+ * Refreshes everything that depends on the set of disaggregation rows. opiRecodeRows
+ * renumbers the # column on its way out, so it covers the row numbering too.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiAfterDisChange($card) {
+  opiRecodeRows($card);
+  updateAllIndexes();
+  opiRefreshCardStatus($card);
+  opiMarkDirty();
+}
+
+/**
+ * Removes every disaggregation, so answering "No" becomes true in the data too.
+ * Saving deletes the milestones behind the removed rows, so it asks first. A row whose
+ * milestones are already in use cannot be deleted; nothing is removed in that case and
+ * the answer stays on "Yes".
+ * @param {jQuery} $card the .outcome card
+ * @return {boolean} true when the card is left with no disaggregations
+ */
+function opiClearDisRows($card) {
+  var $rows = $card.find('.opi-dis__row').not('.is-principal');
+  if (!$rows.exists()) { return true; }
+  if ($rows.find('.opi-dis__delete:disabled').exists()) {
+    window.alert(opiLabel('disClearBlocked'));
+    return false;
+  }
+  if (!window.confirm(opiLabel('disClearConfirm'))) { return false; }
+  $rows.each(function() { opiDropDisRow($card, $(this)); });
+  opiAfterDisChange($card);
+  return true;
 }
 
 /**
@@ -1157,6 +1225,11 @@ function opiAddYear($card) {
  * @param {jQuery} $card the .outcome card
  */
 function opiAddDisRow($card) {
+  // Disaggregations are stored on the milestones of each year column, so a row added
+  // before any column exists would have nowhere to save to. Open the first one for it.
+  if (!$card.find('.opi-matrix__head [data-opi-yearcol]').exists()) {
+    opiAddYear($card);
+  }
   var key = 'jr' + (++opiRowSeq);
   var $pDis = $card.find('.opi-dis__row.is-principal');
 
@@ -1185,9 +1258,7 @@ function opiAddDisRow($card) {
   $mRow.append('<span class="opi-matrix__tail"></span>');
   $card.find('.opi-matrix__rows').append($mRow);
 
-  opiRecodeRows($card);
-  updateAllIndexes();
-  opiRefreshCardStatus($card);
+  opiAfterDisChange($card);
   $row.find('.opi-dis__stmtInput').trigger('focus');
 }
 
