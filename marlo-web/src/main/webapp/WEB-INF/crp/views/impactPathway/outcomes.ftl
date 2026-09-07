@@ -273,7 +273,11 @@
     [#local rowStmts = reordered /]
   [/#if]
   [#if rowStmts?size == 0][#local rowStmts = [outcomeStmt] /][/#if]
-  [#local hasDis = (rowStmts?size > 1) /]
+  [#-- The answer is stored in crp_program_outcomes.has_disaggregations: null = never answered,
+       false = No, true = Yes. An explicit Yes shows the block even before a row exists, and the
+       rows still win over a stored No, so a stale flag can never hide real data. --]
+  [#local storedYes = (outcome.hasDisaggregations)!false /]
+  [#local hasDis = (rowStmts?size > 1) || storedYes /]
   [#local gridCols = "minmax(260px,1fr)" /]
   [#list yearCols as y][#local gridCols = gridCols + " 132px" /][/#list]
   [#local gridCols = gridCols + " 88px" /]
@@ -283,6 +287,14 @@
     [#-- Outcome ID Parameters --]
     <input type="hidden" class="outcomeId" name="${outcomeCustomName}.id" value="${(outcome.id)!}"/>
     <input type="hidden" class="outcomeComposeId" name="${outcomeCustomName}.composeID" value="${(outcome.composeID)!}"/>
+    [#-- Answer to "Does this indicator have disaggregations?".
+         Rendered outside the AICCRA block on purpose: copyFields() copies nulls, so a variant
+         that did not post it back would wipe a stored answer.
+         Disabled while unanswered, and therefore not submitted: Struts converts an empty
+         string to false, which would record "answered No" for every indicator that was never
+         asked. A missing parameter is the only input that leaves the property null. --]
+    [#local disAnswered = (outcome.hasDisaggregations)?? /]
+    <input type="hidden" class="opi-disAnswer" name="${outcomeCustomName}.hasDisaggregations"[#if !disAnswered] disabled[/#if] value="[#if disAnswered]${outcome.hasDisaggregations?string('true','false')}[/#if]"/>
 
     [#-- Card head --]
     <div class="opi-card__head">
@@ -401,6 +413,13 @@
                     [#if !action.canBeDeleted((m.id)!-1,(m.class.name)!"")][#local rowDeletable = false /][/#if]
                   [/#if]
                 [/#list]
+              [/#if]
+              [#-- The principal row is the indicator itself. With no milestones yet there is no
+                   unit to read, and leaving it "Not applicable" blanks and locks every cell of
+                   the first disaggregation, which clones this row. Fall back to the indicator's
+                   own target unit; a stored milestone unit still wins over it. --]
+              [#if isPrincipal && rowUnitId == "-1" && (outcome.srfTargetUnit.id)??]
+                [#local rowUnitId = outcome.srfTargetUnit.id?c /]
               [/#if]
               <div class="opi-dis__row ${isPrincipal?string('is-principal','')}" data-opi-row="r${index}-${stmt_index}" [#if editable && !isPrincipal]draggable="true"[/#if]>
                 <span class="opi-dis__grip" [#if editable && !isPrincipal]title="[@s.text name="outcomes.disaggregations.grip"/]"[/#if] aria-hidden="true">
