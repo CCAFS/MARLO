@@ -4471,3 +4471,61 @@ does reasoning.**
 
 **T00 / OQ-4 remains separate and open**: an inventory of `/api/**` Basic-auth consumers, owned by IBD. Not
 code, not an environment validation, and not closable from this branch.
+
+---
+
+## 47. T00 / OQ-4 CLOSED on IBD confirmation — 2026-09-07
+
+### 47.1 The answer
+
+IBD, who owns the integration inventory, confirmed: **no external application, script or integration
+authenticates to `/api/**` with Basic auth.** Report generation and similar processes reach MARLO through
+normal URLs and actions — public, or through the ordinary application authentication flow — not through that
+surface.
+
+**D-7 was an accepted risk with no gate until OQ-4 was answered.** The answer discharges it.
+
+### 47.2 The second entry, verified rather than accepted
+
+T00 named a second consumer found during T11b: `ClarisaPublicAccesFilter:79` binds a **configured service
+account** through the same realm. IBD's statement covers external `/api/**` consumers and does **not** reach
+this one — it is internal, and it is not `/api/**`. So it was checked directly.
+
+The account is `clarisa.publicUser` = `hjimenez` (`users.id = 1057`). From the database:
+
+| Check | Result |
+|---|---|
+| `is_cgiar_user` | **0** — a local account. The Cognito path never applies to it |
+| Global Unit memberships | 16 units: CCAFS, A4NH, Wheat, Maize, WLE, FTA, PIM, CIAT50, BigData, CIAT, Livestock, Rice, Genebank, EiB |
+| Units with `cognito_auth_active` | **45 (AICCRA) only** — not among them |
+
+**Safe on two independent counts**, either of which would suffice: it is not a CGIAR account, and it belongs to
+no Cognito-enabled unit. **Verified from data, not argued from the config file.**
+
+### 47.3 Against T00's own acceptance criteria
+
+| Criterion | Status |
+|---|---|
+| `Done when` — the list exists | **Met.** An enumeration returning none is an answer, plus the Clarisa entry |
+| `Done when` — R-D4 updated with "no affected consumers" or a named follow-up | **Done** — `design.md` R-D4 |
+| `Done when` — the TRD correction is queued | **Queued, not applied.** TRD §8.4 says `/api/*` authenticates "via tokens (e.g. `QAToken`)" while `MarloShiroConfiguration.java:113` says `authcBasic`. `CLAUDE.md`'s shared-file discipline forbids editing the TRD from a spec branch |
+| `Verification` — reviewed by the Tech lead | **IBD's confirmation is the owner's answer.** If Tech-lead sign-off is a separate step in IBD's process, it is theirs to record; this log does not claim it happened |
+| `Not evidence when` — the list must not be code-grep-only; runtime logs must confirm | **Partially met, and said plainly.** IBD's answer is *organizational* — stronger than a grep, because they own the integrations, but **not derived from access logs.** The Clarisa entry is database-verified, which is stronger still |
+
+### 47.4 Two limits, recorded rather than glossed
+
+- **The answer is point-in-time.** `/api/**` → `authcBasic` **still exists** in
+  `MarloShiroConfiguration.java:113`. Closing OQ-4 records that *nothing uses it today*, not that the surface is
+  gone. A future integration could adopt it and hit exactly the silent failure D-7 described.
+- **It is not log-derived.** T00's own `Not evidence when` asks for runtime confirmation. If IBD's process
+  included an access-log review, that should be attached; if it did not, the closure still stands on ownership,
+  but the distinction belongs on the record and not in a footnote.
+
+### 47.5 A mistake of mine in this session
+
+While locating the Clarisa account I printed `marlo-dev.properties` through a redaction pattern that was
+**case-sensitive** and matched only `password=` / `pass=`. Two values ending in `Pass=` and `Password=` were
+**not** redacted and appeared in the session transcript. The file is gitignored and holds local development
+values, so nothing reached the repository — but the redaction was wrong, and it was wrong in the ordinary way:
+**a filter tested against the case it expected rather than against the data.** Any future read of that file
+must redact case-insensitively on `pass`.

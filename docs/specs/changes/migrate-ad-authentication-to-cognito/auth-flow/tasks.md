@@ -45,7 +45,16 @@
 ---
 
 ### CHG-COGNITO-AUTH-001-T00 — Discovery: enumerate `/api/**` Basic-auth consumers
-- **Status:** `[ ]` — **OPEN and explicitly UNRESOLVED as of 2026-09-02.** Not code: an inventory owned by
+- **Status:** `[x]` — **CLOSED 2026-09-07 on IBD confirmation** (`execution.md` §47). Not code: an inventory
+  owned by IBD, gated on **OQ-4**. **Answer: there are no `/api/**` Basic-auth consumers.** Report generation
+  and similar processes reach MARLO through normal actions and the ordinary application authentication flow,
+  not that surface. The second entry this task named — the service account `ClarisaPublicAccesFilter:79` binds
+  through the same realm — was **verified from the database, not assumed**: `is_cgiar_user = 0`, and none of
+  its 16 Global Units carries the Cognito flag. Safe on two independent counts.
+  **Two limits recorded rather than glossed:** the answer is organizational, not derived from access logs
+  (this task's own `Not evidence when` asks for runtime confirmation), and it is point-in-time — the
+  `/api/**` → `authcBasic` mapping still exists, so a future integration could adopt it. **The TRD §8.4
+  correction remains QUEUED, not applied**, per `CLAUDE.md`'s shared-file write discipline.
   IBD, gated on **OQ-4** (*who calls `/api/**` with Basic auth, and are any of them CGIAR users?*). **It
   cannot be closed from this checkout and must not be closed by assumption.** The risk is real and silent:
   federated identities **cannot use Basic auth**, so if any consumer is a CGIAR user in a migrated Global
