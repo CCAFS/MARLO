@@ -30,9 +30,13 @@
 
 - [ ] `requirements.md` and `design.md` reviewed and moved to Approved.
 - [ ] `git pull` on `staging`; confirm `logging-standardization` is not behind it.
-- [ ] Baseline captured before any edit, for the deltas the tasks below assert:
-      `printStackTrace()` 207, `System.out.print*` 266, `System.err.print*` 4, message-only error logs 135,
-      files with an SLF4J logger 315 of 3,453.
+- [x] Baseline captured before any edit, for the deltas the tasks below assert. Measured on this checkout at
+      `f89d6c7195` with `grep -rn <pattern> --include='*.java' .` excluding `/target/`:
+      `printStackTrace()` **108**, `System.out.print*` **198**, `System.err.print*` **3**, files with an SLF4J
+      logger **338**, files importing `org.jfree.util.Log` **14**.
+      An earlier draft of this section recorded 207 / 266 / 4 / 315 / 21. Those figures predate A2-2435 Part 1
+      and the innovations SLF4J routing (`60df11865a`), both now in `staging`; the §8 delta assertions use the
+      numbers above.
 - [ ] Baseline Checkstyle counts captured for every file each task touches
       (`checkstyle.sh --baseline`), since the codebase carries pre-existing violations —
       `BaseAction.java` alone is 9 at HEAD, including `FileLength`.
@@ -40,24 +44,39 @@
 
 ## 3. Task List
 
-### ENH-LOGGING-STANDARDIZATION-001-T01 — Fix the REST logging aspect
+### ENH-LOGGING-STANDARDIZATION-001-T01 — Remove the dead REST logging aspect
 
-- **Depends on:** —
+- **Depends on:** — (but land it with or after T02, which carries the replacement coverage)
 - **Module:** marlo-web
 - **Files touched:**
-  - `logging/LoggingAspect.java` (modified)
-- **Constitutional checks:** English-only comments; 2-space indent, 120-char lines; no new file, so no GPL
-  header needed.
+  - `logging/LoggingAspect.java` (**deleted**)
+  - `MarloRestApiConfig.java` (modified — drop the `loggingAspect()` `@Bean` at `:78-81` and the now-unused
+    import)
+- **Constitutional checks:** English-only comments; 2-space indent, 120-char lines. No new file, so no GPL
+  header applies. `@EnableAspectJAutoProxy` and the two Shiro advisor beans in the same class are untouched —
+  they are what actually enforces REST authorization.
+- **Rationale (ADR-8):** The pointcut `within(org.cgiar.ccafs.marlo.rest.*)` has matched nothing since it was
+  added in January 2018, because all 386 classes are in subpackages. Repairing it is worse than removing it:
+  the aspect never sees the response, so it cannot carry `status_code`, while `ExceptionTranslator:138`
+  handles `Exception` and already receives every REST exception. A working pointcut would double-log every
+  REST error, mark every legitimate 404 as ERROR, proxy ~190 beans, and stringify every argument and result —
+  its `isDebugEnabled()` guard is always true, because `logback.xml:114` is `<root level="ALL">` with no
+  logger scoping `org.cgiar.ccafs.marlo`.
 - **Tests:**
-  - Unit/integration: an exception thrown from a class under `rest.controller.v2.controllist` reaches the
-    `@AfterThrowing` advice.
+  - Integration: an exception thrown from a class under `rest.controller.v2.controllist` still produces
+    exactly one log event — from `ExceptionTranslator`, after T02 — and the HTTP response is unchanged.
 - **Done when:**
-  - Pointcut is `within(org.cgiar.ccafs.marlo.rest..*)`, not `rest.*`.
-  - The `@Around` advice is removed or gated so it cannot run outside DEBUG.
+  - `logging/LoggingAspect.java` no longer exists and no bean definition references it.
+  - `grep -rn "LoggingAspect" --include='*.java' .` returns nothing.
+  - The stale comment at `ExceptionTranslator:47-48` is removed, since the thing it refers to is gone (T02
+    replaces it with the real explanation).
+  - `logging/` is not left empty for long — T08 adds `MarloMdcJsonProvider.java` to it.
   - Clean recompile green; no new Checkstyle violations.
-- **Verification:** Compare the log volume of an identical `dev` session before and after. The advice now
-  applies to 386 classes instead of 0; if the `@Around` survives ungated, the volume explodes and the task has
-  failed even though it compiles. Confirm the `@AfterThrowing` line appears for a forced REST exception.
+- **Verification:** `grep` proves the deletion. Force an exception in a v2 endpoint and confirm the response is
+  byte-for-byte identical to before and that exactly one event is logged. Confirm the application still starts
+  and an authorization-protected v2 endpoint still rejects an unauthorized caller — the deleted `@Bean` sits in
+  the same `@Configuration` as the Shiro advisors, so a careless edit there breaks authorization, not
+  logging.
 
 ### ENH-LOGGING-STANDARDIZATION-001-T02 — Log every REST error handler with its status
 
@@ -74,8 +93,11 @@
   - All 15 `@ExceptionHandler` methods log (1 does today).
   - 5xx logs at ERROR, 4xx at WARN or INFO — a client asking for a missing record is not an ERROR.
   - Every log call passes the exception as the last argument, never `e.getMessage()` concatenated.
-  - The stale comment at `:46` claiming the `LoggingAspect` handles these is corrected — after T01 it is true
-    for a different reason and must not stay misleading.
+  - The stale comment at `:47-48` claiming the `LoggingAspect` handles these is **removed**, not reworded:
+    after T01 the aspect no longer exists, and this class is now the whole of the REST error-logging path
+    (ADR-8).
+  - `status_code` is emitted so that `MarloMdcJsonProvider` (T08) can type it as a number — put the value in
+    MDC under `status_code`, do not format it into the message text.
 - **Verification:** Call a v2 endpoint with a non-existent id; confirm one line with `status_code: 404` where
   today there are none. Confirm the HTTP response body is byte-for-byte identical to before.
 
@@ -170,11 +192,13 @@
 - **Files touched:**
   - `marlo-parent/pom.xml` (modified — `logstash-logback-encoder` 6.6)
   - `marlo-web/pom.xml` (modified — dependency)
+  - `logging/MarloMdcJsonProvider.java` (**new**)
   - `marlo-web/src/main/resources/logback.xml` (modified — `FILE-JSON`)
   - `resources/config/marlo-dev.properties`, `marlo-test.properties` (modified — `log.json`)
-- **Constitutional checks:** `CLAUDE.md` rule 11 — no dependency downgraded; 6.6 pinned because 7.x requires
-  logback 1.3+/SLF4J 2.x and this checkout is logback 1.2.13 (design ADR-4). NF-001 — the four text appenders
-  and their pattern are untouched. NF-004 — field names in one `<providers>` block.
+- **Constitutional checks:** **GPL header from `AGENTS.md` on the new provider.** `CLAUDE.md` rule 11 — no
+  dependency downgraded; 6.6 pinned because 7.x requires logback 1.3+/SLF4J 2.x and this checkout is logback
+  1.2.13 (design ADR-4). NF-001 — the four text appenders and their pattern are untouched. NF-004 — field
+  names in one `<providers>` block.
 - **Tests:**
   - Integration: every emitted line parses as JSON and carries the fields in design §11.
 - **Done when:**
@@ -182,11 +206,23 @@
     history, matching the shape of the existing appenders.
   - Wired into the existing conditional `<root>` block behind `log.json` (OPS-002).
   - `stack_trace` truncation configured (SEC-003).
+  - `MarloMdcJsonProvider` writes `status_code` and `user_id` as JSON **numbers** (NF-006), suppresses
+    `user_name`/`user_email` unless `status_code >= 400` (SEC-001 — this task is where that requirement is
+    finally enforced; nothing before it can), and omits `service_affected` rather than emitting it empty
+    (design ADR-9).
+  - An absent or unparseable `status_code` in MDC is treated as absent and never throws (NF-005).
+  - `controller_affected` carries the request path without the query string (SEC-002).
   - The existing framework logger levels — including the two `net.sf.ehcache.pool.sizeof.*` loggers raised to
     ERROR by A2-2435 Part 1 — apply to the new appender without duplication, since they are logger-scoped.
 - **Verification:** `cat marlo-json-dev.log | jq -e .` on a full session — every line must parse. Confirm
   `marlo-dev.log` is unchanged in shape. Confirm `log.json=false` produces no JSON file and leaves the text log
-  working.
+  working. Assert the typing without a cast:
+  `jq -e 'select(.status_code >= 500)' marlo-json-dev.log` must select the 500s, and
+  `grep -c '"status_code":"' marlo-json-dev.log` must return 0. Assert SEC-001 negatively: no line with
+  `status_code` below 400, or with no `status_code` at all, may carry `user_email`. Because
+  `logstash-logback-encoder` 6.6 was built against a 2.12-era Jackson and this checkout pins 2.18.9, the
+  verification is a **started application with a parsed file**, not a green build — an incompatibility here
+  fails at runtime in the appender.
 
 ### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain
 
@@ -319,7 +355,7 @@
 ## 4. Dependency Graph
 
 ```
-T01 (aspect pointcut) ──┐
+T01 (delete aspect) ────┐
 T02 (REST handlers) ────┼──────────────────────────► T13 (notification)
 T03 (log.folder) ───────┤                                  ▲
 T04 (getEnvironment) ───┴─► T05 (LoggingContextFilter)      │
@@ -335,9 +371,10 @@ T04 (getEnvironment) ───┴─► T05 (LoggingContextFilter)      │
                                                                           └─► T16 (QA pass)
 ```
 
-T01, T02, T03 and T04 are independent and can run in parallel. T14 must come after T09–T12 or its suppressions
-file is stale the moment it lands. T08 must come after T05–T07, or the JSON ships with empty context fields and
-reads as a regression.
+T03 and T04 are independent and can run in parallel with anything. T01 and T02 are formally independent but
+should land together or T02 first: T01 deletes the only other component that could log a REST error, and T02 is
+what replaces it (ADR-8). T14 must come after T09–T12 or its suppressions file is stale the moment it lands.
+T08 must come after T05–T07, or the JSON ships with empty context fields and reads as a regression.
 
 ## 5. Testing Plan
 
@@ -346,8 +383,9 @@ reads as a regression.
 - `APConfig.getEnvironment()`: each profile maps to its environment; unknown profile yields a safe default,
   never null (T04).
 - `LoggingContextFilter`: `MDC.clear()` runs even when the downstream chain throws (T05).
-- `LoggingAspect`: the `@AfterThrowing` advice fires for a class in a `rest` **subpackage** — the case the old
-  pointcut missed (T01).
+- `MarloMdcJsonProvider`: `status_code` and `user_id` are written as numbers; `user_name`/`user_email` are
+  written when `status_code` is 400 or above and omitted otherwise, including when `status_code` is absent
+  entirely; an unparseable `status_code` is treated as absent and does not throw (T08).
 - Existing `marlo-data` unit tests stay green through T09–T10; the cleanup must not touch behaviour.
 
 ### Integration
@@ -361,10 +399,12 @@ Run locally with `scripts/run-marlo-java17.sh` under `dev`, `log.json=true`:
 4. A REST call with a non-existent id emits exactly one event with `status_code: 404`. Today it emits none.
 5. An unhandled Struts exception emits `status_code: 500` with `user_name`/`user_email` present — and both are
    **absent** on the successful requests from step 1.
-6. `marlo-dev.log` is unchanged in shape (NF-001).
-7. A code path fixed in T09–T12 puts its trace in `stack_trace` instead of on `System.err`.
-8. The same fault twice sends one mail, carrying a `request_id` that locates the event.
-9. `log.json=false` writes no JSON file and leaves the text log working.
+6. `jq -e 'select(.status_code >= 500)'` selects the 500 events with no `tonumber` cast, and
+   `grep -c '"status_code":"'` returns 0 — the field is a number, not a quoted string.
+7. `marlo-dev.log` is unchanged in shape (NF-001).
+8. A code path fixed in T09–T12 puts its trace in `stack_trace` instead of on `System.err`.
+9. The same fault twice sends one mail, carrying a `request_id` that locates the event.
+10. `log.json=false` writes no JSON file and leaves the text log working.
 
 ### Regression (manual, QA team)
 

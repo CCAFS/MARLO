@@ -48,11 +48,16 @@ Three consequences follow directly, and each is a distinct operational failure:
    so a 500 returned to an integration partner is invisible on the server. This is precisely the
    "errors with `status_code >= 400` are not always reported" problem the DevOps agreement names, and in MARLO
    it is literal.
-2. **The one centralized logging component advises nothing.** `logging/LoggingAspect.java` declares
-   `@Pointcut("within(org.cgiar.ccafs.marlo.rest.*)")`. No `.java` file lives directly in that package — all
-   386 are in subpackages — and `within(pkg.*)` does not match subpackages. The aspect has therefore never
-   run, and `ExceptionTranslator.java:46` documents an assumption ("just for exceptions that don't get
-   processed by the LoggingAspect") that has never held.
+2. **The one centralized logging component advises nothing, and is the wrong place to fix finding 1.**
+   `logging/LoggingAspect.java` declares `@Pointcut("within(org.cgiar.ccafs.marlo.rest.*)")`. No `.java` file
+   lives directly in that package — all 386 are in subpackages — and `within(pkg.*)` does not match
+   subpackages. The aspect has therefore never run since it was added in January 2018, and
+   `ExceptionTranslator.java:47-48` documents an assumption ("just for exceptions that don't get processed by the
+   LoggingAspect") that has never held. Findings 1 and 2 each cite the other as the reason it does not log.
+   Repairing the pointcut would not help: the aspect observes the exception and never the response, so it
+   cannot know the HTTP status FN-004 requires, while `ExceptionTranslator:138` handles `Exception` and no
+   REST exception escapes the one place that does know it. Fixing the pointcut would therefore log every REST
+   error twice, and mark every legitimate 404 as an ERROR. FN-005 removes the aspect instead.
 3. **No log line can be attributed to a request or a user.** With no MDC, two concurrent users produce
    interleaved lines that cannot be separated, and an error line cannot be tied to whoever hit it.
 
@@ -73,8 +78,9 @@ enforces it: `configuration/marlo-checkstyle.xml` has eleven rules, none about l
   `tool_name`, `module_section`, `controller_affected` and `message`.
 - ENH-LOGGING-STANDARDIZATION-001-FN-004 — Every error response produced by the REST layer MUST produce
   exactly one log event carrying the HTTP status code returned to the client (see §2, finding 1).
-- ENH-LOGGING-STANDARDIZATION-001-FN-005 — The REST logging aspect MUST advise the classes it declares to
-  advise (see §2, finding 2).
+- ENH-LOGGING-STANDARDIZATION-001-FN-005 — The REST layer MUST NOT retain a logging component that advises
+  nothing. `LoggingAspect` MUST be removed and REST error logging consolidated in `ExceptionTranslator`, the
+  only place where the HTTP status FN-004 requires is known (see §2, finding 2).
 - ENH-LOGGING-STANDARDIZATION-001-FN-006 — Every log event that reports a caught exception MUST carry the
   exception's stack trace, not only its message.
 - ENH-LOGGING-STANDARDIZATION-001-FN-007 — An error notification sent to the support team MUST identify the
@@ -98,6 +104,10 @@ enforces it: `configuration/marlo-checkstyle.xml` has eleven rules, none about l
   adopting the names the DevOps group finally agrees is one edit and not a search across the codebase.
 - ENH-LOGGING-STANDARDIZATION-001-NF-005 — A failure inside the logging path MUST NOT fail the request that
   produced it.
+- ENH-LOGGING-STANDARDIZATION-001-NF-006 — Fields whose values are numeric — `status_code` and `user_id` —
+  MUST be emitted as JSON numbers, not as quoted strings, so a consumer can filter on a range without a cast.
+  This does not come for free: SLF4J's MDC is a `Map<String,String>` and the encoder pinned by ADR-4 has no
+  typed-MDC writer, so it requires the provider named in design §11.
 
 ### Data
 
@@ -114,7 +124,10 @@ enforces it: `configuration/marlo-checkstyle.xml` has eleven rules, none about l
 
 - ENH-LOGGING-STANDARDIZATION-001-SEC-001 — `user_id` MAY be emitted on every event. `user_name` and
   `user_email` MUST be emitted only on events whose `status_code` is 400 or above — the only case where
-  someone needs to contact the affected user.
+  someone needs to contact the affected user. The restriction MUST be enforced **at emission, not at
+  population**: both values enter the request context at the start of the request, while the status code is
+  known only at the end, so no context-based rule can express it. Design §11 names the single component that
+  enforces it.
 - ENH-LOGGING-STANDARDIZATION-001-SEC-002 — `payload` MUST be an allow-list of non-identifying fields
   (entity ids, section, phase). It MUST NOT contain the raw request or response body, and MUST NOT contain a
   password, token, authorization header, cookie or session identifier.
@@ -157,6 +170,13 @@ decision by another team. It is listed here to stay traceable, not because it is
   descriptions) and its mandatory-field list ends in "etc.". §9 records the names MARLO adopts meanwhile.
 - **The status-code alert control list.** Still an open TODO in the source document; until it exists,
   "alerting" has no agreed definition across tools.
+- **The prescribed human-readable error line.** The source document requires every tool to print
+  `[Nest] 218 - 09/26/2025, 10:15:09 AM ERROR [STAR/PRMS] [Controller] [function] [method] [USER:1]: /my/routes (ErrorStack)`.
+  That is a NestJS console line: the `[Nest] <pid>` prefix and the US-formatted timestamp are emitted by
+  NestJS's own logger, which MARLO does not run. NF-001 keeps MARLO's text pattern unchanged because the
+  team reads that file over SSH and `reports/ai-context/deployment-checklist.md:80,83` instructs them to.
+  The same information — controller, method, user, route, stack — is carried by the JSON event instead.
+  Whether the line is normative for non-Nest tools is §8.7.
 - **`docs/detailed-design/detailed-design.md` §9.** Not needed: §9.1 already prescribes SLF4J + Logback, a
   per-class logger, the level semantics and the `System.out`/`printStackTrace` prohibition. This spec
   implements that section rather than contradicting it, so no constitutional change is triggered. §9.4's
@@ -206,9 +226,11 @@ decision by another team. It is listed here to stay traceable, not because it is
 
 **AC for FN-005:**
 - Given an exception thrown inside a class under `org.cgiar.ccafs.marlo.rest.controller.v2.controllist`,
-- When the aspect's pointcut is evaluated,
-- Then the `@AfterThrowing` advice MUST run,
-- And this MUST be demonstrated by a test or an inspected log line, not by reading the pointcut.
+- When it propagates out of the controller,
+- Then exactly one log event MUST be emitted, by `ExceptionTranslator`, carrying the status returned to the
+  client,
+- And no `LoggingAspect` class and no aspect bean MUST remain in the source tree,
+- And this MUST be demonstrated by an inspected log line, not by reading the code.
 
 **AC for FN-006 and FN-009:**
 - Given a caught exception on the save chain, the authentication path, a servlet filter or the REST layer,
@@ -229,6 +251,11 @@ decision by another team. It is listed here to stay traceable, not because it is
 - When its events are inspected,
 - Then `user_id` MAY be present and `user_name`/`user_email` MUST be absent,
 - And on an event with `status_code` 400 or above, both MUST be present.
+
+**AC for NF-006:**
+- Given an event carrying `status_code` and `user_id`,
+- When the line is inspected, neither value MUST appear quoted,
+- And `jq -e 'select(.status_code >= 500)'` MUST select it without a `tonumber` cast.
 
 **AC for SEC-002 and SEC-003:**
 - Given a login request and a request carrying an authorization header,
@@ -296,6 +323,14 @@ Questions that do not block this spec but shape its successor. Each belongs to t
    that requires `user.name` and `user.email` on every event.
 6. **What happens to an event that fails validation?** The source document says "discard or flag". A discarded
    event is exactly the one needed during an incident; MARLO's position is a quarantine stream, never a drop.
+7. **Is the prescribed console line normative for tools that are not NestJS?** The required format carries a
+   `[Nest] <pid>` prefix and a NestJS-formatted timestamp, neither of which a Java/Logback application
+   produces. MARLO's position: the JSON event is the normative artefact and the text log stays in the format
+   the team already reads; if a shared human-readable line is genuinely required, it needs a framework-neutral
+   specification. See §4.
+8. **Is `user` a nested object or three flat keys?** The schema block nests `user_id`, `name` and `email`
+   under `user`; SLF4J's MDC holds flat string keys only, so MARLO emits `user_id`, `user_name` and
+   `user_email` at the top level. Either the pre-processor nests them, or the agreed schema flattens. See §9.
 
 ## 9. Decision Log
 
@@ -330,6 +365,46 @@ Questions that do not block this spec but shape its successor. Each belongs to t
   criticality (save chain, authentication, filters, REST) fixes the paths where a swallowed exception corrupts
   data first. The Checkstyle suppressions file makes the gate bite on new code immediately without demanding
   the whole backlog be cleared first.
+- 2026-09-07 — **`user` emitted as three flat keys, not as a nested object.** — Rationale: the agreed schema
+  nests `user_id`, `name` and `email` under a `user` object. SLF4J's MDC is a flat `Map<String, String>`, so a
+  nested object would require either a custom `JsonProvider` or serialising a JSON fragment into an MDC value
+  and hoping the encoder does not escape it. Both put the field structure in Java instead of in the one
+  `<providers>` block NF-004 requires. `user_id` / `user_name` / `user_email` are emitted at the top level and
+  the pre-processor nests them if the group keeps the nested shape — a mapping in one component rather than a
+  custom provider in every tool. Recorded as a deliberate divergence; see §8.8.
+  **Superseded in part by the provider entry below:** NF-006 and SEC-001 put a MARLO-owned `JsonProvider` in
+  the tree anyway, so "it would need a custom provider" is no longer a cost that distinguishes the two shapes.
+  The decision stands on the pre-processor being the right place to reshape a cross-tool schema; if §8.8
+  settles on nesting, it is now a small change in one class.
+- 2026-09-07 — **The prescribed console error line is not adopted.** — Rationale: the format in the source
+  document is a NestJS console line, including a `[Nest] <pid>` prefix and a NestJS-formatted timestamp that a
+  Logback pattern does not produce. Reproducing it would mean changing the text log the team reads over SSH
+  (NF-001) to imitate the output of a framework MARLO does not run, while the JSON event already carries every
+  field it contains. Recorded as a divergence rather than an omission; see §4 and §8.7.
+- 2026-09-07 — **`LoggingAspect` removed rather than repaired.** — Rationale: its pointcut has matched
+  nothing since January 2018, and repairing it would make things worse, not better. The aspect sees the
+  exception but never the response, so it cannot supply the `status_code` FN-004 requires, and
+  `ExceptionTranslator:138` handles `Exception`, so every REST exception already reaches the one component
+  that does know the status. A working pointcut would therefore log each REST error twice — once without the
+  status — flag every legitimate 404 as ERROR, wrap ~190 Spring beans in proxies, and, because `<root>` is
+  `ALL` and the encoder's own `isDebugEnabled()` guard is consequently always true, stringify every REST
+  argument and result into the log. Alternatives considered: fix the pointcut and DEBUG-gate the `@Around`;
+  fix the pointcut and add a class-scoped `<logger>` so the existing guard finally works. Both keep a
+  component whose only correct output duplicates `ExceptionTranslator`. Consequence: T01 becomes a deletion
+  and the substance of FN-004 moves entirely into T02.
+- 2026-09-07 — **A MARLO-owned `JsonProvider` emits the context fields, rather than the encoder's MDC
+  provider.** — Rationale: three separate requirements cannot be met by the stock providers. NF-006 needs
+  `status_code` and `user_id` as JSON numbers, and MDC is a `Map<String,String>` with no typed writer in the
+  6.6 encoder ADR-4 pins — the `mdcEntryWriter` that would solve it arrived in 7.3, which needs logback 1.3.
+  SEC-001 needs `user_name`/`user_email` suppressed unless the status is 400 or above, a decision that can
+  only be taken when the event is written, since the values are populated at the start of the request and the
+  status is known at the end. And `service_affected` has no value in a monolith (§8.3) and should be omitted
+  rather than emitted empty on every line. One class takes all three decisions in one place, which also keeps
+  NF-004 true. Alternatives considered: `StructuredArguments.keyValue` at each call site, which covers
+  `status_code` but not `user_id`, since that applies to every event of a request rather than one call;
+  emitting strings and casting in a downstream pre-processor, which is out of scope and does not exist, and
+  would leave `jq` — the consumer ADR-1 accepts as the baseline — needing a cast on the field that decides
+  alerting.
 - 2026-09-07 — **`docs/detailed-design/detailed-design.md` §9 left unchanged.** — Rationale: §9.1 already
   prescribes exactly what this spec implements. Editing it would make the work a constitutional event under
   `CLAUDE.md`, requiring an epic spec and external review, for no change in content. The conventions land in

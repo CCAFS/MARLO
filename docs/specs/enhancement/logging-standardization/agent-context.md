@@ -22,25 +22,35 @@ so every one of those calls goes nowhere. If a class seems to log and nothing ap
 One JSON object per line, written by the `FILE-JSON` appender to
 `${log.folder}/marlo-json-${log.instance}.log`, alongside the unchanged text log.
 
-| Field | Where it comes from | When |
-|---|---|---|
-| `timestamp` | Logback | always, ISO 8601 UTC, ms |
-| `level` | call site | always |
-| `request_id` | `LoggingContextFilter`, generated | every event inside a request |
-| `environment` | `APConfig.getEnvironment()` ← Spring active profile | always |
-| `tool_name` | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
-| `module_section` | logger name (the emitting class) | always |
-| `controller_affected` | request URI, `LoggingContextFilter` | every event inside a request |
-| `message` | call site | always |
-| `status_code` | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only |
-| `user_id` | `AddUserIdFilter`, Shiro principal | authenticated requests |
-| `user_name`, `user_email` | `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter` | **only** when `status_code >= 400` |
-| `stack_trace` | Logback throwable provider, truncated | when an exception is passed |
-| `payload` | call site, allow-list only | rarely, explicitly |
-| `service_affected` | — | emitted empty; no meaning for a monolith |
+| Field | Type | Where it comes from | When |
+|---|---|---|---|
+| `timestamp` | str | Logback | always, ISO 8601 UTC, ms |
+| `level` | str | call site | always |
+| `request_id` | str | `LoggingContextFilter`, generated | every event inside a request |
+| `environment` | str | `APConfig.getEnvironment()` ← Spring active profile | always |
+| `tool_name` | str | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
+| `module_section` | str | logger name (the emitting class) | always |
+| `controller_affected` | str | request path **without query string**, `LoggingContextFilter` | every event inside a request |
+| `message` | str | call site | always |
+| `status_code` | **num** | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only |
+| `user_id` | **num** | `AddUserIdFilter`, Shiro principal | authenticated requests |
+| `user_name`, `user_email` | str | `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter` | **only** when `status_code >= 400` |
+| `stack_trace` | str | Logback throwable provider, truncated | when an exception is passed |
+| `payload` | obj | call site, allow-list only | rarely, explicitly |
+| `service_affected` | — | — | **omitted**; no meaning for a monolith |
 
-Field names live in **one** `<providers>` block in `logback.xml`. The cross-tool naming is not settled
+`user_id` / `user_name` / `user_email` are three flat keys, not a nested `user` object — the MDC is a flat
+string map. Field names live in **one** `<providers>` block in `logback.xml`. The cross-tool naming is not settled
 (`tool`/`module` vs `tool_name`/`module_section` in the source agreement), so a rename must stay a single edit.
+
+**The two numeric fields are not free, and that flat string map is why.** The pinned encoder (6.6, because 7.x
+needs logback 1.3) has no typed-MDC writer, so anything read straight from MDC serializes as `"404"` — and
+`status_code` is the field every query over the log filters on, where `"404" >= "500"` compares text.
+`logging/MarloMdcJsonProvider.java` exists for exactly that, and it is also the **only** place that can
+enforce SEC-001: `user_name`/`user_email` enter the
+context when the request starts and `status_code` is known when it ends, so "only on errors" can only be
+applied when the line is written. The same class omits `service_affected`. If you are changing any of those
+three behaviours, that file is the one to open — not `logback.xml`, not the filters.
 
 ## 3. Where The Context Comes From, And Why It's Split
 
@@ -87,10 +97,14 @@ From A2-2435, now enforced by Checkstyle:
 
 ## 6. Known Gaps And Traps
 
-- **`LoggingAspect` advised nothing for years.** Its pointcut was `within(org.cgiar.ccafs.marlo.rest.*)`, and
-  no `.java` file lives directly in that package — all 386 are in subpackages, which `pkg.*` does not match.
-  Fixed to `rest..*`. Its `@Around` advice stringifies every argument and result, so it is removed or
-  DEBUG-gated: with the pointcut working it would apply to 386 classes instead of zero.
+- **`LoggingAspect` advised nothing for years, and is now deleted.** Its pointcut was
+  `within(org.cgiar.ccafs.marlo.rest.*)`, and no `.java` file lives directly in that package — all 386 are in
+  subpackages, which `pkg.*` does not match. It was **not** repaired: the aspect never sees the response, so
+  it cannot carry `status_code`, and `ExceptionTranslator:138` handles `Exception` and already receives every
+  REST exception. A working pointcut would double-log every REST error, record every legitimate 404 at ERROR,
+  proxy ~190 beans, and stringify every argument and result — the `@Around` guard reads `isDebugEnabled()`,
+  which is always true because `logback.xml:114` is `<root level="ALL">` and nothing scopes
+  `org.cgiar.ccafs.marlo`. If you are looking for the REST-side logging hook, it is `ExceptionTranslator`.
 - **`ExceptionTranslator` had 15 handlers and 1 log call.** REST errors were returned to clients with no
   server-side record. It is also the only place in the codebase where the HTTP status is known, so it is the
   only place `status_code` can be populated.
@@ -115,7 +129,9 @@ From A2-2435, now enforced by Checkstyle:
 appender picks them up.
 
 **Adding a new field to the schema:** put it in the `<providers>` block in `logback.xml` and, if it is
-per-request, populate it in `LoggingContextFilter`. Check §4 before adding any `MDC.put`.
+per-request, populate it in `LoggingContextFilter`. Check §4 before adding any `MDC.put`. If the field must be
+a number, must be conditional on another field, or must be omitted when empty, it goes through
+`MarloMdcJsonProvider` instead — `logback.xml` alone cannot express any of those.
 
 **Adding a REST error handler:** log it in `ExceptionTranslator` with the status its `@ResponseStatus`
 declares — 5xx at ERROR, 4xx at WARN or INFO. Do not change the `ErrorDTO` shape; clients depend on it.
@@ -136,8 +152,9 @@ every appender, so never duplicate them per appender.
   third context object.
 - **`UnhandledExceptionAction` + `SendMailS`** — the alerting path. Already emails the support team with user,
   CRP, phase and `actionName`. Extend it; never add a parallel notifier.
-- **`LoggingAspect`** — the REST-side hook. Now that its pointcut matches, use it rather than adding
-  per-controller try/catch logging.
+- **`ExceptionTranslator`** — the REST-side hook, and the only component that knows the HTTP status. Add
+  handlers and log there rather than adding per-controller try/catch logging. `LoggingAspect` used to be
+  described as this hook; it never worked and has been deleted (§6).
 - **The framework logger levels at `logback.xml:57-146`** — Struts, Shiro, Hibernate, Tomcat, Spring, ehcache
   are already tuned. Check there before concluding something "doesn't log".
 
@@ -147,6 +164,8 @@ The queue and the Pre-Processor from the cross-tool agreement; any Promtail targ
 (A2-1470 left one on `marlotest` only, tailing `catalina.out`; production has none); Loki retention, Grafana
 dashboards and Loki-side alert rules; the cross-tool field-name and mandatory-field agreement; the status-code
 alert control list; `detailed-design.md` §9, which already prescribes what this implements; APM and metrics.
+Also not adopted: the source document's prescribed `[Nest] ...` console error line — it is NestJS output, the
+text pattern stays as it is (NF-001), and the JSON event carries the same fields.
 
 See `requirements.md` §4 for why each is out, and §8 for the questions still owned by the DevOps group.
 
