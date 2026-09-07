@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -35,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Named
 public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationReferenceManager {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectInnovationReferenceManagerImpl.class);
 
 
   private ProjectInnovationReferenceDAO projectInnovationReferenceDAO;
@@ -157,7 +161,7 @@ public class ProjectInnovationReferenceManagerImpl implements ProjectInnovationR
             c -> c != null && c.getId() != null && c.getReference().equals(projectInnovationReference.getReference()))
           .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error retrieving project innovation references: " + e.getMessage());
+      LOG.error("Could not get the references of the innovation {} in the phase {}", innovationID, next.getId(), e);
       projectInnovationReferences = new ArrayList<>();
     }
 

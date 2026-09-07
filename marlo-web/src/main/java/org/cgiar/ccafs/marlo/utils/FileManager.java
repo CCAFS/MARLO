@@ -80,11 +80,9 @@ public class FileManager {
 
       return b;
     } catch (FileNotFoundException e) {
-      LOG.error("File Not Found.");
-      e.printStackTrace();
+      LOG.error("The file {} was not found", url, e);
     } catch (IOException e1) {
-      LOG.error("Error Reading The File.");
-      e1.printStackTrace();
+      LOG.error("Could not read the file {}", url, e1);
     } finally {
 
       try {

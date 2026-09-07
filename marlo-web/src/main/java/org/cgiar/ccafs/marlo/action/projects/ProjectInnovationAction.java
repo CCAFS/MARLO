@@ -201,7 +201,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1527,7 +1526,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          Log.error("error getting complementary solutions " + e);
+          logger.error("error getting complementary solutions", e);
         }
 
         // Innovations PRMS
@@ -1572,7 +1571,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          Log.error("error getting tool categories " + e);
+          logger.error("error getting tool categories", e);
         }
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null
@@ -1582,7 +1581,7 @@ public class ProjectInnovationAction extends BaseAction {
                 .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId()))
                 .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
           } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Could not sort the references of the innovation {}", innovation.getId(), e);
           }
         }
 
@@ -1670,7 +1669,7 @@ public class ProjectInnovationAction extends BaseAction {
                 .sorted(Comparator.comparing(ProjectInnovationFunction::getOrderIndex)).collect(Collectors.toList());
           }
         } catch (Exception e) {
-          Log.error("error getting project innovation functions " + e);
+          logger.error("error getting project innovation functions", e);
         }
 
         this.toolCategoryList.sort((o1, o2) -> {
@@ -1684,7 +1683,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
         });
       } catch (Exception e) {
-        Log.error("error getting list " + e);
+        logger.error("error getting list", e);
       }
       boolean has_specific_management_deliverables = this
           .hasSpecificities(APConstants.CRP_HAS_SPECIFIC_MANAGEMENT_DELIVERABLE_TYPES);
@@ -1728,7 +1727,7 @@ public class ProjectInnovationAction extends BaseAction {
             .filter(it -> it != null && it.getSource() != null && it.getSource() == 1 && it.getParent() == null)
             .collect(Collectors.toList());
       } catch (Exception e) {
-        Log.error("error getting institution types " + e);
+        logger.error("error getting institution types", e);
       }
 
       // Order SDG list by ID
@@ -1797,7 +1796,7 @@ public class ProjectInnovationAction extends BaseAction {
                 }
               } else {
                 // Handle institutions without a valid ID
-                Log.warn("Institution without a valid ID.");
+                logger.warn("Institution without a valid ID.");
                 contributingPartner.setNameWithCountry("Unknown Institution");
               }
 
@@ -1808,7 +1807,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          Log.error("Error getting headquarters: ", e);
+          logger.error("Error getting headquarters: ", e);
         }
       }
 
@@ -1859,7 +1858,7 @@ public class ProjectInnovationAction extends BaseAction {
               .collect(Collectors.toList());
         }
       } catch (Exception e) {
-        Log.error("error deleting elements from " + e);
+        logger.error("error deleting elements from", e);
       }
 
       // Innovation Type
@@ -1885,7 +1884,7 @@ public class ProjectInnovationAction extends BaseAction {
 
         }
       } catch (Exception e) {
-        Log.error("error getting list " + e);
+        logger.error("error getting list", e);
       }
 
       // Innovation Nature
@@ -1912,7 +1911,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovationNatureList.add(innovationNatureOther);
         }
       } catch (Exception e) {
-        Log.error("error getting list " + e);
+        logger.error("error getting list", e);
       }
 
       focusLevelList = focusLevelManager.findAll();
@@ -2148,7 +2147,8 @@ public class ProjectInnovationAction extends BaseAction {
               }
 
             } catch (Exception e) {
-              Log.error("error getting metadata elements " + e);
+              logger.debug("The deliverable {} has no handle metadata element in {}", deliverable.getId(),
+                  this.getActualPhase(), e);
             }
             try {
               if (deliverable.getDissemination() != null
@@ -2159,7 +2159,7 @@ public class ProjectInnovationAction extends BaseAction {
                 }
               }
             } catch (Exception e) {
-              Log.error("error getting dissemination info " + e);
+              logger.error("error getting dissemination info", e);
             }
 
             if (deliverable.getDissemination() != null && deliverable.getDissemination().getDisseminationUrl() != null
@@ -2289,7 +2289,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error getting feedback comments " + e);
+      logger.error("error getting feedback comments", e);
     }
 
     innovationDB = projectInnovationManager.getProjectInnovationById(innovationID);
@@ -2436,6 +2436,55 @@ public class ProjectInnovationAction extends BaseAction {
       Path path = this.getAutoSaveFilePath();
 
       innovation.setProject(project);
+
+      // A dropdown the user never touched posts the placeholder of the select macro, whose headerKey is "-1", and
+      // Struts binds that -1 onto the managed ProjectInnovationInfo. Every manager called below is @Transactional, so
+      // the first one that writes anything commits, Hibernate flushes the whole session, and the -1 reaches a foreign
+      // key column that rejects it. Which save that is depends on the data, since a save whose collection is empty
+      // writes nothing. The same guards run again later in this method, but by then the flush already failed, so the
+      // negative ids have to be cleared here, before the first save.
+      if (innovation.getProjectInnovationInfo() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
+          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+          innovation.getProjectInnovationInfo().setLeadOrganization(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution() != null
+          && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() != null) {
+          Long earlyIpInstitutionId =
+            innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId();
+          if (earlyIpInstitutionId <= 0) {
+            innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+          } else {
+            Institution earlyIpInstitution = institutionManager.getInstitutionById(earlyIpInstitutionId);
+            if (earlyIpInstitution != null) {
+              innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(earlyIpInstitution);
+            } else {
+              innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+            }
+          }
+        }
+      }
 
       this.saveOrganizations(innovationDB, phase);
       this.saveDeliverables(innovationDB, phase);
@@ -2648,7 +2697,7 @@ public class ProjectInnovationAction extends BaseAction {
           innovation.getProjectInnovationInfo().setReasonNotKnowledgePotential(reasonNotKnowledgePotential);
         }
       } catch (Exception e) {
-        Log.error("error getting know potential " + e);
+        logger.error("error getting know potential", e);
       }
       if (innovation.getProjectInnovationInfo().getHasKnowledgePotential() == null
           || innovation.getProjectInnovationInfo().getHasKnowledgePotential().getId() == null
@@ -2781,7 +2830,7 @@ public class ProjectInnovationAction extends BaseAction {
             // }
           }
         } catch (Exception e) {
-          Log.error("error deleting actor " + e);
+          logger.error("error deleting actor", e);
         }
       }
 
@@ -2843,8 +2892,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("Error saving actors " + e);
-      System.out.println("Error saving actors " + e);
+      logger.error("Error saving actors", e);
     }
   }
 
@@ -2881,7 +2929,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          Log.error("error deleting alliance levers " + e);
+          logger.error("error deleting alliance levers", e);
         }
       }
 
@@ -2927,7 +2975,7 @@ public class ProjectInnovationAction extends BaseAction {
               projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
             }
           } catch (Exception e) {
-            Log.error("error saving other alliance lever " + e);
+            logger.error("error saving other alliance lever", e);
           }
 
         }
@@ -2936,7 +2984,7 @@ public class ProjectInnovationAction extends BaseAction {
     } catch (
 
     Exception e) {
-      Log.error("Error saving alliance levers " + e);
+      logger.error("Error saving alliance levers", e);
     }
   }
 
@@ -2970,7 +3018,7 @@ public class ProjectInnovationAction extends BaseAction {
             }
           }
         } catch (Exception e) {
-          Log.error("error deleting alliance organization " + e);
+          logger.error("error deleting alliance organization", e);
         }
       }
 
@@ -3043,7 +3091,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error saving actors " + e);
+      logger.error("error saving actors", e);
     }
 
   }
@@ -3146,7 +3194,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("Error saving innovation bundles", e);
-      System.out.println("Error saving innovation bundles: " + e);
     }
   }
 
@@ -3246,7 +3293,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
 
     } catch (Exception e) {
-      Log.error("error to delete complementary solution functions " + e);
+      logger.error("error to delete complementary solution functions", e);
     }
 
     try {
@@ -3284,7 +3331,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error to delete complementary solution functions " + e);
+      logger.error("error to delete complementary solution functions", e);
     }
   }
 
@@ -3316,7 +3363,7 @@ public class ProjectInnovationAction extends BaseAction {
                         .deleteProjectInnovationComplementarySolutionFunction(function.getId());
                   }
                 } catch (Exception e) {
-                  Log.error("error to delete complementary solution functions " + e);
+                  logger.error("error to delete complementary solution functions", e);
                 }
                 projectInnovationComplementarySolutionManager
                     .deleteProjectInnovationComplementarySolution(complementarySolution.getId());
@@ -3382,7 +3429,6 @@ public class ProjectInnovationAction extends BaseAction {
 
     } catch (Exception e) {
       logger.error("Error saving complementary solutions", e);
-      System.out.println("Error saving complementary solutions: " + e);
     }
   }
 
@@ -4251,7 +4297,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
       } catch (Exception e) {
-        Log.error("error deleting reference complementary solution " + e);
+        logger.error("error deleting reference complementary solution", e);
       }
     }
 
@@ -4277,7 +4323,7 @@ public class ProjectInnovationAction extends BaseAction {
                   .getProjectInnovationReferenceComplementarySolutionById(innovationReference.getId());
             }
           } catch (Exception e) {
-            Log.error("error in load references process " + e);
+            logger.error("error in load references process", e);
           }
 
           innovationReferenceSave.setProjectInnovation(projectInnovation);
@@ -4307,7 +4353,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error saving reference complementary solution " + e);
+      logger.error("error saving reference complementary solution", e);
     }
   }
 
@@ -4341,7 +4387,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
       } catch (Exception e) {
-        Log.error("error deleting reference " + e);
+        logger.error("error deleting reference", e);
       }
     }
 
@@ -4449,7 +4495,7 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
       } catch (Exception e) {
-        Log.error("error deleting reference URL " + e);
+        logger.error("error deleting reference URL", e);
       }
     }
 
@@ -4500,7 +4546,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error saving references URL " + e);
+      logger.error("error saving references URL", e);
     }
   }
 
@@ -4638,7 +4684,7 @@ public class ProjectInnovationAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error in sdg save process " + e);
+      logger.error("error in sdg save process", e);
     }
   }
 
@@ -5058,13 +5104,13 @@ public class ProjectInnovationAction extends BaseAction {
                   ref.setDeliverableType(deliverableTypeManager.getDeliverableTypeById(deliverableTypeId));
                 }
               } catch (Exception e) {
-                Log.error("Error parsing deliverableType.id for reference index " + i + ": " + e);
+                logger.error("Could not parse deliverableType.id for the reference index {}", i, e);
               }
             }
           }
         }
       } catch (Exception e) {
-        Log.error("Error normalizing reference deliverable type params before validation: " + e);
+        logger.error("Error normalizing reference deliverable type params before validation:", e);
       }
 
       // Change the parameters for the new way to validate the data
@@ -5156,7 +5202,6 @@ public class ProjectInnovationAction extends BaseAction {
 
     } catch (Exception e) {
       logger.error("Error verifying bundle type", e);
-      System.out.println("Error verifying bundle type: " + e);
     }
   }
 }

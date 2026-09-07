@@ -186,7 +186,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -460,7 +459,7 @@ public class DeliverableAction extends BaseAction {
         deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
           projectID, this.getActualPhase().getId()).get(0);
     } catch (Exception e) {
-      Log.error(e + " error getting actual cluster participant ID");
+      logger.error("error getting actual cluster participant ID", e);
     }
     if (clusterParticipant != null && clusterParticipant.getId() != null) {
       return clusterParticipant;
@@ -665,7 +664,7 @@ public class DeliverableAction extends BaseAction {
             && di.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()).get(0);
       }
     } catch (Exception e) {
-      Log.error(e + " error getting deliverable info by phase");
+      logger.error("error getting deliverable info by phase", e);
     }
     return deliverableInfoPhase;
   }
@@ -680,7 +679,7 @@ public class DeliverableAction extends BaseAction {
         deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
           projectID, this.getActualPhase().getId()).get(0);
     } catch (Exception e) {
-      Log.error(e + " error getting actual cluster participant ID");
+      logger.error("error getting actual cluster participant ID", e);
     }
     if (clusterParticipant != null && clusterParticipant.getId() != null) {
       return true;
@@ -760,7 +759,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.info("error getting soil indicators " + e);
+      logger.error("Could not build the soil indicators text", e);
     }
   }
 
@@ -858,7 +857,7 @@ public class DeliverableAction extends BaseAction {
         deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
           projectID, this.getActualPhase().getId()).get(0);
     } catch (Exception e) {
-      Log.error(e + " error getting actual cluster participant ID");
+      logger.error("error getting actual cluster participant ID", e);
     }
     if (clusterParticipant != null && clusterParticipant.getId() != null) {
       return clusterParticipant.getId();
@@ -1365,7 +1364,7 @@ public class DeliverableAction extends BaseAction {
                     indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
                   }
                 } catch (Exception e) {
-                  Log.error("error getting crp program outcome " + e);
+                  logger.error("error getting crp program outcome", e);
                 }
               }
               if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null
@@ -1378,7 +1377,7 @@ public class DeliverableAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error validating soil indicator boolean " + e);
+      logger.error("error validating soil indicator boolean", e);
     }
     return containsIndicator;
   }
@@ -1833,7 +1832,8 @@ public class DeliverableAction extends BaseAction {
                 && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
               .findFirst().orElse(null).getElementValue();
           } catch (Exception e) {
-            Log.info(e);
+            logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
+              this.getActualPhase(), e);
           }
 
 
@@ -1844,7 +1844,8 @@ public class DeliverableAction extends BaseAction {
                 && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
               .findFirst().orElse(null).getElementValue();
           } catch (Exception e) {
-            Log.info(e);
+            logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
+              this.getActualPhase(), e);
           }
 
 
@@ -2156,7 +2157,7 @@ public class DeliverableAction extends BaseAction {
           studyTypeList.remove(0);
         }
       } catch (Exception e) {
-        Log.error("error deleting elements from study type list " + e);
+        logger.error("error deleting elements from study type list", e);
       }
 
       crps = new ArrayList<GlobalUnit>();
@@ -2439,7 +2440,7 @@ public class DeliverableAction extends BaseAction {
             feedbackQACommentTemp = feedbackQACommentManager
               .getFeedbackQACommentsByPhaseAndParentId(this.getActualPhase().getId(), deliverable.getId());
           } catch (Exception e) {
-            Log.error("unable to get FeedbackQACommentTemp", e);
+            logger.error("unable to get FeedbackQACommentTemp", e);
           }
 
 
@@ -3424,7 +3425,7 @@ public class DeliverableAction extends BaseAction {
           deliverableManagedState.getDeliverableInfo().setStudyType(null);
         }
       } catch (Exception e) {
-        Log.error("Validate null study type id " + e);
+        logger.error("Validate null study type id", e);
       }
 
       if (haveRegions) {
@@ -3952,7 +3953,7 @@ public class DeliverableAction extends BaseAction {
                   .get(0);
               }
             } catch (Exception e) {
-              Log.error(e + "error getting cluster participant id");
+              logger.error("error getting cluster participant id", e);
             }
 
           }
@@ -3992,7 +3993,8 @@ public class DeliverableAction extends BaseAction {
           deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(
             deliverable.getId(), deliverable.getProject().getId(), this.getActualPhase().getId()).get(0);
       } catch (Exception e) {
-        Log.info(e);
+        logger.debug("The deliverable {} has no cluster participant in {}", deliverable.getId(), this.getActualPhase(),
+          e);
       }
       participantSave.setParticipants(deliverable.getDeliverableParticipant().getParticipants());
       participantSave.setFemales(deliverable.getDeliverableParticipant().getFemales());
@@ -4514,7 +4516,7 @@ public class DeliverableAction extends BaseAction {
               && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
             .findFirst().orElse(null).getElementValue();
         } catch (Exception e) {
-          Log.info(e);
+          logger.debug("The deliverable {} has no DOI metadata element", deliverable.getId(), e);
         }
 
         try {
@@ -4523,7 +4525,7 @@ public class DeliverableAction extends BaseAction {
               && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
             .findFirst().orElse(null).getElementValue();
         } catch (Exception e) {
-          Log.info(e);
+          logger.debug("The deliverable {} has no handle metadata element", deliverable.getId(), e);
         }
       }
 
@@ -4756,7 +4758,7 @@ public class DeliverableAction extends BaseAction {
                 clusterParticipant =
                   deliverableClusterParticipantManager.getDeliverableClusterParticipantById(clusterParticipantID);
               } catch (Exception e) {
-                Log.error(e + " error getting cluster participant by ID");
+                logger.error("error getting cluster participant by ID", e);
               }
               if (clusterParticipant != null) {
                 clusterParticipant.setDeliverable(deliverable);
@@ -5685,7 +5687,7 @@ public class DeliverableAction extends BaseAction {
         deliverableInfoDb.setStudyType(null);
       }
     } catch (Exception e) {
-      Log.error("Validate null study type id " + e);
+      logger.error("Validate null study type id", e);
     }
     // Set CrpProgramOutcome to null if has an -1 id
     if (deliverable.getDeliverableInfo().getCrpProgramOutcome() == null

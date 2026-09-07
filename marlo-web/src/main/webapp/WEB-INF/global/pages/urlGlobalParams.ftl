@@ -3,7 +3,8 @@
 [#if logged]
   [@s.param name='edit' value="true" /]
 [/#if]
-[#-- Phase ID parameter --]
-[#if actualPhase??]
+[#-- Phase ID parameter. A phase with no id renders the param with an empty value, which every action then has
+     to reject, so the param is only added when there is an id to send. --]
+[#if (actualPhase.id)?has_content]
   [@s.param name='phaseID' value=actualPhase.id /]
 [/#if]

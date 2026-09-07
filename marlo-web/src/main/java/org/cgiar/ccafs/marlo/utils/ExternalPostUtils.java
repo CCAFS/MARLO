@@ -29,10 +29,15 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author tonyshikali
  */
 public class ExternalPostUtils {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ExternalPostUtils.class);
 
   private String username = "";
 
@@ -139,9 +144,8 @@ public class ExternalPostUtils {
       if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
         rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       } else {
-        System.out
-          .println(requestMethod + " request to " + endpoint + " generated response " + connection.getResponseCode()
-            + " " + connection.getResponseMessage() + " " + requestMethod + "ing\n" + parameters);
+        LOG.error("The {} request to {} answered {} {}. Sent parameters: {}", requestMethod, endpoint,
+          connection.getResponseCode(), connection.getResponseMessage(), parameters);
         if (connection.getErrorStream() != null) {
           rd = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
         } else if (connection.getInputStream() != null) {
@@ -162,7 +166,7 @@ public class ExternalPostUtils {
       wr.close();
       connection.disconnect();
     } catch (Throwable e) {
-      e.printStackTrace();
+      LOG.error("The {} request to {} could not be completed", requestMethod, endpoint, e);
     }
 
     return postResponse;
@@ -200,9 +204,8 @@ public class ExternalPostUtils {
       if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
         rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       } else {
-        System.out
-          .println(requestMethod + " request to " + endpoint + " generated response " + connection.getResponseCode()
-            + " " + connection.getResponseMessage() + " " + requestMethod + "ing\n" + parameters);
+        LOG.error("The {} request to {} answered {} {}. Sent parameters: {}", requestMethod, endpoint,
+          connection.getResponseCode(), connection.getResponseMessage(), parameters);
         if (connection.getErrorStream() != null) {
           rd = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
         } else if (connection.getInputStream() != null) {
@@ -222,7 +225,7 @@ public class ExternalPostUtils {
       wr.close();
       connection.disconnect();
     } catch (Throwable e) {
-      e.printStackTrace();
+      LOG.error("The {} request to {} could not be completed", requestMethod, endpoint, e);
     }
 
     return postResponse;

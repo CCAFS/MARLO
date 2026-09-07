@@ -92,9 +92,8 @@ public class ThreadSendMail extends Thread {
 
         i++;
         if (i == 10) {
-          e.printStackTrace();
           reply = true;
-          LOG.error(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+          LOG.error("The message '{}' could not be sent after {} attempts", subject, i, e);
           emailLog.setTried(i);
           emailLog.setSucces(false);
           emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
@@ -109,15 +108,14 @@ public class ThreadSendMail extends Thread {
             60 * // seconds to a minute
             1000);
         } catch (InterruptedException e1) {
-
-          e1.printStackTrace();
+          LOG.warn("The wait between send attempts of the message '{}' was interrupted", subject, e1);
         }
-        e.printStackTrace();
+        LOG.warn("Attempt {} to send the message '{}' failed", i, subject, e);
       }
 
     }
     if (reply) {
-      System.out.println("Enviamos respaldo ");
+      LOG.info("Sending the backup copy of the message '{}'", subject);
       Properties backupproperties = System.getProperties();
       backupproperties.put("mail.debug", "true");
       backupproperties.put("mail.smtp.host", config.getEmailHostbackup());
@@ -145,8 +143,7 @@ public class ThreadSendMail extends Thread {
 
         msgbackup.saveChanges();
       } catch (MessagingException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+        LOG.error("Could not save the changes of the backup message '{}'", subject, e1);
       }
       try {
         if (!config.isProduction()) {
@@ -159,25 +156,23 @@ public class ThreadSendMail extends Thread {
           msgbackup.setFrom(new InternetAddress(config.getEmail_notificaction_backup()));
         } catch (AddressException e) {
           msgbackup.setFrom((InternetAddress) null);
-          LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+          LOG.error("Could not set the FROM address of the backup message '{}'", subject, e);
         }
         msgbackup.setRecipients(Message.RecipientType.BCC, sendeMail.getRecipients(Message.RecipientType.BCC));
         msgbackup.setSubject(sendeMail.getSubject());
         msgbackup.setSentDate(sendeMail.getSentDate());
         msgbackup.setContent((MimeMultipart) sendeMail.getContent());
       } catch (MessagingException e) {
-        e.printStackTrace();
-        LOG.error("There was an error sending a message", e.getMessage());
+        LOG.error("Could not build the backup message '{}'", subject, e);
 
       } catch (Exception e) {
-        e.printStackTrace();
-        LOG.error("There was an error sending  a backup message", e.getMessage());
+        LOG.error("There was an unexpected error building the backup message '{}'", subject, e);
       }
       i = 0;
       try {
         emailLogBkup.setMessageID(msgbackup.getMessageID());
       } catch (MessagingException e1) {
-        e1.printStackTrace();
+        LOG.error("Could not read the id of the backup message '{}'", subject, e1);
       }
       while (!sent) {
         try {
@@ -197,8 +192,7 @@ public class ThreadSendMail extends Thread {
 
           i++;
           if (i == 10) {
-            e.printStackTrace();
-            LOG.error(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+            LOG.error("The backup message '{}' could not be sent after {} attempts", subject, i, e);
             emailLogBkup.setTried(i);
             emailLogBkup.setSucces(false);
             emailLogBkup.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
@@ -213,10 +207,9 @@ public class ThreadSendMail extends Thread {
               60 * // seconds to a minute
               1000);
           } catch (InterruptedException e1) {
-
-            e1.printStackTrace();
+            LOG.warn("The wait between send attempts of the backup message '{}' was interrupted", subject, e1);
           }
-          e.printStackTrace();
+          LOG.warn("Attempt {} to send the backup message '{}' failed", i, subject, e);
         }
       }
     }
