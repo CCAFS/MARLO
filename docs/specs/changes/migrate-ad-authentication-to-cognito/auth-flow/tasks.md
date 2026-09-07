@@ -31,7 +31,7 @@
 
 - [ ] `requirements.md` and `design.md` approved by Tech lead + one of PMU/QA lead.
 - [x] **OQ-9 answered 2026-09-02** — the stable identifier is the corporate **`email`**, normalized (trim + lowercase). A different corporate email is a **different user**. **T07 unblocked.**
-- [x] **OQ-3 answered 2026-09-02 — dissolved.** No new federation is requested: the existing IBD Cognito setup is already integrated with the CGIAR corporate directory. MARLO reuses it via the 7 `cognito.*` environment variables. **T12–T14 unblocked**; the "returns to the parent proposal" branch cannot trigger.
+- [x] **OQ-3 answered 2026-09-02 — dissolved.** No new federation is requested: the existing IBD Cognito setup is already integrated with the CGIAR corporate directory. MARLO reuses it via the **8** `cognito.*` environment variables (**corrected 2026-09-07**: written as 7, which was true until T15 added `cognito.identity.provider` on 2026-09-03). **T12–T14 unblocked**; the "returns to the parent proposal" branch cannot trigger.
 - [ ] `git pull` on `staging`; branch is `staging-cognito`.
 - [ ] A Cognito User Pool + app client exists in a dev account. **Superseded in shape by OQ-3's closure:** the pool exists and is not MARLO's to create. What is still needed is an **app client whose callback allowlist includes MARLO's redirect URI**, plus the 7 key values for the target environment — a request to the pool's owner, not a provisioning task in this spec.
 

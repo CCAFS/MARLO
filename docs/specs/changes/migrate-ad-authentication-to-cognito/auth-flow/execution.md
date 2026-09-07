@@ -4624,3 +4624,50 @@ pass by comparing an empty string to an empty string. The Tester noted it theref
 `NoSuchMethodError: Checker.setClassloader`. `CLAUDE.md` lists it as a required hard gate. It would not have
 covered this work regardless: no `includeTestSourceDirectory` is configured, so it reads `src/main/java` only.
 Fixing it means editing `marlo-parent/pom.xml`, a shared file under the dependency-baseline rule.
+
+---
+
+## 49. WARN-3 corrected — the OQ-3 key count — 2026-09-07
+
+`/akili-validate`'s cross-document figure check caught it: the **OQ-3 closure entry** stated that deployed
+environments supply **7** `cognito.*` variables, and added *"verified 2026-09-02 that those 7 names match
+`APConfig`'s `@Value` fields and `marlo-test.properties` exactly"*. **There are eight.**
+
+The entry was accurate the day it was written. **T15 added `cognito.identity.provider` the next day and the
+entry was never updated** — the half-applied-amendment shape that FAILed T18 twice and that §40.6 records for
+the task ledger. This is its third occurrence in one spec.
+
+**Why it mattered operationally, and it is not cosmetic.** A deployment provisioning seven variables would
+have omitted the one setting that routes users straight to the CGIAR IdP; they would land on Cognito's hosted
+provider chooser instead. Visible rather than silent — but configured from a document whose own words were
+*"verified"*.
+
+### 49.1 What changed, and what deliberately did not
+
+**Corrected — three current claims**, each carrying the correction inline rather than silently renumbered:
+the OQ-3 table row and the OQ-3 Decision Log entry in `requirements.md`, and the OQ-3 note in `tasks.md`.
+
+**Preserved — four historical records.** `execution.md:305`, `:362`, `:1116` and `:2922` describe the
+pre-T15 seven-key state and were true when written. `tasks.md:791` says T15 added its key "as T03 did for the
+other seven", which is **exactly right** and would become wrong if edited. **Rewriting a record of what was
+true then is not a correction; it is a falsification.**
+
+### 49.2 The sweep ran in both directions
+
+Forward: the **original detection pattern** was re-run, not a narrower one — a benign regex would have
+reported success on a sweep that never looked. Every surviving "7" is inside the correction text, a preserved
+historical record, or unrelated (`test 7`, `seven generic branches`, `hard rule 8`).
+
+Backward: every document citing OQ-3 was checked for an inherited count. None asserts one.
+
+Ground truth re-verified rather than assumed: `marlo-test.properties` carries exactly **8** `cognito.*` keys.
+
+### 49.3 WARN-1 and WARN-2 left as they are, by instruction
+
+**WARN-1** — Checkstyle is a required hard gate per `CLAUDE.md:184` and is **doubly inert**: the
+`maven-checkstyle-plugin:2.9.1` / `checkstyle:8.18` pairing throws, and `severity="warning"` repo-wide means
+it would enforce nothing if it ran. **Recorded as accepted repository-level debt, outside `auth-flow`'s
+scope.** No build or repository configuration was modified.
+
+**WARN-2** — §27.4 items **8a, 8b and 8c stay NOT OBSERVED** with their existing owners and follow-ups. Not
+marked PASS.

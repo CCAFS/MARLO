@@ -139,7 +139,7 @@ The implementation matches `design.md` §5.2, §8, §13.1 and §13.3. Three deli
 explained in the design or the execution notes, as Phase 6 requires: the `cognitoUnloggedStack` deviation from
 §8, the T16 reflection workaround, and the T21 call-site adaptation.
 
-### WARN-3 — a figure contradicted by another document's own prose
+### WARN-3 — a figure contradicted by another document's own prose — **CORRECTED 2026-09-07**
 
 `requirements.md:486` and `:506` — the **OQ-3 closure entry**, dated 2026-09-02 — both state that deployed
 environments supply **7** `cognito.*` environment variables, and `:506` adds *"verified 2026-09-02 that those 7
@@ -165,7 +165,17 @@ ledger.
 - **Ownership:** the Leader. It is a documentation correction, not a code change.
 - **Blocks archive? Not on its own** — but it should be corrected before archive, because archiving freezes a
   document that states a verified-sounding falsehood about deployment configuration.
-- **Not remediated here**, per the user's instruction to stop after reporting.
+- **CORRECTED 2026-09-07**, on the user's authorisation and scoped to this finding alone. Three **current**
+  claims now read 8 and carry the correction inline: `requirements.md`'s OQ-3 table row and Decision Log
+  entry, and `tasks.md`'s OQ-3 note. Ground truth re-verified: `marlo-test.properties` carries exactly eight
+  `cognito.*` keys, `cognito.identity.provider` among them.
+- **Historical records were preserved, deliberately.** `execution.md:305`, `:362`, `:1116` and `:2922`
+  describe the pre-T15 seven-key state and were accurate when written; `tasks.md:791` says T15 added a key
+  "as T03 did for the other seven", which is exactly right. **Rewriting those would falsify the record.**
+- **Closure sweep ran in both directions.** Forward: the original detection pattern was re-run and every
+  surviving "7" is either inside the correction text itself, a preserved historical record, or unrelated
+  (`test 7`, `seven generic branches`, `hard rule 8`). Backward: every document citing OQ-3 was checked, and
+  none asserts a count that the correction invalidates.
 
 ## 9. Test Evidence Summary
 
@@ -194,7 +204,7 @@ pending work for `/akili-archive` Step 3.
 
 | # | Finding | Severity | Owner | Blocks archive? |
 |---|---|---|---|---|
-| **WARN-3** | OQ-3 says 7 `cognito.*` variables; there are 8 | WARN | Leader | Not on its own — **but correct it first** |
+| ~~**WARN-3**~~ | ~~OQ-3 says 7 `cognito.*` variables; there are 8~~ **CORRECTED 2026-09-07**, with a two-directional closure sweep | resolved | Leader | No |
 | **WARN-1** | Checkstyle is a required gate and is doubly inert, repo-wide | WARN | `marlo-parent/pom.xml` owner / Tech lead | No |
 | **WARN-2** | 8a / 8b / 8c NOT OBSERVED | WARN | DevOps/IBD, Infrastructure, QA | No |
 | A1–A6 | Advisories, no spec violation | advisory | various | No |
@@ -209,10 +219,10 @@ pending work for `/akili-archive` Step 3.
 | No unresolved FAIL findings | **MET** — zero FAIL |
 | WARN findings accepted or assigned follow-up | **MET** — all three have named owners |
 | Tests cover the key requirements and scenarios | **MET** — 58 clauses proven; every gap accepted or held open |
-| Implementation drift reflected in the docs | **MET, with WARN-3 outstanding** |
+| Implementation drift reflected in the docs | **MET** — WARN-3 corrected 2026-09-07 |
 | **The user has reviewed the validation summary** | **NOT MET — this is the remaining gate** |
 
-**Recommendation: archive-ready once the user reviews this report**, and preferably after WARN-3 is corrected.
+**Recommendation: archive-ready. The user's review of this report is the one remaining gate.**
 
 ### Auditor independence — the limit of this report
 
@@ -224,7 +234,7 @@ re-check — but a validation report is the wrong place to leave that unsaid.
 
 ### Remaining steps before `/akili-archive`
 
-1. **Correct WARN-3** — the 7-versus-8 count in the OQ-3 entry, with a correction-closure sweep.
+1. ~~Correct WARN-3~~ — **done 2026-09-07.**
 2. **User review of this report** — the one readiness gate not met.
 3. Optionally decide WARN-1's disposition: fix the plugin pairing, or record it as an accepted repo-level debt.
 
