@@ -229,7 +229,7 @@ public class ProjectActivitiesAction extends BaseAction {
       openA.sort(Comparator.comparing(this::extractActivityNumber));
       return openA;
     } catch (Exception e) {
-      System.err.println("Error getting activities: " + e.getMessage());
+      logger.error("Could not get the activities of the project", e);
       return new ArrayList<>();
     }
   }

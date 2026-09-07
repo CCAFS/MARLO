@@ -143,8 +143,7 @@ public class SendMailS extends BaseAction {
 
       msg.saveChanges();
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not save the changes of the message '{}'", subject, e1);
     }
 
     EmailLog emailLog = new EmailLog();
@@ -155,8 +154,7 @@ public class SendMailS extends BaseAction {
     try {
       emailLog.setMessageID(msg.getMessageID());
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not read the id of the message '{}'", subject, e1);
     }
     String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
     String footer = "</div>";
@@ -166,8 +164,7 @@ public class SendMailS extends BaseAction {
     try {
       emailLog.setMessageID(msg.getMessageID());
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not read the id of the message '{}'", subject, e1);
     }
 
     // Set the FROM and TO fields
@@ -216,7 +213,7 @@ public class SendMailS extends BaseAction {
       } catch (AddressException e) {
         msg.setFrom((InternetAddress) null);
         // msgbackup.setFrom((InternetAddress) null);
-        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+        LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
       if (bbcEmail != null) {
@@ -255,8 +252,7 @@ public class SendMailS extends BaseAction {
         try {
           emailLog.setMessageID(msg.getMessageID());
         } catch (MessagingException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
+          LOG.error("Could not read the id of the message '{}'", subject, e1);
         }
       }
 
@@ -267,8 +263,7 @@ public class SendMailS extends BaseAction {
       thread.start();
 
     } catch (MessagingException e) {
-      e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
+      LOG.error("There was an error sending the message '{}'", subject, e);
 
     }
   }
@@ -329,8 +324,7 @@ public class SendMailS extends BaseAction {
     try {
       msg.saveChanges();
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not save the changes of the message '{}'", subject, e1);
     }
 
     EmailLog emailLog = new EmailLog();
@@ -343,8 +337,7 @@ public class SendMailS extends BaseAction {
     try {
       emailLog.setMessageID(msg.getMessageID());
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not read the id of the message '{}'", subject, e1);
     }
 
     // Set the FROM and TO fields
@@ -380,7 +373,7 @@ public class SendMailS extends BaseAction {
         msg.setFrom(new InternetAddress(config.getEmailNotification()));
       } catch (AddressException e) {
         msg.setFrom((InternetAddress) null);
-        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+        LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
       if (bbcEmail != null) {
@@ -420,8 +413,7 @@ public class SendMailS extends BaseAction {
       return true;
 
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
+      LOG.error("There was an error sending the message '{}'", subject, e);
       return false;
     }
   }
@@ -483,8 +475,7 @@ public class SendMailS extends BaseAction {
 
       msg.saveChanges();
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not save the changes of the message '{}'", subject, e1);
     }
 
     EmailLog emailLog = new EmailLog();
@@ -495,8 +486,7 @@ public class SendMailS extends BaseAction {
     try {
       emailLog.setMessageID(msg.getMessageID());
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not read the id of the message '{}'", subject, e1);
     }
     String header = "<div style=\"font-family:Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif; \">";
     String footer = "</div>";
@@ -506,8 +496,7 @@ public class SendMailS extends BaseAction {
     try {
       emailLog.setMessageID(msg.getMessageID());
     } catch (MessagingException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+      LOG.error("Could not read the id of the message '{}'", subject, e1);
     }
 
     // Set the FROM and TO fields
@@ -556,7 +545,7 @@ public class SendMailS extends BaseAction {
       } catch (AddressException e) {
         msg.setFrom((InternetAddress) null);
         // msgbackup.setFrom((InternetAddress) null);
-        LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+        LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
       if (bbcEmail != null) {
@@ -595,8 +584,7 @@ public class SendMailS extends BaseAction {
         try {
           emailLog.setMessageID(msg.getMessageID());
         } catch (MessagingException e1) {
-          // TODO Auto-generated catch block
-          e1.printStackTrace();
+          LOG.error("Could not read the id of the message '{}'", subject, e1);
         }
       }
 
@@ -607,8 +595,7 @@ public class SendMailS extends BaseAction {
       thread.start();
 
     } catch (MessagingException e) {
-      e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
+      LOG.error("There was an error sending the message '{}'", subject, e);
 
     }
   }
