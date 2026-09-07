@@ -166,7 +166,14 @@ The system **SHALL** authenticate CGIAR users by an OAuth 2.0 Authorization Code
 - **WHEN** they return to MARLO
 - **THEN** the existing `login.error.invalidUserCrp` message **MUST** be shown
 - **AND** the Shiro session **MUST** be cleared and the subject logged out
-- **AND IT MUST** behave identically to the local-login case for the same condition
+- **AND IT MUST** apply the **same mechanism** as the local-login case for the same condition: the same
+  `login.error.invalidUserCrp` key, the same `getSession().clear()` and `Subject.logout()`, through the same
+  shared `finishLogin` tail — **RE-AMENDED 2026-09-07**: the earlier wording said "behave **identically**",
+  which the **presentation** deliberately no longer does. T21 and T22 made the Cognito path **redirect** to
+  `login.do` instead of re-rendering in place, because rendering in place left the authorization code and
+  `state` in the address bar and in browser history and poisoned the `Referer` — that is **V-4, V-5 and V-7**
+  (`execution.md` §34, §37, §40). The local path carries no authorization material in its URL and needs no
+  such redirect. **The divergence is the fix, not a defect** (see Decision Log, 2026-09-07)
 
 ##### Scenario: MARLO account is inactive
 
@@ -364,7 +371,13 @@ The flow **SHALL** be gated by a per-Global-Unit specificity, following the `AGE
 
 - **GIVEN** the Cognito flow is enabled for Global Unit `X`
 - **WHEN** an operator sets the specificity to `false` for `X`
-- **THEN** CGIAR users of `X` **MUST** immediately return to the LDAP flow on their next login attempt
+- **THEN** CGIAR users of `X` **MUST** return to the LDAP flow on their next login attempt —
+  **AMENDED 2026-09-07**: "immediately" holds only when the flag is written **through the application**
+  (`saveCustomParameter`) or the application is restarted. `CustomParameterMySQLDAO:90` marks the override
+  lookup `setCacheable(true)` with a **3600 s** TTL, and Hibernate cannot see a write made outside its session
+  — so a flag flipped by **direct SQL or by a Flyway migration can take up to an hour to take effect**
+  (`execution.md` §24.3). **This is an environment constraint, not an implementation defect**, and the
+  rollback route that satisfies the requirement is the application one
 - **AND IT MUST NOT** require a code change, a build, or a redeploy
 - **BUT** it **MUST NOT** affect any other Global Unit
 
@@ -495,3 +508,5 @@ Per the AKILI rule that a gate blind to the dominant defect class is not a gate:
 | 2026-09-02 | **OQ-8 CLOSED — local logout only; never terminate the CGIAR SSO session** | Ending the IdP session would sign the user out of unrelated CGIAR applications open in the same browser (corporate email among them). MARLO ends only its own session and the Cognito application session. FN-007 must therefore **not** perform RP-initiated logout |
 | 2026-09-04 | **The step-3 method is announced by a heading, not chosen through a control** — FN-001 and `design.md` §5.2 re-amended the same day they were amended | The earlier amendment required an *External user* control that revealed the password only once chosen, and an absence-by-construction guarantee on the CGIAR path. Both are withdrawn. **A selection step offering only one valid method is artificial navigation and unnecessary friction**: the matrix above resolves every account to exactly one method the server can accept, so the "choice" has a single option and the click buys nothing. Automatic resolution (`mode = isCgiarUser && cognitoEnabled`) is kept byte-identical, and T12's validated create-then-remove mechanism is kept rather than inverted into a primary creation path — it is exercised by a real corporate login. **The server remains authoritative either way** (SEC-005/SEC-006, T11/T11b): the UI decides what to offer, never what to permit |
 | 2026-09-07 | **OQ-4 CLOSED on IBD confirmation — no `/api/**` Basic-auth consumers exist** | IBD, who owns the integration inventory, confirmed that no external application, script or integration authenticates to `/api/**` with Basic auth; report generation and similar processes reach MARLO through normal actions and the ordinary application authentication flow. **D-7 was an accepted risk with no gate until this was answered; the answer discharges it.** T00's second entry — the service account `ClarisaPublicAccesFilter` binds through the same realm — was verified independently from the database rather than accepted: `is_cgiar_user = 0` and no membership in any Cognito-enabled Global Unit, so it is unaffected on two independent counts. **Two limits are recorded rather than glossed:** the answer is organizational, not derived from access logs, and it is point-in-time — the `authcBasic` mapping still exists, so a future integration could still adopt it |
+| 2026-09-07 | **FN-002 S5 re-amended — the Cognito refusal diverges from the local one in *presentation*, and that divergence is the fix** | The clause required the two to "behave identically". T21 and T22 deliberately made the Cognito path redirect to `login.do` rather than re-render in place, because rendering in place left the authorization code and `state` in the address bar and browser history and poisoned the `Referer` — the root cause of **V-4**, fixed as **V-5** and **V-7**. The local path carries no authorization material in its URL and needs no redirect. **The mechanism stays identical**: same message key, same `getSession().clear()`, same `Subject.logout()`, same shared `finishLogin` tail. Found by `/akili-test` as spec drift: FN-001 and FN-006 were amended when they drifted, this clause was not. **No production code changed to satisfy an obsolete requirement** |
+| 2026-09-07 | **MIG-001 S17 amended — "immediately" is true of the application route, not of direct SQL** | `CustomParameterMySQLDAO:90` marks the specificity lookup `setCacheable(true)` with a 3600 s TTL, and Hibernate cannot observe a write made outside its own session. A flag flipped by direct SQL or by a Flyway migration can therefore take **up to an hour** to take effect (`execution.md` §24.3, recorded as a Category B environment behaviour during T12). Flipping it through `saveCustomParameter`, or restarting, is immediate. **The requirement was stronger than any route could satisfy; the amendment names the route that does.** An operational consequence for the rollback runbook, not a code defect |

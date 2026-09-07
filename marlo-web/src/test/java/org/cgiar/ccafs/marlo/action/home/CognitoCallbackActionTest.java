@@ -205,8 +205,18 @@ public class CognitoCallbackActionTest {
 
   private PendingAuthorization seedPending(TestableCognitoCallbackAction action, String state, long globalUnitId,
     String returnUrl, String nonce) {
+    return this.seedPending(action, state, globalUnitId, returnUrl, nonce, "verifier-abc");
+  }
+
+  /**
+   * Overload carrying an explicit PKCE verifier, so the one test that asserts what reaches the token
+   * endpoint can seed a value distinctive to itself rather than the shared {@code "verifier-abc"} every
+   * other test uses -- a shared literal could be matched by accident, a distinctive one cannot.
+   */
+  private PendingAuthorization seedPending(TestableCognitoCallbackAction action, String state, long globalUnitId,
+    String returnUrl, String nonce, String verifier) {
     PendingAuthorization pending =
-      new PendingAuthorization(state, Long.valueOf(globalUnitId), returnUrl, nonce, "verifier-abc");
+      new PendingAuthorization(state, Long.valueOf(globalUnitId), returnUrl, nonce, verifier);
     SecurityUtils.getSubject().getSession().setAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION, pending);
     return pending;
   }
@@ -483,6 +493,130 @@ public class CognitoCallbackActionTest {
     assertEquals(Action.SUCCESS, result);
     GlobalUnit sessionCrp = (GlobalUnit) action.getSession().get(APConstants.SESSION_CRP);
     assertEquals(Long.valueOf(GLOBAL_UNIT_ID), sessionCrp.getId());
+  }
+
+  /**
+   * The sibling of the round trip above, added by {@code /akili-test}'s coverage extension to close
+   * {@code test-report.md} 8 findings <b>1 (SEC-002 at the token exchange)</b> and
+   * <b>2 (FN-002 S4's session contract)</b>. Both are assertions about the <i>same single successful
+   * callback</i>, which is why they share one test rather than being split.
+   * <p>
+   * <b>Why a sibling and not four more lines in
+   * {@link #validRoundTripScopesTheSessionToTheGlobalUnitBoundAtMintTime}.</b> Two of the six things
+   * asserted here cannot be measured with the collaborators {@code newAction()} installs for the other
+   * twenty tests: {@code new APConfig()} answers {@code ""} to {@code getCognitoCallbackUrl()} (T03's
+   * empty default -- so a {@code redirect_uri} assertion against it would pass on two empty strings and
+   * prove nothing), and {@code NoCustomParametersManager} returns an empty list (so the custom-parameter
+   * loop runs zero iterations and cannot be observed at all). Swapping either into {@code newAction()}
+   * would change the fixture under twenty unrelated tests to serve one; this test brings its own.
+   * <p>
+   * <b>What each assertion would catch</b> -- every one of these is green today and would stay green if
+   * the corresponding value silently became {@code null}, which is the whole reason this test exists:
+   * <ul>
+   * <li><b>{@code codeVerifier}</b> -- read back out of the Shiro session, so it is the verifier the
+   * callback actually consumed, not a copy of the literal seeded above. Catches a regression that stops
+   * passing {@code pending.getVerifier()}, mints a fresh verifier at exchange time, or passes the
+   * {@code nonce} by mistake. Cognito rejects the exchange in every one of those cases, so the failure
+   * mode is "no CGIAR user can log in", with a fully green suite.</li>
+   * <li><b>{@code redirectUri}</b> -- asserted against {@code APConfig} <i>and</i> against the specific
+   * configured URL, so it cannot pass by comparing empty string to empty string. Catches a regression that
+   * sends the request URL, the base URL, or nothing at all; Cognito requires the {@code redirect_uri} to
+   * match the authorize request byte for byte.</li>
+   * <li><b>{@code authorizationCode}</b> -- catches an exchange wired to the wrong parameter, which would
+   * otherwise surface only as an opaque provider-side refusal.</li>
+   * <li><b>{@code SESSION_USER}, the unit's custom parameters, {@code CRP_VISIBLE_TOP_GULIST}, the
+   * colour</b> -- FN-002 S4. Only {@code SESSION_CRP} was asserted anywhere before this, so a Cognito login
+   * that established a half-populated session passed the suite.</li>
+   * </ul>
+   */
+  @Test
+  public void validRoundTripSendsThePkceVerifierAndPopulatesTheWholeSession() throws Exception {
+    this.userManager.register(cgiarUser(9001L));
+    this.crpUserManager.isMember = true;
+
+    Parameter activeKey = new Parameter();
+    activeKey.setKey("cognitoRoundTripActiveParameter");
+    CustomParameter activeParameter = new CustomParameter();
+    activeParameter.setParameter(activeKey);
+    activeParameter.setValue("active-value");
+    activeParameter.setActive(true);
+    // The negative half of the same clause: an INACTIVE row must not reach the session. Without it, an
+    // assertion that "a custom parameter is present" would also pass against a loop with no isActive guard.
+    Parameter inactiveKey = new Parameter();
+    inactiveKey.setKey("cognitoRoundTripInactiveParameter");
+    CustomParameter inactiveParameter = new CustomParameter();
+    inactiveParameter.setParameter(inactiveKey);
+    inactiveParameter.setValue("inactive-value");
+    inactiveParameter.setActive(false);
+
+    ConfiguredCognitoApConfig config = new ConfiguredCognitoApConfig();
+    TestableCognitoCallbackAction action = new TestableCognitoCallbackAction(config, this.userManager,
+      this.crpManager, this.crpUserManager, new ListedCustomParametersManager(activeParameter, inactiveParameter),
+      new NoOpParameterManager(), this.realValidator, this.realIdentityMapper, this.exchangeClient);
+    action.setSession(new HashMap<String, Object>());
+    action.visibleTopGuList = true;
+
+    this.seedPending(action, "state-pkce", GLOBAL_UNIT_ID, null, "nonce-pkce", "verifier-pkce-9f3a2c");
+
+    // Read the pending authorization BACK OUT of the session: this is the object callback(...) is about to
+    // consume. Comparing against a copy of the literal seeded above would still pass if production started
+    // minting its own verifier at exchange time and the two happened to be equal by construction.
+    PendingAuthorization fromSession = (PendingAuthorization) SecurityUtils.getSubject().getSession()
+      .getAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION);
+    assertNotNull("the pending authorization must be readable from the session before the callback runs",
+      fromSession);
+    String sessionVerifier = fromSession.getVerifier();
+    assertNotNull("SEC-002: a pending authorization with no PKCE verifier would make this test vacuous",
+      sessionVerifier);
+    assertFalse("SEC-002: a blank PKCE verifier would make this test vacuous", sessionVerifier.trim().isEmpty());
+    this.exchangeClient.idTokenToReturn = this.validIdToken(fromSession.getNonce(), CGIAR_EMAIL);
+
+    String result = action.callback("auth-code-pkce", "state-pkce", null);
+
+    assertEquals(Action.SUCCESS, result);
+
+    // ---- SEC-002 at the exchange (finding 1) --------------------------------------------------------
+    assertEquals("the token endpoint must be called exactly once per callback", 1,
+      this.exchangeClient.exchangeCallCount);
+    assertEquals("the authorization code sent must be the one this callback was invoked with", "auth-code-pkce",
+      this.exchangeClient.lastAuthorizationCode);
+    assertNotNull("SEC-002: a null code_verifier breaks every CGIAR login and is invisible without this",
+      this.exchangeClient.lastCodeVerifier);
+    assertFalse("SEC-002: a blank code_verifier is as broken as a null one",
+      this.exchangeClient.lastCodeVerifier.trim().isEmpty());
+    assertEquals("SEC-002: the code_verifier sent to the token endpoint must be the one bound at mint time, "
+      + "read here out of the PendingAuthorization this callback consumed", sessionVerifier,
+      this.exchangeClient.lastCodeVerifier);
+    assertNotNull("a null redirect_uri is refused by Cognito on every exchange",
+      this.exchangeClient.lastRedirectUri);
+    assertFalse("an empty redirect_uri would make the two assertions below vacuous",
+      this.exchangeClient.lastRedirectUri.trim().isEmpty());
+    assertEquals("the redirect_uri sent must be the configured callback URL, from APConfig",
+      config.getCognitoCallbackUrl(), this.exchangeClient.lastRedirectUri);
+    assertEquals("...and it must be that specific value, so the assertion above cannot pass by comparing two "
+      + "empty strings", "https://marlo.example.org/cognitoCallback.do", this.exchangeClient.lastRedirectUri);
+
+    // ---- FN-002 S4: what the established session actually carries (finding 2) ------------------------
+    Map<String, Object> session = action.getSession();
+    User sessionUser = (User) session.get(APConstants.SESSION_USER);
+    assertNotNull("FN-002 S4: the session must carry SESSION_USER", sessionUser);
+    assertEquals("SESSION_USER must be the resolved users row, not the detached email-only stand-in DD-6 "
+      + "puts in the inherited `user` field", Long.valueOf(9001L), sessionUser.getId());
+    assertEquals(CGIAR_EMAIL, sessionUser.getEmail());
+    assertEquals("FN-002 S4: the unit's ACTIVE custom parameters must be copied into the session",
+      "active-value", session.get("cognitoRoundTripActiveParameter"));
+    assertFalse("an INACTIVE custom parameter must NOT reach the session",
+      session.containsKey("cognitoRoundTripInactiveParameter"));
+    assertEquals("FN-002 S4: CRP_VISIBLE_TOP_GULIST must carry this action's own isVisibleTopGUList(), which "
+      + "is true here precisely so a hardcoded false could not satisfy this", Boolean.TRUE,
+      session.get(APConstants.CRP_VISIBLE_TOP_GULIST));
+    String sessionColor = (String) session.get("color");
+    assertNotNull("FN-002 S4: the session colour must be assigned at login", sessionColor);
+    assertTrue("the session colour must be a six-digit hex colour as randomColor() produces, was: "
+      + sessionColor, sessionColor.matches("^#[0-9a-f]{6}$"));
+    GlobalUnit sessionCrp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
+    assertEquals("still the unit bound at mint time -- this remains a genuine round trip", Long.valueOf(
+      GLOBAL_UNIT_ID), sessionCrp.getId());
   }
 
   /**
@@ -1408,6 +1542,57 @@ public class CognitoCallbackActionTest {
   }
 
   /**
+   * Returns a fixed list of {@link CustomParameter} rows for any Global Unit id, so
+   * {@code finishLogin}'s session-population loop actually runs -- the sibling of
+   * {@link NoCustomParametersManager}, which returns an empty list and makes that loop unobservable.
+   */
+  private static final class ListedCustomParametersManager implements CustomParameterManager {
+
+    private final List<CustomParameter> parameters = new ArrayList<CustomParameter>();
+
+    ListedCustomParametersManager(CustomParameter... customParameters) {
+      for (CustomParameter customParameter : customParameters) {
+        this.parameters.add(customParameter);
+      }
+    }
+
+    @Override
+    public void deleteCustomParameter(long customParameterId) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public boolean existCustomParameter(long customParameterID) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<CustomParameter> findAll() {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<CustomParameter> getAllCustomParametersByGlobalUnitId(long globalUnitId) {
+      return this.parameters;
+    }
+
+    @Override
+    public CustomParameter getCustomParameterById(long customParameterID) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public CustomParameter getCustomParameterByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public CustomParameter saveCustomParameter(CustomParameter customParameter) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+  }
+
+  /**
    * Registers users by email and by id, and records every {@code saveLastLogin} call. {@code saveUser}
    * explodes: {@code AbstractMarloDAO.update(T)} returns before {@code merge()} for an entity the Hibernate
    * session already contains -- which every {@code User} handed to this double is, since it always comes
@@ -1480,14 +1665,34 @@ public class CognitoCallbackActionTest {
     }
   }
 
-  /** Records every exchange call and returns a configurable, fixed outcome. */
+  /**
+   * Records every exchange call -- <b>including all three arguments</b> -- and returns a configurable, fixed
+   * outcome.
+   * <p>
+   * <b>Why the arguments are captured (test-report.md 8, finding 1).</b> This double used to discard
+   * {@code authorizationCode}, {@code redirectUri} and {@code codeVerifier} outright, keeping only the
+   * outcome. SEC-002's PKCE requirement was therefore proven on the <i>authorize</i> side only: a regression
+   * that sent {@code null}, a stale verifier, or the wrong {@code redirect_uri} to the token endpoint would
+   * have left this whole module green while breaking <b>every</b> CGIAR login, because the exchange is the
+   * one call where Cognito actually checks those three values. Recording them costs four fields and makes
+   * {@link CognitoCallbackActionTest#validRoundTripSendsThePkceVerifierAndPopulatesTheWholeSession} able to
+   * assert what is sent, not merely what comes back.
+   */
   private static final class RecordingTokenExchangeClient implements TokenExchangeClient {
 
     private String idTokenToReturn;
     private boolean shouldFail;
+    private int exchangeCallCount;
+    private String lastAuthorizationCode;
+    private String lastRedirectUri;
+    private String lastCodeVerifier;
 
     @Override
     public ExchangeResult exchange(String authorizationCode, String redirectUri, String codeVerifier) {
+      this.exchangeCallCount++;
+      this.lastAuthorizationCode = authorizationCode;
+      this.lastRedirectUri = redirectUri;
+      this.lastCodeVerifier = codeVerifier;
       if (this.shouldFail) {
         return ExchangeResult.rejected();
       }
@@ -1499,6 +1704,16 @@ public class CognitoCallbackActionTest {
   private static final class TestableCognitoCallbackAction extends CognitoCallbackAction {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Defaults to {@code false}, which is exactly what the previous unconditional
+     * {@code return false} gave every test in this suite -- nothing else changes behaviour by declaring
+     * this field. It is settable only so that
+     * {@link CognitoCallbackActionTest#validRoundTripSendsThePkceVerifierAndPopulatesTheWholeSession} can
+     * assert {@code CRP_VISIBLE_TOP_GULIST} carries the action's own answer rather than a constant: an
+     * assertion pinned to {@code Boolean.FALSE} would pass just as happily against a hardcoded {@code false}.
+     */
+    private boolean visibleTopGuList;
 
     TestableCognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
@@ -1520,7 +1735,7 @@ public class CognitoCallbackActionTest {
 
     @Override
     public boolean isVisibleTopGUList() {
-      return false;
+      return this.visibleTopGuList;
     }
 
     @Override

@@ -4529,3 +4529,98 @@ While locating the Clarisa account I printed `marlo-dev.properties` through a re
 values, so nothing reached the repository — but the redaction was wrong, and it was wrong in the ordinary way:
 **a filter tested against the case it expected rather than against the data.** Any future read of that file
 must redact case-insensitively on `pass`.
+
+---
+
+## 48. `/akili-test`, and two requirements corrected rather than obeyed — 2026-09-07
+
+### 48.1 The report, and an error in my own summary
+
+`test-report.md` was generated from the Leader → Tester harness: one Tester for backend + integration, the
+frontend suite **stopped for missing infrastructure** rather than improvised, E2E aggregated inline from the
+user's manual validations. Suite: **201 tests, 0 failures**. **No `PRODUCT_BUG`.**
+
+> **The summary table I wrote was wrong.** I recorded 43 PASS / 12 GAP / 4 AUTOMATION_DEFERRED / 3 NOT
+> OBSERVED. Counted from the 73 rows of the matrix I had just built, the truth is **52 / 16 / 2 / 3**. I
+> wrote the numbers by eye instead of deriving them from the table sitting directly above them — the same
+> defect §40.6 and §46 record about lists that are never re-read, committed one screen after writing the
+> lesson down.
+
+### 48.2 The finding a green suite could not have surfaced
+
+**Both `RecordingTokenExchangeClient` doubles discard all three arguments of
+`exchange(authorizationCode, redirectUri, codeVerifier)`.** They keep only `idTokenToReturn` and `shouldFail`.
+
+So **nothing asserts that the PKCE verifier or the `redirect_uri` ever reaches the exchange.** A regression
+passing `null`, a stale verifier, or the wrong redirect URI would leave **all 201 tests green while breaking
+every CGIAR login**. The only thing proving it today is the user's real sign-ins, because Cognito refuses a
+PKCE exchange without the verifier.
+
+The implementation is correct. **The proof was missing, and its absence was invisible.**
+
+### 48.3 Two requirements corrected — the code was right, the requirement was not
+
+**FN-002 S5** required the Cognito membership refusal to *"behave identically to the local-login case"*. T21
+and T22 deliberately made them differ: local re-renders in place, Cognito **redirects** to `login.do`. That
+divergence **is the fix** — rendering in place left the authorization code and `state` in the address bar and
+in browser history and poisoned the `Referer`, which is **V-4**, closed as **V-5** and **V-7**. The local path
+carries no authorization material in its URL and needs no redirect.
+
+The clause now requires the same **mechanism** — same message key, same `getSession().clear()`, same
+`Subject.logout()`, same shared `finishLogin` tail — and records that the presentation diverges by design.
+
+**MIG-001 S17** required a flag flip to take effect *"immediately"*. `CustomParameterMySQLDAO:90` marks the
+lookup `setCacheable(true)` with a **3600 s** TTL and Hibernate cannot see a write made outside its session, so
+direct SQL or a Flyway migration can take **up to an hour** (§24.3, found during T12 and recorded as a
+Category B environment behaviour). Through `saveCustomParameter`, or after a restart, it is immediate.
+
+**The requirement was stronger than any route could satisfy. The amendment names the route that does.**
+
+> **No production code was changed to make either obsolete requirement true.** That was the user's explicit
+> instruction and it is the right one: T18 was FAILed twice for the opposite mistake — an amendment left alive
+> without the task that matched it.
+
+### 48.4 Correction closure
+
+Both superseded phrasings were swept across the whole spec. `design.md` repeats neither.
+**`judgment.md:50` quotes the old FN-002 wording inside a historical defect analysis and was deliberately left
+alone** — amending a record of what was true then would falsify it. `test-report.md`'s finding rows are
+updated as part of this pass.
+
+### 48.5 Five coverage gaps closed — and a counting error made twice
+
+Suite **201 → 207**. Three test files, **no production file touched**. `STATUS: PASS`, no `PRODUCT_BUG`.
+
+The PKCE assertion is the one that mattered, and it was built so it cannot be vacuous: the verifier is read
+back out of the Shiro session before the callback consumes it, the recording fields default to `null`, and
+`redirect_uri` is asserted **twice** — against `APConfig` and against the literal URL — so the first cannot
+pass by comparing an empty string to an empty string. The Tester noted it therefore ran no mutation probe:
+**the field's `null` default already is the mutation.**
+
+> **I made the same counting error twice in one document.** The first issue carried hand-typed grades
+> (43/12/4/3 against an actual 52/16/2/3). Rewriting them "derived from the matrix", my script split the row on
+> `|` and read index 6 — correct in `awk`, which is 1-indexed, and the **trailing empty cell** in JavaScript,
+> which is not. Every row graded PASS and the file briefly claimed **73/0/0/0**. Caught by cross-checking with
+> a second tool, which is now the rule: **a derived number is only derived once two independent tools agree.**
+
+### 48.6 Three corrections from the Tester, all upheld
+
+- **Finding 13's failure semantics were wrong in my brief.** I wrote that a failure "is a real leak and that is
+  a `PRODUCT_BUG`". A failure is equally likely to be a false positive from an over-broad pattern, which is a
+  *test* defect. The Tester measured candidates against the tree first and rejected two: scanning raw source
+  matches the ordinary identifier `deliverablemetadataelement` (26 lowercase chars), and scanning comments
+  matches a 40-character **git commit SHA** quoted in javadoc. Hence string-literals-only, with the resulting
+  limitation pinned by its own assertion.
+- **Finding 11's mechanism is not what the code suggests.** `LoginAction.java:518-528`, commented
+  `// Hack for cleaning cached authorization`, is **inert**: it clears the cache using principals that
+  `logout()` has already nulled, so `AuthorizingRealm`'s null guard returns immediately. FN-007 is satisfied
+  **entirely by Shiro**. Verified directly. Not a defect, but it reads as a safety net and is not one.
+- **Finding 9 needed five assertions, not four**, and two of them could not live in the existing round-trip
+  test without changing a fixture shared by twenty others.
+
+### 48.7 Checkstyle is a required gate and it is inert
+
+`mvn checkstyle:check` fails on **every** module — verified against one this work never touched — with
+`NoSuchMethodError: Checker.setClassloader`. `CLAUDE.md` lists it as a required hard gate. It would not have
+covered this work regardless: no `includeTestSourceDirectory` is configured, so it reads `src/main/java` only.
+Fixing it means editing `marlo-parent/pom.xml`, a shared file under the dependency-baseline rule.
