@@ -2437,6 +2437,55 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.setProject(project);
 
+      // A dropdown the user never touched posts the placeholder of the select macro, whose headerKey is "-1", and
+      // Struts binds that -1 onto the managed ProjectInnovationInfo. Every manager called below is @Transactional, so
+      // the first one that writes anything commits, Hibernate flushes the whole session, and the -1 reaches a foreign
+      // key column that rejects it. Which save that is depends on the data, since a save whose collection is empty
+      // writes nothing. The same guards run again later in this method, but by then the flush already failed, so the
+      // negative ids have to be cleared here, before the first save.
+      if (innovation.getProjectInnovationInfo() != null) {
+        if (innovation.getProjectInnovationInfo().getRepIndStageInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndStageInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndStageInnovation(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationNature() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationNature().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationNature(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndInnovationType() != null
+          && innovation.getProjectInnovationInfo().getRepIndInnovationType().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndInnovationType(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getRepIndDegreeInnovation() != null
+          && innovation.getProjectInnovationInfo().getRepIndDegreeInnovation().getId() == -1) {
+          innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getLeadOrganization() != null
+          && innovation.getProjectInnovationInfo().getLeadOrganization().getId() == -1) {
+          innovation.getProjectInnovationInfo().setLeadOrganization(null);
+        }
+
+        if (innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution() != null
+          && innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId() != null) {
+          Long earlyIpInstitutionId =
+            innovation.getProjectInnovationInfo().getIntellectualPropertyInstitution().getId();
+          if (earlyIpInstitutionId <= 0) {
+            innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+          } else {
+            Institution earlyIpInstitution = institutionManager.getInstitutionById(earlyIpInstitutionId);
+            if (earlyIpInstitution != null) {
+              innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(earlyIpInstitution);
+            } else {
+              innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
+            }
+          }
+        }
+      }
+
       this.saveOrganizations(innovationDB, phase);
       this.saveDeliverables(innovationDB, phase);
       this.saveContributionOrganizations(innovationDB, phase);
