@@ -379,31 +379,6 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
-  // cgamboa 16/05/2024 getActivitiesLedByUser was be updated
-  public List<Activity> getActivitiesLedByUser(long userID) {
-    List<Activity> activities = new ArrayList<Activity>();
-    int qunatityActivity = 0;
-    try {
-      qunatityActivity =
-        activityManager.getActivitiesByProjectAndUserQuantity(projectID, this.getActualPhase().getId(), userID);
-      if (qunatityActivity > 0) {
-        activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
-          .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
-            && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
-            && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
-
-      }
-    } catch (Exception e) {
-      LOG.error("Could not get the activities led by the user {} on the project {}, so none are reported",
-        userID, projectID, e);
-    }
-    return activities;
-
-
-  }
-
   public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
     List<Activity> activities = new ArrayList<Activity>();
     try {
@@ -422,18 +397,6 @@ public class ProjectPartnerAction extends BaseAction {
     }
     return activities;
 
-
-  }
-
-  public List<Activity> getActivitiesLedByUserOld(long userID) {
-    Project project = projectManager.getProjectById(projectID);
-    List<Activity> activities = project.getActivities().stream()
-      .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
-        && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
-        && c.getPhase().equals(this.getActualPhase()))
-      .collect(Collectors.toList());
-    return activities;
 
   }
 
