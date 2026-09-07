@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -60,6 +62,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 
 public class SendEmails {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SendEmails.class);
 
   private static ReportingSummaryAction action;
   private static ValidateProjectSectionAction validateProjectSectionAction;
@@ -132,7 +136,7 @@ public class SendEmails {
       }
       for (Phase phase : phases) {
         if (phase.getYear() == 2017 || phase.getYear() == 2018) {
-          System.out.println("VALIDATE PROJECT " + project.getId());
+          LOG.info("Validating the project {}", project.getId());
           validateProjectSectionAction.setProjectID(project.getId());
           validateProjectSectionAction.setSession(action.getSession());
           validateProjectSectionAction.setValidSection(true);
@@ -148,21 +152,21 @@ public class SendEmails {
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the description section of the project {}", project.getId(), e);
           }
           validateProjectSectionAction.setMissingFields(new StringBuilder());
           validateProjectSectionAction.setSectionName(ProjectSectionStatusEnum.PARTNERS.getStatus());
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the partners section of the project {}", project.getId(), e);
           }
           validateProjectSectionAction.setMissingFields(new StringBuilder());
           validateProjectSectionAction.setSectionName(ProjectSectionStatusEnum.BUDGET.getStatus());
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the budget section of the project {}", project.getId(), e);
           }
           projectLeaderEditAction.setProjectId(project.getId());
           projectLeaderEditAction.setProjectStatus(true);
@@ -179,8 +183,7 @@ public class SendEmails {
               projectLeaderEditAction.execute();
             }
           } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Could not run the project leader edit action for the project {}", project.getId(), e);
           }
         }
       }
@@ -224,7 +227,7 @@ public class SendEmails {
       }
       for (Phase phase : phases) {
         if (phase.getYear() == 2017 || phase.getYear() == 2018 && phase.getDescription().equals("Planning")) {
-          System.out.println("VALIDATE PROJECT " + project.getId());
+          LOG.info("Validating the project {}", project.getId());
           validateProjectSectionAction.setProjectID(project.getId());
           validateProjectSectionAction.setSession(action.getSession());
           validateProjectSectionAction.setValidSection(true);
@@ -240,21 +243,21 @@ public class SendEmails {
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the description section of the project {}", project.getId(), e);
           }
           validateProjectSectionAction.setMissingFields(new StringBuilder());
           validateProjectSectionAction.setSectionName(ProjectSectionStatusEnum.PARTNERS.getStatus());
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the partners section of the project {}", project.getId(), e);
           }
           validateProjectSectionAction.setMissingFields(new StringBuilder());
           validateProjectSectionAction.setSectionName(ProjectSectionStatusEnum.BUDGET.getStatus());
           try {
             validateProjectSectionAction.execute();
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Could not validate the budget section of the project {}", project.getId(), e);
           }
         }
       }
@@ -333,18 +336,15 @@ public class SendEmails {
           inputStream = action.getClass().getResourceAsStream("/manual/" + fileName);
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          LOG.error("The manual file {} was not found", fileName, e);
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          LOG.error("Could not read the manual file {}", fileName, e);
         } finally {
           if (inputStream != null) {
             try {
               inputStream.close();
             } catch (IOException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+              LOG.error("Could not close the stream of the manual file {}", fileName, e);
             }
           }
         }

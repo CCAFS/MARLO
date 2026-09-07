@@ -19,19 +19,23 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class UrlJsonTest {
 
+  private static final Logger LOG = LoggerFactory.getLogger(UrlJsonTest.class);
+
   public static void main(String[] args) {
 
     try {
-      System.out.println(readUrl(
+      LOG.info(readUrl(
         "https://server15738.contentdm.oclc.org/dmwebservices/index.php?q=dmGetItemInfo/p15738coll2/131044/json"));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("Could not read the test URL", e);
     }
 
   }

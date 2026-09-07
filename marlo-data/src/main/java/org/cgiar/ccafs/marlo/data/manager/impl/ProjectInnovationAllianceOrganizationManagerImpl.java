@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -35,6 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Named
 public class ProjectInnovationAllianceOrganizationManagerImpl implements ProjectInnovationAllianceOrganizationManager {
+
+  private static final Logger LOG =
+    LoggerFactory.getLogger(ProjectInnovationAllianceOrganizationManagerImpl.class);
 
 
   private ProjectInnovationAllianceOrganizationDAO projectInnovationAllianceOrganizationDAO;
@@ -166,7 +171,8 @@ public class ProjectInnovationAllianceOrganizationManagerImpl implements Project
         .filter(c -> c.getInstitution().getId().equals(projectInnovationAllianceOrganization.getInstitution().getId()))
         .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in InnovationAllianceOrganizationPhase( method" + e);
+      LOG.error("Could not get the alliance organizations of the innovation {} in the phase {}", innovationID,
+        phase.getId(), e);
     }
 
     if (innovationAllianceOrganizations.isEmpty()) {

@@ -63,13 +63,16 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  * @author Christian Garcia- CIAT/CCAFS
  */
 public class ProjectOutcomeListAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectOutcomeListAction.class);
 
   /**
    * 
@@ -231,7 +234,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       context.setCurrentUserId(this.getCurrentUser().getId()); // o como se obtenga el usuario
       AuditLogContextProvider.push(context);
       try {
-        Log.info("Deleting project outcome with id " + outcomeId);
+        LOG.info("Deleting the project outcome {}", outcomeId);
         ProjectOutcome outcome = projectOutcomeManager.getProjectOutcomeById(outcomeId);
         for (SectionStatus sectionStatus : outcome.getSectionStatuses()) {
           sectionStatusManager.deleteSectionStatus(sectionStatus.getId());
@@ -305,7 +308,7 @@ public class ProjectOutcomeListAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the feedback comments info of the project outcome list", e);
     }
   }
 
@@ -653,7 +656,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       }
 
     } catch (Exception e) {
-      Log.error("Error updating portfolio boolean value", e);
+      LOG.error("Error updating portfolio boolean value", e);
     }
   }
 }

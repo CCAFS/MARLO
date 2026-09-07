@@ -39,9 +39,12 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RestConnectionUtil {
 
+  private static final Logger LOG = LoggerFactory.getLogger(RestConnectionUtil.class);
 
   protected static Element getDocumentRoot(InputStreamReader stream) {
     try {
@@ -63,11 +66,9 @@ public class RestConnectionUtil {
     try {
       response = httpClient.execute(getRequest);
     } catch (ClientProtocolException e) {
-
-      e.printStackTrace();
+      LOG.error("The JSON request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("The JSON request to {} could not be executed", linkRequest, e);
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
@@ -84,8 +85,7 @@ public class RestConnectionUtil {
       }
       return json.toString();
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("Could not read the JSON response of {}", linkRequest, e);
     }
 
     return null;
@@ -102,11 +102,9 @@ public class RestConnectionUtil {
     try {
       response = httpClient.execute(getRequest);
     } catch (ClientProtocolException e) {
-
-      e.printStackTrace();
+      LOG.error("The DOI citation request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("The DOI citation request to {} could not be executed", linkRequest, e);
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
@@ -123,8 +121,7 @@ public class RestConnectionUtil {
       }
       return json.toString();
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("Could not read the DOI citation response of {}", linkRequest, e);
     }
 
     return null;
@@ -147,11 +144,9 @@ public class RestConnectionUtil {
     try {
       response = httpClient.execute(getRequest);
     } catch (ClientProtocolException e) {
-
-      e.printStackTrace();
+      LOG.error("The XML request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("The XML request to {} could not be executed", linkRequest, e);
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
@@ -164,8 +159,7 @@ public class RestConnectionUtil {
       Element metadata = getDocumentRoot(br);
       return metadata;
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("Could not parse the XML response of {}", linkRequest, e);
     }
 
     return null;
@@ -202,7 +196,7 @@ public class RestConnectionUtil {
       builder.setConnectionManager(ccm);
       return builder.build();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      LOG.error("Could not build the HTTP client that accepts every SSL certificate", ex);
       return null;
     }
   }

@@ -41,11 +41,15 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class ClientRepository {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ClientRepository.class);
 
   protected static Element getDocumentRoot(InputStreamReader stream) {
     try {
@@ -131,9 +135,8 @@ public class ClientRepository {
 
       jo.put("contributor.author", authors);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not read the CGSpace metadata of the item '{}' from {}", id, linkRequest, e);
       jo = null;
-      e.printStackTrace();
     }
 
     return jo;
@@ -147,7 +150,7 @@ public class ClientRepository {
     try {
       return readUrl(linkRequest + "?q=" + id);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not read the IFPRI metadata of the item '{}' from {}", id, linkRequest, e);
       return "Not Found";
     }
   }
@@ -160,7 +163,7 @@ public class ClientRepository {
     try {
       return readUrl(linkRequest + "?id=" + id);
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not read the ILRI metadata of the item '{}' from {}", id, linkRequest, e);
       return "Not Found";
     }
   }
@@ -177,11 +180,9 @@ public class ClientRepository {
     try {
       response = httpClient.execute(getRequest);
     } catch (ClientProtocolException e) {
-
-      e.printStackTrace();
+      LOG.error("The XML request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("The XML request to {} could not be executed", linkRequest, e);
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
@@ -194,8 +195,7 @@ public class ClientRepository {
       Element metadata = getDocumentRoot(br);
       return metadata;
     } catch (Exception e) {
-
-      e.printStackTrace();
+      LOG.error("Could not parse the XML response of {}", linkRequest, e);
     }
 
     return null;
@@ -228,7 +228,7 @@ public class ClientRepository {
       registry.register(new Scheme("https", 443, ssf));
       return new DefaultHttpClient(mgr, base.getParams());
     } catch (Exception ex) {
-      ex.printStackTrace();
+      LOG.error("Could not build the HTTP client that accepts every SSL certificate", ex);
       return null;
     }
   }
