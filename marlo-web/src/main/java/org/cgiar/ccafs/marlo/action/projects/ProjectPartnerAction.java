@@ -390,7 +390,8 @@ public class ProjectPartnerAction extends BaseAction {
         activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
           .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
             && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
+            && c.getPhase().equals(this.getActualPhase()))
           .collect(Collectors.toList());
 
       }
@@ -410,7 +411,8 @@ public class ProjectPartnerAction extends BaseAction {
       activities = activitiesOut.stream()
         .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
           && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
+          && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
 
 
@@ -428,7 +430,8 @@ public class ProjectPartnerAction extends BaseAction {
     List<Activity> activities = project.getActivities().stream()
       .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
         && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
+        && c.getPhase().equals(this.getActualPhase()))
       .collect(Collectors.toList());
     return activities;
 
@@ -1369,12 +1372,14 @@ public class ProjectPartnerAction extends BaseAction {
 
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           project.setPartners(project.getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList()));
 
         } else {
           List<ProjectPartner> partnes = new ArrayList<>();
           for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())) {
             Institution inst = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
             if (!inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
@@ -1615,7 +1620,8 @@ public class ProjectPartnerAction extends BaseAction {
       List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons(this.getActualPhase());
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
 
           this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
@@ -2196,7 +2202,8 @@ public class ProjectPartnerAction extends BaseAction {
       ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB(this.getActualPhase());
 
       List<ProjectPartner> partnersDB = projectDB.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
 
 
       for (ProjectPartner projectPartnerDB : partnersDB) {
