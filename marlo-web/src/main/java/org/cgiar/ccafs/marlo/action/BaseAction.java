@@ -2085,8 +2085,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return allPhases.get(requestedPhaseID);
         }
 
-        LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
-          APConstants.PHASE_ID, phaseIDParam);
+        // An absent or empty value is the everyday case: the templates still render the param with no value
+        // when the phase they were given has no id. A value that is present and does not resolve is not.
+        if (StringUtils.isNotBlank(phaseIDParam)) {
+          LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
+            APConstants.PHASE_ID, phaseIDParam);
+        }
         Phase phase = this.getPhaseFromCurrentPhaseParam();
 
         if (phase != null) {
