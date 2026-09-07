@@ -5,7 +5,7 @@
 | Parent spec path | `docs/specs/changes/migrate-ad-authentication-to-cognito` |
 | Spec Family ID | `CHG-COGNITO-FAMILY` |
 | Date created | 2026-08-24 (on `staging-cognito`) · **rebuilt on this branch 2026-08-27** |
-| Last updated | 2026-08-29 |
+| Last updated | 2026-09-07 |
 | Spec-family status | `open` |
 | Owner | IBD Team — Alliance of Bioversity International and CIAT |
 | Working branch | **`staging-cognito-impl`** |
@@ -56,7 +56,7 @@ call against the real federated pool settles it** (OQ-21). Until then, no candid
 | # | Spec Path | Depends on | Parallel-safe | Status |
 |---|---|---|---|---|
 | 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | **`done`** — CP2+CP3 complete 2026-08-29, all 18 tasks (T00–T17); see `directory-abstraction/tasks.md` §10 and `execution.md`'s CP3 report |
-| 2 | `changes/migrate-ad-authentication-to-cognito/auth-flow` | none | **yes** | **`in-progress`** — spec transferred verbatim from `staging-cognito` on 2026-08-31 (see `auth-flow/execution.md` §1.1); `T01` done, **unreviewed** (§1.2). `T01`–`T06` are reachable here; `T07` is blocked by OQ-9 and `T12`+ by OQ-3 |
+| 2 | `changes/migrate-ad-authentication-to-cognito/auth-flow` | none | **yes** | **`done`** — 25 tasks (T00–T22 incl. T11b), 207 tests, validated PASS with WARN and archived 2026-09-07 to `docs/specs/archive/2026-09-07-changes--migrate-ad-authentication-to-cognito--auth-flow/`. LDAP is **not** retired: that is child 3 |
 | 3 | `changes/migrate-ad-authentication-to-cognito/directory-retirement` | `directory-abstraction`, `auth-flow` | no | `pending` |
 
 > **This table is the exhaustive child set of the spec family.** No AKILI command creates a child
