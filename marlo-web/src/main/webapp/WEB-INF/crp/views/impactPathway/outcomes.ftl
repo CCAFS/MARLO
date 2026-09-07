@@ -702,7 +702,7 @@
            without a status NPEs OutcomeValidator.validateMilestone. --]
       <input type="hidden" name="${cellName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id?c)!-1}"/>
       <input type="hidden" name="${cellName}.extendedYear" value="${(milestone.extendedYear?c)!-1}"/>
-      <span class="opi-cell__read">${(milestone.value)!'&mdash;'}</span>
+      <span class="opi-cell__read">[#if (milestone.value)?has_content]${milestone.value}[#else]&mdash;[/#if]</span>
       <span class="opi-cell__readStatus">${(milestone.milestonesStatus.name)!}</span>
     [/#if]
   </span>
