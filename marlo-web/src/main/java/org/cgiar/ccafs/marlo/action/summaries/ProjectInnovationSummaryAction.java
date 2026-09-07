@@ -115,7 +115,6 @@ import javax.inject.Inject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -373,16 +372,16 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         bytesPDF = os.toByteArray();
       } catch (Exception e) {
         if (e.getClass().getName().contains("ClientAbortException")) {
-          System.out.println("Client aborted the connection: " + e.getMessage());
+          LOG.debug("The client aborted the connection while the innovations JSON was being generated", e);
         } else {
-          System.out.println("Exception while generating JSON: " + e.getMessage());
+          LOG.error("Could not generate the innovations JSON", e);
           throw e;
         }
       } finally {
         try {
           os.close();
         } catch (Exception e) {
-          System.out.println("Error closing output stream: " + e.getMessage());
+          LOG.warn("Could not close the output stream of the innovations report", e);
         }
       }
     }
@@ -520,7 +519,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             scalingReadiness = scalingReadinessObj.getComposedName().split(" - ")[0].trim();
           }
         } catch (Exception e) {
-          System.out.println("error getting readiness scale " + e);
+          LOG.error("Could not get the readiness scale", e);
         }
 
         try {
@@ -532,7 +531,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             ? innovation.getProjectInnovationOrganizations().stream().collect(Collectors.toList()) : null);
 
         } catch (Exception e) {
-          Log.error("Error getting shared projects info");
+          LOG.error("Could not get the shared projects info", e);
         }
 
         try {
@@ -543,7 +542,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
                 .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         } catch (Exception e) {
-          System.out.println("error setting alliance organizations " + e);
+          LOG.error("Could not set the alliance organizations", e);
         }
         // Innovations references
         if (innovation.getProjectInnovationReferences() != null
@@ -557,7 +556,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(o -> referenceIds.add(o.getId())).collect(Collectors.toList()));
 
           } catch (Exception e) {
-            System.out.println("error setting references " + e);
+            LOG.error("Could not set the references", e);
           }
         }
 
@@ -574,11 +573,11 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
                 .filter(o -> referenceUrlIds.add(o.getId())).collect(Collectors.toList()));
 
             } catch (Exception e) {
-              e.printStackTrace();
+              LOG.error("Could not set the reference URLs of the innovation", e);
             }
           }
         } catch (Exception e) {
-          System.out.println("error setting references url " + e);
+          LOG.error("Could not set the reference URLs", e);
         }
 
         // Innovations actors
@@ -729,7 +728,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         } catch (Exception e) {
-          Log.error("error setting crps " + e);
+          LOG.error("Could not set the CRPs", e);
         }
         try {
           // Innovation Deliverable List
@@ -739,7 +738,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }
 
         } catch (Exception e) {
-          Log.error("error getting deliverables innovations " + e);
+          LOG.error("Could not get the deliverables of the innovations", e);
         }
 
         try {
@@ -749,7 +748,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         } catch (Exception e) {
-          Log.error("error getting shared innovations " + e);
+          LOG.error("Could not get the shared innovations", e);
         }
 
 
@@ -761,7 +760,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .getRepIndInnovationTypeById(projectInnovationInfo.getRepIndInnovationType().getId()));
           }
         } catch (Exception e) {
-          Log.error("error getting shared innovations " + e);
+          LOG.error("Could not get the shared innovations", e);
         }
 
         try {
@@ -773,7 +772,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
           allianceLevers = null;
         } catch (Exception e) {
-          Log.error("error getting strategic outcomes " + e);
+          LOG.error("Could not get the strategic outcomes", e);
         }
 
         try {
@@ -783,7 +782,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         } catch (Exception e) {
-          Log.error("error getting SDGs " + e);
+          LOG.error("Could not get the SDGs", e);
         }
 
         try {
@@ -797,7 +796,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
                 .sorted(Comparator.comparing(o -> o.getId())).collect(Collectors.toList()));
           }
         } catch (Exception e) {
-          Log.error("error getting Complementary solutions " + e);
+          LOG.error("Could not get the complementary solutions", e);
         }
 
         try {
@@ -807,7 +806,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
           }
         } catch (Exception e) {
-          Log.error("error getting Innovations Bundles " + e);
+          LOG.error("Could not get the innovation bundles", e);
         }
 
         // Complementary Solutions
@@ -853,7 +852,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             }
           }
         } catch (Exception e) {
-          Log.error("error getting complementary solutions " + e);
+          LOG.error("Could not get the complementary solutions", e);
         }
 
         contributingOrganizations = innovation.getContributingOrganizations(); // getContributingOrganizations()
@@ -881,7 +880,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       }
     } catch (Exception e) {
-      System.out.println("error setting innovation report variables " + e);
+      LOG.error("Could not set the innovation report variables", e);
     }
 
     // JSON list
@@ -889,7 +888,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     try {
       deliverablesJson = objectMapper.writeValueAsString(deliverables != null ? deliverables : null);
     } catch (Exception e) {
-      System.out.println("error in deliverables json " + e);
+      LOG.error("Could not build the deliverables JSON", e);
     }
 
     try {
@@ -912,8 +911,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             }
           }
         } catch (Exception e) {
-          System.out.println("Error setting locations: " + e.getMessage());
-          e.printStackTrace();
+          LOG.error("Could not set the locations", e);
         }
 
         String headquarter = Optional.ofNullable(org.getInstitution()).map(Institution::getLocations).flatMap(
@@ -941,8 +939,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       contributingOrganizationsJson = objectMapper.writeValueAsString(contributingOrganizationsDTO);
     } catch (Exception e) {
-      System.out.println("Contribution organizations json " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not build the contribution organizations JSON", e);
     }
 
 
@@ -968,7 +965,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             }
           }
         } catch (Exception e) {
-          System.out.println("Error setting locations: " + e);
+          LOG.error("Could not set the locations", e);
         }
 
         try {
@@ -983,8 +980,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             }
           }
         } catch (Exception e) {
-          System.out.println("Error setting locations: " + e.getMessage());
-          e.printStackTrace();
+          LOG.error("Could not set the locations", e);
         }
 
         String headquarter = Optional.ofNullable(center.getInstitution()).map(Institution::getLocations).flatMap(
@@ -1000,8 +996,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       centersJson = objectMapper.writeValueAsString(centersDTO);
     } catch (Exception e) {
-      System.out.println("Error getting centers: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the centers", e);
     }
 
     try {
@@ -1024,8 +1019,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       }
       studiesJson = objectMapper.writeValueAsString(studiesList);
     } catch (Exception e) {
-      System.out.println("Error getting studies: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the studies", e);
     }
 
 
@@ -1047,8 +1041,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       sharedInnovationsJson = objectMapper.writeValueAsString(sharedInnovationsList);
     } catch (Exception e) {
-      System.out.println("Error getting sharedInnovations: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the shared innovations", e);
     }
 
     try {
@@ -1068,8 +1061,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       allianceLeversJson = objectMapper.writeValueAsString(allianceLeversList);
     } catch (Exception e) {
-      System.out.println("Error getting allianceLevers: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the alliance levers", e);
     }
 
     try {
@@ -1087,8 +1079,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       sdgsJson = objectMapper.writeValueAsString(sdgsList);
     } catch (Exception e) {
-      System.out.println("Error getting sdgs: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the SDGs", e);
     }
 
     try {
@@ -1106,8 +1097,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       impactAreasJson = objectMapper.writeValueAsString(impactAreasList);
     } catch (Exception e) {
-      System.out.println("Error getting impactAreas: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the impact areas", e);
     }
 
     try {
@@ -1131,8 +1121,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       allianceOrganizationsJson = objectMapper.writeValueAsString(new ArrayList<>(allianceOrganizationsSet));
     } catch (Exception e) {
-      System.out.println("Error getting allianceOrganizations: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the alliance organizations", e);
     }
 
 
@@ -1169,8 +1158,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       // Convert the transformed list to JSON
       actorsJson = objectMapper.writeValueAsString(actorsList);
     } catch (Exception e) {
-      System.out.println("Error getting actors: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the actors", e);
     }
 
 
@@ -1178,8 +1166,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       toolCategoriesJson = toolCategories != null && !toolCategories.isEmpty() ? toolCategories.stream()
         .map(tc -> tc.getToolCategory().getName()).filter(Objects::nonNull).collect(Collectors.joining("; ")) : "";
     } catch (Exception e) {
-      System.out.println("Error getting toolCategories: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the tool categories", e);
     }
 
     try {
@@ -1239,8 +1226,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       referencesJson = objectMapper.writeValueAsString(referencesList);
     } catch (Exception e) {
-      System.out.println("Error getting references: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the references", e);
     }
 
 
@@ -1293,8 +1279,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       referenceUrlsJson = objectMapper.writeValueAsString(referenceUrlsList);
     } catch (Exception e) {
-      System.out.println("Error getting referenceUrls: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the reference URLs", e);
     }
 
 
@@ -1348,8 +1333,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       referenceComplementarySolutionsJson = objectMapper.writeValueAsString(referenceComplementarySolutionsList);
     } catch (Exception e) {
-      System.out.println("Error getting referenceComplementarySolutions: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the reference complementary solutions", e);
     }
 
     // Innovation Bundles
@@ -1417,8 +1401,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       bundlesJson = objectMapper.writeValueAsString(bundlesDTO);
     } catch (Exception e) {
-      System.out.println("Error getting bundles json: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not build the bundles JSON", e);
     }
 
     // Complementary Solution
@@ -1470,8 +1453,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       complementarySolutionsJson = objectMapper.writeValueAsString(solutionsDTO);
     } catch (Exception e) {
-      System.out.println("Error getting complementary solutions json: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not build the complementary solutions JSON", e);
     }
 
 
@@ -1486,44 +1468,38 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
       crpOutcomesJson = objectMapper.writeValueAsString(crpOutcomesList);
     } catch (Exception e) {
-      System.out.println("Error getting crpOutcomes: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the CRP outcomes", e);
     }
 
     try {
       partnersJson = objectMapper.writeValueAsString(partners != null ? partners : null);
     } catch (Exception e) {
-      System.out.println("Error getting partners: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the partners", e);
     }
 
     try {
       partnerInstitutionsJson =
         objectMapper.writeValueAsString(partnerInstitutions != null ? partnerInstitutions : null);
     } catch (Exception e) {
-      System.out.println("Error getting partnerInstitutions: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the partner institutions", e);
     }
 
     try {
       partnerPersonsJson = objectMapper.writeValueAsString(partnerPersons != null ? partnerPersons : null);
     } catch (Exception e) {
-      System.out.println("Error getting partnerPersons: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the partner persons", e);
     }
 
     try {
       myProjectsJson = objectMapper.writeValueAsString(myProjects != null ? myProjects : null);
     } catch (Exception e) {
-      System.out.println("Error getting myProjects: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get my projects", e);
     }
 
     try {
       partnershipsJson = objectMapper.writeValueAsString(partnerships != null ? partnerships : null);
     } catch (Exception e) {
-      System.out.println("Error getting partnerships: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not get the partnerships", e);
     }
 
     /**
@@ -1622,7 +1598,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("complementarySolutions", this.normalizeJson(complementarySolutionsJson));
       jsonData.put("timeCreation", this.getCurrentDatev2());
     } catch (Exception e) {
-      System.out.println("error setting jsonData " + e);
+      LOG.error("Could not set the JSON data", e);
     }
 
     headerMap.put("height", "40mm");
@@ -1638,14 +1614,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonOptions.put("footer", footerMap);
       jsonOptions.put("timeout", "300000");
     } catch (Exception e) {
-      System.out.println("error setting jsonOptions " + e);
+      LOG.error("Could not set the JSON options", e);
     }
 
     try {
       jsonRoot.put("data", jsonData);
       jsonRoot.put("options", jsonOptions);
     } catch (Exception e) {
-      System.out.println("Error setting jsonRoot info " + e);
+      LOG.error("Could not set the JSON root info", e);
     }
     this.loadData();
 
@@ -1657,14 +1633,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonRoot.put("fileName", this.innovationsReportName);
       jsonRoot.put("bucketName", this.bucketName);
     } catch (Exception e) {
-      System.out.println("Error setting other json root information");
+      LOG.error("Could not set the rest of the JSON root information", e);
     }
 
     try {
       jsonMainRoot.put("data", jsonRoot);
       jsonMainRoot.put("pattern", "pdf.generate");
     } catch (Exception e) {
-      System.out.println("Error setting jsonRoot and jsonMainRoot information " + e);
+      LOG.error("Could not set the jsonRoot and jsonMainRoot information", e);
     }
 
     try {
@@ -1675,14 +1651,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
         fileWriter.write(jsonOutput);
         fileWriter.close();
       } catch (Exception e) {
-        System.out.println("Generated just for local environments");
+        LOG.debug("The local report dump was not written, which is expected outside a local environment", e);
       }
 
-      System.out.println("send microservice class: " + this.innovationsReportName);
+      LOG.info("Sending the innovations report {} to the microservice queue", this.innovationsReportName);
       this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
 
     } catch (final IOException e) {
-      System.out.println("error generating json " + e);
+      LOG.error("Could not generate the innovations JSON to send to the microservice", e);
     }
 
     return SUCCESS;
@@ -2234,7 +2210,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
           }
         }
       } catch (final Exception e) {
-        Log.error("error in isAllianceSelected " + e);
+        LOG.error("Could not determine whether the alliance is selected", e);
       }
     }
     return false;
@@ -2255,7 +2231,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       this.bucketName = this.config.getMicroserviceBucketname();
 
     } catch (final Exception e) {
-      System.out.println("error getting report configuration data " + e);
+      LOG.error("Could not get the report configuration data", e);
     }
   }
 
