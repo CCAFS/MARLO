@@ -18,12 +18,29 @@
 [#assign canUnSubmit = (action.hasPersmissionUnSubmitImpact(crpProgramID))!false /]
 [#assign outcomeCounts = (action.outcomeCountByProgram)!{} /]
 
+[#-- Each global unit names its programs differently: flagShip.menu is
+     "Component" for AICCRA and PABRA, "Module" for Gender / EiB / BigData,
+     "Lever" for Alliance, and "Flagship" by default. Captured once here so the
+     card heading and every row read from the same override, and so the heading
+     stops saying "Components" over rows that say "Flagship F1".
+     outcomes.sidebar.title carries the pluralisation.
+
+     action.getText() rather than a captured [#assign][@s.text/][/#assign]: with
+     the auto-escaping this project runs on, a captured block is a markup-output
+     value and string built-ins such as ?lower_case fail on it (500). getText
+     returns a plain String. --]
+[#assign componentNoun = action.getText("flagShip.menu") /]
+
+[#-- countNounOne / countNounMany come from outcomes.ftl, which picks
+     "indicator(s)" for AICCRA and "outcome(s)" everywhere else. Reused rather
+     than recomputed so the card and the page heading cannot disagree. --]
+
 [#-- Kept for fieldsValidation.js, which reads the sections to validate from here. --]
 <span id="sectionsForChecking" style="display:none">outcomes</span>
 
 <nav id="secondaryMenu" class="opi-menu hidden-print">
 
-  <p class="opi-menu__heading">[@s.text name="outcomes.sidebar.title"/]</p>
+  <p class="opi-menu__heading">[@s.text name="outcomes.sidebar.title"][@s.param]${componentNoun}[/@s.param][/@s.text]</p>
 
   <div class="menuList opi-menu__list">
     [#list programs as program]
@@ -33,8 +50,8 @@
         <a href="[@s.url][@s.param name ="crpProgramID"]${program.id}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
           [#if isActive]aria-current="page"[/#if]>
           <span class="opi-menu__body">
-            <span class="opi-menu__title">[#if centerGlobalUnit]${(program.composedName)!}[#else][@s.text name="flagShip.menu"/] ${(program.acronym)!}[/#if]</span>
-            <span class="opi-menu__sub">${programCount} [#if programCount == 1][@s.text name="outcomes.status.count.one"/][#else][@s.text name="outcomes.status.count.many"/][/#if]</span>
+            <span class="opi-menu__title">[#if centerGlobalUnit]${(program.composedName)!}[#else]${componentNoun} ${(program.acronym)!}[/#if]</span>
+            <span class="opi-menu__sub">${programCount} [#if programCount == 1]${countNounOne}[#else]${countNounMany}[/#if]</span>
           </span>
           [#-- Only the active component's data is on the page, so only it can carry
                a live missing-fields badge; outcomes.js fills this in. --]
@@ -47,7 +64,9 @@
   [#-- Check for missing fields --]
   [#if canEdit && !completed && !submission?has_content]
     <div class="opi-menu__foot">
-      <p class="projectValidateButton-message">[@s.text name="outcomes.sidebar.checkHint"/]</p>
+      [#-- Mid-sentence, so the noun is lowercased here rather than carrying a
+           second lowercase override per global unit. --]
+      <p class="projectValidateButton-message">[@s.text name="outcomes.sidebar.checkHint"][@s.param]${componentNoun?lower_case}[/@s.param][/@s.text]</p>
       <div id="validateProject-${crpProgramID}" class="projectValidateButton">[@s.text name="outcomes.sidebar.checkButton"/]</div>
       <div id="progressbar-${crpProgramID}" class="progressbar" style="display:none"></div>
     </div>
