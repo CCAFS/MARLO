@@ -1,0 +1,53 @@
+/*************** Homepage banner admin section ***************/
+/* ENH-HOMEPAGE-BANNER-001. Only what the shared admin form styles do not already cover:
+   the preview of the stored image and the spacing around the file input. */
+
+.homepageBannerForm {
+  padding: 20px;
+}
+
+.homepageBannerForm .homepageBannerDescription {
+  margin-top: 10px;
+}
+
+.homepageBannerForm .homepageBannerDescriptionText {
+  min-height: 160px;
+}
+
+.homepageBannerImage {
+  margin-top: 10px;
+}
+
+.homepageBannerImage__label {
+  color: #777;
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.homepageBannerImage__current {
+  margin-bottom: 14px;
+}
+
+/* The stored image can be any aspect ratio, and an SVG with no intrinsic size would otherwise fill the
+   column, so the preview is bounded in both directions. */
+.homepageBannerImage__current img {
+  display: block;
+  max-width: 320px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.homepageBannerImage__remove {
+  margin-top: 8px;
+}
+
+.homepageBannerImage__hint {
+  color: #777;
+  font-size: 12px;
+  margin-top: 8px;
+}

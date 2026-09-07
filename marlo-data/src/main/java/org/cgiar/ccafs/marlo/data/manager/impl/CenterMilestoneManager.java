@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -45,6 +46,7 @@ public class CenterMilestoneManager implements ICenterMilestoneManager {
   }
 
   @Override
+  @Transactional
   public void deleteCenterMilestone(long centerMilestoneId) {
 
     centerMilestoneDAO.deleteCenterMilestone(centerMilestoneId);

@@ -76,7 +76,6 @@ public class GlobalUnitMySQLDAO extends AbstractMarloDAO<GlobalUnit, Long> imple
 
   @Override
   public List<GlobalUnit> findAll() {
-    System.out.println("*****FDIAZ - findAll - DAO");
     String query = "from " + GlobalUnit.class.getName() + " where is_active=1";
     List<GlobalUnit> list = super.findAll(query);
     if (list.size() > 0) {

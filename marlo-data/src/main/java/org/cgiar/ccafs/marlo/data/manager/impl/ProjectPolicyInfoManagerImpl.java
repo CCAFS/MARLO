@@ -107,6 +107,7 @@ public class ProjectPolicyInfoManagerImpl implements ProjectPolicyInfoManager {
   }
 
   @Override
+  @Transactional
   public ProjectPolicyInfo saveProjectPolicyInfo(ProjectPolicyInfo projectPolicyInfo) {
 
 

@@ -52,7 +52,15 @@ This document maps how MARLO composes FTL pages through includes, imports, and m
 - Binding convention:
   - Input names mirror Struts model paths (example: `powbSynthesis.financialPlan.financialPlanIssues`).
 
+## Relations Popups
+- Macro library: `marlo-web/src/main/webapp/WEB-INF/crp/macros/relationsPopupMacro.ftl`
+- Button plus modal with a searchable, sortable, paginated and filterable table.
+- Markup contract, shared JS/CSS, DataTables traps and the testing recipe:
+  `reports/ai-context/relations-popup-pattern.md`. Read it before adding or upgrading one.
+
 ## Implementation Notes for AI
 1. Default approach for UI changes: reuse existing macros from `forms.ftl` before adding raw HTML fields.
 2. For expandable/dynamic blocks, follow `isTemplate=true` + hidden DOM template pattern.
 3. Keep composition in FTL layer (includes/imports) and avoid introducing new rendering stacks.
+4. For a relations popup, follow `reports/ai-context/relations-popup-pattern.md` rather than copying
+   an existing macro: the older ones query inside the macro, once per related entity type.

@@ -36,11 +36,15 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sebastian Amariles - CIAT/CCAFS
  */
 public class SLOsAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(SLOsAction.class);
 
   private static final long serialVersionUID = -793652591843623397L;
 
@@ -142,7 +146,8 @@ public class SLOsAction extends BaseAction {
           try {
             slo.setId(Long.parseLong(idParam));
           } catch (NumberFormatException e) {
-            // Invalid ID, skip
+            LOG.warn("Discarding the id '{}' of the SLO {}, which is not a number, so it is saved as a new one",
+              idParam, index);
           }
         }
 
@@ -199,7 +204,8 @@ public class SLOsAction extends BaseAction {
           try {
             indicator.setId(Long.parseLong(idParam));
           } catch (NumberFormatException e) {
-            // Invalid ID, skip
+            LOG.warn("Discarding the id '{}' of the SLO indicator {}, which is not a number, so it is saved as a new"
+              + " one", idParam, indicatorIndex);
           }
         }
 
@@ -269,7 +275,8 @@ public class SLOsAction extends BaseAction {
           try {
             target.setId(Long.parseLong(idParam));
           } catch (NumberFormatException e) {
-            // Invalid ID, skip
+            LOG.warn("Discarding the id '{}' of the SLO indicator target {}, which is not a number, so it is saved as"
+              + " a new one", idParam, targetIndex);
           }
         }
 
@@ -278,7 +285,8 @@ public class SLOsAction extends BaseAction {
           try {
             target.setYear(Integer.parseInt(yearParam.trim()));
           } catch (NumberFormatException e) {
-            // Invalid year, set to 0
+            LOG.warn("The year '{}' of the SLO indicator target {} is not a number, so it is saved as 0", yearParam,
+              targetIndex);
             target.setYear(0);
           }
         }
@@ -288,7 +296,8 @@ public class SLOsAction extends BaseAction {
           try {
             target.setValue(new java.math.BigDecimal(valueParam.trim()));
           } catch (NumberFormatException e) {
-            // Invalid value, skip
+            LOG.warn("Discarding the value '{}' of the SLO indicator target {}, which is not a number", valueParam,
+              targetIndex);
           }
         }
 
@@ -335,7 +344,8 @@ public class SLOsAction extends BaseAction {
           try {
             issue.setId(Long.parseLong(idParam));
           } catch (NumberFormatException e) {
-            // Invalid ID, skip
+            LOG.warn("Discarding the id '{}' of the cross cutting issue {}, which is not a number, so it is saved as a"
+              + " new one", idParam, index);
           }
         }
 

@@ -68,6 +68,27 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
     sessionFactory.close();
   }
 
+  /**
+   * Builds the request identification that every failure message in this filter carries: the method, the URL and the
+   * user behind it. Whoever reads the log needs all three to reproduce a failed save, and the commit failure reported
+   * here is often its only trace.
+   * The user id is read from the AuditLogContext, which AddUserIdFilter has already filled from Shiro. Shiro itself
+   * cannot be consulted at this point: the ShiroFilter has already exited by the time the transaction is committed.
+   * 
+   * @param requestUrl the method and URL of the request, as built in doFilterInternal.
+   * @return a description that can be appended to any message, never null.
+   */
+  private String describeRequest(String requestUrl) {
+    String userDescription = "";
+    if (AuditLogContextProvider.hasAuditLogContext()) {
+      Long currentUserId = AuditLogContextProvider.getAuditLogContext().getCurrentUserId();
+      if (currentUserId != null) {
+        userDescription = " of the user " + currentUserId;
+      }
+    }
+    return requestUrl + userDescription;
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse response, FilterChain chain)
     throws ServletException, IOException {
@@ -91,7 +112,6 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       if (cache != null) {
         cache.evictAllRegions(); // Evict data from all query regions.
       }
-      System.out.println("Cache cleared for request: " + requestUrl);
       sessionFactory.getCurrentSession().beginTransaction();
       // Continue filter chain
       chain.doFilter(httpRequest, response);
@@ -104,8 +124,9 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
       }
 
     } catch (StaleObjectStateException staleEx) {
-      LOG.error("This interceptor does not implement optimistic concurrency control!");
-      LOG.error("Your application will not work until you add compensation actions!");
+      LOG.error("A concurrent modification was detected while completing the request" + this.describeRequest(requestUrl)
+        + ". This filter does not implement optimistic concurrency control, so no compensation action was taken",
+        staleEx);
       httpRequest.getSession().setAttribute("exception", staleEx);
       // Rollback, close everything, possibly compensate for any permanent changes
       // during the conversation, and finally restart business conversation. Maybe
@@ -115,14 +136,16 @@ public class MARLOCustomPersistFilter extends OncePerRequestFilter {
     } catch (Throwable ex) {
       httpRequest.getSession().setAttribute("exception", ex);
       // Rollback only
-      LOG.error("Exception occurred when trying to commit transaction");
+      String requestDescription = this.describeRequest(requestUrl);
+      LOG.error("The request" + requestDescription
+        + " failed and its transaction is being rolled back. Nothing it wrote reached the database", ex);
       try {
         if (sessionFactory.getCurrentSession().getTransaction().isActive()) {
-          LOG.info("Trying to rollback database transaction after exception");
+          LOG.info("Rolling back the database transaction of the request" + requestDescription);
           sessionFactory.getCurrentSession().getTransaction().rollback();
         }
       } catch (Throwable rbEx) {
-        LOG.error("Could not rollback transaction after exception!", rbEx);
+        LOG.error("Could not roll back the transaction of the request" + requestDescription, rbEx);
       }
 
       // Let others handle it... maybe another interceptor for exceptions?

@@ -118,7 +118,7 @@ public class POISummary {
         paragraphRun.setText(text, 0);
       }
     } catch (Exception e) {
-      System.out.println(e);
+      LOG.error("Could not add the text '{}' to the paragraph", text, e);
     }
   }
 
@@ -549,7 +549,7 @@ public class POISummary {
           int level = Integer.valueOf(parStyle.substring("Narrative".length())).intValue();
           toc.addRow(level, par.getText(), 1, "112723803");
         } catch (NumberFormatException e) {
-          e.printStackTrace();
+          LOG.error("Could not read the outline level of the paragraph style '{}'", parStyle, e);
         }
       }
     }
@@ -2101,7 +2101,7 @@ public class POISummary {
           try {
             this.textHyperlink(poiParameter.getUrl().trim(), poiParameter.getText(), paragraph);
           } catch (Exception e) {
-            System.out.println(e);
+            LOG.error("Could not add the hyperlink {} to the paragraph", poiParameter.getUrl(), e);
           }
         } else {
 

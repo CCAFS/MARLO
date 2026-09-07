@@ -22,6 +22,8 @@ Operational routing catalog for MARLO internal flows using Struts Actions (`.do`
 | Annual Report | `annualReport` / `/annualReport` | `{crp}/melia` | `MeliaAction` | `editReportSynthesisStack` | `/WEB-INF/crp/views/annualReport/annualReport_melia.ftl` |
 | Annual Report | `annualReport` / `/annualReport` | `{crp}/governance` | `ManagementGovernanceAction` | `editReportSynthesisStack` | `/WEB-INF/crp/views/annualReport/annualReport_governance.ftl` |
 | Admin | `admin` / `/admin` | `{crp}/portfolioManagement` | `PortfolioManagementAction` | `crpAdminStack` | `/WEB-INF/crp/views/admin/portfoliosManagement.ftl` |
+| Admin | `admin` / `/admin` | `{crp}/homepageBannerManagement` | `HomepageBannerManagementAction` | `crpAdminStack` | `/WEB-INF/crp/views/admin/homepageBannerManagement.ftl` |
+| Data (public) | `data` / `/data` | `homepageBannerImage` | `DownloadHomepageBannerImageAction` | none (public stream) | `stream` result, dynamic `contentType` |
 
 ## Interceptor Stack Pointers
 1. `crpAdminStack`: includes auth/session + admin access + `canEditCrpAdmin`.
@@ -31,6 +33,14 @@ Operational routing catalog for MARLO internal flows using Struts Actions (`.do`
 5. `editPowbStack`: includes auth/session + `canEditPowbSynthesis`.
 6. `editReportSynthesisStack`: includes auth/session + `canEditReportSynthesis`.
 7. `editProjectListStack`: lightweight stack used before extra action-level interceptors like `editDeliverable`.
+
+## Public Stream Routes
+The `data` package is unauthenticated by design and serves binary content through Struts `stream` results:
+`globalUnitLogo` (fixed `image/png`, falls back to a default image) and `homepageBannerImage`
+(`${contentType}` supplied by the action, since a banner image may be PNG, JPEG or SVG; **no** default-image
+fallback — a missing image is a 404, because the homepage only emits the `img` element when a banner names a
+file). Both actions derive the file path from a Global Unit acronym and accept no path fragment from the
+caller.
 
 ## JSON Usage Note
 `projectListStack` includes `SecurityControl` and is the key stack for JSON security checks. Use it only for existing JSON endpoints and avoid introducing new JSON paths unless required by current architecture.

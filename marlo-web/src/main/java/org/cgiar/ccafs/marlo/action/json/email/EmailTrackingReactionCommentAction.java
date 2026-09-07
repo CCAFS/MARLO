@@ -209,36 +209,47 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
 
     if (sectionName != null && !sectionName.isEmpty()) {
 
-      switch (ProjectSectionsEnum.getValue(sectionName)) {
-        case OUTCOME:
-          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
-            + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
-          sectionName = "Contribution To Performance Indicadors";
-          break;
-        case DELIVERABLE:
-          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
-            + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
-          sectionName = "Deliverable";
-          parentFieldDescription = "Deliverable " + parentFieldDescription;
-          break;
-        case EXPECTEDSTUDY:
-          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
-            + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
-          sectionName = "OICR or MELIA ";
-          parentFieldDescription = "OICR " + parentFieldDescription;
-          break;
-        case INNOVATION:
-          sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
-            + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
-          sectionName = "Innovations";
-          parentFieldDescription = "Innovation " + parentFieldDescription;
-          break;
-        default:
-          sectionLink =
-            this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
-              + sectionName + "ID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
-          parentFieldDescription = sectionName + " " + parentFieldDescription;
-          break;
+      // getValue returns null for any slug outside the enum, and switching on that null would throw.
+      ProjectSectionsEnum section = ProjectSectionsEnum.getValue(sectionName);
+
+      if (section == null) {
+        LOG.warn("Unknown section name '{}' while building the reaction email; using it verbatim", sectionName);
+        sectionLink =
+          this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
+            + sectionName + "ID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+        parentFieldDescription = sectionName + " " + parentFieldDescription;
+      } else {
+        switch (section) {
+          case OUTCOME:
+            sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/contributionCrp.do?"
+              + "projectOutcomeID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+            sectionName = "Contribution To Performance Indicadors";
+            break;
+          case DELIVERABLE:
+            sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?"
+              + "deliverableID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+            sectionName = "Deliverable";
+            parentFieldDescription = "Deliverable " + parentFieldDescription;
+            break;
+          case EXPECTEDSTUDY:
+            sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/study.do?"
+              + "expectedID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+            sectionName = "OICR or MELIA ";
+            parentFieldDescription = "OICR " + parentFieldDescription;
+            break;
+          case INNOVATION:
+            sectionLink = this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?"
+              + "innovationID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+            sectionName = "Innovations";
+            parentFieldDescription = "Innovation " + parentFieldDescription;
+            break;
+          default:
+            sectionLink =
+              this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/" + sectionName + ".do?"
+                + sectionName + "ID=" + sectionID + "&phaseID=" + currentPhase.getId() + "&edit=true" + "#" + fieldID;
+            parentFieldDescription = sectionName + " " + parentFieldDescription;
+            break;
+        }
       }
     }
 

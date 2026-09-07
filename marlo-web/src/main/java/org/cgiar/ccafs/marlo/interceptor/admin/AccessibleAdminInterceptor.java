@@ -37,7 +37,9 @@ public class AccessibleAdminInterceptor extends AbstractInterceptor implements S
     Map<String, Object> session = invocation.getInvocationContext().getSession();
     baseAction = (BaseAction) invocation.getAction();
     baseAction.setSession(session);
-    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin()) {
+    // The role check keeps the module reachable for an administrator of a Global Unit with no editable
+    // phase, whose permission set is empty even though the role is assigned. See BaseAction.isVisibleTop().
+    if (baseAction.canAccessSuperAdmin() || baseAction.canAcessCrpAdmin() || baseAction.isRole("CRP-Admin")) {
       return invocation.invoke();
     } else {
       return BaseAction.NOT_AUTHORIZED;

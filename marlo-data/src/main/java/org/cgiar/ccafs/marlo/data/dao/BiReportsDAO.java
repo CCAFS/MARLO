@@ -50,11 +50,12 @@ public interface BiReportsDAO {
   public BiReports find(long id);
 
   /**
-   * This method gets a list of biReports that are active
+   * This method gets the list of active biReports that belong to the given global unit.
    * 
+   * @param globalUnitId is the global unit identifier.
    * @return a list from BiReports null if no exist records
    */
-  public List<BiReports> findAll();
+  public List<BiReports> findAll(long globalUnitId);
 
 
   /**

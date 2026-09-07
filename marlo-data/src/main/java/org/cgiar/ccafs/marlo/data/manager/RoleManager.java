@@ -52,6 +52,14 @@ public interface RoleManager {
   public List<Role> findAll();
 
   /**
+   * This method gets the list of roles that belong to a given global unit.
+   *
+   * @param globalUnitId globalUnit identifier
+   * @return a list from Role, empty if no exist records
+   */
+  public List<Role> findAllByGlobalUnit(long globalUnitId);
+
+  /**
    * Clone role_permissions from template global unit roles to target global unit roles by matching acronym.
    *
    * @param templateGlobalUnitId template global unit id

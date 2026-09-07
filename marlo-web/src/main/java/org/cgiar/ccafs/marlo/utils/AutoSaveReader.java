@@ -280,9 +280,7 @@ public class AutoSaveReader {
         Object obj = gson.fromJson(jobj, Class.forName(className));
         return obj;
       } catch (Exception e) {
-        e.printStackTrace();
-        LOG.error(e.getLocalizedMessage());
-
+        LOG.error("Could not deserialize the autosaved object of the class {}", className, e);
       }
     } else {
       LOG.error("null jobj in readFromJson");

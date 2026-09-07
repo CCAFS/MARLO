@@ -1,0 +1,110 @@
+/*
+ * Feedback Fields Management.
+ *
+ * DataTables styling for the field-relations modal. The search box repeats, verbatim, the rules that
+ * projects/projectContributionsCrpList.css declares globally, so the control is the same one an administrator
+ * already knows; the rest (length selector, info, pagination) is scoped to .feedbackUsageModal because that page
+ * pins the length selector absolutely for a full-width layout, which does not work inside a modal.
+ */
+
+/*
+ * The title row is what opens and closes the field: pointer plus the open/closed arrow. impactPathway/outcomes.css
+ * declares this for .srfSlo, but that stylesheet is not loaded on this page, so the same rules are repeated here.
+ * The image path is relative to this file and resolves to webapp/global/images.
+ */
+.srfSlo .blockTitle {
+  cursor: pointer;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-position: -4px;
+}
+
+.srfSlo .blockTitle.closed {
+  background-image: url(../../../global/images/arrow-down.png);
+}
+
+/*
+ * Only the arrow changes on open. outcomes.css also dims the whole title with opacity: 0.5, which here would fade
+ * the usage counter that now lives inside it and make a working button read as disabled.
+ */
+.srfSlo .blockTitle.opened {
+  background-image: url(../../../global/images/arrow-up.png);
+}
+
+/*
+ * Usage counter: it lives inside .blockTitle so it reads on the same line as the field name, floated to the right
+ * edge. The title itself stays the accordion's click target -- feedbackManagement.js stops the click here so
+ * opening the modal does not toggle the block.
+ */
+.srfSlo .blockTitle .elementRelations {
+  float: right;
+  /* The right margin clears the absolutely positioned .removeElement pinned to the corner of the borderBox. */
+  margin: 0 24px 0 10px;
+}
+
+.feedbackUsageModal .dataTables_wrapper {
+  position: relative;
+}
+
+/*
+ * Search box: same geometry, colours and DOM trick as .dataTables_filter/.iconSearch in
+ * projects/projectContributionsCrpList.css, so the control looks identical to the one on that page. The icon is
+ * prepended into the filter and pushed to the right edge of the input, the "Search:" label is painted white so it
+ * disappears, and the input is pulled back over it.
+ */
+.feedbackUsageModal .dataTables_filter {
+  float: left !important;
+  margin-bottom: 4px;
+}
+
+.feedbackUsageModal .dataTables_filter label {
+  color: white;
+}
+
+.feedbackUsageModal .dataTables_filter label input {
+  height: 30px !important;
+  width: 295px !important;
+  margin-left: -44px !important;
+  color: #5f5e5e;
+}
+
+.feedbackUsageModal .iconSearch {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  margin-left: 285px;
+  border-radius: 0px 4px 4px 0px;
+  display: flex;
+}
+
+.feedbackUsageModal .dataTables_length {
+  float: right;
+  margin-bottom: 8px;
+}
+
+.feedbackUsageModal .dataTables_length label {
+  font-weight: normal;
+  color: inherit;
+}
+
+.feedbackUsageModal .dataTables_info {
+  padding-top: 10px;
+  font-size: 12px;
+  color: #777;
+}
+
+.feedbackUsageModal .dataTables_paginate {
+  padding-top: 6px;
+}
+
+/* The table is built while the modal is hidden, so let it use the full modal width once shown. */
+.feedbackUsageModal table.feedbackUsageList {
+  width: 100% !important;
+  margin-top: 4px;
+}
+
+.feedbackUsageModal table.feedbackUsageList td,
+.feedbackUsageModal table.feedbackUsageList th {
+  vertical-align: middle;
+}

@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -119,14 +120,18 @@ public class FeedbackStatusAction extends BaseAction {
 
   @Override
   public void prepare() throws Exception {
-    String reportName = this.getFeedbackBIReportName();
-    biReports = biReportsManager.findAll().stream()
-      .filter(bi -> bi != null && Objects.equals(bi.getReportName(), reportName)).collect(Collectors.toList());
-
-    biParameters = biParametersManager.findAll();
-
     // Get current CRP
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
+
+    String reportName = this.getFeedbackBIReportName();
+    List<BiReports> crpBiReports = loggedCrp == null ? null : biReportsManager.findAll(loggedCrp.getId());
+    biReports = crpBiReports == null ? new ArrayList<>()
+      : crpBiReports.stream().filter(bi -> bi != null && Objects.equals(bi.getReportName(), reportName))
+        .collect(Collectors.toList());
+
+    List<BiParameters> crpBiParameters = loggedCrp == null ? null : biParametersManager.findAll(loggedCrp.getId());
+    biParameters = crpBiParameters == null ? new ArrayList<>() : crpBiParameters;
+
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
       // safeguardID =

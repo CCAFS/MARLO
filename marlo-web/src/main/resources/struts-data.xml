@@ -29,6 +29,19 @@
             </result>
         </action>
 
+        <!-- Homepage banner image (ENH-HOMEPAGE-BANNER-001). Dynamic contentType: the stored file may be a
+             PNG, a JPEG or an SVG. No default-image fallback on error, unlike globalUnitLogo above. -->
+        <action name="homepageBannerImage" class="org.cgiar.ccafs.marlo.action.downloads.DownloadHomepageBannerImageAction">
+            <result name="success" type="stream">
+                <param name="contentType">${contentType}</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="bufferSize">1024</param>
+            </result>
+            <result name="error" type="redirectAction">
+                /WEB-INF/global/pages/error/404.ftl
+            </result>
+        </action>
+
         <action name="globalUnitLogo" class="org.cgiar.ccafs.marlo.action.downloads.DownloadGlobalUnitLogoAction">
             <result name="success" type="stream">
                 <param name="contentType">image/png</param>

@@ -57,9 +57,9 @@ public class BiReportsManagerImpl implements BiReportsManager {
   }
 
   @Override
-  public List<BiReports> findAll() {
+  public List<BiReports> findAll(long globalUnitId) {
 
-    return biReportsDAO.findAll();
+    return biReportsDAO.findAll(globalUnitId);
 
   }
 

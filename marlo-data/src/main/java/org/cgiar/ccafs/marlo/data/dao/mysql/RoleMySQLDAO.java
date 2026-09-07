@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDAO {
@@ -90,6 +91,18 @@ public class RoleMySQLDAO extends AbstractMarloDAO<Role, Long> implements RoleDA
     }
     return Collections.emptyList();
 
+  }
+
+  @Override
+  public List<Role> findAllByGlobalUnit(long globalUnitId) {
+    String queryString = "from " + Role.class.getName() + " r where r.crp.id = :globalUnitId";
+    Query<Role> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, Role.class)
+      .setParameter("globalUnitId", globalUnitId);
+    List<Role> list = super.findAll(query);
+    if (list == null) {
+      return Collections.emptyList();
+    }
+    return list;
   }
 
   @Override

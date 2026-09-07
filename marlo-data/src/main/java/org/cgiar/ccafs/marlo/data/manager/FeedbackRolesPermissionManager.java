@@ -45,13 +45,14 @@ public interface FeedbackRolesPermissionManager {
 
 
   /**
-   * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
-   * 
+   * This method verifies whether any of the given roles is granted the given feedback permission within the given
+   * global unit. Both the grant and the role must belong to that global unit.
+   *
    * @param roleIds is the list of roles IDs.
-   * @param permissionName is the permissionName name.
-   * @param globalUnitID is the permissionName name.
-   * @param clusterTypeID is the permissionName name.
-   * @return a list from FeedbackRolesPermission null if no exist records
+   * @param permissionName is the permission name, as stored in feedback_permissions.name.
+   * @param globalUnitID is the global unit the grant and the role must belong to.
+   * @param clusterTypeID is the cluster type to match; when null, only grants with no cluster type match.
+   * @return true if at least one matching grant exists, false otherwise
    */
   public boolean existsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName, long globalUnitID,
     Long clusterTypeID);
@@ -65,32 +66,32 @@ public interface FeedbackRolesPermissionManager {
 
   /**
    * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
-   * 
+   *
    * @param roleIds is the list of roles IDs.
-   * @param permissionName is the permissionName name.
-   * @param globalUnitID is the permissionName name.
-   * @param clusterTypeID is the permissionName name.
+   * @param permissionName is the permission name, as stored in feedback_permissions.name.
+   * @param globalUnitID is the global unit the grant must belong to.
+   * @param clusterTypeID is the cluster type to match; when null, only grants with no cluster type match.
    * @return a list from FeedbackRolesPermission null if no exist records
    */
   List<FeedbackRolesPermission> findObjectsByRoleIdsAndPermissionName(List<Long> roleIds, String permissionName,
     Long globalUnitID, Long clusterTypeID);
 
   /**
-   * This method gets a list of feedbackRolesPermission filtered by role Acronyms and permission name.
-   * 
-   * @param permissionName is the permission name.
-   * @param globalUnitID is the permissionName name.
-   * @return a list from FeedbackRolesPermission null if no exist records
+   * This method gets the acronyms of the roles granted the given feedback permission within the given global unit.
+   *
+   * @param permissionName is the permission name, as stored in feedback_permissions.name.
+   * @param globalUnitID is the global unit the grant and the role must belong to.
+   * @return a list of role acronyms, empty if no records exist
    */
   public List<String> findRoleAcronymsByPermissionName(String permissionName, long globalUnitID);
 
 
   /**
-   * This method gets a list of feedbackRolesPermission filtered by role IDs and permission name.
-   * 
-   * @param permissionName is the permission name.
-   * @param globalUnitID is the permissionName name.
-   * @return a list from FeedbackRolesPermission null if no exist records
+   * This method gets the IDs of the roles granted the given feedback permission within the given global unit.
+   *
+   * @param permissionName is the permission name, as stored in feedback_permissions.name.
+   * @param globalUnitID is the global unit the grant and the role must belong to.
+   * @return a list of role IDs, empty if no records exist
    */
   public List<Long> findRoleIdsByPermissionName(String permissionName, long globalUnitID);
 

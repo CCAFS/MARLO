@@ -455,3 +455,129 @@
 
   </div>
 [/#macro]
+
+[#-- 
+  Activity titles (admin > activities management): informative popup listing the clusters(projects) that are using an
+  activity title, with no phase or year restriction, so the admin can see where the activity is reported.
+  It only displays information, it does not decide whether the activity title can be deleted.
+  One row per logical activity: activities replicate forward, so the phases of a same activity are collapsed into a
+  span instead of repeating the row once per phase.
+  @param element the ActivityTitle being rendered.
+  @param relations the list returned by action.getActivityTitleRelations(element.id).
+--]
+[#macro activityTitleRelationsMacro element relations labelText=true]
+  [#if relations?has_content]
+    [#local composedID = "ActivityTitle-${(element.id)!}" /]
+    [#local activityTitle = (element.title)!'' /]
+    [#-- Distinct clusters, so the button count and the table agree on what is being counted --]
+    [#local clusterIds = [] /]
+    [#list relations as relation]
+      [#if !clusterIds?seq_contains(relation.clusterId)]
+        [#local clusterIds = clusterIds + [relation.clusterId] /]
+      [/#if]
+    [/#list]
+
+    <div id="${composedID}" class="form-group elementRelations ActivityTitle">
+      [#-- Button --]
+      <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-clusters-${composedID}">
+        <span class="icon-20 project"></span> <strong>${clusterIds?size}</strong> [#if labelText][@s.text name="activityManagement.relations.button" /][/#if]
+      </button>
+
+      [#-- Modal --]
+      <div class="modal fade" id="modal-clusters-${composedID}" tabindex="-1" role="dialog" aria-labelledby="label-clusters-${composedID}">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="label-clusters-${composedID}">
+                [@s.text name="activityManagement.relations.title" /]
+                <br />
+                <small>${activityTitle}</small>
+              </h4>
+            </div>
+            <div class="modal-body">
+              <p class="infoText">[@s.text name="activityManagement.relations.help" /]</p>
+              [#-- 
+                Per column filters. relationsModalDataTables.js reads data-filter-columns and builds one select per
+                listed column, labelling it with that column header, so nothing has to be repeated here.
+              --]
+              [#assign labelAll][@s.text name="activityManagement.relations.filter.all" /][/#assign]
+              <div class="relationsModalFilters" data-filter-columns="1,4" data-label-all="${labelAll}"></div>
+              [#-- 
+                Clusters table. data-order and data-page-length are read natively by DataTables, which merges the
+                table data attributes over the shared init options, so the list opens grouped by cluster.
+              --]
+              <table class="table table-striped table-hover activityClustersList" width="100%"
+                data-page-length="10" data-order='[[0, "asc"]]'>
+                <thead>
+                  <tr>
+                    <th>[@s.text name="projectsList.projectids" /]</th>
+                    <th>[@s.text name="projectsList.projectTitles" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.activity" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.phases" /]</th>
+                    <th>[@s.text name="activityManagement.relations.column.status" /]</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  [#list relations as relation]
+                    [#local clusterUrl][@s.url namespace="/clusters" action="${(crpSession)!}/activities"][@s.param name='projectID']${relation.clusterId?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+                    [#-- 
+                      The activity own title is a copy of the activity title for AICCRA, so showing it would just
+                      repeat the modal header. The description is what the cluster actually reported.
+                    --]
+                    [#local description = (relation.activityDescription)!'' /]
+                    [#if description?length > 160]
+                      [#local description = description?substring(0, 160) + "..." /]
+                    [/#if]
+                    [#if relation.reportedInCurrentPhase]
+                      [#local statusClass = "is-reported" /]
+                      [#assign statusLabel][@s.text name="activityManagement.relations.status.reported" /][/#assign]
+                    [#else]
+                      [#local statusClass = "is-removed" /]
+                      [#assign statusLabel][@s.text name="activityManagement.relations.status.removed" /][/#assign]
+                    [/#if]
+                    <tr>
+                      <th scope="row">C${relation.clusterId?c}</th>
+                      [#-- 
+                        Filtered column: plain text only, so the select offers one option per cluster.
+                      --]
+                      <td>[#if (relation.clusterTitle)?has_content]${relation.clusterTitle}[#else][@s.text name="projectsList.title.none" /][/#if]</td>
+                      <td>
+                        [#if (relation.composedId)?has_content]<strong>${relation.composedId}</strong>[/#if]
+                        [#if description?has_content]<br /><span class="activityDescriptionText">${description}</span>[/#if]
+                      </td>
+                      [#-- 
+                        Every phase the activity lives in, listed explicitly so gaps are visible. Not a filtered
+                        column: each combination would be its own filter option. Long lists are trimmed and the
+                        full list stays in the tooltip.
+                      --]
+                      [#local shownPhases = relation.phaseLabels /]
+                      [#local hiddenPhases = 0 /]
+                      [#if shownPhases?size > 4]
+                        [#local hiddenPhases = shownPhases?size - 4 /]
+                        [#local shownPhases = shownPhases[0..3] /]
+                      [/#if]
+                      <td title="${relation.phaseLabels?join(', ')}">
+                        ${shownPhases?join(', ')}[#if hiddenPhases > 0] <span class="phasesMore">+${hiddenPhases} [@s.text name="activityManagement.relations.phasesMore" /]</span>[/#if]
+                      </td>
+                      [#-- 
+                        Plain text on purpose: this column is filtered, and DataTables filters against the raw cell
+                        content, so any markup here would break an exact match.
+                      --]
+                      <td class="relationsStatus ${statusClass}">${statusLabel}</td>
+                      <td><a href="${clusterUrl}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a></td>
+                    </tr>
+                  [/#list]
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">[@s.text name="form.buttons.close" /]</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  [/#if]
+[/#macro]

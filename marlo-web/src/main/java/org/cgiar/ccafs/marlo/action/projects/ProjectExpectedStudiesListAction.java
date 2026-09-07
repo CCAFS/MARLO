@@ -262,7 +262,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Could not get the feedback comments info of the study list", e);
     }
   }
 

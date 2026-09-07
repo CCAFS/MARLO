@@ -3,8 +3,8 @@
 **Spec ID:** DOMAIN-FEEDBACK-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-25
-**Implements requirements:** DOMAIN-FEEDBACK-001-FN-001 … FN-039, NF-001 … NF-010
+**Last Updated:** 2026-09-03
+**Implements requirements:** DOMAIN-FEEDBACK-001-FN-001 … FN-040, NF-001 … NF-010
 **Touches modules:** marlo-web, marlo-data
 
 > This is an **as-built design record** plus the remediation design for the requirements marked **(GAP)**.
@@ -110,24 +110,23 @@ Views / assets
 ### Remediation footprint (proposed)
 
 #### marlo-web
-- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-009, FN-010, FN-011)
+- Modified: `action/crp/admin/FeedbackManagementAction.java` (FN-010)
 - Modified: `action/crp/admin/FeedbackRolesPermissionsManagementAction.java` (FN-021, FN-022)
 - New: `validation/crp/admin/FeedbackManagementValidator.java` (NF-006)
 - New: `validation/crp/admin/FeedbackRolesPermissionsManagementValidator.java` (NF-006)
 - Modified: `action/BaseAction.java` (FN-021, FN-030, FN-031)
-- Modified: `action/json/project/SaveFeedbackCommentsAction.java` (FN-038 — null-safe section resolution)
-- Modified: `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (FN-011, FN-013, NF-008)
+- Modified: `action/json/project/SaveFeedbackCommentsAction.java` (null-safe section resolution; `SAFEGUARDS`
+  link case)
+- Modified: `webapp/WEB-INF/crp/views/admin/feedbackManagement.ftl` (FN-013)
 - Modified: `webapp/WEB-INF/crp/views/admin/feedbackRolesPermissionsManagement.ftl` (FN-013, FN-021)
-- Modified: `webapp/WEB-INF/crp/views/projects/safeguard.ftl` (FN-038, pending OQ-006)
-- Modified: `webapp/crp/js/admin/feedbackManagement.js`, `feedbackRolesPermissionsManagement.js` (NF-007)
-- Modified: `webapp/crp/js/feedback/feedbackAutoImplementation.js` (NF-007, NF-010)
+- Modified: `webapp/crp/js/admin/feedbackRolesPermissionsManagement.js` (duplicated permission filter)
+- Modified: `webapp/crp/js/feedback/feedbackAutoImplementation.js` (NF-010)
 - Modified: `resources/global.properties` (help keys, validation messages, JS prompt keys)
 - Deleted: `action/json/project/FeedbackParentIdAction.java` + its `struts-json.xml` mapping (FN-039, pending OQ-005)
 
 #### marlo-data
 - Modified: `data/dao/mysql/FeedbackQACommentableFieldsMySQLDAO.java` (NF-003)
 - Modified: `data/dao/mysql/FeedbackRolesPermissionMySQLDAO.java` (NF-003, NF-004, FN-030)
-- Modified: `resources/xmls/FeedbackRolesPermissions.hbm.xml` (NF-005)
 
 #### marlo-core / marlo-utils
 - Not applicable.
@@ -210,19 +209,15 @@ Not editable from the UI.
 | `V2_6_0_20250604_1540`, `20250605_1540`, `20250605_1550` | `global_unit_id` on both configuration tables + backfill. |
 | `V2_6_0_20250616_1420`, `20250616_1500` | Truncate and reseed all grants for global unit 45 (AICCRA). |
 | `V2_6_0_20250617_1700` | `role_id` and `feedback_permission_id` relaxed to NULL. |
-| `V2_6_0_20250618_1700`, `20251106_1500` | Cluster-type backfill by description matching; FPM `can_react_comments` → Theme. |
+| `V2_6_0_20250618_1700`, `20251106_1500` | Cluster-type backfill by description matching; FPM `can_react_comments` → Theme. **Both partially inert — see FN-040: no `Theme` row exists in `cluster_types`.** |
 | `V2_6_0_20250625_1320`, `20250625_1340` | Adds and seeds `requires_project_association`. |
 
 ### Proposed migrations
 
-Only one is required, and only if OQ-006 resolves to migrating data rather than changing the enum or the FTL:
+None. The safeguard slug was reconciled in the FTL, not in the data — no row was ever configured with either
+spelling, so there was nothing to normalise.
 
-```
-V2_6_0_<YYYYMMDD>_<HHMM>__NormalizeFeedbackSafeguardSectionName.sql
-  UPDATE feedback_qa_commentable_fields SET section_name = 'safeguards' WHERE section_name = 'safeguard';
-```
-
-FN-021 needs no migration — `requires_project_association` already exists. FN-030 and NF-003..NF-005 are
+FN-021 needs no migration — `requires_project_association` already exists. FN-030 and NF-003..NF-004 are
 code-only. FN-022 is validated in the application layer; the NOT NULL constraints are deliberately not
 reinstated because existing rows may violate them.
 
@@ -274,10 +269,21 @@ block, and a `.remove-element` per block. `updateIndexes()` reindexes `name="col
 add/remove — this is the contract the server-side manual binder depends on (NF-002). Both are instances of the
 accordion list pattern in `EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md`.
 
-`feedbackManagement.ftl` — block title `Feedback Field <n>: <sectionDescription> - <fieldName>`; body is
-five `[@customForm.input]` controls (`sectionName`, `sectionDescription`, `fieldName`, `fieldDescription`,
-`parentFieldDescription`) plus a hidden `id`. `parentFieldIdentifier` is not rendered.
-`pageLibs = ["select2"]`, `customJS = ["js/admin/feedbackManagement.js"]` (no cache-buster — NF-008).
+`feedbackManagement.ftl` — block title `Feedback Field <n>: <sectionDescription> - <fieldName>`; body is a
+hand-written `<select class="sectionName">` for `sectionName` plus four `[@customForm.input]` controls
+(`sectionDescription`, `fieldName`, `fieldDescription`, `parentFieldDescription`) and a hidden `id`.
+`parentFieldIdentifier` is not rendered. `pageLibs = ["select2"]`,
+`customJS = ["js/admin/feedbackManagement.js?YYYYMMDD"]`.
+
+The section select is written out in the template rather than through `[@customForm.select]`, which hands the
+current value to `[@s.select]` as an OGNL expression that never matches a string slug. Its options are
+`getProjectSections()` (every `ProjectSectionsEnum.getStatus()`), rendered as
+`<option value="<slug>"><label> (<slug>)</option>`, where the label is
+`FeedbackManagementAction.getProjectSectionLabel(slug)` → `getText("feedbackManagement.section." + slug, slug)`.
+The label is presentational only; the posted and persisted value stays the bare slug, so a tenant can rename a
+section in `custom/*.properties` without touching data. A stored slug outside the enum gets its own extra
+option flagged `feedbackManagement.sectionName.unknown`, so it survives the save; the placeholder posts `-1`,
+which the binder normalises to an empty string.
 
 `feedbackRolesPermissionsManagement.ftl` — block title `Permission <n>: <description>` with a `New` badge when
 `recentlyCreated`; body is `description` input plus three `[@customForm.select]` controls
@@ -443,8 +449,6 @@ OQ-001 asks whether to switch it to `feedback_active`.
 - Actions log through SLF4J. `FeedbackRolesPermissionsManagementAction` logs per-row save and delete failures;
   `FeedbackManagementAction` has no logger at all and its binder swallows exceptions silently — the main
   observability gap on the admin side.
-- `feedbackAutoImplementation.js` `console.log`s all four capability flags plus `isSuperAdmin` on every page
-  load; useful in support, but it is production console noise and is scheduled for removal (NF-007).
 - Audit columns on `feedback_qa_comments` are rich and are the real audit trail: `user_id`, `user_editor_id`,
   `user_approval_id`, `draft_action_user_id`, `responsible_user_id`, `comment_date`, `edition_date`,
   `approval_date`, `draft_action_date`, `start_track_date`, `end_track_date`.
@@ -480,9 +484,17 @@ OQ-001 asks whether to switch it to `feedback_active`.
   (single-quote doubling). All inputs on these paths are currently server-derived (ids from the session,
   permission names from an enum), so there is no reachable injection today — but the pattern is one careless
   caller away from being one, and must be converted to bound parameters.
-- **Cross-tenant grant leakage (FN-030).** Because matching ignores `frp.global_unit_id`, a grant row belonging
-  to global unit A is honoured for a user of global unit B whenever the referenced role belongs to B. This is
-  the highest-severity finding in this spec.
+- **Unenforced tenant column on grants (FN-030).** Matching filters `roles.global_unit_id` and never reads
+  `frp.global_unit_id`. Since `roles.global_unit_id` is `NOT NULL` and `getRolesList()` already restricts the
+  user's roles to the current CRP, no user can match a role of another tenant — so this is **not** a cross-tenant
+  privilege escalation. What it is: the grant row's own tenant column is decorative, so a row whose
+  `global_unit_id` disagrees with its role's global unit is enforced for the role's tenant while being invisible
+  and undeletable in that tenant's admin screen, and manageable only from the other tenant's screen. Not
+  reachable through the UI — both the role dropdown and the assigned `globalUnit` are scoped to the current
+  tenant — so the only origin is a migration or manual SQL. Severity: data integrity and manageability, not
+  access control. **Verified latent and fixed 2026-08-25:** `aiccradb1` holds 26 grants, none mis-tenanted;
+  the three live queries now bind their parameters and require `frp.global_unit_id = :globalUnitID` plus
+  `r.global_unit_id = frp.global_unit_id`.
 - Admin routes are reachable by direct URL even where the menu entry is hidden (NF-009); the interceptor stack,
   not menu visibility, is the control.
 - `feedbackRolesPermissionsManagement.ftl` loads select2 CSS from `cdnjs.cloudflare.com` — a third-party
@@ -494,15 +506,16 @@ OQ-001 asks whether to switch it to `feedback_active`.
 
 - Everything in §1–13 is already in production for AICCRA; documenting it changes nothing.
 - The remediation items split cleanly by risk:
-  - **Behaviour-preserving, ship any time:** NF-003 (bound parameters), NF-004 (fix or delete the broken query),
-    NF-005 (hbm column name), NF-007 (dead JS), NF-008 (cache-buster), FN-031 (`*Old()` removal),
-    FN-013 (help text).
-  - **Behaviour-changing, needs QA sign-off:** FN-009 and FN-010 (delete semantics), NF-006 and FN-022
-    (validation can now reject saves that previously succeeded), FN-011 (free text → select; existing
-    out-of-enum values must be surfaced, not silently dropped).
-  - **Behaviour-changing, needs a product decision first:** FN-030 (cross-tenant scoping — will revoke
-    capabilities that currently work), FN-021 (`requiresProjectAssociation`), FN-038 (safeguard slug),
-    FN-012 / FN-039 (retirements), OQ-001 (admin visibility), OQ-003 (tracking cluster semantics).
+  - **Already shipped:** FN-030 (tenant predicate), NF-003 and NF-004 for
+    `FeedbackRolesPermissionMySQLDAO` — verified non-observable by a pre-flight first.
+  - **Behaviour-preserving, ship any time:** NF-003 for `FeedbackQACommentableFieldsMySQLDAO`,
+    FN-031 (`*Old()` removal), FN-013 (help text).
+  - **Behaviour-changing, needs QA sign-off:** FN-010 (delete semantics), NF-006 and FN-022
+    (validation can now reject saves that previously succeeded).
+  - **Behaviour-changing, needs a product decision first:** FN-030 (tenant scoping — will revoke mis-tenanted
+    grants that currently work), FN-021 (`requiresProjectAssociation`),
+    FN-040 (cluster-type reconciliation), FN-012 / FN-039 (retirements), OQ-001 (admin visibility),
+    OQ-003 (tracking cluster semantics).
 - Rollback: every code item is revertible by commit. The one candidate migration
   (`NormalizeFeedbackSafeguardSectionName`) is reversible with the inverse `UPDATE`; capture the pre-change
   `section_name` distribution before running it.
@@ -538,10 +551,20 @@ OQ-001 asks whether to switch it to `feedback_active`.
 
 ## 16. Open Risks
 
-- **R-01** — Fixing FN-030 revokes capabilities that currently work for any tenant relying on the leak. Needs
-  the pre-flight report in §14 before it ships.
-- **R-02** — FN-011 (Section Name select) will hide any configured value outside `ProjectSectionsEnum` —
-  including `safeguard` (FN-038). Sequence FN-038 before FN-011.
+- **R-01** — *Closed.* The cross-tenant grant pre-flight returned zero mis-tenanted grants and zero old-vs-new
+  predicate divergence, so the FN-030 fix revokes nothing. Re-run that pre-flight before any reseed of
+  `feedback_roles_permissions`, and once against production — the measurement is from a dev database.
+- **R-07** — *Reframed 2026-08-25.* The live grant data is correct; `cluster_types` id 2 is `Theme`. The
+  residual risk is environment reproducibility: a database built from migrations alone gets `Flagship` for id 2,
+  so the two `can_react_comments` grants land on the wrong cluster type there. Fix the catalog migration, and
+  never backfill `cluster_type_id` from `description` again — `'thematic'` does not contain `'theme'`, which is
+  why `V2_6_0_20250618_1700` silently skipped those rows.
+- **R-08** — The module carries real volume: 6992 comments and 5272 replies over 89 active fields. Most fields
+  therefore have comments, so FN-010 is not a corner case — nearly any attempt to delete a commentable field
+  will hit the `ON DELETE RESTRICT` FK. Treat T12 as the highest-value remediation task.
+- **R-02** — *Closed.* All four configured slugs (`deliverable`, `innovation`, `study`,
+  `projectContributionCrp`) are valid `ProjectSectionsEnum` values, and `safeguard.ftl` now publishes
+  `safeguards`, so the section select hides nothing.
 - **R-03** — Adding validation (NF-006, FN-022) can block a save that administrators have been completing for
   years with partially empty rows. Audit existing rows for null `role_id` / `feedback_permission_id` first.
 - **R-04** — `feedbackAutoImplementation.js` is ~1780 lines of DOM-index-coupled jQuery with no tests. Any edit

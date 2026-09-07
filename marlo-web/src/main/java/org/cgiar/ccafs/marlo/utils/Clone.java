@@ -6,7 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Clone {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Clone.class);
 
   // ============================================================
   // Base project path — adjust this only if MARLO is located
@@ -62,9 +67,9 @@ public class Clone {
 
       Files.write(target, content.getBytes(StandardCharsets.UTF_8));
 
-      System.out.println("Generated: " + target);
+      LOG.info("Generated: {}", target);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.error("Could not generate {} from the template {}", target, template, e);
     }
   }
 
@@ -116,7 +121,7 @@ public class Clone {
       generateMysqlDao(m);
       generateManager(m);
       generateManagerImpl(m);
-      System.out.println("✅ Generated for " + m);
+      LOG.info("Generated the files for {}", m);
     }
   }
 }

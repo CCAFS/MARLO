@@ -14,5 +14,8 @@
         <property name="parameterValue" type="string">
             <column name="parameter_value" />
         </property>
+        <many-to-one name="globalUnit" class="org.cgiar.ccafs.marlo.data.model.GlobalUnit" fetch="select">
+            <column name="global_unit_id"  />
+        </many-to-one>
     </class>
 </hibernate-mapping>

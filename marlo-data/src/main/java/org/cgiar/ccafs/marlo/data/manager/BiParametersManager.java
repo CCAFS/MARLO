@@ -44,11 +44,14 @@ public interface BiParametersManager {
 
 
   /**
-   * This method gets a list of biParameters that are active
+   * This method gets the list of biParameters that apply to the given global unit. A parameter configured for the
+   * global unit overrides the platform-wide default (the row with no global unit) that shares its name, so at most one
+   * BiParameters is returned per parameter name.
    * 
+   * @param globalUnitId is the global unit identifier.
    * @return a list from BiParameters null if no exist records
    */
-  public List<BiParameters> findAll();
+  public List<BiParameters> findAll(long globalUnitId);
 
 
   /**

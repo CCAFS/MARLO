@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.FeedbackQACommentManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -84,6 +85,11 @@ public class FeedbackQACommentManagerImpl implements FeedbackQACommentManager {
   @Override
   public List<FeedbackQAComment> getFeedbackQACommentsByPhaseAndParentId(long phaseID, long parentID) {
     return feedbackQACommentDAO.getFeedbackQACommentsByPhaseAndParentId(phaseID, parentID);
+  }
+
+  @Override
+  public List<Map<String, Object>> getUsageByCommentableFieldAndGlobalUnit(long globalUnitID) {
+    return feedbackQACommentDAO.getUsageByCommentableFieldAndGlobalUnit(globalUnitID);
   }
 
   @Override

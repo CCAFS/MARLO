@@ -181,6 +181,11 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   @Override
+  public List<Map<String, Object>> getActivityTitleRelations(long globalUnitId, long currentPhaseId) {
+    return activityDAO.getActivityTitleRelations(globalUnitId, currentPhaseId);
+  }
+
+  @Override
   public List<Activity> getActivitiesByComposedID(String composedID, long phaseId) {
     return activityDAO.getActivitiesByComposedID(composedID, phaseId);
   }

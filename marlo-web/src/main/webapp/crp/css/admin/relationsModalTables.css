@@ -52,3 +52,76 @@
 .modal .modal-body table tbody td {
   vertical-align: middle !important;
 }
+
+/**
+ * Opt in per column filters built by relationsModalDataTables.js. They sit above the table, on the right of the
+ * search box, so they must not inherit the white label color used by .dataTables_filter.
+ */
+.modal .relationsModalFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.modal .relationsModalFilter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal .relationsModalFilter label {
+  margin: 0;
+  font-weight: normal;
+  white-space: nowrap;
+  color: #5f5e5e;
+}
+
+.modal .relationsModalFilter select {
+  width: auto;
+  min-width: 130px;
+  height: 30px;
+  display: inline-block;
+}
+
+/**
+ * Status cell of the activity clusters popup. Kept as plain text so DataTables can filter it exactly, with the
+ * badge look applied here instead of through a nested span.
+ */
+.modal .modal-body td.relationsStatus {
+  white-space: nowrap;
+}
+
+.modal .modal-body td.relationsStatus.is-reported,
+.modal .modal-body td.relationsStatus.is-removed {
+  font-size: 0.9em;
+}
+
+.modal .modal-body td.relationsStatus.is-reported {
+  color: #3c763d;
+  font-weight: bold;
+}
+
+.modal .modal-body td.relationsStatus.is-removed {
+  color: #9a9a9a;
+}
+
+/* Activity clusters popup: the reported description is secondary information */
+.modal .modal-body .activityDescriptionText {
+  color: #777;
+  font-size: 0.92em;
+}
+
+/* Activity clusters popup: trimmed tail of the phase list */
+.modal .modal-body .phasesMore {
+  color: #999;
+  font-size: 0.88em;
+  white-space: nowrap;
+}
+
+/* Cluster titles are long free text: keep the filter select from stretching the row */
+.modal .relationsModalFilter select {
+  max-width: 320px;
+  text-overflow: ellipsis;
+}

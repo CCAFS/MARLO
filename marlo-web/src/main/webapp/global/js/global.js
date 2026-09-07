@@ -129,16 +129,19 @@ $(document).ready(function () {
     }
   }
 
-  // Main Menu always visible (skip on login page where it is not functional)
-  if ($('#mainMenu').exists() && !$('.loginPage').exists()) {
-    var mainMenuPosition = $('#mainMenu').position().top + 20;
-    $(window).scroll(function () {
-      if ($(window).scrollTop() >= mainMenuPosition) {
-        $('#mainMenu .menuContent').addClass('positionFixedTop');
-      } else {
-        $('#mainMenu .menuContent').removeClass('positionFixedTop');
-      }
-    });
+  // Main Menu always visible. The bar is pinned by `position: sticky` on
+  // #mainMenu (marlo-redesign.css), so this only toggles the pinned shadow:
+  // there is no scroll threshold to measure, which is what used to go stale
+  // whenever the header above the bar changed height after ready().
+  // The old `.loginPage` guard is dropped — that class is never rendered, so
+  // the bar already stuck on the login page too.
+  if ($('#mainMenu').exists()) {
+    var $mainMenu = $('#mainMenu');
+    var syncMainMenuStuck = function () {
+      $mainMenu.toggleClass('is-stuck', $(window).scrollTop() > 0);
+    };
+    $(window).on('scroll.mainMenu', syncMainMenuStuck);
+    syncMainMenuStuck();
   }
 
   // Phase tag visible

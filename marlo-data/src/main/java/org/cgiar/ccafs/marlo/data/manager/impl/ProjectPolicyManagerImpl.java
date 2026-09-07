@@ -332,12 +332,14 @@ public class ProjectPolicyManagerImpl implements ProjectPolicyManager {
   }
 
   @Override
+  @Transactional
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy) {
 
     return projectPolicyDAO.save(projectPolicy);
   }
 
   @Override
+  @Transactional
   public ProjectPolicy saveProjectPolicy(ProjectPolicy projectPolicy, String section, List<String> relationsName,
     Phase phase) {
     return projectPolicyDAO.save(projectPolicy, section, relationsName, phase);

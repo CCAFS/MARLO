@@ -21,11 +21,13 @@ import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 
 @Named
 public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQAComment, Long>
@@ -100,6 +102,33 @@ public class FeedbackQACommentMySQLDAO extends AbstractMarloDAO<FeedbackQACommen
       return list;
     }
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<Map<String, Object>> getUsageByCommentableFieldAndGlobalUnit(long globalUnitID) {
+    /*
+     * One aggregate for the whole global unit instead of a query per field: the admin screen needs a usage count
+     * for every commentable field it lists, plus the breakdown behind each one. The join on
+     * feedback_qa_commentable_fields is what scopes the result to the global unit -- feedback_qa_comments has no
+     * global unit of its own, it inherits the one of the field it points at.
+     */
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT c.field_id AS field_id, c.project_id AS project_id, c.id_phase AS phase_id, ");
+    query.append("COUNT(*) AS total, MIN(c.link) AS link ");
+    query.append("FROM feedback_qa_comments c ");
+    query.append("JOIN feedback_qa_commentable_fields f ON f.id = c.field_id ");
+    query.append("WHERE f.global_unit_id = :globalUnitID ");
+    query.append("GROUP BY c.field_id, c.project_id, c.id_phase ");
+    query.append("ORDER BY c.field_id, total DESC ");
+
+    List<Map<String, Object>> result = this.getSessionFactory().getCurrentSession()
+      .createNativeQuery(query.toString()).setParameter("globalUnitID", globalUnitID)
+      .setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE).list();
+
+    if (result == null) {
+      return Collections.emptyList();
+    }
+    return result;
   }
 
   @Override

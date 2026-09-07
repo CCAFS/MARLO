@@ -12,18 +12,6 @@ function init() {
 
 function attachEvents() {
 
-  $('#feedbackPermissionFilter').on('change', function () {
-    const selectedId = $(this).val();
-    $('.srfSlo').each(function () {
-      const permissionId = $(this).find('.feedbackPermission').val();
-      if (!selectedId || selectedId === permissionId) {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
-  });
-  
   $('#clearFeedbackPermissionFilter').on('click', function () {
     $('#feedbackPermissionFilter').val(null).trigger('change');
   });
@@ -37,12 +25,6 @@ function attachEvents() {
     }
     
   $('.addSlo').on('click', addIdo);
-
-  $('.addIndicator').on('click', addIndicator);
-
-  $('.addTargets').on('click', addTargets);
-
-  $('.addCrossCuttingIssue').on('click', addCrossCuttingIssue);
 
   $('.remove-element').on('click', removeElement);
 
@@ -60,8 +42,7 @@ function attachEvents() {
   });
   
   $('#feedbackPermissionFilter').on('change', function () {
-  const selectedPermissionId = $(this).val();
-
+    const selectedPermissionId = $(this).val();
     $('.srfSlo').not('.is-template').each(function () {
       const itemPermissionId = $(this).data('permission-id') + "";
       const shouldShow = !selectedPermissionId || selectedPermissionId === itemPermissionId;
@@ -72,9 +53,8 @@ function attachEvents() {
 }
 
 function addIdo() {
-  console.log("add ido");
   var $itemsList = $(this).parent().find('.slos-list');
-  var $item = $("#srfSlo-template").clone(true).removeAttr("id");
+  var $item = $("#srfSlo-template").clone(true).removeAttr("id").removeClass("is-template");
   $item.find('.blockTitle').trigger('click');
   $itemsList.append($item);
   $item.slideDown('slow');
@@ -84,38 +64,6 @@ function addIdo() {
 
 
 
-
-function addIndicator() {
-  console.log("addIndicator");
-  var $itemsList = $(this).parent().parent().find('.srfIndicators-list');
-  var $item = $("#srfSloIndicator-template").clone(true).removeAttr("id");
-
-  $itemsList.append($item);
-  $item.slideDown('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
-
-function addTargets() {
-  console.log("addTargets");
-  var $itemsList = $(this).parent().parent().find('.targetsList');
-  var $item = $("#targetIndicator-template").clone(true).removeAttr("id");
-  $itemsList.append($item);
-  $item.show('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
-
-function addCrossCuttingIssue() {
-  console.log("addCrossCuttingIssue");
-  var $itemsList = $(this).parent().find('.issues-list');
-  var $item = $("#srfCCIssue-template").clone(true).removeAttr("id");
-
-  $itemsList.append($item);
-  $item.slideDown('slow');
-  updateIndexes();
-  $item.trigger('addComponent');
-}
 
 function removeElement() {
   $item = $(this).parent();

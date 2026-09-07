@@ -23,10 +23,9 @@ public enum ProjectSectionsEnum {
 
   DESCRIPTION("projectDescription"), PARTNERS("projectPartners"), DELIVERABLES("deliverableList"),
   LOCATIONS("locations"), OUTCOMES("contributionsCrpList"), OUTCOME("projectContributionCrp"),
-  DELIVERABLESLIST("deliverablesList"), ACTIVITIES("activities"), CASESTUDIES("caseStudies"),
-  DELIVERABLE("deliverable"), FUNDINGSOURCE("fundingSource"), EXPECTEDSTUDIES("studies"),
-  INNOVATIONS("innovationsList"), INNOVATION("innovation"), EXPECTEDSTUDY("study"), SAFEGUARDS("safeguards"),
-  FEEDBACK("feedback");
+  ACTIVITIES("activities"), CASESTUDIES("caseStudies"), DELIVERABLE("deliverable"), FUNDINGSOURCE("fundingSource"),
+  EXPECTEDSTUDIES("studies"), INNOVATIONS("innovationsList"), INNOVATION("innovation"), EXPECTEDSTUDY("study"),
+  SAFEGUARDS("safeguards"), FEEDBACK("feedback");
 
   public static ProjectSectionsEnum getValue(String section) {
     ProjectSectionsEnum[] lst = ProjectSectionsEnum.values();

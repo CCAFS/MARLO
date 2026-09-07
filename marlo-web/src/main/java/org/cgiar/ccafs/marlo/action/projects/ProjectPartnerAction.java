@@ -844,15 +844,15 @@ public class ProjectPartnerAction extends BaseAction {
           inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
           buffer = readFully(inputStream);
         } catch (FileNotFoundException e) {
-          e.printStackTrace();
+          LOG.error("The manual file {} was not found", fileName, e);
         } catch (IOException e) {
-          e.printStackTrace();
+          LOG.error("Could not read the manual file {}", fileName, e);
         } finally {
           if (inputStream != null) {
             try {
               inputStream.close();
             } catch (IOException e) {
-              e.printStackTrace();
+              LOG.error("Could not close the stream of the manual file {}", fileName, e);
             }
           }
         }

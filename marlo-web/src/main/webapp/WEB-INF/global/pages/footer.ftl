@@ -2,6 +2,8 @@
     <!-- The errorTag is DEPRECIATED right now it's not being use -->
     <!-- <span id="test" class="errorTag glyphicon glyphicon-info-sign" style="display:none;"> </span>-->
     <!-- ${actionName} Content end-->
+    [#-- Closes #pageContent, opened by header.ftl. --]
+    </div>
     [#if !(avoidFooter!false)]
     <footer class="footer">
       <div class="container">
@@ -46,7 +48,7 @@
     
     [#-- Global Javascript --]
     <script type="text/javascript" src="${baseUrlCdn}/global/js/utils.js?20250521" ></script>
-    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20251211" ></script>
+    <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20260819" ></script>
     [#if logged]
       [#-- Pusher app --]
       <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>

@@ -13,7 +13,7 @@
 			<column name="description" sql-type="TEXT" />
 		</property>		
 		<property name="requiresProjectAssociation" type="boolean">
-            <column name="requires_project_association " not-null="true" />
+            <column name="requires_project_association" />
         </property>
 		<many-to-one name="role" class="org.cgiar.ccafs.marlo.data.model.Role"
             fetch="select">
