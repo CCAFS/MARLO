@@ -377,6 +377,11 @@ public class CrpUsersActionDirectoryTest {
     }
 
     @Override
+    public List<Role> findAllByGlobalUnit(long globalUnitId) {
+      throw new UnsupportedOperationException("not used in this test");
+    }
+
+    @Override
     public int cloneRolePermissionsByAcronym(long templateGlobalUnitId, long targetGlobalUnitId) {
       throw new UnsupportedOperationException("not used in this test");
     }
