@@ -379,29 +379,6 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
 
-  // cgamboa 16/05/2024 getActivitiesLedByUser was be updated
-  public List<Activity> getActivitiesLedByUser(long userID) {
-    List<Activity> activities = new ArrayList<Activity>();
-    int qunatityActivity = 0;
-    try {
-      qunatityActivity =
-        activityManager.getActivitiesByProjectAndUserQuantity(projectID, this.getActualPhase().getId(), userID);
-      if (qunatityActivity > 0) {
-        activities = activityManager.getActivitiesByProject(projectID, this.getActualPhase().getId()).stream()
-          .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
-            && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
-          .collect(Collectors.toList());
-
-      }
-    } catch (Exception e) {
-      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
-    }
-    return activities;
-
-
-  }
-
   public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
     List<Activity> activities = new ArrayList<Activity>();
     try {
@@ -409,26 +386,17 @@ public class ProjectPartnerAction extends BaseAction {
       activities = activitiesOut.stream()
         .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
           && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
+          && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase() != null
+          && c.getPhase().equals(this.getActualPhase()))
         .collect(Collectors.toList());
 
 
     } catch (Exception e) {
-      LOG.error(" enable to get acitivities in getActivitiesLedByUser   function ");
+      LOG.error("Could not filter the activities led by the user {} on the project {}, so none are reported",
+        userID, projectID, e);
     }
     return activities;
 
-
-  }
-
-  public List<Activity> getActivitiesLedByUserOld(long userID) {
-    Project project = projectManager.getProjectById(projectID);
-    List<Activity> activities = project.getActivities().stream()
-      .filter(c -> c.isActive() && c.getProjectPartnerPerson() != null && c.getActivityStatus() != null
-        && c.getActivityStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-        && c.getProjectPartnerPerson().getId().longValue() == userID && c.getPhase().equals(this.getActualPhase()))
-      .collect(Collectors.toList());
-    return activities;
 
   }
 
@@ -575,7 +543,7 @@ public class ProjectPartnerAction extends BaseAction {
       }).collect(Collectors.toList());
 
     } catch (Exception e) {
-      LOG.error("Error retrieving deliverables for user " + userID, e);
+      LOG.error("Could not retrieve the deliverables of the user {}", userID, e);
     }
     return deliverablesLeadsTmp;
   }
@@ -945,7 +913,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      LOG.error("Error getting crpPrograms and crp programs leaders " + e);
+      LOG.error("Could not get the crp programs and their leaders", e);
     }
 
     // project coordinator CC emails
@@ -1367,12 +1335,14 @@ public class ProjectPartnerAction extends BaseAction {
 
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
           project.setPartners(project.getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList()));
 
         } else {
           List<ProjectPartner> partnes = new ArrayList<>();
           for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+            .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+              .collect(Collectors.toList())) {
             Institution inst = institutionManager.getInstitutionById(projectPartner.getInstitution().getId());
             if (!inst.getCrpPpaPartners().stream()
               .filter(insti -> insti.isActive() && insti.getCrp().getId().longValue() == this.getCrpID().longValue())
@@ -1613,7 +1583,8 @@ public class ProjectPartnerAction extends BaseAction {
       List<ProjectPartnerPerson> previousCoordinators = previousProject.getCoordinatorPersons(this.getActualPhase());
 
       for (ProjectPartner previousPartner : previousProject.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList())) {
         if (project.getProjecInfoPhase(this.getActualPhase()).isProjectEditLeader()) {
 
           this.removeProjectIndicatorsCenter(previouslyEnteredPartner);
@@ -1741,9 +1712,9 @@ public class ProjectPartnerAction extends BaseAction {
   private void manualBinding() {
       Map<String, Parameter> params = this.getParameters();
       
-      LOG.debug("=== Iniciando manualBinding para ProjectPartner ===");
+      LOG.debug("Starting the manual binding of the project partners");
       
-      // Primero inicializar la lista de partners si es necesario
+      // Initialise the partner list first, if it is not there yet
       initializePartnersList(params);
       
       // Luego hacer el binding de cada campo
@@ -1760,7 +1731,7 @@ public class ProjectPartnerAction extends BaseAction {
   // =====================================================
 
   private void initializePartnersList(Map<String, Parameter> params) {
-      // Encontrar el máximo índice de partners
+      // Find the highest partner index carried by the request
       int maxIndex = -1;
       for (String key : params.keySet()) {
           if (key.matches("project\\.partners\\[\\d+\\]\\.id")) {
@@ -1771,14 +1742,14 @@ public class ProjectPartnerAction extends BaseAction {
           }
       }
       
-      LOG.debug("Máximo índice de partners encontrado: " + maxIndex);
+      LOG.debug("The highest partner index in the request is {}", maxIndex);
       
       if (maxIndex >= 0) {
           if (project.getPartners() == null) {
               project.setPartners(new ArrayList<>());
           }
           
-          // Crear los objetos ProjectPartner necesarios
+          // Create as many ProjectPartner objects as the request needs
           while (project.getPartners().size() <= maxIndex) {
               ProjectPartner newPartner = new ProjectPartner();
               newPartner.setPartnerPersons(new ArrayList<>());
@@ -1786,8 +1757,6 @@ public class ProjectPartnerAction extends BaseAction {
               newPartner.setPartnerContributors(new ArrayList<>());
               project.getPartners().add(newPartner);
           }
-          
-          LOG.debug("Lista de partners inicializada con " + project.getPartners().size() + " elementos");
           
           // Bindear los IDs de los partners existentes
           for (String key : params.keySet()) {
@@ -1798,9 +1767,8 @@ public class ProjectPartnerAction extends BaseAction {
                       try {
                           Long id = Long.parseLong(value);
                           project.getPartners().get(index).setId(id);
-                          LOG.debug("Partner[" + index + "].id bindeado: " + id);
                       } catch (NumberFormatException e) {
-                          LOG.error("Error parseando partner.id: " + value, e);
+                          LOG.error("Could not parse the partner id {}", value, e);
                       }
                   }
               }
@@ -1815,10 +1783,9 @@ public class ProjectPartnerAction extends BaseAction {
                           Phase phase = phaseManager.getPhaseById(phaseId);
                           if (phase != null) {
                               project.getPartners().get(index).setPhase(phase);
-                              LOG.debug("Partner[" + index + "].phase bindeado: " + phaseId);
                           }
                       } catch (NumberFormatException e) {
-                          LOG.error("Error parseando partner.phase.id: " + value, e);
+                          LOG.error("Could not parse the partner phase id {}", value, e);
                       }
                   }
               }
@@ -1829,7 +1796,6 @@ public class ProjectPartnerAction extends BaseAction {
                   String value = params.get(key).getValue();
                   if (index < project.getPartners().size()) {
                       project.getPartners().get(index).setResponsibilities(value);
-                      LOG.debug("Partner[" + index + "].responsibilities bindeado");
                   }
               }
               
@@ -1839,7 +1805,6 @@ public class ProjectPartnerAction extends BaseAction {
                   String value = params.get(key).getValue();
                   if (index < project.getPartners().size()) {
                       project.getPartners().get(index).setSubDepartment(value);
-                      LOG.debug("Partner[" + index + "].subDepartment bindeado");
                   }
               }
           }
@@ -1862,11 +1827,10 @@ public class ProjectPartnerAction extends BaseAction {
                       Institution institution = institutionManager.getInstitutionById(institutionId);
                       if (institution != null) {
                           project.getPartners().get(index).setInstitution(institution);
-                          LOG.debug("Partner[" + index + "].institution bindeado: " + institutionId);
                       }
                   }
               } catch (Exception e) {
-                  LOG.error("Error bindeando partner.institution: " + key, e);
+                  LOG.error("Could not bind the partner institution from the parameter {}", key, e);
               }
           }
       }
@@ -1877,7 +1841,7 @@ public class ProjectPartnerAction extends BaseAction {
   // =====================================================
 
   private void bindPartnersPartnerPersons(Map<String, Parameter> params) {
-      // Primero, encontrar e inicializar las listas de partnerPersons para cada partner
+      // First find and initialise the partnerPersons list of every partner
       for (String key : params.keySet()) {
           if (key.matches("project\\.partners\\[\\d+\\]\\.partnerPersons\\[\\d+\\]\\.id")) {
               int partnerIndex = extractIndex(key);
@@ -1897,7 +1861,7 @@ public class ProjectPartnerAction extends BaseAction {
           }
       }
       
-      // Ahora hacer el binding de cada campo
+      // Then bind each field
       for (String key : params.keySet()) {
           try {
               // Bind partnerPerson.id
@@ -1911,7 +1875,6 @@ public class ProjectPartnerAction extends BaseAction {
                       if (personIndex < partner.getPartnerPersons().size()) {
                           Long id = Long.parseLong(value);
                           partner.getPartnerPersons().get(personIndex).setId(id);
-                          LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].id bindeado: " + id);
                       }
                   }
               }
@@ -1930,7 +1893,6 @@ public class ProjectPartnerAction extends BaseAction {
                               User user = userManager.getUser(userId);
                               if (user != null) {
                                   partner.getPartnerPersons().get(personIndex).setUser(user);
-                                  LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].user bindeado: " + userId);
                               }
                           }
                       }
@@ -1947,7 +1909,6 @@ public class ProjectPartnerAction extends BaseAction {
                       ProjectPartner partner = project.getPartners().get(partnerIndex);
                       if (personIndex < partner.getPartnerPersons().size()) {
                           partner.getPartnerPersons().get(personIndex).setContactType(value);
-                          LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].contactType bindeado: " + value);
                       }
                   }
               }
@@ -1966,14 +1927,13 @@ public class ProjectPartnerAction extends BaseAction {
                               PartnerDivision division = partnerDivisionManager.getPartnerDivisionById(divisionId);
                               if (division != null) {
                                   partner.getPartnerPersons().get(personIndex).setPartnerDivision(division);
-                                  LOG.debug("Partner[" + partnerIndex + "].partnerPersons[" + personIndex + "].partnerDivision bindeado: " + divisionId);
                               }
                           }
                       }
                   }
               }
           } catch (Exception e) {
-              LOG.error("Error bindeando partnerPerson: " + key, e);
+              LOG.error("Could not bind the partner person from the parameter {}", key, e);
           }
       }
   }
@@ -1983,9 +1943,9 @@ public class ProjectPartnerAction extends BaseAction {
   // =====================================================
 
   private void bindPartnersSelectedLocations(Map<String, Parameter> params) {
-    LOG.debug("=== Iniciando binding de selectedLocations ===");
+    LOG.debug("Starting the binding of the selected locations");
     
-    // Primero identificar qué partners tienen locaciones
+    // First work out which partners carry locations
     Set<Integer> partnersWithLocations = new HashSet<>();
     for (String key : params.keySet()) {
         if (key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\[\\d+\\]\\.locElement\\.isoAlpha2") ||
@@ -1995,22 +1955,21 @@ public class ProjectPartnerAction extends BaseAction {
         }
     }
     
-    LOG.debug("Partners con locaciones en UI: " + partnersWithLocations);
+    LOG.debug("The request carries locations for the partners {}", partnersWithLocations);
     
-    // Limpiar las listas de todos los partners que tienen locaciones en la UI
+    // Clear the list of every partner the request carries locations for
     for (int partnerIndex : partnersWithLocations) {
         if (partnerIndex < project.getPartners().size()) {
             ProjectPartner partner = project.getPartners().get(partnerIndex);
             if (partner.getSelectedLocations() == null) {
                 partner.setSelectedLocations(new ArrayList<>());
             } else {
-                LOG.debug("Limpiando selectedLocations existentes para Partner[" + partnerIndex + "]");
                 partner.getSelectedLocations().clear();
             }
         }
     }
     
-    // Ahora hacer el binding solo de las locaciones válidas
+    // Then bind only the usable locations
     for (String key : params.keySet()) {
         if (key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\[\\d+\\]\\.locElement\\.isoAlpha2") ||
             key.matches("project\\.partners\\[\\d+\\]\\.selectedLocations\\.locElement\\.isoAlpha2")) {
@@ -2018,47 +1977,48 @@ public class ProjectPartnerAction extends BaseAction {
                 int partnerIndex = extractIndex(key);
                 String isoAlpha2 = params.get(key).getValue();
                 
-                LOG.debug("Procesando locación para Partner[" + partnerIndex + "]: " + isoAlpha2);
+                LOG.debug("Binding the location {} of the partner at index {}", isoAlpha2, partnerIndex);
                 
                 if (isoAlpha2 != null && !isoAlpha2.isEmpty() && !isoAlpha2.equals("-1") 
                     && partnerIndex < project.getPartners().size()) {
                     
                     ProjectPartner partner = project.getPartners().get(partnerIndex);
                     
-                    // Buscar el LocElement por su código ISO
+                    // Look the LocElement up by its ISO code
                     LocElement locElement = locationManager.getLocElementByISOCode(isoAlpha2);
                     
                     if (locElement != null) {
-                        // Crear un InstitutionLocation con el locElement
+                        // Wrap the locElement in an InstitutionLocation
                         InstitutionLocation institutionLocation = new InstitutionLocation();
                         institutionLocation.setLocElement(locElement);
                         
-                        // Verificar si ya existe para evitar duplicados
+                        // Check whether it is already selected, so it is not added twice
                         boolean exists = partner.getSelectedLocations().stream()
                             .anyMatch(loc -> loc.getLocElement() != null && 
                                            isoAlpha2.equals(loc.getLocElement().getIsoAlpha2()));
                         
                         if (!exists) {
                             partner.getSelectedLocations().add(institutionLocation);
-                            LOG.debug("✅ Partner[" + partnerIndex + "].selectedLocation agregado: " + isoAlpha2);
+                            LOG.debug("Added the location {} to the partner at index {}", isoAlpha2, partnerIndex);
                         } else {
-                            LOG.debug("⚠️  Locación duplicada ignorada: " + isoAlpha2);
+                            LOG.debug("The location {} is already selected, so it is ignored", isoAlpha2);
                         }
                     } else {
-                        LOG.warn("❌ No se encontró LocElement para código ISO: " + isoAlpha2);
+                        LOG.warn("There is no LocElement for the ISO code {}, so the location is skipped", isoAlpha2);
                     }
                 }
             } catch (Exception e) {
-                LOG.error("Error bindeando selectedLocation: " + key, e);
+                LOG.error("Could not bind the selected location from the parameter {}", key, e);
             }
         }
     }
     
-    // Log final para verificar
+    // Report the resulting counts, for diagnosis only
     for (int i = 0; i < project.getPartners().size(); i++) {
         ProjectPartner partner = project.getPartners().get(i);
         if (partner.getSelectedLocations() != null) {
-            LOG.debug("Partner[" + i + "] tiene " + partner.getSelectedLocations().size() + " locaciones después del binding");
+            LOG.debug("The partner at index {} has {} locations after the binding", i,
+              partner.getSelectedLocations().size());
         }
     }
     
@@ -2070,7 +2030,7 @@ public class ProjectPartnerAction extends BaseAction {
   // =====================================================
 
   private void bindPartnersPartnerContributors(Map<String, Parameter> params) {
-      // Primero, encontrar e inicializar las listas de partnerContributors para cada partner
+      // First find and initialise the partnerContributors list of every partner
       for (String key : params.keySet()) {
           if (key.matches("project\\.partners\\[\\d+\\]\\.partnerContributors\\[\\d+\\]\\.id")) {
               int partnerIndex = extractIndex(key);
@@ -2092,7 +2052,7 @@ public class ProjectPartnerAction extends BaseAction {
           }
       }
       
-      // Ahora hacer el binding
+      // Then bind each field
       for (String key : params.keySet()) {
           try {
               // Bind partnerContributor.id
@@ -2106,7 +2066,6 @@ public class ProjectPartnerAction extends BaseAction {
                       if (contributorIndex < partner.getPartnerContributors().size()) {
                           Long id = Long.parseLong(value);
                           partner.getPartnerContributors().get(contributorIndex).setId(id);
-                          LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].id bindeado: " + id);
                       }
                   }
               }
@@ -2124,7 +2083,6 @@ public class ProjectPartnerAction extends BaseAction {
                           ProjectPartner contributor = projectPartnerManager.getProjectPartnerById(contributorId);
                           if (contributor != null) {
                               partner.getPartnerContributors().get(contributorIndex).setProjectPartnerContributor(contributor);
-                              LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].projectPartnerContributor bindeado: " + contributorId);
                           }
                       }
                   }
@@ -2147,13 +2105,12 @@ public class ProjectPartnerAction extends BaseAction {
                                   contribution.setProjectPartnerContributor(new ProjectPartner());
                               }
                               contribution.getProjectPartnerContributor().setInstitution(institution);
-                              LOG.debug("Partner[" + partnerIndex + "].partnerContributors[" + contributorIndex + "].institution bindeado: " + institutionId);
                           }
                       }
                   }
               }
           } catch (Exception e) {
-              LOG.error("Error bindeando partnerContributor: " + key, e);
+              LOG.error("Could not bind the partner contributor from the parameter {}", key, e);
           }
       }
   }
@@ -2163,7 +2120,7 @@ public class ProjectPartnerAction extends BaseAction {
   // =====================================================
 
   /**
-   * Extrae el primer índice de un parámetro con formato "objeto[indice].propiedad"
+   * Extracts the first index of a parameter shaped "object[index].property"
    */
   private int extractIndex(String key) {
       int startIdx = key.indexOf('[') + 1;
@@ -2172,7 +2129,7 @@ public class ProjectPartnerAction extends BaseAction {
   }
 
   /**
-   * Extrae el segundo índice de un parámetro con formato "objeto[indice1].objeto2[indice2].propiedad"
+   * Extracts the second index of a parameter shaped "object[index1].object2[index2].property"
    */
   private int extractSecondIndex(String key) {
       int firstClose = key.indexOf(']');
@@ -2194,7 +2151,8 @@ public class ProjectPartnerAction extends BaseAction {
       ProjectPartnerPerson previousLeader = projectDB.getLeaderPersonDB(this.getActualPhase());
 
       List<ProjectPartner> partnersDB = projectDB.getProjectPartners().stream()
-        .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
+          .collect(Collectors.toList());
 
 
       for (ProjectPartner projectPartnerDB : partnersDB) {
@@ -2266,7 +2224,7 @@ public class ProjectPartnerAction extends BaseAction {
             try {
               projectPartnerDB = projectPartnerManager.saveProjectPartner(projectPartnerDB);
             } catch (Exception e) {
-              LOG.warn("Error saving projectPartnerManager.saveProjectPartner " + e);
+              LOG.warn("Could not save the project partner, so the change is not persisted", e);
             }
 
             if (!this.isCenterGlobalUnit()) {
@@ -2296,11 +2254,12 @@ public class ProjectPartnerAction extends BaseAction {
           }
 
           if (projectPartnerClient.getSelectedLocations() != null) {
-              // Filtrar cualquier locación nula o sin LocElement
+              // Drop any location that is null or carries no LocElement
               projectPartnerClient.getSelectedLocations().removeIf(loc -> 
                   loc == null || loc.getLocElement() == null || loc.getLocElement().getIsoAlpha2() == null
               );
-              LOG.debug("Partner con " + projectPartnerClient.getSelectedLocations().size() + " locaciones válidas");
+              LOG.debug("The partner keeps {} usable locations after the incomplete ones are dropped",
+                projectPartnerClient.getSelectedLocations().size());
           }
 
 
@@ -2382,51 +2341,51 @@ public class ProjectPartnerAction extends BaseAction {
       return;
     }
 
-    LOG.info(">>> Iniciando guardado de locaciones para Partner ID: " + projectPartnerDB.getId());
+    LOG.debug("Saving the locations of the partner {}", projectPartnerDB.getId());
 
     /**
-     * 1. Obtener las locaciones actuales de la base de datos que están activas.
+     * 1. Read the locations currently active in the database.
      */
     List<ProjectPartnerLocation> projectPartnerLocationsDB =
       projectPartnerDB.getProjectPartnerLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
 
     /**
-     * 2. PROCESO DE BORRADO:
-     * Comparamos lo que hay en DB contra lo que viene de la UI (usando el código ISO como clave).
+     * 2. DELETION PASS:
+     * Compare what the database holds against what the UI sent, keyed on the ISO code.
      */
     for (ProjectPartnerLocation projectPartnerLocationDB : projectPartnerLocationsDB) {
-      // Seguridad: Verificar que la relación en DB tenga país asignado
+      // Guard: the row in the database may have no country assigned
       if (projectPartnerLocationDB.getInstitutionLocation() != null 
           && projectPartnerLocationDB.getInstitutionLocation().getLocElement() != null) {
         
         String isoAlpha2 = projectPartnerLocationDB.getInstitutionLocation().getLocElement().getIsoAlpha2();
         
-        // Si el país que está en la DB NO está en la lista que envió el usuario, se marca para borrar.
+        // A country held in the database but absent from what the user sent is marked for deletion.
         if (projectPartnerClient.getSelectedLocations().stream()
           .filter(c -> c != null && c.getLocElement() != null 
                     && c.getLocElement().getIsoAlpha2() != null
                     && c.getLocElement().getIsoAlpha2().equals(isoAlpha2))
           .collect(Collectors.toList()).isEmpty()) {
           
-          LOG.debug("Deleting location: " + isoAlpha2);
+          LOG.debug("Deleting the location {}", isoAlpha2);
           projectPartnerLocationManager.deleteProjectPartnerLocation(projectPartnerLocationDB.getId());
         }
       }
     }
     
     /**
-     * 3. PROCESO DE GUARDADO:
-     * Recorremos las locaciones enviadas por el usuario (UI).
+     * 3. SAVE PASS:
+     * Walk the locations the user sent from the UI.
      */
     for (InstitutionLocation updatedInstitutionLocationClient : projectPartnerClient.getSelectedLocations()) {
       
-      // Validamos que el objeto enviado traiga el código ISO
+      // The object the UI sent must carry an ISO code
       if (updatedInstitutionLocationClient != null && updatedInstitutionLocationClient.getLocElement() != null 
           && updatedInstitutionLocationClient.getLocElement().getIsoAlpha2() != null) {
         
         String isoAlpha2 = updatedInstitutionLocationClient.getLocElement().getIsoAlpha2();
         
-        // Verificamos si esta locación YA existe en la DB para no duplicarla
+        // Skip the location if the database already holds it, so it is not duplicated
         boolean alreadyExists = projectPartnerLocationsDB.stream()
           .anyMatch(c -> c.isActive() 
                     && c.getInstitutionLocation() != null
@@ -2434,34 +2393,35 @@ public class ProjectPartnerAction extends BaseAction {
                     && isoAlpha2.equals(c.getInstitutionLocation().getLocElement().getIsoAlpha2()));
 
         if (!alreadyExists) {
-          // TRADUCCIÓN: Buscamos el objeto país real por su código ISO
+          // Resolve the real country object from its ISO code
           LocElement locElement = locationManager.getLocElementByISOCode(isoAlpha2);
           
           if (locElement != null) {
-            // Buscamos la relación Institución-País (InstitutionLocation)
+            // Resolve the institution-to-country relation (InstitutionLocation)
             InstitutionLocation institutionLocation =
               institutionLocationManager.findByLocation(locElement.getId(), projectPartnerDB.getInstitution().getId());
             
-            // SEGURIDAD: Solo guardamos si encontramos la relación válida en la DB
+            // Guard: save only when that relation actually exists in the database
             if (institutionLocation != null) {
               ProjectPartnerLocation partnerLocation = new ProjectPartnerLocation();
               partnerLocation.setInstitutionLocation(institutionLocation);
               partnerLocation.setProjectPartner(projectPartnerDB);
               
               partnerLocation = projectPartnerLocationManager.saveProjectPartnerLocation(partnerLocation);
-              LOG.info("Saved new location: " + isoAlpha2);
+              LOG.debug("Saved the new location {}", isoAlpha2);
               
-              // Agregar a la colección para auditoría
+              // Add it to the collection so the audit listener records the relation
               projectPartnerDB.getProjectPartnerLocations().add(partnerLocation);
             } else {
-              LOG.warn("No se encontró InstitutionLocation para ISO: " + isoAlpha2 + " e Institución: " + projectPartnerDB.getInstitution().getId());
+              LOG.warn("The institution {} has no InstitutionLocation for the ISO code {}, so it is not saved",
+                projectPartnerDB.getInstitution().getId(), isoAlpha2);
             }
           } else {
-            LOG.warn("No se encontró LocElement para el código ISO: " + isoAlpha2);
+            LOG.warn("There is no LocElement for the ISO code {}, so the location is not saved", isoAlpha2);
           }
         }
       } else {
-        LOG.warn("Una locación de la UI viene nula o sin LocElement.");
+        LOG.warn("A location in the request is null or carries no LocElement, so it is skipped");
       }
     }
   }
@@ -2514,9 +2474,8 @@ public class ProjectPartnerAction extends BaseAction {
               .filter(c -> c.getInstitution().getId().equals(institutionId)).collect(Collectors.toList());
             if (!partenerContributor.isEmpty()) {
               partnerContributionClient.getProjectPartnerContributor().setId(partenerContributor.get(0).getId());
-              LOG.debug("User didn't select a ProjectPartnerContributor for projectPartner : " + projectPersonDB.getId()
-                + ", setting the projectPartnerContributor to projectPartner with id = "
-                + partenerContributor.get(0).getId());
+              LOG.debug("User did not select a ProjectPartnerContributor for the project partner {}, so it is "
+                + "set to the project partner {}", projectPersonDB.getId(), partenerContributor.get(0).getId());
             }
 
           }
@@ -2777,7 +2736,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      LOG.error("error getting TIP parameters " + e);
+      LOG.error("Could not get the TIP parameters", e);
     }
   }
 

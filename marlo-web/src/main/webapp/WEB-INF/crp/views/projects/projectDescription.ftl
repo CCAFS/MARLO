@@ -117,7 +117,7 @@
                 [#else]
                   <label class="col-form-label required">${action.getText("project.liaisonInstitution")}:</label>
                   <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
-                    ${(project.projectInfo.liaisonInstitution.composedName)?string!"N/A"} 
+                    ${(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
                   </p>
                 [/#if]
               </div>
@@ -130,7 +130,7 @@
                   [#else]
                     <label class="col-form-label required">${action.getText("project.clusterType")}:</label>
                     <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
-                      ${(project.projectInfo.clusterType.name)?string!"N/A"} 
+                      ${(project.projectInfo.clusterType.name)!"N/A"} 
                     </p>
                   [/#if]
                 </div>  
