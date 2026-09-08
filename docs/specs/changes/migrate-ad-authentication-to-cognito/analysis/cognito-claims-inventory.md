@@ -161,7 +161,72 @@ the pool's alias configuration — **unverified**, and it must be checked agains
 
 ---
 
-## 8. What this does NOT resolve
+## 8. The question this inventory exists to answer
+
+The point of the Cognito migration is to stop depending on the `org.cgiar.ciat.auth` library. So the
+operative question is not *what can Cognito tell us* in the abstract — it is **whether Cognito can supply
+what each AD consumer actually reads.** Enumerated against the working tree on 2026-09-08:
+
+| Consumer | Asks about | Fields read |
+|---|---|---|
+| `CrpUsersAction:636-641` | **a third party** | `isFound`, `getFirstName`, `getLastName`, `getLogin` |
+| `ManageUsersAction:156-159` (global) | **a third party** | `isFound`, `getFirstName`, `getLastName`, `getLogin` |
+| `ManageUsersAction:258-264` (center) | **a third party** | the same, plus `getSource` |
+| `SearchUserAction:197-204` | **a third party** | the same, plus `getEmail` |
+| `GuestUsersValidator:45` | **a third party** | `isFound` |
+| `APCustomRealm.getCgiarNickname:329-341` | **the person signing in** | the AD login |
+
+`utils/searchUsersUtil.java` also holds a direct `new LDAPService()`, but it is a `main()` method with no
+callers — developer scratch, to be deleted with the retirement rather than replaced.
+
+### 8.1 The conclusion
+
+**Cognito claims can replace none of the six.**
+
+* **Five of the six ask about a third party.** An ID token describes only the person who just authenticated.
+  That is not a scope or configuration limit — it is what OIDC is. No claim can be requested that answers a
+  question about somebody else.
+* **The one that concerns the authenticated user needs the AD login** — the single field the pool does not
+  carry (§3), measured twice.
+
+So `given_name` and `family_name`, the useful find of 2026-09-08, **serve no existing AD consumer.** They
+would serve only a capability MARLO does not have today: provisioning a user at first sign-in.
+
+### 8.2 What the migration actually replaces
+
+| `adauth` capability | Replacement |
+|---|---|
+| Authenticate (`LDAPAuthenticator`) | ✅ **Cognito.** Shipped and working |
+| Directory lookup (`DirectoryService.findByEmail`) | ❌ **No replacement.** Structurally outside what Cognito claims can do |
+| Repair `users.username` at sign-in (`getCgiarNickname`) | ❌ Depends on OQ-18 |
+
+`directory-abstraction` did its job: all five third-party consumers now go through **one seam**,
+`DirectoryService.findByEmail`, so putting a different source behind it is a contained change. That source
+simply cannot be Cognito.
+
+The sibling Alliance application already runs this separation in production — Cognito authenticates, and a
+locally mirrored table synced from the HR system supplies the directory (§9). MARLO's own
+`DirectorySource` enum already reserves the alternatives: `DIRECTORY_API`, `CLARISA`, `AD_MIRROR`,
+`INVITATION`.
+
+### 8.3 Consequence for how the open questions are ranked
+
+**OQ-18** — mapping the `sAMAccountName` — resolves **one consumer of six**.
+**OQ-21** and the choice of directory source resolve **five**.
+
+The plan currently treats them as comparable. They are not.
+
+And one thing can now be stated without waiting on anyone: **the AD retirement is blocked on the directory,
+not on authentication.** Authentication is done.
+
+> **A parity argument that does not exist.** `getCgiarNickname` (`APCustomRealm:329-341`) repairs **only**
+> `users.username`. It does not touch `first_name` or `last_name`, and neither does any other login path. So
+> there is no name-refresh behaviour that retirement would remove and a Cognito claim would have to restore.
+> Recorded because the opposite is easy to assume.
+
+---
+
+## 9. What this does NOT resolve
 
 **The directory capability.** The token describes only the person who just authenticated. There is no way to
 ask an OIDC flow about a third party. The three admin sites that create users from a directory lookup —
@@ -181,7 +246,7 @@ behavioural change.
 
 ---
 
-## 9. How to reproduce
+## 10. How to reproduce
 
 Only a real corporate sign-in can produce this data — there is no headless path. Verified: the app client
 credentials are valid (`invalid_grant` on a bogus code, not `invalid_client`) but `client_credentials` returns
@@ -205,11 +270,11 @@ Results land in `${log.folder}/marlo-${log.instance}.log`, greppable as `[COGNIT
 
 ---
 
-## 10. Open decisions this inventory hands over
+## 11. Open decisions this inventory hands over
 
 | # | Decision | Blocked by |
 |---|---|---|
-| 1 | Make `profile` permanent, to gain `given_name` / `family_name` | Nobody — MARLO's call |
+| 1 | Make `profile` permanent, to gain `given_name` / `family_name`. **Deferred**: §8.1 shows no existing AD consumer can use them, so the scope should travel with the feature that consumes it, not ahead of it | Nobody — MARLO's call |
 | 2 | Whether to auto-provision a CGIAR user at first Cognito sign-in, now that name and surname are available. Today gate 1 forbids it (FN-002, "MUST NOT auto-provision") | Product decision; changes a stated requirement |
 | 3 | Whether to pursue the `sAMAccountName` mapping (OQ-18) or accept a null `users.username` for accounts created after AD retirement | Pool and tenant owners — **A2-2459** |
 | 4 | Whether Cognito can serve directory lookups at all | **OQ-21** — one `ListUsers` call, once IAM permits it |
