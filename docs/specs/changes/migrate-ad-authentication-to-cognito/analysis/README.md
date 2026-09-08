@@ -11,6 +11,12 @@ family. They were authored on branch `staging-cognito` and copied here **byte-id
 | [`impact-analysis.md`](./impact-analysis.md) | 311 | System impact: the single dispatch point, all 4 realm surfaces, the hardcoded-credential finding |
 | [`touchpoint-inventory.md`](./touchpoint-inventory.md) | 174 | Every file to change, create, or verify unchanged — with exact line numbers |
 
+**Added later, not part of the original four:**
+
+| Document | What it answers |
+|---|---|
+| [`cognito-claims-inventory.md`](./cognito-claims-inventory.md) | **What the pool actually tells MARLO about a user**, measured from two real corporate sign-ins (2026-09-04, 2026-09-08). Which claims arrive at which scope, why the AD login is not among them, the three traps in the claim names, and what would have to change — and who owns each change. Read this before proposing any work that reads user data out of Cognito |
+
 **Do not edit these to fix a link.** They are the authored analysis; the resolution map below exists
 so their links can be followed without modifying them.
 
