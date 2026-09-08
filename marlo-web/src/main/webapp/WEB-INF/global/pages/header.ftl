@@ -121,9 +121,12 @@
     </script>
 
     [#-- Stencil test --]
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
-    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+    [#-- A2-2457: keep these versions pinned. Unversioned unpkg URLs resolve to "latest", and
+         primevue 5.x adds a license gate that renders an "Invalid PrimeUI License" badge.
+         primevue 4.5.5 pairs with @primeuix/themes 2.0.3 (both on @primeuix/styled 0.7.x). --]
+    <script src="https://unpkg.com/vue@3.5.42/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/primevue@4.5.5/umd/primevue.min.js"></script>
+    <script src="https://unpkg.com/@primeuix/themes@2.0.3/umd/aura.js"></script>
 
     [#-- <script type="module" src="https://cdn.jsdelivr.net/gh/yecksin/marlo-stencil-components@main/dist/esm/marlo-stencil-components.js?v=2"></script> --]
 
