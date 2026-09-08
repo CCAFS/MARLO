@@ -79,8 +79,15 @@
 
 /* OLD */
 .btn:focus {
-  outline: none !important;
   color: unset;
+}
+
+/* This used to be `.btn:focus { outline: none !important }`, which also hid the
+   indicator from keyboard users — a .btn was reachable by Tab with nothing to
+   show for it. :not(:focus-visible) keeps the original intent (no ring left
+   behind after a mouse click) and lets a keyboard focus through. */
+.btn:focus:not(:focus-visible) {
+  outline: none !important;
 }
 .minimize, .minimizeOutcome{
   display: none;
@@ -373,6 +380,13 @@ span.icon-20 {
   --opi-primary: #0277A2;
   --opi-primary-dark: #015C7D;
   --opi-primary-ink: #15719B;
+  /* Focus ring. Brand blue, not the danger orange: a focus outline is a
+     neutral "you are here" cue, so it must not read as an error. #0277A2 on a
+     white or light surface is ~5:1, well over the 3:1 WCAG asks of it. */
+  --opi-focus: #0277A2;
+  /* Soft glow that pairs with the brand border to mark a focused field. Defined
+     once so every control gets the identical ring. */
+  --opi-focus-ring: 0 0 0 3px rgba(2, 119, 162, .12);
   --opi-ink: #1F2A37;
   --opi-ink-soft: #4B5563;
   --opi-muted: #6B7280;
@@ -408,7 +422,67 @@ span.icon-20 {
 .opi-page *:before,
 .opi-page *:after { box-sizing: border-box; }
 
-.opi-page :focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+/* Page-level focus ring for controls that have no focus treatment of their own —
+   buttons, links, tabs, chips. Form fields opt out of it further down: they carry
+   the brand border + --opi-focus-ring instead, and showing both at once is what
+   made the value cells read as a different component from every other field. */
+.opi-page :focus-visible { outline: 2px solid var(--opi-focus); outline-offset: 2px; }
+
+/* bootstrap's .btn:focus carries its own outline at the same specificity as the
+   rule above, so state the winner explicitly instead of relying on load order. */
+.opi-page .btn:focus-visible {
+  outline: 2px solid var(--opi-focus);
+  outline-offset: 2px;
+}
+
+/* trumbowyg ships `outline: none` on its toolbar and modal buttons at a higher
+   specificity than the page rule, leaving the editor chrome with no keyboard
+   indicator at all. The ring is inset here: toolbar buttons sit flush against
+   each other, so an outset ring would overlap its neighbours. */
+.opi-page .trumbowyg-button-pane button:not(.trumbowyg-disable):focus-visible,
+.opi-page .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-submit:focus-visible,
+.opi-page .trumbowyg-modal-box .trumbowyg-modal-button.trumbowyg-modal-reset:focus-visible {
+  outline: 2px solid var(--opi-focus);
+  outline-offset: -2px;
+}
+
+/* The editor is a field, not a button, and was the last control still answering
+   focus with an outline ring — the page-level ring landed on the contenteditable
+   because trumbowyg gives .trumbowyg-box no focus state at all.
+
+   The field frame lives on the editor rather than on the whole widget: the box
+   becomes a bare container, the toolbar sits above it as chrome, and the editing
+   surface carries the same border + ring as every other input. Framing the box
+   instead would have wrapped the toolbar too, and the editor sits flush inside
+   it, so a ring on both would have drawn two adjacent lines. */
+.opi-page .trumbowyg-box {
+  border: 0;
+}
+
+/* The toolbar's own bottom rule would double up with the editor's new top
+   border, so it is dropped and replaced by a small gap. */
+.opi-page .trumbowyg-button-pane {
+  border-bottom: 0;
+  margin-bottom: 4px;
+}
+
+.opi-page .trumbowyg-editor,
+.opi-page .trumbowyg-textarea {
+  border: 1px solid var(--opi-border-strong);
+  border-radius: var(--opi-radius-sm);
+  /* customTrumbowyg gives the editor an inset shadow no other OPI field has. */
+  box-shadow: none;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.opi-page .trumbowyg-editor:focus,
+.opi-page .trumbowyg-editor:focus-visible,
+.opi-page .trumbowyg-textarea:focus,
+.opi-page .trumbowyg-textarea:focus-visible {
+  border-color: var(--opi-primary);
+  box-shadow: var(--opi-focus-ring);
+  outline: none;
+}
 
 .opi-page .mz { scrollbar-width: thin; }
 
@@ -895,9 +969,11 @@ span.icon-20 {
 
 .opi-page .opi-card__body input[type="text"]:focus,
 .opi-page .opi-card__body textarea:focus,
-.opi-page .opi-card__body select:focus {
+.opi-page .opi-card__body select:focus,
+.opi-page .opi-plainInput:focus {
   border-color: var(--opi-primary);
-  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  box-shadow: var(--opi-focus-ring);
+  outline: none;
 }
 
 .opi-page .opi-card__body .fieldError,
@@ -926,7 +1002,7 @@ span.icon-20 {
 
 .opi-page .opi-card__body select.opi-select:focus {
   border-color: var(--opi-primary);
-  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  box-shadow: var(--opi-focus-ring);
   outline: none;
 }
 
@@ -981,7 +1057,8 @@ span.icon-20 {
 .opi-page .opi-card__body .select2-container--default.select2-container--focus .select2-selection--single,
 .opi-page .opi-card__body .select2-container--default.select2-container--open .select2-selection--single {
   border-color: var(--opi-primary);
-  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  box-shadow: var(--opi-focus-ring);
+  outline: none;
 }
 
 .opi-page .opi-card__body .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
@@ -1799,7 +1876,7 @@ span.icon-20 {
 
 .opi-cell__valueWrap:focus-within {
   border-color: var(--opi-primary);
-  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  box-shadow: var(--opi-focus-ring);
 }
 
 /* Unit "Not applicable": the value is not collected for this row. */
@@ -1828,3 +1905,14 @@ span.icon-20 {
 /* Baseline value is a plain optional number; it keeps the shared field box but
    must stay empty when nothing was captured, so it is not a .targetValue. */
 .opi-page .opi-card__body input.opi-baselineValue { text-align: right; }
+
+/* global.css reserves 34px of right padding on .targetValueNumber to clear the
+   27px unit chip it hangs off .input::after. The redesign switches that chip off
+   (see the `content: none` rule above) and states the unit in its own select, so
+   the reservation was holding empty space and Target Value sat visibly
+   mis-padded next to Baseline Value. 10px is what .input-sm gives every other
+   field in the card, Baseline Value included, so the pair now matches.
+   .opi-cell__value is excluded: it keeps its own tighter box and a real affix. */
+.opi-page .opi-card__body input.targetValueNumber:not(.opi-cell__value) {
+  padding-right: 10px;
+}
