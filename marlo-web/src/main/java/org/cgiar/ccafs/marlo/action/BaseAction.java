@@ -2085,8 +2085,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           return allPhases.get(requestedPhaseID);
         }
 
-        LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
-          APConstants.PHASE_ID, phaseIDParam);
+        // An absent or empty value is the everyday case: the templates still render the param with no value
+        // when the phase they were given has no id. A value that is present and does not resolve is not.
+        if (StringUtils.isNotBlank(phaseIDParam)) {
+          LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
+            APConstants.PHASE_ID, phaseIDParam);
+        }
         Phase phase = this.getPhaseFromCurrentPhaseParam();
 
         if (phase != null) {
@@ -3474,7 +3478,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         for (Deliverable deliverable : deliverables) {
           if (deliverable != null && deliverable.getId() != null) {
-            deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+            // find() resolves to session.get(), which answers null for a row that no longer exists. Assigning
+            // that straight back to the loop variable left every reader below dereferencing null, including the
+            // catch blocks that report them, so the report threw out of the handler meant to contain the failure.
+            Deliverable deliverableDB = deliverableManager.getDeliverableById(deliverable.getId());
+            if (deliverableDB != null) {
+              deliverable = deliverableDB;
+            }
           }
           DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
           boolean isDOIDuplicated = false;
