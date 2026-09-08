@@ -30,8 +30,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PRMSInnovationService extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PRMSInnovationService.class);
 
   private static final long serialVersionUID = -4335064142194555431L;
   private List<Map<String, String>> innovations;
@@ -71,7 +75,7 @@ public class PRMSInnovationService extends BaseAction {
 
       return SUCCESS;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not build the PRMS innovation list", e);
       return ERROR;
     }
   }

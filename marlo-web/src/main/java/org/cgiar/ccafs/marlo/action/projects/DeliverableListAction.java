@@ -60,7 +60,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,7 +270,7 @@ public class DeliverableListAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Could not get the feedback comments info of the deliverable list", e);
     }
   }
 
@@ -344,7 +343,6 @@ public class DeliverableListAction extends BaseAction {
       }
     } catch (Exception e) {
       logger.error("unable to get feedbackcomments info", e);
-      e.printStackTrace();
     }
   }
 
@@ -394,7 +392,6 @@ public class DeliverableListAction extends BaseAction {
 
     } catch (Exception e) {
       logger.error("unable to get feedbackcomments info", e);
-      e.printStackTrace();
     }
   }
 
@@ -546,7 +543,6 @@ public class DeliverableListAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
       logger.error("unable to get deliverable info", e);
       return new ArrayList<>();
     }
@@ -683,8 +679,8 @@ public class DeliverableListAction extends BaseAction {
                   .collect(Collectors.toList());
               if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
                 if (deliverablePartnershipResponsibles.size() > 1) {
-                  Log.warn("There are more than 1 deliverable responsibles for D" + prevShared.getDeliverable().getId()
-                    + " " + this.getActualPhase().toString());
+                  logger.warn("There is more than one deliverable responsible for D{} in {}",
+                    prevShared.getDeliverable().getId(), this.getActualPhase());
                 }
                 DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
 
@@ -754,7 +750,8 @@ public class DeliverableListAction extends BaseAction {
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
                   .findFirst().orElse(null).getElementValue();
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
               try {
                 handle = deliverableMetadataElements.stream()
@@ -763,7 +760,8 @@ public class DeliverableListAction extends BaseAction {
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
                   .findFirst().orElse(null).getElementValue();
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
 
               // Deliverable dissemination
@@ -772,7 +770,8 @@ public class DeliverableListAction extends BaseAction {
               try {
                 deliverableDissemination = deliverableTemp.getDissemination(this.getActualPhase());
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no dissemination record in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
 
               if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
@@ -819,8 +818,8 @@ public class DeliverableListAction extends BaseAction {
               .collect(Collectors.toList());
             if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
               if (deliverablePartnershipResponsibles.size() > 1) {
-                Log.warn("There are more than 1 deliverable responsibles for D" + deliverableTemp.getId() + " "
-                  + this.getActualPhase().toString());
+                logger.warn("There is more than one deliverable responsible for D{} in {}", deliverableTemp.getId(),
+                  this.getActualPhase());
               }
               DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
 
@@ -979,8 +978,8 @@ public class DeliverableListAction extends BaseAction {
                   .collect(Collectors.toList());
               if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
                 if (deliverablePartnershipResponsibles.size() > 1) {
-                  Log.warn("There are more than 1 deliverable responsibles for D" + prevShared.getDeliverable().getId()
-                    + " " + this.getActualPhase().toString());
+                  logger.warn("There is more than one deliverable responsible for D{} in {}",
+                    prevShared.getDeliverable().getId(), this.getActualPhase());
                 }
                 DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
 
@@ -1051,7 +1050,8 @@ public class DeliverableListAction extends BaseAction {
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
                   .findFirst().orElse(null).getElementValue();
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
 
               try {
@@ -1061,7 +1061,8 @@ public class DeliverableListAction extends BaseAction {
                     && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
                   .findFirst().orElse(null).getElementValue();
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
 
               // Deliverable dissemination
@@ -1070,7 +1071,8 @@ public class DeliverableListAction extends BaseAction {
               try {
                 deliverableDissemination = deliverableTemp.getDissemination(this.getActualPhase());
               } catch (Exception e) {
-                Log.info(e);
+                logger.debug("The deliverable {} has no dissemination record in {}", deliverableID,
+                  this.getActualPhase(), e);
               }
 
               if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
@@ -1114,8 +1116,8 @@ public class DeliverableListAction extends BaseAction {
               .collect(Collectors.toList());
             if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
               if (deliverablePartnershipResponsibles.size() > 1) {
-                Log.warn("There are more than 1 deliverable responsibles for D" + deliverableTemp.getId() + " "
-                  + this.getActualPhase().toString());
+                logger.warn("There is more than one deliverable responsible for D{} in {}", deliverableTemp.getId(),
+                  this.getActualPhase());
               }
               DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
 

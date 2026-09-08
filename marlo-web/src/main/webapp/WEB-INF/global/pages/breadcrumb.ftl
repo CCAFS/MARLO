@@ -1,14 +1,18 @@
 [#ftl]
 [#if breadCrumb??]
+[#-- A phase with no id used to render phaseID with an empty value, which every action then had to reject, so the
+     param is only added to the links when there is an id to send. --]
+[#assign phaseQuery = "" /]
+[#if (actualPhase.id)?has_content][#assign phaseQuery = "phaseID=" + actualPhase.id?c /][/#if]
 <ol class="breadcrumb">
   [#if breadCrumb?has_content] 
     [#list breadCrumb as item]
       <li class="[#if !item_has_next]active[/#if]">
         [#if item.action?has_content]
           [#if item.param?exists]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}&phaseID=${(actualPhase.id)!}" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?${item.param}[#if phaseQuery?has_content]&${phaseQuery}[/#if]" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
           [#else]
-            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do?phaseID=${(actualPhase.id)!}" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
+            <a href="${baseUrl}/${item.nameSpace}/${item.action}.do[#if phaseQuery?has_content]?${phaseQuery}[/#if]" >[#if item.label?exists][@s.text name="breadCrumb.menu.${item.label}" /][#else][@s.text name="${item.text}" /][/#if]</a>
           [/#if]
         [#else]
           [@s.text name="breadCrumb.menu.${item.label}" /]</a>
