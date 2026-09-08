@@ -111,9 +111,11 @@ plus a track cell whose width JavaScript sets to `totalDays × pxPerDay`.
    │  │        └─ __row--overflow    32px; OVERFLOW + chip track
    │  ├─ __foot         window/span (left), placed/hint (right)
    │  └─ __popover      z 20, appended by schedule.js
-   └─ __next            300px aside, margin-top 44px so its top edge meets
-                        __frame's rather than the controls row's; next activity,
-                        else next phase, else absent
+   └─ __side            300px column of one or two __next panels; next
+                        activity, else next phase, else absent. margin-top 44px
+                        so its top edge meets __frame's rather than the controls
+                        row's -- dropped to 0 by --pair, because two panels
+                        already reach the frame's bottom without the offset
 ```
 
 **Stacking contract.** `.scheduleCard__canvas` is the only stacking context. Order: gridlines 0,
