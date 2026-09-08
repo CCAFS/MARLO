@@ -58,8 +58,9 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public String getEmailByUsername(String username) {
-    String queryString = "select email from " + User.class.getName() + " where username = '" + username + "'";
+    String queryString = "select email from " + User.class.getName() + " where username = :username";
     Query<String> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, String.class);
+    query.setParameter("username", username);
     String email = query.uniqueResult();
     return email;
   }

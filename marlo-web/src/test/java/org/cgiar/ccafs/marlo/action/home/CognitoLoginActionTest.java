@@ -52,6 +52,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -77,6 +78,9 @@ import static org.junit.Assert.assertTrue;
 public class CognitoLoginActionTest {
 
   private static final String VALID_EMAIL = "priya.cgiar@cgiar.org";
+  /** The AD login the same account signs in with. 95% of MARLO accounts carry a username that is not an
+   * email, and the login wizard accepts it in step 1 (login.js:131-134), so it is not an edge case. */
+  private static final String VALID_USERNAME = "pcgiar";
   private static final long GLOBAL_UNIT_ID = 55L;
   private static final Pattern BASE64_URL_43 = Pattern.compile("^[A-Za-z0-9_-]{43}$");
   private static final Pattern PKCE_VERIFIER_CHARSET = Pattern.compile("^[A-Za-z0-9._~-]{43,128}$");
@@ -100,6 +104,7 @@ public class CognitoLoginActionTest {
     User user = new User();
     user.setId(Long.valueOf(9001L));
     user.setEmail(VALID_EMAIL);
+    user.setUsername(VALID_USERNAME);
     user.setCgiarUser(true);
     user.setActive(true);
     return user;
@@ -359,6 +364,37 @@ public class CognitoLoginActionTest {
       assertFalse("this endpoint must never write users.agree_terms -- it cannot prove who the email is",
         this.userManager.saveUserCalled);
     }
+  }
+
+  /**
+   * The wizard's step 1 accepts an email <b>or</b> a username: {@code CrpByUserEmailAction:96-99} falls back
+   * to {@code getUserByUsername}, {@code GlobalUnitMySQLDAO.crpUsers} matches on either column, and
+   * {@code login.js:131-134} deliberately skips the email-format check when the value carries no {@code "@"},
+   * leaving it "for the server to resolve". {@code login.js:244} then forwards whatever was typed to this
+   * endpoint, under a parameter named {@code email}. This gate must therefore resolve both.
+   * <p>
+   * <b>Fails when</b> the {@code getUserByUsername} fallback is removed: this scenario produces
+   * {@code INPUT} with {@code login.error.cognitoNotEligible} instead of a redirect. That was the shipped
+   * behaviour, and it locked such an account out completely -- {@code LoginAction}'s T11b guard correctly
+   * refuses the local password for the very same account, so neither path was reachable.
+   * <p>
+   * The suite could not have caught this before: the {@code UserManager} double declared
+   * {@code getUserByUsername} "not needed by this suite" and threw, so every test asserted on an email.
+   */
+  @Test
+  public void anEligibleAccountEnteringByUsernameReachesTheAuthorizeRedirect() {
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(new ConfiguredApConfig());
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_USERNAME);
+    action.setAgree(Boolean.TRUE);
+
+    assertEquals("a username entry must be resolved, not refused", Action.SUCCESS, action.authorize(null));
+    assertNotNull("the authorize URL must be built for a username entry", action.getAuthorizeUrl());
+    assertNotNull("a username entry must mint a pending authorization exactly as an email entry does",
+      SecurityUtils.getSubject().getSession().getAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION));
+    assertFalse("resolving by username must still write nothing to the user's row",
+      this.userManager.saveUserCalled);
   }
 
   /**
@@ -998,6 +1034,7 @@ public class CognitoLoginActionTest {
   private static final class RecordingUserManager implements UserManager {
 
     private final Map<String, User> byEmail = new HashMap<String, User>();
+    private final Map<String, String> emailByUsername = new HashMap<String, String>();
     private CognitoLoginAction action;
     private boolean saveUserCalled;
     private boolean authorizeUrlWasNullAtSaveTime;
@@ -1005,6 +1042,9 @@ public class CognitoLoginActionTest {
 
     void register(User user) {
       this.byEmail.put(user.getEmail(), user);
+      if (user.getUsername() != null && !user.getUsername().isEmpty()) {
+        this.emailByUsername.put(user.getUsername(), user.getEmail());
+      }
     }
 
     @Override
@@ -1034,7 +1074,11 @@ public class CognitoLoginActionTest {
 
     @Override
     public User getUserByUsername(String username) {
-      throw new UnsupportedOperationException("not needed by this suite");
+      // Mirrors UserManagerImp: username -> email -> user. A double that indexed Users by username
+      // directly would stay green if getUserByEmail regressed, which is the "double gentler than
+      // production" shape this spec's own audits found nine times.
+      String email = this.emailByUsername.get(username);
+      return email == null ? null : this.getUserByEmail(email);
     }
 
     @Override

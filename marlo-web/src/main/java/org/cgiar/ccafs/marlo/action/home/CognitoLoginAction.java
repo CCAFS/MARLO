@@ -280,8 +280,20 @@ public class CognitoLoginAction extends BaseAction {
     }
 
     String normalizedEmail = this.email == null ? null : this.email.trim().toLowerCase();
-    User user = normalizedEmail == null || normalizedEmail.isEmpty() ? null
-      : this.userManager.getUserByEmail(normalizedEmail);
+    User user = null;
+    if (normalizedEmail != null && !normalizedEmail.isEmpty()) {
+      // The wizard's step 1 (crpByEmail.do) resolves an email OR a username -- login.js:131-134 skips the
+      // email-format check when the value carries no "@" and leaves it "for the server to resolve" -- and
+      // login.js:244 forwards whatever was typed to this endpoint under the `email` parameter. Resolving
+      // only by email leaves a CGIAR user who signs in with their username unable to reach the authorize
+      // redirect at all, and LoginAction's T11b guard then correctly refuses their local password too, so
+      // the account is left with no way in. Mirrors ValidateUserAction:229-232 and LoginAction:213-216,
+      // the two sites that already resolve this same submitted value both ways.
+      user = this.userManager.getUserByEmail(normalizedEmail);
+      if (user == null) {
+        user = this.userManager.getUserByUsername(normalizedEmail);
+      }
+    }
     if (user == null || !user.isCgiarUser()) {
       LOG.info("Cognito login refused: the submitted account is not a CGIAR-authenticated account");
       return this.refuse("login.error.cognitoNotEligible");
