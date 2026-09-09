@@ -631,14 +631,21 @@ public class CognitoCallbackAction extends LoginAction {
    * <p>
    * <b>Both claims are optional.</b> They arrive only because {@code CognitoLoginAction} requests the
    * {@code profile} scope; a pool that stops emitting them must degrade to "leave the field as it is",
-   * never to a blank write. Hence the {@code isNotBlank} guard on the incoming value as well as the
-   * {@code isBlank} guard on the stored one.
+   * never to a blank write. Hence the guard on the incoming value as well as the one on the stored value:
+   * both sides are checked, so neither an absent claim nor a populated row can produce a write.
    * <p>
-   * <b>This does not persist by itself.</b> The caller's {@code saveLastLogin} does, and that is the only
-   * method that can: {@code saveUser} routes through {@code AbstractMarloDAO.update(T)}, which returns
-   * before {@code merge()} for a session-managed entity, and carries no {@code @Transactional}, so this
-   * OSIV session's {@code FlushMode.MANUAL} would never flush the change — the same trap recorded in this
-   * class's javadoc for {@code users.agree_terms}. Never "fix" this by calling {@code saveUser} here.
+   * <b>This does not persist by itself</b> — the caller's {@code saveLastLogin} does, and here it is the
+   * only thing that can. Being precise about why, because the short version is wrong in both directions:
+   * {@code saveUser} carries no {@code @Transactional}, so an UPDATE through it reaches the database only
+   * when something <em>later in the same request</em> opens and commits a transaction — whose flush covers
+   * the whole persistence context, not just the entity handed to it. That is exactly why {@code saveUser}
+   * does persist on the local login path, where {@code finishLogin}'s {@code saveLastLogin} commits
+   * afterwards and carries the earlier change along with it.
+   * <p>
+   * <b>In this callback there is no afterwards.</b> {@code saveLastLogin} here <em>is</em> the last
+   * persistence step, so a {@code saveUser} at this point would be flushed by nothing and would lose the
+   * write in silence. Never "simplify" this to {@code saveUser} — not because that method cannot persist,
+   * but because at this point in this flow nothing would flush it.
    *
    * @param loggedUser the Hibernate-managed row for the authenticated account
    * @param validatedAssertion the assertion whose signature, issuer, audience, expiry and nonce have all
