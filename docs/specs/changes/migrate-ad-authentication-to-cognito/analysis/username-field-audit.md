@@ -1,7 +1,7 @@
 # `users.username` — can MARLO work without it?
 
 **Analysis ID:** `CHG-COGNITO-USERNAME-AUDIT-001`
-**Revision:** 1
+**Revision:** 2 — runtime verification added 2026-09-09, see §10
 **Scope:** every reader and writer of the `users.username` column, across Java, FreeMarker, JavaScript, the ORM mapping, SQL, Pentaho reports and i18n properties
 **Method:** static analysis of the working tree on branch `staging-cognito-impl`, 2026-09-09. No database access — see §8
 **Companions:** [`cognito-claims-inventory.md`](./cognito-claims-inventory.md) · [`adauth-retirement-analysis.md`](./adauth-retirement-analysis.md)
@@ -126,7 +126,9 @@ All four read `DirectoryPerson.getLogin()` and lowercase it:
 
 ---
 
-## 5. Real impacts — three, and only three
+## 5. Real impacts
+
+> Revision 1 titled this section *"three, and only three"*. A fourth was found during the runtime verification of §10 and is recorded as §5.4. The original three are unchanged.
 
 ### 5.1 `FeedbackQACommentsAction:180` and `:403` — a latent bug becomes a visible `null`
 
@@ -190,6 +192,41 @@ ticket.
 
 ---
 
+### 5.4 `DirectoryPerson.getLogin()` is dereferenced unguarded by three reachable writers
+
+Found 2026-09-09 while tracing `SearchUserAction` (§10). Not a null-`users.username` consequence — the
+opposite: it is how the column gets *written*, and it can fail before it ever writes.
+
+```java
+newUser.setUsername(person.getLogin().toLowerCase());
+```
+
+`CrpUsersAction:641`, `ManageUsersAction:159` (global) and `ManageUsersAction:261` (center) all do this,
+guarded only by `person.isFound()` `[V]`. But `DirectoryPerson.found(email, login, firstName, lastName,
+source)` applies `Objects.requireNonNull` to **`source` alone** `[V]`, and `LdapDirectoryService:73` passes
+`user.getLogin()` straight through from `adauth` without checking it `[V]`. So a found person with a null
+login NPEs at all three sites.
+
+**The real defect is the undeclared contract.** `DirectoryService`'s type-level Javadoc is meticulous about
+its invariants — never throws, never returns null, `source` never null, five enumerated outcomes — and says
+**nothing** about whether `login`, `firstName` or `lastName` can be null on a found result `[V]`. Three
+consumers assume they cannot. A future provider behind the same seam (`COGNITO_CLAIMS`, `AD_MIRROR`,
+CLARISA) has no way to know that assumption exists.
+
+Whether `adauth` can actually return a found `LDAPUser` with a null login is **`[OQ]`** — it is a
+third-party JAR and cannot be determined from this repository.
+
+Two ways to close it, and the choice is a design decision rather than a fix:
+
+| | Approach | Trade-off |
+|---|---|---|
+| **(a)** | Guard the three call sites | Local and contained, but leaves the contract as ambiguous as it is now for the next provider |
+| **(b)** | Make `found()` require a non-null `login`, and state it in the `DirectoryService` Javadoc | Fixes the cause, and the constructor then protects every future provider. **More invasive:** if `adauth` can return a null login, `LdapDirectoryService` must decide what that case becomes — most likely `NOT_FOUND` — which is a small but real behaviour change |
+
+`directory-abstraction` owns this code and is archived, so either way it needs its own task.
+
+---
+
 ## 6. Accepted consequences
 
 | # | Consequence | Status |
@@ -221,18 +258,89 @@ Neither edit is applied here. `family.md` is the manifest, and its prior structu
 
 | Unknown | Why it is not answerable here | Who answers |
 |---|---|---|
-| **How many existing users have a null `username`** | No database access in this session — the local MySQL rejected `root` and no `marlo-*.properties` exists on the machine. This sizes consequence 6.2, it does not change any verdict above | One SQL query. Related to `OQ-1` |
+| ~~How many existing users have a null `username`~~ | **ANSWERED 2026-09-09 — see §10.2** | — |
 | **Whether CLARISA requires `externalUserName`** | A remote API contract, not in this repository | CLARISA team — `OQ-14` |
 | **Whether the QA service rejects the literal `null`** | Same | QA service owners — `OQ-14` |
 | **Whether `preferred_username` can be a federation mapping target** | Pool alias configuration; already flagged unverified in claims-inventory §7 | Pool owner — `OQ-18` |
 
-None of the four blocks the conclusion: **MARLO can work without `users.username`**, at a cost of two
-obligatory lines and two optional fallbacks.
+None of these blocks the conclusion: **MARLO can work without `users.username`**.
 
 ---
 
 ## 9. Verification status
 
-**No code has been changed.** This document is the analysis; §5.1 and §5.2 describe work that is
-proposed, not implemented. Line numbers were read against `staging-cognito-impl` on **2026-09-09** and
-will drift — re-locate before editing, per the execution plan's session-start step.
+Revision 1 stated that no code had been changed. That is no longer true, and this is what shipped on
+`staging-cognito-impl`:
+
+| Commit | What |
+|---|---|
+| `54a0424dbb` | §5.1 — `FeedbackQACommentsAction:180,403` now read `getFirstName()` |
+| `1dc36af0b2` | Three further defects of the same class found while sweeping that file: the old-model block's guard validated `reply` while the body read `comment` (an NPE plus the wrong person under `userName_reply`), and `prepare()`'s three `Long.parseLong` calls threw `NumberFormatException` out of an unhandled method |
+| `587b0eb6fb` | §5.2 — `QAReportsAction` normalizes the absent values so the QA service stops receiving the text `null` |
+
+**Still not implemented:** §5.2's CLARISA fallback (gated on `OQ-14`) and §5.4 (needs its own task under
+a future spec, since `directory-abstraction` is archived).
+
+Line numbers were read against `staging-cognito-impl` and will drift — re-locate before editing, per the
+execution plan's session-start step.
+
+---
+
+## 10. Runtime verification — 2026-09-09
+
+Revision 1 was static analysis only. Two of its open items were closed by running the application
+locally (`scripts/run-marlo-java17.sh`) and querying the development database `aiccradb1`.
+
+### 10.1 `SearchUserAction` is not reachable — it is dead code
+
+Revision 1 listed `SearchUserAction:91` and `:203` as live consumers. **They are not.** The action has no
+mapping in any Struts XML, no convention annotations, and no JavaScript caller — what appeared to call it
+(`crpUsers.js:210`) targets `crpByEmail.do`, a different action with a different payload shape `[V]`.
+
+The Struts convention plugin *is* on the classpath and its default locators (`action,actions,struts,struts2`)
+would cover the package, which is why revision 1 could not rule it out. Measured, it does not map it `[V]`:
+
+| Probe | Body |
+|---|---|
+| `/crpByEmail.do` — a real XML-mapped action, used as the positive control | **23 bytes** of JSON |
+| 8 candidates for `SearchUserAction`, across 4 namespaces × 3 name forms | 17,500–17,549 bytes |
+
+**A method note worth carrying.** The first attempt read HTTP status codes and concluded the opposite:
+MARLO answers **200** for any unmatched `.do` path, serving a ~17.5 KB page templated with whatever name
+was requested — `/totally-bogus-path-xyz.do` included. Status codes prove nothing here; a positive control
+is mandatory. Two further confirmations: `/json/global/search-user.do` is byte-identical to
+`/json/global/zzz-nonexistent.do` apart from the reflected name, and the application log records neither
+the action, nor an NPE from its parameter-less `prepare()`, nor the lookup of the probe email.
+
+**Consequence:** two of the six consumers in §3 are moot, and `OQ-12` is answered for this action. The
+`getLogin()` gap it exposed is real and lives in the other three sites — §5.4.
+
+### 10.2 The measured population
+
+`aiccradb1`, 3,599 accounts. **`is_cgiar_user` is not usable as the discriminator in this copy** — only one
+row carries `1`, which is an artifact of the development dataset. Per the product owner, **in production
+every `@cgiar.org` address is `is_cgiar_user = 1`**, so the email domain is the correct proxy:
+
+| Domain | Accounts | No username | Has username |
+|---|---|---|---|
+| `@cgiar.org` | 1,673 | **1** | 1,672 |
+| Other | 1,926 | 181 | 1,745 |
+
+No username in the table is an email address (0 rows match `%@%`).
+
+**What this establishes for §1.1 and §6.** The CGIAR population is 99.94% populated, and those values came
+from Active Directory — precisely what retirement removes. The 181 absent usernames are almost entirely
+**non-CGIAR** accounts, which never had one because AD never supplied it. So the empty state is not
+introduced by this decision: **it already works today, in 181 accounts, having broken nothing.** Growth
+comes only from CGIAR accounts created after retirement; no existing account loses anything.
+
+This also sharpens consequence 6.2: 3,417 of 3,599 accounts carry a username today, so username sign-in is
+the majority entry path and stays available to every one of them.
+
+### 10.3 An unrelated observation, by design
+
+`/crpByEmail.do` answers **unauthenticated** and distinguishes an existing account from a missing one,
+returning the display name, `isCgiarUser`, `agree`, and the Global Unit list including `cognitoEnabled`
+`[V]`. This is deliberate — it is step 1 of the login wizard (`login.js:711`), which must know before
+authentication whether to show the local password field or the Cognito redirect. Recorded as a known
+property, not a defect: it does permit account enumeration, and whether that matters is a product call.
