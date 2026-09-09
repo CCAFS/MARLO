@@ -949,6 +949,24 @@ public class CognitoLogHygieneTest {
     public String getCognitoDomain() {
       return "test-pool.auth.us-east-1.amazoncognito.com";
     }
+    /**
+     * A2-2463 (CFG-2): a double that stands in for a configured environment must now supply all six
+     * required keys, because the gate checks all six. Three sufficed only while three were checked.
+     */
+    @Override
+    public String getCognitoJwksUri() {
+      return "https://directory.example.invalid/.well-known/jwks.json";
+    }
+
+    @Override
+    public String getCognitoRegion() {
+      return "test-region";
+    }
+
+    @Override
+    public String getCognitoUserPoolId() {
+      return "test-user-pool";
+    }
   }
 
   /** Resolves exactly the users registered; throws on {@code login} to prove it is never reached. */

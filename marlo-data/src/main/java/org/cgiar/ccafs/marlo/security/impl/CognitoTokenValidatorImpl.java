@@ -148,8 +148,38 @@ public class CognitoTokenValidatorImpl implements CognitoTokenValidator {
    * @param config the application configuration. Required
    */
   public CognitoTokenValidatorImpl(APConfig config) {
-    this("https://cognito-idp." + config.getCognitoRegion() + ".amazonaws.com/" + config.getCognitoUserPoolId(),
-      config.getCognitoClientId(), new RemoteJwksSource(config));
+    this(composeIssuer(config.getCognitoRegion(), config.getCognitoUserPoolId()), config.getCognitoClientId(),
+      new RemoteJwksSource(config));
+  }
+
+  /**
+   * A2-2463 (CFG-1): composes the expected issuer, or returns {@code ""} when either part is missing.
+   * <p>
+   * <b>A blank part must not produce a non-blank issuer.</b> This used to be an inline concatenation, which
+   * with an unset {@code cognito.region} and {@code cognito.user.pool.id} produced a host with an empty
+   * label -- a string that is <em>not blank</em>. {@link #isConfigured()} tests exactly for blankness, so it
+   * passed, and the refusal then came from further down the method. The log line written for this case never
+   * fired, and an operator who had simply forgotten an environment variable was pointed at the token instead.
+   * <p>
+   * The fully-unconfigured case was already covered by accident: with no configuration at all the audience
+   * ({@code cognito.client.id}) is blank too, so {@code isConfigured()} refused on that instead. The gap only
+   * appeared on a <b>partial</b> configuration -- the shape a hand-set list of six environment variables
+   * actually takes. {@code CognitoTokenValidatorTest} pins it, and the mutation is recorded there: with the
+   * old concatenation restored, that test reports {@code UNTRUSTED_SIGNING_KEY}, because a blank JWKS URI
+   * makes the signature gate refuse before the issuer is ever compared.
+   * <p>
+   * {@code ""} rather than {@code null} on purpose: the constructor's {@code requireNonNull} still holds, and
+   * blank is what {@code isConfigured()} already knows how to refuse.
+   *
+   * @param region the {@code cognito.region} setting
+   * @param userPoolId the {@code cognito.user.pool.id} setting
+   * @return the issuer Cognito would assert, or {@code ""} when either part is null or blank
+   */
+  private static String composeIssuer(String region, String userPoolId) {
+    if (region == null || region.trim().isEmpty() || userPoolId == null || userPoolId.trim().isEmpty()) {
+      return "";
+    }
+    return "https://cognito-idp." + region.trim() + ".amazonaws.com/" + userPoolId.trim();
   }
 
   /**

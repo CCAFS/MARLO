@@ -949,6 +949,25 @@ public class CognitoLoginActionTest {
    * design.md 9.3) must fail closed rather than build a broken redirect.
    */
   @Test
+  public void aMissingTokenVerificationKeyRefusesBeforeTheRedirect() throws Exception {
+    // A2-2463 (CFG-2). The three keys that build the authorize URL are all present, so the old gate
+    // redirected: the person reached the corporate IdP, typed their password, authenticated, and only then
+    // hit the failure. This test reddens if the gate is ever narrowed back to those three.
+    this.customParameterManager.override = activeOverride("true");
+    TestableCognitoLoginAction action = this.newAction(new ConfiguredApConfigMissingJwksUri());
+    action.setGlobalUnitId(Long.valueOf(GLOBAL_UNIT_ID));
+    action.setEmail(VALID_EMAIL);
+    action.setAgree(Boolean.TRUE);
+
+    String result = action.authorize("https://marlo.example.org/testcrp/projectList.do");
+
+    assertEquals(Action.INPUT, result);
+    assertNull("no authorize URL may be produced when a required key is missing", action.getAuthorizeUrl());
+    assertTrue("the refusal must be the infrastructure category, not an account one",
+      action.isCognitoUnavailable());
+  }
+
+  @Test
   public void anUnconfiguredEnvironmentFailsClosedInsteadOfBuildingABrokenRedirect() {
     this.customParameterManager.override = activeOverride("true");
     TestableCognitoLoginAction action = this.newAction(new APConfig());
@@ -1230,6 +1249,19 @@ public class CognitoLoginActionTest {
   }
 
   /** A fully-configured Cognito environment -- the opposite of design.md 9.3's phase-0 default. */
+  /**
+   * A2-2463 (CFG-2): {@link ConfiguredApConfig} with {@code cognito.jwks.uri} blanked, standing in for the
+   * one environment variable an operator forgot. Everything needed to BUILD the redirect is present, which
+   * is what made the old three-key gate wave it through.
+   */
+  private static final class ConfiguredApConfigMissingJwksUri extends ConfiguredApConfig {
+
+    @Override
+    public String getCognitoJwksUri() {
+      return "";
+    }
+  }
+
   private static class ConfiguredApConfig extends APConfig {
 
     @Override
@@ -1245,6 +1277,32 @@ public class CognitoLoginActionTest {
     @Override
     public String getCognitoDomain() {
       return "test-pool.auth.us-east-1.amazoncognito.com";
+    }
+
+    /**
+     * A2-2463 (CFG-2): the gate now requires all six mandatory keys, so a double that claims to be a
+     * configured environment has to supply all six. Before this, three were enough because only three
+     * were checked -- which is precisely the gap the change closes.
+     * <p>
+     * <b>The values are deliberately not deployment-shaped.</b> A real region, pool id or JWKS host would
+     * match {@code CognitoCredentialLiteralScanTest}'s {@code COGNITO_HOST} and {@code USER_POOL_ID}
+     * patterns. That scan covers {@code src/main} only, so a literal here would not redden it -- which is
+     * exactly why it has to be avoided by hand rather than left to the check. Nothing in these tests parses
+     * or resolves the values; the gate only asks whether they are blank.
+     */
+    @Override
+    public String getCognitoJwksUri() {
+      return "https://directory.example.invalid/.well-known/jwks.json";
+    }
+
+    @Override
+    public String getCognitoRegion() {
+      return "test-region";
+    }
+
+    @Override
+    public String getCognitoUserPoolId() {
+      return "test-user-pool";
     }
   }
 

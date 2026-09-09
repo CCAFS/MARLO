@@ -517,7 +517,16 @@ public class CognitoLoginAction extends BaseAction {
    */
   private boolean isCognitoConfigured() {
     return !this.config.getCognitoDomain().isEmpty() && !this.config.getCognitoClientId().isEmpty()
-      && !this.config.getCognitoCallbackUrl().isEmpty();
+      && !this.config.getCognitoCallbackUrl().isEmpty()
+      // A2-2463 (CFG-2): the three keys that verify the token on the way BACK are checked here too, even
+      // though this method only builds the outbound redirect. Without them a half-configured environment
+      // sends the person to the corporate IdP, they type their password, they authenticate successfully,
+      // and the failure lands on return -- so a corporate credential is spent before anyone learns the
+      // sign-in could never complete. Refusing here costs nothing and moves that discovery before the
+      // redirect. These are the remaining 3 of the 6 required keys; client.secret and identity.provider
+      // are absent on purpose, both being optional by design.
+      && !this.config.getCognitoJwksUri().isEmpty() && !this.config.getCognitoRegion().isEmpty()
+      && !this.config.getCognitoUserPoolId().isEmpty();
   }
 
   /**

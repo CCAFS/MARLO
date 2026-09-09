@@ -226,6 +226,40 @@ public class CognitoTokenValidatorTest {
     assertFalse("an unconfigured validator must never accept a token", result.isAccepted());
   }
 
+  /**
+   * A2-2463 (CFG-1). <b>A partial configuration must be reported as unconfigured, not as a bad issuer.</b>
+   * <p>
+   * {@code anUnconfiguredValidatorConstructsButAcceptsNothing} above passes even without this fix, because
+   * with no configuration at all the audience is blank too and {@code isConfigured()} refuses on that. The
+   * defect only surfaced when {@code cognito.client.id} <em>was</em> set and {@code cognito.region} was not
+   * -- the shape a hand-set list of six environment variables actually takes. The old inline concatenation
+   * then produced {@code "https://cognito-idp..amazonaws.com/"}, which is not blank, so the blank check
+   * passed and the refusal came out as {@code UNEXPECTED_ISSUER}: an operator with a missing variable was
+   * told the token looked tampered with.
+   */
+  @Test
+  public void aPartiallyConfiguredValidatorRefusesAsUnconfiguredNotAsWrongIssuer() throws Exception {
+    // client.id set, region and user.pool.id absent -- exactly one forgotten environment variable
+    CognitoTokenValidatorImpl partial = new CognitoTokenValidatorImpl(new APConfig() {
+
+      @Override
+      public String getCognitoClientId() {
+        return AUDIENCE;
+      }
+    });
+
+    Result result = partial.validate(sign(validClaims().build(), this.trustedKey), NONCE);
+
+    assertFalse("a partially configured validator must never accept a token", result.isAccepted());
+    // MALFORMED_TOKEN is the reason the not-configured branch returns (:349). In THIS fixture it can only
+    // come from there: the token is well-formed and signed by the trusted key, so nothing else produces it.
+    // An earlier version of this test asserted merely "not UNEXPECTED_ISSUER" and was worthless -- it
+    // passed without the fix too, because a blank jwks.uri makes the signature gate refuse first, well
+    // before the issuer is ever compared. Asserting the exact reason is what makes this test bite.
+    assertEquals("a missing environment variable must be reported as not-configured",
+      RejectionReason.MALFORMED_TOKEN, result.getRejectionReason());
+  }
+
   /** A blank expected nonce is the absence of an expectation, and must not satisfy the replay gate. */
   @Test
   public void aBlankExpectedNonceRejects() throws Exception {
