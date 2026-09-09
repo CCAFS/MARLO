@@ -18,10 +18,12 @@ package org.cgiar.ccafs.marlo.action.qa;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.QATokenAuthManager;
 import org.cgiar.ccafs.marlo.data.model.QATokenAuth;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +54,47 @@ public class QAReportsAction extends BaseAction {
   }
 
 
+  /**
+   * Composes the display name sent to the QA service from the name parts that are actually present.
+   * <p>
+   * {@code User.getComposedCompleteName()} is deliberately not reused here: it concatenates the two fields
+   * without guarding them, which is the defect this method exists to avoid rather than relocate.
+   *
+   * @param user the signed-in user
+   * @return the name, or an empty string when neither part is set -- never the text {@code "null"}
+   */
+  private String composeName(User user) {
+    String firstName = StringUtils.trimToEmpty(user.getFirstName());
+    String lastName = StringUtils.trimToEmpty(user.getLastName());
+    return StringUtils.trimToEmpty(firstName + " " + lastName);
+  }
+
+  /**
+   * Builds the QA token for the signed-in user.
+   * <p>
+   * Every value that can legitimately be absent is normalized to an empty string first. The reason is that
+   * {@code QATokenAuthMySQLDAO.generate} composes its call by string concatenation, so a {@code null}
+   * reaching it is stringified by Java into the four-character text {@code "null"} <b>before</b> SQL sees
+   * it: the token is still generated, but {@code qa_token_auth.username} and the identity forwarded to
+   * qa.cgiar.org record the word "null" as though it were the person's login. An absent value must look
+   * absent.
+   * <p>
+   * {@code users.username} is the value this actually protects. It is populated only from Active Directory,
+   * and the Cognito migration accepts a null in that column, so accounts created after the AD retirement
+   * will reach here with nothing set -- see
+   * {@code docs/specs/changes/migrate-ad-authentication-to-cognito/analysis/username-field-audit.md} and
+   * Jira A2-2460.
+   * <p>
+   * {@code email} and {@code id} are passed unguarded on purpose: the email is the key every account is
+   * resolved by and the id is the primary key of the authenticated session, so neither can be null here,
+   * and guarding them would imply a doubt that does not exist.
+   */
   @Override
   public void prepare() {
-    qATokenAuth = qATokenManager.generateQATokenAuth(
-      this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName(),
-      this.getCurrentUser().getUsername(), this.getCurrentUser().getEmail(), this.getCurrentGlobalUnit().getSmoCode(),
-      this.getCurrentUser().getId().toString());
+    User user = this.getCurrentUser();
+    qATokenAuth = qATokenManager.generateQATokenAuth(this.composeName(user),
+      StringUtils.trimToEmpty(user.getUsername()), user.getEmail(),
+      StringUtils.trimToEmpty(this.getCurrentGlobalUnit().getSmoCode()), user.getId().toString());
   }
 
 
