@@ -482,7 +482,7 @@ public class CognitoCallbackAction extends LoginAction {
       return this.refuse(GENERIC_FAILURE_KEY);
     }
     loggedUser.setAgreeTerms(Boolean.TRUE);
-    this.fillBlankNames(loggedUser, assertion);
+    this.applyNamesFromToken(loggedUser, assertion);
     this.getUserManager().saveLastLogin(loggedUser);
 
     // DD-6: the inherited `user` field the shared tail dereferences must be non-null, detached, and carry
@@ -619,52 +619,69 @@ public class CognitoCallbackAction extends LoginAction {
   }
 
   /**
-   * A2-2462: fills {@code first_name} / {@code last_name} from the validated token when, and only when, the
-   * stored value is blank.
+   * A2-2462: writes {@code first_name} / {@code last_name} from the validated token, under a two-part rule.
    * <p>
-   * <b>Fill-only-never-overwrite is the agreed policy</b>, not a conservative default. Measured on
-   * 2026-09-09, 0 of 3,599 accounts had a blank name, so this repairs nothing today — its purpose is
-   * forward-looking: after AD retirement nothing authoritative supplies these fields for a new CGIAR
-   * account, and a row that reaches this point incomplete gets completed from the corporate directory
-   * instead of staying empty. Refreshing on every sign-in was considered and rejected: it would overwrite
-   * an administrator's deliberate correction.
+   * <b>A field is written when the claim is present AND either of these holds:</b>
+   * <ol>
+   * <li><b>This is the account's first sign-in</b> ({@code users.last_login} is still null). Whatever the
+   * row carries was typed by an administrator at creation time and is <em>provisional</em>; the corporate
+   * directory is the authority, and this is the one moment it gets to say so. Both fields are replaced,
+   * populated or not.</li>
+   * <li><b>The stored field is blank</b>, on any sign-in. A row that ends up incomplete later still gets
+   * completed rather than staying empty.</li>
+   * </ol>
+   * <p>
+   * <b>Why first sign-in and not "blank only".</b> The earlier revision of this method wrote only into a
+   * blank field, and measured against the development database on 2026-09-09 that condition was true for
+   * <b>0 of 3,599</b> accounts. Worse, it could not become true in the flow this feature exists for: the
+   * create-user dialog requires a first and last name, so an administrator always fills them and the
+   * blank test never fires. First sign-in is the trigger that makes the corporate value actually land --
+   * exactly once, on real data.
+   * <p>
+   * <b>After that first sign-in the values are never refreshed again.</b> A later change to the corporate
+   * name is not picked up. That is deliberate: it protects a deliberate administrative correction, and the
+   * alternative -- refreshing on every sign-in -- would silently undo one.
    * <p>
    * <b>Both claims are optional.</b> They arrive only because {@code CognitoLoginAction} requests the
-   * {@code profile} scope; a pool that stops emitting them must degrade to "leave the field as it is",
-   * never to a blank write. Hence the guard on the incoming value as well as the one on the stored value:
-   * both sides are checked, so neither an absent claim nor a populated row can produce a write.
+   * {@code profile} scope; a pool that stops emitting them must leave the field as it is, never write a
+   * blank over it. Hence the guard on the incoming value as well as on the stored one.
    * <p>
-   * <b>This does not persist by itself</b> — the caller's {@code saveLastLogin} does, and here it is the
-   * only thing that can. Being precise about why, because the short version is wrong in both directions:
-   * {@code saveUser} carries no {@code @Transactional}, so an UPDATE through it reaches the database only
-   * when something <em>later in the same request</em> opens and commits a transaction — whose flush covers
-   * the whole persistence context, not just the entity handed to it. That is exactly why {@code saveUser}
-   * does persist on the local login path, where {@code finishLogin}'s {@code saveLastLogin} commits
-   * afterwards and carries the earlier change along with it.
+   * <b>The first-sign-in test must be read before {@code saveLastLogin} runs</b>, which is why this sits
+   * where it does: the row was loaded a few lines above and still carries the database's {@code last_login},
+   * and the caller's {@code saveLastLogin} on the next line is what sets it. Moving this call below that
+   * one makes the test false for every account, forever, without failing anything visibly.
    * <p>
-   * <b>In this callback there is no afterwards.</b> {@code saveLastLogin} here <em>is</em> the last
-   * persistence step, so a {@code saveUser} at this point would be flushed by nothing and would lose the
-   * write in silence. Never "simplify" this to {@code saveUser} — not because that method cannot persist,
-   * but because at this point in this flow nothing would flush it.
+   * <b>This does not persist by itself</b> -- the caller's {@code saveLastLogin} does, and here it is the
+   * only thing that can. {@code saveUser} carries no {@code @Transactional}, so an UPDATE through it reaches
+   * the database only when something <em>later in the same request</em> opens and commits a transaction,
+   * whose flush covers the whole persistence context. That is why {@code saveUser} does persist on the local
+   * login path, where {@code finishLogin}'s {@code saveLastLogin} commits afterwards. <b>In this callback
+   * there is no afterwards</b>: {@code saveLastLogin} here <em>is</em> the last persistence step, so a
+   * {@code saveUser} at this point would be flushed by nothing and lose the write in silence.
    *
    * @param loggedUser the Hibernate-managed row for the authenticated account
    * @param validatedAssertion the assertion whose signature, issuer, audience, expiry and nonce have all
-   *        already passed — an unverified claim must never reach a write
+   *        already passed -- an unverified claim must never reach a write
    */
-  private void fillBlankNames(User loggedUser, CognitoAssertion validatedAssertion) {
-    boolean filled = false;
-    if (this.isBlank(loggedUser.getFirstName()) && !this.isBlank(validatedAssertion.getGivenName())) {
+  private void applyNamesFromToken(User loggedUser, CognitoAssertion validatedAssertion) {
+    // Read before the caller's saveLastLogin stamps it -- see the javadoc.
+    boolean firstSignIn = loggedUser.getLastLogin() == null;
+    boolean written = false;
+    if (!this.isBlank(validatedAssertion.getGivenName())
+      && (firstSignIn || this.isBlank(loggedUser.getFirstName()))) {
       loggedUser.setFirstName(validatedAssertion.getGivenName());
-      filled = true;
+      written = true;
     }
-    if (this.isBlank(loggedUser.getLastName()) && !this.isBlank(validatedAssertion.getFamilyName())) {
+    if (!this.isBlank(validatedAssertion.getFamilyName())
+      && (firstSignIn || this.isBlank(loggedUser.getLastName()))) {
       loggedUser.setLastName(validatedAssertion.getFamilyName());
-      filled = true;
+      written = true;
     }
-    if (filled) {
-      // The values themselves are personal data and are deliberately not logged -- the user id is enough to
-      // find the row, and this line lands in the same log as every other Cognito event.
-      LOG.info("Cognito callback filled a blank name from the ID token for user {}", loggedUser.getId());
+    if (written) {
+      // The names themselves are personal data and are deliberately not logged -- the user id locates the
+      // row, and this line lands in the same log as every other Cognito event.
+      LOG.info("Cognito callback applied the directory name for user {} (first sign-in: {})",
+        loggedUser.getId(), Boolean.valueOf(firstSignIn));
     }
   }
 

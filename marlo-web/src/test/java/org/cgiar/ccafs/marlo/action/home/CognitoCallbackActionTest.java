@@ -267,8 +267,11 @@ public class CognitoCallbackActionTest {
    * token, and it rides the same {@code saveLastLogin} call {@code agree_terms} already uses.
    */
   @Test
-  public void blankNamesAreFilledFromTheIdToken() throws Exception {
-    this.userManager.register(cgiarUser(9001L));
+  public void blankNamesAreFilledFromTheIdTokenOnALaterSignIn() throws Exception {
+    // last_login set, so the first-sign-in arm cannot be what writes -- this isolates the blank arm.
+    User returning = cgiarUser(9001L);
+    returning.setLastLogin(new Date());
+    this.userManager.register(returning);
     TestableCognitoCallbackAction action = this.newAction();
     PendingAuthorization pending = this.seedPending(action, "state-n1", GLOBAL_UNIT_ID, null, "nonce-n1");
     this.crpUserManager.isMember = true;
@@ -285,10 +288,13 @@ public class CognitoCallbackActionTest {
    * the moment the policy drifted to "refresh on every login" -- which was considered and rejected.
    */
   @Test
-  public void storedNamesAreNeverOverwrittenByTheIdToken() throws Exception {
+  public void storedNamesAreNeverOverwrittenOnALaterSignIn() throws Exception {
     User existing = cgiarUser(9001L);
     existing.setFirstName("Corrected");
     existing.setLastName("ByAnAdmin");
+    // The account has signed in before, so the corporate directory has already had its one say and an
+    // administrator's later correction must survive every subsequent sign-in.
+    existing.setLastLogin(new Date());
     this.userManager.register(existing);
     TestableCognitoCallbackAction action = this.newAction();
     PendingAuthorization pending = this.seedPending(action, "state-n2", GLOBAL_UNIT_ID, null, "nonce-n2");
@@ -299,6 +305,31 @@ public class CognitoCallbackActionTest {
     assertEquals("a stored first name must survive the sign-in", "Corrected",
       this.userManager.lastSavedUser.getFirstName());
     assertEquals("a stored last name must survive the sign-in", "ByAnAdmin",
+      this.userManager.lastSavedUser.getLastName());
+  }
+
+  /**
+   * A2-2462, <b>the case the feature exists for</b>. With Cognito enabled the create-user dialog asks the
+   * administrator for a first and last name, so the row is never blank -- which is why a blank-only trigger
+   * could never fire here. On the account's very first sign-in the corporate directory replaces those
+   * provisional values, populated or not, exactly once.
+   */
+  @Test
+  public void theFirstSignInReplacesTheNamesAnAdministratorTyped() throws Exception {
+    User provisional = cgiarUser(9001L);
+    provisional.setFirstName("Priyanka");
+    provisional.setLastName("Chandra");
+    // last_login null -- this account has never signed in
+    this.userManager.register(provisional);
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-n4", GLOBAL_UNIT_ID, null, "nonce-n4");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL, "Priya", "Chandran");
+
+    assertEquals(Action.SUCCESS, action.callback("auth-code-n4", "state-n4", null));
+    assertEquals("the directory value must win on the first sign-in", "Priya",
+      this.userManager.lastSavedUser.getFirstName());
+    assertEquals("the directory value must win on the first sign-in", "Chandran",
       this.userManager.lastSavedUser.getLastName());
   }
 
@@ -1722,6 +1753,13 @@ public class CognitoCallbackActionTest {
     public boolean saveLastLogin(User user) {
       this.lastSavedUser = user;
       this.saveLastLoginCallCount++;
+      // A2-2462: the real UserManagerImp.saveLastLogin stamps the date before delegating, and this double
+      // must too. Without it the double is unfaithful in the one way that matters here: the first-sign-in
+      // test is what guards `applyNamesFromToken` being called BEFORE this method, and with the stamp
+      // missing that ordering could be inverted -- silently disabling the feature for every account in
+      // production -- while every test stayed green. Verified by mutation: inverting the two calls reddens
+      // theFirstSignInReplacesTheNamesAnAdministratorTyped only once this line is present.
+      user.setLastLogin(new Date());
       return true;
     }
 
