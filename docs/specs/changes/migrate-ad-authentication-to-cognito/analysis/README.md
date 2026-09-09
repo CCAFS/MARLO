@@ -16,6 +16,7 @@ family. They were authored on branch `staging-cognito` and copied here **byte-id
 | Document | What it answers |
 |---|---|
 | [`cognito-claims-inventory.md`](./cognito-claims-inventory.md) | **What the pool actually tells MARLO about a user**, measured from two real corporate sign-ins (2026-09-04, 2026-09-08). Which claims arrive at which scope, why the AD login is not among them, the three traps in the claim names, and what would have to change — and who owns each change. Read this before proposing any work that reads user data out of Cognito |
+| [`username-field-audit.md`](./username-field-audit.md) | **Whether MARLO can work without `users.username`** — the one field Cognito cannot supply. Every reader and writer of the column across Java, FreeMarker, JavaScript, the ORM mapping, SQL, Pentaho reports and i18n, each with a verdict; the three real impacts; and the product-owner decision of 2026-09-09 to accept a null. Read this before treating `OQ-18` as a retirement prerequisite, or before proposing to derive a username |
 
 **Do not edit these to fix a link.** They are the authored analysis; the resolution map below exists
 so their links can be followed without modifying them.
