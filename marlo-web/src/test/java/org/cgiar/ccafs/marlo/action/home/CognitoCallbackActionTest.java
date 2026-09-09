@@ -193,9 +193,21 @@ public class CognitoCallbackActionTest {
   }
 
   private String validIdToken(String nonce, String email) throws JOSEException {
+    return this.validIdToken(nonce, email, null, null);
+  }
+
+  /**
+   * A2-2462 overload carrying the two personal-name claims. {@code JWTClaimsSet.Builder.claim} removes a
+   * claim when handed {@code null}, so passing null for either produces a token that genuinely lacks it --
+   * which is what the {@code profile}-scope-absent case needs to be modelled faithfully rather than as an
+   * empty string.
+   */
+  private String validIdToken(String nonce, String email, String givenName, String familyName)
+    throws JOSEException {
     Instant now = Instant.now();
     JWTClaimsSet claims = new JWTClaimsSet.Builder().issuer(ISSUER).audience(AUDIENCE).subject("sub-priya")
       .claim("email", email).claim("cognito:username", "priyac").claim("token_use", "id").claim("nonce", nonce)
+      .claim("given_name", givenName).claim("family_name", familyName)
       .issueTime(Date.from(now.minusSeconds(5))).expirationTime(Date.from(now.plusSeconds(3600))).build();
     SignedJWT jwt = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID(this.signingKey.getKeyID()).build(),
       claims);
@@ -248,6 +260,65 @@ public class CognitoCallbackActionTest {
     assertEquals("agree_terms must be TRUE on the persisted row", Boolean.TRUE,
       this.userManager.lastSavedUser.getAgreeTerms());
     assertEquals(Long.valueOf(9001L), this.userManager.lastSavedUser.getId());
+  }
+
+  /**
+   * A2-2462. The whole point of the feature: a row whose names are blank is completed from the validated
+   * token, and it rides the same {@code saveLastLogin} call {@code agree_terms} already uses.
+   */
+  @Test
+  public void blankNamesAreFilledFromTheIdToken() throws Exception {
+    this.userManager.register(cgiarUser(9001L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-n1", GLOBAL_UNIT_ID, null, "nonce-n1");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL, "Priya", "Chandran");
+
+    assertEquals(Action.SUCCESS, action.callback("auth-code-n1", "state-n1", null));
+    assertEquals("Priya", this.userManager.lastSavedUser.getFirstName());
+    assertEquals("Chandran", this.userManager.lastSavedUser.getLastName());
+  }
+
+  /**
+   * A2-2462, and <b>the constraint that defines the agreed policy</b>: fill-only, never overwrite. An
+   * administrator's deliberate correction must survive every subsequent sign-in, so this test would redden
+   * the moment the policy drifted to "refresh on every login" -- which was considered and rejected.
+   */
+  @Test
+  public void storedNamesAreNeverOverwrittenByTheIdToken() throws Exception {
+    User existing = cgiarUser(9001L);
+    existing.setFirstName("Corrected");
+    existing.setLastName("ByAnAdmin");
+    this.userManager.register(existing);
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-n2", GLOBAL_UNIT_ID, null, "nonce-n2");
+    this.crpUserManager.isMember = true;
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL, "Priya", "Chandran");
+
+    assertEquals(Action.SUCCESS, action.callback("auth-code-n2", "state-n2", null));
+    assertEquals("a stored first name must survive the sign-in", "Corrected",
+      this.userManager.lastSavedUser.getFirstName());
+    assertEquals("a stored last name must survive the sign-in", "ByAnAdmin",
+      this.userManager.lastSavedUser.getLastName());
+  }
+
+  /**
+   * A2-2462. The claims are optional -- they arrive only because the authorize request asks for the
+   * {@code profile} scope. A pool that emits neither must leave the row as it is, never write a blank over
+   * it, so the guard has to test the incoming value and not only the stored one.
+   */
+  @Test
+  public void absentNameClaimsLeaveTheStoredValuesAlone() throws Exception {
+    this.userManager.register(cgiarUser(9001L));
+    TestableCognitoCallbackAction action = this.newAction();
+    PendingAuthorization pending = this.seedPending(action, "state-n3", GLOBAL_UNIT_ID, null, "nonce-n3");
+    this.crpUserManager.isMember = true;
+    // no given_name / family_name at all -- the pre-A2-2462 token shape
+    this.exchangeClient.idTokenToReturn = this.validIdToken(pending.getNonce(), CGIAR_EMAIL);
+
+    assertEquals(Action.SUCCESS, action.callback("auth-code-n3", "state-n3", null));
+    assertNull("an absent claim must not write a blank", this.userManager.lastSavedUser.getFirstName());
+    assertNull("an absent claim must not write a blank", this.userManager.lastSavedUser.getLastName());
   }
 
   /**

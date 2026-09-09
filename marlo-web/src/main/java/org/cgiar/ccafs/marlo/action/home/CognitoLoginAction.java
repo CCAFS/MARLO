@@ -175,7 +175,18 @@ public class CognitoLoginAction extends BaseAction {
   private static final int STATE_BYTES = 32;
   private static final int NONCE_BYTES = 32;
 
-  private static final String OAUTH_SCOPE = "openid email";
+  /**
+   * A2-2462: {@code profile} is requested so the ID token carries {@code given_name} and {@code family_name},
+   * which {@code CognitoCallbackAction} uses to fill an account whose names are blank. Measured against the
+   * live pool on 2026-09-08: with {@code "openid email"} both claims are <b>absent</b>; adding {@code profile}
+   * makes both arrive clean and usable.
+   * <p>
+   * The claims-inventory deferred this scope on the grounds that it "should travel with the feature that
+   * consumes it, not ahead of it". That feature is now here, which is what makes the change appropriate.
+   * <b>Do not widen this further</b> without a consumer: every additional scope is user data MARLO asks for
+   * and must then justify holding.
+   */
+  private static final String OAUTH_SCOPE = "openid email profile";
 
   /**
    * CHG-COGNITO-AUTH-001-T19 (V-4). A same-origin return URL is still rejected when its normalized path's

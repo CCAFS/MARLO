@@ -931,7 +931,9 @@ public class CognitoLoginActionTest {
     assertEquals("code", params.get("response_type"));
     assertEquals("test-client-id", params.get("client_id"));
     assertEquals("https://marlo.example.org/cognitoCallback.do", params.get("redirect_uri"));
-    assertEquals("openid email", params.get("scope"));
+    // A2-2462: profile is required for given_name / family_name. This assertion is deliberately exact --
+    // it is the guard that makes an accidental scope widening visible in review.
+    assertEquals("openid email profile", params.get("scope"));
     assertTrue(params.containsKey("state"));
     assertTrue(params.containsKey("nonce"));
     assertTrue(params.containsKey("code_challenge"));

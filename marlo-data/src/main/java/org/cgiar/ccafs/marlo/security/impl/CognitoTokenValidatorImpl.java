@@ -114,6 +114,10 @@ public class CognitoTokenValidatorImpl implements CognitoTokenValidator {
   private static final String CLAIM_NONCE = "nonce";
   private static final String CLAIM_EMAIL = "email";
   private static final String CLAIM_USERNAME_CLAIM = "cognito:username";
+  // A2-2462. Present only when the authorize request asked for the `profile` scope, so both are optional
+  // by construction. `name` is deliberately NOT among these: it carries the UPN, not a personal name.
+  private static final String CLAIM_GIVEN_NAME = "given_name";
+  private static final String CLAIM_FAMILY_NAME = "family_name";
   private static final String EXPECTED_TOKEN_USE = "id";
 
   /**
@@ -373,6 +377,7 @@ public class CognitoTokenValidatorImpl implements CognitoTokenValidator {
       // T07 changes this argument and nothing else in this class.
       CognitoAssertion assertion = new CognitoAssertion(claims.getSubject(),
         this.stringClaimOrNull(claims, CLAIM_EMAIL), this.stringClaimOrNull(claims, CLAIM_USERNAME_CLAIM),
+        this.stringClaimOrNull(claims, CLAIM_GIVEN_NAME), this.stringClaimOrNull(claims, CLAIM_FAMILY_NAME),
         this.issuedAtOf(claims));
       return Result.accepted(assertion);
     } catch (IllegalArgumentException e) {

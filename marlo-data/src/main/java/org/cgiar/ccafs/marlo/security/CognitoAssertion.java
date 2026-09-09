@@ -53,6 +53,8 @@ public final class CognitoAssertion implements Serializable {
   private final String identityClaim;
   private final String email;
   private final String usernameClaim;
+  private final String givenName;
+  private final String familyName;
   private final Instant issuedAt;
 
   /**
@@ -66,6 +68,24 @@ public final class CognitoAssertion implements Serializable {
    * @throws IllegalArgumentException if a required value is missing or blank
    */
   public CognitoAssertion(String identityClaim, String email, String usernameClaim, Instant issuedAt) {
+    this(identityClaim, email, usernameClaim, null, null, issuedAt);
+  }
+
+  /**
+   * A2-2462. Same contract as the four-argument form, plus the two personal-name claims.
+   *
+   * @param identityClaim the value of the claim that identifies this person stably. Required
+   * @param email the person's email address as asserted by the pool. Required
+   * @param usernameClaim the corporate username claim, or {@code null}. Optional by design (OQ-18)
+   * @param givenName the {@code given_name} claim, or {@code null} when the pool did not emit one.
+   *        <b>Optional by design</b> — it arrives only when the {@code profile} scope was requested, so
+   *        code reading it must treat absence as normal rather than as an error
+   * @param familyName the {@code family_name} claim, or {@code null}. Optional for the same reason
+   * @param issuedAt when the pool issued the token this assertion came from. Required
+   * @throws IllegalArgumentException if a required value is missing or blank
+   */
+  public CognitoAssertion(String identityClaim, String email, String usernameClaim, String givenName,
+    String familyName, Instant issuedAt) {
     // A blank identity or email must fail loudly here rather than reach the realm and resolve to
     // "no such user", which would read as a login failure instead of the coding error it is.
     if (identityClaim == null || identityClaim.trim().isEmpty()) {
@@ -80,6 +100,8 @@ public final class CognitoAssertion implements Serializable {
     this.identityClaim = identityClaim.trim();
     this.email = email.trim();
     this.usernameClaim = usernameClaim == null || usernameClaim.trim().isEmpty() ? null : usernameClaim.trim();
+    this.givenName = givenName == null || givenName.trim().isEmpty() ? null : givenName.trim();
+    this.familyName = familyName == null || familyName.trim().isEmpty() ? null : familyName.trim();
     this.issuedAt = issuedAt;
   }
 
@@ -93,7 +115,8 @@ public final class CognitoAssertion implements Serializable {
     }
     CognitoAssertion that = (CognitoAssertion) other;
     return this.identityClaim.equals(that.identityClaim) && this.email.equals(that.email)
-      && Objects.equals(this.usernameClaim, that.usernameClaim) && this.issuedAt.equals(that.issuedAt);
+      && Objects.equals(this.usernameClaim, that.usernameClaim) && Objects.equals(this.givenName, that.givenName)
+      && Objects.equals(this.familyName, that.familyName) && this.issuedAt.equals(that.issuedAt);
   }
 
   /**
@@ -101,6 +124,28 @@ public final class CognitoAssertion implements Serializable {
    */
   public String getEmail() {
     return this.email;
+  }
+
+  /**
+   * A2-2462. Read only to fill a blank {@code users.last_name}; never to overwrite a value already stored.
+   *
+   * @return the {@code family_name} claim, or {@code null} when the pool emitted none
+   */
+  public String getFamilyName() {
+    return this.familyName;
+  }
+
+  /**
+   * A2-2462. Read only to fill a blank {@code users.first_name}; never to overwrite a value already stored.
+   * <p>
+   * <b>Do not substitute the {@code name} claim for this.</b> Measured, {@code name} carries the UPN
+   * ({@code K.TANAKA@cgiar.org}), not a personal name — writing from it stores plausible-looking garbage,
+   * which is the defect already reverted once when {@code cognito:username} reached {@code users.username}.
+   *
+   * @return the {@code given_name} claim, or {@code null} when the pool emitted none
+   */
+  public String getGivenName() {
+    return this.givenName;
   }
 
   /**
@@ -132,12 +177,14 @@ public final class CognitoAssertion implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.identityClaim, this.email, this.usernameClaim, this.issuedAt);
+    return Objects.hash(this.identityClaim, this.email, this.usernameClaim, this.givenName, this.familyName,
+      this.issuedAt);
   }
 
   /**
    * Renders the email and issue time only. The identity claim is left out on purpose: it is the join key
-   * to a MARLO account, and this value lands in logs.
+   * to a MARLO account, and this value lands in logs. <b>The names are left out for the same reason</b>
+   * (A2-2462): they are personal data with no diagnostic value, and this value lands in logs.
    */
   @Override
   public String toString() {

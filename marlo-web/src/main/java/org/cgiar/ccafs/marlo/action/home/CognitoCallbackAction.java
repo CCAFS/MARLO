@@ -482,6 +482,7 @@ public class CognitoCallbackAction extends LoginAction {
       return this.refuse(GENERIC_FAILURE_KEY);
     }
     loggedUser.setAgreeTerms(Boolean.TRUE);
+    this.fillBlankNames(loggedUser, assertion);
     this.getUserManager().saveLastLogin(loggedUser);
 
     // DD-6: the inherited `user` field the shared tail dereferences must be non-null, detached, and carry
@@ -615,6 +616,57 @@ public class CognitoCallbackAction extends LoginAction {
 
   public String getState() {
     return this.state;
+  }
+
+  /**
+   * A2-2462: fills {@code first_name} / {@code last_name} from the validated token when, and only when, the
+   * stored value is blank.
+   * <p>
+   * <b>Fill-only-never-overwrite is the agreed policy</b>, not a conservative default. Measured on
+   * 2026-09-09, 0 of 3,599 accounts had a blank name, so this repairs nothing today — its purpose is
+   * forward-looking: after AD retirement nothing authoritative supplies these fields for a new CGIAR
+   * account, and a row that reaches this point incomplete gets completed from the corporate directory
+   * instead of staying empty. Refreshing on every sign-in was considered and rejected: it would overwrite
+   * an administrator's deliberate correction.
+   * <p>
+   * <b>Both claims are optional.</b> They arrive only because {@code CognitoLoginAction} requests the
+   * {@code profile} scope; a pool that stops emitting them must degrade to "leave the field as it is",
+   * never to a blank write. Hence the {@code isNotBlank} guard on the incoming value as well as the
+   * {@code isBlank} guard on the stored one.
+   * <p>
+   * <b>This does not persist by itself.</b> The caller's {@code saveLastLogin} does, and that is the only
+   * method that can: {@code saveUser} routes through {@code AbstractMarloDAO.update(T)}, which returns
+   * before {@code merge()} for a session-managed entity, and carries no {@code @Transactional}, so this
+   * OSIV session's {@code FlushMode.MANUAL} would never flush the change — the same trap recorded in this
+   * class's javadoc for {@code users.agree_terms}. Never "fix" this by calling {@code saveUser} here.
+   *
+   * @param loggedUser the Hibernate-managed row for the authenticated account
+   * @param validatedAssertion the assertion whose signature, issuer, audience, expiry and nonce have all
+   *        already passed — an unverified claim must never reach a write
+   */
+  private void fillBlankNames(User loggedUser, CognitoAssertion validatedAssertion) {
+    boolean filled = false;
+    if (this.isBlank(loggedUser.getFirstName()) && !this.isBlank(validatedAssertion.getGivenName())) {
+      loggedUser.setFirstName(validatedAssertion.getGivenName());
+      filled = true;
+    }
+    if (this.isBlank(loggedUser.getLastName()) && !this.isBlank(validatedAssertion.getFamilyName())) {
+      loggedUser.setLastName(validatedAssertion.getFamilyName());
+      filled = true;
+    }
+    if (filled) {
+      // The values themselves are personal data and are deliberately not logged -- the user id is enough to
+      // find the row, and this line lands in the same log as every other Cognito event.
+      LOG.info("Cognito callback filled a blank name from the ID token for user {}", loggedUser.getId());
+    }
+  }
+
+  /**
+   * @param value the value to test
+   * @return {@code true} when {@code value} is {@code null}, empty, or whitespace only
+   */
+  private boolean isBlank(String value) {
+    return value == null || value.trim().isEmpty();
   }
 
   private String refuse(String i18nKey) {
