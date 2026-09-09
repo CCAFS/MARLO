@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Christian Garcia
@@ -44,6 +45,7 @@ public class CenterRegionManager implements ICenterRegionManager {
   }
 
   @Override
+  @Transactional
   public void deleteResearchRegion(long researchRegionId) {
 
     researchRegionDAO.deleteResearchRegion(researchRegionId);

@@ -15,8 +15,6 @@ public class RemoveAccents {
    * @return false if the text has not accents
    */
   public Boolean hasAccents(String text) {
-    System.out.println("entro 1 " + text);
-
     String original = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ";
     boolean contains = false;
 

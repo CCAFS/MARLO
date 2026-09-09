@@ -137,7 +137,8 @@ public class PortfolioManagementAction extends BaseAction {
               Long id = Long.parseLong(idParam);
               portfolio.setId(id);
             } catch (NumberFormatException e) {
-              // Silent fail
+              logger.warn("Discarding the id '{}' of the portfolio {}, which is not a number, so it is saved as a new"
+                + " one", idParam, index);
             }
           }
           

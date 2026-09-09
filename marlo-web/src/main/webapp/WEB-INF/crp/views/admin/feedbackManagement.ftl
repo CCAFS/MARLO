@@ -127,8 +127,11 @@
           <div class="selectList">
             <select id="${name}.sectionName" name="${name}.sectionName" class="sectionName form-control input-sm">
               <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+              [#-- Label first, slug in parentheses: the slug is the value that is stored and the one the runtime
+                   matches, so it stays visible, but on its own it is not what an administrator recognises. Only the
+                   option text changes -- value is still the bare slug. --]
               [#list projectSections as section]
-                <option value="${section}"[#if section == currentSection] selected="selected"[/#if]>${section}</option>
+                <option value="${section}"[#if section == currentSection] selected="selected"[/#if]>${action.getProjectSectionLabel(section)} (${section})</option>
               [/#list]
               [#if currentSection?has_content && !projectSections?seq_contains(currentSection)]
                 <option value="${currentSection}" selected="selected">${currentSection} [@s.text name="feedbackManagement.sectionName.unknown" /]</option>

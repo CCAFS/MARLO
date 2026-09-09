@@ -69,11 +69,15 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class ProjectInnovationListAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectInnovationListAction.class);
 
 
   private static final long serialVersionUID = 3586039079035252726L;
@@ -400,7 +404,7 @@ public class ProjectInnovationListAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the feedback comments info of the innovation list", e);
     }
   }
 

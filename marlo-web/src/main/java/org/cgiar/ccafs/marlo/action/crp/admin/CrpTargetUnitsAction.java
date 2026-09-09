@@ -40,10 +40,15 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
  */
 public class CrpTargetUnitsAction extends BaseAction {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CrpTargetUnitsAction.class);
 
 
   private static final long serialVersionUID = -1004871247517845386L;
@@ -167,7 +172,8 @@ public class CrpTargetUnitsAction extends BaseAction {
 
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not tell whether the target unit {} of {} can be deleted, so it is reported as not deletable",
+        id, className, e);
       return false;
     }
   }

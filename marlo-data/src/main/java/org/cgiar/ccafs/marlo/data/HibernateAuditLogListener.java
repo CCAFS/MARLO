@@ -194,7 +194,7 @@ public class HibernateAuditLogListener
      */
     @Override
     public void doBeforeTransactionCompletion(SessionImplementor sessionImplementor) {
-      LOG.debug("begin doAfterTransactionCompletion");
+      LOG.debug("begin doBeforeTransactionCompletion");
 
       AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
@@ -211,7 +211,7 @@ public class HibernateAuditLogListener
       List<Auditlog> createAuditlogs = this.createAllAuditLogsForTransaction(sessionFactory);
 
       if (CollectionUtils.isEmpty(createAuditlogs)) {
-        LOG.info("Audit logs are empty");
+        LOG.debug("Audit logs are empty");
         return;
       }
 
@@ -243,7 +243,7 @@ public class HibernateAuditLogListener
               IAuditLog entityRelation = this.unProxyIAuditLogObject(propertyValue, sessionFactory);
               entityRelation = this.loadRelations(entityRelation, false, 2, sessionFactory);
               classMetadata.setPropertyValue(entity, name, entityRelation);
-              LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
+              LOG.debug("set property: {}, on entity: {}, with value: {}", name, entity, entityRelation);
             } else {
               if (!(name.equals("createdBy") || name.equals("modifiedBy"))) {
                 try {
@@ -252,9 +252,10 @@ public class HibernateAuditLogListener
                     entityRelation = this.loadRelations(entityRelation, false, 3, sessionFactory);
                   }
                   classMetadata.setPropertyValue(entity, name, entityRelation);
-                  LOG.debug("set property: " + name + ", on entity: " + entity + ", with value: " + entityRelation);
+                  LOG.debug("set property: {}, on entity: {}, with value: {}", name, entity, entityRelation);
                 } catch (LazyInitializationException e) {
-                  LOG.error(e.getMessage());
+                  LOG.warn("Could not load the relation {} of {}, so the audit record is incomplete", name,
+                    entity, e);
                 }
               }
             }
@@ -289,7 +290,8 @@ public class HibernateAuditLogListener
         openStatelessSession.getTransaction().commit();
 
       } catch (HibernateException e) {
-        LOG.error("Unable to insert Auditlog entity");
+        LOG.error("Could not insert {} audit records for the transaction, so the change is not audited",
+          auditLogs.size(), e);
       } finally {
 
         if (openStatelessSession != null) {
@@ -315,7 +317,7 @@ public class HibernateAuditLogListener
 
   }
 
-  public static final Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
+  private static final Logger LOG = LoggerFactory.getLogger(HibernateAuditLogListener.class);
 
 
   private static final long serialVersionUID = 1L;
@@ -404,7 +406,7 @@ public class HibernateAuditLogListener
   public void onPostDelete(PostDeleteEvent postDeleteEvent) {
 
     Object entity = postDeleteEvent.getEntity();
-    LOG.debug("begin onPostDelete for Entity : " + entity);
+    LOG.debug("begin onPostDelete for Entity {}", entity);
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
@@ -421,7 +423,7 @@ public class HibernateAuditLogListener
      * We might delete many entities on a single request, but we only want to do the audit logging on one.
      */
     if (!entity.getClass().getCanonicalName().equals(auditLogContext.getEntityCanonicalName())) {
-      LOG.debug("Entity : " + entity + " , is not the entity we want to audit log");
+      LOG.debug("Entity {} is not the entity we want to audit log", entity);
       return;
     }
 
@@ -445,7 +447,7 @@ public class HibernateAuditLogListener
   public void onPostInsert(PostInsertEvent postInsertEvent) {
 
     Object entity = postInsertEvent.getEntity();
-    LOG.debug("begin onPostInsert for Entity : " + entity);
+    LOG.debug("begin onPostInsert for Entity {}", entity);
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
@@ -454,7 +456,7 @@ public class HibernateAuditLogListener
      * execute the listeners. There might be a better way to do this like conditionally active the listeners.
      */
     if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
-      LOG.debug("No audit log context setup for insert on entity: " + entity);
+      LOG.debug("No audit log context setup for insert on entity {}", entity);
       return;
     }
 
@@ -462,7 +464,7 @@ public class HibernateAuditLogListener
      * We might save many entities on a single request, but we only want to do the audit logging on one.
      */
     if (!entity.getClass().getCanonicalName().equals(auditLogContext.getEntityCanonicalName())) {
-      LOG.debug("Entity : " + entity + " , is not the entity we want to audit log");
+      LOG.debug("Entity {} is not the entity we want to audit log", entity);
       return;
     }
 
@@ -488,7 +490,7 @@ public class HibernateAuditLogListener
   public void onPostUpdate(PostUpdateEvent postUpdateEvent) {
     Object entity = postUpdateEvent.getEntity();
 
-    LOG.debug("begin onPostUpdatefor Entity : " + entity);
+    LOG.debug("begin onPostUpdate for Entity {}", entity);
 
     AuditLogContext auditLogContext = AuditLogContextProvider.getAuditLogContext();
 
@@ -497,7 +499,7 @@ public class HibernateAuditLogListener
      * execute the listeners. There might be a better way to do this like conditionally activate the listeners.
      */
     if (auditLogContext.getActionName() == null && CollectionUtils.isEmpty(auditLogContext.getRelationsNames())) {
-      LOG.debug("No audit log context setup for update on entity: " + entity);
+      LOG.debug("No audit log context setup for update on entity {}", entity);
       return;
     }
 
@@ -505,7 +507,7 @@ public class HibernateAuditLogListener
      * We might save many entities on a single request, but we only want to do the audit logging on one.
      */
     if (!entity.getClass().getCanonicalName().equals(auditLogContext.getEntityCanonicalName())) {
-      LOG.debug("Entity : " + entity + " , is not the entity we want to audit log");
+      LOG.debug("Entity {} is not the entity we want to audit log", entity);
       return;
     }
 
@@ -575,7 +577,6 @@ public class HibernateAuditLogListener
 
       }
 
-      // LOG.debug("COMPARE LOGS WITH STAGING BRANCH: " + auditLogContext.getUpdates().toString());
 
 
     }
@@ -591,7 +592,7 @@ public class HibernateAuditLogListener
     try {
       parentId = id.toString();
     } catch (Exception e1) {
-      e1.printStackTrace();
+      LOG.warn("Could not read the id of an audited entity, so its parent id is empty", e1);
       parentId = "";
     }
     /**
@@ -633,8 +634,7 @@ public class HibernateAuditLogListener
             relations.addAll(loadList);
 
           } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Could not load the relations of an audited entity, so the audit record is incomplete", e);
           }
 
         }
@@ -692,8 +692,8 @@ public class HibernateAuditLogListener
                          * entities
                          * where some are soft deleted and others are hard deleted).
                          */
-                        LOG.info("IAuditLog obj with className: " + className + ", and id: " + audit.getId()
-                          + " can not be found");
+                        LOG.debug("The audited {} with id {} was not found, so the state copy is used", className,
+                          audit.getId());
                         // Add the audit from the state object array
                         listRelation.add(audit);
                         continue;
@@ -768,7 +768,7 @@ public class HibernateAuditLogListener
 
                     } catch (ClassNotFoundException e) {
 
-                      LOG.error(e.getLocalizedMessage());
+                      LOG.error("Could not resolve the class of an audited relation, so it is dropped", e);
                     }
                   }
 
@@ -786,20 +786,15 @@ public class HibernateAuditLogListener
 
             }
           } catch (HibernateException e) {
-            e.printStackTrace();
-            LOG.info("Can not load lazy relation  " + e.getLocalizedMessage());
+            LOG.warn("Could not load a lazy relation, so the audit record is incomplete", e);
           } catch (IllegalArgumentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOG.error("Could not read a relation of an audited entity, so the audit record is incomplete", e1);
           } catch (IllegalAccessException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOG.error("Could not read a relation of an audited entity, so the audit record is incomplete", e1);
           } catch (NoSuchFieldException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOG.error("Could not read a relation of an audited entity, so the audit record is incomplete", e1);
           } catch (SecurityException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOG.error("Could not read a relation of an audited entity, so the audit record is incomplete", e1);
           }
         }
 

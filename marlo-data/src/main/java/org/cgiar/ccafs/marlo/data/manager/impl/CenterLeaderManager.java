@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -42,6 +43,7 @@ public class CenterLeaderManager implements ICenterLeaderManager {
   }
 
   @Override
+  @Transactional
   public void deleteResearchLeader(long researchLeaderId) {
 
     researchLeaderDAO.deleteResearchLeader(researchLeaderId);

@@ -35,8 +35,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReadExcelFile {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ReadExcelFile.class);
 
   private static final String[] HEAD_TEMPLATE = {"Name", "Last Name", "Gender", "Citizenship", "Email"};
   private int totalRows;
@@ -99,7 +103,7 @@ public class ReadExcelFile {
       }
 
     } catch (EncryptedDocumentException e) {
-      e.printStackTrace();
+      LOG.error("Could not read the data of the encrypted workbook", e);
     }
 
 
@@ -159,7 +163,7 @@ public class ReadExcelFile {
         }
 
       } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-        e.printStackTrace();
+        LOG.error("Could not read the excel file {}", file.getName(), e);
       }
     }
 
@@ -278,7 +282,6 @@ public class ReadExcelFile {
       Object[][] data = this.readExcelFile(file);
       if (data.length > 0) {
         for (Object[] element : data) {
-          System.out.println(element[0]);
           if ((element[0] == "") || (element[1] == "") || (element[2] == "")) {
             rigthFile = false;
           }

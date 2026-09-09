@@ -60,12 +60,9 @@ public class CrpProgramLeaderMySQLDAO extends AbstractMarloDAO<CrpProgramLeader,
   @Override
   public List<CrpProgramLeader> findAll() {
     String query = "from " + CrpProgramLeader.class.getName() + " where is_active=1";
-    List<CrpProgramLeader> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    // No active leaders is a valid state. Both callers stream this list straight away, so returning null
+    // here turned that valid state into a NullPointerException.
+    return super.findAll(query);
   }
 
   @Override

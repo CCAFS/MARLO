@@ -63,12 +63,9 @@ public class LiaisonUserMySQLDAO extends AbstractMarloDAO<LiaisonUser, Long> imp
   @Override
   public List<LiaisonUser> findAll() {
     String query = "from " + LiaisonUser.class.getName();
-    List<LiaisonUser> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    // An empty table is a valid state: a Global Unit with no liaison users yet. Every caller streams this
+    // list straight away, so returning null here turned that valid state into a NullPointerException.
+    return super.findAll(query);
   }
 
   @Override

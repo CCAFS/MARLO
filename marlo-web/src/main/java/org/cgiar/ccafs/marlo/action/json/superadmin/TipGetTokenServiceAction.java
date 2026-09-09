@@ -116,7 +116,7 @@ public class TipGetTokenServiceAction extends BaseAction {
 
           return SUCCESS;
         } else {
-          System.out.println("Error: Unexpected status");
+          LOG.error("The TIP token service answered with an unexpected status");
           return ERROR;
         }
 
@@ -124,7 +124,7 @@ public class TipGetTokenServiceAction extends BaseAction {
         return ERROR;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not obtain a token from the TIP service", e);
       return ERROR;
     }
   }

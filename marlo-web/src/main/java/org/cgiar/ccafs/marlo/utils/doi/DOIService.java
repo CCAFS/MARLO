@@ -29,12 +29,16 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**************
  * @author German C. Martinez - CIAT/CCAFS
  **************/
 
 public class DOIService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DOIService.class);
 
   /**
    * DOI service URL. It returns a JSON as described in the DOI
@@ -61,8 +65,7 @@ public class DOIService {
       try (InputStreamReader reader = new InputStreamReader(shortDoiServiceURL.openStream())) {
         element = new JsonParser().parse(reader);
       } catch (FileNotFoundException fnfe) {
-        // nothing
-        fnfe.printStackTrace();
+        LOG.warn("The DOI service did not return a document for '{}'", doi, fnfe);
       }
     } else {
       throw new InvalidDOIException(doi);

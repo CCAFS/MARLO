@@ -74,7 +74,6 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
         }
       }
     }
-    System.out.println("projectInnovationSDGId " + projectInnovationSDGId);
     projectInnovationSDGDAO.deleteProjectInnovationSDG(projectInnovationSDGId);
   }
 

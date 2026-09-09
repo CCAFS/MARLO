@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -37,6 +38,13 @@ public class DownloadGlobalUnitLogoAction extends BaseAction {
   private static final String LOGOS_RELATIVE_PATH = "globalUnits" + File.separator + "logos" + File.separator;
   private static final String USER_DIR_PROPERTY = "user.dir";
   private static final String LEGACY_LOGO_FOLDER = "marlo-web/src/main/webapp/global/images/crps";
+  /**
+   * The acronym arrives from an anonymous request and is turned into a file name, so anything that could step
+   * outside the logos folder -- a path separator, a dot segment -- is rejected instead of sanitized. Every
+   * acronym in global_units is covered by this pattern, including the ones that carry a space.
+   */
+  private static final Pattern VALID_ACRONYM_PATTERN = Pattern.compile("[A-Z0-9 _-]{1,50}");
+  private static final int MAX_LOGGED_ACRONYM_LENGTH = 50;
 
   private transient InputStream fileInputStream;
   private String acronym;
@@ -46,37 +54,69 @@ public class DownloadGlobalUnitLogoAction extends BaseAction {
     super(config);
   }
 
+  /**
+   * Keeps a rejected acronym printable before it reaches the log. The value comes from an anonymous request, so
+   * a CR or an LF in it would let one log call write what looks like a second, fabricated log line. Control
+   * characters become a question mark and the value is cut to the length the acronym pattern would have
+   * accepted; everything else is left alone, so a path traversal attempt is still readable in the log.
+   * Replace this with LogSanitizer once CHG-COGNITO-AUTH-001 reaches staging.
+   *
+   * @param value the raw acronym as it arrived in the request, may be null.
+   * @return a value safe to interpolate into a single log line, never null.
+   */
+  private String printable(String value) {
+    if (value == null) {
+      return "";
+    }
+    String stripped = value.replaceAll("[^\\x20-\\x7E]", "?");
+    if (stripped.length() > MAX_LOGGED_ACRONYM_LENGTH) {
+      return stripped.substring(0, MAX_LOGGED_ACRONYM_LENGTH) + "...(truncated)";
+    }
+    return stripped;
+  }
+
   @Override
   public String execute() throws Exception {
-    if (StringUtils.isNotBlank(acronym)) {
-      String normalizedAcronym = StringUtils.upperCase(StringUtils.trim(acronym), Locale.ROOT);
-      String uploadsBase = config.getUploadsBaseFolder();
-      if (StringUtils.isNotBlank(uploadsBase)) {
-        File logoFile = new File(uploadsBase, LOGOS_RELATIVE_PATH + normalizedAcronym + ".png");
-        if (logoFile.exists() && logoFile.isFile()) {
-          this.fileInputStream = new FileInputStream(logoFile);
+    String normalizedAcronym = StringUtils.upperCase(StringUtils.trim(acronym), Locale.ROOT);
+    if (StringUtils.isNotBlank(normalizedAcronym)) {
+      if (VALID_ACRONYM_PATTERN.matcher(normalizedAcronym).matches()) {
+        String uploadsBase = config.getUploadsBaseFolder();
+        if (StringUtils.isNotBlank(uploadsBase)) {
+          File logoFile = new File(uploadsBase, LOGOS_RELATIVE_PATH + normalizedAcronym + ".png");
+          if (logoFile.exists() && logoFile.isFile()) {
+            this.fileInputStream = new FileInputStream(logoFile);
+            return SUCCESS;
+          }
+          // Debug, not warn: serving the default logo for a unit that has none uploaded is this action's
+          // contract, not a degraded answer. Only a missing default.png below is worth a higher level.
+          LOG.debug("globalUnitLogoDownload: logo not found in uploads for acronym {}", normalizedAcronym);
+        } else {
+          LOG.error("globalUnitLogoDownload: uploads base folder not configured");
+        }
+
+        String workspaceRoot = System.getProperty(USER_DIR_PROPERTY);
+        File legacyLogoFile =
+          new File(workspaceRoot, LEGACY_LOGO_FOLDER + File.separator + normalizedAcronym + ".png");
+        if (legacyLogoFile.exists() && legacyLogoFile.isFile()) {
+          this.fileInputStream = new FileInputStream(legacyLogoFile);
           return SUCCESS;
         }
-        LOG.warn("globalUnitLogoDownload: logo not found in uploads for acronym {}", normalizedAcronym);
+
+        LOG.debug("globalUnitLogoDownload: logo not found in legacy folder for acronym {}", normalizedAcronym);
       } else {
-        LOG.error("globalUnitLogoDownload: uploads base folder not configured");
+        LOG.warn("globalUnitLogoDownload: the requested acronym is not a valid global unit acronym, so it was not"
+          + " used to build a file path: {}", this.printable(normalizedAcronym));
       }
-
-      String workspaceRoot = System.getProperty(USER_DIR_PROPERTY);
-      File legacyLogoFile = new File(workspaceRoot, LEGACY_LOGO_FOLDER + File.separator + normalizedAcronym + ".png");
-      if (legacyLogoFile.exists() && legacyLogoFile.isFile()) {
-        this.fileInputStream = new FileInputStream(legacyLogoFile);
-        return SUCCESS;
-      }
-
-      LOG.warn("globalUnitLogoDownload: logo not found in legacy folder for acronym {}", normalizedAcronym);
     }
 
-    InputStream defaultStream = ServletActionContext.getServletContext().getResourceAsStream("/global/images/crps/default.png");
+    InputStream defaultStream =
+      ServletActionContext.getServletContext().getResourceAsStream("/global/images/crps/default.png");
     if (defaultStream != null) {
       this.fileInputStream = defaultStream;
       return SUCCESS;
     }
+    LOG.warn("globalUnitLogoDownload: the default logo is missing from the WAR, so no image is returned for the"
+      + " acronym {}", this.printable(normalizedAcronym));
     return ERROR;
   }
 

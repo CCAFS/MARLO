@@ -109,6 +109,7 @@ public class ProjectHighlightInfoManagerImpl implements ProjectHighlightInfoMana
   }
 
   @Override
+  @Transactional
   public ProjectHighlightInfo saveProjectHighlightInfo(ProjectHighlightInfo projectHighlightInfo) {
 
     ProjectHighlightInfo sourceInfo = projectHighlightInfoDAO.save(projectHighlightInfo);

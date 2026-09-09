@@ -85,6 +85,7 @@ public class LiaisonUserManagerImpl implements LiaisonUserManager {
   }
 
   @Override
+  @Transactional
   public LiaisonUser saveLiaisonUser(LiaisonUser liaisonUser) {
 
     return liaisonUserDAO.save(liaisonUser);

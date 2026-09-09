@@ -183,7 +183,6 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.hibernate.exception.LockAcquisitionException;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.struts2.dispatcher.Parameter;
@@ -582,7 +581,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
     } catch (final Exception e) {
-      Log.error(" error in fillallianceLevers function " + e.getMessage());
+      logger.error("error in fillallianceLevers function", e);
     }
 
   }
@@ -620,7 +619,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
 
     } catch (final Exception e) {
-      Log.error(" error in fillAllianceLeversComment function " + e.getMessage());
+      logger.error("error in fillAllianceLeversComment function", e);
     }
 
   }
@@ -4164,7 +4163,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      Log.error("error in quantification save method " + e);
+      logger.error("error in quantification save method", e);
 
     }
   }
@@ -4933,7 +4932,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
 
     } catch (Exception e) {
-      Log.error("Error updating portfolio boolean value", e);
+      logger.error("Error updating portfolio boolean value", e);
     }
   }
 
@@ -5073,7 +5072,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       }
       return false;
     } catch (Exception e) {
-      Log.error("error in validateIfcontainsOutcomes method " + e);
+      logger.error("error in validateIfcontainsOutcomes method", e);
       return false;
     }
   }
@@ -5092,7 +5091,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       return false;
     } catch (Exception e) {
-      Log.error("error in validateIfcontainsSdgcontribution method " + e);
+      logger.error("error in validateIfcontainsSdgcontribution method", e);
       return false;
     }
   }

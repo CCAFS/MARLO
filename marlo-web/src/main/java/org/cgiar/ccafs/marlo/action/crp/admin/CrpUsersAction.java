@@ -663,7 +663,7 @@ public class CrpUsersAction extends BaseAction {
               this.notifyRoleAssigned(newUser);
 
             } catch (NoSuchAlgorithmException e) {
-              e.printStackTrace();
+              LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
               LOG.error(e.getMessage());
             }
 
@@ -759,7 +759,8 @@ public class CrpUsersAction extends BaseAction {
                 try {
                   this.notifyRoleAssigned(existingUser);
                 } catch (Exception e) {
-                  e.printStackTrace();
+                  LOG.error("Could not notify the user {} of the guest role assigned to them",
+                    existingUser.getEmail(), e);
                   LOG.error(e.getMessage());
                 }
 
@@ -874,18 +875,16 @@ public class CrpUsersAction extends BaseAction {
       inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
       buffer = readFully(inputStream);
     } catch (FileNotFoundException e) {
-      LOG.error(e.getMessage());
-      e.printStackTrace();
+      // The email is still sent, only without the manual attached, so this is the only trace of it.
+      LOG.error("The user manual {} was not found, so the email goes out without it", fileName, e);
     } catch (IOException e) {
-      LOG.error(e.getMessage());
-      e.printStackTrace();
+      LOG.error("The user manual {} could not be read, so the email goes out without it", fileName, e);
     } finally {
       if (inputStream != null) {
         try {
           inputStream.close();
         } catch (IOException e) {
-          LOG.error(e.getMessage());
-          e.printStackTrace();
+          LOG.warn("Could not close the stream of the user manual {}", fileName, e);
         }
       }
     }

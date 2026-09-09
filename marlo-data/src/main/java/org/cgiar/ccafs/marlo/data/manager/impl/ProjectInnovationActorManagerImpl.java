@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -34,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Named
 public class ProjectInnovationActorManagerImpl implements ProjectInnovationActorManager {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ProjectInnovationActorManagerImpl.class);
 
   private ProjectInnovationActorDAO projectInnovationActorDAO;
   private PhaseDAO phaseDAO;
@@ -84,7 +88,7 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
               && c.getActor().getId().equals(projectInnovationActors.getActor().getId()))
           .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in ActorByInnovationAndPhase method" + e);
+      LOG.error("Could not get the actors of the innovation {} in the phase {}", innovationID, phase.getId(), e);
     }
     for (ProjectInnovationActor projectInnovationActorsDB : innovationActors) {
       if (projectInnovationActorsDB.getId() != null) {
@@ -158,7 +162,8 @@ public class ProjectInnovationActorManagerImpl implements ProjectInnovationActor
                   && c.getActor().getId().equals(projectInnovationActor.getActor().getId()))
               .collect(Collectors.toList());
     } catch (Exception e) {
-      System.out.println("Error in ActorByInnovationAndPhase save method" + e);
+      LOG.error("Could not get the actors of the innovation {} in the phase {} while saving", innovationID,
+        phase.getId(), e);
     }
     // if (innovationActors == null || innovationActors.isEmpty()) {
     ProjectInnovationActor projectInnovationActorAdd = new ProjectInnovationActor();

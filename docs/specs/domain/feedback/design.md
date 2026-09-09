@@ -3,7 +3,7 @@
 **Spec ID:** DOMAIN-FEEDBACK-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-09-03
 **Implements requirements:** DOMAIN-FEEDBACK-001-FN-001 … FN-040, NF-001 … NF-010
 **Touches modules:** marlo-web, marlo-data
 
@@ -269,10 +269,21 @@ block, and a `.remove-element` per block. `updateIndexes()` reindexes `name="col
 add/remove — this is the contract the server-side manual binder depends on (NF-002). Both are instances of the
 accordion list pattern in `EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md`.
 
-`feedbackManagement.ftl` — block title `Feedback Field <n>: <sectionDescription> - <fieldName>`; body is
-five `[@customForm.input]` controls (`sectionName`, `sectionDescription`, `fieldName`, `fieldDescription`,
-`parentFieldDescription`) plus a hidden `id`. `parentFieldIdentifier` is not rendered.
-`pageLibs = ["select2"]`, `customJS = ["js/admin/feedbackManagement.js?YYYYMMDD"]`.
+`feedbackManagement.ftl` — block title `Feedback Field <n>: <sectionDescription> - <fieldName>`; body is a
+hand-written `<select class="sectionName">` for `sectionName` plus four `[@customForm.input]` controls
+(`sectionDescription`, `fieldName`, `fieldDescription`, `parentFieldDescription`) and a hidden `id`.
+`parentFieldIdentifier` is not rendered. `pageLibs = ["select2"]`,
+`customJS = ["js/admin/feedbackManagement.js?YYYYMMDD"]`.
+
+The section select is written out in the template rather than through `[@customForm.select]`, which hands the
+current value to `[@s.select]` as an OGNL expression that never matches a string slug. Its options are
+`getProjectSections()` (every `ProjectSectionsEnum.getStatus()`), rendered as
+`<option value="<slug>"><label> (<slug>)</option>`, where the label is
+`FeedbackManagementAction.getProjectSectionLabel(slug)` → `getText("feedbackManagement.section." + slug, slug)`.
+The label is presentational only; the posted and persisted value stays the bare slug, so a tenant can rename a
+section in `custom/*.properties` without touching data. A stored slug outside the enum gets its own extra
+option flagged `feedbackManagement.sectionName.unknown`, so it survives the save; the placeholder posts `-1`,
+which the binder normalises to an empty string.
 
 `feedbackRolesPermissionsManagement.ftl` — block title `Permission <n>: <description>` with a `New` badge when
 `recentlyCreated`; body is `description` input plus three `[@customForm.select]` controls

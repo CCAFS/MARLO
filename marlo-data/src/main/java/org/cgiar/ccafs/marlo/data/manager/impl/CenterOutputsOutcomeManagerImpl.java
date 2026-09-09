@@ -70,6 +70,7 @@ public class CenterOutputsOutcomeManagerImpl implements CenterOutputsOutcomeMana
   }
 
   @Override
+  @Transactional
   public CenterOutputsOutcome saveCenterOutputsOutcome(CenterOutputsOutcome centerOutputsOutcome) {
 
     return centerOutputsOutcomeDAO.save(centerOutputsOutcome);
