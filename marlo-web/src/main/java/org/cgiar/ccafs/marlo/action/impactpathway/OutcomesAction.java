@@ -344,6 +344,42 @@ public class OutcomesAction extends BaseAction {
     return programs;
   }
 
+  /**
+   * Counts the active outcomes of the current phase per program, so the sidebar
+   * can show the design's "N indicators" subtitle for every component without
+   * lazy-loading each program's outcome collection from the template.
+   *
+   * Keys are the program id as a String: FreeMarker looks map entries up by
+   * string key, so a Map<Long, ?> would never resolve from the template.
+   *
+   * @return a map of crpProgram id (as String) to its outcome count in the current phase
+   */
+  public Map<String, Integer> getOutcomeCountByProgram() {
+    Map<String, Integer> counts = new HashMap<>();
+    if (this.getActualPhase() == null || this.getActualPhase().getId() == null) {
+      return counts;
+    }
+    List<CrpProgramOutcome> phaseOutcomes =
+      crpProgramOutcomeManager.getAllCrpProgramOutcomesByPhase(this.getActualPhase().getId());
+    if (phaseOutcomes == null) {
+      return counts;
+    }
+    Long actualPhaseId = this.getActualPhase().getId();
+    for (CrpProgramOutcome outcome : phaseOutcomes) {
+      if (outcome == null || !outcome.isActive() || outcome.getCrpProgram() == null) {
+        continue;
+      }
+      // getAllCrpProgramOutcomesByPhase queries `phase.id >= :phaseId`, so it also
+      // returns every future phase; keep only the phase actually being shown.
+      if (outcome.getPhase() == null || !actualPhaseId.equals(outcome.getPhase().getId())) {
+        continue;
+      }
+      String programId = String.valueOf(outcome.getCrpProgram().getId());
+      counts.put(programId, counts.getOrDefault(programId, 0) + 1);
+    }
+    return counts;
+  }
+
   public RepIndGenderYouthFocusLevelManager getRepIndGenderYouthFocusLevelManager() {
     return repIndGenderYouthFocusLevelManager;
   }
@@ -1174,7 +1210,15 @@ public class OutcomesAction extends BaseAction {
 
       programOutcomeIncoming.setFile(null); 
 
+      // The Order field was removed from the form, so it no longer binds. copyFields()
+      // copies nulls, which would wipe the stored value; keep whatever is already there.
+      Integer storedOrderIndex = crpProgramOutcome.getOrderIndex();
+
       crpProgramOutcome.copyFields(programOutcomeIncoming);
+
+      if (programOutcomeIncoming.getOrderIndex() == null) {
+        crpProgramOutcome.setOrderIndex(storedOrderIndex);
+      }
 
       if (incomingFileId != null) {
           // If an ID is provided, look up the file record in the DB
@@ -1376,7 +1420,9 @@ public class OutcomesAction extends BaseAction {
           incomingMilestone.setGenderFocusLevel(repIndGenderYouthFocusLevel);
         }
 
-        Long unitId = incomingMilestone.getSrfTargetUnit().getId();
+        // A milestone submitted without its unit (partial binding) must not NPE
+        Long unitId =
+          incomingMilestone.getSrfTargetUnit() != null ? incomingMilestone.getSrfTargetUnit().getId() : null;
         if (unitId != null && unitId != -1) {
             SrfTargetUnit unit = srfTargetUnitManager.getSrfTargetUnitById(unitId);
             milestone.setSrfTargetUnit(unit); // Reemplaza el objeto completo
@@ -1384,7 +1430,10 @@ public class OutcomesAction extends BaseAction {
             milestone.setSrfTargetUnit(null);
         }
 
-        milestone.copyFields(incomingMilestone);
+        // copyFields() copies nulls and `milestone` is the row loaded from the DB, so any
+        // column the form does not bind would be wiped. The AICCRA matrix only submits the
+        // fields its design shows, so carry the rest over from what is stored.
+        this.preserveUnboundMilestoneFields(milestone, incomingMilestone);
 
         milestone.setActiveSince(new Date(Calendar.getInstance().getTimeInMillis()));
         milestone.setModifiedBy(this.getCurrentUser());
@@ -1402,6 +1451,71 @@ public class OutcomesAction extends BaseAction {
         crpMilestoneManager.replicate(milestone, nextPhase);
       }
     }
+  }
+
+  /**
+   * Carries over the milestone columns the submitted form did not bind.
+   * <p>
+   * {@link CrpMilestone#copyFields(CrpMilestone)} copies nulls, and the entity it is applied to
+   * is the row loaded from the database, so a field absent from the form is silently cleared.
+   * The AICCRA period-target matrix only submits what its design shows, which would wipe the
+   * POWB and DAC columns the other global units still write.
+   * <p>
+   * Only an absent field (null) is restored. A field that was submitted empty binds as an empty
+   * String or -1 rather than null, so clearing a value from the legacy form still works.
+   *
+   * @param stored the milestone loaded from the database, already updated by copyFields
+   * @param incoming the milestone bound from the submitted form
+   * @param before a snapshot of stored taken before copyFields ran
+   */
+  protected static void restoreUnboundMilestoneFields(CrpMilestone stored, CrpMilestone incoming,
+    CrpMilestone before) {
+    if (incoming.getPowbMilestoneVerification() == null) {
+      stored.setPowbMilestoneVerification(before.getPowbMilestoneVerification());
+    }
+    if (incoming.getPowbMilestoneOtherRisk() == null) {
+      stored.setPowbMilestoneOtherRisk(before.getPowbMilestoneOtherRisk());
+    }
+    if (incoming.getGenderFocusLevel() == null) {
+      stored.setGenderFocusLevel(before.getGenderFocusLevel());
+    }
+    if (incoming.getYouthFocusLevel() == null) {
+      stored.setYouthFocusLevel(before.getYouthFocusLevel());
+    }
+    if (incoming.getCapdevFocusLevel() == null) {
+      stored.setCapdevFocusLevel(before.getCapdevFocusLevel());
+    }
+    if (incoming.getClimateFocusLevel() == null) {
+      stored.setClimateFocusLevel(before.getClimateFocusLevel());
+    }
+    if (incoming.getPowbIndFollowingMilestone() == null) {
+      stored.setPowbIndFollowingMilestone(before.getPowbIndFollowingMilestone());
+    }
+    if (incoming.getPowbIndAssesmentRisk() == null) {
+      stored.setPowbIndAssesmentRisk(before.getPowbIndAssesmentRisk());
+    }
+    if (incoming.getPowbIndMilestoneRisk() == null) {
+      stored.setPowbIndMilestoneRisk(before.getPowbIndMilestoneRisk());
+    }
+    if (incoming.getOrderIndex() == null) {
+      stored.setOrderIndex(before.getOrderIndex());
+    }
+    if (incoming.getIsPowb() == null) {
+      stored.setIsPowb(before.getIsPowb());
+    }
+  }
+
+  /**
+   * Snapshots the milestone, applies copyFields and restores whatever the form did not bind.
+   *
+   * @param stored the milestone loaded from the database
+   * @param incoming the milestone bound from the submitted form
+   */
+  private void preserveUnboundMilestoneFields(CrpMilestone stored, CrpMilestone incoming) {
+    CrpMilestone before = new CrpMilestone();
+    before.copyFields(stored);
+    stored.copyFields(incoming);
+    restoreUnboundMilestoneFields(stored, incoming, before);
   }
 
   public void saveSubIdo(CrpProgramOutcome oldOutcome, CrpProgramOutcome incomingOutcome) {
