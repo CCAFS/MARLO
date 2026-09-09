@@ -287,6 +287,33 @@ A child spec may not close a question it does not own.
 
 **Not one of these blocks child 1.** That is the finding that justified row 1.
 
+### The specificity asymmetry — recorded 2026-09-09
+
+Product-owner direction: **Cognito is a specificity, so a Global Unit with `cognito_auth_active` off must
+keep using the current flow.** Verified against the working tree, with a consequence for how the questions
+above are ranked.
+
+Five call sites resolve the flag and **all five are on the login path** — `LoginAction:229,236`,
+`CognitoLoginAction:519`, `CognitoCallbackAction` (shared resolver), `ValidateUserAction:249,256`,
+`CrpByUserEmailAction:126`. **No consumer of `DirectoryService` reads it**, and
+`findByEmail(email)` does not take a Global Unit to decide on.
+
+| | Capability A — authentication | Capability B — directory lookup |
+|---|---|---|
+| Gated per Global Unit | **Yes** | **No** |
+| Rollout shape | Gradual, unit by unit | **One cut, every unit at once** |
+
+Three things follow:
+
+1. **`adauth` cannot reach functional retirement until every unit has the flag on.** Gate 1 is gated on the
+   slowest unit, not the first.
+2. **The user-creation flow keeps using AD for as long as AD exists** — which is what the product owner
+   requires, and it needs no work, because it has no per-unit gate to get wrong.
+3. **This sharpens the ranking in § *Consequence for how the open questions are ranked*.** Authentication is
+   solved and gradual. The directory is one decision landing on every unit simultaneously, so **OQ-21 is the
+   binding question** — see `analysis/username-field-audit.md` §11 for the full record.
+
+
 ---
 
 ## Decision Log

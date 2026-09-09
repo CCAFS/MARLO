@@ -1,7 +1,7 @@
 # `users.username` — can MARLO work without it?
 
 **Analysis ID:** `CHG-COGNITO-USERNAME-AUDIT-001`
-**Revision:** 2 — runtime verification added 2026-09-09, see §10
+**Revision:** 3 — §1.1 corrected and §11 added 2026-09-09; runtime verification in §10
 **Scope:** every reader and writer of the `users.username` column, across Java, FreeMarker, JavaScript, the ORM mapping, SQL, Pentaho reports and i18n properties
 **Method:** static analysis of the working tree on branch `staging-cognito-impl`, 2026-09-09. No database access — see §8
 **Companions:** [`cognito-claims-inventory.md`](./cognito-claims-inventory.md) · [`adauth-retirement-analysis.md`](./adauth-retirement-analysis.md)
@@ -35,16 +35,27 @@ loop instead of a formula.
 
 ### 1.1 The consequence that makes the decision safe
 
-Discarding derivation leaves `users.username` with **no writer at all**. It has four today `[V]` —
-`APCustomRealm.getCgiarNickname:333-338` plus the three admin-creation sites (§4) — and all four read
-`DirectoryPerson.getLogin()`, so all four disappear with the library.
-`CognitoIdentityMapperImpl:88-103` already decided to write nothing.
+> **Corrected 2026-09-09.** Revisions 1 and 2 said the field is left "with **no writer at all**" by
+> discarding derivation, and therefore freezes. **That was wrong about the timing**, and the error mattered
+> because it implied an urgency that does not exist. Cognito is a per-Global-Unit specificity, so while any
+> unit still has it off, AD keeps writing the column — see §11. The paragraph below is restated against the
+> milestone that actually causes the freeze.
 
-The field therefore becomes **frozen**: it keeps what it holds, receives nothing new, and the share of
-nulls grows as accounts are created. This makes the degradation **gradual and non-retroactive** `[I]` —
-no existing user loses anything on retirement day — and it makes the decision **reversible**: if
-`OQ-18` lands, a replacement for `getCgiarNickname` repairs the field on each sign-in exactly as today,
-and the null population self-heals for anyone who logs in.
+`users.username` has four writers today `[V]` — `APCustomRealm.getCgiarNickname:333-338` plus the three
+admin-creation sites (§4) — and all four read `DirectoryPerson.getLogin()`, so all four disappear **with
+the library**, not with the Cognito decision. `CognitoIdentityMapperImpl:88-103` already decided to write
+nothing.
+
+The freeze therefore begins at **Gate 1** (functional AD retirement: zero runtime `adauth` calls), not
+before. Until then, every CGIAR user signing in through a Global Unit whose `cognito_auth_active` is off
+takes the local form → `APCustomRealm`'s AD branch → `getCgiarNickname`, and the column is written and
+repaired exactly as it always was `[V]`.
+
+From Gate 1 onward the field keeps what it holds and receives nothing new, so the share of nulls grows as
+accounts are created. That makes the degradation **gradual and non-retroactive** `[I]` — no existing user
+loses anything on the day it happens — and it makes the decision **reversible**: if `OQ-18` lands, a
+replacement for `getCgiarNickname` repairs the field on each sign-in exactly as today, and the null
+population self-heals for anyone who logs in.
 
 ---
 
@@ -344,3 +355,54 @@ returning the display name, `isCgiarUser`, `agree`, and the Global Unit list inc
 `[V]`. This is deliberate — it is step 1 of the login wizard (`login.js:711`), which must know before
 authentication whether to show the local password field or the Cognito redirect. Recorded as a known
 property, not a defect: it does permit account enumeration, and whether that matters is a product call.
+
+---
+
+## 11. The specificity asymmetry — authentication is gradual, the directory is not
+
+Recorded 2026-09-09 at the product owner's direction: **Cognito is a specificity, so while it is off for a
+Global Unit that unit must keep using the current flow.** Verified against the working tree, and it has a
+consequence the earlier analysis did not state.
+
+### 11.1 Only authentication is gated
+
+Five call sites resolve `cognito_auth_active`, and **all five are on the login path** `[V]`:
+
+| Site | Role |
+|---|---|
+| `LoginAction:229,236` | blocks CGIAR credential relay when the flag is on |
+| `CognitoLoginAction:519` | authoritative pre-filter before the authorize redirect |
+| `CognitoCallbackAction` | authoritative gate after the redirect (via the shared resolver) |
+| `ValidateUserAction:249,256` | login wizard |
+| `CrpByUserEmailAction:126` | login wizard rendering hint |
+
+**No consumer of the directory reads it** — not `ManageUsersAction`, not `CrpUsersAction`, not
+`GuestUsersValidator`, not `APCustomRealm.getCgiarNickname` `[V]`. `DirectoryService.findByEmail(email)`
+does not even take a Global Unit to decide on.
+
+### 11.2 What that means for the two capabilities
+
+| | Capability A — authentication | Capability B — directory lookup |
+|---|---|---|
+| Gated by the specificity? | **Yes**, per Global Unit | **No** |
+| Rollout shape | Gradual, unit by unit | **All-or-nothing across every unit at once** |
+| While the flag is off somewhere | That unit authenticates through `LDAPAuthenticator`, and `getCgiarNickname` still writes `users.username` | Unchanged — every unit shares one directory source |
+
+So the user-creation flow **must keep using AD for as long as AD exists**, exactly as the product owner
+requires — and it does so without any extra work, because it has no per-unit gate to get wrong.
+
+### 11.3 Consequences to carry
+
+1. **`adauth` cannot reach functional retirement until every Global Unit has the flag on.** Authentication
+   is gradual by design, so Gate 1 is gated on the *slowest* unit, not on the first.
+2. **Replacing the directory source is a single cut for the whole platform.** If it were ever required to
+   follow the specificity, a gate would have to be added — and there is nowhere obvious to put it:
+   `CrpUsersAction` has `selectedGlobalUnitAcronym`, but `ManageUsersAction.create()` is a global JSON
+   action with no unit context, and the `DirectoryService` signature carries none `[V]`.
+3. **A person can belong to one unit with the flag on and another with it off.** `LoginAction:229-237`
+   already handles that — the selected unit decides, otherwise a fail-closed sweep across memberships — so
+   during rollout such a user still has their username written whenever they sign in through the AD path
+   `[V]`.
+4. **This is why `OQ-21` is the binding question.** Migrating authentication is already solved and is
+   gradual; supplying the directory after AD is gone is one decision that lands on every unit
+   simultaneously.
