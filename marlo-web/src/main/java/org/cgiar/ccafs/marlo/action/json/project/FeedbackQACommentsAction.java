@@ -177,7 +177,7 @@ public class FeedbackQACommentsAction extends BaseAction {
               replyMap.put("approvalUserName",
                 (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
                   && reply.getUserApproval().getLastName() != null)
-                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+                    ? reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName() : "");
               if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
                 String dateString = reply.getApprovalDate().toString();
                 fieldsMap.put("approvalDate", dateString);
@@ -400,7 +400,7 @@ public class FeedbackQACommentsAction extends BaseAction {
               replyMap.put("approvalUserName",
                 (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
                   && reply.getUserApproval().getLastName() != null)
-                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+                    ? reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName() : "");
               if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
                 String dateString = reply.getApprovalDate().toString();
                 fieldsMap.put("approvalDate", dateString);
