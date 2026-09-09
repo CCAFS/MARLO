@@ -199,6 +199,47 @@ They come from the environment, not from a committed `marlo-${profile}.propertie
 (`directory-abstraction`) introduces **no configuration at all** — `LdapDirectoryService` reads the
 same `config.isProduction()` the existing code reads, and nothing more.
 
+### The keys as implemented, and where each is validated
+
+Child 2 shipped 8 keys (`APConfig:187-202`, all in the `${key:}` form with an empty default). Recorded
+here because the section above says only that child 2 *would* define them, and `auth-flow/` is now
+archived — a reader of this manifest has nowhere else to look.
+
+**There is deliberately no startup validation.** A blank-rejecting constructor would throw during Spring
+context startup on every environment that has not enabled Cognito, destroying the phase-0 inertness the
+empty defaults exist to provide (`CognitoTokenValidatorImpl:160-164` states this). Validation therefore
+lives at each point of consumption, and every one of them **fails closed**.
+
+| Key | Required | Validated at | When blank |
+|---|---|---|---|
+| `cognito.domain` | yes | `CognitoLoginAction.isCognitoConfigured():508` (pre-redirect) · `CognitoCallbackAction:291` | refused, `login.error.cognitoUnavailable` |
+| `cognito.client.id` | yes | the same two | refused |
+| `cognito.callback.url` | yes | `CognitoLoginAction:509` | refused |
+| `cognito.jwks.uri` | yes | `CognitoTokenValidatorImpl.RemoteJwksSource.fetch():94-98` | `MalformedURLException` → no JWKS → every signature check fails closed |
+| `cognito.region` | yes | **indirectly only — see CFG-1** | issuer never matches |
+| `cognito.user.pool.id` | yes | **indirectly only — see CFG-1** | issuer never matches |
+| `cognito.client.secret` | **no** | `CognitoCallbackAction:300-301` | a public app client on PKCE alone — legitimate, not a misconfiguration |
+| `cognito.identity.provider` | **no** | `CognitoLoginAction:348-349` | omitted from the authorize URL; Cognito shows its own provider picker |
+
+### Two findings — diagnostics and UX, not security
+
+Raised 2026-09-09 from a read of the shipped code. **Neither is a security defect: both already fail
+closed.** Both are recorded because the failure they produce points an operator at the wrong cause.
+
+| # | Finding |
+|---|---|
+| **CFG-1** | **`isConfigured()` cannot detect a blank `cognito.region` or `cognito.user.pool.id`.** `CognitoTokenValidatorImpl:147` composes the expected issuer by concatenation — `"https://cognito-idp." + region + ".amazonaws.com/" + userPoolId` — so with both unset it is the literal `https://cognito-idp..amazonaws.com/`, which is **not blank**. `isConfigured():241-243` tests only for blankness, so the call at `validate():313` passes and the token is rejected at `:340` as `UNEXPECTED_ISSUER` instead. The log line built for precisely this case — *"the validator is not configured (issuer/audience are blank)"* — never fires. An operator who forgot `cognito.region` is told the issuer is unexpected, which reads as a wrong pool or a tampered token |
+| **CFG-2** | **The pre-redirect gate checks 3 of the 6 required keys.** `CognitoLoginAction.isCognitoConfigured():507-510` validates `domain`, `client.id` and `callback.url` — coherent with its own purpose, since those three build the authorize URL — but not `jwks.uri`, `region` or `user.pool.id`. On a half-configured environment MARLO therefore **redirects the user to Cognito, they authenticate successfully, and the failure happens on return**: corporate credentials are typed before anyone learns sign-in cannot work. Failing before the redirect is strictly better |
+
+**Both resolve with one change:** a single completeness predicate over the six required keys, consulted
+both before the redirect (CFG-2) and inside `isConfigured()` (CFG-1). That turns each gap into an early
+refusal carrying the message that already exists.
+
+**Not implemented, and not a loose fix.** The code is child 2's, and `auth-flow/` is archived
+(`docs/specs/archive/2026-09-07-changes--migrate-ad-authentication-to-cognito--auth-flow`). An archived
+audit trail is not reopened, so the change needs its own task under a future spec rather than an
+edit dropped onto shipped, reviewed code.
+
 ## Cross-branch state
 
 `staging-cognito` holds 6 commits this branch does not. Nothing was merged.
