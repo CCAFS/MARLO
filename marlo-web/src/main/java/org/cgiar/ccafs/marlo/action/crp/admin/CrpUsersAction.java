@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
@@ -41,9 +43,11 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
@@ -112,6 +116,10 @@ public class CrpUsersAction extends BaseAction {
   private List<Role> rolesCrp;
   private final DirectoryService directoryService;
 
+  private final CustomParameterManager customParameterManager;
+
+  private final ParameterManager parameterManager;
+
 
   private List<GlobalUnit> crps;
 
@@ -119,8 +127,11 @@ public class CrpUsersAction extends BaseAction {
   public CrpUsersAction(APConfig config, GlobalUnitManager globalUnitManager, CrpUserManager crpUserManager,
     UserManager userManager, ProjectManager projectManager, PhaseManager phaseManager, RoleManager roleManager,
     UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator,
-    DirectoryService directoryService) {
+    DirectoryService directoryService, CustomParameterManager customParameterManager,
+    ParameterManager parameterManager) {
     super(config);
+    this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.userManager = userManager;
@@ -132,6 +143,38 @@ public class CrpUsersAction extends BaseAction {
     this.globalUnitManager = globalUnitManager;
     this.crpUserManager = crpUserManager;
     this.directoryService = directoryService;
+  }
+
+  /**
+   * A2-2449: is this a corporate address whose Global Unit authenticates through Cognito?
+   * <p>
+   * The cheap domain test runs first, so a non-corporate address never reaches the two catalog reads
+   * {@link CognitoAuthSpecificity} performs. With the flag off this returns {@code false} and {@code save()}
+   * behaves exactly as before, having done no extra work.
+   * <p>
+   * Unlike the global {@code ManageUsersAction}, the Global Unit here is <b>explicit and correct</b>: it is
+   * the one the user is being granted access to, already resolved from {@code selectedGlobalUnitAcronym}.
+   *
+   * <p>
+   * <b>Every part of the Global Unit is guarded, not just the reference.</b>
+   * {@code CognitoAuthSpecificity.isActiveFor} checks for a null unit and then dereferences {@code getId()}
+   * and {@code getGlobalUnitType().getId()}, both of which auto-unbox. The five login-path callers never hit
+   * either, because they pass units loaded by a manager -- but a creation screen must not 500 over a feature
+   * flag, so an incompletely populated unit resolves to "flag off" here instead of throwing there.
+   *
+   * @param email the address being created
+   * @param unit the Global Unit access is being granted to; {@code null} resolves to {@code false}
+   * @return {@code true} only when the address is corporate AND that unit has the flag on
+   */
+  private boolean isCognitoCgiarAddress(String email, GlobalUnit unit) {
+    if (email == null || !email.trim().toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
+      return false;
+    }
+    if (unit == null || unit.getId() == null || unit.getGlobalUnitType() == null
+      || unit.getGlobalUnitType().getId() == null) {
+      return false;
+    }
+    return CognitoAuthSpecificity.isActiveFor(unit, this.customParameterManager, this.parameterManager);
   }
 
   public String getEmailSend() {
@@ -643,10 +686,32 @@ public class CrpUsersAction extends BaseAction {
               newUser = userManager.saveUser(newUser);
               message = this.getText("saving.saved.guestRole");
               this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+            } else if (this.isCognitoCgiarAddress(newUser.getEmail(), globalUnit)) {
+              // A2-2449: the directory could not confirm this person, but the address is corporate and this
+              // Global Unit authenticates through Cognito. is_cgiar_user must be true or gate 2 of
+              // CognitoIdentityMapper refuses them for good, with no screen able to change the flag back.
+              //
+              // The names are required and PROVISIONAL -- CognitoCallbackAction replaces them from the
+              // directory on this account's first sign-in. `password` is deliberately left as the
+              // "(Your Outlook Password)" text set above and setPassword is never called, so the
+              // notification points them at their corporate credentials instead of a MARLO one they could
+              // never use: APCustomRealm routes a CGIAR account to Cognito and never reaches dbAuthenticator.
+              isCGIARUser = true;
+              if (user.getFirstName() != null && user.getLastName() != null
+                && user.getFirstName().trim().length() > 0 && user.getLastName().trim().length() > 0) {
+                newUser.setFirstName(user.getFirstName());
+                newUser.setLastName(user.getLastName());
+                newUser.setCgiarUser(true);
+                newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+                newUser = userManager.saveUser(newUser);
+                message = this.getText("saving.saved.guestRole");
+                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+              }
             } else {
               // Non CGIAR user
               isCGIARUser = false;
-              if (user.getFirstName() != null && user.getLastName() != null) {
+              if (user.getFirstName() != null && user.getLastName() != null
+                && user.getFirstName().trim().length() > 0 && user.getLastName().trim().length() > 0) {
                 isCGIARUser = false;
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
@@ -660,31 +725,42 @@ public class CrpUsersAction extends BaseAction {
               }
             }
 
-            try {
+            // A2-2449: none of the three branches above created an account, which today means the names were
+            // missing or blank. Everything below assumes a persisted user: notifyRoleAssigned reloads it by id
+            // and would dereference the null that comes back, and the CrpUser / UserRole rows would point at an
+            // unsaved User. Report the missing fields the way the rest of save() does and return INPUT.
+            if (newUser.getId() != null) {
+              try {
 
-              this.sendMailNewUser(newUser, globalUnit, password);
-              this.notifyRoleAssigned(newUser);
+                this.sendMailNewUser(newUser, globalUnit, password);
+                this.notifyRoleAssigned(newUser);
 
-            } catch (NoSuchAlgorithmException e) {
-              LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
-              LOG.error(e.getMessage());
+              } catch (NoSuchAlgorithmException e) {
+                LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
+                LOG.error(e.getMessage());
+              }
+
+              // Add Crp Users
+              CrpUser crpUser = new CrpUser();
+              crpUser.setUser(newUser);
+              crpUser.setCrp(globalUnit);
+              crpUser = crpUserManager.saveCrpUser(crpUser);
+
+              // Add guest user role
+              UserRole userRole = new UserRole();
+              Role guestRole = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
+                .collect(Collectors.toList()).get(0);
+              userRole.setRole(guestRole);
+              userRole.setUser(newUser);
+              userRole = userRoleManager.saveUserRole(userRole);
+              message = this.getText("saving.saved.guestRole");
+              this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+            } else {
+              LOG.warn(this.getText("guestUsers.firstName") + " / " + this.getText("guestUsers.lastName"));
+              this.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
+              this.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
+              error++;
             }
-
-            // Add Crp Users
-            CrpUser crpUser = new CrpUser();
-            crpUser.setUser(newUser);
-            crpUser.setCrp(globalUnit);
-            crpUser = crpUserManager.saveCrpUser(crpUser);
-
-            // Add guest user role
-            UserRole userRole = new UserRole();
-            Role guestRole = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
-              .collect(Collectors.toList()).get(0);
-            userRole.setRole(guestRole);
-            userRole.setUser(newUser);
-            userRole = userRoleManager.saveUserRole(userRole);
-            message = this.getText("saving.saved.guestRole");
-            this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
 
           } else {
             this.addActionMessage("message:" + "login.error.selectCrp");

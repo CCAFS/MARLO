@@ -15,7 +15,13 @@
 
 package org.cgiar.ccafs.marlo.action.json.global;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
@@ -24,7 +30,10 @@ import org.cgiar.ccafs.marlo.security.directory.FakeDirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -178,12 +187,35 @@ public class ManageUsersActionDirectoryTest {
    * outside a Struts request), which this hand-rolled test does not stand up. Returning the key itself
    * is deterministic and lets every assertion above compare against {@code getText(key)} directly.
    */
+  /**
+   * A2-2449: a manager double that answers "nothing configured" to every lookup, so
+   * {@code CognitoAuthSpecificity.isActiveFor} resolves the flag to {@code false} and this suite keeps
+   * exercising the pre-Cognito behaviour it was written for. A {@link Proxy} rather than a full interface
+   * implementation, because only two methods are ever reached and both return objects -- anything else is a
+   * call this suite did not intend to make.
+   *
+   * @param <T> the manager interface
+   * @param type the manager interface to stand in for
+   * @return a proxy answering {@code null} from every object-returning method
+   */
+  private static <T> T unconfiguredManager(Class<T> type) {
+    return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type},
+      (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null));
+  }
+
   private static final class TestableManageUsersAction extends ManageUsersAction {
 
     private static final long serialVersionUID = 1L;
 
     TestableManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService) {
-      super(config, userManager, directoryService);
+      super(config, userManager, directoryService, unconfiguredManager(CustomParameterManager.class),
+        unconfiguredManager(ParameterManager.class));
+    }
+
+    /** A2-2449: lets one test supply managers that resolve {@code cognito_auth_active} to active. */
+    TestableManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService,
+      CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+      super(config, userManager, directoryService, customParameterManager, parameterManager);
     }
 
     @Override
@@ -193,6 +225,131 @@ public class ManageUsersActionDirectoryTest {
   }
 
   /** Records how many times {@code saveUser} runs, and can simulate a failed save (id stays 0). */
+  /**
+   * A2-2449: managers that resolve {@code cognito_auth_active} to active for any Global Unit.
+   *
+   * @return a {@code CustomParameterManager} answering with an active {@code "true"} override
+   */
+  private static CustomParameterManager migratedUnitManager() {
+    CustomParameter override = new CustomParameter();
+    override.setValue("true");
+    override.setActive(true);
+    return (CustomParameterManager) Proxy.newProxyInstance(
+      CustomParameterManager.class.getClassLoader(), new Class<?>[] {CustomParameterManager.class},
+      (proxy, method, args) -> "getCustomParameterByParameterKeyAndGlobalUnitId".equals(method.getName())
+        ? override : (method.getReturnType() == boolean.class ? Boolean.FALSE : null));
+  }
+
+  /**
+   * A2-2449: a Global Unit carrying an id, seeded into the session as the administrator's current unit --
+   * which is the only unit this global JSON action can resolve.
+   *
+   * @param action the action to seed
+   * @throws Exception if the session cannot be set
+   */
+  private static void seedMigratedSessionUnit(Object action) throws Exception {
+    GlobalUnit unit = new GlobalUnit();
+    unit.setId(Long.valueOf(45L));
+    unit.setAcronym("TESTCRP");
+    // A faithful stand-in: SESSION_CRP always holds a fully loaded entity, and
+    // CognitoAuthSpecificity.isActiveFor dereferences getGlobalUnitType().getId() on the catalog-fallback
+    // path without guarding it. A fixture missing the type would make this suite fail on a state production
+    // cannot produce -- and would hide the branch actually under test.
+    GlobalUnitType type = new GlobalUnitType();
+    type.setId(Long.valueOf(3L));
+    unit.setGlobalUnitType(type);
+    Map<String, Object> session = new HashMap<String, Object>();
+    session.put(APConstants.SESSION_CRP, unit);
+    ((ManageUsersAction) action).setSession(session);
+  }
+
+  /**
+   * A2-2449, <b>the branch this change adds</b>. The directory cannot confirm the person -- which is what
+   * every account will look like once AD is retired -- but the address is corporate and the administrator's
+   * Global Unit authenticates through Cognito. The account must be created as CGIAR, or gate 2 of
+   * {@code CognitoIdentityMapper} refuses that person permanently and no screen can flip the flag back.
+   * <p>
+   * The names come from the form and are provisional; {@code CognitoCallbackAction} replaces them from the
+   * directory on the first sign-in. No username is set -- the token carries no AD login.
+   */
+  @Test
+  public void aCorporateAddressInAMigratedUnitIsCreatedAsCgiarWithTheFormNames() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.NOT_FOUND);
+    TestableManageUsersAction migrated = new TestableManageUsersAction(new APConfig(), this.userManager,
+      this.directoryService, migratedUnitManager(), unconfiguredManager(ParameterManager.class));
+    inject(migrated, "actionName", "global/createUser");
+    seedMigratedSessionUnit(migrated);
+    User newUser = new User();
+    newUser.setEmail(EMAIL);
+    newUser.setFirstName("Priyanka");
+    newUser.setLastName("Chandra");
+    inject(migrated, "newUser", newUser);
+
+    migrated.create();
+
+    assertTrue("a corporate address in a migrated unit must be created as CGIAR", newUser.isCgiarUser());
+    assertEquals("the form names stand in until the first sign-in", "Priyanka", newUser.getFirstName());
+    assertEquals("the form names stand in until the first sign-in", "Chandra", newUser.getLastName());
+    assertNull("no AD login exists to set", newUser.getUsername());
+  }
+
+  /**
+   * A2-2449, <b>the guard that keeps the flag honest</b>. Same corporate address, same missing directory
+   * answer -- but the Global Unit has not been migrated, so nothing changes and the account is created
+   * exactly as it is today. This reddens if the specificity check is ever dropped.
+   */
+  @Test
+  public void aCorporateAddressInANonMigratedUnitIsStillCreatedAsNonCgiar() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.NOT_FOUND);
+    seedMigratedSessionUnit(this.action);
+    User newUser = new User();
+    newUser.setEmail(EMAIL);
+    newUser.setFirstName("Priyanka");
+    newUser.setLastName("Chandra");
+    inject(this.action, "newUser", newUser);
+
+    this.action.create();
+
+    assertFalse("with the flag off nothing may change", newUser.isCgiarUser());
+  }
+
+  /**
+   * A2-2449: <b>an incompletely populated Global Unit must resolve to "flag off", never throw.</b>
+   * {@code CognitoAuthSpecificity.isActiveFor} guards a null unit and then dereferences {@code getId()} and
+   * {@code getGlobalUnitType().getId()}, both auto-unboxing. Production's {@code SESSION_CRP} holds a fully
+   * loaded entity, so this state should not arise -- but a creation screen must not answer a feature flag
+   * with a 500, and "should not arise" has been wrong before. Remove either clause of the guard and this
+   * test throws instead of failing an assertion.
+   */
+  @Test
+  public void anIncompleteSessionUnitResolvesToFlagOffRatherThanThrowing() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.NOT_FOUND);
+    // NO active override on purpose: with one, isActiveFor answers from that branch and never reaches the
+    // catalog lookup where getGlobalUnitType() is dereferenced. A null override is what forces it there,
+    // which is the only way this test can prove the guard prevents an exception rather than merely
+    // changing an outcome. With the guard removed this test ERRORS with a NullPointerException; the first
+    // version of it used an active override and only failed an assertion, proving nothing about throwing.
+    TestableManageUsersAction migrated = new TestableManageUsersAction(new APConfig(), this.userManager,
+      this.directoryService, unconfiguredManager(CustomParameterManager.class),
+      unconfiguredManager(ParameterManager.class));
+    inject(migrated, "actionName", "global/createUser");
+    // an id but no GlobalUnitType -- the dereference isActiveFor performs without guarding it
+    GlobalUnit noType = new GlobalUnit();
+    noType.setId(Long.valueOf(45L));
+    Map<String, Object> session = new HashMap<String, Object>();
+    session.put(APConstants.SESSION_CRP, noType);
+    migrated.setSession(session);
+    User newUser = new User();
+    newUser.setEmail(EMAIL);
+    newUser.setFirstName("Priyanka");
+    newUser.setLastName("Chandra");
+    inject(migrated, "newUser", newUser);
+
+    migrated.create();
+
+    assertFalse("an incomplete unit must not be treated as migrated", newUser.isCgiarUser());
+  }
+
   private static final class FakeUserManager implements UserManager {
 
     private long nextId = 1;

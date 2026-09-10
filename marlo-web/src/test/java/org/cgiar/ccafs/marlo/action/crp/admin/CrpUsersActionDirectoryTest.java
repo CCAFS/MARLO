@@ -16,7 +16,9 @@
 package org.cgiar.ccafs.marlo.action.crp.admin;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
@@ -39,6 +41,7 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +55,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -166,6 +170,72 @@ public class CrpUsersActionDirectoryTest {
     assertEquals("User", saved.getLastName());
     assertNotNull(this.action.capturedPassword);
     assertTrue("password must be exactly 6 digits", this.action.capturedPassword.matches("\\d{6}"));
+  }
+
+  /**
+   * A2-2449: <b>a blank name must not create an account.</b> Both branches of {@code save()} used to test
+   * the names for {@code null} alone, so {@code ""} -- which is what the form actually submits when the
+   * fields are left empty -- and {@code " "} both passed, and produced a row carrying a blank name, visible
+   * in every listing that renders it. The sibling {@code json/global/ManageUsersAction} has always tested
+   * for content rather than presence; this brings both branches here in line with it. Strengthened on both,
+   * not only the new one, because the weakness was identical and leaving two neighbouring branches
+   * validating differently is worse than the bug.
+   * <p>
+   * {@code ""} is the case that matters: it is the realistic input, and the one that made the guard below
+   * necessary rather than merely tidy. See {@link #aBlankNameReportsTheMissingFieldsInsteadOfThrowing()}.
+   */
+  @Test
+  public void blankNamesNeverCreateAnAccount() throws Exception {
+    for (String blank : new String[] {"", " ", "\t"}) {
+      this.setUp();
+      this.directoryService.setMode(FakeDirectoryService.Mode.NOT_FOUND);
+
+      User formUser = new User();
+      formUser.setEmail(EMAIL);
+      formUser.setFirstName(blank);
+      formUser.setLastName(blank);
+      this.action.setUser(formUser);
+
+      this.action.save();
+
+      assertNull("a blank name must not reach userManager.saveUser, given [" + blank + "]",
+        this.userManager.lastSavedUser);
+    }
+  }
+
+  /**
+   * A2-2449, <b>the regression this change had to fix to be safe.</b> When no account is created,
+   * {@code save()} used to fall straight through to {@code notifyRoleAssigned}, which reloads the user by id
+   * ({@code userManager.getUser(userAssigned.getId())}) and then dereferences what comes back -- {@code null}
+   * for a user that was never persisted. It also went on to write a {@code CrpUser} and a {@code UserRole}
+   * pointing at that unsaved {@code User}.
+   * <p>
+   * That path was nearly unreachable before, because the old {@code != null} test accepted the {@code ""} the
+   * form submits and created the account anyway. Requiring real content made it the <b>common</b> path, so
+   * an admin submitting the guest form with no names would have got a 500 instead of a blank-name row.
+   * {@code GuestUsersValidator} does not prevent it: it tests {@code isEmpty()} rather than trimming, and
+   * only calls {@code addMessage}, never {@code addFieldError}, so {@code save()} runs regardless.
+   * <p>
+   * Remove the {@code newUser.getId() != null} guard and this test ERRORS with a NullPointerException.
+   */
+  @Test
+  public void aBlankNameReportsTheMissingFieldsInsteadOfThrowing() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.NOT_FOUND);
+
+    User formUser = new User();
+    formUser.setEmail(EMAIL);
+    formUser.setFirstName("");
+    formUser.setLastName("");
+    this.action.setUser(formUser);
+
+    String result = this.action.save();
+
+    assertEquals("a blank name is a validation failure, not a save", Action.INPUT, result);
+    assertTrue("the first name must be reported as missing",
+      this.action.getInvalidFields().containsKey("input-user.firstName"));
+    assertTrue("the last name must be reported as missing",
+      this.action.getInvalidFields().containsKey("input-user.lastName"));
+    assertNull("nothing may be persisted", this.userManager.lastSavedUser);
   }
 
   /**
@@ -569,6 +639,22 @@ public class CrpUsersActionDirectoryTest {
    * captures the generated password from instead of exercising). Everything DIRABS-T06 changed —
    * {@code save()}'s directory lookup and field mapping — runs unmodified.
    */
+  /**
+   * A2-2449: a manager double that answers "nothing configured" to every lookup, so
+   * {@code CognitoAuthSpecificity.isActiveFor} resolves the flag to {@code false} and this suite keeps
+   * exercising the pre-Cognito behaviour it was written for. A {@link Proxy} rather than a full interface
+   * implementation, because only two methods are ever reached and both return objects -- anything else is a
+   * call this suite did not intend to make.
+   *
+   * @param <T> the manager interface
+   * @param type the manager interface to stand in for
+   * @return a proxy answering {@code null} from every object-returning method
+   */
+  private static <T> T unconfiguredManager(Class<T> type) {
+    return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type},
+      (proxy, method, args) -> method.getReturnType() == boolean.class ? Boolean.FALSE : null));
+  }
+
   private static final class TestableCrpUsersAction extends CrpUsersAction {
 
     private static final long serialVersionUID = 1L;
@@ -580,7 +666,8 @@ public class CrpUsersActionDirectoryTest {
       UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator,
       DirectoryService directoryService) {
       super(config, globalUnitManager, crpUserManager, userManager, projectManager, phaseManager, roleManager,
-        userRoleManager, sendMailS, validator, directoryService);
+        userRoleManager, sendMailS, validator, directoryService,
+        unconfiguredManager(CustomParameterManager.class), unconfiguredManager(ParameterManager.class));
     }
 
     @Override

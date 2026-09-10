@@ -17,8 +17,12 @@ package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -81,11 +85,53 @@ public class ManageUsersAction extends BaseAction {
 
   private final DirectoryService directoryService;
 
+  private final CustomParameterManager customParameterManager;
+
+  private final ParameterManager parameterManager;
+
   @Inject
-  public ManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService) {
+  public ManageUsersAction(APConfig config, UserManager userManager, DirectoryService directoryService,
+    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
     super(config);
     this.userManager = userManager;
     this.directoryService = directoryService;
+    this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
+  }
+
+  /**
+   * A2-2449: is this a corporate address whose Global Unit authenticates through Cognito?
+   * <p>
+   * <b>Both halves are load-bearing, and the order is deliberate.</b> The cheap domain test runs first, so a
+   * non-corporate address never reaches the two catalog reads {@link CognitoAuthSpecificity} performs. With
+   * the flag off -- every Global Unit but AICCRA today -- this returns {@code false} and the caller behaves
+   * exactly as it did before, having done no extra work at all.
+   * <p>
+   * <b>The Global Unit is the administrator's, from the session</b>, not the new user's: this action is a
+   * global JSON endpoint with no unit in its URL, and the account being created belongs to none yet. An
+   * administrator working inside a migrated unit is the closest available authority, and a {@code null}
+   * session unit resolves to {@code false}, which is the safe default -- the pre-existing behaviour.
+   *
+   * <p>
+   * <b>Every part of the Global Unit is guarded, not just the reference.</b>
+   * {@code CognitoAuthSpecificity.isActiveFor} checks for a null unit and then dereferences {@code getId()}
+   * and {@code getGlobalUnitType().getId()}, both of which auto-unbox. The five login-path callers never hit
+   * either, because they pass units loaded by a manager -- but a creation screen must not 500 over a feature
+   * flag, so an incompletely populated unit resolves to "flag off" here instead of throwing there.
+   *
+   * @param email the address being created
+   * @return {@code true} only when the address is corporate AND the session's Global Unit has the flag on
+   */
+  private boolean isCognitoCgiarAddress(String email) {
+    if (email == null || !email.trim().toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
+      return false;
+    }
+    GlobalUnit unit = this.getCurrentGlobalUnit();
+    if (unit == null || unit.getId() == null || unit.getGlobalUnitType() == null
+      || unit.getGlobalUnitType().getId() == null) {
+      return false;
+    }
+    return CognitoAuthSpecificity.isActiveFor(unit, this.customParameterManager, this.parameterManager);
   }
 
   /**
@@ -159,6 +205,34 @@ public class ManageUsersAction extends BaseAction {
           newUser.setUsername(person.getLogin().toLowerCase());
           newUser.setCgiarUser(true); // marking it as CGIAR user.
           this.addUser();
+        } else if (this.isCognitoCgiarAddress(newUser.getEmail())) {
+          // A2-2449: the directory could not confirm this person, but the address is corporate and this
+          // Global Unit authenticates through Cognito -- so Cognito, not a MARLO password, is what will let
+          // them in, and is_cgiar_user must say so or gate 2 of CognitoIdentityMapper locks them out
+          // permanently with no way to fix it from any screen.
+          //
+          // The names are required exactly as the non-CGIAR branch requires them, because nothing else can
+          // supply them here: an ID token describes only the person authenticating, and nobody is. They are
+          // PROVISIONAL -- CognitoCallbackAction replaces them with the directory's own values on this
+          // account's first sign-in. Leaving them blank instead would render "null null" through
+          // getComposedCompleteName() until that happens.
+          //
+          // No password is set, and none is generated: `password` keeps the "(Your Outlook Password)" text
+          // the CGIAR branch above also relies on, so the notification tells them to use their corporate
+          // credentials.
+          if (newUser.getFirstName() != null && newUser.getLastName() != null
+            && newUser.getFirstName().trim().length() > 0 && newUser.getLastName().trim().length() > 0) {
+            newUser.setCgiarUser(true);
+            if (!this.addUser()) {
+              newUser = null;
+              message = this.getText("manageUsers.email.notAdded");
+            }
+            return SUCCESS;
+          } else {
+            message = this.getText("manageUsers.email.validation");
+            emailStatus.put("status", true);
+            return SUCCESS;
+          }
         } else {
           // Non cgiar email
           if (newUser.getFirstName() != null && newUser.getLastName() != null
