@@ -3763,8 +3763,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
       if (deliverablesURL != null && !deliverablesURL.isEmpty()) {
         for (String deliverable : deliverablesURL) {
-          if (deliverable.contains(disseminationURL) && !deliverable.contains((deliverableID + ""))
-            && disseminationURL != null) {
+          // The null check has to come first: the outer guard lets a deliverable through on its handle or its
+          // DOI alone, and String.contains(null) throws.
+          if (disseminationURL != null && deliverable.contains(disseminationURL)
+            && !deliverable.contains((deliverableID + ""))) {
             DeliverableSearchSummary deliverableDTO = new DeliverableSearchSummary();
             deliverableDTO.setDeliverableID(Long.parseLong("0"));
             deliverableDTOs.add(deliverableDTO);

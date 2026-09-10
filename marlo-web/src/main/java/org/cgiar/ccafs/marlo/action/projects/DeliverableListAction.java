@@ -70,6 +70,11 @@ public class DeliverableListAction extends BaseAction {
 
 
   private static final long serialVersionUID = -823169163612346982L;
+
+  // Identifiers of the metadata elements this list reads to detect duplicated deliverables.
+  private static final long HANDLE_METADATA_ELEMENT_ID = 35L;
+  private static final long DOI_METADATA_ELEMENT_ID = 36L;
+
   // Logger
   private final Logger logger = LoggerFactory.getLogger(DeliverableListAction.class);
 
@@ -577,6 +582,36 @@ public class DeliverableListAction extends BaseAction {
   }
 
 
+  /**
+   * Reads the value of one metadata element of a deliverable in the current phase. A deliverable that never got the
+   * element is the everyday case, so it is reported as absent rather than as a failure.
+   *
+   * @param metadataElements the metadata elements of the deliverable, which can be null.
+   * @param metadataElementID the identifier of the metadata element to read.
+   * @param deliverableID the identifier of the deliverable the elements belong to.
+   * @return the value of the element, or null when the deliverable has no value for it.
+   */
+  private String getMetadataElementValue(List<DeliverableMetadataElement> metadataElements, long metadataElementID,
+    long deliverableID) {
+    if (metadataElements == null) {
+      return null;
+    }
+
+    try {
+      return metadataElements.stream()
+        .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+          && me.getMetadataElement().getId().longValue() == metadataElementID && me.getPhase() != null
+          && me.getPhase().equals(this.getActualPhase()) && me.getDeliverable() != null
+          && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
+        .map(DeliverableMetadataElement::getElementValue).findFirst().orElse(null);
+    } catch (Exception e) {
+      logger.warn("Could not read the metadata element {} of the deliverable {}, so it is reported as absent",
+        metadataElementID, deliverableID, e);
+      return null;
+    }
+  }
+
+
   /*
    * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
    */
@@ -741,28 +776,11 @@ public class DeliverableListAction extends BaseAction {
                   .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
                   .collect(Collectors.toList())));
               }
-              List<DeliverableMetadataElement> deliverableMetadataElements;
-              deliverableMetadataElements = deliverableTemp.getMetadataElements(this.getActualPhase());
-              try {
-                DOI = deliverableMetadataElements.stream()
-                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                    && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
-                    && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-                  .findFirst().orElse(null).getElementValue();
-              } catch (Exception e) {
-                logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
-                  this.getActualPhase(), e);
-              }
-              try {
-                handle = deliverableMetadataElements.stream()
-                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                    && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
-                    && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-                  .findFirst().orElse(null).getElementValue();
-              } catch (Exception e) {
-                logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
-                  this.getActualPhase(), e);
-              }
+              List<DeliverableMetadataElement> deliverableMetadataElements =
+                deliverableTemp.getMetadataElements(this.getActualPhase());
+              DOI = this.getMetadataElementValue(deliverableMetadataElements, DOI_METADATA_ELEMENT_ID, deliverableID);
+              handle =
+                this.getMetadataElementValue(deliverableMetadataElements, HANDLE_METADATA_ELEMENT_ID, deliverableID);
 
               // Deliverable dissemination
               DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
@@ -884,301 +902,6 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
-  /*
-   * Copy method from project.getCurrentDeliverables to allow add the shared deliverables to list
-   */
-  public void loadCurrentDeliverablesOld() {
-    try {
-      currentDeliverableList = new ArrayList<>();
-      currentDeliverableList =
-        this.getDeliverables().stream().filter(d -> d.isActive() && d.getDeliverableInfo(this.getActualPhase()) != null
-          && !d.getDeliverableInfo().isPrevious()).collect(Collectors.toList());
-    } catch (Exception e) {
-      logger.error("unable to get shared deliverables", e);
-    }
-
-    // Load Shared deliverables
-    previousSharedDeliverableList = new ArrayList<>();
-    try {
-      List<ProjectDeliverableShared> deliverableShared = this.projectDeliverableSharedManager
-        .getByProjectAndPhase(project.getId(), this.getActualPhase().getId()) != null
-          ? this.projectDeliverableSharedManager.getByProjectAndPhase(project.getId(), this.getActualPhase().getId())
-            .stream()
-            .filter(px -> px.isActive() && px.getDeliverable().isActive()
-              && px.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null)
-            .collect(Collectors.toList())
-          : Collections.emptyList();
-
-
-      if (deliverableShared != null && !deliverableShared.isEmpty()) {
-        for (ProjectDeliverableShared deliverableS : deliverableShared) {
-          List<ProjectDeliverableShared> deliverablesTemp = projectDeliverableSharedManager
-            .getByDeliverable(deliverableS.getDeliverable().getId(), this.getActualPhase().getId());
-
-          if (deliverablesTemp != null && !deliverablesTemp.isEmpty()) {
-            for (ProjectDeliverableShared deliverableTemp : deliverablesTemp) {
-
-              if (deliverableTemp.getDeliverable().getSharedWithProjects() == null
-                || (deliverableTemp.getDeliverable().getSharedWithProjects() != null
-                  && deliverableTemp.getDeliverable().getSharedWithProjects().isEmpty())) {
-
-                deliverableTemp.getDeliverable().setSharedWithProjects(
-                  "" + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-
-              } else {
-                if (deliverableTemp.getDeliverable().getSharedWithProjects() != null
-                  && deliverableTemp.getProject() != null
-                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()) != null
-                  && deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                  && (!deliverableTemp.getDeliverable().getSharedWithProjects()
-                    .contains(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym()))) {
-                  deliverableTemp.getDeliverable()
-                    .setSharedWithProjects(deliverableTemp.getDeliverable().getSharedWithProjects() + "; "
-                      + deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                }
-              }
-            }
-          }
-
-          if (!currentDeliverableList.contains(deliverableS.getDeliverable())
-            && !deliverableS.getDeliverable().getDeliverableInfo(this.getActualPhase()).isPrevious()) {
-            currentDeliverableList.add(deliverableS.getDeliverable());
-          }
-        }
-
-        // Previous shared deliverables
-        List<ProjectDeliverableShared> prevProjectDeliverables = deliverableShared.stream()
-          .filter(d -> d.isActive() && d.getDeliverable() != null
-            && d.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-            && d.getDeliverable().getDeliverableInfo().isPrevious())
-          .collect(Collectors.toList());
-
-        if (prevProjectDeliverables != null && !prevProjectDeliverables.isEmpty()) {
-          for (ProjectDeliverableShared prevShared : prevProjectDeliverables) {
-            if (prevShared != null && prevShared.getDeliverable() != null
-              && prevShared.getDeliverable().getId() != null) {
-
-              // Owner
-              if (prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null) {
-                prevShared.getDeliverable()
-                  .setOwner(prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                prevShared.getDeliverable()
-                  .setSharedWithMe(prevShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              } else {
-                prevShared.getDeliverable().setOwner(prevShared.getProject().getId() + "");
-                prevShared.getDeliverable().setSharedWithMe(prevShared.getProject().getId() + "");
-              }
-
-              // Responsible
-              String leader = null;
-              List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
-                prevShared.getDeliverable().getDeliverableUserPartnerships().stream()
-                  .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-                    .getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-                  .collect(Collectors.toList());
-              if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
-                if (deliverablePartnershipResponsibles.size() > 1) {
-                  logger.warn("There is more than one deliverable responsible for D{} in {}",
-                    prevShared.getDeliverable().getId(), this.getActualPhase());
-                }
-                DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
-
-                if (responsible != null && responsible.getDeliverableUserPartnershipPersons() != null) {
-
-                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-                  List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons()
-                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-                  if (!persons.isEmpty()) {
-                    responsibleppp = persons.get(0);
-                  }
-
-                  if (responsibleppp != null && responsibleppp.getUser() != null
-                    && responsibleppp.getUser().getComposedName() != null) {
-                    leader = responsibleppp.getUser().getComposedName();
-                  }
-                }
-              }
-
-              // Set deliverable responsible
-              if (leader != null) {
-                prevShared.getDeliverable().setResponsible(leader);
-              }
-
-
-              previousSharedDeliverableList.add(prevShared.getDeliverable());
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      logger.error("unable to get shared deliverables", e);
-    }
-
-    // shared with
-
-    if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
-      List<ProjectDeliverableShared> deliverablesShared = new ArrayList<>();
-      try {
-        for (Deliverable deliverableTemp : currentDeliverableList) {
-          if (deliverableTemp != null && deliverableTemp.getId() != null) {
-            deliverableTemp = deliverableManager.getDeliverableById(deliverableTemp.getId());
-            deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
-            if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
-              deliverablesShared = deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
-                && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
-            }
-
-            // Is duplicated
-            if (this.hasSpecificities(APConstants.DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE)) {
-              String DOI = null;
-              String handle = null;
-              String disseminationURL = null;
-
-
-              if (deliverableTemp.getDeliverableMetadataElements() != null) {
-                deliverableTemp.setMetadataElements(new ArrayList<>(deliverableTemp.getDeliverableMetadataElements()
-                  .stream().filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase()))
-                  .collect(Collectors.toList())));
-              }
-              List<DeliverableMetadataElement> deliverableMetadataElements;
-              deliverableMetadataElements = deliverableTemp.getMetadataElements(this.getActualPhase());
-
-              try {
-                DOI = deliverableMetadataElements.stream()
-                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                    && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
-                    && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-                  .findFirst().orElse(null).getElementValue();
-              } catch (Exception e) {
-                logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
-                  this.getActualPhase(), e);
-              }
-
-              try {
-                handle = deliverableMetadataElements.stream()
-                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                    && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
-                    && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-                  .findFirst().orElse(null).getElementValue();
-              } catch (Exception e) {
-                logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
-                  this.getActualPhase(), e);
-              }
-
-              // Deliverable dissemination
-              DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
-
-              try {
-                deliverableDissemination = deliverableTemp.getDissemination(this.getActualPhase());
-              } catch (Exception e) {
-                logger.debug("The deliverable {} has no dissemination record in {}", deliverableID,
-                  this.getActualPhase(), e);
-              }
-
-              if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
-                && !deliverableDissemination.getDisseminationUrl().isEmpty()) {
-                disseminationURL = deliverableDissemination.getDisseminationUrl();
-              }
-
-              List<DeliverableSearchSummary> deliverableDTOs = null;
-              deliverableDTOs =
-                this.getDuplicatedDeliverableInformation(DOI, handle, disseminationURL, deliverableTemp.getId());
-
-              boolean isDuplicated = false;
-              if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
-                isDuplicated = true;
-              } else {
-                isDuplicated = false;
-              }
-              if (deliverableTemp.getDeliverableInfo(this.getActualPhase()) != null) {
-                deliverableTemp.getDeliverableInfo(this.getActualPhase()).setDuplicated(isDuplicated);
-                deliverableManager.saveDeliverable(deliverableTemp);
-              }
-            }
-
-            // Owner
-            if (deliverableTemp.getProject() != null && !deliverableTemp.getProject().getId().equals(projectID)) {
-              deliverableTemp
-                .setOwner(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              deliverableTemp
-                .setSharedWithMe(deliverableTemp.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-            } else {
-              deliverableTemp.setOwner("This Cluster");
-              deliverableTemp.setSharedWithMe("Not Applicable");
-            }
-
-            // Responsible
-            String leader = null;
-            List<DeliverableUserPartnership> deliverablePartnershipResponsibles = deliverableTemp
-              .getDeliverableUserPartnerships().stream()
-              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-              .collect(Collectors.toList());
-            if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
-              if (deliverablePartnershipResponsibles.size() > 1) {
-                logger.warn("There is more than one deliverable responsible for D{} in {}", deliverableTemp.getId(),
-                  this.getActualPhase());
-              }
-              DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
-
-              if (responsible != null && responsible.getDeliverableUserPartnershipPersons() != null) {
-
-                DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-                List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons()
-                  .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-                if (!persons.isEmpty()) {
-                  responsibleppp = persons.get(0);
-                }
-
-                if (responsibleppp != null && responsibleppp.getUser() != null
-                  && responsibleppp.getUser().getComposedName() != null) {
-                  leader = responsibleppp.getUser().getComposedName();
-                }
-              }
-            }
-
-            // Set deliverable responsible
-            if (leader != null) {
-              deliverableTemp.setResponsible(leader);
-            }
-
-            // Shared with others
-            for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
-              if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-                deliverableShared.getDeliverable().setSharedWithProjects(
-                  "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-              } else {
-                if (deliverableShared.getDeliverable() != null
-                  && deliverableShared.getDeliverable().getSharedWithProjects() != null
-                  && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                  && !deliverableShared.getDeliverable().getSharedWithProjects()
-                    .contains(deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
-                  deliverableShared.getDeliverable()
-                    .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
-                      + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
-                }
-              }
-            }
-          }
-        }
-      } catch (Exception e) {
-        logger.error("unable to get shared deliverables", e);
-      }
-    }
-
-
-    if (currentDeliverableList != null && !currentDeliverableList.isEmpty()) {
-      try {
-        currentDeliverableList.stream().sorted((d1, d2) -> d1.getId().compareTo((d2.getId())))
-          .collect(Collectors.toList());
-      } catch (Exception e) {
-        logger.error("unable to get shared deliverables", e);
-      }
-      // deliverables.addAll(currentDeliverableList);
-    }
-
-
-  }
 
   @Override
   public void prepare() throws Exception {
