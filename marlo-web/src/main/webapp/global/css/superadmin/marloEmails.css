@@ -1,0 +1,91 @@
+/* Emails on track: MARLO table format, the same one used by the parameters and evidencies tables */
+
+.emailsOnTrack .emailsTableHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.emailsOnTrack .emailsTableHeader .emailsSubtitle {
+  margin: 0;
+  color: #4b4b4b;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Search box, aligned with the dashboard icon search pattern */
+.emailsOnTrack .emails-search-wrap {
+  position: relative;
+  margin: 10px 0 15px;
+  width: 295px;
+  margin-left: auto;
+}
+
+.emailsOnTrack .emails-search-wrap .emails-search {
+  height: 30px;
+  width: 295px;
+  margin-left: 0;
+  padding-right: 42px;
+}
+
+.emailsOnTrack .emails-search-wrap .emails-search-icon {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.emailsOnTrack .emails-search-wrap .emails-search-icon .glyphicon {
+  color: #fff;
+  font-size: 14px;
+}
+
+/* Sortable headers, same format as the evidencies popup table */
+.emailsOnTrack table#marloEmailsTable.dataTable {
+  border-collapse: collapse;
+}
+
+.emailsOnTrack table#marloEmailsTable.dataTable > thead > tr > th {
+  border-bottom: 2px solid #0b7ba6;
+  color: #0b7ba6;
+  font-size: 13px;
+  padding: 6px 25px 6px 8px;
+  vertical-align: middle;
+}
+
+.emailsOnTrack table#marloEmailsTable td {
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.emailsOnTrack table#marloEmailsTable td.emailDate {
+  white-space: nowrap;
+}
+
+/* The message id is long and has no reason to push the readable columns out of the table */
+.emailsOnTrack table#marloEmailsTable td.emailMessageId {
+  font-size: 0.85em;
+  color: #767676;
+}
+
+.emailsOnTrack .dataTables_info,
+.emailsOnTrack .dataTables_paginate {
+  font-size: 0.9em;
+}
+
+@media (max-width: 767px) {
+  .emailsOnTrack .emails-search-wrap,
+  .emailsOnTrack .emails-search-wrap .emails-search {
+    width: 100%;
+    margin-left: 0;
+  }
+}
