@@ -43,15 +43,17 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
      */
     valueChange;
     vueApp = null;
+    vueInstance = null;
     onPropsChange() {
         this.updateVueComponent();
     }
     updateVueComponent() {
-        if (this.vueApp) {
-            // Update the existing Vue app instead of recreating it
-            const vueInstance = this.vueApp._instance.proxy;
-            vueInstance.selectedValues = this.value || [];
-            vueInstance.options = this.data || [];
+        if (this.vueInstance) {
+            // Update the mounted root instance instead of recreating the app. The root proxy
+            // comes from mount(); app._instance is only populated by the Vue dev/devtools
+            // builds, so it stays null on vue.global.prod.js.
+            this.vueInstance.selectedValues = this.value || [];
+            this.vueInstance.options = this.data || [];
         }
     }
     initializeMultiSelectVue() {
@@ -74,6 +76,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
         if (this.vueApp) {
             this.vueApp.unmount();
             this.vueApp = null;
+            this.vueInstance = null;
         }
         // Clear previous content
         container.innerHTML = '';
@@ -153,7 +156,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
             // Register MultiSelect component
             this.vueApp.component('MultiSelect', PrimeVue.MultiSelect);
             // Mount the this.vueApp
-            this.vueApp.mount(container);
+            this.vueInstance = this.vueApp.mount(container);
         }
         catch (error) {
             console.error('Error mounting MultiSelect:', error);
@@ -175,6 +178,7 @@ const MalMultiselect$1 = /*@__PURE__*/ proxyCustomElement(class MalMultiselect e
         if (this.vueApp) {
             this.vueApp.unmount();
             this.vueApp = null;
+            this.vueInstance = null;
         }
         const container = this.el.querySelector('#multi-select-container');
         if (container) {
