@@ -53,13 +53,21 @@ public class EmailsOnTrackAction extends BaseAction {
   public void prepare() throws Exception {
     List<EmailLog> emailLogs = emailLogManager.findAll();
     emails = new ArrayList<>();
-    emails.addAll(emailLogs.stream().filter(c -> c.getSucces().booleanValue() == false).collect(Collectors.toList()));
+    emailsSent = new ArrayList<>();
+
+    // The DAO answers with null, not with an empty list, when no email has been logged yet.
+    if (emailLogs == null) {
+      return;
+    }
+
+    // succes_email is nullable, so an entry whose outcome was never recorded is reported as not sent, which is
+    // the list the section is about and the one that can be sent again.
+    emails.addAll(emailLogs.stream().filter(c -> !Boolean.TRUE.equals(c.getSucces())).collect(Collectors.toList()));
 
     /*
      * Emails sent list
      */
-    emailsSent = new ArrayList<>();
-    emailsSent.addAll(emailLogs.stream().filter(c -> c.getSucces().booleanValue() == true).collect(Collectors.toList()));
+    emailsSent.addAll(emailLogs.stream().filter(c -> Boolean.TRUE.equals(c.getSucces())).collect(Collectors.toList()));
   }
 
   @Override
