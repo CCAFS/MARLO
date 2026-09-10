@@ -115,6 +115,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -188,6 +189,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public static final String SAVED_STATUS = "savedStatus";
 
   private static final long serialVersionUID = -740360140511380630L;
+
+  // Identifiers of the deliverable metadata elements read when detecting duplicated deliverables.
+  protected static final long HANDLE_METADATA_ELEMENT_ID = 35L;
+  protected static final long DOI_METADATA_ELEMENT_ID = 36L;
 
   private static HashMap<String, String> isOicrGeneralInformationCompleteMap = new HashMap<>();
 
@@ -3810,6 +3815,63 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return deliverableDTOs;
+  }
+
+  /**
+   * Reads the value of one metadata element out of a list that belongs to a single deliverable and phase.
+   * A deliverable that never got the element is the everyday case, so it is reported as absent rather than as a
+   * failure.
+   *
+   * @param metadataElements the metadata elements to read, which can be null.
+   * @param metadataElementID the identifier of the metadata element to read.
+   * @return the value of the element, or null when the collection has no value for it.
+   */
+  protected String getMetadataElementValue(Collection<DeliverableMetadataElement> metadataElements,
+    long metadataElementID) {
+    if (metadataElements == null) {
+      return null;
+    }
+
+    try {
+      return metadataElements.stream()
+        .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
+          && me.getMetadataElement().getId().longValue() == metadataElementID
+          && !StringUtils.isBlank(me.getElementValue()))
+        .map(DeliverableMetadataElement::getElementValue).findFirst().orElse(null);
+    } catch (Exception e) {
+      LOG.warn("Could not read the metadata element {}, so it is reported as absent", metadataElementID, e);
+      return null;
+    }
+  }
+
+  /**
+   * Reads the value of one metadata element of a deliverable in the current phase. The list may hold the elements of
+   * other phases, so it is narrowed before the value is read.
+   *
+   * @param metadataElements the metadata elements to read, which can be null and can span several phases.
+   * @param metadataElementID the identifier of the metadata element to read.
+   * @param deliverableID the identifier of the deliverable the element must belong to. It is read as an object
+   *        because the callers pass it straight from the entity, where it is nullable.
+   * @return the value of the element, or null when the deliverable has no value for it in the current phase.
+   */
+  protected String getMetadataElementValue(Collection<DeliverableMetadataElement> metadataElements,
+    long metadataElementID, Long deliverableID) {
+    if (metadataElements == null || deliverableID == null) {
+      return null;
+    }
+
+    try {
+      List<DeliverableMetadataElement> elementsOfThePhase = metadataElements.stream()
+        .filter(me -> me != null && me.getPhase() != null && me.getPhase().equals(this.getActualPhase())
+          && me.getDeliverable() != null && me.getDeliverable().getId() != null
+          && me.getDeliverable().getId().equals(deliverableID))
+        .collect(Collectors.toList());
+      return this.getMetadataElementValue(elementsOfThePhase, metadataElementID);
+    } catch (Exception e) {
+      LOG.warn("Could not read the metadata element {} of the deliverable {}, so it is reported as absent",
+        metadataElementID, deliverableID, e);
+      return null;
+    }
   }
 
   public List<ProjectExpectedStudy> getexpectedCrpOutcomes(Long id) {

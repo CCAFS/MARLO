@@ -70,11 +70,6 @@ public class DeliverableListAction extends BaseAction {
 
 
   private static final long serialVersionUID = -823169163612346982L;
-
-  // Identifiers of the metadata elements this list reads to detect duplicated deliverables.
-  private static final long HANDLE_METADATA_ELEMENT_ID = 35L;
-  private static final long DOI_METADATA_ELEMENT_ID = 36L;
-
   // Logger
   private final Logger logger = LoggerFactory.getLogger(DeliverableListAction.class);
 
@@ -459,36 +454,6 @@ public class DeliverableListAction extends BaseAction {
 
   public long getProjectID() {
     return projectID;
-  }
-
-
-  /**
-   * Reads the value of one metadata element of a deliverable in the current phase. A deliverable that never got the
-   * element is the everyday case, so it is reported as absent rather than as a failure.
-   *
-   * @param metadataElements the metadata elements of the deliverable, which can be null.
-   * @param metadataElementID the identifier of the metadata element to read.
-   * @param deliverableID the identifier of the deliverable the elements belong to.
-   * @return the value of the element, or null when the deliverable has no value for it.
-   */
-  private String getMetadataElementValue(List<DeliverableMetadataElement> metadataElements, long metadataElementID,
-    long deliverableID) {
-    if (metadataElements == null) {
-      return null;
-    }
-
-    try {
-      return metadataElements.stream()
-        .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-          && me.getMetadataElement().getId().longValue() == metadataElementID && me.getPhase() != null
-          && me.getPhase().equals(this.getActualPhase()) && me.getDeliverable() != null
-          && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-        .map(DeliverableMetadataElement::getElementValue).findFirst().orElse(null);
-    } catch (Exception e) {
-      logger.warn("Could not read the metadata element {} of the deliverable {}, so it is reported as absent",
-        metadataElementID, deliverableID, e);
-      return null;
-    }
   }
 
 
