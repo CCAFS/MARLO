@@ -4705,19 +4705,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public Boolean getProjectLp6ContributionValue(long projectID, long phaseID) {
-    try {
-      ProjectLp6Contribution projectLp6Contribution = new ProjectLp6Contribution();
-      Boolean value = null;
-      if (projectID != 0 && phaseID != 0) {
-        projectLp6Contribution = this.projectLp6ContributionManager.findAll().stream()
-          .filter(c -> c.isActive() && c.getProject().getId() == projectID && c.getPhase().getId() == phaseID)
-          .collect(Collectors.toList()).get(0);
+    if (projectID == 0 || phaseID == 0) {
+      return false;
+    }
 
-        if (projectLp6Contribution != null) {
-          value = projectLp6Contribution.isContribution();
-        }
+    try {
+      // Most projects never report an LP6 contribution, so finding no row is the everyday case and not an anomaly.
+      // The value itself is nullable, and the callers read the result as a primitive, so it never returns null.
+      Optional<ProjectLp6Contribution> projectLp6Contribution = this.projectLp6ContributionManager.findAll().stream()
+        .filter(c -> c.isActive() && c.getProject().getId() == projectID && c.getPhase().getId() == phaseID)
+        .findFirst();
+
+      if (projectLp6Contribution.isPresent() && projectLp6Contribution.get().isContribution() != null) {
+        return projectLp6Contribution.get().isContribution();
       }
-      return value;
+      return false;
     } catch (Exception e) {
       LOG.warn("Could not get the LP6 contribution of the project {} in the phase {}, so it is reported as false",
         projectID, phaseID, e);
@@ -8385,27 +8387,48 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public boolean isYearToShowSectionCovid19() {
-    try {
-      if (Boolean.parseBoolean(this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19).toString())) {
-        String rangesYears = (String) this.getSession().get(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
-        String[] years = rangesYears.split("-");
-        if (years.length == 2) {
-          if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()
-            && Integer.parseInt(years[1]) >= this.getActualPhase().getYear()) {
-            return true;
-          }
-        } else {
-          if (years.length == 1) {
-            if (Integer.parseInt(years[0]) <= this.getActualPhase().getYear()) {
-              return true;
-            }
-          }
-        }
-      }
-    } catch (Exception e) {
-      LOG.debug("Could not read the COVID-19 section years from the session, so the section is hidden", e);
+    if (!this.hasSpecificities(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19)) {
       return false;
     }
+
+    // The range is stored as [since]-[until]. A global unit can have the section turned on with no range configured,
+    // which is not an anomaly: the section stays hidden until the range is filled in.
+    String rangesYears = this.getSessionValue(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
+    if (StringUtils.isBlank(rangesYears)) {
+      LOG.debug("The COVID-19 year range is not configured, so the section is hidden");
+      return false;
+    }
+
+    Phase phase = this.getActualPhase();
+    if (phase == null) {
+      LOG.debug("There is no phase to compare with the COVID-19 year range, so the section is hidden");
+      return false;
+    }
+
+    int phaseYear = phase.getYear();
+    String[] years = rangesYears.split("-");
+    // There is no year zero, so it is the value the years that do not parse fall back to.
+    int since = NumberUtils.toInt(StringUtils.trim(years[0]), 0);
+    if (since == 0) {
+      LOG.warn("The COVID-19 year range {} does not start with a valid year, so the section is hidden", rangesYears);
+      return false;
+    }
+
+    if (years.length == 1) {
+      // A single year has no upper bound: the section is shown from that year onwards.
+      return since <= phaseYear;
+    }
+
+    if (years.length == 2) {
+      int until = NumberUtils.toInt(StringUtils.trim(years[1]), 0);
+      if (until == 0) {
+        LOG.warn("The COVID-19 year range {} does not end with a valid year, so the section is hidden", rangesYears);
+        return false;
+      }
+      return since <= phaseYear && until >= phaseYear;
+    }
+
+    LOG.warn("The COVID-19 year range {} is not a [since]-[until] range, so the section is hidden", rangesYears);
     return false;
   }
 
