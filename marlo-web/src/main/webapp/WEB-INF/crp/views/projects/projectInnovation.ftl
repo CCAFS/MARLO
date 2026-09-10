@@ -8,7 +8,9 @@
      primevue 5.x adds a license gate that renders an "Invalid PrimeUI License" badge.
      primevue 4.5.5 pairs with @primeuix/themes 2.0.3 (both on @primeuix/styled 0.7.x).
      Vue must stay on a full build: the components declare string templates, so the
-     runtime-only build cannot render them. --]
+     runtime-only build cannot render them.
+     A2-2464: it is the production build, so the components must not read dev-only Vue
+     internals such as app._instance (see mal-multiselect.js updateVueComponent). --]
 [#assign customJS = [
   "https://unpkg.com/vue@3.5.42/dist/vue.global.prod.js",
   "https://unpkg.com/primevue@4.5.5/umd/primevue.min.js",
@@ -21,7 +23,7 @@
 
 [#assign moduleJS = [
   "${baseUrlMedia}/js/dist/components/my-component.js?20250902",
-  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20250902",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20260910",
   "${baseUrlMedia}/js/dist/components/mal-select.js?20250902"
 ] /]
 

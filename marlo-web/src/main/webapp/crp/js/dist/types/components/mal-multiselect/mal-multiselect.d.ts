@@ -38,6 +38,7 @@ export declare class MalMultiselect {
      */
     valueChange: EventEmitter<any>;
     private vueApp;
+    private vueInstance;
     onPropsChange(): void;
     private updateVueComponent;
     private initializeMultiSelectVue;
