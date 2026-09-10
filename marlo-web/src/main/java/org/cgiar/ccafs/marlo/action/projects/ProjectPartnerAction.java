@@ -381,6 +381,10 @@ public class ProjectPartnerAction extends BaseAction {
 
   public List<Activity> getActivitiesLedByUserCustom(long userID, List<Activity> activitiesOut) {
     List<Activity> activities = new ArrayList<Activity>();
+    if (activitiesOut == null) {
+      return activities;
+    }
+
     try {
 
       activities = activitiesOut.stream()
