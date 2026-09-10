@@ -34,6 +34,8 @@ import javax.mail.internet.MimeMultipart;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate5.SessionHolder;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class ThreadSendMail extends Thread {
 
@@ -55,6 +57,56 @@ public class ThreadSendMail extends Thread {
     this.emailLog = emailLog;
     this.sessionFactory = sessionFactory;
     this.config = config;
+  }
+
+  /**
+   * Saves the log of a message that has already been handed to the mail server. The send runs on a plain Thread,
+   * which has no Hibernate session bound to it, so one is opened and bound here for the DAO to find through
+   * getCurrentSession. Nothing is rethrown: by this point the message is already sent, and letting a failure of
+   * the log escape would kill the thread and skip the backup send, which is what left email_logs empty.
+   *
+   * @param log the entry to save.
+   */
+  private void persistEmailLog(EmailLog log) {
+    // Qualified because javax.mail.Session is already imported in this class.
+    org.hibernate.Session session = null;
+    boolean bound = false;
+    // Opening and binding are inside the try on purpose: bindResource throws when the thread already holds a
+    // session, and openSession throws when the pool is exhausted, so leaving them out would reopen the very
+    // hole this method closes.
+    try {
+      session = sessionFactory.openSession();
+      TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+      bound = true;
+      session.beginTransaction();
+      emailLogManager.saveEmailLog(log);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      LOG.error("Could not save the log of the message '{}'", subject, e);
+      try {
+        if (session != null && session.getTransaction() != null && session.getTransaction().isActive()) {
+          session.getTransaction().rollback();
+        }
+      } catch (Exception rollbackException) {
+        LOG.error("Could not roll back the log of the message '{}'", subject, rollbackException);
+      }
+    } finally {
+      if (bound) {
+        try {
+          TransactionSynchronizationManager.unbindResource(sessionFactory);
+        } catch (Exception e) {
+          LOG.error("Could not unbind the session that logged the message '{}'", subject, e);
+        }
+      }
+      // Closed separately so a failure to unbind cannot leak the connection back to the pool.
+      if (session != null) {
+        try {
+          session.close();
+        } catch (Exception e) {
+          LOG.error("Could not close the session that logged the message '{}'", subject, e);
+        }
+      }
+    }
   }
 
   @Override
@@ -83,9 +135,7 @@ public class ThreadSendMail extends Thread {
         emailLog.setTried(i++);
         emailLog.setSucces(true);
         emailLog.setFileContent(null);
-        sessionFactory.getCurrentSession().beginTransaction();
-        emailLogManager.saveEmailLog(emailLog);
-        sessionFactory.getCurrentSession().getTransaction().commit();
+        this.persistEmailLog(emailLog);
 
       } catch (MessagingException e) {
         LOG.info("Message  DID NOT sent: \n" + subject);
@@ -97,9 +147,7 @@ public class ThreadSendMail extends Thread {
           emailLog.setTried(i);
           emailLog.setSucces(false);
           emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-          sessionFactory.getCurrentSession().beginTransaction();
-          emailLogManager.saveEmailLog(emailLog);
-          sessionFactory.getCurrentSession().getTransaction().commit();
+          this.persistEmailLog(emailLog);
           break;
 
         }
@@ -183,9 +231,7 @@ public class ThreadSendMail extends Thread {
           emailLogBkup.setTried(i++);
           emailLogBkup.setSucces(true);
           emailLogBkup.setFileContent(null);
-          sessionFactory.getCurrentSession().beginTransaction();
-          emailLogManager.saveEmailLog(emailLogBkup);
-          sessionFactory.getCurrentSession().getTransaction().commit();
+          this.persistEmailLog(emailLogBkup);
 
         } catch (MessagingException e) {
           LOG.info("Backup Message  DID NOT sent: \n" + subject);
@@ -196,9 +242,7 @@ public class ThreadSendMail extends Thread {
             emailLogBkup.setTried(i);
             emailLogBkup.setSucces(false);
             emailLogBkup.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-            sessionFactory.getCurrentSession().beginTransaction();
-            emailLogManager.saveEmailLog(emailLogBkup);
-            sessionFactory.getCurrentSession().getTransaction().commit();
+            this.persistEmailLog(emailLogBkup);
             break;
 
           }
