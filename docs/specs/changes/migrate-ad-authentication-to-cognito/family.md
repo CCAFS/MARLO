@@ -5,7 +5,7 @@
 | Parent spec path | `docs/specs/changes/migrate-ad-authentication-to-cognito` |
 | Spec Family ID | `CHG-COGNITO-FAMILY` |
 | Date created | 2026-08-24 (on `staging-cognito`) · **rebuilt on this branch 2026-08-27** |
-| Last updated | 2026-09-09 |
+| Last updated | 2026-09-11 |
 | Spec-family status | `open` |
 | Owner | IBD Team — Alliance of Bioversity International and CIAT |
 | Working branch | **`staging-cognito-impl`** |
@@ -298,6 +298,9 @@ Five call sites resolve the flag and **all five are on the login path** — `Log
 `CrpByUserEmailAction:126`. **No consumer of `DirectoryService` reads it**, and
 `findByEmail(email)` does not take a Global Unit to decide on.
 
+> *The call-site count and point 2 below were overtaken the next day. Read § **Superseded by the
+> user-creation path** before relying on either.*
+
 | | Capability A — authentication | Capability B — directory lookup |
 |---|---|---|
 | Gated per Global Unit | **Yes** | **No** |
@@ -312,6 +315,41 @@ Three things follow:
 3. **This sharpens the ranking in § *Consequence for how the open questions are ranked*.** Authentication is
    solved and gradual. The directory is one decision landing on every unit simultaneously, so **OQ-21 is the
    binding question** — see `analysis/username-field-audit.md` §11 for the full record.
+
+### Superseded by the user-creation path — recorded 2026-09-11
+
+The record above was accurate on the day it was written. Two commits since then changed two of its
+facts, both on the **user-creation path** — the one place the record put outside the flag's reach.
+
+**The call-site count is now eight, and two are off the login path.**
+`CognitoAuthSpecificity.isActiveFor` is called from `CrpUsersAction:177` and `ManageUsersAction:134`
+as well, both added by `641f69302a` (2026-09-10, A2-2449) — one day after this section was recorded,
+which is why it counted five. A ninth read is `crpUsers.ftl:53`, which resolves the flag from the
+session through `hasSpecificities` rather than through the resolver, to carry it to the browser.
+
+**Point 2 no longer holds. Both halves of it are now false.**
+
+- *It needed work.* The Guest Users screen (`{crp}/crpUsers.do`) could not create **any** `@cgiar.org`
+  account the directory failed to confirm. `crpUsers.js` hid the first and last name block for any
+  address containing `@cgiar.org` — commit `3b0c5a33f7`, 2019-07-11, six years old — while `save()`
+  required those names, so the save returned INPUT naming two inputs the page would not show and no
+  retry could succeed. The same guess was silently creating accounts with blank names and
+  `is_cgiar_user = 0` until A2-2449 tightened the check from `!= null` to a blank check. **A directory
+  outage is indistinguishable from an absent person**, so in any environment without the CIAT network
+  this was every corporate address, not an edge case. Fixed by `57c107f087` and `e9c8c81ee6`.
+- *It now has a per-unit gate.* `crpUsers.ftl:53` renders `cognito_auth_active` so the screen asks for
+  the names unconditionally in a migrated unit, and consults the directory before hiding them in one
+  that is not.
+
+**What this adds to child 3.** `DirectoryByEmailAction` is a new `DirectoryService` consumer — six
+files use the interface now — and the first one reachable over HTTP as a read-only lookup, behind a
+session and the CRP administrator permission. Child 3 migrates it with the rest. Both commits are
+frontend and provisioning work inside child 3's declared scope, delivered ahead of it as a bug fix
+rather than through a spec.
+
+**What does not change.** The Capability A / Capability B table stands: `findByEmail(email)` still
+takes no Global Unit, still no `DirectoryService` consumer reads the flag, and Gate 1 is still gated
+on the slowest unit. Points 1 and 3 are unaffected and **OQ-21 remains the binding question**.
 
 
 ---
@@ -335,3 +373,4 @@ Three things follow:
 | **2026-08-31** | **Row 2's `Parallel-safe: yes` is unaffected by T01** | T01 touches `LoginAction.java` and one new test file. `LoginAction` was already listed as child 2's file in § *Parallel-safety*, and child 1 is `done` and archived, so no disjointness claim changes. **`marlo-parent/pom.xml` was deliberately not touched** — the tests use hand-rolled doubles and a `Proxy`, keeping `DEC-005` unneeded and the POM free for T03 |
 | **2026-08-29** | **Row 1 (`directory-abstraction`) moved to `done`** — all 18 tasks (T00–T17), CP2 and CP3 both complete | `adauth` is still present in all 3 POMs and still the implementation; **Gate 1 is explicitly NOT reached** — 3 live call sites remain (2 Capability A, owned by child 2; 1 the seam's own `LdapDirectoryService`). This closes only the `directory-abstraction` leg of child 3's `Depends on`; the `auth-flow` leg is still `pending`, so **child 3 is not yet unblocked overall**. See `directory-abstraction/execution.md`'s `CHECKPOINT RESULT — CP3` |
 | **2026-09-09** | **`users.username` may be null: accept it, and reject deriving a username.** Sign-in by email only for accounts created after retirement | Product-owner decision, on the audit in `analysis/username-field-audit.md`. A derived value is not the AD login (`k.tanaka` vs `ktanaka`, measured twice) — it is the write `T17` already reverted for `cognito:username`, and an admin typing it by hand has the same defect with a human in the loop. **What makes it safe:** with derivation gone the field has *no writer at all*, so it freezes rather than breaking — the degradation is gradual and non-retroactive, and OQ-18 can still repair it on sign-in later, which makes the decision reversible. The audit swept every layer (Java, FreeMarker, JS, ORM, SQL, 40 Pentaho reports, i18n): the column is nullable everywhere including `Users.hbm.xml:18-19`, so **no migration**; all three queries touching it fail closed, so **no authentication hole**. Cost is two obligatory lines (`FeedbackQACommentsAction:180,403`) and two optional fallbacks. **Consequently OQ-14's premise is corrected and OQ-18 is downgraded to an improvement** |
+| **2026-09-11** | **The user-creation flow is now gated per Global Unit, and the 2026-09-09 asymmetry record is superseded on that point** | Not a change of direction — a correction of fact. The Guest Users screen could not create any `@cgiar.org` account the directory failed to confirm, because its script decided from the email domain what only the server can ask. The record said that flow *needs no work* and *has no per-unit gate to get wrong*; it needed both. Fixed outside a spec as a bug (`57c107f087`, `e9c8c81ee6`) because the screen was unusable in any environment without the CIAT network, which includes every local checkout. **Consequences for child 3:** `DirectoryByEmailAction` joins its migration set as a sixth `DirectoryService` consumer and the first HTTP-reachable one, and part of its declared frontend / provisioning scope has already landed. **What is unchanged:** Capability B is still ungated, so Gate 1 still waits on the slowest unit and OQ-21 is still the binding question |
