@@ -651,13 +651,18 @@ public class CognitoCallbackAction extends LoginAction {
    * and the caller's {@code saveLastLogin} on the next line is what sets it. Moving this call below that
    * one makes the test false for every account, forever, without failing anything visibly.
    * <p>
-   * <b>This does not persist by itself</b> -- the caller's {@code saveLastLogin} does, and here it is the
-   * only thing that can. {@code saveUser} carries no {@code @Transactional}, so an UPDATE through it reaches
-   * the database only when something <em>later in the same request</em> opens and commits a transaction,
-   * whose flush covers the whole persistence context. That is why {@code saveUser} does persist on the local
-   * login path, where {@code finishLogin}'s {@code saveLastLogin} commits afterwards. <b>In this callback
-   * there is no afterwards</b>: {@code saveLastLogin} here <em>is</em> the last persistence step, so a
-   * {@code saveUser} at this point would be flushed by nothing and lose the write in silence.
+   * <b>This does not persist by itself, and it does not need to.</b> {@code loggedUser} is the
+   * Hibernate-managed row, so assigning a field marks it dirty; the caller's {@code saveLastLogin} is
+   * {@code @Transactional} and its commit flushes the whole persistence context, writing these names in the
+   * same statement batch as {@code last_login}. Calling {@code saveUser} here as well would be a redundant
+   * second write of the same row.
+   * <p>
+   * <b>Corrected 2026-09-11.</b> This paragraph previously argued that {@code saveUser} <em>could not</em> be
+   * used here because it carried no {@code @Transactional} and nothing later in the request would flush it.
+   * {@code UserMySQLDAO.saveUser} was annotated on 2026-09-10, so that reasoning no longer holds -- a
+   * {@code saveUser} at this point would now persist. The code is unchanged because relying on the managed
+   * entity is still the better of the two, not because the alternative is broken. Do not reinstate the old
+   * argument.
    *
    * @param loggedUser the Hibernate-managed row for the authenticated account
    * @param validatedAssertion the assertion whose signature, issuer, audience, expiry and nonce have all
