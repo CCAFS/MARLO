@@ -7,7 +7,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js?20260911" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20260911-1" 
   ] 
 /]
 [#assign customCSS = [
@@ -46,7 +46,7 @@
         <div class="borderBox">
           <p id="guestUserMessage" class="note" style="display:none"></p>
           [#-- A2-2449: only the server can ask the CGIAR directory, so these two flags carry its answer and
-               crpUsers.js stops deciding from the email domain. cognitoAuthActive: this unit authenticates
+               this screen's script stops deciding from the email domain. cognitoAuthActive: this unit authenticates
                through Cognito, so the directory is a convenience and its silence must not block a creation.
                directoryUnconfirmed: the last save reported the names as missing, which only happens when the
                directory failed to confirm the address. --]

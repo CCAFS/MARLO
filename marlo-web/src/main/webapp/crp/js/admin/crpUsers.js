@@ -175,6 +175,7 @@ var guestUsersModule =
       var $directoryUnconfirmed = $('#directoryUnconfirmed');
       var timer = null;
       var userHasAccess = false;
+      var directoryFound = false;
 
       function init() {
         events();
@@ -216,6 +217,7 @@ var guestUsersModule =
               beforeSend: function() {
                 $message.hide();
                 userHasAccess = false;
+                directoryFound = false;
               },
               success: function(data) {
                 console.log(data);
@@ -230,7 +232,7 @@ var guestUsersModule =
                 }
               },
               complete: function(data) {
-                validateForm();
+                findInDirectory(email);
               },
               error: function(data) {
               }
@@ -239,6 +241,26 @@ var guestUsersModule =
           validateForm();
         }
 
+      }
+
+      // Asks the server whether the CGIAR directory holds this address. A refused, unknown or failed
+      // lookup all answer the same way, and all leave directoryFound false -- the names get asked for.
+      // Never blocks: validateForm runs on completion whatever the outcome.
+      function findInDirectory(email) {
+        $.ajax({
+            url: baseUrl + "/directoryByEmail.do",
+            data: {
+              userEmail: email
+            },
+            success: function(data) {
+              directoryFound = (data && data.found === true);
+            },
+            complete: function(data) {
+              validateForm();
+            },
+            error: function(data) {
+            }
+        });
       }
 
       function validateForm() {
@@ -273,11 +295,14 @@ var guestUsersModule =
         }
       }
 
-      // The browser has no way to reach the CGIAR directory, so these two flags -- rendered by the server --
-      // are what decide whether the names are needed. Deciding it from the email domain is what used to hide
-      // the fields while save() required them, leaving the creation impossible to complete.
+      // Deciding this from the email domain is what used to hide the fields while save() required them,
+      // leaving the creation impossible to complete. Every input below comes from the server instead: the
+      // two flags it rendered, and the directory's own answer for the address currently typed.
       function namesAreRequired() {
-        return $cognitoAuthActive.val() === "true" || $directoryUnconfirmed.val() === "true";
+        if($cognitoAuthActive.val() === "true" || $directoryUnconfirmed.val() === "true") {
+          return true;
+        }
+        return !directoryFound;
       }
 
       function validateCGIAR() {

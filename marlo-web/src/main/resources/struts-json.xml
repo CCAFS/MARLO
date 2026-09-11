@@ -402,6 +402,19 @@
 			</result>
 		</action>
 
+		<!-- Reaches the CGIAR directory, so it must not be callable without a session. The package default
+		     jsonStack already refuses that through SecurityJsonInterceptor, and the action checks the CRP
+		     admin permission on top. `root` keeps the response to the action's own map rather than every
+		     getter BaseAction exposes. -->
+		<action name="directoryByEmail"
+			class="org.cgiar.ccafs.marlo.action.json.global.DirectoryByEmailAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="root">directory</param>
+			</result>
+		</action>
+
 		<action name="autosaveWriter"
 			class="org.cgiar.ccafs.marlo.action.json.autosave.AutoSaveWriterAction">
 			<result type="json">
