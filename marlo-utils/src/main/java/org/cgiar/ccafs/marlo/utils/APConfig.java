@@ -76,6 +76,8 @@ public class APConfig {
   private String PUSH_APP_ID;
   @Value("${pusher.api.privatekey}")
   private String PUSH_SECRETE_KEY;
+  @Value("${tawkto.api.key:}")
+  private String TAWKTO_SITE_ID;
   @Value("${file.downloads}")
   private String FILE_DOWNLOADS;
   @Value("${file.uploads.projectsFolder}")
@@ -749,6 +751,24 @@ public class APConfig {
     }
 
     return PUSH_SECRETE_KEY;
+  }
+
+  /**
+   * Get the Tawk.to site id configured for this server. It is the id the chat widget uses while nobody is
+   * signed in, so it is what the login screen shows; from the sign-in on, the chat belongs to the global unit
+   * and its crp_taw_api parameter is the only source. It is optional on purpose: a server that leaves the
+   * property empty simply renders no chat on the login screen, and the empty default keeps an older properties
+   * file from breaking the context.
+   *
+   * @return the configured site id, or an empty string when none is set
+   */
+  public String getTawktoSiteId() {
+
+    if (TAWKTO_SITE_ID == null) {
+      return "";
+    }
+
+    return TAWKTO_SITE_ID.trim();
   }
 
   /**

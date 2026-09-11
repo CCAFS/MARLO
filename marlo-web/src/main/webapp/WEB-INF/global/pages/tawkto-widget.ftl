@@ -1,26 +1,27 @@
 [#ftl]
+[#-- The site id is resolved from the state of the session, the same way in every environment. The server
+     property is read only while nobody is signed in, which is what puts the chat on the login screen. Once the
+     user signs in the global unit owns the chat, so its crp_taw_api parameter becomes the only source: a
+     parameter that is missing or empty means that global unit has no chat, not that the server one takes over.
+     Pointing an environment at the right chat is therefore a configuration duty: the property belongs to the
+     server, the parameter to the global unit. --]
+[#if logged]
+  [#-- specificityValue only reads the session, where the parameters of the global unit were left at sign-in,
+       and answers null when the key is not there, so it is safe before a global unit has been chosen. --]
+  [#assign tawktoSiteId = ((action.specificityValue('crp_taw_api'))!"")?trim]
+[#else]
+  [#assign tawktoSiteId = ((config.tawktoSiteId)!"")?trim]
+[/#if]
+[#-- Without a site id there is no chat to embed, so neither the script nor the button are rendered. --]
+[#if tawktoSiteId?has_content]
+[#-- A session outside production now reaches the same chat a real user would, so the visitor is tagged and
+     support can tell a test conversation from a real one. --]
+[#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
 <div id="draggable-button" class="hidden-print" style="display:none">
-  <!--  <p><span class="glyphicon glyphicon-comment"></span> Chat </p> <span class="status"></span>  -->
   <p><img src="${baseUrlCdn}/global/images/chatTawkto.png"></p>
 </div>
 
 <script type="text/javascript">
-  [#-- MARLO Develop ID as default --]
-  [#assign tawktoSiteId = "57864c4b7e9d57372d381198"]
-  [#if config.production]
-    [#-- MARLO Production Public Key --]
-    [#assign tawktoSiteId = "582f0c81f9976a1964b0c240"]
-    [#if crpSession?? && logged]
-      [#-- MARLO Production CRP Key. The parameter row can exist with an empty value, and an empty string is not
-           missing, so the default operator alone would leave the site id blank and request an unusable widget URL. --]
-      [#assign crpTawktoSiteId = (action.specificityValue('crp_taw_api'))!""]
-      [#if crpTawktoSiteId?trim?has_content]
-        [#assign tawktoSiteId = crpTawktoSiteId?trim]
-      [/#if]
-    [/#if]
-  [/#if]
-  [#-- User tag --]
-  [#assign userTag][#if !config.production]([#if config.debug]Develop[#else]Testing[/#if])[/#if][/#assign]
   [#-- Tawk.to Widget --]
   var $dragButton = $("#draggable-button");
   
@@ -65,5 +66,6 @@
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
   })();
- 
+
 </script>
+[/#if]
