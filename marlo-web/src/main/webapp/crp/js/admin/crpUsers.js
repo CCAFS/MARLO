@@ -171,6 +171,8 @@ var guestUsersModule =
       var $message = $('#guestUserMessage');
       var $userNameBlock = $('.firstLastName');
       var $submitButton = $('button[name="save"]');
+      var $cognitoAuthActive = $('#cognitoAuthActive');
+      var $directoryUnconfirmed = $('#directoryUnconfirmed');
       var timer = null;
       var userHasAccess = false;
 
@@ -271,9 +273,16 @@ var guestUsersModule =
         }
       }
 
+      // The browser has no way to reach the CGIAR directory, so these two flags -- rendered by the server --
+      // are what decide whether the names are needed. Deciding it from the email domain is what used to hide
+      // the fields while save() required them, leaving the creation impossible to complete.
+      function namesAreRequired() {
+        return $cognitoAuthActive.val() === "true" || $directoryUnconfirmed.val() === "true";
+      }
+
       function validateCGIAR() {
         var email = getUserEmail();
-        if(validateEmail(email) && email.indexOf("@cgiar.org") !== -1) {
+        if(!namesAreRequired() && validateEmail(email) && email.indexOf("@cgiar.org") !== -1) {
           $userNameBlock.slideUp();
           return true;
         } else {
