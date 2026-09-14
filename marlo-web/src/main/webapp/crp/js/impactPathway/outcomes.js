@@ -933,14 +933,51 @@ $(document).ready(function() {
   // The menu is a popover: anything outside it, or Escape, closes it.
   $(document).on('mousedown.opiYearMenu', function(e) {
     if (!$(e.target).closest('.opi-addYearWrap').exists()) { opiCloseYearMenu(); }
+    if (!$(e.target).closest('.opi-rmYear__pop, .opi-rmYear').exists()) { opiCloseRemoveYear(); }
   });
   $(document).on('keydown.opiYearMenu', function(e) {
-    if (e.which === 27 && $('.opi-yearMenu').exists()) {
+    if (e.which !== 27) { return; }
+    if ($('.opi-yearMenu').exists()) {
       var $btn = $('.opi-addYear[aria-expanded="true"]');
       opiCloseYearMenu();
       $btn.trigger('focus');
     }
+    if ($('.opi-rmYear__pop').exists()) { opiCloseRemoveYear(true); }
   });
+
+  // ---- remove a year column ----
+  $page.on('click', '.opi-rmYear:not([disabled])', function(e) {
+    e.stopPropagation();
+    opiCloseYearMenu();
+    var $col = $(this).closest('[data-opi-yearcol]');
+    var $card = $col.closest('.outcome');
+    var year = parseInt($col.attr('data-opi-yearcol'), 10);
+    if (isNaN(year)) { return; }
+    // An empty column costs nothing to rebuild, so it goes without asking; the
+    // undo bar is the safety net either way.
+    if (opiYearValueCount($card, year) === 0) {
+      opiCloseRemoveYear();
+      opiRemoveYear($card, year);
+    } else {
+      opiOpenRemoveYear($(this), $card, year);
+    }
+  });
+
+  $page.on('click', '.opi-rmYear__cancel', function() { opiCloseRemoveYear(); });
+
+  $page.on('click', '.opi-rmYear__confirm', function() {
+    var $pop = $(this).closest('.opi-rmYear__pop');
+    var $card = $pop.closest('.outcome');
+    var year = parseInt($pop.attr('data-opi-rmyear'), 10);
+    opiCloseRemoveYear();
+    if (!isNaN(year)) { opiRemoveYear($card, year); }
+  });
+
+  $page.on('click', '.opi-undoBar__action', function() { opiUndoRemoveYear(); });
+
+  // The popover is pinned to a column of a horizontally scrollable table, so it
+  // cannot follow it: close it instead of letting it drift.
+  $page.on('scroll', '.opi-matrix', function() { opiCloseRemoveYear(); });
 
   // ---- create the missing milestone behind an empty cell ----
   $page.on('click', '.opi-cell__create', function() {
@@ -1254,6 +1291,11 @@ function opiAddYear($card, year) {
     newYear = years.length ? years[years.length - 1] + 1 : opiNowYear();
   }
   if (years.indexOf(newYear) !== -1) { return; }
+  // Opening the same year again makes its pending undo meaningless.
+  if (opiRemovedYear && opiRemovedYear.year === newYear) {
+    opiRemovedYear = null;
+    opiHideUndoBar();
+  }
 
   // Where the new column lands among the existing ones; the cells of every row
   // follow the header, so one index drives both.
@@ -1267,6 +1309,11 @@ function opiAddYear($card, year) {
   if (newYear === opiNowYear()) {
     $col.addClass('is-now').append($('<span class="opi-matrix__now" />').text(opiLabel('nowLabel')));
   }
+  // A column that was just opened has nothing stored behind it, so it is always
+  // removable -- no canBeDeleted() question to ask.
+  $col.append($('<button type="button" class="opi-rmYear" />')
+    .attr({ 'aria-label': opiLabel('rmyearLabel'), title: opiLabel('rmyearLabel') })
+    .html('&#10005;'));
   if (pos < $headYears.length) { $col.insertBefore($headYears.eq(pos)); } else { $head.append($col); }
 
   $card.find('.opi-matrix__row').each(function() {
@@ -1298,6 +1345,172 @@ function opiCardYear($card, nameEnd) {
   }).first().val();
   var year = parseInt(value, 10);
   return year > 0 ? year : NaN;
+}
+
+/* The last removed year column, kept detached so the undo bar can put it back.
+   Only one is held: a second removal commits the first, like any snackbar. */
+var opiRemovedYear = null;
+
+/**
+ * How many cells of one year column carry a value. Read-only cells count: they
+ * are stored targets and would be deleted with the column just the same.
+ * @param {jQuery} $card the .outcome card
+ * @param {number} year the column's year
+ * @return {number} how many values would be lost
+ */
+function opiYearValueCount($card, year) {
+  var count = 0;
+  $card.find('.opi-matrix__row').children('.opi-cell[data-opi-year="' + year + '"]').each(function() {
+    if ($.trim($(this).find('.opi-cell__value').val() || '') !== '') { count++; }
+  });
+  return count;
+}
+
+/**
+ * Detaches one year column -- its header plus one cell per row -- and offers it
+ * back through the undo bar. The cells carry the milestones' hidden inputs, so
+ * dropping them out of the form is what deletes those milestones on the next
+ * save; putting them back restores them with their ids intact.
+ * @param {jQuery} $card the .outcome card
+ * @param {number} year the column's year
+ */
+function opiRemoveYear($card, year) {
+  var $col = $card.find('.opi-matrix__head [data-opi-yearcol="' + year + '"]');
+  if (!$col.exists()) { return; }
+
+  var cells = [];
+  $card.find('.opi-matrix__row').each(function() {
+    var $row = $(this);
+    var $cell = $row.children('.opi-cell[data-opi-year="' + year + '"]');
+    if ($cell.exists()) { cells.push({ key: $row.attr('data-opi-row'), $cell: $cell.detach() }); }
+  });
+
+  opiRemovedYear = { $card: $card, year: year, $col: $col.detach(), cells: cells };
+
+  opiApplyGrid($card);
+  updateAllIndexes();
+  opiRefreshCardStatus($card);
+  opiMarkDirty();
+  opiShowUndoBar($card, year);
+}
+
+/**
+ * Puts the last removed year column back where it was.
+ */
+function opiUndoRemoveYear() {
+  var removed = opiRemovedYear;
+  opiHideUndoBar();
+  if (!removed) { return; }
+  opiRemovedYear = null;
+
+  var $card = removed.$card;
+  var years = opiYears($card);
+  // The column may have been opened again by hand in the meantime; there is
+  // nothing to put back then.
+  if (years.indexOf(removed.year) !== -1) { return; }
+  // The slot is recomputed rather than replayed: other columns may have come or
+  // gone while the bar was up.
+  var pos = 0;
+  while (pos < years.length && years[pos] < removed.year) { pos++; }
+
+  var $head = $card.find('.opi-matrix__head');
+  var $headYears = $head.find('[data-opi-yearcol]');
+  if (pos < $headYears.length) {
+    removed.$col.insertBefore($headYears.eq(pos));
+  } else {
+    $head.append(removed.$col);
+  }
+
+  $.each(removed.cells, function(i, entry) {
+    var $row = opiMatrixRow($card, entry.key);
+    if (!$row.exists()) { return; }
+    var $cells = $row.children('.opi-cell');
+    if (pos < $cells.length) {
+      entry.$cell.insertBefore($cells.eq(pos));
+    } else {
+      $row.append(entry.$cell);
+    }
+  });
+
+  opiApplyGrid($card);
+  updateAllIndexes();
+  opiRefreshCardStatus($card);
+  opiMarkDirty();
+}
+
+/**
+ * Shows the "<year> removed / Undo" bar under the card's matrix.
+ *
+ * It has no timer on purpose: the confirmation promises the removal can be undone
+ * until the form is saved, and a bar that expired first would break that promise --
+ * re-adding the year by hand opens new milestones and loses the values. It goes
+ * when the removal is undone, when another year is removed, or with the page.
+ * @param {jQuery} $card the .outcome card
+ * @param {number} year the year that was removed
+ */
+function opiShowUndoBar($card, year) {
+  opiHideUndoBar();
+  var $bar = $('<div class="opi-undoBar" role="status" />')
+    .append($('<span class="opi-undoBar__text" />').text(opiLabel('rmyearUndo').replace('{0}', year)))
+    .append($('<button type="button" class="opi-undoBar__action" />').text(opiLabel('rmyearUndoAction')));
+  $card.find('.opi-matrix-block').append($bar);
+}
+
+/**
+ * Removes the undo bar.
+ */
+function opiHideUndoBar() {
+  $('.opi-undoBar').remove();
+}
+
+/**
+ * Opens the "Remove <year>?" confirmation under its column.
+ *
+ * The popover lives on .opi-matrix-block rather than inside the header cell:
+ * .opi-matrix scrolls horizontally, which would clip it.
+ * @param {jQuery} $btn the clicked .opi-rmYear button
+ * @param {jQuery} $card the .outcome card
+ * @param {number} year the column's year
+ */
+function opiOpenRemoveYear($btn, $card, year) {
+  opiCloseRemoveYear();
+  var count = opiYearValueCount($card, year);
+  var detail = count === 1
+    ? opiLabel('rmyearDetailOne')
+    : opiLabel('rmyearDetailMany').replace('{0}', count);
+
+  var $pop = $('<div class="opi-rmYear__pop" role="dialog" />')
+    .attr('data-opi-rmyear', year)
+    .attr('aria-label', opiLabel('rmyearTitle').replace('{0}', year))
+    .append($('<span class="opi-rmYear__title" />').text(opiLabel('rmyearTitle').replace('{0}', year)))
+    .append($('<span class="opi-rmYear__detail" />').text(detail))
+    .append($('<span class="opi-rmYear__actions" />')
+      .append($('<button type="button" class="opi-rmYear__cancel" />').text(opiLabel('rmyearCancel')))
+      .append($('<button type="button" class="opi-rmYear__confirm" />').text(opiLabel('rmyearConfirm'))));
+
+  var $block = $card.find('.opi-matrix-block');
+  $block.append($pop);
+
+  var blockRect = $block[0].getBoundingClientRect();
+  var btnRect = $btn[0].getBoundingClientRect();
+  var width = $pop.outerWidth();
+  var left = (btnRect.left - blockRect.left) + (btnRect.width / 2) - (width / 2);
+  left = Math.max(8, Math.min(left, blockRect.width - width - 8));
+  $pop.css({ left: Math.round(left), top: Math.round(btnRect.bottom - blockRect.top + 8) });
+
+  $btn.addClass('is-open');
+  $pop.find('.opi-rmYear__cancel').trigger('focus');
+}
+
+/**
+ * Closes the remove-year confirmation.
+ * @param {boolean} [restoreFocus] whether to put the focus back on its button
+ */
+function opiCloseRemoveYear(restoreFocus) {
+  var $btn = $('.opi-rmYear.is-open');
+  $('.opi-rmYear__pop').remove();
+  $btn.removeClass('is-open');
+  if (restoreFocus) { $btn.trigger('focus'); }
 }
 
 /**

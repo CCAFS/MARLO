@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091413",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091417",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091413",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091417",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -81,6 +81,15 @@
         data-year-taken="[@s.text name="outcomes.matrix.addYear.reason.taken"/]"
         data-year-other="[@s.text name="outcomes.matrix.addYear.other"/]"
         data-year-add="[@s.text name="outcomes.matrix.addYear.confirm"/]"
+        data-rmyear-label="[@s.text name="outcomes.matrix.removeYear"/]"
+        data-rmyear-blocked="[@s.text name="outcomes.matrix.removeYear.blocked"/]"
+        data-rmyear-title="[@s.text name="outcomes.matrix.removeYear.title"/]"
+        data-rmyear-detail-one="[@s.text name="outcomes.matrix.removeYear.detail.one"/]"
+        data-rmyear-detail-many="[@s.text name="outcomes.matrix.removeYear.detail.many"/]"
+        data-rmyear-cancel="[@s.text name="outcomes.matrix.removeYear.cancel"/]"
+        data-rmyear-confirm="[@s.text name="outcomes.matrix.removeYear.confirm"/]"
+        data-rmyear-undo="[@s.text name="outcomes.matrix.removeYear.undo"/]"
+        data-rmyear-undo-action="[@s.text name="outcomes.matrix.removeYear.undo.action"/]"
         data-q-one="[@s.text name="outcomes.questions.count.one"/]"
         data-q-many="[@s.text name="outcomes.questions.count.many"/]"
         data-collapse-all="[@s.text name="outcomes.collapseAll"/]"
@@ -288,6 +297,20 @@
        rows still win over a stored No, so a stale flag can never hide real data. --]
   [#local storedYes = (outcome.hasDisaggregations)!false /]
   [#local hasDis = (rowStmts?size > 1) || storedYes /]
+  [#-- A year column can only be dropped when every milestone under it may be both
+       deleted and edited in this phase. canBeDeleted() guards targets already in
+       use; canEditMileStone() keeps a closed year from being wiped off the form. --]
+  [#local yearDeletable = [] /]
+  [#list yearCols as y]
+    [#local canDropYear = true /]
+    [#list outcome.milestones![] as m]
+      [#if ((m.year)!-1) == y && (!action.canBeDeleted((m.id)!-1,(m.class.name)!"") || !action.canEditMileStone(m))]
+        [#local canDropYear = false /]
+        [#break]
+      [/#if]
+    [/#list]
+    [#local yearDeletable = yearDeletable + [canDropYear] /]
+  [/#list]
   [#local gridCols = "minmax(260px,1fr)" /]
   [#list yearCols as y][#local gridCols = gridCols + " 132px" /][/#list]
 
@@ -507,7 +530,7 @@
                   [#-- The menu itself is built by outcomes.js: its options depend on the
                        baseline / closing year selects above, which the user can still change. --]
                   <span class="opi-addYearWrap">
-                    <button type="button" class="opi-addYear opi-dashedBtn opi-dashedBtn--sm" aria-haspopup="dialog" aria-expanded="false">+ [@s.text name="outcomes.matrix.addYear"/]</button>
+                    <button type="button" class="opi-addYear" aria-haspopup="dialog" aria-expanded="false">+ [@s.text name="outcomes.matrix.addYear"/]</button>
                   </span>
                 [/#if]
               </span>
@@ -521,6 +544,15 @@
                   <span class="opi-matrix__year ${(y == nowYear)?string('is-now','')}" data-opi-yearcol="${y}">
                     <span class="opi-matrix__yearLabel">${y}</span>
                     [#if y == nowYear]<span class="opi-matrix__now">[@s.text name="outcomes.matrix.now"/]</span>[/#if]
+                    [#if editable]
+                      [#if yearDeletable[y_index]]
+                        <button type="button" class="opi-rmYear" aria-label="[@s.text name="outcomes.matrix.removeYear"/]" title="[@s.text name="outcomes.matrix.removeYear"/]">&#10005;</button>
+                      [#else]
+                        [#-- Shown disabled rather than hidden, so the column keeps its width
+                             and the reason is one hover away. --]
+                        <button type="button" class="opi-rmYear" disabled aria-label="[@s.text name="outcomes.matrix.removeYear.blocked"/]" title="[@s.text name="outcomes.matrix.removeYear.blocked"/]">&#10005;</button>
+                      [/#if]
+                    [/#if]
                   </span>
                 [/#list]
               </div>

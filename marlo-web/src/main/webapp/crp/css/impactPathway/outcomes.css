@@ -1120,13 +1120,146 @@ span.icon-20 {
 /* The legend keeps its own margin-left: auto for the heads it still shares a line with. */
 .opi-block__tools .opi-block__legend { margin-left: 0; }
 
+/* ---------- Remove a target year (column ✕, its confirm and the undo bar) ---------- */
+
+/* Destructive at rest, not only under the pointer: the control says what it does
+   before you reach it. The outline is always drawn -- it only changes colour with
+   the state -- so the column header keeps the same shape whatever the state. */
+.opi-page .opi-card__body .opi-rmYear {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--opi-danger-border);
+  border-radius: 5px;
+  background: transparent;
+  font: 600 10px Figtree, sans-serif;
+  line-height: 1;
+  color: var(--opi-danger);
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-rmYear:hover:not([disabled]),
+.opi-page .opi-card__body .opi-rmYear.is-open {
+  border-color: var(--opi-danger);
+  background: var(--opi-danger-bg);
+  color: #A5361F;
+}
+
+/* Blocked keeps the outline too, in the same grey the other disabled controls use,
+   rather than fading the red out with opacity. */
+.opi-page .opi-card__body .opi-rmYear[disabled] {
+  border-color: #DDE3EA;
+  background: transparent;
+  color: #9AA4B0;
+  cursor: not-allowed;
+}
+
+.opi-rmYear__pop {
+  position: absolute;
+  z-index: 40;
+  width: 268px;
+  padding: 12px 13px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  background: var(--opi-surface);
+  border: 1px solid var(--opi-danger-border);
+  border-radius: 11px;
+  box-shadow: 0 14px 34px rgba(31, 42, 55, .18);
+}
+
+.opi-rmYear__title { font: 600 14px Figtree, sans-serif; color: var(--opi-ink); }
+.opi-rmYear__detail { font: 400 12.5px/1.45 Figtree, sans-serif; color: var(--opi-danger); text-wrap: pretty; }
+.opi-rmYear__actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+.opi-page .opi-card__body .opi-rmYear__cancel,
+.opi-page .opi-card__body .opi-rmYear__confirm {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font: 600 13px Figtree, sans-serif;
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-rmYear__cancel {
+  border: 1px solid var(--opi-border-strong);
+  background: var(--opi-surface);
+  color: var(--opi-ink-soft);
+}
+
+.opi-page .opi-card__body .opi-rmYear__cancel:hover { border-color: var(--opi-ink-soft); }
+
+.opi-page .opi-card__body .opi-rmYear__confirm {
+  border: 0;
+  background: #A5361F;
+  color: #fff;
+}
+
+.opi-page .opi-card__body .opi-rmYear__confirm:hover { filter: brightness(1.08); }
+
+.opi-undoBar {
+  margin-top: 8px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--opi-surface-head);
+  border: 1px solid var(--opi-border);
+  border-radius: 8px;
+  font: 400 12.5px Figtree, sans-serif;
+  color: var(--opi-ink-soft);
+}
+
+.opi-undoBar__text { flex: 1; min-width: 0; }
+
+.opi-page .opi-card__body .opi-undoBar__action {
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--opi-border-strong);
+  border-radius: 7px;
+  background: var(--opi-surface);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--opi-primary);
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-undoBar__action:hover { border-color: var(--opi-primary); }
+
 /* ---------- Add a target year (block head button + its menu) ---------- */
 
 /* The button sits on the legend's line, so the row's baseline alignment would
    hang it by its text; the menu anchors to this wrapper. */
 .opi-addYearWrap { position: relative; align-self: center; display: inline-flex; }
 
-.opi-addYear.is-open { border-style: solid; border-color: var(--opi-primary); color: var(--opi-primary); }
+/* An action, not a placeholder: it carries the same primary fill as Save so it
+   reads as a button rather than as an empty slot waiting to be filled. */
+.opi-page .opi-card__body .opi-addYear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--opi-primary);
+  border-radius: 7px;
+  background: var(--opi-primary);
+  color: #fff;
+  font: 500 13px Figtree, sans-serif;
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-addYear:hover,
+.opi-page .opi-card__body .opi-addYear.is-open {
+  background: var(--opi-primary);
+  border-color: var(--opi-primary-dark);
+  color: #fff;
+  filter: brightness(1.06);
+}
 
 .opi-yearMenu {
   position: absolute;
@@ -1357,6 +1490,10 @@ span.icon-20 {
 .opi-page .opi-addDis { align-self: flex-start; }
 
 /* ---------- Period targets matrix ---------- */
+
+/* Anchors the remove-year confirmation: .opi-matrix below scrolls sideways and
+   would clip a popover hung off a column header. */
+.opi-matrix-block { position: relative; }
 
 .opi-matrix { border: 1px solid var(--opi-border); border-radius: 10px; overflow-x: auto; background: #fff; }
 .opi-matrix__scroll { min-width: min-content; }
