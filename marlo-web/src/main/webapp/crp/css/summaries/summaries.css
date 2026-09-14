@@ -338,7 +338,7 @@
 }
 
 .download {
-  background-color: #2BA6CB;
+  background-color: var(--marlo-brand-light);
   color: #fff;
   padding: 5px 13px;
   border-bottom: 3px solid #1E94B8;

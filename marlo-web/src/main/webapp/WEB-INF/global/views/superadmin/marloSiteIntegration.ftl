@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/siteIntegration.css", "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/siteIntegration.css", "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "siteIntegration" /]
 

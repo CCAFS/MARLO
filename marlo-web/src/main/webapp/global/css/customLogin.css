@@ -338,7 +338,7 @@
 .login-button-container .login-form-button {
   width: 100% !important;
   height: 40px;
-  background: #0277a2;
+  background: var(--marlo-brand);
   border: none;
   border-radius: 10px;
   color: #ffffff;
@@ -611,12 +611,12 @@
 }
 
 .selection-bar-options ul li:hover {
-  border-color: #0277a2;
+  border-color: var(--marlo-brand);
   background-color: #fff;
 }
 
 .selection-bar-options ul li.active {
-  border: 1px solid #0277a2;
+  border: 1px solid var(--marlo-brand);
   background-color: #fff;
 }
 

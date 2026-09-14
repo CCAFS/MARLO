@@ -10,7 +10,7 @@
                     "${baseUrlMedia}/js/capDev/year-select.js"] /]
 
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20260914"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [

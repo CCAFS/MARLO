@@ -13,7 +13,7 @@
 /]
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/impactPathway/clusterActivities.css",
-  "${baseUrlMedia}/css/impactPathway/impactGraphic.css" 
+  "${baseUrlMedia}/css/impactPathway/impactGraphic.css?20260914" 
   ] 
 /]
 [#assign currentSection = "impactPathway" /]

@@ -188,7 +188,7 @@ vertical-align: middle;}
 }
 
 .selected{
-	border-color: #2ba6cb;
+	border-color: var(--marlo-brand-light);
 }
 
 .notAvailable{
@@ -249,7 +249,7 @@ vertical-align: middle;}
 }
 
 .download{
-	    background-color: #2BA6CB;
+	    background-color: var(--marlo-brand-light);
 	    color: #fff;
 	    padding: 5px 13px;
 	    border-bottom: 3px solid #1E94B8;
@@ -257,7 +257,7 @@ vertical-align: middle;}
 }
 
 .directlyReport{
-	    background: url(../../global/images/add.png) no-repeat 4px #2BA6CB;
+	    background: url(../../global/images/add.png) no-repeat 4px var(--marlo-brand-light);
     padding: 4px 25px 4px 28px;
     margin: 5px 0;
     text-decoration: none;

@@ -266,7 +266,7 @@ li.select2-search.select2-search--inline{
     margin: 5px 0;
     text-decoration: none;
     cursor: pointer;
-    background-color: #2BA6CB;
+    background-color: var(--marlo-brand-light);
     color: #fff;
     border: 0;
     border-bottom: 3px solid #1E94B8;
@@ -506,7 +506,7 @@ tr:nth-child(even) {
     display: inline-block;
     width: 25px;
     height: 25px;
-    background-color: #0b7ba6;
+    background-color: var(--marlo-brand);
     border-radius: 5px;
     text-align: center;
     margin-right: 10px;
@@ -524,7 +524,7 @@ tr:nth-child(even) {
 }
 
 .text-left-position {
-    color: #0b7ba6;
+    color: var(--marlo-brand);
     cursor: pointer;
     font-size: 12px;
     float: right;

@@ -12,8 +12,8 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20260619",
-  "${baseUrlCdn}/global/css/impactGraphic.css",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20260914",
+  "${baseUrlCdn}/global/css/impactGraphic.css?20260914",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
 /]

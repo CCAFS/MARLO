@@ -6,8 +6,8 @@
   "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20230528",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314",
-  "${baseUrlCdn}/global/css/customDataTable.css?20250528"] /]
+  "${baseUrlMedia}/css/projects/projectCaseStudies.css?20260914",
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
 [#assign hideJustification = true /]

@@ -15,7 +15,7 @@
 }
 
 #info h2 {
-    color: #0277A2;
+    color: var(--marlo-brand);
     font-size: 4.3em;
 }
 
@@ -33,7 +33,7 @@
     padding: 3px 8px 3px 8px;
     margin-top: 4px;
     text-align: center;
-    background: #0277a2;
+    background: var(--marlo-brand);
     color: #fff;
     border-radius: 5px;
     cursor: pointer;

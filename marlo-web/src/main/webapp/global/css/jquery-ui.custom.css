@@ -447,7 +447,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: hidden; zoom: 1; font-size: 1.02em; text-align: left;}
 .ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
-.ui-dialog .ui-dialog-buttonpane button {margin: 0.2em .4em .2em 0;cursor: pointer;padding: 5px;border-color: #2ba6cb;background: #2ba6cb;color: #fff;border-radius: 2px;}
+.ui-dialog .ui-dialog-buttonpane button {margin: 0.2em .4em .2em 0;cursor: pointer;padding: 5px;border-color: var(--marlo-brand-light);background: var(--marlo-brand-light);color: #fff;border-radius: 2px;}
 .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 2px; bottom: 2px; }
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 
@@ -596,13 +596,13 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { text-decoration: none; }
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { font-weight: bold; color: #ffffff; border-width:2px;}
 .ui-state-hover a, .ui-state-hover a:hover { color: #ffffff; text-decoration: none; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #dddddd; font-weight: bold; color: #2BA6CB;}
-.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #2BA6CB; text-decoration: none; }
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: 1px solid #dddddd; font-weight: bold; color: var(--marlo-brand-light);}
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: var(--marlo-brand-light); text-decoration: none; }
 .ui-widget :active { outline: none; }
 
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
-    border: 1px solid #2ba6cb;
-    background: #2ba6cb;
+    border: 1px solid var(--marlo-brand-light);
+    background: var(--marlo-brand-light);
     font-weight: normal;
     padding:5px;
     border-radius:2px;
@@ -610,8 +610,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
-   border: 1px solid #2ba6cb;
-    background: #2ba6cb;
+   border: 1px solid var(--marlo-brand-light);
+    background: var(--marlo-brand-light);
     font-weight: normal;
     padding:5px;
     border-radius:2px;
@@ -697,10 +697,10 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 
 /* Button states */
-.ui-state-default, .ui-widget-content .ui-state-default{background-color: #2BA6CB;border-color: #2BA6CB;color: #F7F7F7;border-radius: 2px;}
+.ui-state-default, .ui-widget-content .ui-state-default{background-color: var(--marlo-brand-light);border-color: var(--marlo-brand-light);color: #F7F7F7;border-radius: 2px;}
 .ui-state-focus, .ui-widget-content .ui-state-focus{background-color:#2693B3;border-color:#2693B3;color:#ffffff;}
-.ui-state-hover, .ui-widget-content .ui-state-hover{background-color:#2BA6CB;border-color:#2BA6CB;color:#ffffff;}
-.ui-state-active, .ui-widget-content .ui-state-active{background-color:#2BA6CB;border-color:#2BA6CB;color:#ffffff;}
+.ui-state-hover, .ui-widget-content .ui-state-hover{background-color:var(--marlo-brand-light);border-color:var(--marlo-brand-light);color:#ffffff;}
+.ui-state-active, .ui-widget-content .ui-state-active{background-color:var(--marlo-brand-light);border-color:var(--marlo-brand-light);color:#ffffff;}
 
 
 /* Accordion */
@@ -717,8 +717,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-tabs-nav{border-color:#d4d4d4;}
 
 /* Dialog states */
-.ui-dialog{border: 2px solid #2BA6CB !important;background-color:#ffffff !important;border-radius: 4px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);}
-.ui-dialog-titlebar{border-color: #2BA6CB;color:#ffffff;background-color: #2BA6CB;}
+.ui-dialog{border: 2px solid var(--marlo-brand-light) !important;background-color:#ffffff !important;border-radius: 4px;box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);}
+.ui-dialog-titlebar{border-color: var(--marlo-brand-light);color:#ffffff;background-color: var(--marlo-brand-light);}
 .ui-dialog-buttonpane{border-color: #B6D9DD !important;background-color:#ffffff;}
 .ui-dialog-content{background-color:#ffffff !important;}
 .ui-dialog-titlebar .ui-icon{background-image:url(images/ui-icons_ffffff_0.png);}

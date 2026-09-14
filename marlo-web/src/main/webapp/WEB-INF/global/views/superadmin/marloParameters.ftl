@@ -8,7 +8,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260827",
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] /]
 [#assign currentSection = "superadmin" /]

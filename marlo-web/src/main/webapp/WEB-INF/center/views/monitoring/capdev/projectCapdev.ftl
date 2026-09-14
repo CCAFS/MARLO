@@ -11,7 +11,7 @@
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/impactPathway/outputList.css",
-  "${baseUrlCdn}/global/css/customDataTable.css", 
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914", 
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
   ] 
 /]

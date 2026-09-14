@@ -71,7 +71,7 @@ table.dataTable {
 }
 
 table.dataTable thead {
-  background-color: #8ea786;
+  background-color: var(--marlo-brand);
   color: #fff;
 }
 
@@ -193,7 +193,7 @@ table.dataTable a {
 }
 
 .subHeader {
-    background-color: #8ea786;
+    background-color: var(--marlo-brand);
 }
 
 /* Specific to innovations table */
@@ -203,7 +203,7 @@ table.dataTable a {
 }
 
 #table-innovations_wrapper .iconSearch{
-  background: #0b7ba6;
+  background: var(--marlo-brand);
   height: 30px;
   width: 40px;
   position: absolute;
@@ -308,7 +308,7 @@ table.oicrStudiesTable.dataTable td.oicr-check-cell {
 
 #table-prms-innovations_wrapper .iconSearch,
 #table-all-innovations_wrapper .iconSearch {
-    background: #0b7ba6;
+    background: var(--marlo-brand);
     height: 30px;
     width: 40px;
     position: absolute;

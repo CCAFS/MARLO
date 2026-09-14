@@ -7,7 +7,7 @@
   ] 
 /]
 [#assign customCSS = [ 
-  "${baseUrlCdn}/global/css/superadmin/superadmin.css",
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914",
   "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css"
   ] 
 /]

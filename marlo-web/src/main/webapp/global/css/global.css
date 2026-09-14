@@ -160,7 +160,7 @@ a#btn-revokeChoice {
 
 .bigAddButton {
 	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%230B7BA6' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-	color: #0B7BA6;
+	color: var(--marlo-brand);
 	font-size: 1.5rem;
 	padding: 10px 0;
 	margin: 0 7px;
@@ -683,7 +683,7 @@ input[type="submit"],
 button,
 .addButton,
 a.form-button {
-	background-color: #2BA6CB;
+	background-color: var(--marlo-brand-light);
 	color: #fff;
 	border: 0;
 	padding: 5px 26px;
@@ -712,7 +712,7 @@ a.form-button.button-edit {
 }
 
 .addButton {
-	background: url('../../global/images/add.png') no-repeat 4px #2BA6CB;
+	background: url('../../global/images/add.png') no-repeat 4px var(--marlo-brand-light);
 	padding: 4px 25px 4px 28px;
 	margin: 5px 1px;
 	text-decoration: none;
@@ -934,7 +934,7 @@ input[type="number"].targetValueNumber::-webkit-outer-spin-button {
 .fileUpload .upload::before {
 	content: 'Select a file';
 	display: inline-block;
-	background: #2BA6CB;
+	background: var(--marlo-brand-light);
 	border-radius: 3px;
 	margin-top: 1px;
 	padding: 2px 6px;
@@ -952,7 +952,7 @@ input[type="number"].targetValueNumber::-webkit-outer-spin-button {
 }
 
 .fileUpload .upload:active::before {
-	background-color: #2BA6CB;
+	background-color: var(--marlo-brand-light);
 }
 
 .fileUpload .remove {
@@ -1472,7 +1472,7 @@ select#partnerSave_activityPartner_partner_type_id {
 }
 
 .panel .panel-head {
-	background: #8EA786;
+	background: var(--marlo-brand);
 	color: #fff;
 	padding: 6px;
 	text-align: center;
@@ -2516,7 +2516,7 @@ a.currentSection li {
 	font-weight: lighter;
 	letter-spacing: 0.02em;
 	color: #ffffff;
-	background: #0b7ba6;
+	background: var(--marlo-brand);
 	text-align: center;
 	border-radius: 4px;
 }
@@ -2553,7 +2553,7 @@ a.currentSection li {
 	font-weight: bold;
 	background-color: #f4fafc;
 	border-color: #cfe6ef;
-	/*box-shadow: inset 3px 0 0 #0b7ba6, 0 1px 2px rgba(15, 23, 42, 0.06);*/
+	/*box-shadow: inset 3px 0 0 var(--marlo-brand), 0 1px 2px rgba(15, 23, 42, 0.06);*/
 }
 
 #secondaryMenu ul li ul>li.currentSection.hasBackground {
@@ -2623,7 +2623,7 @@ a.currentSection li {
 }
 
 #secondaryMenu ul li>ul li a:focus-visible {
-	outline: 2px solid #0b7ba6;
+	outline: 2px solid var(--marlo-brand);
 	outline-offset: -2px;
 }
 
@@ -2986,7 +2986,7 @@ h3.contentSubTitle {
 	color: #FFF;
 	text-align: center;
 	/* text-decoration: underline; */
-	background: #8EA786;
+	background: var(--marlo-brand);
 	padding: 5px 0;
 	margin: 0px 0 5px 0;
 	font-weight: 700;
@@ -3219,7 +3219,7 @@ a.button-blue:hover {
 
 .button-green {
 	padding: 5px 8px 5px 8px;
-	color: #8ea786;
+	color: var(--marlo-brand);
 	cursor: pointer;
 	display: inline-block;
 }
@@ -3550,17 +3550,17 @@ input.userName {
 }
 
 #timelineBlock .li.complete .status {
-	border-top: 2px solid #8EA786;
+	border-top: 2px solid var(--marlo-brand);
 }
 
 #timelineBlock .li.complete .status:before {
-	background-color: #8EA786;
+	background-color: var(--marlo-brand);
 	border: none;
 	transition: all 200ms ease-in;
 }
 
 #timelineBlock .li.complete .status h4 {
-	color: #8EA786;
+	color: var(--marlo-brand);
 }
 
 @media (min-device-width: 320px) and (max-device-width: 700px) {
@@ -3686,7 +3686,7 @@ input.userName {
 }
 
 #dashboard #deadline .active {
-	background: #8EA786;
+	background: var(--marlo-brand);
 	border-radius: 4.8em;
 	-moz-border-radius: 4.8em;
 	-webkit-border-radius: 4.8em;
@@ -3905,11 +3905,11 @@ h6.title {
 }
 
 button#ipGraph-btnPrint {
-	background: url(../../global/images/download-icon.png)no-repeat center #2BA6CB;
+	background: url(../../global/images/download-icon.png)no-repeat center var(--marlo-brand-light);
 }
 
 button#ipGraph-btnMax {
-	background: url(../../global/images/max-icon.png)no-repeat center #2BA6CB;
+	background: url(../../global/images/max-icon.png)no-repeat center var(--marlo-brand-light);
 }
 
 button#ipGraph-btnFullimpact,
@@ -5301,7 +5301,7 @@ li.fileUploaded span {
 }
 
 .mf-icon.check {
-	color: #8EA786;
+	color: var(--marlo-brand);
 }
 
 .icon-neutral {
@@ -6300,7 +6300,7 @@ table.evaluationTable .statusCol {
 }
 
 table.evaluationRank thead {
-	background: #2ba6cb;
+	background: var(--marlo-brand-light);
 	color: #fff;
 	border: none;
 }
@@ -6711,7 +6711,7 @@ h4.testEnvironment {
 
 .button-save {
 	color: #FFFFFF;
-	background: #8EA786;
+	background: var(--marlo-brand);
 	border-bottom: 3px solid #7E9377;
 	outline: none;
 }
@@ -7256,8 +7256,8 @@ input.fieldChecked {
 	background: url(../../../marlo-web/global/images/icon-check-tiny.png) no-repeat;
 	background-position: 97% 50%;
 	background-size: 12px;
-	border-color: #8ea786 !important;
-	color: #8ea786 !important;
+	border-color: var(--marlo-brand) !important;
+	color: var(--marlo-brand) !important;
 }
 
 #glossary hr {
@@ -8005,7 +8005,7 @@ span.listTag {
 }
 
 a.form-button.button-history {
-	background-color: #2BA6CB;
+	background-color: var(--marlo-brand-light);
 	border-bottom: 3px solid #1E94B8;
 }
 
@@ -8138,7 +8138,7 @@ div.selectPrimary {
 
 /*.menuContent #bi::before{
   content: "BETA";
-  color: #0277a2;
+  color: var(--marlo-brand);
   font-size: 9px;
   position: absolute;
   top: 0em;
@@ -8149,7 +8149,7 @@ div.selectPrimary {
 
 .menuContent .beta::before{
 	content: "BETA";
-	color: #0277a2;
+	color: var(--marlo-brand);
 	font-size: 9px;
 	position: absolute;
 	top: 0em;
@@ -8475,7 +8475,7 @@ img.qaCommentStatus {
 .replyTitle {
 	width: 100%;
 	padding: 4px 10px;
-	background: #0b7ba6;
+	background: var(--marlo-brand);
 	color: white;
 	font-size: 13px;
 	font-weight: 600;
@@ -8541,7 +8541,7 @@ img.qaCommentStatus {
 	align-items: center;
 	justify-content: center;
 	margin-left: 3px;
-	background-color: #0b7ba6;
+	background-color: var(--marlo-brand);
 	border-radius: 50%;
 	float: right;
 	place-self: end;
@@ -8595,7 +8595,7 @@ img.qaCommentStatus {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #0b7ba6;
+	background-color: var(--marlo-brand);
 	border-radius: 50%;
 	align-self: center;
 }

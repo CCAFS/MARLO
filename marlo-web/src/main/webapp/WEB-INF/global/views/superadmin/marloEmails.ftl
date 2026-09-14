@@ -4,8 +4,8 @@
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/emails.js?20260910" ] /]
 [#assign customCSS = [ 
-  "${baseUrlCdn}/global/css/superadmin/superadmin.css",
-  "${baseUrlCdn}/global/css/superadmin/marloEmails.css?20260910"
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914",
+  "${baseUrlCdn}/global/css/superadmin/marloEmails.css?20260914"
   ] 
 /]
 [#assign currentSection = "superadmin" /]

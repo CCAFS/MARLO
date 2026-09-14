@@ -2,7 +2,7 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
-  "${baseUrlCdn}/global/css/customDataTable.css"
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914"
   ] 
 /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]

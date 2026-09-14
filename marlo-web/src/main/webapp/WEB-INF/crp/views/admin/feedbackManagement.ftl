@@ -8,7 +8,7 @@
  ] /]
 [#assign customCSS = [
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css",
-  "${baseUrlMedia}/css/admin/feedbackManagement.css?20260831"
+  "${baseUrlMedia}/css/admin/feedbackManagement.css?20260914"
  ] /]
 [#import "/WEB-INF/crp/macros/feedbackFieldRelationsMacro.ftl" as fieldRelations /]
 [#assign currentSection = "admin" /]

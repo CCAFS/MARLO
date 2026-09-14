@@ -64,7 +64,7 @@
 .tool {cursor: pointer;padding: 20%;text-align: center;font-size: 1.6em;width: 100%;padding-top: 40%;}
 
 .tool:hover {
-    color: #2ba6cb;
+    color: var(--marlo-brand-light);
 }
 
 #fullscreen {
@@ -1390,7 +1390,7 @@ div#impactGraphic-fullscreen {
 }
 
 .iconSearch {
-    background: #0b7ba6;
+    background: var(--marlo-brand);
     height: 30px;
     width: 40px;
     position: absolute;

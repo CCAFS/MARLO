@@ -4,7 +4,7 @@
 [#assign pageLibs = ["trumbowyg"] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloSLOs.js",  "${baseUrlCdn}/global/js/fieldsValidation.js"
  ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "marloMessages" /]
 

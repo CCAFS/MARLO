@@ -7,8 +7,8 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/deliverable/projectDeliverable.css?20240314"
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914",
+  "${baseUrlMedia}/css/deliverable/projectDeliverable.css?20260914"
   ] 
   /]
 [#assign currentSection = "monitoring" /]

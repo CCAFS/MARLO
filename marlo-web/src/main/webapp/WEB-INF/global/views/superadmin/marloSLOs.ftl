@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloSLOs.js" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "slos" /]
 

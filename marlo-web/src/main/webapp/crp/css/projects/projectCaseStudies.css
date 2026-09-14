@@ -55,7 +55,7 @@ table#projectHighlights {
   }
   
   .iconSearch{
-    background: #0b7ba6;
+    background: var(--marlo-brand);
     height: 30px;
     width: 40px;
     position: absolute;

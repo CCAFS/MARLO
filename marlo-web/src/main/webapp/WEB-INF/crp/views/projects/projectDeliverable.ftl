@@ -13,8 +13,8 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
-  "${baseUrlCdn}/global/css/404.css?20240523"
+  "${baseUrl}/crp/css/projects/projectDeliverable.css?20260914",
+  "${baseUrlCdn}/global/css/404.css?20260914"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]

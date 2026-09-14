@@ -11,7 +11,7 @@
 /] 
 [#assign customCSS = [
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-  "${baseUrlMedia}/css/projects/projectLocations.css?20230106" ] /]
+  "${baseUrlMedia}/css/projects/projectLocations.css?20260914" ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "locations" /]
 [#assign hideJustification = true /]

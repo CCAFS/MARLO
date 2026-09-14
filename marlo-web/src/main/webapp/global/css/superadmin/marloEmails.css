@@ -31,7 +31,7 @@
 }
 
 .emailsOnTrack .emails-search-wrap .emails-search-icon {
-  background: #0b7ba6;
+  background: var(--marlo-brand);
   height: 30px;
   width: 40px;
   position: absolute;
@@ -55,8 +55,8 @@
 }
 
 .emailsOnTrack table#marloEmailsTable.dataTable > thead > tr > th {
-  border-bottom: 2px solid #0b7ba6;
-  color: #0b7ba6;
+  border-bottom: 2px solid var(--marlo-brand);
+  color: var(--marlo-brand);
   font-size: 13px;
   padding: 6px 25px 6px 8px;
   vertical-align: middle;

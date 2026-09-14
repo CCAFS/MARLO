@@ -36,7 +36,7 @@ body .WOS_tag p{
   justify-content: center;
 }
 .fair .achieved {
-  background-color: #8ea786;
+  background-color: var(--marlo-brand);
   color: white;
 }
 
@@ -286,7 +286,7 @@ p.noChecked {
 }
 
 .fairCompliant.achieved .sign {
-  background: #8ea786;
+  background: var(--marlo-brand);
 }
 
 .fairCompliant.not-achieved .sign {
@@ -640,7 +640,7 @@ form#CCAFS_deliverableList {
   display: inline-block;
   width: 25px;
   height: 25px;
-  background-color: #0b7ba6;
+  background-color: var(--marlo-brand);
   border-radius: 5px;
   text-align: center;
   margin-right: 10px;
@@ -656,7 +656,7 @@ form#CCAFS_deliverableList {
 }
 
 .extended-simple-version {
-  color: #0b7ba6;
+  color: var(--marlo-brand);
   cursor: pointer;
   font-size: 12px;
   float: right;
@@ -791,7 +791,7 @@ div#ccDimension-capacity {
 }
 
 .iconSearch{
-    background: #0b7ba6;
+    background: var(--marlo-brand);
     height: 30px;
     width: 40px;
     position: absolute;

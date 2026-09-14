@@ -245,7 +245,7 @@ p.contributioRem {
   font-style: italic;
 }
 .addOtherTargetUnit a{
-  color: #8ea786;
+  color: var(--marlo-brand);
 }
 
 .buttonSubIdo-content {
@@ -332,7 +332,7 @@ p.contributioRem {
   }
 
 .iconSearch{
-    background: #0b7ba6;
+    background: var(--marlo-brand);
     height: 30px;
     width: 40px;
     position: absolute;

@@ -4,8 +4,8 @@
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/publications/publicationsList.js" ] /]
 [#assign customCSS = [
-  "${baseUrlCdn}/global/css/customDataTable.css", 
-  "${baseUrlMedia}/css/projects/projectDeliverable.css"
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914", 
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20260914"
   ] 
 /]
 [#assign currentSection = "additionalReporting" /]

@@ -155,7 +155,7 @@ a#opener {
   }
   
   .iconSearch{
-      background: #0b7ba6;
+      background: var(--marlo-brand);
       height: 30px;
       width: 40px;
       position: absolute;
@@ -174,7 +174,7 @@ a#opener {
   background-color: #f5f2f2 !important;
 }
 .color-bg_top_table {
-  background-color: #2BA6CB !important;
+  background-color: var(--marlo-brand-light) !important;
   color: #ffffff;
 }
 

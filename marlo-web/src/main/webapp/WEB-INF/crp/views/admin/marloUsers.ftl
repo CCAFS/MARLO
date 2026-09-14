@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/marloUsers.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js" ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "guestUsers" /]
 

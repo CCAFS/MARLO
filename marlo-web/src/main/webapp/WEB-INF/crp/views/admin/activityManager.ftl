@@ -11,7 +11,7 @@
   ] 
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/admin/relationsModalTables.css?20260828",
+  "${baseUrlMedia}/css/admin/relationsModalTables.css?20260914",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ] 
 /]

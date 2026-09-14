@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title][@s.text name="privatePage.title" /][/#assign]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/privatePage.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/privatePage.css?20260914" ] /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]

@@ -9,7 +9,7 @@
   "${baseUrlMedia}/js/impactPathway/centerOutcome.js" ]
 /]
 [#assign customCSS = [
-  "${baseUrlCdn}/global/css/customDataTable.css",
+  "${baseUrlCdn}/global/css/customDataTable.css?20260914",
   "${baseUrlMedia}/css/impactPathway/outcomeList.css"] 
 /]
 [#assign currentSection = "impactPathway" /]

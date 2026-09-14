@@ -1,6 +1,6 @@
 [#ftl]
 [#assign title][@s.text name="server.error.500.title" /][/#assign]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/500.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/500.css?20260914" ] /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]

@@ -20,7 +20,7 @@ error
 
 [#assign sectionsForChecking = [] /]
 
-<link rel="stylesheet" href="${baseUrlCdn}/global/css/impactGraphic.css" />
+<link rel="stylesheet" href="${baseUrlCdn}/global/css/impactGraphic.css?20260914" />
 
 
 <nav id="secondaryMenu" class="">

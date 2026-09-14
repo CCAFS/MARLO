@@ -4,7 +4,7 @@
 [#assign pageLibs = [ "trumbowyg"] /]
 [#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/tipManagement.js?20240305",  "${baseUrlCdn}/global/js/fieldsValidation.js"
  ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css", "${baseUrlCdn}/global/css/superadmin/tipManagement.css" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914", "${baseUrlCdn}/global/css/superadmin/tipManagement.css" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "tipManagement" /]
 

@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs"] /]
 [#assign customJS = ["${baseUrlMedia}/js/monitoring/projects/projectsList.js?20230323" ] /]
-[#assign customCSS = ["${baseUrlCdn}/global/css/customDataTable.css"] /]
+[#assign customCSS = ["${baseUrlCdn}/global/css/customDataTable.css?20260914"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = (filterBy)!"all" /]
 

@@ -131,7 +131,7 @@ p.contributioRem {
   font-style: italic;
 }
 .addOtherTargetUnit a{
-  color: #8ea786;
+  color: var(--marlo-brand);
 }
 
 .buttonSubIdo-content {
