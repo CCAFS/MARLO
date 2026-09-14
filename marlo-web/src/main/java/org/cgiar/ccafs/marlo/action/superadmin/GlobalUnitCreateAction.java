@@ -17,12 +17,16 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitCreationManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -46,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -63,6 +68,11 @@ public class GlobalUnitCreateAction extends BaseAction {
   private static final String USER_DIR_PROPERTY = "user.dir";
   private static final String LOGO_FOLDER = "marlo-web/src/main/webapp/global/images/crps";
   private static final String LOGOS_RELATIVE_PATH = "globalUnits" + File.separator + "logos" + File.separator;
+
+  // A CSS hex colour: #rgb, #rgba, #rrggbb or #rrggbbaa. Mirrors BaseAction.HEX_COLOR_PATTERN, which guards the same
+  // value on the way out; this one guards it on the way in, so a bad value never reaches the database.
+  private static final Pattern THEME_COLOR_PATTERN =
+    Pattern.compile("^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$");
   private static final String GLOBAL_PROPERTIES_SOURCE = "marlo-web/src/main/resources/global.properties";
   private static final String CUSTOM_PROPERTIES_FOLDER = "marlo-web/src/main/resources/custom";
   private static final boolean ENABLE_CUSTOM_PROPERTIES_FILE_CREATION = false;
@@ -72,6 +82,8 @@ public class GlobalUnitCreateAction extends BaseAction {
   private final GlobalUnitTypeManager globalUnitTypeManager;
   private final InstitutionManager institutionManager;
   private final GlobalUnitCreationManager globalUnitCreationManager;
+  private final CustomParameterManager customParameterManager;
+  private final ParameterManager parameterManager;
   private final GlobalUnitCreateValidator validator;
 
   private List<GlobalUnit> globalUnits;
@@ -101,13 +113,16 @@ public class GlobalUnitCreateAction extends BaseAction {
   @Inject
   public GlobalUnitCreateAction(APConfig config, GlobalUnitManager globalUnitManager,
     GlobalUnitTypeManager globalUnitTypeManager, InstitutionManager institutionManager,
-    GlobalUnitCreationManager globalUnitCreationManager, GlobalUnitCreateValidator validator) {
+    GlobalUnitCreationManager globalUnitCreationManager, GlobalUnitCreateValidator validator,
+    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
     super(config);
     this.globalUnitManager = globalUnitManager;
     this.globalUnitTypeManager = globalUnitTypeManager;
     this.institutionManager = institutionManager;
     this.globalUnitCreationManager = globalUnitCreationManager;
     this.validator = validator;
+    this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
   }
 
   public String getAcronym() {
@@ -198,6 +213,7 @@ public class GlobalUnitCreateAction extends BaseAction {
       .filter(institution -> institution != null && institution.getId() != null).collect(Collectors.toList());
     this.loadCrpAdminTeams();
     this.loadExistingLogoAcronyms();
+    this.loadThemeColors();
 
     if (templateGlobalUnitId == null || templateGlobalUnitId.longValue() <= 0L) {
       templateGlobalUnitId = Long.valueOf(this.resolveTemplateGlobalUnitId());
@@ -629,6 +645,113 @@ public class GlobalUnitCreateAction extends BaseAction {
   }
 
   /**
+   * Fills the transient themeColor of every listed Global Unit from its crp_theme_color custom parameter, so the
+   * colour picker opens on the colour that is actually in force. A unit with no parameter row keeps a null colour,
+   * which the view renders as the MARLO default.
+   */
+  private void loadThemeColors() {
+    if (globalUnits == null) {
+      return;
+    }
+
+    for (GlobalUnit globalUnit : globalUnits) {
+      if (globalUnit == null || globalUnit.getId() == null) {
+        continue;
+      }
+      try {
+        CustomParameter stored = customParameterManager
+          .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_THEME_COLOR, globalUnit.getId());
+        if (stored != null && stored.isActive()) {
+          globalUnit.setThemeColor(stored.getValue());
+        }
+      } catch (Exception e) {
+        LOG.warn("Could not read the theme colour of global unit {}, so it is shown as unset", globalUnit.getId(), e);
+      }
+    }
+  }
+
+  /**
+   * Writes the submitted colour into the crp_theme_color custom parameter of this Global Unit.
+   * A blank colour removes the row rather than storing an empty value, so "no colour" is one state and not two.
+   * The value is validated here because it ends up inside a style sheet: anything that is not a hex colour is
+   * refused and the stored value is left untouched.
+   */
+  private void saveThemeColor(GlobalUnit globalUnit, String submittedColor) {
+    if (globalUnit == null || globalUnit.getId() == null || globalUnit.getGlobalUnitType() == null
+      || globalUnit.getGlobalUnitType().getId() == null) {
+      return;
+    }
+
+    String color = StringUtils.trimToEmpty(submittedColor);
+    if (StringUtils.isNotBlank(color) && !THEME_COLOR_PATTERN.matcher(color).matches()) {
+      LOG.warn("The theme colour {} of global unit {} is not a hex colour, so it is not saved", color,
+        globalUnit.getId());
+      this.addActionError(this.getText("globalUnitManagement.themeColor.invalid", new String[] {color}));
+      return;
+    }
+
+    CustomParameter stored = null;
+    try {
+      stored = customParameterManager.getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_THEME_COLOR,
+        globalUnit.getId());
+    } catch (Exception e) {
+      LOG.debug("Global unit {} has no theme colour stored yet", globalUnit.getId(), e);
+    }
+
+    if (StringUtils.isBlank(color)) {
+      if (stored != null && stored.getId() != null) {
+        customParameterManager.deleteCustomParameter(stored.getId());
+      }
+      this.forgetThemeColorInSession(globalUnit);
+      return;
+    }
+
+    if (stored == null) {
+      Parameter parameter =
+        parameterManager.getParameterByKey(APConstants.CRP_THEME_COLOR, globalUnit.getGlobalUnitType().getId());
+      if (parameter == null) {
+        // The crp_theme_color parameter is seeded per Global Unit type by migration; a type without it cannot be
+        // themed, which is a configuration gap rather than a user error.
+        LOG.warn("There is no crp_theme_color parameter for global unit type {}, so the colour is not saved",
+          globalUnit.getGlobalUnitType().getId());
+        return;
+      }
+      stored = new CustomParameter();
+      stored.setCrp(globalUnit);
+      stored.setParameter(parameter);
+    }
+
+    stored.setValue(color);
+    customParameterManager.saveCustomParameter(stored);
+    this.rememberThemeColorInSession(globalUnit, color);
+  }
+
+  /**
+   * Keeps the session of the editing superadmin in step when they recolour the Global Unit they are logged into.
+   * Other users keep the previous colour until they log in again -- custom parameters only reach a session at login
+   * or on a global unit switch.
+   */
+  private void rememberThemeColorInSession(GlobalUnit globalUnit, String color) {
+    if (this.getSession() == null) {
+      return;
+    }
+    Long currentGlobalUnitId = this.resolveCurrentGlobalUnitId();
+    if (currentGlobalUnitId != null && currentGlobalUnitId.equals(globalUnit.getId())) {
+      this.getSession().put(APConstants.CRP_THEME_COLOR, color);
+    }
+  }
+
+  private void forgetThemeColorInSession(GlobalUnit globalUnit) {
+    if (this.getSession() == null) {
+      return;
+    }
+    Long currentGlobalUnitId = this.resolveCurrentGlobalUnitId();
+    if (currentGlobalUnitId != null && currentGlobalUnitId.equals(globalUnit.getId())) {
+      this.getSession().remove(APConstants.CRP_THEME_COLOR);
+    }
+  }
+
+  /**
    * Clears the cached Global Unit list used by the superadmin top bar so soft-deleted or newly created
    * units are reflected without requiring a full logout.
    */
@@ -770,6 +893,7 @@ public class GlobalUnitCreateAction extends BaseAction {
 
     globalUnitManager.saveGlobalUnit(toSave);
     this.syncCrpAdminTeam(toSave, item.getCrpAdminTeam(), globalUnitIndex);
+    this.saveThemeColor(toSave, item.getThemeColor());
   }
 
   private void createManagementGlobalUnit(GlobalUnit item, String itemName, String itemAcronym,
@@ -792,6 +916,9 @@ public class GlobalUnitCreateAction extends BaseAction {
 
     GlobalUnit createdGlobalUnit = globalUnitCreationManager.createGlobalUnit(request);
     this.copyInternationalizationFileIfNeeded(createdGlobalUnit);
+    // A colour picked while creating the unit has to be carried over here too: this branch returns before
+    // saveManagementItem() reaches its own saveThemeColor() call.
+    this.saveThemeColor(createdGlobalUnit, item.getThemeColor());
   }
 
   private String resolveCustomFileName(String sourceAcronym) {

@@ -1,0 +1,30 @@
+/* Global Unit brand colour picker. The swatch sits inline with the hex field so the colour and its value read as
+   one control rather than two. Kept out of superadmin.css, which fourteen other views share. */
+.theme-color-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.theme-color-controls .theme-color-swatch {
+  width: 44px;
+  height: 34px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  flex: none;
+}
+
+.theme-color-controls .theme-color-input {
+  width: 140px;
+  flex: none;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.theme-color-contrast {
+  margin-top: 4px;
+  font-size: 12px;
+}

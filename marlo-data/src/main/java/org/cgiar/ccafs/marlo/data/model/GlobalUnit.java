@@ -97,6 +97,8 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
   // Variables add for Crp Class
   private boolean hasRegions; // Used by CrpAdminManagmentAction
 
+  private String themeColor; // Used by GlobalUnitCreateAction; backed by the crp_theme_color parameter
+
 
   private List<UserRole> programManagmenTeam; // Used by CrpAdminManagmentAction
 
@@ -335,6 +337,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return this.globalUnitType.getId().intValue() == 1 || this.globalUnitType.getId().intValue() == 3;
   }
 
+  public String getThemeColor() {
+    return themeColor;
+  }
+
   public boolean isHasRegions() {
     return hasRegions;
   }
@@ -446,6 +452,10 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   public void setHasRegions(boolean hasRegions) {
     this.hasRegions = hasRegions;
+  }
+
+  public void setThemeColor(String themeColor) {
+    this.themeColor = themeColor;
   }
 
   public void setInstitution(Institution institution) {

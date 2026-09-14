@@ -4,9 +4,9 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js",
-  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260814a"
+  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260914"
 ] /]
-[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260723b" ] /]
+[#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914", "${baseUrlCdn}/global/css/superadmin/globalUnitManagement.css?20260914" ] /]
 [#assign currentSection = "superadmin" /]
 [#assign currentStage = "globalUnitManagement" /]
 
@@ -113,6 +113,9 @@
   <span id="msg-gu-crpAdminDuplicate">[@s.text name="globalUnitManagement.crpAdminTeam.duplicate" /]</span>
   <span id="msg-gu-validationRequired">[@s.text name="globalUnitManagement.validation.requiredFields" /]</span>
   <span id="msg-gu-institutionPlaceholder">[@s.text name="globalUnitManagement.institution.placeholder" /]</span>
+  <span id="msg-gu-themeColorInvalid">[@s.text name="globalUnitManagement.themeColor.invalid"][@s.param]{0}[/@s.param][/@s.text]</span>
+  <span id="msg-gu-themeColorLowContrast">[@s.text name="globalUnitManagement.themeColor.lowContrast"][@s.param]{0}[/@s.param][/@s.text]</span>
+  <span id="msg-gu-themeColorGoodContrast">[@s.text name="globalUnitManagement.themeColor.goodContrast"][@s.param]{0}[/@s.param][/@s.text]</span>
 </div>
 
 <ul style="display:none">
@@ -195,6 +198,28 @@
               <img class="logo-preview-img" src="" alt="" style="max-height:48px; margin-top:4px; display:block;" />
             </div>
           [/#if]
+        </div>
+      </div>
+
+      [#-- Brand colour. The text input is the bound field and the only thing submitted, because it can be empty
+           ("use the MARLO default"); <input type="color"> has no empty state and would submit #000000 for it.
+           The swatch is a view over that field, synced both ways by globalUnitManagement.js. --]
+      [#assign themeColor = (element.themeColor)!'' /]
+      <div class="row">
+        <div class="col-md-12 form-group theme-color-field">
+          <label>[@s.text name="globalUnitManagement.themeColor" /]</label>
+          <div class="theme-color-controls">
+            <input class="theme-color-swatch" type="color" aria-label="[@s.text name="globalUnitManagement.themeColor.pick" /]"
+              value="${themeColor?has_content?then(themeColor, '#0277a2')}" />
+            <input class="form-control theme-color-input" type="text" maxlength="9"
+              name="globalUnits[${index}].themeColor" value="${themeColor}"
+              placeholder="[@s.text name="globalUnitManagement.themeColor.placeholder" /]" />
+            <button type="button" class="btn btn-default btn-sm theme-color-clear">
+              [@s.text name="globalUnitManagement.themeColor.useDefault" /]
+            </button>
+          </div>
+          <small class="help-block theme-color-help">[@s.text name="globalUnitManagement.themeColor.help" /]</small>
+          <div class="theme-color-contrast" aria-live="polite" style="display:none;"></div>
         </div>
       </div>
 

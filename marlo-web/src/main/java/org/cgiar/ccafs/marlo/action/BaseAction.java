@@ -190,6 +190,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private static final long serialVersionUID = -740360140511380630L;
 
+  // A CSS hex colour: #rgb, #rgba, #rrggbb or #rrggbbaa. Anything a superadmin types that does not match this is
+  // refused rather than written into a style sheet.
+  private static final Pattern HEX_COLOR_PATTERN =
+    Pattern.compile("^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$");
+
   // Identifiers of the deliverable metadata elements read when detecting duplicated deliverables.
   protected static final long HANDLE_METADATA_ELEMENT_ID = 35L;
   protected static final long DOI_METADATA_ELEMENT_ID = 36L;
@@ -2923,6 +2928,32 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       }
     }
     return this.crpSession;
+  }
+
+  /**
+   * Gets the brand colour this Global Unit configured in the crp_theme_color parameter, ready to be written into a
+   * style sheet.
+   * The value reaches the session from custom_parameters and is typed by a superadmin, so it is never interpolated
+   * as given: only a three, four, six or eight digit hex colour is returned, and anything else is treated as absent.
+   * Absent is the normal case -- the chrome then keeps the --marlo-brand default declared in marlo-redesign.css.
+   *
+   * @return the configured hex colour including the leading '#', or null when none is configured or the value is not
+   *         a hex colour
+   */
+  public String getCrpThemeColor() {
+    String themeColor = this.getSessionValue(APConstants.CRP_THEME_COLOR);
+    if (StringUtils.isBlank(themeColor)) {
+      return null;
+    }
+
+    themeColor = StringUtils.trim(themeColor);
+    if (!HEX_COLOR_PATTERN.matcher(themeColor).matches()) {
+      LOG.warn("The theme colour {} is not a hex colour, so the global unit keeps the default brand colour",
+        themeColor);
+      return null;
+    }
+
+    return themeColor;
   }
 
   /**

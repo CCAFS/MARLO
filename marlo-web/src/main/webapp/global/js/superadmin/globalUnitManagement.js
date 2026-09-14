@@ -6,6 +6,7 @@ $(document).ready(function() {
   attachCrpAdminTeamEvents();
   attachRequiredFieldsValidation();
   attachAcronymValidation();
+  attachThemeColorEvents();
   initInstitutionSelect2($(".globalUnits-list"));
   highlightServerValidationErrors();
   addUser = addCrpAdminUser;
@@ -518,4 +519,98 @@ function initInstitutionSelect2($container) {
       width: "100%"
     });
   });
+}
+
+/**
+ * Brand colour control. The text input is the bound field; the swatch and the contrast warning are views over it.
+ * Delegated from the list so rows added after load are covered without re-binding.
+ */
+function attachThemeColorEvents() {
+  const $list = $(".globalUnits-list");
+
+  $list.on("input change", ".theme-color-swatch", function() {
+    const $field = $(this).closest(".theme-color-field");
+    $field.find(".theme-color-input").val($(this).val());
+    updateThemeColorContrast($field);
+  });
+
+  $list.on("input change", ".theme-color-input", function() {
+    const $field = $(this).closest(".theme-color-field");
+    const value = $.trim($(this).val());
+    // The swatch only accepts #rrggbb, so a short or alpha hex leaves it where it was rather than resetting it.
+    if (/^#[0-9a-fA-F]{6}$/.test(value)) {
+      $field.find(".theme-color-swatch").val(value);
+    }
+    updateThemeColorContrast($field);
+  });
+
+  $list.on("click", ".theme-color-clear", function() {
+    const $field = $(this).closest(".theme-color-field");
+    $field.find(".theme-color-input").val("");
+    $field.find(".theme-color-swatch").val(MARLO_DEFAULT_BRAND);
+    updateThemeColorContrast($field);
+  });
+
+  $list.find(".theme-color-field").each(function() {
+    updateThemeColorContrast($(this));
+  });
+}
+
+const MARLO_DEFAULT_BRAND = "#0277a2";
+const CONTRAST_AA_TEXT = 4.5;
+
+/**
+ * The brand colour is the background of the main menu bar, which carries white text, so a colour that does not
+ * contrast with white makes the menu unreadable. This warns but never blocks: the judgement stays with the admin.
+ */
+function updateThemeColorContrast($field) {
+  const $message = $field.find(".theme-color-contrast");
+  const value = $.trim($field.find(".theme-color-input").val());
+
+  if (!value) {
+    $message.hide().empty();
+    return;
+  }
+
+  if (!/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value)) {
+    $message.removeClass("text-warning").addClass("text-danger")
+      .text(guMsg("msg-gu-themeColorInvalid")).show();
+    return;
+  }
+
+  const ratio = contrastWithWhite(value);
+  if (ratio === null) {
+    $message.hide().empty();
+    return;
+  }
+
+  if (ratio < CONTRAST_AA_TEXT) {
+    $message.removeClass("text-danger").addClass("text-warning")
+      .text(guMsg("msg-gu-themeColorLowContrast", [ratio.toFixed(2)])).show();
+  } else {
+    $message.removeClass("text-danger text-warning").addClass("text-muted")
+      .text(guMsg("msg-gu-themeColorGoodContrast", [ratio.toFixed(2)])).show();
+  }
+}
+
+/** WCAG 2.1 relative luminance, then the contrast ratio against white. Returns null for an alpha hex. */
+function contrastWithWhite(hex) {
+  let value = hex.replace("#", "");
+  if (value.length === 4 || value.length === 8) {
+    return null;
+  }
+  if (value.length === 3) {
+    value = value.split("").map(function(c) { return c + c; }).join("");
+  }
+  if (value.length !== 6) {
+    return null;
+  }
+
+  const channels = [0, 2, 4].map(function(i) {
+    const channel = parseInt(value.substr(i, 2), 16) / 255;
+    return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+  });
+
+  const luminance = 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+  return 1.05 / (luminance + 0.05);
 }
