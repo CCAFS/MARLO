@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091417",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091418",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091417",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091418",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -88,8 +88,6 @@
         data-rmyear-detail-many="[@s.text name="outcomes.matrix.removeYear.detail.many"/]"
         data-rmyear-cancel="[@s.text name="outcomes.matrix.removeYear.cancel"/]"
         data-rmyear-confirm="[@s.text name="outcomes.matrix.removeYear.confirm"/]"
-        data-rmyear-undo="[@s.text name="outcomes.matrix.removeYear.undo"/]"
-        data-rmyear-undo-action="[@s.text name="outcomes.matrix.removeYear.undo.action"/]"
         data-q-one="[@s.text name="outcomes.questions.count.one"/]"
         data-q-many="[@s.text name="outcomes.questions.count.many"/]"
         data-collapse-all="[@s.text name="outcomes.collapseAll"/]"

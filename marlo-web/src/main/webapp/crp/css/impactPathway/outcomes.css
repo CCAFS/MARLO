@@ -1202,35 +1202,6 @@ span.icon-20 {
 
 .opi-page .opi-card__body .opi-rmYear__confirm:hover { filter: brightness(1.08); }
 
-.opi-undoBar {
-  margin-top: 8px;
-  padding: 7px 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--opi-surface-head);
-  border: 1px solid var(--opi-border);
-  border-radius: 8px;
-  font: 400 12.5px Figtree, sans-serif;
-  color: var(--opi-ink-soft);
-}
-
-.opi-undoBar__text { flex: 1; min-width: 0; }
-
-.opi-page .opi-card__body .opi-undoBar__action {
-  flex: none;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--opi-border-strong);
-  border-radius: 7px;
-  background: var(--opi-surface);
-  font: 600 12.5px Figtree, sans-serif;
-  color: var(--opi-primary);
-  cursor: pointer;
-}
-
-.opi-page .opi-card__body .opi-undoBar__action:hover { border-color: var(--opi-primary); }
-
 /* ---------- Add a target year (block head button + its menu) ---------- */
 
 /* The button sits on the legend's line, so the row's baseline alignment would
