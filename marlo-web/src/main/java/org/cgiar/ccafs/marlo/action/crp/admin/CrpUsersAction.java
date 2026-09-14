@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -68,6 +69,13 @@ import org.slf4j.LoggerFactory;
 public class CrpUsersAction extends BaseAction {
 
   private static final long serialVersionUID = 4072844056573550689L;
+
+  /**
+   * Role acronyms kept out of the users screen: no tab, no table and no badge in the Roles column.
+   * The match is by acronym, not by id, because the roles table holds one row per role and Global Unit,
+   * so a single entry here covers every Global Unit.
+   */
+  private static final List<String> HIDDEN_ROLE_ACRONYMS = Arrays.asList("SL");
 
   /**
    * Helper method to read a stream into memory.
@@ -444,6 +452,19 @@ public class CrpUsersAction extends BaseAction {
   }
 
   /**
+   * Tells whether a role must be hidden from the users screen.
+   * 
+   * @param role the role to evaluate
+   * @return true when the role acronym is listed in HIDDEN_ROLE_ACRONYMS
+   */
+  private boolean isHiddenRole(Role role) {
+    if (role == null || role.getAcronym() == null) {
+      return false;
+    }
+    return HIDDEN_ROLE_ACRONYMS.stream().anyMatch(acronym -> acronym.equalsIgnoreCase(role.getAcronym()));
+  }
+
+  /**
    * @param userAssigned is the user been assigned
    * @param role is the role(Guest)
    */
@@ -520,7 +541,8 @@ public class CrpUsersAction extends BaseAction {
 
     this.rolesCrp = roleManager
       .findAll().stream().filter(c -> !c.getUserRoles().isEmpty()
-        && c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getId().longValue() != 17)
+        && c.getCrp().getId().longValue() == this.getCrpID().longValue() && c.getId().longValue() != 17
+        && !this.isHiddenRole(c))
       .collect(Collectors.toList());
     rolesCrp.sort((p1, p2) -> p1.getOrder().compareTo(p2.getOrder()));
     for (Role role : rolesCrp) {

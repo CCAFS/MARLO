@@ -109,7 +109,7 @@ public interface ActivityDAO {
    * This method validate if the activity identify with the given id exists in the system.
    * 
    * @param projectID is a project/cluster identifier.
-   * @return a list from Activity null if no exist records
+   * @return the ongoing activities of the project in the phase, empty when it has none.
    */
   public List<Activity> getActivitiesByProject(long projectId, long phaseId);
 

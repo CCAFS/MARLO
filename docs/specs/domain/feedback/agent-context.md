@@ -239,11 +239,11 @@ Constants live in **both** `APConstants.java` files. `BaseAction.feedbackModule(
     field on every `getCommentStatus.do` request, purely to test non-emptiness. The guard is redundant with
     the `try/catch` inside it. The primary path (`getFeedbackQACommentsByPhaseAndParentId`) already returns
     an empty list, so the `catch` fallbacks are not hit routinely.
-8. **Dead code that looks live.** `DeliverableListAction.getCommentStatusesOld` / `getCommentStatusesOld2`
-    (no callers; only `getCommentStatuses` at line 218 runs), `FeedbackQACommentableFieldsMySQLDAO
-    .findBySectionName` and `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its
-    missing `frp` alias was fixed, but nothing calls it). The `*Old()` capability methods of `BaseAction` were
-    on this list until they were removed on 2026-09-04.
+8. **Dead code that looks live.** `FeedbackQACommentableFieldsMySQLDAO.findBySectionName` and
+    `FeedbackRolesPermissionMySQLDAO.findObjectsByRoleIdsAndPermissionName` (its missing `frp` alias was
+    fixed, but nothing calls it). Two entries left this list once they were removed: the `*Old()` capability
+    methods of `BaseAction` on 2026-09-04, and `DeliverableListAction.getCommentStatusesOld` /
+    `getCommentStatusesOld2` on 2026-09-10 — `getCommentStatuses` is now the only one of that family.
 9. **Configured sections do not match the enum.** Verified against `aiccradb1` on 2026-08-26, global unit 45
     has 91 active fields across `innovation` (34), `study` (22), `deliverable` (20), `projectContributionCrp`
     (13), `contributionsCrpList` (1) and `test` (1). **`test` is not a `ProjectSectionsEnum` value**, so field

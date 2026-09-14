@@ -162,7 +162,8 @@ public class FeedbackQACommentsAction extends BaseAction {
                 replyMap.put("status", "");
               }
 
-              if (reply.getUser() != null) {
+              if (reply.getUser() != null && reply.getUser().getFirstName() != null
+                && reply.getUser().getLastName() != null) {
                 replyMap.put("userName", reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
               } else {
                 replyMap.put("userName", "");
@@ -177,7 +178,7 @@ public class FeedbackQACommentsAction extends BaseAction {
               replyMap.put("approvalUserName",
                 (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
                   && reply.getUserApproval().getLastName() != null)
-                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+                    ? reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName() : "");
               if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
                 String dateString = reply.getApprovalDate().toString();
                 fieldsMap.put("approvalDate", dateString);
@@ -400,7 +401,7 @@ public class FeedbackQACommentsAction extends BaseAction {
               replyMap.put("approvalUserName",
                 (reply.getUserApproval() != null && reply.getUserApproval().getFirstName() != null
                   && reply.getUserApproval().getLastName() != null)
-                    ? reply.getUserApproval().getUsername() + " " + reply.getUserApproval().getLastName() : "");
+                    ? reply.getUserApproval().getFirstName() + " " + reply.getUserApproval().getLastName() : "");
               if (reply.getApprovalDate() != null && reply.getApprovalDate().toString() != null) {
                 String dateString = reply.getApprovalDate().toString();
                 fieldsMap.put("approvalDate", dateString);
@@ -467,12 +468,12 @@ public class FeedbackQACommentsAction extends BaseAction {
               if (reply.getUser() != null && reply.getUser().getFirstName() != null
                 && reply.getUser().getLastName() != null) {
                 fieldsMap.put("userName_reply",
-                  comment.getUser().getFirstName() + " " + comment.getUser().getLastName());
+                  reply.getUser().getFirstName() + " " + reply.getUser().getLastName());
               } else {
                 fieldsMap.put("userName_reply", "");
               }
-              if (reply.getCommentDate() != null && comment.getCommentDate().toString() != null) {
-                String dateString = comment.getCommentDate().toString();
+              if (reply.getCommentDate() != null && reply.getCommentDate().toString() != null) {
+                String dateString = reply.getCommentDate().toString();
                 fieldsMap.put("date_reply", dateString);
               } else {
                 fieldsMap.put("date_reply", "");
@@ -494,6 +495,34 @@ public class FeedbackQACommentsAction extends BaseAction {
     return comments;
   }
 
+  /**
+   * Parses a numeric request parameter, returning null instead of throwing when it is absent or not a number.
+   * <p>
+   * Every caller's field is already treated as optional by {@code execute()}, which requires
+   * {@code parentId} and {@code phaseId} to be non-null before it reads any comment, so a null here makes the
+   * action return an empty comment list rather than fail. Before this, a non-numeric value in the query
+   * string raised {@code NumberFormatException} out of {@code prepare()}, above any handler.
+   * <p>
+   * The rejected value is deliberately not logged: it is unvalidated request input, and echoing it into a log
+   * line is how CR/LF log injection gets in. The parameter name is enough to locate the caller.
+   *
+   * @param value the raw parameter value
+   * @param parameterName the parameter's name, for the log line
+   * @return the parsed id, or null when the value is blank or not a number
+   */
+  private Long parseId(String value, String parameterName) {
+    String trimmed = StringUtils.trim(value);
+    if (StringUtils.isBlank(trimmed)) {
+      return null;
+    }
+    try {
+      return Long.valueOf(trimmed);
+    } catch (NumberFormatException e) {
+      logger.warn("Ignoring non-numeric value for request parameter {}", parameterName);
+      return null;
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
@@ -503,8 +532,8 @@ public class FeedbackQACommentsAction extends BaseAction {
      * }
      */
     if (parameters.get(APConstants.PARENT_REQUEST_ID).isDefined()) {
-      parentId = Long.parseLong(
-        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0])));
+      parentId = this.parseId(parameters.get(APConstants.PARENT_REQUEST_ID).getMultipleValues()[0],
+        APConstants.PARENT_REQUEST_ID);
     }
     if (parameters.get(APConstants.SECTION_REQUEST_NAME).isDefined()) {
       sectionName =
@@ -515,12 +544,11 @@ public class FeedbackQACommentsAction extends BaseAction {
         StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FRONT_REQUEST_NAME).getMultipleValues()[0]));
     }
     if (parameters.get(APConstants.PHASE_ID).isDefined()) {
-      phaseId =
-        Long.parseLong(StringUtils.trim(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])));
+      phaseId = this.parseId(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0], APConstants.PHASE_ID);
     }
     if (parameters.get(APConstants.FIELD_REQUEST_ID).isDefined()) {
-      fieldId = Long.parseLong(
-        StringUtils.trim(StringUtils.trim(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0])));
+      fieldId = this.parseId(parameters.get(APConstants.FIELD_REQUEST_ID).getMultipleValues()[0],
+        APConstants.FIELD_REQUEST_ID);
     }
   }
 
