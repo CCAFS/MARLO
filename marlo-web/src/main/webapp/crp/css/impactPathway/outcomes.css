@@ -1110,6 +1110,105 @@ span.icon-20 {
   color: var(--opi-muted);
 }
 
+/* Period targets stacks its head: the label on its own line, then the hint on the
+   left with the legend and the add-year button grouped on the right, all on one
+   centred line. */
+.opi-block__head--stacked { flex-direction: column; align-items: stretch; gap: 6px; }
+.opi-block__meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.opi-block__meta .opi-block__hint { flex: 1; min-width: 0; }
+.opi-block__tools { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+/* The legend keeps its own margin-left: auto for the heads it still shares a line with. */
+.opi-block__tools .opi-block__legend { margin-left: 0; }
+
+/* ---------- Add a target year (block head button + its menu) ---------- */
+
+/* The button sits on the legend's line, so the row's baseline alignment would
+   hang it by its text; the menu anchors to this wrapper. */
+.opi-addYearWrap { position: relative; align-self: center; display: inline-flex; }
+
+.opi-addYear.is-open { border-style: solid; border-color: var(--opi-primary); color: var(--opi-primary); }
+
+.opi-yearMenu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  z-index: 40;
+  width: 276px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  background: var(--opi-surface);
+  border: 1px solid var(--opi-border-strong);
+  border-radius: 11px;
+  box-shadow: 0 14px 34px rgba(31, 42, 55, .18);
+}
+
+.opi-yearMenu__head { padding: 2px 6px 8px; display: flex; flex-direction: column; gap: 2px; }
+.opi-yearMenu__title { font: 600 13.5px Figtree, sans-serif; color: var(--opi-ink); }
+.opi-yearMenu__range { font: 400 12px Figtree, sans-serif; color: var(--opi-muted); }
+
+.opi-page .opi-card__body .opi-yearMenu__option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-yearMenu__option:hover:not([disabled]) { background: var(--opi-info-bg); }
+
+/* A year that already has a column stays in the list, greyed and ticked, so the
+   menu says why it is not on offer. */
+.opi-page .opi-card__body .opi-yearMenu__option[disabled] { background: var(--opi-surface-head); cursor: default; }
+.opi-yearMenu__option[disabled] .opi-yearMenu__year { color: var(--opi-ink-soft); }
+
+.opi-yearMenu__year { flex: none; width: 42px; font: 600 13.5px Figtree, sans-serif; color: var(--opi-ink); }
+.opi-yearMenu__note { flex: 1; min-width: 0; font: 400 12px Figtree, sans-serif; color: var(--opi-ink-soft); }
+/* A year past the closing year is still addable, but it is worth a second look. */
+.opi-yearMenu__note.is-after { color: var(--opi-warn); }
+.opi-yearMenu__note.is-taken { color: var(--opi-muted); }
+
+.opi-yearMenu__check { flex: none; display: inline-flex; color: #8B939F; }
+
+.opi-yearMenu__sep { display: block; height: 1px; margin: 6px 4px; background: var(--opi-border-soft); }
+
+.opi-yearMenu__custom-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 0 4px 2px; }
+
+.opi-page .opi-card__body input.opi-yearMenu__custom {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--opi-border-strong);
+  border-radius: 7px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--opi-ink);
+}
+
+.opi-page .opi-card__body .opi-yearMenu__add {
+  flex: none;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  font: 600 13px Figtree, sans-serif;
+  color: #fff;
+  background: var(--opi-primary);
+  cursor: pointer;
+}
+
+.opi-page .opi-card__body .opi-yearMenu__add[disabled] { background: #A6BCC8; cursor: not-allowed; }
+
+.opi-yearMenu__customNote { flex-basis: 100%; font: 400 11.5px Figtree, sans-serif; color: var(--opi-required); }
+.opi-yearMenu__customNote:empty { display: none; }
+
 .opi-legendSwatch {
   width: 9px; height: 9px;
   border-radius: 2px;
@@ -1236,7 +1335,7 @@ span.icon-20 {
 .opi-dis__row.is-principal .opi-dis__stmtInput { font-weight: 600; }
 .opi-dis__unit { padding: 5px 8px; }
 .opi-dis__rule { padding: 5px 8px; }
-.opi-page .opi-dis__ruleSelect { cursor: not-allowed; }
+.opi-page .opi-dis__ruleSelect[disabled] { cursor: not-allowed; }
 .opi-dis__actions { padding: 5px 4px; display: flex; justify-content: center; }
 
 .opi-dis__delete,
@@ -1300,8 +1399,6 @@ span.icon-20 {
   letter-spacing: .05em;
   color: #fff;
 }
-
-.opi-matrix__addcol { padding: 7px 8px; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--opi-border); }
 
 .opi-matrix__row { display: grid; border-top: 1px solid var(--opi-border-soft); background: #fff; }
 .opi-matrix__row.is-principal { background: #FAFCFD; }
@@ -1378,9 +1475,6 @@ span.icon-20 {
   min-height: 14px;
 }
 
-.opi-cell__read { font: 500 13px Figtree, sans-serif; color: var(--opi-ink); text-align: right; }
-.opi-cell__readStatus { font: 400 11.5px Figtree, sans-serif; color: var(--opi-muted); text-align: right; }
-
 .opi-cell.is-empty { align-items: center; justify-content: center; }
 
 .opi-cell__create {
@@ -1397,8 +1491,6 @@ span.icon-20 {
 
 .opi-cell__create:hover { border-color: var(--opi-primary); color: var(--opi-primary); }
 .opi-cell__dash { color: #C3CBD5; }
-
-.opi-matrix__tail { border-left: 1px solid var(--opi-border-soft); }
 
 .opi-matrix__leftovers { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 
@@ -1810,6 +1902,11 @@ span.icon-20 {
   .opi-saveBar__state { flex: 1 1 100%; }
   .opi-saveBar__detail { flex: 1 1 100%; }
   .opi-page .opi-saveBar #lastUpdateMessage { flex: 1 1 100%; }
+
+  /* Period targets head: the hint takes the line to itself so the legend and the
+     add-year button wrap onto the next one, still grouped on the right. Without
+     a full basis the hint just shrinks and the three stay crammed on one line. */
+  .opi-block__meta .opi-block__hint { flex: 1 1 100%; }
 }
 
 /* global.css hangs a 27x27 unit chip off every .input wrapper holding a
@@ -1884,6 +1981,23 @@ span.icon-20 {
 .opi-page .opi-card__body .opi-cell.is-na input.opi-cell__value { cursor: not-allowed; }
 .opi-cell.is-na .opi-cell__affix { visibility: hidden; }
 .opi-cell.is-missing .opi-cell__valueWrap { border-color: var(--opi-warn-field); }
+
+/* A cell the user cannot edit keeps the same box, disabled, rather than
+   collapsing into plain text - that is what keeps the unit affix and the hint
+   on screen. Browsers grey a disabled control out; the value is still the point
+   of the cell, so its ink is restored. */
+.opi-cell.is-readonly .opi-cell__valueWrap { background: #F5F7FA; border-color: var(--opi-border); }
+.opi-page .opi-card__body .opi-cell.is-readonly input.opi-cell__value {
+  opacity: 1;
+  cursor: default;
+  color: var(--opi-ink);
+  -webkit-text-fill-color: var(--opi-ink);
+}
+.opi-page .opi-cell.is-readonly .opi-cell__extYear {
+  opacity: 1;
+  cursor: default;
+  -webkit-text-fill-color: var(--opi-ink-soft);
+}
 
 .opi-card__meta { text-transform: none; }
 

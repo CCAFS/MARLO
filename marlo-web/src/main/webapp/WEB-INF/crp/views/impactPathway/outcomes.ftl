@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?202609045",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091413",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?202609048",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091413",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -71,6 +71,16 @@
         data-summary-missing-one="[@s.text name="outcomes.summary.missing.one"/]"
         data-summary-missing-many="[@s.text name="outcomes.summary.missing.many"/]"
         data-required-label="[@s.text name="outcomes.matrix.required"/]"
+        data-now-label="[@s.text name="outcomes.matrix.now"/]"
+        data-year-title="[@s.text name="outcomes.matrix.addYear.title"/]"
+        data-year-range="[@s.text name="outcomes.matrix.addYear.range"/]"
+        data-year-range-unset="[@s.text name="outcomes.matrix.addYear.range.unset"/]"
+        data-year-now="[@s.text name="outcomes.matrix.addYear.reason.now"/]"
+        data-year-after="[@s.text name="outcomes.matrix.addYear.reason.after"/]"
+        data-year-within="[@s.text name="outcomes.matrix.addYear.reason.within"/]"
+        data-year-taken="[@s.text name="outcomes.matrix.addYear.reason.taken"/]"
+        data-year-other="[@s.text name="outcomes.matrix.addYear.other"/]"
+        data-year-add="[@s.text name="outcomes.matrix.addYear.confirm"/]"
         data-q-one="[@s.text name="outcomes.questions.count.one"/]"
         data-q-many="[@s.text name="outcomes.questions.count.many"/]"
         data-collapse-all="[@s.text name="outcomes.collapseAll"/]"
@@ -280,7 +290,6 @@
   [#local hasDis = (rowStmts?size > 1) || storedYes /]
   [#local gridCols = "minmax(260px,1fr)" /]
   [#list yearCols as y][#local gridCols = gridCols + " 132px" /][/#list]
-  [#local gridCols = gridCols + " 88px" /]
 
   <div id="outcome-${isTemplate?string('template', index)}" class="outcome opi-card form-group" style="display:${isTemplate?string('none','block')}">
 
@@ -452,13 +461,18 @@
                     [/#if]
                   </select>
                 </span>
-                [#-- Business rule: in the design but with no table behind it yet, so it is
-                     read-only and unnamed — nothing is submitted or silently lost. --]
+                [#-- Business rule: pickable, and outcomes.js mirrors it into the row's
+                     caption, but there is still no table behind it. The select stays
+                     unnamed so nothing reaches the save chain, which also means the
+                     choice does not survive a reload — the title says so. --]
                 <span class="opi-dis__rule">
-                  <select class="opi-plain opi-dis__ruleSelect" disabled
+                  <select class="opi-plain opi-dis__ruleSelect"[#if !editable] disabled[/#if]
                     title="[@s.text name="outcomes.disaggregations.rule.pending"/]"
                     aria-label="[@s.text name="outcomes.disaggregations.rule"/]">
-                    <option>[@s.text name="outcomes.disaggregations.rule.none"/]</option>
+                    <option value="none">[@s.text name="outcomes.disaggregations.rule.none"/]</option>
+                    <option value="capdev">[@s.text name="outcomes.disaggregations.rule.capdev"/]</option>
+                    <option value="specific">[@s.text name="outcomes.disaggregations.rule.specific"/]</option>
+                    <option value="actors">[@s.text name="outcomes.disaggregations.rule.actors"/]</option>
                   </select>
                 </span>
                 <span class="opi-dis__actions">
@@ -481,10 +495,23 @@
 
         [#-- =================== Period targets (year matrix) =================== --]
         <div class="opi-block opi-matrix-block">
-          <div class="opi-block__head">
+          [#-- Two lines: the label owns the first one, and the hint, the legend and
+               the add-year button share a second one. --]
+          <div class="opi-block__head opi-block__head--stacked">
             <span class="opi-block__label">[@s.text name="outcome.milestone.sectionTitle"/]</span>
-            <span class="opi-block__hint">[@s.text name="outcomes.matrix.hint"/]</span>
-            <span class="opi-block__legend"><span class="opi-legendSwatch"></span>[@s.text name="outcomes.matrix.missingLegend"/]</span>
+            <div class="opi-block__meta">
+              <span class="opi-block__hint">[@s.text name="outcomes.matrix.hint"/]</span>
+              <span class="opi-block__tools">
+                <span class="opi-block__legend"><span class="opi-legendSwatch"></span>[@s.text name="outcomes.matrix.missingLegend"/]</span>
+                [#if editable]
+                  [#-- The menu itself is built by outcomes.js: its options depend on the
+                       baseline / closing year selects above, which the user can still change. --]
+                  <span class="opi-addYearWrap">
+                    <button type="button" class="opi-addYear opi-dashedBtn opi-dashedBtn--sm" aria-haspopup="dialog" aria-expanded="false">+ [@s.text name="outcomes.matrix.addYear"/]</button>
+                  </span>
+                [/#if]
+              </span>
+            </div>
           </div>
           <div class="opi-matrix mz">
             <div class="opi-matrix__scroll">
@@ -496,9 +523,6 @@
                     [#if y == nowYear]<span class="opi-matrix__now">[@s.text name="outcomes.matrix.now"/]</span>[/#if]
                   </span>
                 [/#list]
-                <span class="opi-matrix__addcol">
-                  [#if editable]<button type="button" class="opi-addYear opi-dashedBtn opi-dashedBtn--sm">+ [@s.text name="outcomes.matrix.addYear"/]</button>[/#if]
-                </span>
               </div>
               [#local placed = [] /]
               <div class="milestones-list opi-matrix__rows" listname="${outcomeCustomName}.milestones">
@@ -531,7 +555,6 @@
                       </span>
                     [/#if]
                   [/#list]
-                  <span class="opi-matrix__tail"></span>
                 </div>
               [/#list]
               </div>
@@ -683,7 +706,8 @@
   [/#if]
   [#local cellStatus = (milestone.milestonesStatus.id)!-1 /]
   [#local showExt = ((milestone.extendedYear?has_content) && (milestone.extendedYear != -1) && milestone.extendedYear != milestone.year) || (cellStatus == 4) /]
-  <span [#if isTemplate]id="opiCell-template"[/#if] class="milestone opi-cell" data-opi-year="${(milestone.year)!''}" [#if isTemplate]style="display:none"[/#if]>
+  [#local cellReadOnly = !(cellEditable || isTemplate) /]
+  <span [#if isTemplate]id="opiCell-template"[/#if] class="milestone opi-cell[#if cellReadOnly] is-readonly[/#if]" data-opi-year="${(milestone.year)!''}" [#if isTemplate]style="display:none"[/#if]>
     <input type="hidden" class="mileStoneId" name="${cellName}.id" value="${(milestone.id)!}"/>
     <input type="hidden" class="mileStoneComposeId" name="${cellName}.composeID" value="${(milestone.composeID)!}"/>
     [#if cellEditable || isTemplate]
@@ -721,8 +745,24 @@
            without a status NPEs OutcomeValidator.validateMilestone. --]
       <input type="hidden" name="${cellName}.milestonesStatus.id" value="${(milestone.milestonesStatus.id?c)!-1}"/>
       <input type="hidden" name="${cellName}.extendedYear" value="${(milestone.extendedYear?c)!-1}"/>
-      <span class="opi-cell__read">[#if (milestone.value)?has_content]${milestone.value}[#else]&mdash;[/#if]</span>
-      <span class="opi-cell__readStatus">${(milestone.milestonesStatus.name)!}</span>
+      [#-- The value keeps the editable cell's own box, only disabled, instead of
+           collapsing into plain text: that is what keeps .opi-cell__affix (the unit)
+           and .opi-cell__hint (n/a, or the percentage resolved against the principal
+           row) on screen, and both are information the reader needs. A disabled
+           control is never submitted, so the hidden inputs above stay the ones that
+           travel; this field is unnamed on purpose. --]
+      <span class="opi-cell__valueWrap">
+        <span class="opi-cell__affix" aria-hidden="true"></span>
+        <input type="text" class="opi-cell__value" value="${(milestone.value)!}" aria-label="${rowStmt} ${(milestone.year)!''}" disabled/>
+      </span>
+      [#if showExt]
+        [#-- Same reason: an extended target year is only shown on the editable cell,
+             so a locked one used to drop it silently. --]
+        <select class="opi-plain opi-cell__extYear" aria-label="[@s.text name="outcome.milestone.inputNewTargetYear"/]" disabled>
+          <option>${(milestone.extendedYear?c)!''}</option>
+        </select>
+      [/#if]
+      <span class="opi-cell__hint" data-opi-hint></span>
     [/#if]
   </span>
 [/#macro]

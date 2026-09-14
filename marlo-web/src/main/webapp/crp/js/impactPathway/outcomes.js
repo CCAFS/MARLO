@@ -15,7 +15,8 @@ function init() {
   $('.outcomes-list select').not('.opi-plain, .opi-select').select2();
 
   /* Numeric Inputs */
-  $('input.targetValue , input.targetYear').numericInput();
+  $('input.targetValue , input.targetYear').not('.opi-cell__value').numericInput();
+  opiBindCellNumeric($('input.opi-cell__value'));
 
   // Baseline value is optional and nullable, so it stays out of numericInput():
   // that helper rewrites an empty field to 0, which would store a real 0 for an
@@ -777,6 +778,10 @@ $(document).ready(function() {
   opiDecorateCheckButton();
   opiGroupSaveBar();
   opiDecorateSaveButton();
+  // The unit affix, the cell hint and the row's code / unit caption are read-only
+  // information, so they are painted before the editable-only wiring: a locked
+  // page renders the same cells and must not lose them.
+  opiPaintMatrix();
   if (!opiIsEditable()) {
     return;
   }
@@ -784,13 +789,6 @@ $(document).ready(function() {
   opiRefreshAllStatuses();
   opiDecorateSidebar();
   $('.opi-q').each(function() { opiRefreshQuestions($(this).closest('.outcome')); });
-  $('.opi-matrix__row .opi-cell__value').each(function() { opiRefreshCell($(this)); });
-  $('.opi-dis__row').each(function() {
-    var $card = $(this).closest('.outcome');
-    var $mRow = opiMatrixRow($card, $(this).attr('data-opi-row'));
-    $mRow.find('[data-opi-rowsub]').text($(this).find('.opi-dis__unitSelect option:selected').text() || '');
-    $mRow.find('[data-opi-rowcode]').text($(this).find('.opi-dis__codeInput').val() || ' ');
-  });
   $('.outcomes-list > .outcome').each(function() { opiRecodeRows($(this)); });
 
   var $page = $('.opi-page');
@@ -885,16 +883,63 @@ $(document).ready(function() {
     opiAfterDisChange($card);
   });
 
+  // ---- business rule: caption only, so it does not mark the form dirty ----
+  $page.on('change', '.opi-dis__ruleSelect', function() {
+    var $dis = $(this).closest('.opi-dis__row');
+    var $mRow = opiMatrixRow($dis.closest('.outcome'), $dis.attr('data-opi-row'));
+    $mRow.find('[data-opi-rowsub]').text(opiRowSubtitle($dis));
+  });
+
   // ---- add a disaggregation row ----
   $page.on('click', '.opi-addDis', function() {
     var $card = $(this).closest('.outcome');
     opiAddDisRow($card);
   });
 
-  // ---- add a year column ----
-  $page.on('click', '.opi-addYear', function() {
+  // ---- add a year column: the button opens the year menu ----
+  $page.on('click', '.opi-addYear', function(e) {
+    e.stopPropagation();
+    var $btn = $(this);
+    var wasOpen = $btn.attr('aria-expanded') === 'true';
+    opiCloseYearMenu();
+    if (!wasOpen) { opiOpenYearMenu($btn); }
+  });
+
+  $page.on('click', '.opi-yearMenu__option:not([disabled])', function() {
     var $card = $(this).closest('.outcome');
-    opiAddYear($card);
+    var year = parseInt($(this).attr('data-opi-year'), 10);
+    opiCloseYearMenu();
+    if (!isNaN(year)) { opiAddYear($card, year); }
+  });
+
+  $page.on('input keyup', '.opi-yearMenu__custom', function() {
+    var digits = String($(this).val() || '').replace(/\D/g, '').slice(0, 4);
+    if (digits !== $(this).val()) { $(this).val(digits); }
+    opiRefreshYearMenuCustom($(this).closest('.opi-yearMenu'));
+  });
+
+  $page.on('keydown', '.opi-yearMenu__custom', function(e) {
+    if (e.which === 13) { e.preventDefault(); $(this).closest('.opi-yearMenu').find('.opi-yearMenu__add').trigger('click'); }
+  });
+
+  $page.on('click', '.opi-yearMenu__add:not([disabled])', function() {
+    var $menu = $(this).closest('.opi-yearMenu');
+    var $card = $menu.closest('.outcome');
+    var year = parseInt($menu.find('.opi-yearMenu__custom').val(), 10);
+    opiCloseYearMenu();
+    if (!isNaN(year)) { opiAddYear($card, year); }
+  });
+
+  // The menu is a popover: anything outside it, or Escape, closes it.
+  $(document).on('mousedown.opiYearMenu', function(e) {
+    if (!$(e.target).closest('.opi-addYearWrap').exists()) { opiCloseYearMenu(); }
+  });
+  $(document).on('keydown.opiYearMenu', function(e) {
+    if (e.which === 27 && $('.opi-yearMenu').exists()) {
+      var $btn = $('.opi-addYear[aria-expanded="true"]');
+      opiCloseYearMenu();
+      $btn.trigger('focus');
+    }
   });
 
   // ---- create the missing milestone behind an empty cell ----
@@ -947,6 +992,35 @@ function opiLabel(key) {
  */
 function opiIsEditable() {
   return String($('#opiI18n').data('editable')) === 'true';
+}
+
+/**
+ * The caption under a matrix row's statement: its unit, plus the business rule
+ * when one is picked. The rule has no table behind it yet, so it only ever comes
+ * from the select on screen.
+ * @param {jQuery} $dis the .opi-dis__row element
+ * @return {string} the caption, e.g. "% \u00b7 Actors (innovations)"
+ */
+function opiRowSubtitle($dis) {
+  var unit = $.trim($dis.find('.opi-dis__unitSelect option:selected').text() || '');
+  var $rule = $dis.find('.opi-dis__ruleSelect');
+  var rule = $rule.val() === 'none' ? '' : $.trim($rule.find('option:selected').text() || '');
+  return unit && rule ? unit + ' \u00b7 ' + rule : (unit || rule);
+}
+
+/**
+ * Paints the purely descriptive part of every matrix: each cell's unit affix and
+ * hint, and each row's code and caption. Writes nothing that is submitted, so it
+ * also runs on a page the user cannot edit.
+ */
+function opiPaintMatrix() {
+  $('.opi-matrix__row .opi-cell__value').each(function() { opiRefreshCell($(this)); });
+  $('.opi-dis__row').each(function() {
+    var $card = $(this).closest('.outcome');
+    var $mRow = opiMatrixRow($card, $(this).attr('data-opi-row'));
+    $mRow.find('[data-opi-rowsub]').text(opiRowSubtitle($(this)));
+    $mRow.find('[data-opi-rowcode]').text($(this).find('.opi-dis__codeInput').val() || ' ');
+  });
 }
 
 /**
@@ -1062,7 +1136,7 @@ function opiSyncRow($card, key) {
   var unit = $dis.find('.opi-dis__unitSelect').val() || '-1';
   $mRow.find('[data-opi-rowstmt]').text(stmt);
   $mRow.find('[data-opi-rowcode]').text(code || ' ');
-  $mRow.find('[data-opi-rowsub]').text($dis.find('.opi-dis__unitSelect option:selected').text() || '');
+  $mRow.find('[data-opi-rowsub]').text(opiRowSubtitle($dis));
   var naUnit = String(unit) === '-1';
   $mRow.find('.opi-cell').each(function() {
     $(this).find('.opi-cell__title').val(stmt);
@@ -1125,37 +1199,201 @@ function opiNewCell($card, key, year) {
   $cell.find('.opi-cell__code').val($dis.find('.opi-dis__codeInput').val() || '');
   $cell.find('.opi-cell__unit').val($dis.find('.opi-dis__unitSelect').val() || '-1');
   $cell.find('.opi-cell__status').val('1'); // New
-  if ($cell.find('input.targetValue').numericInput) {
-    $cell.find('input.targetValue').numericInput();
+  if ($.fn.numericInput) {
+    opiBindCellNumeric($cell.find('input.opi-cell__value'));
   }
   return $cell;
 }
 
 /**
- * Adds a year column: one header cell plus one new milestone per row.
- * @param {jQuery} $card the .outcome card
+ * Binds MARLO's numeric keydown filter to period-target cells without the side
+ * effect that comes with it: numericInput() (global/js/utils.js) rewrites an
+ * empty field to 0, exactly like it would for Baseline value above. On the
+ * matrix that is not cosmetic -- an unfilled target would read as a real 0, so
+ * the amber "Missing value" flag and the "required" hint could never fire, and
+ * the next save would store targets nobody set.
+ * @param {jQuery} $inputs the .opi-cell__value fields to bind
  */
-function opiAddYear($card) {
-  var years = $card.find('.opi-matrix__head [data-opi-yearcol]').map(function() {
+function opiBindCellNumeric($inputs) {
+  var $empty = $inputs.filter(function() { return $.trim($(this).val() || '') === ''; });
+  $inputs.numericInput();
+  $empty.val('');
+}
+
+/**
+ * Reads the year columns a card already shows, in ascending order.
+ * @param {jQuery} $card the .outcome card
+ * @return {Array<number>} the years, ascending
+ */
+function opiYears($card) {
+  return $card.find('.opi-matrix__head [data-opi-yearcol]').map(function() {
     return parseInt($(this).attr('data-opi-yearcol'), 10);
-  }).get().filter(function(y) { return !isNaN(y); });
-  var nowYear = parseInt($('#opiI18n').data('nowYear'), 10);
-  var newYear = years.length ? Math.max.apply(null, years) + 1 : (isNaN(nowYear) ? new Date().getFullYear() : nowYear);
+  }).get().filter(function(y) { return !isNaN(y); }).sort(function(a, b) { return a - b; });
+}
+
+/**
+ * The reporting year of the phase being edited.
+ * @return {number} the year, or the calendar year when the carrier has none
+ */
+function opiNowYear() {
+  var now = parseInt($('#opiI18n').data('nowYear'), 10);
+  return isNaN(now) ? new Date().getFullYear() : now;
+}
+
+/**
+ * Adds a year column: one header cell plus one new milestone per row. The column
+ * is inserted in chronological order, so any year can be added, not only the next
+ * one after the last.
+ * @param {jQuery} $card the .outcome card
+ * @param {number} [year] the year to open; defaults to the one after the last column
+ */
+function opiAddYear($card, year) {
+  var years = opiYears($card);
+  var newYear = parseInt(year, 10);
+  if (isNaN(newYear)) {
+    newYear = years.length ? years[years.length - 1] + 1 : opiNowYear();
+  }
+  if (years.indexOf(newYear) !== -1) { return; }
+
+  // Where the new column lands among the existing ones; the cells of every row
+  // follow the header, so one index drives both.
+  var pos = 0;
+  while (pos < years.length && years[pos] < newYear) { pos++; }
 
   var $head = $card.find('.opi-matrix__head');
+  var $headYears = $head.find('[data-opi-yearcol]');
   var $col = $('<span class="opi-matrix__year" />').attr('data-opi-yearcol', newYear)
     .append($('<span class="opi-matrix__yearLabel" />').text(newYear));
-  $col.insertBefore($head.find('.opi-matrix__addcol'));
+  if (newYear === opiNowYear()) {
+    $col.addClass('is-now').append($('<span class="opi-matrix__now" />').text(opiLabel('nowLabel')));
+  }
+  if (pos < $headYears.length) { $col.insertBefore($headYears.eq(pos)); } else { $head.append($col); }
 
   $card.find('.opi-matrix__row').each(function() {
-    var $cell = opiNewCell($card, $(this).attr('data-opi-row'), newYear);
-    $cell.insertBefore($(this).find('.opi-matrix__tail'));
+    var $row = $(this);
+    var $cell = opiNewCell($card, $row.attr('data-opi-row'), newYear);
+    var $cells = $row.children('.opi-cell');
+    if (pos < $cells.length) { $cell.insertBefore($cells.eq(pos)); } else { $row.append($cell); }
+    // The cell is a clone of the hidden template, so its unit affix and hint are
+    // still blank until the row's unit is copied onto it.
+    opiSyncRow($card, $row.attr('data-opi-row'));
   });
 
   opiApplyGrid($card);
   updateAllIndexes();
   opiRefreshCardStatus($card);
   opiMarkDirty();
+}
+
+/**
+ * Reads one of the card's own year selects. Restricted to .outcomeYear because a
+ * milestone select in the leftovers block is also named "...[i].year".
+ * @param {jQuery} $card the .outcome card
+ * @param {RegExp} nameEnd pattern the select's name must end with
+ * @return {number} the selected year, or NaN when unset
+ */
+function opiCardYear($card, nameEnd) {
+  var value = $card.find('select.outcomeYear').filter(function() {
+    return nameEnd.test($(this).attr('name') || '');
+  }).first().val();
+  var year = parseInt(value, 10);
+  return year > 0 ? year : NaN;
+}
+
+/**
+ * Builds the option list of the add-year menu: the next five reporting years from
+ * the later of the baseline and the reporting year, each with the reason it is in
+ * the list. A year the card already has a column for is listed too, disabled, so
+ * the menu explains why it is not on offer instead of silently leaving a gap.
+ * @param {jQuery} $card the .outcome card
+ * @return {Array<Object>} five {year, note, kind, taken} entries, ascending
+ */
+function opiYearChoices($card) {
+  var years = opiYears($card);
+  var now = opiNowYear();
+  var baseline = opiCardYear($card, /\.startYear$/);
+  var closing = opiCardYear($card, /\]\.year$/);
+  // Nothing before the reporting year can still be planned, and nothing before the
+  // baseline belongs to the programme.
+  var first = isNaN(baseline) ? now : Math.max(baseline, now);
+
+  var choices = [];
+  for (var y = first; choices.length < 5; y++) {
+    var taken = years.indexOf(y) !== -1;
+    var kind = taken ? 'taken' : ((!isNaN(closing) && y > closing) ? 'after' : (y === now ? 'now' : 'within'));
+    choices.push({
+      year: y,
+      kind: kind,
+      taken: taken,
+      note: opiLabel('year' + kind.charAt(0).toUpperCase() + kind.slice(1))
+    });
+  }
+  return choices;
+}
+
+/**
+ * Opens the add-year menu under its button.
+ * @param {jQuery} $btn the .opi-addYear button
+ */
+function opiOpenYearMenu($btn) {
+  var $card = $btn.closest('.outcome');
+  var baseline = opiCardYear($card, /\.startYear$/);
+  var closing = opiCardYear($card, /\]\.year$/);
+  var range = (isNaN(baseline) || isNaN(closing))
+    ? opiLabel('yearRangeUnset')
+    : opiLabel('yearRange').replace('{0}', baseline).replace('{1}', closing);
+
+  var $menu = $('<div class="opi-yearMenu" role="dialog" />').attr('aria-label', opiLabel('yearTitle'));
+  $menu.append($('<div class="opi-yearMenu__head" />')
+    .append($('<span class="opi-yearMenu__title" />').text(opiLabel('yearTitle')))
+    .append($('<span class="opi-yearMenu__range" />').text(range)));
+
+  $.each(opiYearChoices($card), function(i, choice) {
+    var $option = $('<button type="button" class="opi-yearMenu__option" />')
+      .attr('data-opi-year', choice.year)
+      .prop('disabled', choice.taken)
+      .append($('<span class="opi-yearMenu__year" />').text(choice.year))
+      .append($('<span class="opi-yearMenu__note" />').addClass('is-' + choice.kind).text(choice.note));
+    if (choice.taken) {
+      $option.append('<span class="opi-yearMenu__check" aria-hidden="true">'
+        + '<svg width="13" height="13" viewBox="0 0 16 16" fill="none">'
+        + '<path d="M3 8.4 6.2 11.6 13 4.8" stroke="currentColor" stroke-width="1.9" '
+        + 'stroke-linecap="round" stroke-linejoin="round"></path></svg></span>');
+    }
+    $menu.append($option);
+  });
+
+  $menu.append('<span class="opi-yearMenu__sep"></span>');
+  $menu.append($('<div class="opi-yearMenu__custom-row" />')
+    .append($('<input type="text" class="opi-yearMenu__custom" inputmode="numeric" maxlength="4" />')
+      .attr('placeholder', opiLabel('yearOther')).attr('aria-label', opiLabel('yearOther')))
+    .append($('<button type="button" class="opi-yearMenu__add" disabled />').text(opiLabel('yearAdd')))
+    .append($('<span class="opi-yearMenu__customNote" />')));
+
+  $btn.attr('aria-expanded', 'true').addClass('is-open');
+  $btn.closest('.opi-addYearWrap').append($menu);
+  opiRefreshYearMenuCustom($menu);
+}
+
+/**
+ * Closes whichever add-year menu is open.
+ */
+function opiCloseYearMenu() {
+  $('.opi-yearMenu').remove();
+  $('.opi-addYear').attr('aria-expanded', 'false').removeClass('is-open');
+}
+
+/**
+ * Gates the "Other year" Add button: four digits, and not a year the card already
+ * shows a column for.
+ * @param {jQuery} $menu the .opi-yearMenu element
+ */
+function opiRefreshYearMenuCustom($menu) {
+  var raw = String($menu.find('.opi-yearMenu__custom').val() || '');
+  var year = parseInt(raw, 10);
+  var taken = /^\d{4}$/.test(raw) && opiYears($menu.closest('.outcome')).indexOf(year) !== -1;
+  $menu.find('.opi-yearMenu__add').prop('disabled', !/^\d{4}$/.test(raw) || taken);
+  $menu.find('.opi-yearMenu__customNote').text(taken ? opiLabel('yearTaken') : '');
 }
 
 /**
@@ -1255,6 +1493,8 @@ function opiAddDisRow($card) {
   $row.find('.opi-dis__unitSelect')
     .val($pDis.find('.opi-dis__unitSelect').val() || '-1')
     .prop('disabled', false);
+  // The business rule is per row, so the clone must not inherit the principal's.
+  $row.find('.opi-dis__ruleSelect').val('none').prop('disabled', false);
   // The clone carries the principal row's delete control, which outcomes.ftl renders
   // disabled ("cannot be deleted"). A row the user just added is always removable, so
   // replace it outright instead of only filling in a missing one.
@@ -1273,7 +1513,6 @@ function opiAddDisRow($card) {
   $card.find('.opi-matrix__head [data-opi-yearcol]').each(function() {
     $mRow.append(opiNewCell($card, key, $(this).attr('data-opi-yearcol')));
   });
-  $mRow.append('<span class="opi-matrix__tail"></span>');
   $card.find('.opi-matrix__rows').append($mRow);
 
   opiAfterDisChange($card);
@@ -1286,7 +1525,7 @@ function opiAddDisRow($card) {
  */
 function opiApplyGrid($card) {
   var n = $card.find('.opi-matrix__head [data-opi-yearcol]').length;
-  var cols = 'minmax(260px,1fr)' + (n > 0 ? ' repeat(' + n + ',132px)' : '') + ' 88px';
+  var cols = 'minmax(260px,1fr)' + (n > 0 ? ' repeat(' + n + ',132px)' : '');
   $card.find('.opi-matrix__head, .opi-matrix__row').css('grid-template-columns', cols);
 }
 
@@ -1304,6 +1543,9 @@ function opiApplyGrid($card) {
 function opiApplyNotApplicable($cell, na) {
   var $value = $cell.find('.opi-cell__value');
   if (!$value.exists()) { return; }
+  // A locked cell only mirrors what was stored; its value travels in a hidden
+  // input, so parking or clearing the box here would just misreport it.
+  if ($cell.hasClass('is-readonly')) { return; }
 
   if (na) {
     if (!$cell.hasClass('is-na')) {
@@ -1332,7 +1574,10 @@ function opiRefreshCell($value) {
   var $cell = $value.closest('.opi-cell');
   var raw = $.trim($value.val() || '');
   var notApplicable = $cell.hasClass('is-na');
-  $cell.toggleClass('is-missing', raw === '' && !notApplicable);
+  // A locked cell is never flagged: amber and "Required" ask for an edit the
+  // user is not allowed to make.
+  var readOnly = $cell.hasClass('is-readonly');
+  $cell.toggleClass('is-missing', raw === '' && !notApplicable && !readOnly);
 
   var $card = $cell.closest('.outcome');
   var $mRow = $cell.closest('.opi-matrix__row');
@@ -1346,7 +1591,7 @@ function opiRefreshCell($value) {
   if (notApplicable || isNA) {
     hint = 'n/a';
   } else if (raw === '') {
-    hint = opiLabel('requiredLabel');
+    hint = readOnly ? '' : opiLabel('requiredLabel');
   } else if (unitText.indexOf('%') !== -1 && raw !== '' && !$mRow.hasClass('is-principal')) {
     var year = $cell.attr('data-opi-year');
     var baseRaw = $card.find('.opi-matrix__row.is-principal .opi-cell[data-opi-year="' + year + '"] .opi-cell__value').val();
@@ -1356,7 +1601,7 @@ function opiRefreshCell($value) {
       hint = '≈ ' + Math.round(base * pct / 100).toLocaleString('en-US');
     }
   }
-  $hint.text(hint).toggleClass('is-required', raw === '' && !isNA && !notApplicable);
+  $hint.text(hint).toggleClass('is-required', raw === '' && !isNA && !notApplicable && !readOnly);
 }
 
 /**
@@ -1406,7 +1651,8 @@ function opiCountMissing($card) {
     if (value === '' || value === '-1') { missing++; }
   });
   $card.find('.opi-cell__value:visible').each(function() {
-    if ($(this).closest('.opi-cell').hasClass('is-na')) { return; }
+    var $cell = $(this).closest('.opi-cell');
+    if ($cell.hasClass('is-na') || $cell.hasClass('is-readonly')) { return; }
     if ($.trim($(this).val() || '') === '') { missing++; }
   });
   return missing;
