@@ -782,6 +782,7 @@ $(document).ready(function() {
   // information, so they are painted before the editable-only wiring: a locked
   // page renders the same cells and must not lose them.
   opiPaintMatrix();
+  opiRelabelLockedErrors();
   if (!opiIsEditable()) {
     return;
   }
@@ -1189,6 +1190,76 @@ function opiSyncRow($card, key) {
     var $value = $(this).find('.opi-cell__value');
     if ($value.exists()) { opiRefreshCell($value); }
   });
+  opiTagRowForValidation($dis, $mRow);
+}
+
+/**
+ * Re-labels the errors the shared highlighter left on a closed year's cells.
+ *
+ * OutcomeValidator flags every milestone with no value, the ones this phase can no
+ * longer edit included, and its message is a bare "Required Field". On a box the user
+ * cannot type into that reads like a bug, so those cells say where the gap actually
+ * lives instead. The highlight itself stays: the milestone really is incomplete, and
+ * it is already counting towards the section being reported as incomplete.
+ *
+ * Deferred because fieldsValidation.js paints from its own ready handler, registered
+ * after this one -- the classes are not on the page yet when this runs.
+ */
+function opiRelabelLockedErrors() {
+  window.setTimeout(function() {
+    var text = opiLabel('lockedValue');
+    if (!text) { return; }
+    $('.opi-cell.is-readonly .opi-cell__valueWrap.fieldError').attr('title', text);
+  }, 0);
+}
+
+/**
+ * Swaps the field-name classes an element carries for the highlighter.
+ *
+ * fieldsValidation.js decorates a field it cannot reach by its name -- a hidden one,
+ * or one with no label -- by looking for an element whose class is that field name
+ * with the non-word characters stripped. Milestone indexes move with
+ * updateAllIndexes(), so the previous set is recorded and dropped rather than left
+ * to pile up.
+ * @param {jQuery} $el the element standing in for the field
+ * @param {Array<string>} names the field names it should answer to
+ */
+function opiTagValidationKeys($el, names) {
+  if (!$el.exists()) { return; }
+  var previous = $el.attr('data-opi-keys');
+  if (previous) { $el.removeClass(previous); }
+
+  var joined = $.map(names, function(name) {
+    return name ? name.replace(/\W+/g, '') : null;
+  }).join(' ');
+
+  if (joined) {
+    $el.attr('data-opi-keys', joined).addClass(joined);
+  } else {
+    $el.removeAttr('data-opi-keys');
+  }
+}
+
+/**
+ * Makes one matrix row's validation errors land on something the user can see.
+ *
+ * OutcomeValidator reports against the milestone behind each cell, and neither of the
+ * two fields it flags can be decorated on its own: the statement is a hidden input in
+ * the matrix, and the value has no label. So the row's statement box answers for every
+ * "...milestones[j].title" of the row, and each cell's value box for its own
+ * "...milestones[j].value".
+ * @param {jQuery} $dis the .opi-dis__row element
+ * @param {jQuery} $mRow the matching .opi-matrix__row element
+ */
+function opiTagRowForValidation($dis, $mRow) {
+  var titles = [];
+  $mRow.children('.opi-cell').each(function() {
+    var $cell = $(this);
+    titles.push($cell.find('input[name$=".title"]').attr('name'));
+    opiTagValidationKeys($cell.find('.opi-cell__valueWrap'),
+      [$cell.find('input[name$=".value"]').attr('name')]);
+  });
+  opiTagValidationKeys($dis.find('.opi-dis__stmtInput'), titles);
 }
 
 /**

@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091423",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091426",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091423",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091426",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -71,6 +71,7 @@
         data-summary-missing-one="[@s.text name="outcomes.summary.missing.one"/]"
         data-summary-missing-many="[@s.text name="outcomes.summary.missing.many"/]"
         data-required-label="[@s.text name="outcomes.matrix.required"/]"
+        data-locked-value="[@s.text name="outcomes.matrix.lockedValue"/]"
         data-now-label="[@s.text name="outcomes.matrix.now"/]"
         data-year-title="[@s.text name="outcomes.matrix.addYear.title"/]"
         data-year-range="[@s.text name="outcomes.matrix.addYear.range"/]"
@@ -96,6 +97,22 @@
         data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"
         data-dis-clear-confirm="[@s.text name="outcomes.disaggregations.clear.confirm"/]"
         data-dis-clear-blocked="[@s.text name="outcomes.disaggregations.clear.blocked"/]"></span>
+
+      [#-- Carrier for the shared field highlighter.
+
+           fieldsValidation.js paints a missing field by reading <li id="message">
+           entries of the form "input-<field name>: <message>". generalMessages.ftl is
+           what used to render them, but its actionMessages iterator is commented out,
+           so nothing feeds the highlighter anywhere in MARLO. They are rendered here
+           instead, scoped to this section.
+
+           Two deliberate choices: this list sits outside #generalMessages, because
+           global.js looks for the same ids in there to raise its notification banner;
+           and it does not carry the "messages" class, which global.js also keys on.
+           The messages survive the save redirect through keepRedirectMessages. --]
+      <ul class="opi-validationMessages" style="display:none">
+        [@s.iterator value="actionMessages"]<li id="message">[@s.property /]</li>[/@s.iterator]
+      </ul>
 
       [#-- How this section works --]
       <div class="opi-help" id="opiHelp">
