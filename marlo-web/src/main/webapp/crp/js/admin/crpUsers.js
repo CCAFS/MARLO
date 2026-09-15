@@ -173,9 +173,11 @@ var guestUsersModule =
       var $submitButton = $('button[name="save"]');
       var $cognitoAuthActive = $('#cognitoAuthActive');
       var $directoryUnconfirmed = $('#directoryUnconfirmed');
+      var $usernameExistingMessage = $('#usernameExistingMessage');
       var timer = null;
       var userHasAccess = false;
       var directoryFound = false;
+      var usernameTaken = false;
 
       function init() {
         events();
@@ -218,6 +220,7 @@ var guestUsersModule =
                 $message.hide();
                 userHasAccess = false;
                 directoryFound = false;
+                usernameTaken = false;
               },
               success: function(data) {
                 console.log(data);
@@ -254,6 +257,13 @@ var guestUsersModule =
             },
             success: function(data) {
               directoryFound = (data && data.found === true);
+              // The directory knows this person by a login another MARLO account already holds, so creating
+              // them would break on username_UNIQUE and lose the whole submission. Say it while the address
+              // is being typed rather than letting the save be what finds out.
+              usernameTaken = (data && data.usernameTaken === true);
+              if(usernameTaken) {
+                $message.text($usernameExistingMessage.val()).fadeIn();
+              }
             },
             complete: function(data) {
               validateForm();
@@ -271,7 +281,7 @@ var guestUsersModule =
 
         $userEmail.removeClass('input-loading');
 
-        if(!userHasAccess) {
+        if(!userHasAccess && !usernameTaken) {
           if(validateCGIAR()) {
             isValid = true;
           } else {

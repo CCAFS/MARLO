@@ -145,6 +145,87 @@ public class CrpUsersActionDirectoryTest {
   }
 
   /**
+   * The directory resolved the person, but the login it returned is already held by another account.
+   * {@code users.username} is unique (Users.hbm.xml:19), so writing it would fail the INSERT and take the
+   * whole request down as an HTTP 500 -- no account, no e-mail, no role, and nothing on screen. The
+   * creation must be refused before {@code saveUser}, and the refusal must be reported where the screen
+   * can render it.
+   */
+  @Test
+  public void aTakenDirectoryLoginIsRefusedBeforeTheInsert() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.FOUND);
+    this.directoryService
+      .setResponse(DirectoryPerson.found(EMAIL, "JSmith", "Jane", "Smith", DirectorySource.LDAP));
+    User owner = new User();
+    owner.setEmail("jane.smith@cgiar.org");
+    owner.setUsername("jsmith");
+    this.userManager.usernameOwner = owner;
+
+    User formUser = new User();
+    formUser.setEmail(EMAIL);
+    this.action.setUser(formUser);
+
+    String result = this.action.save();
+
+    assertEquals(Action.INPUT, result);
+    assertNull("a taken login must never reach userManager.saveUser", this.userManager.lastSavedUser);
+    assertEquals("the refusal must reach the screen through invalidFields, the only channel it renders",
+      "manageUsers.username.existing", this.action.getInvalidFields().get("input-user.email"));
+    assertNull("the name fields must not be marked invalid: the names are not what is wrong",
+      this.action.getInvalidFields().get("input-user.firstName"));
+  }
+
+  /**
+   * One save asks the directory once. {@code validate()} already performs the lookup that decides whether
+   * the names are required, and {@code save()} used to repeat it on a second connection -- two answers for
+   * one submission, free to disagree and decide different branches.
+   */
+  @Test
+  public void oneSaveReachesTheDirectoryOnce() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.FOUND);
+    this.directoryService
+      .setResponse(DirectoryPerson.found(EMAIL, "JSmith", "Jane", "Smith", DirectorySource.LDAP));
+
+    User formUser = new User();
+    formUser.setEmail(EMAIL);
+    this.action.setUser(formUser);
+    this.action.setSave(true);
+
+    this.action.validate();
+    this.action.save();
+
+    assertEquals("validate() and save() must share one answer", 1, this.directoryService.getInvocationCount());
+    assertEquals("jsmith", this.userManager.lastSavedUser.getUsername());
+  }
+
+  /**
+   * The reuse is keyed on the address. An answer resolved for a different email must never decide this
+   * creation's branch, so {@code save()} asks again rather than trusting what validate() happens to hold.
+   */
+  @Test
+  public void anAnswerForAnotherEmailIsNotReused() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.FOUND);
+    this.directoryService.setResponse(
+      DirectoryPerson.found("someone.else@cgiar.org", "JSmith", "Jane", "Smith", DirectorySource.LDAP));
+
+    User validated = new User();
+    validated.setEmail("someone.else@cgiar.org");
+    this.action.setUser(validated);
+    this.action.setSave(true);
+    this.action.validate();
+
+    User formUser = new User();
+    formUser.setEmail(EMAIL);
+    this.action.setUser(formUser);
+
+    this.action.save();
+
+    assertEquals("a cached answer for another address must not be reused", 2,
+      this.directoryService.getInvocationCount());
+    assertEquals(EMAIL, this.directoryService.getLastEmailReceived());
+  }
+
+  /**
    * FN-006 *CrpUsersAction*, non-resolving branch: unchanged when the person is not found — both
    * {@code firstName}/{@code lastName} come from the form, a 6-digit numeric password is generated, and
    * {@code setCgiarUser(false)} is applied.
@@ -521,6 +602,13 @@ public class CrpUsersActionDirectoryTest {
 
     private long nextId = 1;
 
+    /**
+     * The account that already holds a given directory login, or {@code null} when it is free. Both
+     * creation paths consult this before writing {@code users.username}, which is unique, so a fake that
+     * refused to answer would make every "the directory found them" test fail.
+     */
+    private User usernameOwner;
+
     private User lastSavedUser;
 
     @Override
@@ -545,7 +633,7 @@ public class CrpUsersActionDirectoryTest {
 
     @Override
     public User getUserByUsername(String username) {
-      throw new UnsupportedOperationException("not used in this test");
+      return this.usernameOwner;
     }
 
     @Override

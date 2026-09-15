@@ -111,6 +111,34 @@ public class ManageUsersActionDirectoryTest {
   }
 
   /**
+   * The directory resolved the person, but the login it returned already belongs to another account.
+   * {@code users.username} is unique (Users.hbm.xml:19), so {@code addUser()} would fail the INSERT and the
+   * dialog would report it as a bad email address. The creation must be refused with its own message, and
+   * no save may be attempted.
+   */
+  @Test
+  public void aTakenDirectoryLoginIsRefusedWithoutCreatingAnything() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.FOUND);
+    this.directoryService
+      .setResponse(DirectoryPerson.found(EMAIL, "JSmith", "Jane", "Smith", DirectorySource.LDAP));
+    User owner = new User();
+    owner.setEmail("jane.smith@cgiar.org");
+    owner.setUsername("jsmith");
+    this.userManager.usernameOwner = owner;
+
+    User newUser = new User();
+    newUser.setEmail(EMAIL);
+    inject(this.action, "newUser", newUser);
+
+    String result = this.action.create();
+
+    assertEquals(ManageUsersAction.SUCCESS, result);
+    assertEquals("a taken login must never reach userManager.saveUser", 0, this.userManager.saveUserCallCount);
+    assertEquals(this.action.getText("manageUsers.username.existing"), this.action.getMessage());
+    assertNull("nothing may be echoed back to the dialog as a created user", this.action.getUsers());
+  }
+
+  /**
    * FN-006 *json/global/ManageUsersAction*: the non-resolving branch's trim-and-length validation on
    * {@code firstName}/{@code lastName} must not change. Whitespace-only names fail
    * {@code trim().length() > 0}, so {@code addUser()} must never run and the
@@ -354,6 +382,13 @@ public class ManageUsersActionDirectoryTest {
 
     private long nextId = 1;
 
+    /**
+     * The account that already holds a given directory login, or {@code null} when it is free. Both
+     * creation paths consult this before writing {@code users.username}, which is unique, so a fake that
+     * refused to answer would make every "the directory found them" test fail.
+     */
+    private User usernameOwner;
+
     private int saveUserCallCount;
 
     private boolean simulateSaveFailure;
@@ -380,7 +415,7 @@ public class ManageUsersActionDirectoryTest {
 
     @Override
     public User getUserByUsername(String username) {
-      throw new UnsupportedOperationException("not used in this test");
+      return this.usernameOwner;
     }
 
     @Override

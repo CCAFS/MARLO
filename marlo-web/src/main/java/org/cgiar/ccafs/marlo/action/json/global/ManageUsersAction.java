@@ -199,6 +199,22 @@ public class ManageUsersAction extends BaseAction {
         // Get the user if it is a CGIAR email.
         DirectoryPerson person = this.directoryService.findByEmail(newUser.getEmail());
 
+        // `users.username` is unique (Users.hbm.xml:19 -- username_UNIQUE) and the branch below writes the
+        // directory's login into it unchecked. The directory answers ONE login for every corporate alias a
+        // person holds, so the second address of someone who already has an account arrived here with a login
+        // another row carried: the INSERT violated the index and the exception left this action as an HTTP
+        // 500, which the dialog reports as "check that the email address is correct" -- about an address that
+        // is perfectly correct. Refuse the same way an already-registered email is refused above.
+        if (person.isFound() && person.getLogin() != null
+          && this.userManager.getUserByUsername(person.getLogin().toLowerCase()) != null) {
+          LOG.warn("The user {} was not created: the directory login {} already belongs to another account.",
+            newUser.getEmail(), person.getLogin().toLowerCase());
+          message = this.getText("manageUsers.username.existing");
+          newUser = null;
+          showInputs = false;
+          return SUCCESS; // Stop here!
+        }
+
         if (person.isFound()) {
           newUser.setFirstName(person.getFirstName());
           newUser.setLastName(person.getLastName());

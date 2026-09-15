@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -73,6 +74,8 @@ public class DirectoryByEmailAction extends BaseAction {
 
   private final DirectoryService directoryService;
 
+  private final UserManager userManager;
+
   private String userEmail;
 
   // The whole response. Declared as the result's `root` so the JSON carries these keys and nothing else --
@@ -80,9 +83,10 @@ public class DirectoryByEmailAction extends BaseAction {
   private Map<String, Object> directory;
 
   @Inject
-  public DirectoryByEmailAction(APConfig config, DirectoryService directoryService) {
+  public DirectoryByEmailAction(APConfig config, DirectoryService directoryService, UserManager userManager) {
     super(config);
     this.directoryService = directoryService;
+    this.userManager = userManager;
   }
 
   @Override
@@ -110,6 +114,13 @@ public class DirectoryByEmailAction extends BaseAction {
     this.directory.put("lastName", person.getLastName());
     if (person.getLogin() != null) {
       this.directory.put("username", person.getLogin().toLowerCase());
+      // Whether that login already belongs to a MARLO account. It is the one thing about this person the
+      // browser cannot work out for itself, and it decides the creation: writing a duplicate login violates
+      // username_UNIQUE and fails the whole save. Answering it here lets the screen say so while the
+      // administrator is still typing. No account of any kind is disclosed -- only that the login is taken --
+      // and this endpoint already passed the session, CRP-administrator and corporate-domain guards above.
+      this.directory.put("usernameTaken",
+        this.userManager.getUserByUsername(person.getLogin().toLowerCase()) != null);
     }
 
     return SUCCESS;

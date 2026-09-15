@@ -124,6 +124,13 @@ public class CrpUsersAction extends BaseAction {
   private List<Role> rolesCrp;
   private final DirectoryService directoryService;
 
+  /**
+   * The directory's answer for the email being created, as {@code validate()} already resolved it. Null when
+   * validation did not run, which is why {@link #resolveDirectoryPerson(String)} still falls back to the
+   * service instead of assuming this is populated.
+   */
+  private DirectoryPerson validatedDirectoryPerson;
+
   private final CustomParameterManager customParameterManager;
 
   private final ParameterManager parameterManager;
@@ -665,6 +672,25 @@ public class CrpUsersAction extends BaseAction {
     users.addAll(userSet);
   }
 
+  /**
+   * Returns the directory's answer for {@code email}, reusing the one {@code validate()} already obtained
+   * when it is for this same address, and asking the directory otherwise.
+   * <p>
+   * The reuse is what makes one save perform one lookup. The fallback is not defensive decoration: nothing
+   * guarantees validation ran before this method -- and the two addresses are compared rather than assumed
+   * equal, because a cached answer for a different email would silently decide the wrong branch.
+   *
+   * @param email the address being created
+   * @return the directory's answer, never {@code null}
+   */
+  private DirectoryPerson resolveDirectoryPerson(String email) {
+    if (this.validatedDirectoryPerson != null && email != null
+      && email.equalsIgnoreCase(this.validatedDirectoryPerson.getEmail())) {
+      return this.validatedDirectoryPerson;
+    }
+    return this.directoryService.findByEmail(email);
+  }
+
   @Override
   public String save() {
     int error = 0;
@@ -695,7 +721,28 @@ public class CrpUsersAction extends BaseAction {
             newUser.setActive(true);
 
             // Get the user if it is a CGIAR email.
-            DirectoryPerson person = this.directoryService.findByEmail(newUser.getEmail());
+            DirectoryPerson person = this.resolveDirectoryPerson(newUser.getEmail());
+
+            // `users.username` is unique (Users.hbm.xml:19 -- username_UNIQUE) and the CGIAR branch below
+            // writes the directory's login into it without ever asking whether it is free. Often it is not:
+            // the directory answers ONE login for every corporate alias a person holds, so an administrator
+            // adding someone's second address arrived here with a login another row already carried. The
+            // INSERT then violated the index and the exception left this action as an HTTP 500 -- no account,
+            // no e-mail, no role, and nothing on screen saying why. Refuse before the insert instead.
+            if (person.isFound() && person.getLogin() != null
+              && userManager.getUserByUsername(person.getLogin().toLowerCase()) != null) {
+              LOG.warn("The user {} was not created: the directory login {} already belongs to another account.",
+                newUser.getEmail(), person.getLogin().toLowerCase());
+              message = this.getText("manageUsers.username.existing");
+              // The message reaches the screen through invalidFields, which crpUsers.ftl renders. An action
+              // message would not: both iterators in global/pages/generalMessages.ftl are commented out, so
+              // returning without this line would replace the 500 with a silent, unexplained no-op.
+              this.getInvalidFields().put("input-user.email", message);
+              // Nothing has been persisted yet, so there is no half-created account to clean up. Returning
+              // here also skips the missing-names branch at the end of save(), which would otherwise mark
+              // both name fields invalid and make the screen ask for names it does not need.
+              return INPUT;
+            }
 
             String password = this.getText("email.outlookPassword");
             if (person.isFound()) {
@@ -1076,7 +1123,9 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
+      // The validator reaches the directory to decide whether the names are required. Keeping its answer is
+      // what lets save() stop asking a second time -- see resolveDirectoryPerson.
+      this.validatedDirectoryPerson = validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
 
