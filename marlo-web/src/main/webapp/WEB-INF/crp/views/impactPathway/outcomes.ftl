@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091418",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091426",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091418",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091426",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -71,6 +71,7 @@
         data-summary-missing-one="[@s.text name="outcomes.summary.missing.one"/]"
         data-summary-missing-many="[@s.text name="outcomes.summary.missing.many"/]"
         data-required-label="[@s.text name="outcomes.matrix.required"/]"
+        data-locked-value="[@s.text name="outcomes.matrix.lockedValue"/]"
         data-now-label="[@s.text name="outcomes.matrix.now"/]"
         data-year-title="[@s.text name="outcomes.matrix.addYear.title"/]"
         data-year-range="[@s.text name="outcomes.matrix.addYear.range"/]"
@@ -96,6 +97,22 @@
         data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"
         data-dis-clear-confirm="[@s.text name="outcomes.disaggregations.clear.confirm"/]"
         data-dis-clear-blocked="[@s.text name="outcomes.disaggregations.clear.blocked"/]"></span>
+
+      [#-- Carrier for the shared field highlighter.
+
+           fieldsValidation.js paints a missing field by reading <li id="message">
+           entries of the form "input-<field name>: <message>". generalMessages.ftl is
+           what used to render them, but its actionMessages iterator is commented out,
+           so nothing feeds the highlighter anywhere in MARLO. They are rendered here
+           instead, scoped to this section.
+
+           Two deliberate choices: this list sits outside #generalMessages, because
+           global.js looks for the same ids in there to raise its notification banner;
+           and it does not carry the "messages" class, which global.js also keys on.
+           The messages survive the save redirect through keepRedirectMessages. --]
+      <ul class="opi-validationMessages" style="display:none">
+        [@s.iterator value="actionMessages"]<li id="message">[@s.property /]</li>[/@s.iterator]
+      </ul>
 
       [#-- How this section works --]
       <div class="opi-help" id="opiHelp">
@@ -365,7 +382,7 @@
       [#-- Acronym + Statement row --]
       <div class="opi-fieldRow">
         <div class="opi-fieldRow__acronym">
-          [@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=false editable=editable /]
+          [@customForm.input name="${outcomeCustomName}.acronym" value="${(outcome.acronym)!}" type="text" i18nkey="outcome.acronym" required=true editable=editable /]
         </div>
         <div class="opi-fieldRow__statement">
           [@customForm.textArea name="${outcomeCustomName}.description"  i18nkey="${isAiccraUI?string('outcome.statementIndicator','outcome.statement')}" required=true className="outcome-statement limitWords-100" editable=editable /]
@@ -381,8 +398,9 @@
 
       [#-- Baseline year / Closing year / Target unit / Target value / Order --]
       <div class="opi-grid5 target-block">
-        [#-- Baseline (start) year --]
-        <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=true editable=editable /]</div>
+        [#-- Baseline (start) year: optional. Only the closing year bounds the matrix;
+             the baseline is context, and plenty of stored indicators never captured one. --]
+        <div>[@customForm.select name="${outcomeCustomName}.startYear" value="${(outcome.startYear)!-1}" i18nkey="${isAiccraUI?string('outcome.baselineYear','outcome.startYear')}" listName="milestoneYears" className="targetYear outcomeYear opi-select" required=false editable=editable /]</div>
         [#-- Baseline value: optional for now, until the existing indicators have one captured. --]
         [#if isAiccraUI]
         <div>[@customForm.input name="${outcomeCustomName}.baselineValue" i18nkey="outcome.baselineValue" placeholder="outcome.inputTargetValue.placeholder" className="opi-baselineValue" required=false editable=editable /]</div>
@@ -392,7 +410,7 @@
         [#-- Target Unit --]
         [#if targetUnitList?has_content]
         <div class="targetUnit-block">
-          [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit opi-select" listName="targetUnitList" editable=editable  /]
+          [@customForm.select name="${outcomeCustomName}.srfTargetUnit.id" i18nkey="outcome.selectTargetUnit"  placeholder="outcome.selectTargetUnit.placeholder" className="targetUnit opi-select" listName="targetUnitList" required=true editable=editable  /]
         </div>
         [#else]
         <input type="hidden" name="${outcomeCustomName}.srfTargetUnit.id" value="-1"/>
@@ -425,8 +443,11 @@
               <span></span>
               <span>#</span>
               <span>[@s.text name="outcomes.disaggregations.code"/]</span>
-              <span>[@s.text name="outcomes.disaggregations.statement"/]</span>
-              <span>[@s.text name="outcomes.disaggregations.unit"/]</span>
+              [#-- Marked on the column, not on every cell: the grid is compact and the
+                   rule is the same for each row. Deliberately not a .requiredTag --
+                   opiCountMissing() resolves those against a field, and these have none. --]
+              <span>[@s.text name="outcomes.disaggregations.statement"/] <span class="red" aria-hidden="true">*</span></span>
+              <span>[@s.text name="outcomes.disaggregations.unit"/] <span class="red" aria-hidden="true">*</span></span>
               <span>[@s.text name="outcomes.disaggregations.rule"/]</span>
               <span></span>
             </div>

@@ -1392,8 +1392,10 @@ span.icon-20 {
 
 .opi-dis__thead { background: var(--opi-surface-head); border-bottom: 1px solid var(--opi-border); }
 
-.opi-dis__thead span { padding: 8px; font: 700 12px Figtree, sans-serif; color: var(--opi-ink-soft); }
-.opi-dis__thead span:nth-child(2) { text-align: center; padding: 8px 6px; }
+/* Direct children only: the padding belongs to the column cell, not to the
+   required marker nested inside it, which would otherwise sit 8px off its label. */
+.opi-dis__thead > span { padding: 8px; font: 700 12px Figtree, sans-serif; color: var(--opi-ink-soft); }
+.opi-dis__thead > span:nth-child(2) { text-align: center; padding: 8px 6px; }
 
 .opi-dis__row { border-top: 1px solid var(--opi-border-soft); background: #fff; }
 .opi-dis__row:first-child { border-top: 0; }

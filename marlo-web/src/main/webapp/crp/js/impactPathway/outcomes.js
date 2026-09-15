@@ -782,6 +782,7 @@ $(document).ready(function() {
   // information, so they are painted before the editable-only wiring: a locked
   // page renders the same cells and must not lose them.
   opiPaintMatrix();
+  opiRelabelLockedErrors();
   if (!opiIsEditable()) {
     return;
   }
@@ -798,6 +799,10 @@ $(document).ready(function() {
     opiRefreshCardStatus($(this).closest('.opi-card'));
   });
 
+  // Every handler below ends on opiRefreshCardStatus because the live recount above
+  // is bound first and therefore runs before opiSyncRow has touched the cells --
+  // without this the pill is computed from the state the row had a moment ago.
+
   // ---- indicator statement mirrors the principal row ----
   $page.on('input keyup', '.outcome-statement', function() {
     var $card = $(this).closest('.outcome');
@@ -806,6 +811,7 @@ $(document).ready(function() {
     var $pDis = $card.find('.opi-dis__row.is-principal');
     $pDis.find('.opi-dis__stmtInput').val(v);
     opiSyncRow($card, $pDis.attr('data-opi-row'));
+    opiRefreshCardStatus($card);
   });
 
   // ---- outcome unit mirrors the principal row unit ----
@@ -815,16 +821,19 @@ $(document).ready(function() {
     var $pDis = $card.find('.opi-dis__row.is-principal');
     $pDis.find('.opi-dis__unitSelect').val($(this).val());
     opiSyncRow($card, $pDis.attr('data-opi-row'));
+    opiRefreshCardStatus($card);
   });
 
   // ---- disaggregation row edits sync into the hidden milestone inputs ----
   $page.on('input keyup', '.opi-dis__stmtInput, .opi-dis__codeInput', function() {
     var $card = $(this).closest('.outcome');
     opiSyncRow($card, $(this).closest('.opi-dis__row').attr('data-opi-row'));
+    opiRefreshCardStatus($card);
   });
   $page.on('change', '.opi-dis__unitSelect', function() {
     var $card = $(this).closest('.outcome');
     opiSyncRow($card, $(this).closest('.opi-dis__row').attr('data-opi-row'));
+    opiRefreshCardStatus($card);
   });
 
   // ---- Yes / No disaggregations toggle ----
@@ -1181,6 +1190,76 @@ function opiSyncRow($card, key) {
     var $value = $(this).find('.opi-cell__value');
     if ($value.exists()) { opiRefreshCell($value); }
   });
+  opiTagRowForValidation($dis, $mRow);
+}
+
+/**
+ * Re-labels the errors the shared highlighter left on a closed year's cells.
+ *
+ * OutcomeValidator flags every milestone with no value, the ones this phase can no
+ * longer edit included, and its message is a bare "Required Field". On a box the user
+ * cannot type into that reads like a bug, so those cells say where the gap actually
+ * lives instead. The highlight itself stays: the milestone really is incomplete, and
+ * it is already counting towards the section being reported as incomplete.
+ *
+ * Deferred because fieldsValidation.js paints from its own ready handler, registered
+ * after this one -- the classes are not on the page yet when this runs.
+ */
+function opiRelabelLockedErrors() {
+  window.setTimeout(function() {
+    var text = opiLabel('lockedValue');
+    if (!text) { return; }
+    $('.opi-cell.is-readonly .opi-cell__valueWrap.fieldError').attr('title', text);
+  }, 0);
+}
+
+/**
+ * Swaps the field-name classes an element carries for the highlighter.
+ *
+ * fieldsValidation.js decorates a field it cannot reach by its name -- a hidden one,
+ * or one with no label -- by looking for an element whose class is that field name
+ * with the non-word characters stripped. Milestone indexes move with
+ * updateAllIndexes(), so the previous set is recorded and dropped rather than left
+ * to pile up.
+ * @param {jQuery} $el the element standing in for the field
+ * @param {Array<string>} names the field names it should answer to
+ */
+function opiTagValidationKeys($el, names) {
+  if (!$el.exists()) { return; }
+  var previous = $el.attr('data-opi-keys');
+  if (previous) { $el.removeClass(previous); }
+
+  var joined = $.map(names, function(name) {
+    return name ? name.replace(/\W+/g, '') : null;
+  }).join(' ');
+
+  if (joined) {
+    $el.attr('data-opi-keys', joined).addClass(joined);
+  } else {
+    $el.removeAttr('data-opi-keys');
+  }
+}
+
+/**
+ * Makes one matrix row's validation errors land on something the user can see.
+ *
+ * OutcomeValidator reports against the milestone behind each cell, and neither of the
+ * two fields it flags can be decorated on its own: the statement is a hidden input in
+ * the matrix, and the value has no label. So the row's statement box answers for every
+ * "...milestones[j].title" of the row, and each cell's value box for its own
+ * "...milestones[j].value".
+ * @param {jQuery} $dis the .opi-dis__row element
+ * @param {jQuery} $mRow the matching .opi-matrix__row element
+ */
+function opiTagRowForValidation($dis, $mRow) {
+  var titles = [];
+  $mRow.children('.opi-cell').each(function() {
+    var $cell = $(this);
+    titles.push($cell.find('input[name$=".title"]').attr('name'));
+    opiTagValidationKeys($cell.find('.opi-cell__valueWrap'),
+      [$cell.find('input[name$=".value"]').attr('name')]);
+  });
+  opiTagValidationKeys($dis.find('.opi-dis__stmtInput'), titles);
 }
 
 /**
@@ -1547,6 +1626,11 @@ function opiSetDisAnswer($card, yes) {
     $answer.val(value).prop('disabled', false);
     opiMarkDirty();
   }
+
+  // The rows only count while they are on screen, so the tally has to follow the
+  // answer. Toggling Yes/No without adding or clearing a row reaches no other
+  // recount path.
+  opiRefreshCardStatus($card);
 }
 
 /**
@@ -1658,10 +1742,9 @@ function opiApplyGrid($card) {
 /**
  * Puts one cell into (or out of) the "Not applicable" state.
  *
- * The value is parked on the element while the unit says Not applicable, so
- * switching back to # of / % restores what the user had typed. It is only lost
- * for good if the form is saved while the row is Not applicable — the input
- * submits empty, which is what clears the column.
+ * A row that is Not applicable captures nothing, so the value is dropped rather
+ * than kept aside: switching back to # of / % leaves the cell empty and asking to
+ * be filled in again. What is on screen is therefore what a save will store.
  *
  * @param {jQuery} $cell the .opi-cell element
  * @param {boolean} na whether the row's unit is Not applicable
@@ -1670,23 +1753,15 @@ function opiApplyNotApplicable($cell, na) {
   var $value = $cell.find('.opi-cell__value');
   if (!$value.exists()) { return; }
   // A locked cell only mirrors what was stored; its value travels in a hidden
-  // input, so parking or clearing the box here would just misreport it.
+  // input, so clearing the box here would just misreport it.
   if ($cell.hasClass('is-readonly')) { return; }
 
   if (na) {
-    if (!$cell.hasClass('is-na')) {
-      $cell.data('opiPrevValue', $value.val() || '');
-      $cell.addClass('is-na');
-    }
+    $cell.addClass('is-na');
     $value.val('').prop('readonly', true);
   } else if ($cell.hasClass('is-na')) {
     $cell.removeClass('is-na');
     $value.prop('readonly', false);
-    var previous = $cell.data('opiPrevValue');
-    if (previous !== undefined && previous !== null && $.trim($value.val() || '') === '') {
-      $value.val(previous);
-    }
-    $cell.removeData('opiPrevValue');
   }
 }
 
@@ -1760,7 +1835,8 @@ function opiRefreshQuestions($card) {
 
 /**
  * Counts required fields left empty inside one indicator card: every shown
- * required marker with an empty control, plus every empty matrix cell.
+ * required marker with an empty control, every disaggregation row missing its
+ * statement or its unit, plus every empty matrix cell.
  * @param {jQuery} $card the .opi-card element
  * @return {number} how many required fields are still empty
  */
@@ -1774,7 +1850,22 @@ function opiCountMissing($card) {
     var $field = $group.find('input:not([type="hidden"]), textarea, select').first();
     if (!$field.exists()) { return; }
     var value = $.trim($field.val() || '');
-    if (value === '' || value === '-1') { missing++; }
+    // -1 means "nothing chosen" for every select here except the target unit, where
+    // it is a stored row of srf_target_units named "Not Applicable". The section's
+    // own instructions tell the user to pick it when the indicator has no
+    // quantifiable target, so it is an answer, not a gap -- same as the unit on a
+    // disaggregation row.
+    var blankOnly = $field.is('select.targetUnit');
+    if (value === '' || (value === '-1' && !blankOnly)) { missing++; }
+  });
+  // Disaggregation rows carry their required marker on the column header rather than
+  // on every cell, so they are counted here instead of through .requiredTag. The
+  // principal row is skipped: its statement and unit only mirror the indicator's own
+  // Statement and Target unit, which the loop above already counted.
+  // Only the statement can be missing. "Not applicable" is a real answer to the unit,
+  // not an empty one -- the row simply captures no value for any year.
+  $card.find('.opi-dis:visible .opi-dis__row').not('.is-principal').each(function() {
+    if ($.trim($(this).find('.opi-dis__stmtInput').val() || '') === '') { missing++; }
   });
   $card.find('.opi-cell__value:visible').each(function() {
     var $cell = $(this).closest('.opi-cell');

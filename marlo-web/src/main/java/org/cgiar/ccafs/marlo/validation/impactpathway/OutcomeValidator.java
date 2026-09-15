@@ -259,78 +259,74 @@ public class OutcomeValidator extends BaseValidator
         return;
     }
 
-    // DEFINIMOS UN PREFIJO PARA NO EQUIVOCARNOS Y HACER EL CÓDIGO MÁS LIMPIO
-    // Nota: Mantenemos el "input-" porque parece ser requerido por tu frontend (CSS/JS)
+    // The "input-" prefix is what the front end keys its field highlighting on.
     String prefix = "input-outcomesForm[" + i + "]"; 
     String listPrefix = "list-outcomesForm[" + i + "]";
 
-    // 1. Validación Description
+    // 1. Statement
     if (!(this.isValidString(outcome.getDescription()) && this.wordCount(outcome.getDescription()) <= 100)) {
         action.addMessage(action.getText("outcome.action.statement.required", params));
-        // CAMBIO: Usamos outcomesForm
         action.getInvalidFields().put(prefix + ".description", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    // 2. Validación Value
+    // 2. Acronym
+    if (!this.isValidString(outcome.getAcronym())) {
+        action.addMessage(action.getText("outcome.action.acronym.required", params));
+        action.getInvalidFields().put(prefix + ".acronym", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // 3. Target value: only collected once the indicator states a unit it can be counted in.
     if (outcome.getSrfTargetUnit() != null && outcome.getSrfTargetUnit().getId() != null
             && outcome.getSrfTargetUnit().getId().longValue() != -1) {
         if (outcome.getValue() == null || !this.isValidNumber(outcome.getValue().toString())) {
             action.addMessage(action.getText("outcome.action.value.required", params));
-            // CAMBIO: Usamos outcomesForm
             action.getInvalidFields().put(prefix + ".value", InvalidFieldsMessages.EMPTYFIELD);
         }
     }
 
-    // 3. Validación Portfolio
+    // 4. Target unit. Id -1 is the stored "Not Applicable" row of srf_target_units, an
+    // answer rather than an empty one -- the section's own instructions tell the user to
+    // pick it when the indicator has no quantifiable target -- so only a missing unit is
+    // a gap here. This mirrors what the form counts as missing.
+    if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == null) {
+        action.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
+        action.getInvalidFields().put(prefix + ".srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
+    }
+
+    // 5. Portfolio
     if (action.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE)) {
         if (outcome.getPortfolio() == null || outcome.getPortfolio().getId() == null
                 || outcome.getPortfolio() != null && outcome.getPortfolio().getId() == -1) {
             action.addMessage(action.getText("outcome.action.portfolio.required", params));
-            // CAMBIO: Usamos outcomesForm
             action.getInvalidFields().put(prefix + ".portfolio.id", InvalidFieldsMessages.EMPTYFIELD);
         }
     }
 
-    // 4. Validación StartYear
-    if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
-        action.addMessage(action.getText("outcome.action.startYear.required", params));
-        // CAMBIO: Usamos outcomesForm
-        action.getInvalidFields().put(prefix + ".startYear", InvalidFieldsMessages.EMPTYFIELD);
-    }
-
-    // 5. Validación Year (Target Year)
+    // 6. Closing year. The baseline (start) year is optional and deliberately not checked:
+    // the block that used to stand here read getYear() instead of getStartYear(), so it
+    // never validated the baseline at all and only doubled this message.
     if (!this.isValidNumber(String.valueOf(outcome.getYear())) || (outcome.getYear() <= 0)) {
         action.addMessage(action.getText("outcome.action.year.required", params));
-        // CAMBIO: Usamos outcomesForm
         action.getInvalidFields().put(prefix + ".year", InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    /*
-     * if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == -1) {
-     * outcome.setSrfTargetUnit(null);
-     * action.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
-     * action.getInvalidFields().put(prefix + ".srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
-     * }
-     */
-
     int year = action.getCurrentCycleYear();
     
-    // 6. Validación Milestones
+    // 7. Period targets
     if (outcome.getMilestones() != null && !outcome.getMilestones().isEmpty()) {
         for (int j = 0; j < outcome.getMilestones().size(); j++) {
             outcome.getMilestones().get(j).setCrpProgramOutcome(outcome);
             
-            // ¡OJO AQUÍ! Debes entrar a este método y asegurarte de que use outcomesForm también
             this.validateMilestone(action, outcome.getMilestones().get(j), i, j);
         }
     } else {
-        action.addMessage("outcome.action.milestones.requeried");
-        // CAMBIO: Usamos outcomesForm
+        // The key was being added as the message itself, so the raw key reached the user.
+        action.addMessage(action.getText("outcome.action.milestones.required", params));
         action.getInvalidFields().put(listPrefix + ".milestones",
                 action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Milestones" }));
     }
 
-    // 7. Validación SubIDOs
+    // 8. Sub-IDOs
     if (!action.isAiccra()) {
         if (outcome.getSubIdos() != null) {
             if (outcome.getSubIdos().isEmpty()) {
