@@ -1092,10 +1092,7 @@ function opiAttachHelpToggle() {
 function opiDecorateSidebar() {
   var $badge = $('[data-opi-menu-badge]');
   if (!$badge.exists()) { return; }
-  var total = 0;
-  $('.outcomes-list > .opi-card').filter(function() {
-    return $(this).attr('id') !== 'outcome-template';
-  }).each(function() { total += opiCountMissing($(this)); });
+  var total = opiSectionMissing();
   $badge.text(total > 0 ? String(total) : '\u2713').toggleClass('is-ok', total === 0);
 }
 
@@ -1842,6 +1839,7 @@ function opiRefreshQuestions($card) {
   $card.find('[data-opi-qnote]').text(hasEmpty ? ($add.data('blockedTitle') || '') : '');
 }
 
+
 /**
  * Counts the words in a value the way BaseValidator.wordCount does server-side: trim, then
  * split on runs of whitespace. Kept identical on purpose -- the two have to agree on whether
@@ -1855,14 +1853,18 @@ function opiWordCount(text) {
 }
 
 /**
- * Counts required fields left empty inside one indicator card: every shown
- * required marker with an empty control, every disaggregation row missing its
- * statement or its unit, plus every empty matrix cell.
+ * The required fields one indicator card is still missing: every shown required marker with an
+ * empty control, every disaggregation row missing its statement, every empty matrix cell, and the
+ * period targets themselves when the indicator has none.
+ *
+ * Returns the elements rather than a tally so that the card badge and the check report can be
+ * driven by one predicate: the badge counts them, and the check outlines the ones the validator
+ * could not see because the indicator is not saved yet.
  * @param {jQuery} $card the .opi-card element
- * @return {number} how many required fields are still empty
+ * @return {jQuery} the controls standing for each gap
  */
-function opiCountMissing($card) {
-  var missing = 0;
+function opiMissingFields($card) {
+  var $missing = $();
   $card.find('.opi-card__body .requiredTag').each(function() {
     var $tag = $(this);
     if (!$tag.is(':visible')) { return; }
@@ -1878,11 +1880,11 @@ function opiCountMissing($card) {
     // gap. OutcomeValidator reads it the same way.
     var blankOnly = $field.is('select.targetUnit');
     if (value === '' || (value === '-1' && !blankOnly)) {
-      missing++;
+      $missing = $missing.add($field);
     } else if ($field.is('textarea.limitWords-100') && opiWordCount(value) > 100) {
       // OutcomeValidator rejects the statement on the same two grounds -- empty, or over 100
       // words -- so both are one gap here too, counted the way it counts them.
-      missing++;
+      $missing = $missing.add($field);
     }
   });
   // Disaggregation rows carry their required marker on the column header rather than
@@ -1892,18 +1894,53 @@ function opiCountMissing($card) {
   // Only the statement can be missing. "Not applicable" is a real answer to the unit,
   // not an empty one -- the row simply captures no value for any year.
   $card.find('.opi-dis:visible .opi-dis__row').not('.is-principal').each(function() {
-    if ($.trim($(this).find('.opi-dis__stmtInput').val() || '') === '') { missing++; }
+    var $stmt = $(this).find('.opi-dis__stmtInput');
+    if ($.trim($stmt.val() || '') === '') { $missing = $missing.add($stmt); }
   });
   $card.find('.opi-cell__value:visible').each(function() {
     var $cell = $(this).closest('.opi-cell');
     if ($cell.hasClass('is-na') || $cell.hasClass('is-readonly')) { return; }
-    if ($.trim($(this).val() || '') === '') { missing++; }
+    if ($.trim($(this).val() || '') === '') { $missing = $missing.add($(this)); }
   });
   // Period Targets is itself required: an indicator with no year column has none at all, which
   // the validator reports as an empty list against the same container. Counted once, as it does.
   var $targets = $card.find('.milestones-list').first();
-  if ($targets.exists() && !$targets.find('.opi-cell, .srfSlo').exists()) { missing++; }
-  return missing;
+  if ($targets.exists() && !$targets.find('.opi-cell, .srfSlo').exists()) {
+    $missing = $missing.add($targets);
+  }
+  return $missing;
+}
+
+/**
+ * How many required fields one indicator card is still missing.
+ * @param {jQuery} $card the .opi-card element
+ * @return {number} how many required fields are still empty
+ */
+function opiCountMissing($card) {
+  return opiMissingFields($card).length;
+}
+
+/**
+ * The indicator cards on the page, leaving out the hidden template and the untouched starter.
+ * @return {jQuery} the real indicator cards
+ */
+function opiIndicatorCards() {
+  return $('.outcomes-list > .opi-card').filter(function() {
+    return $(this).attr('id') !== 'outcome-template' && $(this).is(':visible');
+  });
+}
+
+/**
+ * Everything the section is still missing: the gaps inside each indicator, or -- when the
+ * component has no indicator at all -- the single gap the validator reports for that.
+ * @return {number} how many gaps the section has
+ */
+function opiSectionMissing() {
+  var $cards = opiIndicatorCards();
+  if ($cards.length === 0) { return 1; }
+  var total = 0;
+  $cards.each(function() { total += opiCountMissing($(this)); });
+  return total;
 }
 
 /**
@@ -1939,11 +1976,8 @@ function opiRefreshAllStatuses() {
 function opiRefreshSummary() {
   var $summary = $('[data-opi-summary]');
   if (!$summary.exists()) { return; }
-  var $cards = $('.outcomes-list > .opi-card').filter(function() {
-    return $(this).attr('id') !== 'outcome-template' && $(this).is(':visible');
-  });
-  var total = 0;
-  $cards.each(function() { total += opiCountMissing($(this)); });
+  var $cards = opiIndicatorCards();
+  var total = opiSectionMissing();
   var count = $cards.length;
   var text = count + ' ' + opiLabel(count === 1 ? 'countOne' : 'countMany');
   if (total > 0) {
@@ -2025,18 +2059,24 @@ function opiMarkInvalidField($anchor, message) {
   }
   // A matrix cell is one box in a grid of them: an inline note per cell would break the
   // columns apart, so there the outline carries it and the card's own "n fields missing"
-  // badge says it in words. Every definition field has room for the note.
-  if ($anchor.closest('.opi-matrix').exists()) { return true; }
+  // badge says it in words.
+  if ($anchor.closest('.opi-cell').exists()) { return true; }
   // The validator sends a note per field. Most say "Required Field", for which the design's own
   // shorter wording reads better; anything else is specific to that field -- a closing year that
   // is filled in but does not reach the last column, say -- and is shown as it came.
   var note = (message && message !== 'Required Field') ? message : opiLabel('checkRequired');
   if (!note) { return true; }
-  var $slot = $anchor.closest('.input, .form-group');
-  if (!$slot.exists()) { $slot = $anchor.parent(); }
-  if ($slot.find('.opi-checkNote').exists()) { return true; }
+  // Placed straight after the control it belongs to. Looking for a wrapper to append to was
+  // wrong: the card itself carries .form-group, so a field with no closer wrapper resolved to
+  // the whole card -- and since only one note per wrapper is added, three of four fields lost
+  // their note and the one that survived sat at the foot of the card, away from its field.
+  // Every flagged control gets exactly one note because a second pass returns above.
   var id = 'opiCheckNote-' + (opiRowSeq++);
-  $slot.append($('<span class="opi-checkNote" id="' + id + '"></span>').text(note));
+  // The matrix scrolls sideways and lays its rows out on a grid, so a note belonging to the
+  // matrix as a whole -- "this indicator has no period targets" -- goes under the block rather
+  // than inside it.
+  var $after = $anchor.closest('.opi-matrix').exists() ? $anchor.closest('.opi-matrix-block') : $anchor;
+  $after.after($('<span class="opi-checkNote" id="' + id + '"></span>').text(note));
   var described = $anchor.attr('aria-describedby');
   $anchor.attr('aria-describedby', described ? described + ' ' + id : id);
   return true;
@@ -2081,6 +2121,21 @@ function opiReportValidation(results, complete) {
     });
   });
 
+  // An indicator with nothing stored yet is invisible to the validator, which reads the saved
+  // record: all it can answer for a component in that state is "there are no indicators", against
+  // the whole list. That is true and useless -- the card is right there with its boxes empty. So
+  // the gaps of any card that is not saved yet are added here, from the same predicate the badge
+  // counts with, and the list-level finding is dropped because those gaps say it better.
+  var $unsaved = $('.outcomes-list > .opi-card').filter(function() {
+    return $(this).attr('id') !== 'outcome-template' && $(this).is(':visible')
+      && $.trim($(this).find('input.outcomeId').first().val() || '') === '';
+  });
+  var $ownGaps = $();
+  $unsaved.each(function() { $ownGaps = $ownGaps.add(opiMissingFields($(this))); });
+  if ($ownGaps.length) {
+    keys = $.grep(keys, function(key) { return key !== 'list-outcomes'; });
+  }
+
   // Counted by element rather than by key: the validator reports against the stored record,
   // where one gap on screen can be several -- an empty row statement is one box here and one
   // entry per year column there. The number has to be the number of boxes the user can see
@@ -2094,6 +2149,14 @@ function opiReportValidation(results, complete) {
     opiExpandCard($anchor.closest('.outcome'));
     if (!$anchor.hasClass('opi-checkFlag')) { $flagged = $flagged.add($anchor); }
     opiMarkInvalidField($anchor, messages[key]);
+    if (!$first.exists()) { $first = $anchor; }
+  });
+
+  $ownGaps.each(function() {
+    var $anchor = $(this);
+    opiExpandCard($anchor.closest('.outcome'));
+    if (!$anchor.hasClass('opi-checkFlag')) { $flagged = $flagged.add($anchor); }
+    opiMarkInvalidField($anchor);
     if (!$first.exists()) { $first = $anchor; }
   });
 

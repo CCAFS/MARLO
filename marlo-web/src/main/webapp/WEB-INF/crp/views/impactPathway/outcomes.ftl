@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091501",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091507",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091501",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091507",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -173,6 +173,8 @@
                 [@outcomeMacro outcome=outcome name="outcomesForm" index=outcome_index /]
               [/#list]
             [#else]
+              [#-- No indicators stored yet: a blank card to start the first one. It carries no
+                   stored id, which is how outcomes.js knows the validator cannot answer for it. --]
               [@outcomeMacro outcome={} name="outcomesForm" index=0 /]
             [/#if]
             </div>
