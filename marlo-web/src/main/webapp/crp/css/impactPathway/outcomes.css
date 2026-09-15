@@ -719,6 +719,27 @@ span.icon-20 {
 
 .opi-menu__note { margin: 0; font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--opi-muted); }
 
+/* What "Check for missing fields" found, in words: the field outlines are never the only
+   carrier of the result. Empty until the check runs, so it takes no room before then. */
+.opi-menu__checkStatus {
+  margin: 0;
+  font: 500 12.5px/1.5 Figtree, sans-serif;
+  text-align: left;
+}
+.opi-menu__checkStatus:empty { display: none; }
+.opi-menu__checkStatus.is-ok { color: var(--opi-ok); }
+.opi-menu__checkStatus.is-missing { color: var(--opi-required); }
+
+/* The per-field note the check leaves next to a flagged definition field. Matrix cells
+   carry the outline alone -- a note per cell would break the year columns apart -- and
+   the card's own "n fields missing" badge says it in words for them. */
+.opi-page .opi-checkNote {
+  display: block;
+  margin-top: 4px;
+  font: 500 12px/1.4 Figtree, sans-serif;
+  color: var(--opi-required);
+}
+
 .opi-sidebar .projectValidateButton {
   /* global.css gives this button `margin: 0 8%` and an asymmetric padding for its
      sprite icon, which pushes it out of the card. The icon is an inline SVG here. */

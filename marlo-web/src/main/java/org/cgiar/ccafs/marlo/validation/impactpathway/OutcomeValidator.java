@@ -109,6 +109,14 @@ public class OutcomeValidator extends BaseValidator
   }
 
   public void validateMilestone(BaseAction action, CrpMilestone milestone, int i, int j) {
+    // Requiredness is scoped to the phase that can still answer the target. A period target whose
+    // year is behind the phase is rendered read-only -- the form asks BaseAction for exactly this
+    // rule -- so reporting it as missing opened a gap the user had no way of closing, and the
+    // section kept reading as incomplete however much was filled in.
+    if (!action.canEditMilestoneYear(milestone.getYear())) {
+      return;
+    }
+
     int year = action.getCurrentCycleYear();
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
@@ -132,13 +140,17 @@ public class OutcomeValidator extends BaseValidator
     }
 
 
-    if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null) {
-      if (milestone.getYear() == null
-        || (milestone.getCrpProgramOutcome().getYear().intValue() < milestone.getYear().intValue())) {
-        action.getInvalidFields().put("input-" + customName + ".year", InvalidFieldsMessages.EMPTYFIELD);
-        action.addMessage(action.getText("outcome.action.milestone.year.required", params));
-      }
+    if (milestone.getCrpProgramOutcome() != null && milestone.getCrpProgramOutcome().getYear() != null
+      && milestone.getYear() == null) {
+      action.getInvalidFields().put("input-" + customName + ".year", InvalidFieldsMessages.EMPTYFIELD);
+      action.addMessage(action.getText("outcome.action.milestone.year.required", params));
     }
+    // A period target dated past the indicator's closing year used to be reported right here, as a
+    // missing "Target Year" on the target itself. That made sense while each target carried its own
+    // year select; in the matrix the year belongs to the column, is a hidden input, and the same
+    // year is shared by every row -- so the report landed on a cell that was often filled in and
+    // that the user cannot edit. It is raised once per indicator now, against the closing year,
+    // which is the field that resolves it. See validateOuctome.
 
     if (milestone.getSrfTargetUnit() != null && milestone.getSrfTargetUnit().getId() != -1) {
 
@@ -284,14 +296,15 @@ public class OutcomeValidator extends BaseValidator
         }
     }
 
-    // 4. Target unit. Id -1 is the stored "Not Applicable" row of srf_target_units, an
-    // answer rather than an empty one -- the section's own instructions tell the user to
-    // pick it when the indicator has no quantifiable target -- so only a missing unit is
-    // a gap here. This mirrors what the form counts as missing.
-    if (outcome.getSrfTargetUnit() == null || outcome.getSrfTargetUnit().getId() == null) {
-        action.addMessage(action.getText("outcome.action.srfTargetUnit.required", params));
-        action.getInvalidFields().put(prefix + ".srfTargetUnit.id", InvalidFieldsMessages.EMPTYFIELD);
-    }
+    // 4. Target unit is deliberately not reported as missing. Id -1 is this select's header option
+    // and it is labelled "Not Applicable" on purpose (outcome.selectTargetUnit.placeholder); the
+    // section's own instructions (outcomes.help) tell the user to pick it when the indicator has no
+    // quantifiable target, so it is an answer. A null unit is read the same way rather than as a
+    // gap: the form renders null and -1 as the very same selected option, so reporting only null
+    // asked the user to fix a field that already showed a valid answer, with nothing on screen left
+    // to change. Saving the row normalises it to -1. That leaves this field unable to be reported
+    // missing at all -- see REVIEW.md: whether "Not Applicable" should stay on offer is a product
+    // question, not a defect to patch here.
 
     // 5. Portfolio
     if (action.hasSpecificities(APConstants.PORTFOLIO_FEATURE_ACTIVE)) {

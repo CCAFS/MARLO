@@ -29,6 +29,8 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.SectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
+import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
+import org.cgiar.ccafs.marlo.utils.OutcomeComparators;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.util.ArrayList;
@@ -109,6 +111,11 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
       section = new HashMap<String, Object>();
       section.put("sectionName", sectionStatus.getSectionName());
       section.put("missingFields", sectionStatus.getMissingFields());
+      // The validator already resolves every gap down to the form field that carries it. Only the
+      // human-readable summary used to travel back, so the caller could say how many fields were
+      // missing but not which, and had nothing to highlight. Carrying the map costs one more entry
+      // and lets the section paint the fields inline.
+      section.put("invalidFields", this.getInvalidFields());
       Thread.sleep(500);
     } catch (Exception e) {
       LOG.error("There was an exception trying to get section status for impact pathway ");
@@ -195,9 +202,16 @@ public class ValidateSectionStatusImpactPathway extends BaseAction {
 
       crpProgram.setOutcomes(crpProgram.getCrpProgramOutcomes().stream()
         .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList()));
+      // The validator reports each gap against the position of its indicator -- "outcomesForm[3]" --
+      // and the front end resolves that key against the card sitting in that position on screen.
+      // getCrpProgramOutcomes() is a HashSet, so without this the list arrived in an arbitrary order
+      // and every finding was reported against whichever card happened to be at that index.
+      crpProgram.getOutcomes().sort(OutcomeComparators.renderOrder());
       for (CrpProgramOutcome crpProgramOutcome : crpProgram.getOutcomes()) {
-        crpProgramOutcome.setMilestones(
-          crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
+        // Same reason as the outcome sort above, one level down: getCrpMilestones() is a HashSet, and
+        // the validator numbers each period target by its position in this list.
+        crpProgramOutcome.setMilestones(crpProgramOutcome.getCrpMilestones().stream().filter(c -> c.isActive())
+          .sorted(MilestoneComparators.renderOrder()).collect(Collectors.toList()));
         crpProgramOutcome.setSubIdos(
           crpProgramOutcome.getCrpOutcomeSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
 

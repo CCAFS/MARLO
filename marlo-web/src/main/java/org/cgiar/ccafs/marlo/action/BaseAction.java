@@ -1413,6 +1413,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
+   * Tells whether a period target (milestone) belonging to the given year can still be edited in
+   * the phase being rendered. Phased data is forward-only, so a target whose year is behind the
+   * phase year is rendered read-only and can no longer be answered. A target with no year yet, or
+   * carrying the -1 placeholder, is still being created and stays editable.
+   * This is the single definition of that rule: the form renders from it through
+   * OutcomesAction.canEditMileStone(), and OutcomeValidator scopes its requiredness to it, so a
+   * field the user cannot fill is never reported as missing.
+   *
+   * @param year the year the period target belongs to
+   * @return true when the phase being rendered can still edit it
+   */
+  public boolean canEditMilestoneYear(Integer year) {
+    if (year == null || year.intValue() == -1) {
+      return true;
+    }
+    return year.intValue() >= this.getActualPhase().getYear();
+  }
+
+  /**
    * Verify permission to edit project budget execution for an specific
    * project, budget type and/or institution
    */
