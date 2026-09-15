@@ -2140,3 +2140,84 @@ span.icon-20 {
 .opi-page .opi-card__body input.targetValueNumber:not(.opi-cell__value) {
   padding-right: 10px;
 }
+
+/* ==========================================================================
+   Confirmation dialog
+   Raised by opiConfirm() for the destructive actions that used to go through
+   window.confirm(). It is appended to <body>, outside .opi-page, so the tokens
+   are restated here rather than inherited.
+   ========================================================================== */
+
+.opi-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(31, 42, 55, .45);
+  font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.opi-dialog__box {
+  width: 100%;
+  max-width: 460px;
+  padding: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EF;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(31, 42, 55, .18);
+}
+
+.opi-dialog__title {
+  margin: 0 0 8px;
+  font: 600 16px/1.35 Figtree, sans-serif;
+  color: #1F2A37;
+}
+
+.opi-dialog__detail {
+  margin: 0 0 18px;
+  font: 400 13.5px/1.55 Figtree, sans-serif;
+  color: #4B5563;
+}
+
+.opi-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.opi-dialog__actions button {
+  padding: 8px 14px;
+  font: 500 13px/1.2 Figtree, sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.opi-dialog__cancel {
+  color: #1F2A37;
+  background: #FFFFFF;
+  border: 1px solid #CBD5DE;
+}
+
+.opi-dialog__cancel:hover { background: #F5F7FA; }
+
+/* The destructive one. White ink on the full-strength accent, never on a tint. */
+.opi-dialog__confirm {
+  color: #FFFFFF;
+  background: #B03028;
+  border: 1px solid #B03028;
+}
+
+.opi-dialog__confirm:hover { background: #8F261F; border-color: #8F261F; }
+
+.opi-dialog__box button:focus-visible {
+  outline: 2px solid #0277A2;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .opi-dialog__actions button { flex: 1 1 100%; }
+}

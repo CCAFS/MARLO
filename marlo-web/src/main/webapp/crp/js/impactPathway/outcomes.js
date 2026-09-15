@@ -296,11 +296,37 @@ function addOutcome() {
 }
 
 function removeOutcome() {
-  var $list = $(this).parents('.outcomes-list');
-  var $item = $(this).parents('.outcome');
-  $item.hide(function() {
-    $item.remove();
-    updateAllIndexes();
+  var $trigger = $(this);
+  var $item = $trigger.parents('.outcome');
+  var drop = function() {
+    $item.hide(function() {
+      $item.remove();
+      updateAllIndexes();
+      // The removed card was counting towards the section's tally.
+      if ($('.opi-page').exists()) { opiRefreshSummary(); }
+    });
+  };
+
+  // Removing the card takes its disaggregation rows and every period target with it, and
+  // the deletion lands on the next save. It used to happen on a single click with nothing
+  // asked, so the dialog says what goes before it does.
+  if (!$('.opi-page').exists()) {
+    drop();
+    return;
+  }
+  var rows = $item.find('.opi-dis__row').not('.is-principal').length;
+  var values = 0;
+  $item.find('.opi-cell__value').each(function() {
+    if ($.trim($(this).val() || '') !== '') { values++; }
+  });
+  var name = $.trim($item.find('.opi-card__code').first().text() || '');
+  opiConfirm({
+      title: opiLabel('removeCardTitle').replace('{0}', name || opiLabel('removeCardFallback')),
+      detail: opiLabel('removeCardDetail').replace('{0}', rows).replace('{1}', values),
+      trigger: $trigger,
+      confirmLabel: opiLabel('removeCardConfirm'),
+      cancelLabel: opiLabel('dialogCancel'),
+      onConfirm: drop
   });
 }
 
@@ -847,10 +873,11 @@ $(document).ready(function() {
       if (!$card.find('.opi-dis__row').not('.is-principal').exists()) {
         opiAddDisRow($card);
       }
-    } else if (opiClearDisRows($card)) {
+    } else {
       // Only paint "No" once the rows are gone. Hiding them would keep them submitting,
-      // and the answer would flip back to "Yes" on the next reload.
-      opiSetDisAnswer($card, false);
+      // and the answer would flip back to "Yes" on the next reload -- and it also means
+      // cancelling leaves the toggle exactly where it was, with nothing to bounce back.
+      opiClearDisRows($card, $(this), function() { opiSetDisAnswer($card, false); });
     }
   });
 
@@ -1665,17 +1692,35 @@ function opiAfterDisChange($card) {
  * @param {jQuery} $card the .outcome card
  * @return {boolean} true when the card is left with no disaggregations
  */
-function opiClearDisRows($card) {
+function opiClearDisRows($card, $trigger, onCleared) {
   var $rows = $card.find('.opi-dis__row').not('.is-principal');
-  if (!$rows.exists()) { return true; }
-  if ($rows.find('.opi-dis__delete:disabled').exists()) {
-    window.alert(opiLabel('disClearBlocked'));
-    return false;
+  if (!$rows.exists()) {
+    onCleared();
+    return;
   }
-  if (!window.confirm(opiLabel('disClearConfirm'))) { return false; }
-  $rows.each(function() { opiDropDisRow($card, $(this)); });
-  opiAfterDisChange($card);
-  return true;
+  if ($rows.find('.opi-dis__delete:disabled').exists()) {
+    opiConfirm({
+        title: opiLabel('disClearBlockedTitle'),
+        detail: opiLabel('disClearBlocked'),
+        trigger: $trigger,
+        cancelLabel: opiLabel('dialogClose')
+    });
+    return;
+  }
+  opiConfirm({
+      title: opiLabel('disClearTitle'),
+      // Names what goes: the rows, and the values already captured against them.
+      detail: opiLabel($rows.length === 1 ? 'disClearDetailOne' : 'disClearDetailMany')
+        .replace('{0}', $rows.length),
+      trigger: $trigger,
+      confirmLabel: opiLabel('disClearConfirmButton'),
+      cancelLabel: opiLabel('dialogCancel'),
+      onConfirm: function() {
+        $rows.each(function() { opiDropDisRow($card, $(this)); });
+        opiAfterDisChange($card);
+        onCleared();
+      }
+  });
 }
 
 /**
@@ -1922,4 +1967,135 @@ function opiRefreshSummary() {
   }
   $summary.text(text);
   opiDecorateSidebar();
+}
+
+/* ==========================================================================
+ * Confirmation dialog
+ *
+ * Destructive actions in this section used to go through window.confirm(), which
+ * is unstyled, blocks the whole page until a person dismisses it by hand -- so
+ * browser automation stalls on it -- and cannot say what is about to be lost in
+ * more than one line of plain text.
+ *
+ * opiConfirm() replaces it: one dialog, callback-based, that both the
+ * disaggregations toggle and the indicator's remove button raise. Nothing blocks:
+ * the caller's work happens in onConfirm.
+ * ========================================================================== */
+
+/** The element that opened the dialog, so focus can go back to it. @type {jQuery} */
+var opiDialogTrigger = null;
+
+/**
+ * Closes the jQuery UI tooltip a control may have open.
+ *
+ * The widget is delegated from the document in global.js with track: true, so it closes on
+ * the target's own mouseleave. The dialog's backdrop covers the trigger without the pointer
+ * having to move, and a covered element gets no mouseleave until it moves again -- so the
+ * tooltip would stay on screen with nothing left to dismiss it.
+ *
+ * @param {jQuery} $el the control whose tooltip should go
+ */
+function opiDismissTooltip($el) {
+  if (!$el || !$el.exists()) { return; }
+  // The events jQuery UI itself binds to close it, so the widget keeps its own bookkeeping.
+  $el.trigger('mouseleave').trigger('focusout');
+}
+
+/**
+ * Closes the dialog, if one is open, and puts the focus back where it came from.
+ * @param {Function} [callback] what to run once it is gone
+ */
+function opiCloseDialog(callback) {
+  var $dialog = $('.opi-dialog');
+  if (!$dialog.exists()) { return; }
+  $dialog.remove();
+  $(document).off('keydown.opiDialog focusin.opiDialog');
+  var $trigger = opiDialogTrigger;
+  opiDialogTrigger = null;
+  // The trigger may have been removed by the very action that was confirmed.
+  if ($trigger && $trigger.exists() && $trigger.is(':visible')) {
+    $trigger.trigger('focus');
+    // The focus is given back by code, not by a gesture, so the delegated tooltip would
+    // open with no pointer over the control and nothing to close it again.
+    opiDismissTooltip($trigger);
+  }
+  if (callback) { callback(); }
+}
+
+/**
+ * Raises the section's confirmation dialog.
+ *
+ * @param {Object} options
+ * @param {string} options.title the heading, which names the action
+ * @param {string} options.detail what will be lost, in words
+ * @param {jQuery} options.trigger the control that opened it; focus returns here
+ * @param {string} [options.confirmLabel] omit for a notice with only a dismiss button
+ * @param {string} options.cancelLabel the dismiss label
+ * @param {Function} [options.onConfirm] run after the dialog closes, on confirm only
+ */
+function opiConfirm(options) {
+  opiCloseDialog();
+  opiDialogTrigger = options.trigger && options.trigger.exists() ? options.trigger : null;
+  opiDismissTooltip(opiDialogTrigger);
+
+  var id = 'opiDialog-' + (opiRowSeq++);
+  var $title = $('<h2 class="opi-dialog__title" id="' + id + '-title" />').text(options.title);
+  var $detail = $('<p class="opi-dialog__detail" id="' + id + '-detail" />').text(options.detail);
+  var $cancel = $('<button type="button" class="opi-dialog__cancel" />').text(options.cancelLabel);
+  var $actions = $('<div class="opi-dialog__actions" />').append($cancel);
+
+  var $confirm = null;
+  if (options.confirmLabel) {
+    $confirm = $('<button type="button" class="opi-dialog__confirm" />').text(options.confirmLabel);
+    $actions.append($confirm);
+  }
+
+  var $box = $('<div class="opi-dialog__box" role="dialog" aria-modal="true" />')
+    .attr('aria-labelledby', id + '-title')
+    .attr('aria-describedby', id + '-detail')
+    .append($title).append($detail).append($actions);
+  var $dialog = $('<div class="opi-dialog" />').append($box);
+
+  $('body').append($dialog);
+
+  $cancel.on('click', function() { opiCloseDialog(); });
+  if ($confirm) {
+    $confirm.on('click', function() { opiCloseDialog(options.onConfirm); });
+  }
+  // Clicking the backdrop cancels, the way Esc does. Clicks inside the box must not.
+  $dialog.on('click', function(e) {
+    if (e.target === this) { opiCloseDialog(); }
+  });
+
+  $(document).on('keydown.opiDialog', function(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      e.preventDefault();
+      opiCloseDialog();
+      return;
+    }
+    if (e.key !== 'Tab' && e.keyCode !== 9) { return; }
+    // Keeps Tab inside the dialog.
+    var $stops = $box.find('button:visible');
+    if (!$stops.exists()) { return; }
+    var first = $stops.first()[0];
+    var last = $stops.last()[0];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+  // A click that lands outside the dialog -- on a control still in the page behind it --
+  // would take the focus out of a dialog that is meant to be modal.
+  $(document).on('focusin.opiDialog', function(e) {
+    if (!$box[0].contains(e.target)) {
+      e.stopPropagation();
+      $box.find('button:visible').first().trigger('focus');
+    }
+  });
+
+  // The destructive button is never the one focus lands on.
+  $cancel.trigger('focus');
 }

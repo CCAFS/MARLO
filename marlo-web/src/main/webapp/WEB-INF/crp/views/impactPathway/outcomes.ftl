@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091426",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091504",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091426",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091504",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -95,8 +95,18 @@
         data-expand-all="[@s.text name="outcomes.expandAll"/]"
         data-save-unsaved="[@s.text name="outcomes.saveBar.unsaved"/]"
         data-save-unsaved-detail="[@s.text name="outcomes.saveBar.unsaved.detail"/]"
-        data-dis-clear-confirm="[@s.text name="outcomes.disaggregations.clear.confirm"/]"
-        data-dis-clear-blocked="[@s.text name="outcomes.disaggregations.clear.blocked"/]"></span>
+        data-dis-clear-title="[@s.text name="outcomes.disaggregations.clear.title"/]"
+        data-dis-clear-detail-one="[@s.text name="outcomes.disaggregations.clear.detail.one"/]"
+        data-dis-clear-detail-many="[@s.text name="outcomes.disaggregations.clear.detail.many"/]"
+        data-dis-clear-confirm-button="[@s.text name="outcomes.disaggregations.clear.button"/]"
+        data-dis-clear-blocked-title="[@s.text name="outcomes.disaggregations.clear.blocked.title"/]"
+        data-dis-clear-blocked="[@s.text name="outcomes.disaggregations.clear.blocked"/]"
+        data-remove-card-title="[@s.text name="outcomes.card.remove.title"/]"
+        data-remove-card-fallback="[@s.text name="outcomes.card.remove.fallback"/]"
+        data-remove-card-detail="[@s.text name="outcomes.card.remove.detail"/]"
+        data-remove-card-confirm="[@s.text name="outcomes.card.remove.button"/]"
+        data-dialog-cancel="[@s.text name="outcomes.dialog.cancel"/]"
+        data-dialog-close="[@s.text name="outcomes.dialog.close"/]"></span>
 
       [#-- Carrier for the shared field highlighter.
 
