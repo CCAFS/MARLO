@@ -776,6 +776,9 @@ $(document).ready(function() {
   }
   opiAttachHelpToggle();
   opiDecorateCheckButton();
+  // Registered before the editable guard below: the check button only renders on a page
+  // the user can edit, but the registration must stand whatever that guard decides.
+  window.impactPathwayValidationReport = opiReportValidation;
   opiGroupSaveBar();
   opiDecorateSaveButton();
   // The unit affix, the cell hint and the row's code / unit caption are read-only
@@ -787,6 +790,7 @@ $(document).ready(function() {
     return;
   }
   opiAttachDirtyTracking();
+  opiAttachValidationClearing();
   opiRefreshAllStatuses();
   opiDecorateSidebar();
   $('.opi-q').each(function() { opiRefreshQuestions($(this).closest('.outcome')); });
@@ -1256,8 +1260,13 @@ function opiTagRowForValidation($dis, $mRow) {
   $mRow.children('.opi-cell').each(function() {
     var $cell = $(this);
     titles.push($cell.find('input[name$=".title"]').attr('name'));
-    opiTagValidationKeys($cell.find('.opi-cell__valueWrap'),
-      [$cell.find('input[name$=".value"]').attr('name')]);
+    // The year travels with the value: it is a hidden input with no control of its own, and
+    // when the validator rejects it -- a period target dated past the closing year -- the cell
+    // is the only thing on screen that stands for it.
+    opiTagValidationKeys($cell.find('.opi-cell__valueWrap'), [
+        $cell.find('input[name$=".value"]').attr('name'),
+        $cell.find('input[name$=".year"]').attr('name')
+    ]);
   });
   opiTagValidationKeys($dis.find('.opi-dis__stmtInput'), titles);
 }
@@ -1834,6 +1843,18 @@ function opiRefreshQuestions($card) {
 }
 
 /**
+ * Counts the words in a value the way BaseValidator.wordCount does server-side: trim, then
+ * split on runs of whitespace. Kept identical on purpose -- the two have to agree on whether
+ * a statement is over the 100-word limit.
+ * @param {string} text the value to measure
+ * @return {number} how many words it holds
+ */
+function opiWordCount(text) {
+  var trimmed = $.trim(text || '');
+  return trimmed === '' ? 0 : trimmed.split(/\s+/).length;
+}
+
+/**
  * Counts required fields left empty inside one indicator card: every shown
  * required marker with an empty control, every disaggregation row missing its
  * statement or its unit, plus every empty matrix cell.
@@ -1850,13 +1871,19 @@ function opiCountMissing($card) {
     var $field = $group.find('input:not([type="hidden"]), textarea, select').first();
     if (!$field.exists()) { return; }
     var value = $.trim($field.val() || '');
-    // -1 means "nothing chosen" for every select here except the target unit, where
-    // it is a stored row of srf_target_units named "Not Applicable". The section's
-    // own instructions tell the user to pick it when the indicator has no
-    // quantifiable target, so it is an answer, not a gap -- same as the unit on a
-    // disaggregation row.
+    // -1 means "nothing chosen" for every select here except the target unit. There, -1 is
+    // the header option and it is labelled "Not Applicable" on purpose
+    // (outcome.selectTargetUnit.placeholder), which the section's own instructions tell the
+    // user to pick when the indicator has no quantifiable target -- so it is an answer, not a
+    // gap. OutcomeValidator reads it the same way.
     var blankOnly = $field.is('select.targetUnit');
-    if (value === '' || (value === '-1' && !blankOnly)) { missing++; }
+    if (value === '' || (value === '-1' && !blankOnly)) {
+      missing++;
+    } else if ($field.is('textarea.limitWords-100') && opiWordCount(value) > 100) {
+      // OutcomeValidator rejects the statement on the same two grounds -- empty, or over 100
+      // words -- so both are one gap here too, counted the way it counts them.
+      missing++;
+    }
   });
   // Disaggregation rows carry their required marker on the column header rather than
   // on every cell, so they are counted here instead of through .requiredTag. The
@@ -1872,6 +1899,10 @@ function opiCountMissing($card) {
     if ($cell.hasClass('is-na') || $cell.hasClass('is-readonly')) { return; }
     if ($.trim($(this).val() || '') === '') { missing++; }
   });
+  // Period Targets is itself required: an indicator with no year column has none at all, which
+  // the validator reports as an empty list against the same container. Counted once, as it does.
+  var $targets = $card.find('.milestones-list').first();
+  if ($targets.exists() && !$targets.find('.opi-cell, .srfSlo').exists()) { missing++; }
   return missing;
 }
 
@@ -1922,4 +1953,190 @@ function opiRefreshSummary() {
   }
   $summary.text(text);
   opiDecorateSidebar();
+}
+
+/* ==========================================================================
+ * "Check for missing fields"
+ *
+ * The sidebar button runs OutcomeValidator over the saved section and comes back
+ * with the fields it flagged. programSubmit.js hands the result here instead of
+ * raising its own dialog: the redesign reports in place -- the flagged fields are
+ * outlined where they stand and the tally is announced through a live region --
+ * and it has no green check marks to send anyone looking for.
+ *
+ * The validator answers for what is stored, so the report is cleared as soon as
+ * the user edits the field it landed on.
+ * ========================================================================== */
+
+/**
+ * Resolves one invalidFields key onto the element that should carry its error.
+ *
+ * The keys are "<type>-<field name>", the shape fieldsValidation.js already reads after
+ * a save. A field with a control of its own is marked on the control; one the matrix
+ * keeps hidden -- a cell value, a row statement -- is marked on the stand-in element
+ * opiTagRowForValidation() stamped with the field name, non-word characters stripped.
+ *
+ * @param {string} key an invalidFields key, e.g. "input-outcomesForm[0].value"
+ * @return {jQuery} the element to mark, empty when the field is not on this page
+ */
+function opiValidationAnchor(key) {
+  var split = String(key).indexOf('-');
+  if (split < 0) { return $(); }
+  var field = String(key).substring(split + 1);
+  var $page = $('.opi-page');
+
+  // Deliberately not filtered by :visible. A collapsed card hides its whole body, so
+  // filtering here would lose every field inside it -- the report would say those gaps
+  // were "not on this page" and the card would never be opened to show them. Whether the
+  // element is on screen is the caller's problem, and the caller opens the card.
+  var $control = $page.find('[name="' + field + '"]').not('[type="hidden"]').first();
+  if ($control.exists()) { return $control; }
+
+  // The stand-in carries the field name as a class, which is also how the shared
+  // highlighter reaches a field it cannot select by name.
+  var $standIn = $page.find('.' + field.replace(/\W+/g, '')).first();
+  if ($standIn.exists()) { return $standIn; }
+
+  return $page.find('div[listname="' + field + '"]').first();
+}
+
+/**
+ * Drops every mark the last check left, without touching the ones the shared
+ * highlighter paints after a save -- only what this reporter added carries
+ * .opi-checkFlag.
+ */
+function opiClearValidationReport() {
+  var $page = $('.opi-page');
+  $page.find('.opi-checkNote').remove();
+  $page.find('.opi-checkFlag').removeClass('opi-checkFlag fieldError').removeAttr('aria-invalid');
+  $page.find('[data-opi-check-status]').removeClass('is-missing is-ok').text('');
+}
+
+/**
+ * Marks one field, and returns whether it took the mark.
+ * @param {jQuery} $anchor the element resolved for the field
+ * @return {boolean} true when something was marked
+ */
+function opiMarkInvalidField($anchor, message) {
+  if (!$anchor.exists() || $anchor.hasClass('opi-checkFlag')) { return $anchor.exists(); }
+  $anchor.addClass('opi-checkFlag fieldError');
+  if ($anchor.is('input, textarea, select')) {
+    $anchor.attr('aria-invalid', 'true');
+  }
+  // A matrix cell is one box in a grid of them: an inline note per cell would break the
+  // columns apart, so there the outline carries it and the card's own "n fields missing"
+  // badge says it in words. Every definition field has room for the note.
+  if ($anchor.closest('.opi-matrix').exists()) { return true; }
+  // The validator sends a note per field. Most say "Required Field", for which the design's own
+  // shorter wording reads better; anything else is specific to that field -- a closing year that
+  // is filled in but does not reach the last column, say -- and is shown as it came.
+  var note = (message && message !== 'Required Field') ? message : opiLabel('checkRequired');
+  if (!note) { return true; }
+  var $slot = $anchor.closest('.input, .form-group');
+  if (!$slot.exists()) { $slot = $anchor.parent(); }
+  if ($slot.find('.opi-checkNote').exists()) { return true; }
+  var id = 'opiCheckNote-' + (opiRowSeq++);
+  $slot.append($('<span class="opi-checkNote" id="' + id + '"></span>').text(note));
+  var described = $anchor.attr('aria-describedby');
+  $anchor.attr('aria-describedby', described ? described + ' ' + id : id);
+  return true;
+}
+
+/**
+ * Opens one indicator card if it is collapsed, so a field flagged inside it is not marked
+ * out of sight.
+ *
+ * Deliberately not a click on the caret: that toggles, so a card holding two flagged fields
+ * would be opened by the first and shut again by the second. The collapsed state lives in two
+ * places -- .is-collapsed on the card, which styles it, and .minimizeOutcome on the body,
+ * which hides it -- and "Collapse all" writes both, so both are cleared here.
+ * @param {jQuery} $card the .outcome card
+ */
+function opiExpandCard($card) {
+  if (!$card.exists() || !$card.hasClass('is-collapsed')) { return; }
+  $card.removeClass('is-collapsed');
+  $card.find('.to-minimize-outcome').removeClass('minimizeOutcome');
+  $card.find('.btn-expand-Outcome').attr('aria-expanded', 'true');
+}
+
+/**
+ * Presents the result of "Check for missing fields" on the OPI page.
+ *
+ * Registered as window.impactPathwayValidationReport, which programSubmit.js calls in
+ * place of its own dialog.
+ *
+ * @param {Array<Object>} results one entry per checked section
+ * @param {boolean} complete whether every checked section came back clean
+ */
+function opiReportValidation(results, complete) {
+  opiClearValidationReport();
+
+  var keys = [];
+  var messages = {};
+  $.each(results || [], function(i, result) {
+    if (!result || result.sectionName !== 'outcomes') { return; }
+    $.each(result.invalidFields || {}, function(key, message) {
+      keys.push(key);
+      messages[key] = message;
+    });
+  });
+
+  // Counted by element rather than by key: the validator reports against the stored record,
+  // where one gap on screen can be several -- an empty row statement is one box here and one
+  // entry per year column there. The number has to be the number of boxes the user can see
+  // outlined, or it sends them looking for something that is not there.
+  var $first = $();
+  var $flagged = $();
+  var unreached = 0;
+  $.each(keys, function(i, key) {
+    var $anchor = opiValidationAnchor(key);
+    if (!$anchor.exists()) { unreached++; return; }
+    opiExpandCard($anchor.closest('.outcome'));
+    if (!$anchor.hasClass('opi-checkFlag')) { $flagged = $flagged.add($anchor); }
+    opiMarkInvalidField($anchor, messages[key]);
+    if (!$first.exists()) { $first = $anchor; }
+  });
+
+  var $status = $('.opi-page, #secondaryMenu').find('[data-opi-check-status]');
+  var total = $flagged.length + unreached;
+  var message;
+  if (complete && total === 0) {
+    message = opiLabel('checkComplete');
+    $status.addClass('is-ok');
+  } else {
+    message = total + ' ' + opiLabel(total === 1 ? 'checkMissingOne' : 'checkMissingMany');
+    if (unreached > 0) {
+      message += ' ' + opiLabel('checkElsewhere');
+    }
+    $status.addClass('is-missing');
+  }
+  $status.text(message);
+
+  if ($first.exists()) {
+    $('html, body').animate({scrollTop: $first.offset().top - 140}, 400);
+    if ($first.is('input:visible, textarea:visible, select:visible')) {
+      $first.trigger('focus');
+    }
+  }
+}
+
+/**
+ * Clears a field's mark once the user answers it, so the report never outlives the gap
+ * it described. The count itself is repainted by the live recount already bound above.
+ */
+function opiAttachValidationClearing() {
+  $('.opi-page').on('change keyup', '.opi-checkFlag', function() {
+    var $field = $(this);
+    if ($.trim($field.val() || '') === '') { return; }
+    var described = $field.attr('aria-describedby');
+    $field.removeClass('opi-checkFlag fieldError').removeAttr('aria-invalid');
+    var $slot = $field.closest('.input, .form-group');
+    $slot.find('.opi-checkNote').remove();
+    if (described) { $field.removeAttr('aria-describedby'); }
+  });
+  // A cell value is marked on its wrapper, not on the input, so it is cleared from there.
+  $('.opi-page').on('change keyup', '.opi-cell__value', function() {
+    if ($.trim($(this).val() || '') === '') { return; }
+    $(this).closest('.opi-checkFlag').removeClass('opi-checkFlag fieldError');
+  });
 }

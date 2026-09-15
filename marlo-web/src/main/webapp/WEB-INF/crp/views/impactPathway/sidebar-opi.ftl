@@ -69,6 +69,9 @@
       <p class="projectValidateButton-message">[@s.text name="outcomes.sidebar.checkHint"][@s.param]${componentNoun?lower_case}[/@s.param][/@s.text]</p>
       <div id="validateProject-${crpProgramID}" class="projectValidateButton">[@s.text name="outcomes.sidebar.checkButton"/]</div>
       <div id="progressbar-${crpProgramID}" class="progressbar" style="display:none"></div>
+      [#-- What the check found, in words. outcomes.js writes here; a live region so the
+           result reaches a screen reader too, since the rest of it is field outlines. --]
+      <p class="opi-menu__checkStatus" data-opi-check-status role="status" aria-live="polite"></p>
     </div>
   [/#if]
 

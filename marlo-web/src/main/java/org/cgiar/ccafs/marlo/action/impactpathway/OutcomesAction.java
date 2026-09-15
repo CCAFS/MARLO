@@ -63,6 +63,7 @@ import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
+import org.cgiar.ccafs.marlo.utils.OutcomeComparators;
 import org.cgiar.ccafs.marlo.validation.impactpathway.OutcomeValidator;
 
 import java.io.BufferedReader;
@@ -239,16 +240,9 @@ public class OutcomesAction extends BaseAction {
   }
 
   public boolean canEditMileStone(CrpMilestone crpMilestone) {
-    if (crpMilestone.getYear() == null) {
-      return true;
-    }
-    if (crpMilestone.getYear().intValue() == -1) {
-      return true;
-    }
-    if (crpMilestone.getYear().intValue() >= this.getActualPhase().getYear()) {
-      return true;
-    }
-    return false;
+    // Delegates so the form and OutcomeValidator read the same rule from one place: a period
+    // target rendered read-only here must not be reported as a missing field there.
+    return this.canEditMilestoneYear(crpMilestone.getYear());
   }
 
   public List<PowbIndAssesmentRisk> getAssessmentRisks() {
@@ -444,14 +438,13 @@ public class OutcomesAction extends BaseAction {
   }
 
   public void loadInfo() {
-    Comparator<CrpMilestone> milestoneComparator = new ComparatorChain<>(new MilestoneComparators.YearComparator())
-      .thenComparing(new MilestoneComparators.ComposedIdComparator());
+    // Shared with ValidateSectionStatusImpactPathway, for the same reason the outcome order is.
+    Comparator<CrpMilestone> milestoneComparator = MilestoneComparators.renderOrder();
     try {
       if (outcomesForm != null && !outcomesForm.isEmpty()) {
-        outcomesForm.sort(Comparator.comparing((CrpProgramOutcome o) -> {
-          String desc = o.getDescription();
-          return desc != null && desc.toLowerCase().contains(APConstants.CRP_PROGRAM_OUTCOME_DEPRECATED.toLowerCase());
-        }).thenComparing(CrpProgramOutcome::getId));
+        // Shared with ValidateSectionStatusImpactPathway: the validator numbers its findings by
+        // position in the list, so the list it validates and the list rendered here must agree.
+        outcomesForm.sort(OutcomeComparators.renderOrder());
       }
 
     } catch (Exception e) {

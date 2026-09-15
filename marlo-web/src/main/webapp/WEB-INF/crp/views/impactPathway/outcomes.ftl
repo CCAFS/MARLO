@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091426",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091501",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091426",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091501",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -63,6 +63,11 @@
         data-button-show="[@s.text name="form.buttons.show"/]"
         data-button-hide="[@s.text name="form.buttons.hide"/]"
         data-status-complete="[@s.text name="outcomes.status.complete"/]"
+        data-check-required="[@s.text name="outcomes.check.required"/]"
+        data-check-complete="[@s.text name="outcomes.check.complete"/]"
+        data-check-missing-one="[@s.text name="outcomes.check.missing.one"/]"
+        data-check-missing-many="[@s.text name="outcomes.check.missing.many"/]"
+        data-check-elsewhere="[@s.text name="outcomes.check.elsewhere"/]"
         data-status-missing-one="[@s.text name="outcomes.status.missing.one"/]"
         data-status-missing-many="[@s.text name="outcomes.status.missing.many"/]"
         data-count-one="${countNounOne}"
