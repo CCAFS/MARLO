@@ -199,6 +199,31 @@ public class CrpUsersActionDirectoryTest {
   }
 
   /**
+   * The alias case, which is the one this screen exists to get right: the directory is asked about
+   * {@code new.user@cgiar.org} and answers with the person's <b>primary</b> address. A found
+   * {@link DirectoryPerson} carries the email the directory returned, not the one looked up, so keying the
+   * reuse on it sent {@code save()} back to the directory for a second answer -- in precisely the situation
+   * where one answer matters most.
+   */
+  @Test
+  public void anAnswerIsReusedWhenTheDirectoryRepliesWithAnotherAliasOfTheSamePerson() throws Exception {
+    this.directoryService.setMode(FakeDirectoryService.Mode.FOUND);
+    this.directoryService.setResponse(
+      DirectoryPerson.found("jane.smith@cgiar.org", "JSmith", "Jane", "Smith", DirectorySource.LDAP));
+
+    User formUser = new User();
+    formUser.setEmail(EMAIL);
+    this.action.setUser(formUser);
+    this.action.setSave(true);
+
+    this.action.validate();
+    this.action.save();
+
+    assertEquals("the reuse must be keyed on the address asked about, not on the one answered", 1,
+      this.directoryService.getInvocationCount());
+  }
+
+  /**
    * The reuse is keyed on the address. An answer resolved for a different email must never decide this
    * creation's branch, so {@code save()} asks again rather than trusting what validate() happens to hold.
    */

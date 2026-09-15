@@ -131,6 +131,17 @@ public class CrpUsersAction extends BaseAction {
    */
   private DirectoryPerson validatedDirectoryPerson;
 
+  /**
+   * The address {@code validate()} asked the directory about, kept separately from the answer on purpose.
+   * <p>
+   * A found {@link DirectoryPerson} carries the email <b>the directory returned</b>, not the one that was
+   * looked up ({@code LdapDirectoryService} builds it from the {@code LDAPUser}), and for a person with
+   * several corporate aliases those are different addresses. Keying the reuse on the answer's own email
+   * therefore missed exactly the alias case this screen has to handle, and quietly asked the directory a
+   * second time.
+   */
+  private String validatedDirectoryEmail;
+
   private final CustomParameterManager customParameterManager;
 
   private final ParameterManager parameterManager;
@@ -685,7 +696,7 @@ public class CrpUsersAction extends BaseAction {
    */
   private DirectoryPerson resolveDirectoryPerson(String email) {
     if (this.validatedDirectoryPerson != null && email != null
-      && email.equalsIgnoreCase(this.validatedDirectoryPerson.getEmail())) {
+      && email.equalsIgnoreCase(this.validatedDirectoryEmail)) {
       return this.validatedDirectoryPerson;
     }
     return this.directoryService.findByEmail(email);
@@ -1124,7 +1135,9 @@ public class CrpUsersAction extends BaseAction {
   public void validate() {
     if (save) {
       // The validator reaches the directory to decide whether the names are required. Keeping its answer is
-      // what lets save() stop asking a second time -- see resolveDirectoryPerson.
+      // what lets save() stop asking a second time -- see resolveDirectoryPerson. The address asked about is
+      // recorded here, from the form, because the answer cannot be trusted to carry it back.
+      this.validatedDirectoryEmail = this.user == null ? null : this.user.getEmail();
       this.validatedDirectoryPerson = validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
