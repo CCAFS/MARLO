@@ -89,6 +89,18 @@ function init() {
     cleanWrongData();
   });
 
+  // BUG-LOGIN-TERMS-001-FN-006: #terms is not a .login-input, so the binding above never reaches it.
+  // Found by walking the real flow: the user ticks the box -- correcting the exact thing the message
+  // asks for -- and the message stays on screen, because nothing clears it until the next attempt
+  // repaints it. Scoped deliberately: only when the box becomes CHECKED, and only while the terms
+  // message is the one showing, so toggling the checkbox cannot wipe an unrelated message such as
+  // incorrectPassword
+  $('input#terms').on("change", function() {
+    if($(this).is(':checked') && !$('.loginForm p.invalidField.termsRequired').hasClass("hidden")) {
+      cleanWrongData();
+    }
+  });
+
   // Keep the submit button disabled while the email/username field is empty, so step 1 can't be
   // submitted with nothing typed. "input" (not "change") so it reacts on every keystroke and on paste
   username.on("input", function() {
@@ -147,6 +159,12 @@ function init() {
       showPasswordStep();
     } else if(inputPassword.val() == "") {
       wrongData("voidPassword");
+    } else if(!termsAccepted()) {
+      // BUG-LOGIN-TERMS-001-FN-001: deliberately BEFORE checkPassword(). That function's beforeSend takes
+      // the button lock, and the terms refusal used to arrive only after validateUser.do had answered - at
+      // which point the lock was held and the success branch had nothing left to release it. Reported
+      // after voidPassword so an empty password still names itself first, the behaviour that ships today
+      return;
     } else {
       checkPassword(username.val(), inputPassword.val());
     }
@@ -240,6 +258,15 @@ function init() {
   // free, and it never submits the login form - it navigates to cognitoLogin.do instead. The
   // redirect is always user-initiated (design.md 5.5): nothing here fires without this click
   $('#login-cgiar-button').on('click', function() {
+    // BUG-LOGIN-TERMS-001-FN-002: this control is type="button", so the HTML5 "required" that used to sit
+    // on #terms never fired for it and the redirect carried &agree=false to a server that refuses it under
+    // the generic "cognitoFailed" category (SEC-006) - a dead end the user could not diagnose, one page
+    // load away from the step they were on. CognitoLoginAction's own guard STAYS (SEC-001): this endpoint
+    // is unauthenticated, so the client check is an affordance for the user, never a control
+    if(!termsAccepted()) {
+      return;
+    }
+
     window.location.href = baseUrl + "/cognitoLogin.do"
         + "?email=" + encodeURIComponent($.trim(username.val()))
         + "&globalUnitId=" + encodeURIComponent(selectedGlobalUnitId)
@@ -636,12 +663,14 @@ function loadAvailableItems(email) {
                 }
               });
 
-              // If the user previously accepted the terms and conditions, check the box by default
-              if(data.user.agree) {
-                $('input#terms').attr('checked', true);
-              } else {
-                $('input#terms').attr('checked', false);
-              }
+              // If the user previously accepted the terms and conditions, check the box by default.
+              // BUG-LOGIN-TERMS-001-FN-005: .prop(), not .attr(). jQuery's .attr('checked', ...) writes the
+              // CONTENT attribute, which stops driving the rendered state once the element's dirty-value
+              // flag is set - that is, once the user has clicked the checkbox even once. Since
+              // showEmailStep() never resets #terms either, a "Go back" plus a second lookup could leave a
+              // user whose record says agree=true looking at an unticked box this line believed it had
+              // ticked. "=== true" keeps a null agree_terms from rendering as accepted
+              $('input#terms').prop('checked', data.user.agree === true);
 
               // If user has access to the crpSession or crpSession is void, change to secondForm, if doesn't denied
               // access
@@ -773,7 +802,21 @@ function checkPassword(email,password) {
               clearLoginButtonLoading();
               updateNextButtonState();
             } else {
-              // Keep the spinner and the lock while the real form submits and the page navigates away
+              // Keep the spinner and the lock while the real form submits and the page navigates away.
+              // BUG-LOGIN-TERMS-001-FN-003: but a submit that constraint validation refuses NEVER FIRES,
+              // and this branch is the one holding the lock - so a refusal here left the button disabled
+              // with its spinner, "Go back" disabled and isSubmitting stuck true, recoverable only by
+              // reloading the page. The terms guard above makes that specific case unreachable; this check
+              // makes the whole CLASS unreachable, for whatever required control this form grows next.
+              // closest("form") rather than an id: the form's id is generated by the Struts theme
+              var loginFormElement = $("input#login_formSubmit").closest("form")[0];
+              if(loginFormElement && typeof loginFormElement.checkValidity == "function"
+                  && !loginFormElement.checkValidity()) {
+                clearLoginButtonLoading();
+                updateNextButtonState();
+                wrongData("serverError");
+                return;
+              }
               $("input#login_formSubmit").click();
             }
           },
@@ -797,8 +840,12 @@ function wrongData(type,customMessage) {
   // event never fires and a message from the previous attempt used to stay on screen and stack
   cleanWrongData();
 
-  // bottom red line in input
-  $('input.login-input').addClass("wrongData");
+  // bottom red line in input. BUG-LOGIN-TERMS-001: not for "termsRequired" - neither the email nor the
+  // password input is what is wrong there, and underlining both sends the user to check fields they have
+  // already filled in correctly
+  if(type != "termsRequired") {
+    $('input.login-input').addClass("wrongData");
+  }
 
   // {type} must be a bare CSS class. Passing a whole sentence built an invalid selector
   // (".loginForm p.invalidField.An error has ocurred...") and made jQuery throw, which aborted the
@@ -821,8 +868,22 @@ function wrongData(type,customMessage) {
   // Set focus on the wrong field
   if(type == "voidPassword" || type == "incorrectPassword") {
     inputPassword.focus();
+  } else if(type == "termsRequired") {
+    // BUG-LOGIN-TERMS-001: the checkbox, not the email field. By step 3 the email input sits inside a step
+    // carrying .hidden, which is display:none (global.css) - focusing a display:none element is a no-op,
+    // so the fallback below would leave the message on screen with nothing pointing at the control to act
+    // on. On the COGNITO branch the password input does not exist at all, making this the only target
+    $('input#terms').focus();
   } else {
     username.focus();
+  }
+
+  // BUG-LOGIN-TERMS-001: "termsRequired" names a control the user has not completed yet, not an outcome
+  // worth reporting. postMessageToSlack below is a SYNCHRONOUS XMLHttpRequest (utils.js), so routing the
+  // most frequent slip this form can produce through it would block the UI thread on a webhook round trip
+  // and bury the real notifications underneath it
+  if(type == "termsRequired") {
+    return;
   }
 
   var slackMessage = {
@@ -888,6 +949,18 @@ function clearLoginButtonLoading() {
   $("input#login_next").val("Log in");
   $('.login-back-container').removeClass("is-busy");
   $('.login-back-container .loginBack').attr("disabled", false);
+}
+
+// BUG-LOGIN-TERMS-001-FN-001/FN-002: the terms gate, shared by both step-3 branches. It replaces the HTML5
+// "required" that used to sit on #terms - see loginForm.ftl for why that attribute could not work on either
+// one. Returns true when the attempt may proceed; shows the message, focuses the checkbox and returns false
+// otherwise. One helper, two call sites, so the branches cannot drift apart
+function termsAccepted() {
+  if($('input#terms').is(':checked')) {
+    return true;
+  }
+  wrongData("termsRequired");
+  return false;
 }
 
 // Permissive check for "looks like a usable email address": a single "@", something before it, and a

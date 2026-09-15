@@ -146,6 +146,10 @@
         [#-- CHG-COGNITO-AUTH-001-T12 fix (audit Issue 2): shown when "Log in" is pressed on step 2
              with no card ever selected, so mode cannot be composed safely --]
         <p class="invalidField selectProject hidden">[@s.text name="login.error.invalidField.selectProject"/]</p>
+        [#-- BUG-LOGIN-TERMS-001-UI-001: raised by login.js before any request or redirect is started, so
+             the terms gate never locks the button. It joins this block on purpose -- cleanWrongData()
+             clears every .invalidField here, which is what keeps exactly one login message on screen --]
+        <p class="invalidField termsRequired hidden">[@s.text name="login.error.invalidField.termsRequired"/]</p>
 
         [#-- CHG-COGNITO-AUTH-001-T22 (V-6): the ONLY two categories a refused Cognito login may ever
              render, selected server-side by LoginAction/CognitoLoginAction's own isCognitoUnavailable()/
@@ -156,9 +160,18 @@
         <p class="invalidField cognitoUnavailable${(cognitoUnavailable!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoUnavailable"/]</p>
         <p class="invalidField cognitoFailed${(cognitoFailed!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoFailed"/]</p>
 
-        [#-- Terms and conditions checkbox --]
+        [#-- Terms and conditions checkbox.
+             BUG-LOGIN-TERMS-001-UI-002: deliberately NO "required" here. HTML5 constraint validation
+             cannot express this gate on either branch. On LOCAL the "Log in" click is preventDefault()ed
+             (login.js), so the attribute never fired on the click the user makes; it fired instead on the
+             programmatic submit of #login_formSubmit at the end of the validateUser.do round trip, which
+             aborted the submission while the button lock taken in beforeSend was still held, with nothing
+             left to release it. On COGNITO #login-cgiar-button is type="button" and never submits this
+             form, so the attribute could not fire at all. Its message is also browser-supplied, so it
+             could never be i18n-keyed. The gate now lives in login.js's termsAccepted(), shared by both
+             branches. Do not put it back --]
         <div class="terms-container hidden">
-          <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
+          <input type="checkbox" name="user.agree" id="terms" class="terms" value="true"> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
         </div>
 
         [#-- field recaptcha--]

@@ -133,9 +133,17 @@ public class ValidateUserAction extends BaseAction {
     }
 
     if (user != null) {
-      user.setAgreeTerms(agree);
+      // BUG-LOGIN-TERMS-001-DA-001: acceptance is RECORDED here, never revoked. Writing the raw parameter
+      // meant an attempt made with the terms box unchecked overwrote a previously granted
+      // users.agree_terms = 1 with 0 -- and that same attempt then failed to complete at all, so the row
+      // was downgraded by a login that never happened. The next visit therefore arrived with the box
+      // unticked, which reproduced the failure, which downgraded it again. Revocation is not an operation
+      // this endpoint offers. saveLastLogin stays the write path: it is the @Transactional sibling, and a
+      // write through saveUser would not be flushed.
+      if (Boolean.TRUE.equals(agree)) {
+        user.setAgreeTerms(Boolean.TRUE);
+      }
       userManager.saveLastLogin(user);
-
     }
 
     return SUCCESS;
