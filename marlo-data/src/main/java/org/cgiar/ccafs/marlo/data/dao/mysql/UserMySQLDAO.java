@@ -131,7 +131,11 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
   }
 
   @Override
+  @Transactional
   public User saveUser(User user) {
+    // @Transactional is required for the same reason as in saveLastLogin: it makes Spring start a transaction
+    // and switch the OSIV session from FlushMode.MANUAL to AUTO, so the update is flushed. Without it the
+    // change stays in memory, which is how new users kept their active flag and never got the welcome email.
     if (user.getId() == null) {
       super.saveEntity(user);
     } else {

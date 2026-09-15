@@ -290,9 +290,11 @@
           [#if displayFieldName == "" ]
             
             [#assign key][@s.property value="${name}"/][/#assign]
-            [#assign customValue][#if !stringKey][@s.property value="${listName}[${key}]"/][#else][@s.property value="${listName}['${key}']"/][/#if][/#assign]
-            [#if (key?markup_string == "-1") || (customValue?markup_string == "-1")]${requiredText}   [@s.text name="form.values.fieldEmpty" /][/#if] 
-            [#if customValue?has_content]
+            [#assign cleanKey = (key?is_markup_output)?then(key?markup_string, key)]
+            [#assign customValue][#if !stringKey][@s.property value="${listName}[${cleanKey}]"/][#else][@s.property value="${listName}['${cleanKey}']"/][/#if][/#assign]
+            [#if (key?markup_string == "-1") || (customValue?markup_string == "-1")]
+              ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+            [#elseif customValue?has_content]
               ${customValue}
             [#else]
               [#if !(key?has_content)]
