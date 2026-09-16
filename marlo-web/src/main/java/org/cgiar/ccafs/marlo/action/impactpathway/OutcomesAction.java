@@ -1011,7 +1011,10 @@ public class OutcomesAction extends BaseAction {
 
   @Override
   public String save() {
-    if (this.hasPermission("canEdit")) {
+    // In a closed phase there is no phase-scoped permission to match: getPermissions only
+    // materialises those for phases with editable = 1, so a CRP-Admin holds none and only Super
+    // Admin's "*" would still pass. The second test is what lets both of them correct a past cycle.
+    if (this.hasPermission("canEdit") || this.canEditClosedPhaseOutcomes()) {
       selectedProgram = crpProgramManager.getCrpProgramById(crpProgramID);
       this.saveCrpProgramOutcome();
       // why is this line twice in a row?
