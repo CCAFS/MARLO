@@ -1621,7 +1621,6 @@ span.icon-20 {
 }
 
 .opi-cell__create:hover { border-color: var(--opi-primary); color: var(--opi-primary); }
-.opi-cell__dash { color: #C3CBD5; }
 
 .opi-matrix__leftovers { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 

@@ -294,6 +294,14 @@
 
 [#-----------------------------------  Outcomes Macros  -------------------------------------------]
 
+[#-- The key a period-target row is grouped on. Statements reach crp_milestones
+     through copy/paste, so the same sentence is stored with a doubled space here, a
+     non-breaking space there, and a zero-width space left over from a Word paste at
+     the end. None of that is visible, and none of it may split a row. --]
+[#function opiStmtKey raw]
+  [#return ((raw!"")?replace("\xA0", " ")?replace("\x200B", "")?replace("\x200C", "")?replace("\x200D", "")?replace("\xFEFF", "")?replace("\\s+", " ", "r"))?trim /]
+[/#function]
+
 [#macro outcomeMacro outcome name index isTemplate=false]
   [#assign outcomeCustomName= "${name}[${index}]" /]
   [#local isAiccraUI = action.isAiccra() /]
@@ -303,25 +311,49 @@
   [#local subIdoCount = (outcome.subIdos?size)!0 /]
   [#local nowYear = (actualPhase.year)!-99 /]
 
-  [#-- Group the flat milestone list into the design's matrix: distinct statements
-       are the disaggregation rows, distinct years are the period-target columns. --]
+  [#-- Group the flat milestone list into the design's matrix: statements are the
+       disaggregation rows, distinct years are the period-target columns.
+
+       Rows are keyed on opiStmtKey() and every milestone lands on one: a milestone
+       whose row already holds its year opens a further row with the same statement
+       rather than being left out. Both rules replace a plain comparison of the stored
+       titles, under which a statement that differed only in invisible characters
+       opened a second row for the same indicator -- the two then split the year
+       columns between them, so every year a row did not own rendered as an empty
+       cell, and a period target that had been captured showed no input at all.
+
+       rowOf maps each milestone to its row, and is what the disaggregations table and
+       the matrix match on below; two rows may legitimately carry the same statement,
+       so neither can go back to matching on the text. --]
+  [#local outcomeStmt = opiStmtKey((outcome.description)!"") /]
   [#local rowStmts = [] /]
+  [#local rowOf = [] /]
+  [#local rowYearTaken = [] /]
   [#local yearCols = [] /]
   [#if !isTemplate && outcome.milestones?has_content]
+    [#-- The row carrying the indicator's own statement is the principal one, so it is
+         opened ahead of the rest and keeps the first position. --]
     [#list outcome.milestones as m]
-      [#local mStmt = ((m.title)!"")?trim /]
-      [#if !rowStmts?seq_contains(mStmt)][#local rowStmts = rowStmts + [mStmt] /][/#if]
+      [#if opiStmtKey((m.title)!"") == outcomeStmt][#local rowStmts = [outcomeStmt] /][#break][/#if]
+    [/#list]
+    [#list outcome.milestones as m]
+      [#local mStmt = opiStmtKey((m.title)!"") /]
       [#local mYear = (m.year)!-1 /]
+      [#local mRow = -1 /]
+      [#list rowStmts as s]
+        [#if s == mStmt && !rowYearTaken?seq_contains("${s_index?c}@${mYear?c}")]
+          [#local mRow = s_index /][#break]
+        [/#if]
+      [/#list]
+      [#if mRow == -1]
+        [#local rowStmts = rowStmts + [mStmt] /]
+        [#local mRow = rowStmts?size - 1 /]
+      [/#if]
+      [#local rowYearTaken = rowYearTaken + ["${mRow?c}@${mYear?c}"] /]
+      [#local rowOf = rowOf + [mRow] /]
       [#if !yearCols?seq_contains(mYear)][#local yearCols = yearCols + [mYear] /][/#if]
     [/#list]
     [#local yearCols = yearCols?sort /]
-  [/#if]
-  [#-- The row matching the outcome statement is the principal one and goes first. --]
-  [#local outcomeStmt = ((outcome.description)!"")?trim /]
-  [#if rowStmts?seq_contains(outcomeStmt)]
-    [#local reordered = [outcomeStmt] /]
-    [#list rowStmts as s][#if s != outcomeStmt][#local reordered = reordered + [s] /][/#if][/#list]
-    [#local rowStmts = reordered /]
   [/#if]
   [#if rowStmts?size == 0][#local rowStmts = [outcomeStmt] /][/#if]
   [#-- The answer is stored in crp_program_outcomes.has_disaggregations: null = never answered,
@@ -474,7 +506,7 @@
               [#local rowCode = "" /][#local rowUnitId = "-1" /][#local rowDeletable = true /][#local rowHasMilestones = false /]
               [#if !isTemplate]
                 [#list outcome.milestones![] as m]
-                  [#if ((m.title)!"")?trim == stmt]
+                  [#if rowOf[m_index] == stmt_index]
                     [#local rowHasMilestones = true /]
                     [#if rowCode == ""][#local rowCode = (m.code)!"" /][/#if]
                     [#if rowUnitId == "-1" && (m.srfTargetUnit.id)??][#local rowUnitId = m.srfTargetUnit.id?c /][/#if]
@@ -608,7 +640,7 @@
                     [#local foundIdx = -1 /]
                     [#if !isTemplate]
                       [#list outcome.milestones![] as m]
-                        [#if !placed?seq_contains(m_index) && ((m.title)!"")?trim == stmt && ((m.year)!-1) == y]
+                        [#if !placed?seq_contains(m_index) && rowOf[m_index] == stmt_index && ((m.year)!-1) == y]
                           [#local foundIdx = m_index /]
                           [#local placed = placed + [m_index] /]
                           [#break]
@@ -618,9 +650,34 @@
                     [#if foundIdx != -1]
                       [@opiCellMacro milestone=outcome.milestones[foundIdx] name="${outcomeCustomName}.milestones" index=foundIdx rowStmt=stmt /]
                     [#else]
-                      <span class="opi-cell is-empty" data-opi-year="${y}">
-                        [#if editable]<button type="button" class="opi-cell__create" title="[@s.text name="outcomes.matrix.addValue"/]">+</button>[#else]<span class="opi-cell__dash">&mdash;</span>[/#if]
-                      </span>
+                      [#-- A (row, year) with no milestone behind it. It is only ever marked
+                           .is-empty when the user could still fill it -- outcomes.js opens
+                           those on load, and the "+" is the fallback if the script does not
+                           run. A gap in a year this phase can no longer edit cannot be filled
+                           (the milestone behind it would be refused just like the stored ones
+                           of that year), so it renders as a locked cell instead. --]
+                      [#local gapEditable = editable && action.canEditMilestoneYear(y) /]
+                      [#if gapEditable]
+                        <span class="opi-cell is-empty" data-opi-year="${y}">
+                          <button type="button" class="opi-cell__create" title="[@s.text name="outcomes.matrix.addValue"/]">+</button>
+                        </span>
+                      [#else]
+                        [#-- The same box every other cell has rather than a bare dash, so the
+                             row reads as one continuous series and a year is never a hole. It
+                             is disabled and unnamed, so nothing is submitted for it and no
+                             milestone is invented. Left blank on purpose: 0 is a real target
+                             in this data -- crp_milestones genuinely stores 0.00 -- so writing
+                             one here could not be told apart from a target somebody set to
+                             zero. opiRefreshCell() paints the unit affix and, because the cell
+                             is .is-readonly, leaves it out of the missing-value count. --]
+                        <span class="opi-cell is-readonly" data-opi-year="${y}">
+                          <span class="opi-cell__valueWrap">
+                            <span class="opi-cell__affix" aria-hidden="true"></span>
+                            <input type="text" class="opi-cell__value" value="" aria-label="${stmt} ${y}" disabled/>
+                          </span>
+                          <span class="opi-cell__hint" data-opi-hint></span>
+                        </span>
+                      [/#if]
                     [/#if]
                   [/#list]
                 </div>
@@ -779,7 +836,12 @@
     <input type="hidden" class="mileStoneId" name="${cellName}.id" value="${(milestone.id)!}"/>
     <input type="hidden" class="mileStoneComposeId" name="${cellName}.composeID" value="${(milestone.composeID)!}"/>
     [#if cellEditable || isTemplate]
-      <input type="hidden" class="opi-cell__title" name="${cellName}.title" value="${(milestone.title)!rowStmt}"/>
+      [#-- The row's statement, not the milestone's stored one: the two differ only when
+           the stored title carries the invisible characters opiStmtKey() folds away, and
+           submitting the row's version is what settles that drift on the next save.
+           outcomes.js already writes the same value here whenever the row is edited.
+           Only editable cells do it -- a locked year keeps its title untouched. --]
+      <input type="hidden" class="opi-cell__title" name="${cellName}.title" value="${rowStmt}"/>
       <input type="hidden" class="opi-cell__code" name="${cellName}.code" value="${(milestone.code)!}"/>
       <input type="hidden" class="opi-cell__year" name="${cellName}.year" value="${(milestone.year)!}"/>
       <input type="hidden" class="opi-cell__unit" name="${cellName}.srfTargetUnit.id" value="${(milestone.srfTargetUnit.id)!-1}"/>
