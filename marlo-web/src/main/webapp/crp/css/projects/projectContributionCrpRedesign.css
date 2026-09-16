@@ -1,0 +1,258 @@
+/*
+ * Cluster contribution to performance indicators - A2-2439 redesign.
+ *
+ * Everything here is scoped under .cpi-page so the rules cannot reach the shared
+ * page chrome: global.css owns .phaseRow, .borderBox and the project menu, and
+ * those live on every screen.
+ */
+
+.cpi-page {
+  --cpi-ink: #1F2A37;
+  --cpi-muted: #6B7280;
+  --cpi-line: #E5E9EF;
+  --cpi-brand: #0277A2;
+  --cpi-brand-dark: #015C7D;
+  --cpi-surface: #FFFFFF;
+  --cpi-soft: #F7F9FB;
+}
+
+/* ── Section header ─────────────────────────────────────────────── */
+.cpi-page .cpi-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+.cpi-page .cpi-head__titles { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cpi-page .cpi-head__title { margin: 0; font-size: 22px; font-weight: 600; color: var(--cpi-ink); }
+.cpi-page .cpi-head__subtitle { font-size: 13px; color: var(--cpi-muted); }
+.cpi-page .cpi-head__back { flex: none; font-size: 13px; font-weight: 600; color: var(--cpi-brand); }
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+.cpi-page .cpi-card {
+  background: var(--cpi-surface);
+  border: 1px solid var(--cpi-line);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  padding: 16px 18px 18px;
+  margin-bottom: 14px;
+}
+.cpi-page .cpi-card__title {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--cpi-brand);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cpi-brand);
+}
+
+/* ── Indicator card ─────────────────────────────────────────────── */
+.cpi-page .cpi-indicator { background: var(--cpi-soft); }
+.cpi-page .cpi-indicator__top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.cpi-page .cpi-indicator__code {
+  flex: none;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #EAF1F5;
+  font: 700 12px ui-monospace, Menlo, monospace;
+  color: #15719B;
+}
+.cpi-page .cpi-indicator__name { flex: 1; min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--cpi-ink); }
+.cpi-page .cpi-indicator__details { flex: none; display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.cpi-page .cpi-indicator__details p { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--cpi-brand); }
+.cpi-page .cpi-indicator__meta { display: block; font-size: 13px; color: #4B5563; }
+.cpi-page .cpi-indicator__note { display: block; margin-top: 6px; font-size: 12.5px; color: var(--cpi-muted); }
+
+/* ── Period tabs ────────────────────────────────────────────────── */
+.cpi-page .cpi-periods__title { margin-bottom: 10px; border-bottom: 0; padding-bottom: 0; }
+.cpi-page .cpi-tabs { border-bottom: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.cpi-page .cpi-tabs > li > a {
+  margin: 0;
+  border: 1px solid var(--cpi-line);
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: #F1F3F6;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #4B5563;
+}
+.cpi-page .cpi-tabs > li.active > a,
+.cpi-page .cpi-tabs > li.active > a:hover,
+.cpi-page .cpi-tabs > li.active > a:focus {
+  background: var(--cpi-surface);
+  border: 1px solid var(--cpi-line);
+  border-bottom: 0;
+  font-weight: 600;
+  color: var(--cpi-ink);
+}
+.cpi-page .cpi-tabs__now {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #C7401C;
+}
+.cpi-page .cpi-panes {
+  background: var(--cpi-surface);
+  border: 1px solid var(--cpi-line);
+  border-radius: 0 12px 12px 12px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  padding: 18px 20px 20px;
+}
+
+/* ── Period pane ────────────────────────────────────────────────── */
+.cpi-page .cpi-pane__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.cpi-page .cpi-pane__headline { font-size: 13.5px; font-weight: 600; color: var(--cpi-ink); }
+.cpi-page .cpi-pane__headline strong { font-size: 15px; }
+.cpi-page .cpi-chip {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: #F1F3F6;
+  border: 1px solid #E0E5EB;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #4B5563;
+}
+.cpi-page .cpi-evidence { display: flex; flex-direction: column; gap: 7px; }
+.cpi-page .cpi-evidence__item {
+  padding: 5px 12px;
+  border: 1px solid #BEDFEC;
+  border-radius: 8px;
+  background: #F2F9FC;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #15719B;
+  white-space: nowrap;
+}
+
+/* ── Field groups ───────────────────────────────────────────────
+ * The controls come from customForm (forms.ftl), so the markup is
+ * .input > label + control, with the feedback bubble and the help icon
+ * inline between them. Only the presentation is restated here; the macro
+ * keeps owning the labels, the required flags and the word counters.
+ */
+.cpi-page .cpi-fields { margin-top: 4px; }
+.cpi-page .cpi-fields__values { display: flex; flex-wrap: wrap; gap: 18px; }
+.cpi-page .cpi-fields__values > .cpi-field { flex: 1 1 210px; min-width: 0; margin-bottom: 8px; }
+.cpi-page .cpi-field { margin-bottom: 16px; position: relative; }
+.cpi-page .cpi-field .feedback-flex-items { height: 0; }
+.cpi-page .cpi-field .input { position: relative; }
+
+.cpi-page .cpi-field label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--cpi-ink);
+}
+.cpi-page .cpi-field label.readOnly { color: var(--cpi-muted); }
+.cpi-page .cpi-field label .requiredTag { color: #C7401C; }
+.cpi-page .cpi-field .input > img { width: 14px; height: 14px; vertical-align: -2px; }
+
+/* The feedback bubble is absolutely positioned so it cannot break the row. */
+.cpi-page .cpi-field .commentNumberContainer { position: absolute; top: 0; right: 0; }
+
+.cpi-page .cpi-field input.form-control,
+.cpi-page .cpi-field textarea.form-control {
+  height: 36px;
+  padding: 0 11px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 13.5px;
+  color: var(--cpi-ink);
+  background: #fff;
+}
+.cpi-page .cpi-field input.form-control:focus,
+.cpi-page .cpi-field textarea.form-control:focus {
+  border-color: var(--cpi-brand);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+}
+.cpi-page .cpi-field input.targetValueNumber { text-align: right; font-weight: 600; }
+.cpi-page .cpi-field textarea.form-control {
+  height: auto;
+  min-height: 86px;
+  padding: 9px 11px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+/* Committed value: prose, the way the design shows a field the phase has closed. */
+.cpi-page .cpi-field.is-read .input > p {
+  margin: 0;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cpi-ink);
+}
+.cpi-page .cpi-field--text.is-read .input > p {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 960px;
+}
+/* Not open yet: visible, clearly inert. */
+.cpi-page .cpi-field.is-locked .input > p {
+  margin: 0;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 8px 11px;
+  border: 1px dashed #DDE3EA;
+  border-radius: 8px;
+  background: #F5F7FA;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9AA4B0;
+}
+.cpi-page .cpi-field .fieldError { display: block; font-size: 11.5px; color: #C7401C; }
+.cpi-page .cpi-field__note { display: block; margin-top: 5px; font-size: 11.5px; line-height: 1.45; color: var(--cpi-muted); }
+.cpi-page .cpi-field .limitWords { font-size: 11.5px; color: var(--cpi-muted); }
+.cpi-page .cpi-fields__relations { margin-top: 2px; }
+
+/* ── Disaggregated targets ──────────────────────────────────────── */
+.cpi-page .cpi-dts { margin-top: 6px; }
+.cpi-page .cpi-dts__label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--cpi-ink); }
+.cpi-page .cpi-dts__note { font-size: 12px; font-weight: 400; color: var(--cpi-muted); }
+.cpi-page .cpi-dt {
+  border: 1px solid var(--cpi-line);
+  border-radius: 10px;
+  background: var(--cpi-surface);
+  margin-bottom: 10px;
+}
+.cpi-page .cpi-dt__head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; }
+.cpi-page .cpi-dt__caret {
+  flex: none;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid #4B5563;
+  transition: transform .15s ease;
+}
+.cpi-page .cpi-dt__head[aria-expanded="true"] .cpi-dt__caret { transform: rotate(90deg); }
+.cpi-page .cpi-dt__title { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--cpi-brand); }
+.cpi-page .cpi-dt__body { padding: 4px 14px 14px 30px; border-top: 1px solid #F1F4F7; }
+.cpi-page .cpi-dt--empty { padding: 9px 12px; background: var(--cpi-soft); }
+.cpi-page .cpi-dt--empty .cpi-dt__note { font-size: 12.5px; color: var(--cpi-muted); }
+.cpi-page .cpi-empty { padding: 14px; text-align: center; color: var(--cpi-muted); }
+
+/* ── Additional questions ───────────────────────────────────────── */
+.cpi-page .cpi-questions .baselineIndicator { border: 1px solid var(--cpi-line); border-radius: 10px; margin-bottom: 12px; }

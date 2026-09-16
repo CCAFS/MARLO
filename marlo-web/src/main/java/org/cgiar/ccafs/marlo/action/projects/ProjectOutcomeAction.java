@@ -62,6 +62,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 
 import java.io.BufferedReader;
@@ -1569,7 +1570,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
         .collect(Collectors.toList());
-      milestones.sort(Comparator.comparing(CrpMilestone::getYear));
+      milestones.sort(MilestoneComparators.renderOrder());
     }
 
     if (this.isAiccra()) {
