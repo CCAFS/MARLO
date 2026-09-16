@@ -16,7 +16,7 @@
   "https://unpkg.com/primevue@4.5.5/umd/primevue.min.js",
   "https://unpkg.com/@primeuix/themes@2.0.3/umd/aura.js",
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20250828",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20260904",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826"
 ] /]

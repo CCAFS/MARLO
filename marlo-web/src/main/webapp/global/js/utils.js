@@ -820,7 +820,7 @@ function setCustomEvent(event_category,eventName,event_label) {
 /**
  * Sets the format for input fields with numbers to have commas and separators.
  */
-function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions = {}) {
+function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions = {}, fallbackTargetUnit = undefined) {
 
   $(inputSelector).each(function (i, ele) {
 
@@ -836,6 +836,12 @@ function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions 
     } else {
       $brotherContent = $('.targetUnit-block');
       targetUnitSelected = $brotherContent.attr('data-targetunit');
+    }
+
+    // Sections with no Target Unit at all can state their own through
+    // fallbackTargetUnit; without one the icon stays '?'.
+    if (targetUnitSelected === undefined) {
+      targetUnitSelected = fallbackTargetUnit;
     }
 
     const modifiedIcon = (targetUnit) => {
@@ -885,7 +891,12 @@ function setFormatInput(inputSelector = "input.targetValueNumber", otherOptions 
     $parent.attr('data-targetunit', modifiedIcon(targetUnitSelected));
 
     //add validations to input field through initNumberField
-    initNumberField(name, modfiedOptions(targetUnitSelected));
+    // initNumberField writes thousands separators back into the field, and an
+    // <input type="number"> rejects a value with commas outright - it blanks
+    // it - so number fields keep the step / floor guard forms.ftl gives them.
+    if ($(ele).attr('type') !== 'number') {
+      initNumberField(name, modfiedOptions(targetUnitSelected));
+    }
 
 
   });

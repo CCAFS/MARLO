@@ -171,6 +171,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String CANCEL = "cancel";
 
+  /** Action-name suffix of the Overall Performance Indicators section. @see #canEditClosedPhaseOutcomes() */
+  private static final String OUTCOMES_ACTION_SUFFIX = "/outcomes";
+
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
@@ -1407,9 +1410,57 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
   }
 
+  /**
+   * Whether this user may edit the Overall Performance Indicators section while its phase is closed.
+   *
+   * A closed phase is read-only for everyone else. Admin and Super Admin keep their editing rights
+   * here because they are the ones who correct a past cycle. The exception is deliberately tied to
+   * this one section: the interceptor that applies it is shared with cluster activities, program
+   * impacts, research topics, outputs and next users, and none of those were part of the decision.
+   *
+   * Two places ask this and they must not drift. EditImpactPathwayInterceptor decides what the form
+   * renders; OutcomesAction.save() decides what is accepted. The second cannot lean on the ordinary
+   * phase-scoped permissions, because the getPermissions procedure only materialises those for
+   * phases with editable = 1 -- in a closed phase a CRP-Admin holds none of them, and only Super
+   * Admin's "*" still matches.
+   *
+   * @return true when the closed-phase lock should not apply to this user on this request
+   */
+  public boolean canEditClosedPhaseOutcomes() {
+    Phase actual = this.getActualPhase();
+    // An open phase is governed by the ordinary permissions; there is nothing to lift.
+    if (actual == null || actual.getEditable() == null || actual.getEditable().booleanValue()) {
+      return false;
+    }
+    if (!this.canAccessSuperAdmin() && !this.canEditCrpAdmin()) {
+      return false;
+    }
+    String action = this.getActionName();
+    return action != null && action.endsWith(BaseAction.OUTCOMES_ACTION_SUFFIX);
+  }
+
   public boolean canEditCrpAdmin() {
     String permission = this.generatePermission(Permission.CRP_ADMIN_EDIT_PRIVILEGES, this.getCrpSession());
     return this.securityContext.hasPermission(permission);
+  }
+
+  /**
+   * Tells whether a period target (milestone) belonging to the given year can still be edited in
+   * the phase being rendered. Phased data is forward-only, so a target whose year is behind the
+   * phase year is rendered read-only and can no longer be answered. A target with no year yet, or
+   * carrying the -1 placeholder, is still being created and stays editable.
+   * This is the single definition of that rule: the form renders from it through
+   * OutcomesAction.canEditMileStone(), and OutcomeValidator scopes its requiredness to it, so a
+   * field the user cannot fill is never reported as missing.
+   *
+   * @param year the year the period target belongs to
+   * @return true when the phase being rendered can still edit it
+   */
+  public boolean canEditMilestoneYear(Integer year) {
+    if (year == null || year.intValue() == -1) {
+      return true;
+    }
+    return year.intValue() >= this.getActualPhase().getYear();
   }
 
   /**
