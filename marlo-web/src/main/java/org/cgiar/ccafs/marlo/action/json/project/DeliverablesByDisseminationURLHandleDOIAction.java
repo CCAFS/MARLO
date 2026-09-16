@@ -144,23 +144,9 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
           if (deliverableMetadataElements != null) {
 
-            try {
-              deliverableDOI = deliverableMetadataElements.stream()
-                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                  && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
-                .findFirst().orElse(null).getElementValue();
-            } catch (Exception e) {
-              Log.info(e);
-            }
-
-            try {
-              deliverableHandle = deliverableMetadataElements.stream()
-                .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                  && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
-                .findFirst().orElse(null).getElementValue();
-            } catch (Exception e) {
-              Log.info(e);
-            }
+            deliverableDOI = this.getMetadataElementValue(deliverableMetadataElements, DOI_METADATA_ELEMENT_ID);
+            deliverableHandle =
+              this.getMetadataElementValue(deliverableMetadataElements, HANDLE_METADATA_ELEMENT_ID);
 
 
             try {

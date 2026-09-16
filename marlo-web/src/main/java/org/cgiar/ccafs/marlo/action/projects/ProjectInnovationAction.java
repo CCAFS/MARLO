@@ -2134,21 +2134,10 @@ public class ProjectInnovationAction extends BaseAction {
               }
             }
 
-            try {
-              handle = deliverable.getDeliverableMetadataElements().stream()
-                  .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                      && me.getMetadataElement().getId().longValue() == 35L
-                      && me.getPhase().equals(this.getActualPhase())
-                      && me.getDeliverable().getId().equals(deliverable.getId())
-                      && !StringUtils.isBlank(me.getElementValue()))
-                  .findFirst().orElse(null).getElementValue();
-              if (handle == null || handle.isEmpty()) {
-                handle = "Not defined";
-              }
-
-            } catch (Exception e) {
-              logger.debug("The deliverable {} has no handle metadata element in {}", deliverable.getId(),
-                  this.getActualPhase(), e);
+            handle = this.getMetadataElementValue(deliverable.getDeliverableMetadataElements(),
+                HANDLE_METADATA_ELEMENT_ID, deliverable.getId());
+            if (handle == null || handle.isEmpty()) {
+              handle = "Not defined";
             }
             try {
               if (deliverable.getDissemination() != null

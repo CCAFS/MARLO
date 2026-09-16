@@ -1825,28 +1825,10 @@ public class DeliverableAction extends BaseAction {
             deliverable.setMetadataElements(new ArrayList<>(deliverable.getDeliverableMetadataElements().stream()
               .filter(c -> c.isActive() && c.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
           }
-          try {
-            DOI = deliverable.getDeliverableMetadataElements().stream()
-              .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                && me.getMetadataElement().getId().longValue() == 36L && me.getPhase().equals(this.getActualPhase())
-                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-              .findFirst().orElse(null).getElementValue();
-          } catch (Exception e) {
-            logger.debug("The deliverable {} has no DOI metadata element in {}", deliverableID,
-              this.getActualPhase(), e);
-          }
-
-
-          try {
-            handle = deliverable.getDeliverableMetadataElements().stream()
-              .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-                && me.getMetadataElement().getId().longValue() == 35L && me.getPhase().equals(this.getActualPhase())
-                && me.getDeliverable().getId().equals(deliverableID) && !StringUtils.isBlank(me.getElementValue()))
-              .findFirst().orElse(null).getElementValue();
-          } catch (Exception e) {
-            logger.debug("The deliverable {} has no handle metadata element in {}", deliverableID,
-              this.getActualPhase(), e);
-          }
+          DOI = this.getMetadataElementValue(deliverable.getDeliverableMetadataElements(),
+            DOI_METADATA_ELEMENT_ID, deliverableID);
+          handle = this.getMetadataElementValue(deliverable.getDeliverableMetadataElements(),
+            HANDLE_METADATA_ELEMENT_ID, deliverableID);
 
 
           if (deliverable.getDeliverableDisseminations() != null) {
@@ -4510,23 +4492,8 @@ public class DeliverableAction extends BaseAction {
       String disseminationURL = null;
 
       if (deliverable.getMetadataElements() != null) {
-        try {
-          doi = deliverable.getMetadataElements().stream()
-            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-              && me.getMetadataElement().getId().longValue() == 36L && !StringUtils.isBlank(me.getElementValue()))
-            .findFirst().orElse(null).getElementValue();
-        } catch (Exception e) {
-          logger.debug("The deliverable {} has no DOI metadata element", deliverable.getId(), e);
-        }
-
-        try {
-          handle = deliverable.getMetadataElements().stream()
-            .filter(me -> me != null && me.getMetadataElement() != null && me.getMetadataElement().getId() != null
-              && me.getMetadataElement().getId().longValue() == 35L && !StringUtils.isBlank(me.getElementValue()))
-            .findFirst().orElse(null).getElementValue();
-        } catch (Exception e) {
-          logger.debug("The deliverable {} has no handle metadata element", deliverable.getId(), e);
-        }
+        doi = this.getMetadataElementValue(deliverable.getMetadataElements(), DOI_METADATA_ELEMENT_ID);
+        handle = this.getMetadataElementValue(deliverable.getMetadataElements(), HANDLE_METADATA_ELEMENT_ID);
       }
 
 

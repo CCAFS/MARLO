@@ -517,8 +517,8 @@
 [/#macro]
 
 [#macro contributionToLP6 template=false]
-[#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
 [#if action.hasSpecificities('crp_lp6_active') && reportingActive]
+[#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
 
    [#-- <a class="btn lp6-pdf btn-link" role="button" data-toggle="popover" data-trigger="focus" title="[@s.text name="projects.LP6Contribution.disabledPDF"/]"><img src="${baseUrlCdn}/global/images/pdf.png" height="25"/>[[@s.text name="projects.LP6Contribution.explanatoryPDF" /]]</a>--]

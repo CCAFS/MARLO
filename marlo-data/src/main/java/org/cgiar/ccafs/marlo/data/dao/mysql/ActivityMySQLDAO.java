@@ -171,12 +171,9 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
   public List<Activity> getActivitiesByProject(long projectId, long phaseId) {
     String query = "from " + Activity.class.getName() + " where project_id=" + projectId + " and id_phase=" + phaseId
       + " and is_active=1 and activityStatus=2";
-    List<Activity> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
-    }
-    return null;
-
+    // A project with no ongoing activity in the phase is an everyday case, so the callers get an empty list to
+    // iterate over instead of a null they all have to guard.
+    return super.findAll(query);
   }
 
   @Override
