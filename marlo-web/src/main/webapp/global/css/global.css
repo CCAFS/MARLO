@@ -9408,10 +9408,48 @@ img.qaOptionsComment {
   align-items: center;
   gap: 8px;
   min-height: 34px;
-  padding: 5px 8px;
+  padding: 5px 8px 5px 10px !important;
   font-size: 12.5px;
+  font-weight: 500;
   line-height: 1.35;
   color: #1F2A37;
+}
+
+/* The sprite rules above are (1,1,5), so the reset has to reach that weight or
+ * the old icon keeps showing through the badge. */
+#secondaryMenu.clusterMenu ul li > ul li.submitted > a,
+#secondaryMenu.clusterMenu ul li > ul li.toSubmit > a {
+  background-image: none;
+}
+
+/* Section status, drawn the way the design and the OPI sidebar draw it:
+ * complete reuses .opi-menu__badge.is-ok, still-to-fill is the amber dot. */
+#secondaryMenu.clusterMenu ul ul li.submitted > a::after,
+#secondaryMenu.clusterMenu ul ul li.toSubmit > a::after {
+  content: '';
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#secondaryMenu.clusterMenu ul ul li.submitted > a::after {
+  content: '\2713';
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #EDF7ED;
+  border: 1px solid #BEE0BE;
+  color: #2E6B2F;
+  font: 700 12px Figtree, sans-serif;
+}
+#secondaryMenu.clusterMenu ul ul li.toSubmit > a::after {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #F3DCAF;
+  background: #FDF3E4 radial-gradient(circle at center, #875703 0 2.5px, rgba(0, 0, 0, 0) 2.6px);
 }
 #secondaryMenu.clusterMenu ul ul li.currentSection {
   background: #F2F9FC;
@@ -9421,4 +9459,5 @@ img.qaOptionsComment {
   font-weight: 600;
   color: #015C7D;
 }
+#secondaryMenu.clusterMenu p.menuTitle { font-weight: 600; }
 #secondaryMenu.clusterMenu ul ul li.disabled > a { color: #9AA4B0; }
