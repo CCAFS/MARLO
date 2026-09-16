@@ -786,7 +786,7 @@
                 <div class="modal-body">
                   
                   <table id="evidenceTypes" class="table ">
-                    <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                    <thead style="background-color: var(--marlo-brand, #0b7ba6); font-weight: 500; color: white;">
                       <tr>
                         <th> [@s.text name="study.general.dialogMessage.part1" /]</th>
                         <th> [@s.text name="study.general.dialogMessage.part2" /] </th>

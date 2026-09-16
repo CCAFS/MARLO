@@ -10,7 +10,7 @@
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css?20260914",
-  "${baseUrlMedia}/css/projects/projectDeliverable.css?20260914"] /]
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20260916"] /]
 
 [#assign currentStage = "deliverableList" /]
 [#assign isListSection = true /]

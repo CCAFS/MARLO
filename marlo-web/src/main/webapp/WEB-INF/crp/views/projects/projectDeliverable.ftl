@@ -7,13 +7,13 @@
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20251211",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260916",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/projects/projectDeliverable.css?20260914",
+  "${baseUrl}/crp/css/projects/projectDeliverable.css?20260916",
   "${baseUrlCdn}/global/css/404.css?20260914"
   ] /]
 [#assign currentSection = "projects" /]

@@ -25,7 +25,7 @@
   font-weight: 600;
   letter-spacing: .2px;
   color: #fff;
-  background-color: #40aad4;     /* Added button color */
+  background-color: var(--marlo-brand);     /* Added button color */
   text-decoration: none;
   text-align: center;
   transition: background-color 0.2s ease;
@@ -33,7 +33,7 @@
 
 /* Button hover effect for better feedback */
 .ai-btn:hover {
-  background-color: #349cc2;     /* Slightly darker on hover */
+  background-color: var(--marlo-brand-dark);     /* Slightly darker on hover */
 }
 
 /* Wraps the button and adds spacing above it */
@@ -44,7 +44,7 @@
 
 /* === Custom "Save" button styling for AI section === */
 .buttons-content .button-save {
-  background-color: #40aad4 !important;
+  background-color: var(--marlo-brand) !important;
   border: none !important;
   color: #fff !important;
   border-radius: 6px;
@@ -57,13 +57,13 @@
 
 /* Hover effect */
 .buttons-content .button-save:hover:enabled {
-  background-color: #349cc2 !important;
+  background-color: var(--marlo-brand-dark) !important;
 }
 
 /* Disabled state */
 .buttons-content .button-save:disabled,
 .buttons-content .button-save[disabled] {
-  background-color: #a5d6e2 !important;
+  background-color: var(--marlo-brand-tint-border) !important;
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -89,7 +89,7 @@
 
 /* Send button (styled like AI buttons, slightly wider) */
 .button-send-inline {
-  background-color: #40aad4;
+  background-color: var(--marlo-brand);
   border: none;
   color: #fff;
   border-radius: 6px;
@@ -105,12 +105,12 @@
 
 /* Hover state */
 .button-send-inline:hover:not(:disabled) {
-  background-color: #349cc2;
+  background-color: var(--marlo-brand-dark);
 }
 
 /* Disabled state */
 .button-send-inline:disabled {
-  background-color: #a5d6e2;
+  background-color: var(--marlo-brand-tint-border);
   cursor: not-allowed;
   opacity: 0.7;
 }

@@ -10,7 +10,7 @@
   [#-- "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
 ] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css?20260914" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/publications/publication.css", "${baseUrlMedia}/css/projects/projectDeliverable.css?20260916" ] /]
 [#assign currentSection = "additionalReporting" /]
 
 [#assign breadCrumb = [

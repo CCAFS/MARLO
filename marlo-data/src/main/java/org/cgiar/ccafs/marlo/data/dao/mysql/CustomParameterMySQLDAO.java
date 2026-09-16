@@ -96,6 +96,17 @@ public class CustomParameterMySQLDAO extends AbstractMarloDAO<CustomParameter, L
   }
 
   @Override
+  public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+
+    String queryString = "SELECT cp FROM CustomParameter cp INNER JOIN FETCH cp.parameter p "
+      + "INNER JOIN FETCH cp.crp gu WHERE p.key =:key AND cp.active = TRUE";
+
+    return this.getSessionFactory().getCurrentSession().createQuery(queryString).setParameter("key", parameterKey)
+      .list();
+  }
+
+
+  @Override
   public CustomParameter save(CustomParameter customParameter) {
     if (customParameter.getId() == null) {
       super.saveEntity(customParameter);

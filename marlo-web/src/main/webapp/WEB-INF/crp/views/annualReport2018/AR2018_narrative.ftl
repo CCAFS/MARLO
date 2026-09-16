@@ -5,7 +5,7 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "trumbowyg" ] /]
 [#assign customJS = [  ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20260916"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},

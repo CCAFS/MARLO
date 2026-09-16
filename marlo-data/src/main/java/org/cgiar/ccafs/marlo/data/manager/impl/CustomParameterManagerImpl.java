@@ -80,6 +80,11 @@ public class CustomParameterManagerImpl implements CustomParameterManager {
   }
 
   @Override
+  public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+    return customParameterDAO.getCustomParametersByParameterKey(parameterKey);
+  }
+
+  @Override
   @Transactional
   public CustomParameter saveCustomParameter(CustomParameter customParameter) {
 

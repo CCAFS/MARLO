@@ -35,7 +35,7 @@ ul.nav li a {
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
-  border-top: 4px solid #1882aa;
+  border-top: 4px solid var(--marlo-brand);
   border-bottom-color: transparent;
   font-weight: bold;
 }

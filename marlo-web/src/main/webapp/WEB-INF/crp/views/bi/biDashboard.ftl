@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = ["${baseUrlMedia}/js/bi/biDashboard.js?20260824" ] /]
 [#assign customCSS = [
-  "${baseUrl}/crp/css/bi/biDashboard.css?20251112"
+  "${baseUrl}/crp/css/bi/biDashboard.css?20260916"
   ] 
 /]
 [#assign currentSection = "bi" /] 

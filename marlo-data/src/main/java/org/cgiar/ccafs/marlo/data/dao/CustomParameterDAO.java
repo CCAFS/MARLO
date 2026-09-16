@@ -60,6 +60,16 @@ public interface CustomParameterDAO {
   public CustomParameter getCustomParematerByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId);
 
   /**
+   * This method gets every active customParameter stored under the given parameter key, across all the Global Units.
+   * It exists so a caller needing one setting for a whole list of Global Units reads it with a single query instead
+   * of one query per unit.
+   *
+   * @param parameterKey is the key of the parameter, as declared in the parameters table.
+   * @return a list of CustomParameter, empty when no Global Unit has the parameter set.
+   */
+  public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey);
+
+  /**
    * This method saves the information of the given customParameter
    * 
    * @param customParameter - is the customParameter object with the new information to be added/updated.

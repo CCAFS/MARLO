@@ -5,7 +5,7 @@
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260916",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -15,7 +15,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20260914",
-  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
+  "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20260916",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
 /]

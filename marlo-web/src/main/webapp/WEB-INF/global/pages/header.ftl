@@ -41,31 +41,28 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
 
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260914" />
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css?20260914" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20260916" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css?20260916" />
     [#if centerGlobalUnit]
-      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
+      <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css?20260916" />
     [/#if]
 
     [#-- Redesign layer: overrides global.css, must stay after it --]
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?202608262" />
 
-    [#-- Global Unit brand colour. Redefines the --marlo-brand tokens declared by marlo-redesign.css, so it
-         must stay after that link. Rendered only when the unit has crp_theme_color configured: with no value
-         the hand-tuned default palette is left exactly as it is, rather than being re-derived from its own
-         brand colour. The value is hex-validated in BaseAction.getCrpThemeColor() before it reaches here.
-         The derived tints use color-mix(); where a browser does not support it the declaration is dropped and
-         that single token falls back to the default above, which is why each one is declared separately. --]
-    [#assign themeColor = (action.crpThemeColor)!'' /]
-    [#if themeColor?has_content]
+    [#-- Global Unit brand colour. Redefines the brand tokens declared by marlo-redesign.css and, for a Center,
+         by global-center.css, so it must stay after both links. Rendered only when the unit has crp_theme_color
+         configured: with no value each stylesheet keeps its own hand-tuned palette untouched.
+         Every shade is computed in BaseAction.getCrpThemeTokens() rather than with the CSS color-mix() function,
+         so a browser without color-mix() support gets the whole palette instead of the configured brand
+         surrounded by default shades. The values are hex-validated before they reach here. --]
+    [#assign themeTokens = (action.crpThemeTokens)!{} /]
+    [#if themeTokens?size > 0]
       <style>
         :root {
-          --marlo-brand: ${themeColor};
-          --marlo-brand-dark: color-mix(in srgb, ${themeColor} 77%, #000);
-          --marlo-brand-light: color-mix(in srgb, ${themeColor} 70%, #fff);
-          --marlo-brand-tint: color-mix(in srgb, ${themeColor} 5%, #fff);
-          --marlo-brand-tint-hover: color-mix(in srgb, ${themeColor} 10%, #fff);
-          --marlo-brand-tint-border: color-mix(in srgb, ${themeColor} 30%, #fff);
+        [#list themeTokens?keys as themeToken]
+          ${themeToken}: ${themeTokens[themeToken]};
+        [/#list]
         }
       </style>
     [/#if]

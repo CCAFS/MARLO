@@ -328,7 +328,7 @@ a button.downloadButtonHome:hover{
 
 .capDevList thead tr.header th {
   height:45px;
-  background-color: #7B9074;
+  background-color: var(--marlo-center-brand-dark);
   color: #fff;
   text-align: center;
 }
@@ -339,7 +339,7 @@ a button.downloadButtonHome:hover{
 
 .supportDocsList thead tr.header th {
   height:45px;
-  background-color: #7B9074;
+  background-color: var(--marlo-center-brand-dark);
   color: #fff;
   text-align: center;
 }

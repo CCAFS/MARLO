@@ -158,11 +158,15 @@ a#btn-revokeChoice {
 	background: #E0E0E0;
 }
 
+/* The dashed frame used to be an inline SVG data URI, where a CSS variable cannot reach, so it stayed blue no
+   matter what a Global Unit configured. A real dashed border reads the token. The padding drops by the 2px the
+   border now occupies, so the button keeps its height; the dashes are shorter than the SVG's 15px ones. */
 .bigAddButton {
-	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%230B7BA6' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	border: 2px dashed var(--marlo-brand);
+	border-radius: 10px;
 	color: var(--marlo-brand);
 	font-size: 1.5rem;
-	padding: 10px 0;
+	padding: 8px 0;
 	margin: 0 7px;
 	cursor: pointer;
 	display: block;
@@ -175,7 +179,7 @@ a#btn-revokeChoice {
 }
 
 .bigAddButton:hover {
-	background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='10' ry='10' stroke='%239C9C9CFF' stroke-width='2' stroke-dasharray='15px' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+	border-color: #9c9c9c;
 	color: #757575;
 }
 
@@ -207,7 +211,7 @@ a[disabled] {
 }
 
 .viewMore {
-	color: #287fa1;
+	color: var(--marlo-brand);
 	/* border-bottom: 1px solid #f2f2f2; */
 	position: absolute;
 	bottom: 0;
@@ -4111,7 +4115,7 @@ button.ipGraph-btn {
 
 .projectsList thead tr.header {
 	height: 45px;
-	background-color: #7B9074;
+	background-color: var(--marlo-brand-dark);
 }
 
 .projectsList thead tr.subHeader {
@@ -8918,7 +8922,7 @@ img.qaOptionsComment {
 }
 
 .viewMoreCollapse {
-	color: #287fa1;
+	color: var(--marlo-brand);
 	/* border-bottom: 1px solid #f2f2f2; */
 	position: absolute;
 	bottom: 0;

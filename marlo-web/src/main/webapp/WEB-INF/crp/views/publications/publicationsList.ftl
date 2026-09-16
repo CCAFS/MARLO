@@ -5,7 +5,7 @@
 [#assign customJS = ["${baseUrlMedia}/js/publications/publicationsList.js" ] /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css?20260914", 
-  "${baseUrlMedia}/css/projects/projectDeliverable.css?20260914"
+  "${baseUrlMedia}/css/projects/projectDeliverable.css?20260916"
   ] 
 /]
 [#assign currentSection = "additionalReporting" /]

@@ -5,7 +5,7 @@
 [#assign currentStage = actionName?split('/')[1]/]
 [#assign pageLibs = [ "select2", "trumbowyg" ] /]
 [#assign customJS = [ "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js" ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20190621"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20260916"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}",   "nameSpace":"",             "action":""},
@@ -163,7 +163,7 @@
                       <div class="modal-body">
                         
                         <table id="evidenceTypes" class="table ">
-                          <thead style="background-color: #0b7ba6; font-weight: 500; color: white;">
+                          <thead style="background-color: var(--marlo-brand, #0b7ba6); font-weight: 500; color: white;">
                             <tr>
                               <th> [@s.text name="study.ARdialogMessage.part1" /]</th>
                               <th > [@s.text name="study.ARdialogMessage.part2"/]</th>

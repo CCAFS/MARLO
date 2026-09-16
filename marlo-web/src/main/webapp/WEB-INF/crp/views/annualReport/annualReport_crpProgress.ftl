@@ -11,7 +11,7 @@
   "${baseUrlMedia}/js/annualReport/annualReport_${currentStage}.js",
   "${baseUrlMedia}/js/annualReport/annualReportGlobal.js"
 ] /]
-[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20260916"] /]
 
 [#assign breadCrumb = [
   {"label":"${currentSection}", "nameSpace":"", "action":""},

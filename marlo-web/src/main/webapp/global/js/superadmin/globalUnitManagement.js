@@ -572,7 +572,7 @@ function updateThemeColorContrast($field) {
     return;
   }
 
-  if (!/^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value)) {
+  if (!/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value)) {
     $message.removeClass("text-warning").addClass("text-danger")
       .text(guMsg("msg-gu-themeColorInvalid")).show();
     return;
@@ -593,12 +593,9 @@ function updateThemeColorContrast($field) {
   }
 }
 
-/** WCAG 2.1 relative luminance, then the contrast ratio against white. Returns null for an alpha hex. */
+/** WCAG 2.1 relative luminance, then the contrast ratio against white. Returns null for anything but #rgb/#rrggbb. */
 function contrastWithWhite(hex) {
   let value = hex.replace("#", "");
-  if (value.length === 4 || value.length === 8) {
-    return null;
-  }
   if (value.length === 3) {
     value = value.split("").map(function(c) { return c + c; }).join("");
   }

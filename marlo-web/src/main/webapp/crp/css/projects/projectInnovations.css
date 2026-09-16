@@ -75,7 +75,7 @@ ul.nav li a {
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
-  border-top: 4px solid #1882aa;
+  border-top: 4px solid var(--marlo-brand);
   border-bottom-color: transparent;
   font-weight: bold;
   height: 52.7px;
@@ -489,7 +489,7 @@ div.projectInnovationsPartners div.usersBlock div.deliverableUserItem {
 
 .title-link:hover{
   text-decoration: underline;
-  color: #1882aa;
+  color: var(--marlo-brand);
 }  
 
 /** Complementary innovations **/

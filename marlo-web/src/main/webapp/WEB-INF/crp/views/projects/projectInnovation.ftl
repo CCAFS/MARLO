@@ -18,7 +18,7 @@
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
   "${baseUrlMedia}/js/projects/projectInnovations.js?20250828",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826"
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260916"
 ] /]
 
 [#assign moduleJS = [
@@ -30,7 +30,7 @@
 
 
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20250915",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20260916",
   "${baseUrlCdn}/global/css/customDataTable.css?20260914"
 ] /]
 [#assign currentSection = "projects" /]

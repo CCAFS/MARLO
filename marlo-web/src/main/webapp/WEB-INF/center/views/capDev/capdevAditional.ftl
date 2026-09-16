@@ -1,7 +1,7 @@
 [#ftl]
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/capDev/capacityDevelopment.css",
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css?20260916",
   "${baseUrlCdn}/global/css/customDataTable.css?20260914"
   ] 
 /]

@@ -2,7 +2,7 @@
 [#assign currentSectionString = "capdev-${actionName?replace('/','-')}-${capdevID}-phase-${(actualPhase.id)!}" /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css?20260914",
-  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css?20260916"
   ] 
 /]
 [#assign pageLibs = ["datatables.net", "datatables.net-bs","select2","flag-icon-css"] /]

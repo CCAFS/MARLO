@@ -12,7 +12,7 @@
 [#assign customCSS = [
   "${baseUrlMedia}/css/impactPathway/outputList.css",
   "${baseUrlCdn}/global/css/customDataTable.css?20260914", 
-  "${baseUrlMedia}/css/capDev/capacityDevelopment.css"
+  "${baseUrlMedia}/css/capDev/capacityDevelopment.css?20260916"
   ] 
 /]
 [#assign currentSection = "projects" /]

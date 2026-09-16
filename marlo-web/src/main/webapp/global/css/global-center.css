@@ -1,3 +1,16 @@
+/* Centers theme. Loaded only for a Center Global Unit, between global.css and marlo-redesign.css.
+
+   The olive family (#8ea786 and its darker #7b9074) is the Centers brand, so it reads from a token: when a Center
+   picks its own colour in the Global Unit module, header.ftl redeclares these two tokens after this file and the
+   controls below follow it. With nothing configured the tokens hold the original values and nothing changes.
+
+   The greens (#33b174, #179457, #25a76a, #389767 ...) are the old Centers chrome, not the brand. The redesign
+   layer loads after this file and owns the chrome now, so they are deliberately left as plain values. */
+:root {
+  --marlo-center-brand: #8ea786;
+  --marlo-center-brand-dark: #7b9074;
+}
+
 a {
   color: #909090;
   text-decoration: none;
@@ -32,17 +45,17 @@ a {
 }
 
 .addButton {
-  background: url(../../global/images/add.png) no-repeat 4px #8ea786;
+  background: url(../../global/images/add.png) no-repeat 4px var(--marlo-center-brand);
 }
 
 input[type="submit"], button, .addButton, a.form-button {
-  background-color: #8ea786;
-  border-bottom: 3px solid #7b9074;
+  background-color: var(--marlo-center-brand);
+  border-bottom: 3px solid var(--marlo-center-brand-dark);
 }
 
 .button-blue {
-  background: #8ea786;
-  border-bottom: 2px solid #7b9074;
+  background: var(--marlo-center-brand);
+  border-bottom: 2px solid var(--marlo-center-brand-dark);
 }
 
 .button-blue a {
@@ -50,43 +63,43 @@ input[type="submit"], button, .addButton, a.form-button {
 }
 
 .button-blue:hover {
-  background: #7c9274;
+  background: var(--marlo-center-brand-dark);
 }
 
 ul.horizontalSubMenu li.active {
-  background: #8ea786;
-  border-color: #7b9074;
+  background: var(--marlo-center-brand);
+  border-color: var(--marlo-center-brand-dark);
 }
 
 #secondaryMenu > p {
-  color: #7b9074;
+  color: var(--marlo-center-brand-dark);
 }
 
 #secondaryMenu .menuList p.active {
-  background: #8ea786;
-  border-color: #7b9074;
+  background: var(--marlo-center-brand);
+  border-color: var(--marlo-center-brand-dark);
 }
 
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
-  border-top: 4px solid #7b9074 !important;
-  color: #8ea786 !important;
+  border-top: 4px solid var(--marlo-center-brand-dark) !important;
+  color: var(--marlo-center-brand) !important;
 }
 
 .summariesSection.current {
-  background-color: #8ea786 !important;
+  background-color: var(--marlo-center-brand) !important;
 }
 
 .title-file {
-  color: #7b9074 !important;
+  color: var(--marlo-center-brand-dark) !important;
 }
 
 .sectionSubTitle {
-  border-bottom: 1px solid #7b9074;
-  color: #7b9074;
+  border-bottom: 1px solid var(--marlo-center-brand-dark);
+  color: var(--marlo-center-brand-dark);
 }
 
 #mainMenu .menuContent ul li ul.subMenu li {
-  border-top: 1px solid #7b9074;
+  border-top: 1px solid var(--marlo-center-brand-dark);
 }
 
 #mainMenu .menuContent ul li:hover ul.subMenu {
@@ -94,7 +107,7 @@ ul.horizontalSubMenu li.active {
 }
 
 #dashboardContent li.active a {
-  color: #7b9074 !important;
+  color: var(--marlo-center-brand-dark) !important;
 }
 
 #dashboardContent li a:hover {
@@ -111,17 +124,17 @@ ul.horizontalSubMenu li.active {
 }
 
 .ui-dialog-titlebar {
-  border-color: #8ea786;
-  background-color: #8ea786;
+  border-color: var(--marlo-center-brand);
+  background-color: var(--marlo-center-brand);
 }
 
 .ui-dialog {
-  border: 2px solid #8ea786 !important;
+  border: 2px solid var(--marlo-center-brand) !important;
 }
 
 .ui-dialog .ui-dialog-buttonpane button {
-  border-color: #8ea786;
-  background: #8ea786;
+  border-color: var(--marlo-center-brand);
+  background: var(--marlo-center-brand);
 }
 
 #secondaryMenu ul p.menuTitle {
@@ -129,16 +142,16 @@ ul.horizontalSubMenu li.active {
 }
 
 .fileUpload .upload::before {
-  background: #8ea786;
+  background: var(--marlo-center-brand);
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: #8ea786;
+  background-color: var(--marlo-center-brand);
 }
 
 .pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
-  background-color: #8ea786;
-  border-color: #8ea786;
+  background-color: var(--marlo-center-brand);
+  border-color: var(--marlo-center-brand);
 }
 
 .example .frame ul li.planning.phaseSelected {
@@ -273,4 +286,22 @@ span.errorTag {
 .inputContainer:hover input:checked ~ .checkmark {
   background-color: #27b371;
   border-color: #25af6e;
+}
+
+/* customDataTable.css moved the table header and .subHeader off the olive and onto --marlo-brand. That is the
+   right call for every other Global Unit, where the olive was a leak from this theme, but a Center is where the
+   olive belongs. customDataTable.css is a customCSS entry, so it loads after this file: these two selectors carry
+   an extra `body` to win on specificity rather than on order. */
+body table.dataTable thead {
+  background-color: var(--marlo-center-brand);
+}
+
+body .subHeader {
+  background-color: var(--marlo-center-brand);
+}
+
+/* Same story for the two-row projectsList header: global.css now paints its top row with --marlo-brand-dark, and
+   this file loads after it, so the identical selector is enough to keep a Center on the olive. */
+.projectsList thead tr.header {
+  background-color: var(--marlo-center-brand-dark);
 }

@@ -8,7 +8,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js"
 ] /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/projects/projectInnovations.css?20250514",
+  "${baseUrlMedia}/css/projects/projectInnovations.css?20260916",
   "${baseUrlCdn}/global/css/customDataTable.css?20260914"
   ] /]
 [#assign currentSection = "projects" /]

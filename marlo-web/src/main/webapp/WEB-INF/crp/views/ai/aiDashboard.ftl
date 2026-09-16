@@ -3,7 +3,7 @@
 [#assign title = "AI-CCRA" /]
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","flag-icon-css"] /]
-[#assign customCSS = [ "${baseUrlMedia}/css/ai/aiDashboard.css",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
+[#assign customCSS = [ "${baseUrlMedia}/css/ai/aiDashboard.css?20260916",  "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" ] /]
 [#assign currentSection = "ai" /]
 [#assign currentStage = "description" /]
@@ -86,7 +86,7 @@
 				                [/#if]
 				              [/#if]
 				              <div class="text-start" style="margin-top: 20px;">
-				                <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="button-blue ai-btn">
+				                <a href="${finalUrl}" target="_blank" rel="noopener noreferrer" class="ai-btn">
 				                  <span></span> ${(report.buttonLabel!report.reportTitle)}
 				                </a>
 				              </div>

@@ -316,7 +316,7 @@ function attachEventsFeedback() {
 
     nweTextarea.prop('disabled', false);
     senNewComment.css({
-      'background-color': '#0b7ba6',
+      'background-color': 'var(--marlo-brand, #0b7ba6)',
       'pointer-events': 'auto'
     })
   });
@@ -467,7 +467,7 @@ function attachEventsFeedback() {
 
     nweTextarea.prop('disabled', false);
     senNewComment.css({
-      'background-color': '#0b7ba6',
+      'background-color': 'var(--marlo-brand, #0b7ba6)',
       'pointer-events': 'auto'
     })
   }); */
@@ -675,7 +675,7 @@ function displayReplyComment(elementData, isDisplay = true, options = {}) {
 
     textarea.prop('disabled', false);
     senNewComment.css({
-      'background-color': '#0b7ba6',
+      'background-color': 'var(--marlo-brand, #0b7ba6)',
       'pointer-events': 'auto'
     });
   }

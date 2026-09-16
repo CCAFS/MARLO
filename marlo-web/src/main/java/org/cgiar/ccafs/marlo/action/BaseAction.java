@@ -121,6 +121,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -190,10 +191,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   private static final long serialVersionUID = -740360140511380630L;
 
-  // A CSS hex colour: #rgb, #rgba, #rrggbb or #rrggbbaa. Anything a superadmin types that does not match this is
-  // refused rather than written into a style sheet.
-  private static final Pattern HEX_COLOR_PATTERN =
-    Pattern.compile("^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$");
+  // An opaque CSS hex colour: #rgb or #rrggbb. Anything a superadmin types that does not match this is refused
+  // rather than written into a style sheet. The alpha forms (#rgba, #rrggbbaa) are deliberately excluded: this
+  // colour is the background of a menu bar carrying white text, and a translucent one leaves it unreadable.
+  // GlobalUnitCreateAction guards the same value on the way in with this very constant.
+  protected static final Pattern HEX_COLOR_PATTERN = Pattern.compile("^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$");
 
   // Identifiers of the deliverable metadata elements read when detecting duplicated deliverables.
   protected static final long HANDLE_METADATA_ELEMENT_ID = 35L;
@@ -2954,6 +2956,62 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return themeColor;
+  }
+
+  /**
+   * Builds the CSS custom properties carrying this Global Unit's brand colour, ready for header.ftl to write into a
+   * style sheet. The shades are derived here rather than through the CSS color-mix() function, so a browser without
+   * color-mix() support gets the whole palette instead of the configured brand surrounded by the MARLO defaults.
+   * --marlo-center-brand is part of the map because global-center.css keeps its own olive palette for Center Global
+   * Units; overriding that token is what carries a Center's chosen colour into its buttons and dialogs.
+   *
+   * @return the token name to value map, in declaration order, or an empty map when no colour is configured
+   */
+  public Map<String, String> getCrpThemeTokens() {
+    Map<String, String> tokens = new LinkedHashMap<>();
+    String brand = this.getCrpThemeColor();
+    if (brand == null) {
+      return tokens;
+    }
+
+    String brandDark = this.mixHexColor(brand, 0.77d, false);
+    tokens.put("--marlo-brand", brand);
+    tokens.put("--marlo-brand-dark", brandDark);
+    tokens.put("--marlo-brand-light", this.mixHexColor(brand, 0.70d, true));
+    tokens.put("--marlo-brand-tint", this.mixHexColor(brand, 0.05d, true));
+    tokens.put("--marlo-brand-tint-hover", this.mixHexColor(brand, 0.10d, true));
+    tokens.put("--marlo-brand-tint-border", this.mixHexColor(brand, 0.30d, true));
+    tokens.put("--marlo-center-brand", brand);
+    tokens.put("--marlo-center-brand-dark", brandDark);
+    return tokens;
+  }
+
+  /**
+   * Mixes a hex colour with white or black the way CSS color-mix(in srgb, ...) does.
+   *
+   * @param hexColor an opaque hex colour that already matched HEX_COLOR_PATTERN
+   * @param weight how much of hexColor survives the mix, between 0 and 1
+   * @param towardsWhite true to mix with white, false to mix with black
+   * @return the resulting colour as #rrggbb
+   */
+  private String mixHexColor(String hexColor, double weight, boolean towardsWhite) {
+    String digits = hexColor.substring(1);
+    if (digits.length() == 3) {
+      StringBuilder expanded = new StringBuilder(6);
+      for (int i = 0; i < 3; i++) {
+        expanded.append(digits.charAt(i)).append(digits.charAt(i));
+      }
+      digits = expanded.toString();
+    }
+
+    int other = towardsWhite ? 255 : 0;
+    StringBuilder mixed = new StringBuilder(7).append('#');
+    for (int i = 0; i < 6; i += 2) {
+      int channel = Integer.parseInt(digits.substring(i, i + 2), 16);
+      long value = Math.round((channel * weight) + (other * (1d - weight)));
+      mixed.append(String.format("%02x", Long.valueOf(Math.max(0L, Math.min(255L, value)))));
+    }
+    return mixed.toString();
   }
 
   /**

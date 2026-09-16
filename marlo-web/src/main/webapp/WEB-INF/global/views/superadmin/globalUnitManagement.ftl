@@ -4,7 +4,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/usersManagement.js",
-  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260914"
+  "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260916"
 ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914", "${baseUrlCdn}/global/css/superadmin/globalUnitManagement.css?20260914" ] /]
 [#assign currentSection = "superadmin" /]
@@ -211,7 +211,7 @@
           <div class="theme-color-controls">
             <input class="theme-color-swatch" type="color" aria-label="[@s.text name="globalUnitManagement.themeColor.pick" /]"
               value="${themeColor?has_content?then(themeColor, '#0277a2')}" />
-            <input class="form-control theme-color-input" type="text" maxlength="9"
+            <input class="form-control theme-color-input" type="text" maxlength="7"
               name="globalUnits[${index}].themeColor" value="${themeColor}"
               placeholder="[@s.text name="globalUnitManagement.themeColor.placeholder" /]" />
             <button type="button" class="btn btn-default btn-sm theme-color-clear">
