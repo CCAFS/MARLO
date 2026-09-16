@@ -2,9 +2,10 @@
 [#assign title = "MARLO Admin - Emails" /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
-[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/emails.js" ] /]
+[#assign customJS = [ "${baseUrlCdn}/global/js/superadmin/emails.js?20260910" ] /]
 [#assign customCSS = [ 
-  "${baseUrlCdn}/global/css/superadmin/superadmin.css"
+  "${baseUrlCdn}/global/css/superadmin/superadmin.css",
+  "${baseUrlCdn}/global/css/superadmin/marloEmails.css?20260910"
   ] 
 /]
 [#assign currentSection = "superadmin" /]
@@ -33,27 +34,20 @@
       <div class="col-md-9">
       
         <h4 class="sectionTitle">Emails on track</h4>
-         <ul class="nav nav-tabs" role="tablist">
-         <li> Emails dont send
-      </li>
-        <div id="" class="borderBox ">
-         <div class="loading" style="display:none"></div>
-         <table id="marloEmailsTable" class="display table table-striped table-hover" width="100%">
+        <div class="emailsOnTrack borderBox">
+          <div class="loading" style="display:none"></div>
+          <div class="emailsTableHeader">
+            <h5 class="emailsSubtitle">Emails not sent</h5>
+            <div class="emails-search-wrap">
+              <input type="text" id="marloEmailsSearch" class="form-control emails-search" placeholder="Search email..." />
+              <div class="iconSearch emails-search-icon">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+          <table id="marloEmailsTable" class="table table-striped table-hover" width="100%">
             <thead>
               <tr>
-              [#--  
-                <th class="id"></th>
-                <th class="to"></th>
-                <th class="cc"></th>
-                <th class="bbc"></th>
-                <th class="subject"></th>
-                <th class="message"></th>
-                <th class="tried"></th>
-                <th class="date"></th>
-                <th class="error"></th>
-                <th class="succes"></th>
-                <th class="fileName"></th>
-              --]
                 <th>ID</th>
                 <th>Subject</th>
                 <th>Error</th>
@@ -64,27 +58,29 @@
             <tbody>
               [#if emails??]
               [#list emails as email]
+                [#-- data-search and data-order hold the plain text: DataTables reads the cell markup as
+                     it is. Auto-escaping is on with an HTML output format, so no ?html here --]
                 <tr id="emailrow-${email.id}">
                   <td>${email.id}</td>
-                  <td>
+                  <td data-search="${(email.subject)!""}" data-order="${(email.subject)!""}">
                     <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${(email.subject)!""}</a>
                   </td>
-                  <td>
+                  <td data-search="${(email.error)!""}" data-order="${(email.error)!""}">
                     <a href="#" class="" data-toggle="modal" data-target="#emailPopup-${email.id}">${(email.error)!""}</a>
                   </td>
-                  <td>${(email.date)!""}</td>
-                  <td>${(email.messageID)!}</td>
+                  [#-- Rendered as yyyy-MM-dd HH:mm so that ordering the column by text orders it by date --]
+                  <td class="emailDate">[#if email.date??]${email.date?string('yyyy-MM-dd HH:mm')}[/#if]</td>
+                  <td class="emailMessageId">${(email.messageID)!}</td>
                 </tr>
               [/#list]
               [/#if]
             </tbody>
           </table>
-         <br />
-         <div class="form-group">
+          <br />
+          <div class="form-group">
             <button type="button" class="sendEmails btn btn-primary">Re-[@s.text name="form.buttons.sendEmails" /]</button>
-         </div>
+          </div>
         </div>
-</ul>
       </div>
     </div>
   </div>

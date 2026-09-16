@@ -120,10 +120,8 @@
       })(window, document, "clarity", "script", "${clarityID}");
     </script>
 
-    [#-- Stencil test --]
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
-    <script src="https://unpkg.com/@primeuix/themes/umd/aura.js"></script>
+    [#-- Vue and PrimeVue back the Stencil components, and only the innovations form uses them,
+         so they are declared in that page's customJS instead of here. --]
 
     [#-- <script type="module" src="https://cdn.jsdelivr.net/gh/yecksin/marlo-stencil-components@main/dist/esm/marlo-stencil-components.js?v=2"></script> --]
 

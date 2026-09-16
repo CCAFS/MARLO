@@ -113,7 +113,7 @@ public interface ActivityManager {
    * This method gets a activity object by a given activity identifier.
    * 
    * @param projectID is the project/cluster identifier.
-   * @return a list from Activity null if no exist records
+   * @return the ongoing activities of the project in the phase, empty when it has none.
    */
   public List<Activity> getActivitiesByProject(long projectId, long phaseId);
 
