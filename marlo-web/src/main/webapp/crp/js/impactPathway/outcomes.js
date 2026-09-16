@@ -817,6 +817,10 @@ $(document).ready(function() {
   }
   opiAttachDirtyTracking();
   opiAttachValidationClearing();
+  // Before the first status count, so the cells it opens are counted with the rest.
+  var opened = false;
+  $('.outcomes-list > .outcome').each(function() { opened = opiOpenGaps($(this)) || opened; });
+  if (opened) { updateAllIndexes(); }
   opiRefreshAllStatuses();
   opiDecorateSidebar();
   $('.opi-q').each(function() { opiRefreshQuestions($(this).closest('.outcome')); });
@@ -1328,6 +1332,38 @@ function opiRecodeRows($card) {
     opiSyncRow($card, $(this).attr('data-opi-row'));
   });
   opiRenumberDis($card);
+}
+
+/**
+ * Opens every empty cell of a card as a real, editable period target.
+ *
+ * A (row, year) with no milestone behind it renders as a placeholder carrying the "+"
+ * button, so the year shows nothing to type into until the button is found and clicked.
+ * The cells are opened here instead, on load, through the very path that button uses --
+ * the reader gets the empty box the design asks for rather than a gap to discover.
+ *
+ * Nothing is written by this: the cells are new milestones with no value, exactly like
+ * the ones "+ Add year" creates, and they reach the database only if the user saves.
+ * The form is deliberately not marked dirty for them, and a page the user cannot edit
+ * never gets here -- a locked cell keeps its dash, because inventing a value for a
+ * target nobody set would read as a target of zero.
+ * @param {jQuery} $card the .outcome card
+ * @return {boolean} true when the card had a gap to open
+ */
+function opiOpenGaps($card) {
+  // Only gaps the user may actually fill are marked .is-empty: outcomes.ftl renders a
+  // gap in a year this phase can no longer edit as a locked cell instead, never as one
+  // of these.
+  var $gaps = $card.find('.opi-matrix__row > .opi-cell.is-empty');
+  if (!$gaps.exists()) { return false; }
+  $gaps.each(function() {
+    var $gap = $(this);
+    var key = $gap.closest('.opi-matrix__row').attr('data-opi-row');
+    $gap.replaceWith(opiNewCell($card, key, $gap.attr('data-opi-year')));
+  });
+  // opiNewCell leaves the unit affix and the hint blank; the row owns both.
+  $card.find('.opi-matrix__row').each(function() { opiSyncRow($card, $(this).attr('data-opi-row')); });
+  return true;
 }
 
 /**
