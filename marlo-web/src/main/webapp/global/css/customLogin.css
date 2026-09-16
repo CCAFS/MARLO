@@ -661,11 +661,10 @@
   .login-split {
     flex-direction: column;
   }
-  .login-left,
-  .login-right {
+  .login-left {
     width: 100%;
   }
   .login-right {
-    min-height: 220px;
+    display: none;
   }
 }
