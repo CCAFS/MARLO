@@ -41,7 +41,11 @@
 
 
 
-<nav id="secondaryMenu">
+[#-- `adminMenu` is what the redesigned card styling in marlo-redesign.css hooks on.
+     `#secondaryMenu` is shared by the project, POWB, Annual Report, Impact Pathway,
+     CapDev, Superadmin and Center side navs, so the new look is scoped to this
+     class rather than to the id. --]
+<nav id="secondaryMenu" class="adminMenu">
   <p>[@s.text name="CRPAdmin.menu.title"/]</p>
   <ul>
     <li>

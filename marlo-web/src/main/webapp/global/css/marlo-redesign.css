@@ -1503,3 +1503,132 @@ header {
   color: #fff;
   font: 700 22px/1 var(--marlo-font-sans);
 }
+
+/************* 7. CRP ADMIN SIDE NAV ***************/
+/* The admin side nav as one card of pill items, with a brand accent bar on the
+   current section.
+
+   Scoped to `.adminMenu`, never to `#secondaryMenu` alone: that id is also the
+   project, POWB, Annual Report, Impact Pathway, CapDev, Superadmin and Center
+   side navs, all of which keep the old look. `crp/views/admin/menu-admin.ftl` is
+   the only template that adds the class, which is what puts this on all 19 CRP
+   admin screens at once. The Center admin menu is a separate template and is
+   not affected.
+
+   global.css builds the old look out of `#secondaryMenu ...` descendant
+   selectors, several of them carrying `!important` on the anchor padding, so
+   every rule here repeats the id alongside the class to outrank it. */
+
+#secondaryMenu.adminMenu {
+  float: none;
+  margin-top: 0;
+  background: none;
+  font-family: var(--marlo-font-sans);
+}
+
+/* The "Admin" eyebrow above the card. */
+#secondaryMenu.adminMenu > p {
+  margin: 0 0 10px;
+  padding-left: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--marlo-text-muted);
+}
+
+/* The card. */
+#secondaryMenu.adminMenu > ul {
+  padding: 6px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-xl);
+  background: var(--marlo-surface);
+  box-shadow: var(--marlo-shadow-card);
+}
+
+#secondaryMenu.adminMenu > ul > li {
+  background: none;
+}
+
+#secondaryMenu.adminMenu ul li > ul {
+  padding: 0;
+}
+
+/* Items lose the per-row card that global.css gives them: inside one card they
+   read as a list, not as a stack of tiles. */
+#secondaryMenu.adminMenu ul li > ul li {
+  margin: 0 0 1px;
+  border: 0;
+  border-radius: var(--marlo-radius-md);
+  background: none;
+  box-shadow: none;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+#secondaryMenu.adminMenu ul li > ul li:last-child {
+  margin-bottom: 0;
+}
+
+#secondaryMenu.adminMenu ul li > ul li a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  /* global.css sets this padding with !important, so matching it needs both the
+     higher specificity and !important of its own. */
+  padding: 8px 10px !important;
+  border-radius: var(--marlo-radius-md);
+  color: var(--marlo-text);
+}
+
+/* The accent bar. A pseudo-element so the shared markup stays untouched — it is
+   transparent until the item is the current section, which keeps every row on
+   the same text baseline. */
+#secondaryMenu.adminMenu ul li > ul li a::before {
+  content: '';
+  flex: none;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+#secondaryMenu.adminMenu ul li > ul li:hover {
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+}
+
+#secondaryMenu.adminMenu ul li > ul li:hover a {
+  background: var(--marlo-brand-tint);
+  color: var(--marlo-brand-dark);
+}
+
+#secondaryMenu.adminMenu ul li ul > li.currentSection {
+  border-color: transparent;
+  background: none;
+  font-weight: 600;
+}
+
+#secondaryMenu.adminMenu ul li ul > li.currentSection a {
+  background: var(--marlo-info-bg);
+  font-weight: 600;
+  color: var(--marlo-brand-dark);
+}
+
+#secondaryMenu.adminMenu ul li ul > li.currentSection a::before {
+  background: var(--marlo-brand);
+}
+
+#secondaryMenu.adminMenu ul li > ul li a:focus-visible {
+  outline: 2px solid var(--marlo-brand);
+  outline-offset: -2px;
+}
+
+#secondaryMenu.adminMenu ul li > ul li.disabled a,
+#secondaryMenu.adminMenu ul li > ul li.disabled:hover a {
+  background: none;
+  color: var(--marlo-text);
+}
