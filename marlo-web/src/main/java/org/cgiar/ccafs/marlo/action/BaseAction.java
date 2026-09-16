@@ -170,6 +170,9 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public static final String CANCEL = "cancel";
 
+  /** Action-name suffix of the Overall Performance Indicators section. @see #canEditClosedPhaseOutcomes() */
+  private static final String OUTCOMES_ACTION_SUFFIX = "/outcomes";
+
   // Loggin
   private static final Logger LOG = LoggerFactory.getLogger(BaseAction.class);
 
@@ -1400,6 +1403,35 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
+  }
+
+  /**
+   * Whether this user may edit the Overall Performance Indicators section while its phase is closed.
+   *
+   * A closed phase is read-only for everyone else. Admin and Super Admin keep their editing rights
+   * here because they are the ones who correct a past cycle. The exception is deliberately tied to
+   * this one section: the interceptor that applies it is shared with cluster activities, program
+   * impacts, research topics, outputs and next users, and none of those were part of the decision.
+   *
+   * Two places ask this and they must not drift. EditImpactPathwayInterceptor decides what the form
+   * renders; OutcomesAction.save() decides what is accepted. The second cannot lean on the ordinary
+   * phase-scoped permissions, because the getPermissions procedure only materialises those for
+   * phases with editable = 1 -- in a closed phase a CRP-Admin holds none of them, and only Super
+   * Admin's "*" still matches.
+   *
+   * @return true when the closed-phase lock should not apply to this user on this request
+   */
+  public boolean canEditClosedPhaseOutcomes() {
+    Phase actual = this.getActualPhase();
+    // An open phase is governed by the ordinary permissions; there is nothing to lift.
+    if (actual == null || actual.getEditable() == null || actual.getEditable().booleanValue()) {
+      return false;
+    }
+    if (!this.canAccessSuperAdmin() && !this.canEditCrpAdmin()) {
+      return false;
+    }
+    String action = this.getActionName();
+    return action != null && action.endsWith(BaseAction.OUTCOMES_ACTION_SUFFIX);
   }
 
   public boolean canEditCrpAdmin() {
