@@ -13,9 +13,10 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 3. **[docs/ux-ui/design.md](./docs/ux-ui/design.md)** — UI / UX system blueprint: information architecture, screen inventory, navigation, layout patterns, component inventory, accessibility commitments.
 4. **[docs/trd/trd.md](./docs/trd/trd.md)** — technical blueprint: modules, data model, API surface, save pipeline, security model, observability, testing strategy, ADR snapshots.
 5. **[docs/infrastructure.md](./docs/infrastructure.md)** — environments blueprint: target environment, core components, deployment strategy, network & security, and the **Local Environment contract** (how to start the local stack). Consult it instead of guessing run commands.
-6. **[docs/specs/general-setup/](./docs/specs/general-setup/)** — methodology templates for module specs (`requirements.md`, `design.md`, `task.md`, and `family.md` for spec families).
-7. **[reports/ai-context/](./reports/ai-context/)** — operational runbooks for the most touched flows (frontend composition, save validation matrix, persistence replication, struts routing, interceptor playbook). Treat these as authoritative companions when modifying critical sections.
-8. **[EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md)** — debugging runbook for accordion-style list UIs.
+6. **[docs/akili.md](./docs/akili.md)** — the AKILI-SPECS lifecycle: the eleven `/akili-*` commands, the artifacts each phase writes, the review gates, and the documentation-depth ladder. Read it before running any `/akili-*` command.
+7. **[docs/specs/general-setup/](./docs/specs/general-setup/)** — methodology templates for module specs (`requirements.md`, `design.md`, `task.md`, and `family.md` for spec families).
+8. **[reports/ai-context/](./reports/ai-context/)** — operational runbooks for the most touched flows (frontend composition, save validation matrix, persistence replication, struts routing, interceptor playbook). Treat these as authoritative companions when modifying critical sections.
+9. **[EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md)** — debugging runbook for accordion-style list UIs.
 
 ---
 
@@ -36,6 +37,7 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 | Start the local stack (db / backend / frontend) | `docs/infrastructure.md` §6 "Local Environment" — never guess a run command |
 | Change deployment, environments, or infrastructure | `docs/infrastructure.md` §1–§5 (governed; not improvised by agents) |
 | Split a proposal into child specs | `docs/specs/general-setup/family.md` + author `family.md` in the parent spec folder |
+| Understand or run an AKILI phase, or decide how much spec a change needs | `docs/akili.md` |
 | Decide which model to run a phase on | `## Model Routing` in this file or `AGENTS.md` |
 | Decide which skills a task needs | `## Skill Map` in this file or `AGENTS.md` |
 
@@ -223,6 +225,8 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 
 ## Model Routing
 
+> The phases named below are defined in **[`docs/akili.md`](./docs/akili.md)** — what each `/akili-*` command does, what it writes, and where a human approves. This section only routes them to models.
+
 **Criteria-first:** match the model to the *dominant cognitive demand* of the phase, not to a hardcoded name. Guiding principles:
 
 - **ARCHITECT = BUILDER** — the model that designed it is capable of building it.
@@ -361,6 +365,15 @@ MARLO's stack is Java 17 / Struts 2 / Hibernate-JPA / FreeMarker / jQuery / Mave
 |---|---|---|
 | `api-design-principles` | The Spring MVC REST layer under `marlo-web/src/main/java/.../rest/` (`/api/*`) | Load when adding or changing a REST endpoint, resource shape, or response contract. Not for Struts `.do` actions |
 | `error-handling-patterns` | The save pipeline (`Action.validate()` then `Validator` then manager save chain) plus the interceptor stack | Load when adding a validator, changing validation flow, or touching interceptor error paths. Pair with `reports/ai-context/save-validation-matrix.md` and `reports/ai-context/interceptor-validator-playbook.md` |
+
+**MARLO's own skills.** These are not packaged with AKILI — they are project skills written for this repository, and they encode gates the packaged skills know nothing about. They reach agents through this map exactly like the rows above.
+
+| Skill | Applies To | When to load |
+|---|---|---|
+| `marlo-verify` | Any Java, CSS, or JS change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work |
+| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock and runs the hardcoded-`global_unit_id` risk review |
+| `marlo-commit` | Any commit, amend, or PR body in this repository | Load at the commit step of `/akili-execute`, and whenever a change is finished. It builds the semantic subject, adds the `[SPEC:<path>]` prefix, checks the target branch, and omits AI attribution |
+| `marlo-jira` | Jira issues for MARLO / AICCRA on `cgiarmel.atlassian.net` | Load whenever an issue, ticket, or key like `A2-2452` comes up — including in Spanish, and including when no project is named, since `A2` is the default |
 
 **During `/akili-specify`, derive each task's required skills from this map. During `/akili-execute` and `/akili-test`, the Leader assigns these skills and the Implementer / Tester MUST load them before writing code or tests.**
 

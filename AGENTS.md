@@ -309,6 +309,8 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 
 ## Model Routing
 
+> The phases named below are defined in **[`docs/akili.md`](./docs/akili.md)** — what each `/akili-*` command does, what it writes, and where a human approves. This section only routes them to models.
+
 **Criteria-first:** match the model to the *dominant cognitive demand* of the phase, not to a hardcoded name. Guiding principles:
 
 - **ARCHITECT = BUILDER** — the model that designed it is capable of building it.
@@ -447,6 +449,15 @@ MARLO's stack is Java 17 / Struts 2 / Hibernate-JPA / FreeMarker / jQuery / Mave
 |---|---|---|
 | `api-design-principles` | The Spring MVC REST layer under `marlo-web/src/main/java/.../rest/` (`/api/*`) | Load when adding or changing a REST endpoint, resource shape, or response contract. Not for Struts `.do` actions |
 | `error-handling-patterns` | The save pipeline (`Action.validate()` then `Validator` then manager save chain) plus the interceptor stack | Load when adding a validator, changing validation flow, or touching interceptor error paths. Pair with `reports/ai-context/save-validation-matrix.md` and `reports/ai-context/interceptor-validator-playbook.md` |
+
+**MARLO's own skills.** These are not packaged with AKILI — they are project skills written for this repository, and they encode gates the packaged skills know nothing about. They reach agents through this map exactly like the rows above.
+
+| Skill | Applies To | When to load |
+|---|---|---|
+| `marlo-verify` | Any Java, CSS, or JS change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work |
+| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock and runs the hardcoded-`global_unit_id` risk review |
+| `marlo-commit` | Any commit, amend, or PR body in this repository | Load at the commit step of `/akili-execute`, and whenever a change is finished. It builds the semantic subject, adds the `[SPEC:<path>]` prefix, checks the target branch, and omits AI attribution |
+| `marlo-jira` | Jira issues for MARLO / AICCRA on `cgiarmel.atlassian.net` | Load whenever an issue, ticket, or key like `A2-2452` comes up — including in Spanish, and including when no project is named, since `A2` is the default |
 
 **During `/akili-specify`, derive each task's required skills from this map. During `/akili-execute` and `/akili-test`, the Leader assigns these skills and the Implementer / Tester MUST load them before writing code or tests.**
 

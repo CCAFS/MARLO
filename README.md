@@ -183,6 +183,7 @@ The repository follows a **Spec-Driven Development (SDD)** methodology. The docu
 - [`docs/ux-ui/design.md`](./docs/ux-ui/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
 - [`docs/trd/trd.md`](./docs/trd/trd.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
 - [`docs/infrastructure.md`](./docs/infrastructure.md) — environments blueprint: Test / Staging / Production topology, deployment pipeline, network & security, and the **Local Environment contract** (how to start the local stack).
+- [`docs/akili.md`](./docs/akili.md) — the AKILI-SPECS lifecycle guide: the eleven `/akili-*` commands, what each writes, the review gates, and the documentation-depth ladder.
 - [`.agents/`](./.agents/) — the AKILI multi-agent personas (Leader, Implementer, Reviewer, Tester) used by `/akili-execute` and `/akili-test`. The methodology is **AKILI-SPECS** by Juan Carlos Cadavid ([jcadavid.com](https://jcadavid.com/es/methodology/)), MIT-licensed, installed with `npm install -g akili-specs`; the repository versions only the personas and their model wrappers, never the packaged commands and skills.
 
 ### Spec methodology and taxonomy
