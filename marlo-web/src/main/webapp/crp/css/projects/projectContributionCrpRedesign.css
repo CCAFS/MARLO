@@ -208,9 +208,17 @@
 }
 
 /* customForm prints a committed answer as a <p> -- inside .input for a field and
-   inside .textArea for a narrative -- and global.css greys both. */
+   inside .textArea for a narrative. global.css greys both and also justifies
+   them with word-break: break-all, which splits words mid-letter; the design
+   reads them as plain left-aligned prose. Long tokens still wrap, through
+   overflow-wrap rather than by breaking every word. */
 .cpi-page .cpi-field .input > p,
-.cpi-page .cpi-field .textArea > p { color: var(--cpi-ink); }
+.cpi-page .cpi-field .textArea > p {
+  color: var(--cpi-ink);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
 
 /* Committed value: prose, the way the design shows a field the phase has closed. */
 .cpi-page .cpi-field.is-read .input > p,
