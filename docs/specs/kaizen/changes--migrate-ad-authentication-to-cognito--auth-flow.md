@@ -8,7 +8,7 @@
 | Date | 2026-09-07 |
 | Branch context | **Spec branch** (`staging-cognito-impl` ≠ default `staging`) — no shared file was written; every proposal below is a pending item awaiting the default-branch apply phase |
 | Lessons | 2 (L1 Product, L2 Methodology) · 1 recurrence recorded as a digest update |
-| Pending items | 5 |
+| Pending items | 5 — **all applied 2026-09-17 on `staging`** |
 
 ## Metrics
 
@@ -80,7 +80,7 @@ recorded as a gap.
 
 ## Pending Items
 
-*Recorded on a spec branch. None is applied. All await the apply phase on the default branch.*
+*Recorded on a spec branch. **Applied 2026-09-17 on `staging`** — all five items are closed; P4 keeps an open upstream recommendation to the AKILI methodology repository.*
 
 ### P1 — `trd-adr` · severity: medium
 
@@ -89,7 +89,7 @@ recorded as a gap.
 **Replacement:** `/api/**` is mapped to `authcBasic` through the same realm — `MarloShiroConfiguration.java:113`.
 **Why:** the TRD contradicts the code on an authentication surface. Queued since T00; **not** an ADR
 supersession, so no ADR number is allocated here.
-**Status:** pending.
+**Status:** **applied 2026-09-17** on `staging`. The `/api/**` → `authcBasic` correction landed in `docs/trd/trd.md` §8.4. **Citation corrected at apply time:** the mapping is at `marlo-data/src/main/java/org/cgiar/ccafs/marlo/MarloShiroConfiguration.java` in `filterChainDefinitionMap`, not `:113` as this item recorded. No ADR number allocated — nothing is superseded.
 
 ### P2 — `factual-sweep` · severity: high
 
@@ -102,14 +102,14 @@ evidence for the code those tests cover.
 `marlo-parent/pom.xml` and `marlo-web/pom.xml` declare none. Correct the count and the conclusion, not that.
 **Why high:** a guide is constitution. This sentence currently trains every future agent to discount the
 repository's own test suite.
-**Status:** pending.
+**Status:** **applied 2026-09-17** on `staging`, with the text reconciled at apply time. This item and `directory-abstraction` P7 targeted the same two lines with different figures (31/207 here, 12/39 there); **both were stale.** Measured on apply day: **36 test files, 35 carrying `@Test`, 271 `@Test` methods**, still no Surefire configuration. The applied text carries those figures and the calibrated judgment both items asked for.
 
 ### P3 — `standardization` (L1) · severity: medium
 
 **Target:** `docs/specs/general-setup/requirements.md`, amendment guidance.
 **Proposed line:** an amendment must record the closure sweep it ran — forward for the superseded value, backward
 for documents citing the amended section. An unswept correction is relocated, not applied.
-**Status:** pending, awaiting user review at apply time.
+**Status:** **applied 2026-09-17** on `staging` as writing rule 8 in `docs/specs/general-setup/requirements.md`.
 
 ### P4 — `standardization` (L2) · severity: high
 
@@ -117,7 +117,7 @@ for documents citing the amended section. An unswept correction is relocated, no
 **Proposed line:** when a test double stands in for a collaborator the production code passes arguments to, at
 least one test must assert those arguments; otherwise record the omission as an explicit gap.
 **Also:** upstream to the AKILI methodology repository — the root cause is the persona, not MARLO.
-**Status:** pending.
+**Status:** **applied 2026-09-17** on `staging` — appended to `.agents/tester.md` under *Prove Behavior, Not Count*. The upstream recommendation to the AKILI methodology repository **remains open**; see the upstream backlog.
 
 ### P5 — `digest-update` · severity: raised
 
@@ -128,7 +128,7 @@ Leader's own work: T11b's *"there is no third route"* (a third existed in `Clari
 shared tail — which became **V-7**.
 
 **Action:** raise the severity of the existing root cause rather than open a duplicate lesson.
-**Status:** pending.
+**Status:** **applied 2026-09-17** on `staging`. Merged into the `## Active Lessons` digest at `docs/specs/kaizen-log.md`: severity raised on the existing root cause and `auth-flow` added as a source spec, with the recurrence recorded. No duplicate lesson opened.
 
 ## Carried from the spec's own records
 
