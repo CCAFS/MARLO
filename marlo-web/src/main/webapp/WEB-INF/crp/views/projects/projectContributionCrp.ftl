@@ -223,7 +223,6 @@
               [#else]
                 [@customForm.input name="projectOutcome.expectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
               [/#if]
-              <span class="cpi-field__note">[@s.text name="projectContributionCrp.overall.shareNote" /]</span>
             </div>
             <div class="cpi-field">
               [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false)) /]

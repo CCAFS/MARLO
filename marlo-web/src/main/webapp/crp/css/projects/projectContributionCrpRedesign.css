@@ -207,6 +207,9 @@
   resize: vertical;
 }
 
+/* customForm prints a committed answer as a <p>; the page default greys it. */
+.cpi-page .cpi-field .input > p { color: var(--cpi-ink); }
+
 /* Committed value: prose, the way the design shows a field the phase has closed. */
 .cpi-page .cpi-field.is-read .input > p {
   margin: 0;
