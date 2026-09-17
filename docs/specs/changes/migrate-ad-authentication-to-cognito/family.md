@@ -1,0 +1,376 @@
+# Migrate AD Authentication to Cognito — Spec Family Manifest
+
+| Field | Value |
+|---|---|
+| Parent spec path | `docs/specs/changes/migrate-ad-authentication-to-cognito` |
+| Spec Family ID | `CHG-COGNITO-FAMILY` |
+| Date created | 2026-08-24 (on `staging-cognito`) · **rebuilt on this branch 2026-08-27** |
+| Last updated | 2026-09-11 |
+| Spec-family status | `open` |
+| Owner | IBD Team — Alliance of Bioversity International and CIAT |
+| Working branch | **`staging-cognito-impl`** |
+| Source analysis | [`analysis/`](./analysis/) — 6 documents (the original 4 plus `cognito-claims-inventory.md` and `username-field-audit.md`, both added later), `adauth-retirement-analysis.md` **Revision 3** is the source of truth |
+
+> **Branch note — read before editing.** This manifest was originally authored on `staging-cognito`
+> (commit `73fab253`) with two children. It was **rebuilt on `staging-cognito-impl`** on 2026-08-27 at
+> the user's explicit direction, from the four analysis documents, without merging `staging-cognito`.
+> See § *Cross-branch state* for exactly what exists where, and § *Decision Log* 2026-08-27 for the
+> merge-conflict consequence.
+
+---
+
+## Scope Summary
+
+MARLO authenticates and looks up CGIAR corporate users through the `org.cgiar.ciat.auth` (`adauth`)
+library, which binds directly to CGIAR Active Directory. The programme replaces both capabilities and
+then removes the library — **functional retirement first (zero runtime calls, library still
+installed as a rollback net), physical deletion only after a stabilization window.**
+
+The scope was chunked because `adauth` provides **two capabilities with different answers**:
+
+| | Capability A — Authentication | Capability B — Corporate user lookup |
+|---|---|---|
+| Call sites today | 2 | 6 |
+| Is the person present? | Yes, typing a password | **No** — an admin typed their email |
+| Replacement | Amazon Cognito, federated to the corporate IdP | **Undecided** — 6 candidates. Candidate 1 (Cognito admin APIs) is **contested**, see OQ-21 |
+| Status | Designed and specified | Open architectural decision (`DEC-002`) |
+
+Cognito solves A completely. **Whether it can also serve B is the open question OQ-21**, and it is the
+single highest-leverage unknown in the programme:
+
+- **Analysis Revision 3 §1.4 (`[V-AWS]`)**: no. `ListUsers` / `AdminGetUser` read the User Pool's own
+  directory, and under SAML/OIDC federation a federated identity receives a pool profile only on first
+  successful sign-in — so no Cognito mechanism reaches a corporate person who has never logged in.
+- **Product owner, 2026-08-27**: yes. Cognito exposes email-based lookup, and it federates to CGIAR AD
+  as an external provider, so the email should be sufficient.
+
+**Both readings agree that `ListUsers` filters by email and returns attributes.** They disagree only
+about the *never-signed-in* person — which is exactly the case Capability B exists to serve. **One API
+call against the real federated pool settles it** (OQ-21). Until then, no candidate is selected and
+`DEC-002` stays `PENDING`.
+
+---
+
+## Children
+
+| # | Spec Path | Depends on | Parallel-safe | Status |
+|---|---|---|---|---|
+| 1 | `changes/migrate-ad-authentication-to-cognito/directory-abstraction` | none | **yes** | **`done`** — CP2+CP3 complete 2026-08-29, all 18 tasks (T00–T17); see `directory-abstraction/tasks.md` §10 and `execution.md`'s CP3 report |
+| 2 | `changes/migrate-ad-authentication-to-cognito/auth-flow` | none | **yes** | **`done`** — 25 tasks (T00–T22 incl. T11b), 207 tests, validated PASS with WARN and archived 2026-09-07 to `docs/specs/archive/2026-09-07-changes--migrate-ad-authentication-to-cognito--auth-flow/`. LDAP is **not** retired: that is child 3 |
+| 3 | `changes/migrate-ad-authentication-to-cognito/directory-retirement` | `directory-abstraction`, `auth-flow` | no | `pending` |
+
+> **This table is the exhaustive child set of the spec family.** No AKILI command creates a child
+> spec folder without a prior manifest row. Adding a row is a HITL-approved manifest edit, not a
+> side effect of execution.
+
+**Row 1 is new** (approved 2026-08-27, see Decision Log). **`#` is build order by readiness, not
+priority** — `directory-abstraction` leads because it is the only child with no unresolved external
+blocker.
+
+**Row 3's `Depends on` is only partially satisfied.** Row 1 moving to `done` discharges the
+`directory-abstraction` leg — `LdapDirectoryService` and the seam it sits behind now exist for child 3
+to swap the provider into. **The `auth-flow` leg remains `pending`**, and child 3 also depends on it for
+a hard reason (see § *Child scope boundaries* → 3): `APCustomRealm.getCgiarNickname()` still calls
+`LDAPService` on every CGIAR login, and the jar cannot be deleted while that call site exists. **Child 3
+is therefore not yet unblocked overall** — one of its two dependency legs is closed, not both.
+
+---
+
+## Child scope boundaries
+
+### 1 — `directory-abstraction` *(new)*
+
+Puts every corporate-user lookup behind one interface, **still implemented by `adauth`**.
+
+**Delivers:** `DirectoryPerson`, `DirectorySource`, `DirectoryService`, and `LdapDirectoryService`
+(which delegates to `adauth` verbatim); migration of the 6 `marlo-web` consumers off `LDAPUser` (`searchUsersUtil` is a named exception);
+elimination of the reachable-but-unread `ADConexion` construction in `ContactPersonAction`; a reusable
+`DirectoryServiceContractTest`. Maps to **Checkpoints 2–3** of the execution plan (EXEC-030 … EXEC-053).
+
+**Zero behavior change by construction.** `LdapDirectoryService` reproduces
+`BaseAction.getOutlookUser()` exactly; equivalence is the acceptance criterion.
+
+**Explicitly leaves to child 3:** selecting and implementing the Capability B provider, deleting
+`adauth`, deleting the AD constants, and all infrastructure cleanup.
+
+**Does not touch:** `APCustomRealm.java`, `LDAPAuthenticator.java`, `Authenticator.java`,
+`DBAuthenticator`, `AuthenticationManager`, any `pom.xml`, or anything under `libs/**`. The two
+Capability A call sites belong to child 2 and are protected here.
+
+**Why it is unblocked:** analysis §4.5 — the abstraction is **identical under all six Capability B
+candidates**, so it is not gated by `DEC-002`, OQ-3, or OQ-3b. It is described there as *"the
+highest-value early work in the programme… worth building even if OQ-3b never resolves."*
+
+### 2 — `auth-flow`
+
+Replaces the CGIAR authentication branch (`users.is_cgiar_user = 1`) with Amazon Cognito.
+
+**Delivers:** the Cognito token type and validator, realm token-type dispatch, session establishment,
+ID-token validation, the specificity feature flag, configuration keys, and the login-page change.
+Maps to **Checkpoint 1**.
+
+**Explicitly leaves to children 1 and 3:** the 6 directory-search call sites and removal of `adauth`.
+
+**Does not touch:** `Authenticator.java`, `DBAuthenticator`, `LDAPAuthenticator`,
+`AuthenticationManager`, `MD5Convert`, `users.password`, or the `UsernamePasswordToken` path through
+`APCustomRealm.doGetAuthenticationInfo()` — an `instanceof` guard is inserted *above* the existing
+cast and everything from the cast down is preserved byte-for-byte. The local login flow is a non-goal
+**by construction, not by care**.
+
+**Blocked externally, not technically:** OQ-3 (will CGIAR IT federate MARLO) is a hard blocker for
+implementation, though not for specification. Its spec is already written — see § *Cross-branch state*.
+
+### 3 — `directory-retirement`
+
+Removes `org.cgiar.ciat.auth` from the codebase entirely, and reaches both gates.
+
+**Delivers:** the selected Capability B provider behind the child-1 interface, `UsernameAllocator`,
+`CorporateDomainPolicy`, the `directory.source` switch, the provisioning-flow and frontend changes,
+the `adauth` tripwires, the cutover to zero runtime usage (**Gate 1**), the stabilization window, and
+physical deletion of the dependency, the two committed file-repos (16 + 11 jar versions), the legacy
+classes and the four AD constants (**Gate 2**). Maps to **Checkpoints 4–8**.
+
+**Depends on child 1** because the provider is swapped *behind* the interface child 1 creates —
+without it, the swap is an unbounded refactor across 6 classes instead of one wiring change.
+
+**Depends on child 2** for a hard reason: `APCustomRealm.getCgiarNickname()` calls `LDAPService` on
+every CGIAR login. The jar cannot be deleted while that call site exists, and child 2 is what removes it.
+
+---
+
+## Why this split
+
+| Reason | Detail |
+|---|---|
+| **Different risk profiles** | Child 2 can lock every CGIAR user out of MARLO. Child 1 cannot change behavior at all. Child 3 can break an autocomplete and, at Gate 2, is irreversible. They must not share a rollback decision |
+| **Different rollout shapes** | Child 2 needs staged per-Global-Unit enablement with a live rollback path. Child 1 ships as an ordinary refactor. Child 3 spans an 8-week stabilization window |
+| **Blocking independence** | An authentication defect must never hold up a directory refactor, or vice versa |
+| **One child is unblocked and two are not** | This is the reason row 1 was added. Bundling the abstraction into child 3 would have parked ~10 days of ready, zero-risk, high-leverage work behind an unanswered question owned by CGIAR IT |
+
+---
+
+## Parallel-safety
+
+**Children 1 and 2 are `Parallel-safe: yes`** — their file sets are disjoint:
+
+| Shared writer the root guides flag | Child 1 | Child 2 | Child 3 |
+|---|---|---|---|
+| `marlo-data/.../config/APConstants.java` | — | adds the specificity constant | removes the four `*_AD` constants |
+| `marlo-web/.../config/APConstants.java` | — | adds the specificity constant | removes the four `*_AD` constants |
+| `marlo-web/.../action/BaseAction.java` | **DELETES `getOutlookUser()`** (DD-2) — and child 1 also modifies **6 other** production files: `center/capdev/ContactPersonAction`, `center/json/global/ManageUsersAction`, `crp/admin/CrpUsersAction`, `json/global/ManageUsersAction`, `json/global/SearchUserAction`, `validation/superadmin/GuestUsersValidator` | — | — |
+| `marlo-parent/pom.xml` | — *(unless `DEC-005` lands, see below)* | adds AWS SDK v2 + a JOSE library | removes `adauth` |
+| `database/migrations/` | — | specificity migration | — |
+| `global.properties` | — | login copy | directory copy |
+| `struts-home.xml` | — | 2 new actions | — |
+
+**Child 3 is `Parallel-safe: no`** against both others — it writes every file they write.
+
+**Two caveats on children 1 and 2 running concurrently:**
+
+1. **`DEC-005` (add test-scoped Mockito) would create a collision** on `marlo-parent/pom.xml`. Child 1
+   does **not** need it — a hand-rolled fake `DirectoryService` is trivial for contract tests, and the
+   analysis confirms MARLO's collaborators are constructor-injected interfaces (§2.8). Keep child 1
+   free of `DEC-005` and the disjointness holds.
+2. **Separate `git worktree` is mandatory, not optional.** Two `mvn` runs in one checkout contend for
+   the same `target/`; a build running beside another worker measures the contention, not the change
+   (root guides → `## Concurrency`).
+
+---
+
+---
+
+## Configuration delivery — Cognito connection settings
+
+**Decided 2026-08-27 by the product owner: the Cognito connection settings are supplied as
+environment variables.**
+
+This supersedes what analysis §4.6 assumed. That section maps the Cognito keys onto `APConfig`'s
+`@Value` convention with the `${key:default}` form; it did **not** state where the values come from.
+They come from the environment, not from a committed `marlo-${profile}.properties` file.
+
+| Consequence | Why it matters |
+|---|---|
+| **Every Cognito key still needs `${key:default}`** in `APConfig` | The 63 existing `@Value` fields use no defaults. A key with no default and no environment value **fails Spring context startup**, which is a deployment-time failure, not a login-time one. Analysis §4.6 and touchpoint `#8` both flag this as 🟠 High — the env-var decision does not relax it, it makes it more likely to bite, because an unset env var is easier to ship than a missing properties line |
+| **No Cognito secret ever enters the repository** | Reinforces `CLAUDE.md` Hard rule 12 and Protected Action `P6`. There is no "add it to `marlo-dev.properties`" step to get wrong |
+| **`docs/infrastructure.md` § *Confirmation Needed* item 8 gains a concrete answer for this case** | Secret delivery for Cognito is: environment variables. The rotation policy is still open |
+| **Local development needs the same variables exported** | The `## Local Environment` contract in `docs/infrastructure.md` must name them once child 2 defines them, or a developer's local run fails at startup with no obvious cause |
+
+**Owner:** child 2 `auth-flow` defines the key names and the `APConfig` getters. Child 1
+(`directory-abstraction`) introduces **no configuration at all** — `LdapDirectoryService` reads the
+same `config.isProduction()` the existing code reads, and nothing more.
+
+### The keys as implemented, and where each is validated
+
+Child 2 shipped 8 keys (`APConfig:187-202`, all in the `${key:}` form with an empty default). Recorded
+here because the section above says only that child 2 *would* define them, and `auth-flow/` is now
+archived — a reader of this manifest has nowhere else to look.
+
+**There is deliberately no startup validation.** A blank-rejecting constructor would throw during Spring
+context startup on every environment that has not enabled Cognito, destroying the phase-0 inertness the
+empty defaults exist to provide (`CognitoTokenValidatorImpl:160-164` states this). Validation therefore
+lives at each point of consumption, and every one of them **fails closed**.
+
+| Key | Required | Validated at | When blank |
+|---|---|---|---|
+| `cognito.domain` | yes | `CognitoLoginAction.isCognitoConfigured():508` (pre-redirect) · `CognitoCallbackAction:291` | refused, `login.error.cognitoUnavailable` |
+| `cognito.client.id` | yes | the same two | refused |
+| `cognito.callback.url` | yes | `CognitoLoginAction:509` | refused |
+| `cognito.jwks.uri` | yes | `CognitoTokenValidatorImpl.RemoteJwksSource.fetch():94-98` | `MalformedURLException` → no JWKS → every signature check fails closed |
+| `cognito.region` | yes | **indirectly only — see CFG-1** | issuer never matches |
+| `cognito.user.pool.id` | yes | **indirectly only — see CFG-1** | issuer never matches |
+| `cognito.client.secret` | **no** | `CognitoCallbackAction:300-301` | a public app client on PKCE alone — legitimate, not a misconfiguration |
+| `cognito.identity.provider` | **no** | `CognitoLoginAction:348-349` | omitted from the authorize URL; Cognito shows its own provider picker |
+
+### Two findings — diagnostics and UX, not security
+
+Raised 2026-09-09 from a read of the shipped code. **Neither is a security defect: both already fail
+closed.** Both are recorded because the failure they produce points an operator at the wrong cause.
+
+| # | Finding |
+|---|---|
+| **CFG-1** | **`isConfigured()` cannot detect a blank `cognito.region` or `cognito.user.pool.id`.** `CognitoTokenValidatorImpl:147` composes the expected issuer by concatenation — `"https://cognito-idp." + region + ".amazonaws.com/" + userPoolId` — so with both unset it is the literal `https://cognito-idp..amazonaws.com/`, which is **not blank**. `isConfigured():241-243` tests only for blankness, so the call at `validate():313` passes and the token is rejected at `:340` as `UNEXPECTED_ISSUER` instead. The log line built for precisely this case — *"the validator is not configured (issuer/audience are blank)"* — never fires. An operator who forgot `cognito.region` is told the issuer is unexpected, which reads as a wrong pool or a tampered token |
+| **CFG-2** | **The pre-redirect gate checks 3 of the 6 required keys.** `CognitoLoginAction.isCognitoConfigured():507-510` validates `domain`, `client.id` and `callback.url` — coherent with its own purpose, since those three build the authorize URL — but not `jwks.uri`, `region` or `user.pool.id`. On a half-configured environment MARLO therefore **redirects the user to Cognito, they authenticate successfully, and the failure happens on return**: corporate credentials are typed before anyone learns sign-in cannot work. Failing before the redirect is strictly better |
+
+**Both resolve with one change:** a single completeness predicate over the six required keys, consulted
+both before the redirect (CFG-2) and inside `isConfigured()` (CFG-1). That turns each gap into an early
+refusal carrying the message that already exists.
+
+**Not implemented, and not a loose fix.** The code is child 2's, and `auth-flow/` is archived
+(`docs/specs/archive/2026-09-07-changes--migrate-ad-authentication-to-cognito--auth-flow`). An archived
+audit trail is not reopened, so the change needs its own task under a future spec rather than an
+edit dropped onto shipped, reviewed code.
+
+## Cross-branch state
+
+`staging-cognito` holds 6 commits this branch does not. Nothing was merged.
+
+| Artifact | On `staging-cognito` | On `staging-cognito-impl` (here) |
+|---|---|---|
+| Parent `proposal.md` | ✅ 424 lines, approved 2026-08-24 | ❌ not duplicated |
+| `family.md` | ✅ 2 children | ✅ **this file** — rebuilt, 3 children |
+| `analysis/` ×4 | ✅ | ✅ byte-identical copies |
+| `auth-flow/requirements.md` · `design.md` · `tasks.md` · `judgment.md` | ✅ 1,647 lines | ❌ not duplicated |
+| `directory-abstraction/` | ❌ | ✅ `proposal.md` |
+| AKILI constitutional baseline (`.agents/`, Model Routing, `family.md` template) | ❌ | ✅ commit `56a83ed2` |
+
+**Consequence:** the analysis documents contain relative links to `../proposal.md`,
+`../auth-flow/requirements.md`, and `../auth-flow/design.md` that **do not resolve on this branch**.
+They are not broken references to invent — they point at real, approved artifacts on
+`staging-cognito`. See [`analysis/README.md`](./analysis/README.md) for the resolution map.
+
+**Child 2 is not re-specified here on purpose.** Duplicating 1,647 lines of approved spec would create
+two authorities for one child and guarantee a conflict when the branches meet.
+
+---
+
+## Carried-forward open questions
+
+A child spec may not close a question it does not own.
+
+| # | Question | Owned by | Blocks |
+|---|---|---|---|
+| ~~OQ-2~~ | ~~Option A or Option B?~~ → **RESOLVED 2026-08-24: Option A** (federated redirect for CGIAR users; local form untouched) | Parent — closed | — |
+| **OQ-3** | Which IdP does CGIAR run, and **will CGIAR IT federate MARLO?** | Parent — external. **Deferred by the owner 2026-08-27 — to be established later** | Child 2 implementation. **Not child 1** |
+| **OQ-3b** | Is that IdP one with a queryable HTTP directory API (Entra ID / Graph), or on-prem AD / ADFS with none? | Parent — external. **Deferred 2026-08-27.** May become moot if OQ-21 resolves yes | Child 3 design. **Not child 1** |
+| **OQ-21** | **Can Cognito `ListUsers` (filter by `email`) return a CGIAR person who has NEVER signed in to MARLO through Cognito, on a pool with no pre-provisioned users?** The product owner holds that it can, because Cognito federates to CGIAR AD as an external provider. Analysis Revision 3 §1.4 / §4.3 candidate 1 holds that it cannot, because `ListUsers` reads the pool's own directory and a federated identity gets a pool profile only on first sign-in `[V-AWS]`. **Settled by one API call, not by argument** — see the test in `directory-abstraction/proposal.md` § *Problem*. If the answer is **yes**, candidate 1 wins on cost and OQ-3b / OQ-15 stop mattering for Capability B | Parent — **verify against the real pool once federation exists** | Child 3 design. **Not child 1** |
+| **OQ-15** | Does CLARISA expose a people / user endpoint? **Ask first — cheapest possible answer, credentials already exist** | Parent — external | Child 3 |
+| **OQ-20** | Is the invitation + JIT UX change acceptable to the business? | Parent — business | Child 3 |
+| OQ-18 | Will `sAMAccountName` be mapped at federation time, to a target MARLO can read? **Not to `username`** — that feeds the pool's own attribute and is emitted prefixed as `cognito:username` (claims-inventory §3). `preferred_username` is the only candidate that is both readable and `ListUsers`-filterable, and whether it can be a federation mapping target **is unverified** against this pool (claims-inventory §7) | Parent — raise **with** the federation request. Jira **A2-2459** | **Nothing.** Downgraded 2026-09-09 from retirement prerequisite to *improvement*: `username-field-audit.md` §1.1 establishes MARLO works without the field, and that a later OQ-18 repairs it on sign-in |
+| OQ-19 | How long is the stabilization window, and who signs Gate 1? | IBD Team lead | Child 3 |
+| OQ-1 | How many users have `is_cgiar_user = 1`? | Child 2 | Rollout sizing |
+| OQ-4 | Who consumes `/api/**` with Basic auth? **Narrowed** — all seeded API accounts are `is_cgiar_user = 0` | Child 2 | Risk R-4 |
+| OQ-11 | Do type-2/5 Global Units have corporate users? | Child 2 | Gate 1 reachability |
+| OQ-12 | Does the convention plugin expose `SearchUserAction` and `center/…/ManageUsersAction`? | Child 1 **migrates them either way**; only their *deletion* is gated | Child 3 |
+| OQ-14 | **Premise corrected 2026-09-09 — synthesis was rejected, so the question is no longer about a *synthesized* username but an *absent* one.** Do CLARISA `partner-requests` and the QA service accept a null or missing username? Measured behaviour is already in hand (`username-field-audit.md` §5.2): CLARISA receives the payload with `externalUserName` **removed** (`org.json` drops null keys), and the QA service receives the 4-character literal `null` (`QATokenAuthMySQLDAO:77` interpolates into a SQL literal, so the token stays valid — see §5.3). Both payloads still carry `email` and a user id. If either service refuses, §5.2 names the fallback per service — existing values in a display-identity field, **not** a synthesized username | Child 3 | Child 3 |
+| OQ-16 | Is `clarisa.publicUser` an `is_cgiar_user = 1` account? One SQL query | Child 2 | Gate 1 |
+| OQ-5 | Is `ad_user` populated by a live job or a stale import? **Half-answered: nothing in MARLO writes it** | Child 3 | Candidate 5 only |
+
+**Not one of these blocks child 1.** That is the finding that justified row 1.
+
+### The specificity asymmetry — recorded 2026-09-09
+
+Product-owner direction: **Cognito is a specificity, so a Global Unit with `cognito_auth_active` off must
+keep using the current flow.** Verified against the working tree, with a consequence for how the questions
+above are ranked.
+
+Five call sites resolve the flag and **all five are on the login path** — `LoginAction:229,236`,
+`CognitoLoginAction:519`, `CognitoCallbackAction` (shared resolver), `ValidateUserAction:249,256`,
+`CrpByUserEmailAction:126`. **No consumer of `DirectoryService` reads it**, and
+`findByEmail(email)` does not take a Global Unit to decide on.
+
+> *The call-site count and point 2 below were overtaken the next day. Read § **Superseded by the
+> user-creation path** before relying on either.*
+
+| | Capability A — authentication | Capability B — directory lookup |
+|---|---|---|
+| Gated per Global Unit | **Yes** | **No** |
+| Rollout shape | Gradual, unit by unit | **One cut, every unit at once** |
+
+Three things follow:
+
+1. **`adauth` cannot reach functional retirement until every unit has the flag on.** Gate 1 is gated on the
+   slowest unit, not the first.
+2. **The user-creation flow keeps using AD for as long as AD exists** — which is what the product owner
+   requires, and it needs no work, because it has no per-unit gate to get wrong.
+3. **This sharpens the ranking in § *Consequence for how the open questions are ranked*.** Authentication is
+   solved and gradual. The directory is one decision landing on every unit simultaneously, so **OQ-21 is the
+   binding question** — see `analysis/username-field-audit.md` §11 for the full record.
+
+### Superseded by the user-creation path — recorded 2026-09-11
+
+The record above was accurate on the day it was written. Two commits since then changed two of its
+facts, both on the **user-creation path** — the one place the record put outside the flag's reach.
+
+**The call-site count is now eight, and two are off the login path.**
+`CognitoAuthSpecificity.isActiveFor` is called from `CrpUsersAction:177` and `ManageUsersAction:134`
+as well, both added by `641f69302a` (2026-09-10, A2-2449) — one day after this section was recorded,
+which is why it counted five. A ninth read is `crpUsers.ftl:53`, which resolves the flag from the
+session through `hasSpecificities` rather than through the resolver, to carry it to the browser.
+
+**Point 2 no longer holds. Both halves of it are now false.**
+
+- *It needed work.* The Guest Users screen (`{crp}/crpUsers.do`) could not create **any** `@cgiar.org`
+  account the directory failed to confirm. `crpUsers.js` hid the first and last name block for any
+  address containing `@cgiar.org` — commit `3b0c5a33f7`, 2019-07-11, six years old — while `save()`
+  required those names, so the save returned INPUT naming two inputs the page would not show and no
+  retry could succeed. The same guess was silently creating accounts with blank names and
+  `is_cgiar_user = 0` until A2-2449 tightened the check from `!= null` to a blank check. **A directory
+  outage is indistinguishable from an absent person**, so in any environment without the CIAT network
+  this was every corporate address, not an edge case. Fixed by `57c107f087` and `e9c8c81ee6`.
+- *It now has a per-unit gate.* `crpUsers.ftl:53` renders `cognito_auth_active` so the screen asks for
+  the names unconditionally in a migrated unit, and consults the directory before hiding them in one
+  that is not.
+
+**What this adds to child 3.** `DirectoryByEmailAction` is a new `DirectoryService` consumer — six
+files use the interface now — and the first one reachable over HTTP as a read-only lookup, behind a
+session and the CRP administrator permission. Child 3 migrates it with the rest. Both commits are
+frontend and provisioning work inside child 3's declared scope, delivered ahead of it as a bug fix
+rather than through a spec.
+
+**What does not change.** The Capability A / Capability B table stands: `findByEmail(email)` still
+takes no Global Unit, still no `DirectoryService` consumer reads the flag, and Gate 1 is still gated
+on the slowest unit. Points 1 and 3 are unaffected and **OQ-21 remains the binding question**.
+
+
+---
+
+## Decision Log
+
+| Date | Decision | Rationale |
+|---|---|---|
+| 2026-08-24 | Split the approved scope into `auth-flow` and `directory-retirement` | Authentication and directory retirement have different blast radii and rollback costs. Bundling them would make an autocomplete regression a reason to roll back an authentication migration |
+| 2026-08-24 | OQ-2 held at the parent, not delegated | It selects between two incompatible architectures; a child cannot make that call after the fact |
+| 2026-08-24 | **OQ-2 resolved: Option A** (Cognito federated to CGIAR AD) | AWS does not permit `InitiateAuth` for federated users, so Option B required abandoning federation and running a User Migration Lambda against LDAP with no removal date. Option A is the only variant with a real end state |
+| 2026-08-26 | Analysis realigned to **functional-first** retirement (Revision 3) | A `new ADConexion(...)` on a reachable action is runtime usage, not dead weight. Revision 2 mislabelled the one thing that actually belongs in the functional phase |
+| **2026-08-27** | **Manifest rebuilt on `staging-cognito-impl` rather than merging `staging-cognito`** | User direction, explicit. **Accepted consequence:** this file and `staging-cognito`'s `family.md` will conflict if the branches are ever merged. Mitigation — this file is the newer authority and supersedes; `auth-flow/` and the parent `proposal.md` are deliberately *not* duplicated, so the conflict surface is one file rather than six |
+| **2026-08-27** | **Added row 1, `directory-abstraction`** — HITL-approved manifest edit | Analysis §4.5 establishes the abstraction is identical under all six Capability B candidates and therefore blocked by nothing. Leaving it inside `directory-retirement` would park ready, zero-behavior-change work behind OQ-3b, a question owned by CGIAR IT with no committed answer date |
+| **2026-08-27** | **Children 1 and 2 marked `Parallel-safe: yes`** (the original manifest marked both its children `no`) | Their file sets are genuinely disjoint once the abstraction is separated from the retirement: child 1 writes **7 production files** — `BaseAction` plus the five migrated consumers and `ContactPersonAction` — plus 5 new production and 9 new test files; child 2 writes **none of them**. *(Corrected 2026-08-29 by `/akili-validate`: this read "child 1 writes only `BaseAction` and new files", which was wrong reasoning reaching a right answer. The **conclusion holds** — child 2's set (`APCustomRealm`, `MarloShiroConfiguration`, `LoginAction`, `CrpByUserEmailAction`, `ValidateUserAction`, `loginForm.ftl`, `login.js`) is disjoint from all 7 — but the premise understated child 1's footprint by six files, in the manifest child 2 and child 3 read first.)* Conditional on child 1 not taking `DEC-005` |
+| **2026-08-27** | Build order set by **readiness**, not by the original numbering | Child 1 is the only child with no unresolved external blocker. Numbering it 1 makes the manifest state what can actually start |
+| **2026-08-27** | **Cognito connection settings are delivered as environment variables** | Product-owner decision. Recorded because analysis §4.6 assumed `APConfig` keys without stating their source. Every key still requires the `${key:default}` form — an unset env var otherwise fails Spring context startup. See § *Configuration delivery* |
+| **2026-08-27** | **OQ-3 / OQ-3b deferred; not asked of CGIAR IT yet** | Product-owner decision ("se averigua después"). Recorded so R1 and R2 stay visibly **Critical and unmitigated** rather than quietly assumed away. Neither blocks child 1 |
+| **2026-08-27** | **OQ-21 opened: is candidate 1 (Cognito `ListUsers` by email) viable?** Not resolved in either direction | The product owner and analysis Revision 3 disagree, and the disagreement is decidable by a single API call against the real federated pool rather than by argument. Recording it as a testable question — instead of editing the analysis to match either position — keeps the `[V-AWS]` evidence chain intact and makes the cheapest candidate cheap to confirm. **If OQ-21 resolves yes, Bucket B's 27–36 day estimate drops materially and OQ-3b / OQ-15 become moot for Capability B** |
+| **2026-08-31** | **`auth-flow/` transferred onto `staging-cognito-impl` and started, rather than being worked on `staging-cognito`** | User direction: all work continues on this branch through testing, with the move to `staging` decided at a later validation. Done as a **scoped verbatim `git checkout`**, not a re-specification, so the files stay byte-identical to `staging-cognito` and the branches do not diverge on them. **Accepted consequence:** `auth-flow/tasks.md` and the new `auth-flow/execution.md` are now branch-local and will diverge, widening the predicted merge conflict from `family.md` alone to three files. **Scope of the checkout was load-bearing:** `staging-cognito` carries an older two-child `family.md`, so an unscoped checkout would have silently reverted this branch's three-child manifest |
+| **2026-08-31** | **Row 2's `Parallel-safe: yes` is unaffected by T01** | T01 touches `LoginAction.java` and one new test file. `LoginAction` was already listed as child 2's file in § *Parallel-safety*, and child 1 is `done` and archived, so no disjointness claim changes. **`marlo-parent/pom.xml` was deliberately not touched** — the tests use hand-rolled doubles and a `Proxy`, keeping `DEC-005` unneeded and the POM free for T03 |
+| **2026-08-29** | **Row 1 (`directory-abstraction`) moved to `done`** — all 18 tasks (T00–T17), CP2 and CP3 both complete | `adauth` is still present in all 3 POMs and still the implementation; **Gate 1 is explicitly NOT reached** — 3 live call sites remain (2 Capability A, owned by child 2; 1 the seam's own `LdapDirectoryService`). This closes only the `directory-abstraction` leg of child 3's `Depends on`; the `auth-flow` leg is still `pending`, so **child 3 is not yet unblocked overall**. See `directory-abstraction/execution.md`'s `CHECKPOINT RESULT — CP3` |
+| **2026-09-09** | **`users.username` may be null: accept it, and reject deriving a username.** Sign-in by email only for accounts created after retirement | Product-owner decision, on the audit in `analysis/username-field-audit.md`. A derived value is not the AD login (`k.tanaka` vs `ktanaka`, measured twice) — it is the write `T17` already reverted for `cognito:username`, and an admin typing it by hand has the same defect with a human in the loop. **What makes it safe:** with derivation gone the field has *no writer at all*, so it freezes rather than breaking — the degradation is gradual and non-retroactive, and OQ-18 can still repair it on sign-in later, which makes the decision reversible. The audit swept every layer (Java, FreeMarker, JS, ORM, SQL, 40 Pentaho reports, i18n): the column is nullable everywhere including `Users.hbm.xml:18-19`, so **no migration**; all three queries touching it fail closed, so **no authentication hole**. Cost is two obligatory lines (`FeedbackQACommentsAction:180,403`) and two optional fallbacks. **Consequently OQ-14's premise is corrected and OQ-18 is downgraded to an improvement** |
+| **2026-09-11** | **The user-creation flow is now gated per Global Unit, and the 2026-09-09 asymmetry record is superseded on that point** | Not a change of direction — a correction of fact. The Guest Users screen could not create any `@cgiar.org` account the directory failed to confirm, because its script decided from the email domain what only the server can ask. The record said that flow *needs no work* and *has no per-unit gate to get wrong*; it needed both. Fixed outside a spec as a bug (`57c107f087`, `e9c8c81ee6`) because the screen was unusable in any environment without the CIAT network, which includes every local checkout. **Consequences for child 3:** `DirectoryByEmailAction` joins its migration set as a sixth `DirectoryService` consumer and the first HTTP-reachable one, and part of its declared frontend / provisioning scope has already landed. **What is unchanged:** Capability B is still ungated, so Gate 1 still waits on the slowest unit and OQ-21 is still the binding question |

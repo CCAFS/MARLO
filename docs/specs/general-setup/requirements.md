@@ -15,6 +15,12 @@ Every spec folder MUST contain three files:
 - `design.md` (see `docs/specs/general-setup/design.md`).
 - `task.md` (see `docs/specs/general-setup/task.md`).
 
+A spec folder that was **chunked into child specs** MUST also contain:
+
+- `family.md` (see `docs/specs/general-setup/family.md`) — the spec-family manifest tracking child order, dependencies, and status. Its absence means the spec is flat, with no added obligations.
+
+A spec folder MAY also contain `agent-context.md` — a compact, agent-first operational summary read before the longer spec files for routine work.
+
 ---
 
 ## Front matter (top of every `requirements.md`)
@@ -28,8 +34,9 @@ Every spec folder MUST contain three files:
 **Reviewers:** <PMU lead, QA lead, Tech lead, etc.>
 **Last Updated:** YYYY-MM-DD
 **Related PRD sections:** docs/prd.md §<n>
-**Related System Design sections:** docs/system-design/design.md §<n>
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §<n>
+**Related UX/UI Design sections:** docs/ux-ui/design.md §<n>
+**Related TRD sections:** docs/trd/trd.md §<n>
+**Related Infrastructure sections:** docs/infrastructure.md §<n> (when the spec touches environments, deployment, or the local stack)
 **Companion ai-context docs:** reports/ai-context/<file>.md (when applicable)
 ```
 
@@ -127,8 +134,8 @@ AC for FN-001:
 **Reviewers:** PMU lead, QA lead
 **Last Updated:** 2026-04-30
 **Related PRD sections:** docs/prd.md §6.1, §6.3
-**Related System Design sections:** docs/system-design/design.md §3, §6.3
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3, §5.1
+**Related UX/UI Design sections:** docs/ux-ui/design.md §3, §6.3
+**Related TRD sections:** docs/trd/trd.md §3, §5.1
 **Companion ai-context docs:** reports/ai-context/save-validation-matrix.md
 
 ## 1. Overview

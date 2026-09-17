@@ -20,13 +20,16 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.ADLoginMessages;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -56,6 +59,21 @@ public class LoginAction extends BaseAction {
   // Logging
   private static final Logger LOG = LoggerFactory.getLogger(LoginAction.class);
 
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). One of exactly two public disclosure categories a refused Cognito
+   * login may surface through {@code ?authError=<code>} on the {@code /login.do} redirect target
+   * {@code CognitoCallbackAction} (T20/T21) already builds -- an infrastructure condition, safe to show
+   * distinctly because it says nothing about any account (execution.md 43.2).
+   */
+  public static final String AUTH_ERROR_UNAVAILABLE = "cognitoUnavailable";
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The generic public rejection -- every other reason, including
+   * {@code cognitoNotEligible}, {@code inactive}, {@code invalidUserCrp} and route C's own no-message
+   * branch, collapses here so none of them is distinguishable from an ordinary failure (SEC-005, SEC-006).
+   */
+  public static final String AUTH_ERROR_FAILED = "cognitoFailed";
+
   // Variables
   private User user;
 
@@ -63,6 +81,17 @@ public class LoginAction extends BaseAction {
   private String url;
 
   private String crp;
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). Bound from the {@code authError} query parameter on a GET
+   * {@code /login.do} -- the value {@code CognitoCallbackAction}'s redirect appends. A pure selector:
+   * {@link #isCognitoUnavailable()} and {@link #isCognitoFailed()} only ever compare it with
+   * {@code equals(...)} against the two closed-set literals above, and neither getter -- nor
+   * {@code loginForm.ftl} -- ever renders this field's own value as text. Anything outside the closed set
+   * (unknown, empty, malformed, markup, a duplicated query parameter) fails both comparisons and shows
+   * nothing.
+   */
+  private String authError;
 
 
   private Long globalUnit;
@@ -78,18 +107,21 @@ public class LoginAction extends BaseAction {
 
   private final CustomParameterManager customParameterManager;
 
+  private final ParameterManager parameterManager;
+
   private List<GlobalUnit> crpList;
   private List<GlobalUnit> centerList;
   private List<GlobalUnit> platformsList;
 
   // @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, CustomParameterManager customParameterManager) {
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
   }
 
   @Override
@@ -111,6 +143,101 @@ public class LoginAction extends BaseAction {
 
   public Long getGlobalUnit() {
     return globalUnit;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The raw {@code authError} query parameter, exposed only so it can be
+   * bound and re-read -- {@code loginForm.ftl} must never render this value; it reads
+   * {@link #isCognitoUnavailable()} / {@link #isCognitoFailed()} instead.
+   */
+  public String getAuthError() {
+    return this.authError;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only when {@code authError} is exactly
+   * {@link #AUTH_ERROR_UNAVAILABLE} -- an exact-match closed-set check, never a substring test, so nothing
+   * outside the two approved literals can select a visible message.
+   */
+  public boolean isCognitoUnavailable() {
+    return AUTH_ERROR_UNAVAILABLE.equals(this.authError);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only when {@code authError} is exactly
+   * {@link #AUTH_ERROR_FAILED} -- an independent exact-match check, not the negation of
+   * {@link #isCognitoUnavailable()}. An unknown, empty, or malformed value -- and a plain
+   * {@code login.do} with no parameter at all -- must make both getters {@code false}, not fall through to
+   * this one.
+   */
+  public boolean isCognitoFailed() {
+    return AUTH_ERROR_FAILED.equals(this.authError);
+  }
+
+  public void setAuthError(String authError) {
+    this.authError = authError;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T11b: {@code true} when {@code candidateEmail} resolves to an
+   * {@code is_cgiar_user = 1} account that belongs to at least one Global Unit with
+   * {@code cognito_auth_active} enabled.
+   * <p>
+   * This is {@code ValidateUserAction#isCgiarCredentialRelayBlocked()} (T11) adapted to this action's
+   * shape -- see that method's javadoc for the full MIG-001 reasoning, which applies unchanged here. The
+   * short version: refusing on "any membership is migrated" would lock a CGIAR user with a non-migrated
+   * membership out of that unit's local login entirely, which MIG-001's <i>Both paths coexist</i> scenario
+   * forbids. So when {@code selectedGlobalUnit} is a unit the account actually belongs to, that unit alone
+   * decides.
+   * <p>
+   * <b>{@code selectedGlobalUnit} is a REQUEST, not an authority.</b> It is resolved from the caller-supplied
+   * {@code crp} acronym ({@link GlobalUnitManager#findGlobalUnitByAcronym(String)}), which only proves the
+   * acronym exists -- not that this account belongs to it. T11's first correction FAILed its audit for
+   * exactly this shape: trusting a caller-named unit without checking it against real membership let
+   * {@code &globalUnitId=99999} switch the guard off entirely (execution.md 15.1). Here, a
+   * {@code selectedGlobalUnit} that matches no membership is therefore treated as no selection at all, and
+   * the method falls through to the fail-closed sweep across every membership.
+   *
+   * @param candidateEmail the trimmed, lowercased email the caller is attempting to authenticate as
+   * @param selectedGlobalUnit the Global Unit resolved from the {@code crp} acronym, or {@code null} when
+   *        none was supplied or none resolved
+   * @return {@code true} only when the account is CGIAR-authenticated AND the deciding Global Unit (the
+   *         selected one when it is a real membership, otherwise any membership) has the flag active;
+   *         {@code false} for every local ({@code is_cgiar_user = 0}) account and for an account this
+   *         action cannot resolve at all (SEC-005's {@code BUT MUST NOT} clause)
+   */
+  private boolean isCgiarCredentialRelayBlocked(String candidateEmail, GlobalUnit selectedGlobalUnit) {
+    if (candidateEmail == null || candidateEmail.trim().isEmpty()) {
+      return false;
+    }
+    User candidate = this.userManager.getUserByEmail(candidateEmail);
+    if (candidate == null) {
+      candidate = this.userManager.getUserByUsername(candidateEmail);
+    }
+    if (candidate == null || !candidate.isCgiarUser()) {
+      return false;
+    }
+    List<GlobalUnit> memberships = this.crpManager.crpUsers(candidateEmail);
+
+    // MIG-001: when the selected Global Unit is one the account actually belongs to, that unit alone
+    // decides -- a user in a migrated X and a non-migrated Y must still reach Y's local login. The
+    // membership check is the whole security of this branch; see the javadoc above for why
+    // `selectedGlobalUnit` cannot be trusted on its own.
+    if (selectedGlobalUnit != null) {
+      for (GlobalUnit membership : memberships) {
+        if (selectedGlobalUnit.getId().equals(membership.getId())) {
+          return CognitoAuthSpecificity.isActiveFor(membership, this.customParameterManager, this.parameterManager);
+        }
+      }
+      // Matched no membership: treat it as no selection at all and fall through to the fail-closed sweep.
+    }
+
+    for (GlobalUnit membership : memberships) {
+      if (CognitoAuthSpecificity.isActiveFor(membership, this.customParameterManager, this.parameterManager)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void getLoginMessages() {
@@ -182,8 +309,41 @@ public class LoginAction extends BaseAction {
       // Obtain the global unit selected
       // GlobalUnit loggedCrp = crpManager.getGlobalUnitById(globalUnit);
       GlobalUnit loggedCrp = crpManager.findGlobalUnitByAcronym(crp);
+
+      // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): "attempt started" -- the first event design.md
+      // 11 names, logged before either gate below (the T11b relay guard, then userManager.login()) so a
+      // rejection at either can be correlated back to this one line. "Resolved mode" is the literal LOCAL:
+      // this endpoint IS the local path by construction (login.do) -- a fact about which endpoint was hit,
+      // never a value the caller told MARLO.
+      LOG.info("Local login attempt started for " + LogSanitizer.sanitizeForLog(user.getEmail()) + " (Global Unit "
+        + (loggedCrp == null ? "<unresolved>" : loggedCrp.getAcronym()) + ", mode LOCAL).");
+
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
+
+      // CHG-COGNITO-AUTH-001-T11b (SEC-005): the guard runs, and can refuse, BEFORE userManager.login() is
+      // reached -- once that call executes the submitted password has already left MARLO for the realm's
+      // LDAP branch. Mirrors ValidateUserAction#isCgiarCredentialRelayBlocked() (T11), the reference
+      // implementation corrected after two audits (execution.md 15-16): a caller-supplied Global Unit may
+      // only narrow the decision to a unit the account actually holds, it may never let the decision escape
+      // one, and the flag is never read except through the shared CognitoAuthSpecificity resolver (PS-16).
+      if (this.isCgiarCredentialRelayBlocked(userEmail, loggedCrp)) {
+        // CHG-COGNITO-AUTH-001-T14 (OPS-001): the LOG line names the gate that actually rejected the
+        // attempt -- the T11b guard left this generic on purpose (execution.md 22.5). The field error two
+        // lines below stays the byte-identical wrong-password message; only the LOG line, never anything
+        // rendered to the caller, may say "SEC-005 relay guard".
+        LOG.info("User " + LogSanitizer.sanitizeForLog(user.getEmail())
+          + " denied by the SEC-005 CGIAR relay guard (local login blocked for a CGIAR-migrated account; "
+          + "Global Unit " + (loggedCrp == null ? "<none selected>" : loggedCrp.getAcronym()) + ").");
+        user.setPassword(null);
+        // Same generic shape a wrong password produces (design.md 5.3, matching T11's ValidateUserAction
+        // guard): no new oracle telling a caller which accounts are CGIAR-migrated (SEC-005's BUT MUST NOT
+        // clause). ADLoginMessages's literal-string values are used directly, not as i18n keys (DD-7) --
+        // this is the exact value APCustomRealm/LDAPAuthenticator leave behind for a genuine wrong password.
+        this.addFieldError("loginMessage", this.getText(ADLoginMessages.ERROR_LOGON_FAILURE.getValue()));
+        return BaseAction.INPUT;
+      }
+
       User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {
@@ -230,6 +390,22 @@ public class LoginAction extends BaseAction {
   }
 
   public String login(User loggedUser, GlobalUnit loggedCrp) {
+    return this.finishLogin(loggedUser, loggedCrp, ServletActionContext.getRequest().getHeader("Referer"));
+  }
+
+  /**
+   * Establishes the session for an already-authenticated user and decides where to send them.
+   * <p>
+   * Extracted from {@link #login(User, GlobalUnit)} so that an authentication flow which does not carry a
+   * {@code Referer} header can supply its own return URL (CHG-COGNITO-AUTH-001, DD-6). The only behavioral
+   * change made during the extraction is the null guard on {@code returnUrl}.
+   *
+   * @param loggedUser the authenticated user
+   * @param loggedCrp the Global Unit selected at login
+   * @param returnUrl the URL to return to after login, or {@code null} when the caller has none
+   * @return the Struts result name
+   */
+  protected String finishLogin(User loggedUser, GlobalUnit loggedCrp, String returnUrl) {
 
     // Validate if the user belongs to the selected crp
     if (loggedCrp != null) {
@@ -261,6 +437,12 @@ public class LoginAction extends BaseAction {
          * }
          */
       } else {
+        // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): gate 4 (crp_users membership, design.md 13.1)
+        // rejecting here previously emitted no log line at all -- the exact gap design.md 11's correction
+        // names. This is the shared tail every authentication path uses (T01), so it covers the local AND
+        // the Cognito path alike.
+        LOG.info("User " + loggedUser.getEmail() + " denied: not a member of Global Unit "
+          + loggedCrp.getAcronym() + " (gate 4: crp_users membership).");
         this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
         this.setCrpSession(loggedCrp.getAcronym());
         this.getSession().clear();
@@ -270,6 +452,7 @@ public class LoginAction extends BaseAction {
         return BaseAction.INPUT;
       }
     } else {
+      LOG.info("User " + loggedUser.getEmail() + " denied: no Global Unit was selected.");
       this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
       user.setPassword(null);
       this.getSession().clear();
@@ -278,7 +461,10 @@ public class LoginAction extends BaseAction {
       return BaseAction.INPUT;
     }
 
-    LOG.info("User " + user.getEmail() + " logged in successfully.");
+    // CHG-COGNITO-AUTH-001-T14 (design.md 11): extended to include the Global Unit -- the pre-existing line
+    // logged only the email. loggedCrp is guaranteed non-null here: both branches above that leave it null
+    // or unresolved already returned.
+    LOG.info("User " + user.getEmail() + " logged in successfully for Global Unit " + loggedCrp.getAcronym() + ".");
 
 
     loggedUser = userManager.getUser(loggedUser.getId());
@@ -287,12 +473,15 @@ public class LoginAction extends BaseAction {
      * Save the user url with trying to enter the system to redirect after
      * loged.
      */
-    String urlAction = ServletActionContext.getRequest().getHeader("Referer");
+    String urlAction = returnUrl;
     /*
      * take the ".do" pattern in the url to differentiate the main page.
      * also discard the "logout" url beacause this action close the user session.
+     * The null check is the one behavioral change in this extraction: a request with no Referer header
+     * (Referrer-Policy: no-referrer, curl, Postman, and every caller that has no header to send) used to
+     * throw NullPointerException here.
      */
-    if (urlAction.contains(".do") && !urlAction.contains("logout")) {
+    if (urlAction != null && urlAction.contains(".do") && !urlAction.contains("logout")) {
       this.url = urlAction;
       return LOGIN;
     } else {

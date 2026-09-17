@@ -359,6 +359,39 @@
   color: transparent;
 }
 
+/* CHG-COGNITO-AUTH-001-T12: the COGNITO-branch control. A <button>, unlike the <input
+   type="submit"> above, carries its own browser chrome in some renderers -- reset the same way
+   .loginBack resets its native button appearance below. No new color, spacing, or type scale:
+   #login-cgiar-button is still ".login-form-button" and inherits every rule above unchanged */
+#login-cgiar-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ".loginForm *:focus" clears the outline for every control in the form; restored here with the
+   same :focus / :focus-visible pair used by ".loginBack" below, and the same palette color
+   (#1689ca), since this is a new interactive element and NF-003 requires a visible focus state.
+   CHG-COGNITO-AUTH-001-T12 fix (audit finding 4): deliberately NO border-radius override here,
+   unlike ".loginBack:focus" below. That control has "background: none" and no border-radius of
+   its own, so a radius on its own outline only shapes empty space around a transparent control.
+   #login-cgiar-button is a filled pill that inherits border-radius: 10px from
+   ".login-button-container .login-form-button" - overriding it on :focus would visibly snap the
+   corners on focus/blur, the exact kind of motion NF-003 exists to prevent on the one control it
+   is meant to make keyboard-usable */
+#login-cgiar-button:focus {
+  outline: 2px solid #1689ca;
+  outline-offset: 2px;
+}
+
+#login-cgiar-button:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+#login-cgiar-button:focus-visible {
+  outline: 2px solid #1689ca;
+  outline-offset: 2px;
+}
+
 .login-button-spinner {
   position: absolute;
   top: 50%;
