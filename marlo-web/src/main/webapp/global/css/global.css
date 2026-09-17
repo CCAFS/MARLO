@@ -9460,6 +9460,20 @@ img.qaOptionsComment {
   background: #F2F9FC;
   border-color: #BEDFEC;
 }
+
+/* Two legacy rules shrink single items with !important -- 0.95em on the active
+ * "Contribution to Performance Indicators" link and 0.88em on the LP6 one -- so
+ * those two rows rendered a size smaller than the rest. The redesigned rows wrap
+ * on their own, so the sizing is normalised back here, and the bold the old
+ * current-section rule sets on the <li> comes down with it. */
+#secondaryMenu.clusterMenu ul ul li,
+#secondaryMenu.clusterMenu ul ul li > a,
+#secondaryMenu.clusterMenu ul ul li.currentSection > a {
+  font-size: 12.5px !important;
+}
+#secondaryMenu.clusterMenu ul li ul > li.currentSection {
+  font-weight: 400;
+}
 #secondaryMenu.clusterMenu ul ul li.currentSection > a {
   font-weight: 500;
   color: #015C7D;
