@@ -171,8 +171,13 @@ var guestUsersModule =
       var $message = $('#guestUserMessage');
       var $userNameBlock = $('.firstLastName');
       var $submitButton = $('button[name="save"]');
+      var $cognitoAuthActive = $('#cognitoAuthActive');
+      var $directoryUnconfirmed = $('#directoryUnconfirmed');
+      var $usernameExistingMessage = $('#usernameExistingMessage');
       var timer = null;
       var userHasAccess = false;
+      var directoryFound = false;
+      var usernameTaken = false;
 
       function init() {
         events();
@@ -214,6 +219,8 @@ var guestUsersModule =
               beforeSend: function() {
                 $message.hide();
                 userHasAccess = false;
+                directoryFound = false;
+                usernameTaken = false;
               },
               success: function(data) {
                 console.log(data);
@@ -228,7 +235,7 @@ var guestUsersModule =
                 }
               },
               complete: function(data) {
-                validateForm();
+                findInDirectory(email);
               },
               error: function(data) {
               }
@@ -239,6 +246,33 @@ var guestUsersModule =
 
       }
 
+      // Asks the server whether the CGIAR directory holds this address. A refused, unknown or failed
+      // lookup all answer the same way, and all leave directoryFound false -- the names get asked for.
+      // Never blocks: validateForm runs on completion whatever the outcome.
+      function findInDirectory(email) {
+        $.ajax({
+            url: baseUrl + "/directoryByEmail.do",
+            data: {
+              userEmail: email
+            },
+            success: function(data) {
+              directoryFound = (data && data.found === true);
+              // The directory knows this person by a login another MARLO account already holds, so creating
+              // them would break on username_UNIQUE and lose the whole submission. Say it while the address
+              // is being typed rather than letting the save be what finds out.
+              usernameTaken = (data && data.usernameTaken === true);
+              if(usernameTaken) {
+                $message.text($usernameExistingMessage.val()).fadeIn();
+              }
+            },
+            complete: function(data) {
+              validateForm();
+            },
+            error: function(data) {
+            }
+        });
+      }
+
       function validateForm() {
         var email = getUserEmail();
         var firstName = $.trim($firstName.val());
@@ -247,7 +281,7 @@ var guestUsersModule =
 
         $userEmail.removeClass('input-loading');
 
-        if(!userHasAccess) {
+        if(!userHasAccess && !usernameTaken) {
           if(validateCGIAR()) {
             isValid = true;
           } else {
@@ -271,9 +305,19 @@ var guestUsersModule =
         }
       }
 
+      // Deciding this from the email domain is what used to hide the fields while save() required them,
+      // leaving the creation impossible to complete. Every input below comes from the server instead: the
+      // two flags it rendered, and the directory's own answer for the address currently typed.
+      function namesAreRequired() {
+        if($cognitoAuthActive.val() === "true" || $directoryUnconfirmed.val() === "true") {
+          return true;
+        }
+        return !directoryFound;
+      }
+
       function validateCGIAR() {
         var email = getUserEmail();
-        if(validateEmail(email) && email.indexOf("@cgiar.org") !== -1) {
+        if(!namesAreRequired() && validateEmail(email) && email.indexOf("@cgiar.org") !== -1) {
           $userNameBlock.slideUp();
           return true;
         } else {

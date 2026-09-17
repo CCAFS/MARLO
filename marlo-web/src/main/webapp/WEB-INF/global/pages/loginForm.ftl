@@ -78,10 +78,16 @@
         [#-- Step 3: Password --]
         <div class="login-step hidden" id="login-step-password">
           <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
+          [#-- CHG-COGNITO-AUTH-001-T18 / FN-001: names the authentication method for this block, the
+               way #login-step-cgiar announces itself through its own labelled control. Uses the
+               headline/subtext pair steps 1 and 2 already use (loginForm.ftl:25, :38), so it reads as
+               this step's heading rather than as a field label of the card below it. Placed before
+               #login-password, which login.js restores with append() and must stay the last child --]
+          <p class="login-subtext">[@s.text name="login.externalUser"/]</p>
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">
-              <li id="login-selected-project-card" class="selected-project-card"></li>
+              <li class="selected-project-card"></li>
             </ul>
           </div>
           [#-- Complete name of the user (when the record has one) followed by what was typed in step 1 --]
@@ -98,6 +104,35 @@
           </div>
         </div>
 
+        [#-- Step 3 (COGNITO branch): CHG-COGNITO-AUTH-001-T12 / FN-001. A CGIAR user whose
+             selected Global Unit has the Cognito specificity enabled sees this single "Sign in
+             with CGIAR" control instead of a password field. The selected-project card and the
+             echoed identity are the same reused markup/classes as #login-step-password
+             (design.md 5.2: "both reused") so login.js's existing mirroring code
+             (secondForm/click handler, showPasswordStep) targets both blocks without change.
+             The password input is never rendered here -- it exists only inside
+             #login-step-password, and login.js additionally .remove()s it on this branch as the
+             DOM-removal measure design.md 5.2 requires (not .hide(), not disabled). The terms
+             checkbox and the CGIAR control itself live outside this block (.terms-container,
+             .login-button-container below), exactly as the password step's do, so no control is
+             ever duplicated between the two branches --]
+        <div class="login-step hidden" id="login-step-cgiar">
+          <p class="login-headline">[@s.text name=loginHeadlineKey/]</p>
+          <div class="selected-project-container">
+            <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
+            <ul class="selected-project-card-list">
+              <li class="selected-project-card"></li>
+            </ul>
+          </div>
+          [#-- Complete name of the user (when the record has one) followed by what was typed in step 1 --]
+          <div class="login-echoed-email-container">
+            <p class="login-field-label">[@s.text name="login.loggingInAs"/]</p>
+            <p class="login-echoed-email">
+              <span class="login-echoed-name"></span><span class="login-echoed-username"></span>
+            </p>
+          </div>
+        </div>
+
         [#-- Error messages. login.js shows exactly one of these at a time, selecting it by its
              second CSS class --]
         <p class="invalidField emailRequired hidden">[@s.text name="login.error.invalidField.emailRequired"/]</p>
@@ -108,10 +143,35 @@
         <p class="invalidField deniedAccess hidden">[@s.text name="login.error.invalidField.deniedAccess"/]</p>
         <p class="invalidField voidPassword hidden">[@s.text name="login.error.invalidField.voidPassword"/]</p>
         <p class="invalidField incorrectPassword hidden">[@s.text name="login.error.invalidField.incorrectPassword"/]</p>
+        [#-- CHG-COGNITO-AUTH-001-T12 fix (audit Issue 2): shown when "Log in" is pressed on step 2
+             with no card ever selected, so mode cannot be composed safely --]
+        <p class="invalidField selectProject hidden">[@s.text name="login.error.invalidField.selectProject"/]</p>
+        [#-- BUG-LOGIN-TERMS-001-UI-001: raised by login.js before any request or redirect is started, so
+             the terms gate never locks the button. It joins this block on purpose -- cleanWrongData()
+             clears every .invalidField here, which is what keeps exactly one login message on screen --]
+        <p class="invalidField termsRequired hidden">[@s.text name="login.error.invalidField.termsRequired"/]</p>
 
-        [#-- Terms and conditions checkbox --]
+        [#-- CHG-COGNITO-AUTH-001-T22 (V-6): the ONLY two categories a refused Cognito login may ever
+             render, selected server-side by LoginAction/CognitoLoginAction's own isCognitoUnavailable()/
+             isCognitoFailed() booleans -- never by echoing the authError parameter's own value. Every
+             other rejection reason (cognitoNotEligible, inactive, invalidUserCrp, route C's own
+             no-message branch) collapses into the "cognitoFailed" outcome server-side, before this
+             template ever runs (SEC-005, SEC-006) --]
+        <p class="invalidField cognitoUnavailable${(cognitoUnavailable!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoUnavailable"/]</p>
+        <p class="invalidField cognitoFailed${(cognitoFailed!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoFailed"/]</p>
+
+        [#-- Terms and conditions checkbox.
+             BUG-LOGIN-TERMS-001-UI-002: deliberately NO "required" here. HTML5 constraint validation
+             cannot express this gate on either branch. On LOCAL the "Log in" click is preventDefault()ed
+             (login.js), so the attribute never fired on the click the user makes; it fired instead on the
+             programmatic submit of #login_formSubmit at the end of the validateUser.do round trip, which
+             aborted the submission while the button lock taken in beforeSend was still held, with nothing
+             left to release it. On COGNITO #login-cgiar-button is type="button" and never submits this
+             form, so the attribute could not fire at all. Its message is also browser-supplied, so it
+             could never be i18n-keyed. The gate now lives in login.js's termsAccepted(), shared by both
+             branches. Do not put it back --]
         <div class="terms-container hidden">
-          <input type="checkbox" name="user.agree" id="terms" class="terms" value="true" required> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
+          <input type="checkbox" name="user.agree" id="terms" class="terms" value="true"> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
         </div>
 
         [#-- field recaptcha--]
@@ -126,6 +186,14 @@
           <span class="login-button-spinner hidden"></span>
           [#-- and This one to send login form --]
           [@s.submit name="formSubmit" cssClass="hidden" role="button "/]
+          [#-- CHG-COGNITO-AUTH-001-T12: the COGNITO-branch control (FN-001). A real
+               <button type="button">, so Enter and Space both activate it for free and it never
+               submits #login-step-password's form -- it navigates to cognitoLogin.do instead
+               (design.md 5.5). Reuses .login-form-button, styled only as a descendant of
+               .login-button-container (customLogin.css), so it must live in this container --]
+          <button type="button" id="login-cgiar-button" class="login-form-button hidden">
+            [@s.text name="login.cgiarSignIn"/]
+          </button>
         </div>
 
         [#-- Go back to the previous step. A real <button> so it is in the tab order, exposes a

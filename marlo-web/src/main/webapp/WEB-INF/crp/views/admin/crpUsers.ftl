@@ -7,7 +7,7 @@
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js",
-  "${baseUrlMedia}/js/admin/crpUsers.js?20260219v6" 
+  "${baseUrlMedia}/js/admin/crpUsers.js?20260915-1" 
   ] 
 /]
 [#assign customCSS = [
@@ -44,7 +44,23 @@
         [#-- Create User Guest --]
         <h4 class="sectionTitle">Create Guest User</h4>
         <div class="borderBox">
-          <p id="guestUserMessage" class="note" style="display:none"></p>
+          [#-- The server reports a refused creation through invalidFields, and this paragraph is the only
+               place on the screen where it can be seen: both iterators in global/pages/generalMessages.ftl
+               are commented out, so an action message renders nowhere. Without this the save would come
+               back looking as if nothing had happened. The script reuses the same element for the checks it
+               runs while the address is typed. --]
+          [#assign guestUserServerMessage = (action.invalidFields['input-user.email'])!"" /]
+          <p id="guestUserMessage" class="note"[#if guestUserServerMessage?has_content] style="display:block"[#else] style="display:none"[/#if]>${guestUserServerMessage}</p>
+          [#-- A2-2449: only the server can ask the CGIAR directory, so these two flags carry its answer and
+               this screen's script stops deciding from the email domain. cognitoAuthActive: this unit authenticates
+               through Cognito, so the directory is a convenience and its silence must not block a creation.
+               directoryUnconfirmed: the last save reported the names as missing, which only happens when the
+               directory failed to confirm the address. --]
+          <input type="hidden" id="cognitoAuthActive" value="${action.hasSpecificities('cognito_auth_active')?string('true','false')}" />
+          <input type="hidden" id="directoryUnconfirmed" value="${((action.invalidFields['input-user.firstName'])??)?string('true','false')}" />
+          [#-- Same text the server uses when it refuses the creation, so the warning the script shows while
+               the address is typed and the one the save returns are one string, translated once. --]
+          <input type="hidden" id="usernameExistingMessage" value="[@s.text name='manageUsers.username.existing' /]" />
           [@s.form action=actionName enctype="multipart/form-data" ]
           <div class="form-group">
             <div class="form-group row">

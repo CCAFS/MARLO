@@ -19,7 +19,9 @@ package org.cgiar.ccafs.marlo.action.crp.admin;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
@@ -41,11 +43,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
-
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -118,6 +122,29 @@ public class CrpUsersAction extends BaseAction {
   private boolean isCGIARUser;
   private List<UserRole> users;
   private List<Role> rolesCrp;
+  private final DirectoryService directoryService;
+
+  /**
+   * The directory's answer for the email being created, as {@code validate()} already resolved it. Null when
+   * validation did not run, which is why {@link #resolveDirectoryPerson(String)} still falls back to the
+   * service instead of assuming this is populated.
+   */
+  private DirectoryPerson validatedDirectoryPerson;
+
+  /**
+   * The address {@code validate()} asked the directory about, kept separately from the answer on purpose.
+   * <p>
+   * A found {@link DirectoryPerson} carries the email <b>the directory returned</b>, not the one that was
+   * looked up ({@code LdapDirectoryService} builds it from the {@code LDAPUser}), and for a person with
+   * several corporate aliases those are different addresses. Keying the reuse on the answer's own email
+   * therefore missed exactly the alias case this screen has to handle, and quietly asked the directory a
+   * second time.
+   */
+  private String validatedDirectoryEmail;
+
+  private final CustomParameterManager customParameterManager;
+
+  private final ParameterManager parameterManager;
 
 
   private List<GlobalUnit> crps;
@@ -125,8 +152,12 @@ public class CrpUsersAction extends BaseAction {
   @Inject
   public CrpUsersAction(APConfig config, GlobalUnitManager globalUnitManager, CrpUserManager crpUserManager,
     UserManager userManager, ProjectManager projectManager, PhaseManager phaseManager, RoleManager roleManager,
-    UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator) {
+    UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator,
+    DirectoryService directoryService, CustomParameterManager customParameterManager,
+    ParameterManager parameterManager) {
     super(config);
+    this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
     this.projectManager = projectManager;
     this.phaseManager = phaseManager;
     this.userManager = userManager;
@@ -137,6 +168,39 @@ public class CrpUsersAction extends BaseAction {
     this.sendMailS = sendMailS;
     this.globalUnitManager = globalUnitManager;
     this.crpUserManager = crpUserManager;
+    this.directoryService = directoryService;
+  }
+
+  /**
+   * A2-2449: is this a corporate address whose Global Unit authenticates through Cognito?
+   * <p>
+   * The cheap domain test runs first, so a non-corporate address never reaches the two catalog reads
+   * {@link CognitoAuthSpecificity} performs. With the flag off this returns {@code false} and {@code save()}
+   * behaves exactly as before, having done no extra work.
+   * <p>
+   * Unlike the global {@code ManageUsersAction}, the Global Unit here is <b>explicit and correct</b>: it is
+   * the one the user is being granted access to, already resolved from {@code selectedGlobalUnitAcronym}.
+   *
+   * <p>
+   * <b>Every part of the Global Unit is guarded, not just the reference.</b>
+   * {@code CognitoAuthSpecificity.isActiveFor} checks for a null unit and then dereferences {@code getId()}
+   * and {@code getGlobalUnitType().getId()}, both of which auto-unbox. The five login-path callers never hit
+   * either, because they pass units loaded by a manager -- but a creation screen must not 500 over a feature
+   * flag, so an incompletely populated unit resolves to "flag off" here instead of throwing there.
+   *
+   * @param email the address being created
+   * @param unit the Global Unit access is being granted to; {@code null} resolves to {@code false}
+   * @return {@code true} only when the address is corporate AND that unit has the flag on
+   */
+  private boolean isCognitoCgiarAddress(String email, GlobalUnit unit) {
+    if (email == null || !email.trim().toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
+      return false;
+    }
+    if (unit == null || unit.getId() == null || unit.getGlobalUnitType() == null
+      || unit.getGlobalUnitType().getId() == null) {
+      return false;
+    }
+    return CognitoAuthSpecificity.isActiveFor(unit, this.customParameterManager, this.parameterManager);
   }
 
   public String getEmailSend() {
@@ -619,6 +683,25 @@ public class CrpUsersAction extends BaseAction {
     users.addAll(userSet);
   }
 
+  /**
+   * Returns the directory's answer for {@code email}, reusing the one {@code validate()} already obtained
+   * when it is for this same address, and asking the directory otherwise.
+   * <p>
+   * The reuse is what makes one save perform one lookup. The fallback is not defensive decoration: nothing
+   * guarantees validation ran before this method -- and the two addresses are compared rather than assumed
+   * equal, because a cached answer for a different email would silently decide the wrong branch.
+   *
+   * @param email the address being created
+   * @return the directory's answer, never {@code null}
+   */
+  private DirectoryPerson resolveDirectoryPerson(String email) {
+    if (this.validatedDirectoryPerson != null && email != null
+      && email.equalsIgnoreCase(this.validatedDirectoryEmail)) {
+      return this.validatedDirectoryPerson;
+    }
+    return this.directoryService.findByEmail(email);
+  }
+
   @Override
   public String save() {
     int error = 0;
@@ -649,23 +732,66 @@ public class CrpUsersAction extends BaseAction {
             newUser.setActive(true);
 
             // Get the user if it is a CGIAR email.
-            LDAPUser LDAPUser = this.getOutlookUser(newUser.getEmail());
+            DirectoryPerson person = this.resolveDirectoryPerson(newUser.getEmail());
+
+            // `users.username` is unique (Users.hbm.xml:19 -- username_UNIQUE) and the CGIAR branch below
+            // writes the directory's login into it without ever asking whether it is free. Often it is not:
+            // the directory answers ONE login for every corporate alias a person holds, so an administrator
+            // adding someone's second address arrived here with a login another row already carried. The
+            // INSERT then violated the index and the exception left this action as an HTTP 500 -- no account,
+            // no e-mail, no role, and nothing on screen saying why. Refuse before the insert instead.
+            if (person.isFound() && person.getLogin() != null
+              && userManager.getUserByUsername(person.getLogin().toLowerCase()) != null) {
+              LOG.warn("The user {} was not created: the directory login {} already belongs to another account.",
+                newUser.getEmail(), person.getLogin().toLowerCase());
+              message = this.getText("manageUsers.username.existing");
+              // The message reaches the screen through invalidFields, which crpUsers.ftl renders. An action
+              // message would not: both iterators in global/pages/generalMessages.ftl are commented out, so
+              // returning without this line would replace the 500 with a silent, unexplained no-op.
+              this.getInvalidFields().put("input-user.email", message);
+              // Nothing has been persisted yet, so there is no half-created account to clean up. Returning
+              // here also skips the missing-names branch at the end of save(), which would otherwise mark
+              // both name fields invalid and make the screen ask for names it does not need.
+              return INPUT;
+            }
 
             String password = this.getText("email.outlookPassword");
-            if (LDAPUser != null) {
+            if (person.isFound()) {
               // CGIAR user
               isCGIARUser = true;
-              newUser.setFirstName(LDAPUser.getFirstName());
-              newUser.setLastName(LDAPUser.getLastName());
-              newUser.setUsername(LDAPUser.getLogin().toLowerCase());
+              newUser.setFirstName(person.getFirstName());
+              newUser.setLastName(person.getLastName());
+              newUser.setUsername(person.getLogin().toLowerCase());
               newUser.setCgiarUser(true);
               newUser = userManager.saveUser(newUser);
               message = this.getText("saving.saved.guestRole");
               this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+            } else if (this.isCognitoCgiarAddress(newUser.getEmail(), globalUnit)) {
+              // A2-2449: the directory could not confirm this person, but the address is corporate and this
+              // Global Unit authenticates through Cognito. is_cgiar_user must be true or gate 2 of
+              // CognitoIdentityMapper refuses them for good, with no screen able to change the flag back.
+              //
+              // The names are required and PROVISIONAL -- CognitoCallbackAction replaces them from the
+              // directory on this account's first sign-in. `password` is deliberately left as the
+              // "(Your Outlook Password)" text set above and setPassword is never called, so the
+              // notification points them at their corporate credentials instead of a MARLO one they could
+              // never use: APCustomRealm routes a CGIAR account to Cognito and never reaches dbAuthenticator.
+              isCGIARUser = true;
+              if (user.getFirstName() != null && user.getLastName() != null
+                && user.getFirstName().trim().length() > 0 && user.getLastName().trim().length() > 0) {
+                newUser.setFirstName(user.getFirstName());
+                newUser.setLastName(user.getLastName());
+                newUser.setCgiarUser(true);
+                newUser.setModificationJustification("User created in MARLO " + this.getActionName().replace("/", "-"));
+                newUser = userManager.saveUser(newUser);
+                message = this.getText("saving.saved.guestRole");
+                this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+              }
             } else {
               // Non CGIAR user
               isCGIARUser = false;
-              if (user.getFirstName() != null && user.getLastName() != null) {
+              if (user.getFirstName() != null && user.getLastName() != null
+                && user.getFirstName().trim().length() > 0 && user.getLastName().trim().length() > 0) {
                 isCGIARUser = false;
                 newUser.setFirstName(user.getFirstName());
                 newUser.setLastName(user.getLastName());
@@ -679,31 +805,42 @@ public class CrpUsersAction extends BaseAction {
               }
             }
 
-            try {
+            // A2-2449: none of the three branches above created an account, which today means the names were
+            // missing or blank. Everything below assumes a persisted user: notifyRoleAssigned reloads it by id
+            // and would dereference the null that comes back, and the CrpUser / UserRole rows would point at an
+            // unsaved User. Report the missing fields the way the rest of save() does and return INPUT.
+            if (newUser.getId() != null) {
+              try {
 
-              this.sendMailNewUser(newUser, globalUnit, password);
-              this.notifyRoleAssigned(newUser);
+                this.sendMailNewUser(newUser, globalUnit, password);
+                this.notifyRoleAssigned(newUser);
 
-            } catch (NoSuchAlgorithmException e) {
-              LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
-              LOG.error(e.getMessage());
+              } catch (NoSuchAlgorithmException e) {
+                LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
+                LOG.error(e.getMessage());
+              }
+
+              // Add Crp Users
+              CrpUser crpUser = new CrpUser();
+              crpUser.setUser(newUser);
+              crpUser.setCrp(globalUnit);
+              crpUser = crpUserManager.saveCrpUser(crpUser);
+
+              // Add guest user role
+              UserRole userRole = new UserRole();
+              Role guestRole = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
+                .collect(Collectors.toList()).get(0);
+              userRole.setRole(guestRole);
+              userRole.setUser(newUser);
+              userRole = userRoleManager.saveUserRole(userRole);
+              message = this.getText("saving.saved.guestRole");
+              this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
+            } else {
+              LOG.warn(this.getText("guestUsers.firstName") + " / " + this.getText("guestUsers.lastName"));
+              this.getInvalidFields().put("input-user.firstName", InvalidFieldsMessages.EMPTYFIELD);
+              this.getInvalidFields().put("input-user.lastName", InvalidFieldsMessages.EMPTYFIELD);
+              error++;
             }
-
-            // Add Crp Users
-            CrpUser crpUser = new CrpUser();
-            crpUser.setUser(newUser);
-            crpUser.setCrp(globalUnit);
-            crpUser = crpUserManager.saveCrpUser(crpUser);
-
-            // Add guest user role
-            UserRole userRole = new UserRole();
-            Role guestRole = globalUnit.getRoles().stream().filter(r -> r.getAcronym().equals("G"))
-              .collect(Collectors.toList()).get(0);
-            userRole.setRole(guestRole);
-            userRole.setUser(newUser);
-            userRole = userRoleManager.saveUserRole(userRole);
-            message = this.getText("saving.saved.guestRole");
-            this.addActionMessage("message:" + this.getText("saving.saved.guestRole"));
 
           } else {
             this.addActionMessage("message:" + "login.error.selectCrp");
@@ -997,7 +1134,11 @@ public class CrpUsersAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
-      validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
+      // The validator reaches the directory to decide whether the names are required. Keeping its answer is
+      // what lets save() stop asking a second time -- see resolveDirectoryPerson. The address asked about is
+      // recorded here, from the form, because the answer cannot be trusted to carry it back.
+      this.validatedDirectoryEmail = this.user == null ? null : this.user.getEmail();
+      this.validatedDirectoryPerson = validator.validate(this, user, selectedGlobalUnitAcronym, isCGIARUser, true);
     }
   }
 
