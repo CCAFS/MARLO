@@ -433,7 +433,10 @@
     <span class="cpi-question__n">${index + 1}</span>
     <div class="cpi-question__body">
       <span class="cpi-question__text">
-        <span class="decodeHTML trumbowyg-editor">${(element.indicator)!}</span>
+        [#-- decodeHTML is the functional class (global.js unescapes the stored HTML).
+             trumbowyg-editor is the editor's own chrome -- inset shadow, 80px
+             min-height, 10px padding and a forced #505050 -- so it is left out. --]
+        <span class="decodeHTML">${(element.indicator)!}</span>
         [#if editable]<span class="cpi-question__req">*</span>[/#if]
       </span>
       <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" />
