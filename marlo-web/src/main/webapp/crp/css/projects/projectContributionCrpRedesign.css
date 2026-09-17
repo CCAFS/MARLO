@@ -6,6 +6,21 @@
  * those live on every screen.
  */
 
+.cpi-page,
+.cpi-page p,
+.cpi-page a,
+.cpi-page span,
+.cpi-page small,
+.cpi-page strong,
+.cpi-page label,
+.cpi-page h1, .cpi-page h2, .cpi-page h3, .cpi-page h4, .cpi-page h5,
+.cpi-page input, .cpi-page textarea, .cpi-page select, .cpi-page button {
+  /* header.ftl loads Figtree 400;500;600;700; the page default is a font the
+     app never loads, so weights below bold all collapsed onto one face. */
+  font-family: Figtree, 'Open Sans', sans-serif;
+}
+.cpi-page .glyphicon { font-family: 'Glyphicons Halflings'; }
+
 .cpi-page {
   --cpi-ink: #1F2A37;
   --cpi-muted: #6B7280;
@@ -25,9 +40,10 @@
   margin-bottom: 14px;
 }
 .cpi-page .cpi-head__titles { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.cpi-page .cpi-head__title { margin: 0; font-size: 22px; font-weight: 600; color: var(--cpi-ink); }
+.cpi-page .cpi-head__title { margin: 0; font-size: 22px; font-weight: 500; color: var(--cpi-ink); }
 .cpi-page .cpi-head__subtitle { font-size: 13px; color: var(--cpi-muted); }
-.cpi-page .cpi-head__back { flex: none; font-size: 13px; font-weight: 600; color: var(--cpi-brand); }
+.cpi-page .cpi-head__back { flex: none; font-size: 13px; font-weight: 500; color: var(--cpi-brand); }
+.cpi-page strong, .cpi-page b { font-weight: 500; }
 
 /* ── Cards ──────────────────────────────────────────────────────── */
 .cpi-page .cpi-card {
@@ -43,7 +59,7 @@
   padding-bottom: 8px;
   border-bottom: 2px solid var(--cpi-brand);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--cpi-brand);
 }
 
@@ -55,12 +71,12 @@
   padding: 3px 8px;
   border-radius: 6px;
   background: #EAF1F5;
-  font: 700 12px ui-monospace, Menlo, monospace;
+  font: 500 12px ui-monospace, Menlo, monospace;
   color: #15719B;
 }
-.cpi-page .cpi-indicator__name { flex: 1; min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.45; color: var(--cpi-ink); }
+.cpi-page .cpi-indicator__name { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; line-height: 1.45; color: var(--cpi-ink); }
 .cpi-page .cpi-indicator__details { flex: none; display: flex; align-items: center; gap: 7px; cursor: pointer; }
-.cpi-page .cpi-indicator__details p { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--cpi-brand); }
+.cpi-page .cpi-indicator__details p { margin: 0; font-size: 12.5px; font-weight: 500; color: var(--cpi-brand); }
 .cpi-page .cpi-indicator__meta { display: block; font-size: 13px; color: #4B5563; }
 .cpi-page .cpi-indicator__note { display: block; margin-top: 6px; font-size: 12.5px; color: var(--cpi-muted); }
 
@@ -83,13 +99,13 @@
   background: var(--cpi-surface);
   border: 1px solid var(--cpi-line);
   border-bottom: 0;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--cpi-ink);
 }
 .cpi-page .cpi-tabs__now {
   margin-left: 6px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: .05em;
   text-transform: uppercase;
   color: #C7401C;
@@ -111,8 +127,8 @@
   flex-wrap: wrap;
   margin-bottom: 14px;
 }
-.cpi-page .cpi-pane__headline { font-size: 13.5px; font-weight: 600; color: var(--cpi-ink); }
-.cpi-page .cpi-pane__headline strong { font-size: 15px; }
+.cpi-page .cpi-pane__headline { font-size: 13.5px; font-weight: 500; color: var(--cpi-ink); }
+.cpi-page .cpi-pane__headline strong { font-size: 15px; font-weight: 500; }
 .cpi-page .cpi-chip {
   display: inline-block;
   margin-left: 8px;
@@ -121,7 +137,7 @@
   background: #F1F3F6;
   border: 1px solid #E0E5EB;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: .04em;
   text-transform: uppercase;
   color: #4B5563;
@@ -133,7 +149,7 @@
   border-radius: 8px;
   background: #F2F9FC;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
   color: #15719B;
   white-space: nowrap;
 }
@@ -155,12 +171,12 @@
   display: block;
   margin-bottom: 5px;
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.35;
   color: var(--cpi-ink);
 }
 .cpi-page .cpi-field label.readOnly { color: var(--cpi-muted); }
-.cpi-page .cpi-field label .requiredTag { color: #C7401C; }
+.cpi-page .cpi-field label .requiredTag { color: #C7401C; font-weight: 500; }
 .cpi-page .cpi-field .input > img { width: 14px; height: 14px; vertical-align: -2px; }
 
 /* The feedback bubble is absolutely positioned so it cannot break the row. */
@@ -182,7 +198,7 @@
   border-color: var(--cpi-brand);
   box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
 }
-.cpi-page .cpi-field input.targetValueNumber { text-align: right; font-weight: 600; }
+.cpi-page .cpi-field input.targetValueNumber { text-align: right; font-weight: 500; }
 .cpi-page .cpi-field textarea.form-control {
   height: auto;
   min-height: 86px;
@@ -198,7 +214,7 @@
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--cpi-ink);
 }
 .cpi-page .cpi-field--text.is-read .input > p {
@@ -229,7 +245,7 @@
 
 /* ── Disaggregated targets ──────────────────────────────────────── */
 .cpi-page .cpi-dts { margin-top: 6px; }
-.cpi-page .cpi-dts__label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--cpi-ink); }
+.cpi-page .cpi-dts__label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: var(--cpi-ink); }
 .cpi-page .cpi-dts__note { font-size: 12px; font-weight: 400; color: var(--cpi-muted); }
 .cpi-page .cpi-dt {
   border: 1px solid var(--cpi-line);
@@ -248,7 +264,7 @@
   transition: transform .15s ease;
 }
 .cpi-page .cpi-dt__head[aria-expanded="true"] .cpi-dt__caret { transform: rotate(90deg); }
-.cpi-page .cpi-dt__title { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 600; color: var(--cpi-brand); }
+.cpi-page .cpi-dt__title { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 500; color: var(--cpi-brand); }
 .cpi-page .cpi-dt__body { padding: 4px 14px 14px 30px; border-top: 1px solid #F1F4F7; }
 .cpi-page .cpi-dt--empty { padding: 9px 12px; background: var(--cpi-soft); }
 .cpi-page .cpi-dt--empty .cpi-dt__note { font-size: 12.5px; color: var(--cpi-muted); }

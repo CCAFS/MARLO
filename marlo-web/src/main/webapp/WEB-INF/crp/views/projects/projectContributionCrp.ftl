@@ -67,8 +67,10 @@
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
-        
-      
+
+        [#-- Cluster quote, immediately before the form so it sits with the section --]
+        [#include "/WEB-INF/crp/views/projects/dataInfo-projects.ftl" /]
+
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
           [#--  Feedback Status --]
           [#if action.hasSpecificities('feedback_active') ]
@@ -184,9 +186,7 @@
                 [@s.text name="projectContributionCrp.meta.noDisaggregations" /]
               [/#if]
             </span>
-            [#if (cpiOutcome.instructions?? && cpiOutcome.instructions != '')]
-              <span class="cpi-indicator__note text-evidences">[@s.text name="projectContributionCrp.evidenceNote" /]</span>
-            [/#if]
+            <span class="cpi-indicator__note text-evidences">[@s.text name="projectContributionCrp.evidenceNote" /]</span>
             [#-- Guidance modal, driven by the existing projectContributionCrp.js handlers --]
             <div class="modal-evidences" style="display: none">
               <div class="content-modal">
