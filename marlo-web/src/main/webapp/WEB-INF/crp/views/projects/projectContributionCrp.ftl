@@ -175,7 +175,13 @@
             </div>
             <span class="cpi-indicator__meta">
               [#if showOutcomeValue][@s.text name="projectContributionCrp.meta.unit" /]: ${cpiUnit} &middot; [/#if]
-              [#if ((cpiOutcome.startYear)!-1) gt 0][@s.text name="projectContributionCrp.meta.period" /]: ${cpiOutcome.startYear?c}&ndash;${(cpiOutcome.year)!} &middot; [/#if]
+              [#-- The closing year is always captured; the start year is optional, so the
+                   pair only reads as a period when both are there. --]
+              [#if ((cpiOutcome.startYear)!-1) gt 0 && (cpiOutcome.year)?has_content]
+                [@s.text name="projectContributionCrp.meta.period" /]: ${cpiOutcome.startYear?c}&ndash;${cpiOutcome.year?c} &middot;
+              [#elseif (cpiOutcome.year)?has_content]
+                [@s.text name="projectContributionCrp.meta.closingYear" /]: ${cpiOutcome.year?c} &middot;
+              [/#if]
               [#if (cpiOutcome.baselineValue)?has_content][@s.text name="projectContributionCrp.meta.baseline" /]: ${(cpiOutcome.baselineValue?string(",##0"))!} &middot; [/#if]
               [@s.text name="projectContributionCrp.meta.closingTarget" /]: [#if (cpiOutcome.value)?has_content]${cpiOutcome.value?string(",##0")}[#else]&mdash;[/#if]
             </span>
