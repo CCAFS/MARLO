@@ -299,3 +299,21 @@ multi-Global-Unit deployment):
 Not done: `CLAUDE.md` and `AGENTS.md` are constitutional documents under the process in `CLAUDE.md`, so
 adding the runbook to their document maps needs an `epic` spec and review. Until that lands, agents
 reach the runbook through `README.md` and the `global.properties` header.
+
+### A2-2453 — Drop the "what's next" offset when the column holds two panels (QA-Enhancement)
+
+Raised by QA against the rendered card. `.scheduleCard__side` carries a fixed `margin-top: 44px` so its
+top edge lines up with `__frame`'s instead of with the controls row's (34px button + 10px margin). That
+alignment is only right for a lone panel: a pair is already tall enough to reach the frame's bottom, so
+holding the offset pushes the column past the frame rather than aligning it with it. QA asked for the
+offset to apply to the one-panel case only.
+
+- `dashboard.ftl` — new `scSidePair` flag mirroring the two branches that decide whether a second panel
+  renders (`scSecondItem` or the `scNextPhase` fallback when the first panel is an activity;
+  `scSecondPhase` when it is a phase). It adds `scheduleCard__side--pair` to the column.
+- `dashboard.css` — `.scheduleCard__side--pair { margin-top: 0; }`, declared immediately after
+  `.scheduleCard__side` so the 1250px stacked layout — same specificity, later in the file — still puts
+  both cases back on its own `margin-top: 12px`.
+
+The flag counts *panels*, not activities: the second slot can be filled by the phase fallback, and the
+column's height — the thing the offset is wrong about — is the same either way.

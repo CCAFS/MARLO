@@ -161,6 +161,8 @@ public final class APConstants {
   public static final String CRP_BI_MODULE_ACTIVE = "crp_bi_module_active";
   public static final String HOMEPAGE_TIMELINE_ACTIVE = "homepage_timeline_active";
   public static final String HOMEPAGE_HIDE_SECTION_MAP = "homepage_hide_section_map";
+  // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
+  public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
@@ -616,6 +618,9 @@ public final class APConstants {
   public static final String INSTITUTION_NAME = "institutionName";
 
   public static final String SESSION_CRP = "current_crp";
+  // CHG-COGNITO-AUTH-001-T08: pre-auth round-trip state. FIXED keys, one pending authorization per session
+  // -- DD-4 rejected a state-keyed map as unbounded session growth on an unauthenticated endpoint.
+  public static final String COGNITO_PENDING_AUTHORIZATION = "cognitoPendingAuthorization";
 
   // Session variables
   public static final String SESSION_USER = "current_user";

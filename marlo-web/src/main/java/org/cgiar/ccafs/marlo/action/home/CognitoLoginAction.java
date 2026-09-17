@@ -1,0 +1,581 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+
+package org.cgiar.ccafs.marlo.action.home;
+
+import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
+import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
+
+import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.struts2.ServletActionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * CHG-COGNITO-AUTH-001-T08: the entry point to the federated login. Decides whether a person may start a
+ * Cognito authorization-code flow at all, and mints the security values the callback
+ * ({@code CognitoCallbackAction}, T09) later checks.
+ * <p>
+ * <b>Three checks gate the redirect, and all three fail closed:</b>
+ * <ol>
+ * <li>Configuration -- {@link APConfig}'s Cognito getters return {@code ""}, never {@code null}, on an
+ * unconfigured environment (design.md 9.3). A blank domain, client id or callback URL must never reach a
+ * half-built authorize URL; it is refused before any token is minted.</li>
+ * <li>The Global Unit's {@code cognito_auth_active} specificity, resolved server-side from
+ * {@link CustomParameterManager} / {@link ParameterManager} with {@code COALESCE(custom value,
+ * parameters.default_value)} semantics -- <b>never</b> from a client-supplied flag. design.md 9.2 states this
+ * table three times on purpose: {@code crpByEmail.do}'s {@code cognitoEnabled} is a rendering hint only, and
+ * this action's re-check is authoritative.</li>
+ * <li>{@code users.is_cgiar_user}, resolved by looking the submitted email up through {@link UserManager}.
+ * <b>This is a documented deviation from one sentence in design.md 13.1</b>, which states this action "does
+ * not yet know who the user is" and therefore cannot check {@code is_cgiar_user} -- but {@code tasks.md} T08
+ * both scopes this check into this action and names a test for it. Accepting an email parameter (exactly the
+ * value the step-1 {@code crpByEmail.do} exchange already collected) makes the check possible without
+ * contradicting anything else in the design: {@code CognitoCallbackAction} (T09) still re-applies the same
+ * gate, authoritatively, once the ID token has resolved the caller's real identity, so this is defense in
+ * depth rather than a replacement for T09's gate.</li>
+ * </ol>
+ * <p>
+ * <b>Terms acceptance (design.md 5.4, amended during T08)</b> is <b>checked here and written in the
+ * callback</b>. This endpoint is unauthenticated and {@code email} is unverified, so a write here would let
+ * anyone set — or revoke — a third party's compliance record. The check still belongs here: DD-2 puts the
+ * accept control outside the form on this path, so HTML5 {@code required} cannot fire, and without a guard a
+ * user would complete sign-in having declined.
+ * <p>
+ * <b>Round-trip state (DD-4).</b> {@code state}, {@code nonce} and the PKCE verifier are generated with
+ * {@link SecureRandom}, never a general-purpose {@link java.util.Random}. The values a callback needs are
+ * bound to the Shiro session — not the redirect URI, not a cookie — under one <b>fixed</b> key, so one caller
+ * holds one pending authorization, and its state can never be written apart from its payload. DD-4's
+ * Concurrency clause rejected a {@code state}-keyed map "as unbounded session growth"; last-writer-wins across
+ * tabs is the accepted cost, and the loser sees a state mismatch and retries.
+ * <p>
+ * <b>The return URL is validated at mint time</b>, not merely bound — see {@link #sameOriginOrNull(String)}.
+ */
+public class CognitoLoginAction extends BaseAction {
+
+  /**
+   * Everything a federated round trip must survive on -- including its own {@code state} -- bound to the
+   * pre-auth Shiro session under a single
+   * <b>fixed</b> key (design.md DD-4). Deliberately <b>not</b> carried in the redirect URI or a cookie: either
+   * would let a caller choose the Global Unit they return with, turning a UX convenience into an
+   * access-control input.
+   * <p>
+   * {@link Serializable} for the same reason {@code CognitoAssertion} is (see its javadoc): nothing in MARLO
+   * serializes a session attribute today, but a value bound into Shiro's session must honor the contract
+   * regardless of whether the current wiring happens to exercise it.
+   * <p>
+   * {@code CognitoCallbackAction} (T09) is the intended reader: it reads this entry under its fixed
+   * {@code APConstants} key, compares the returned state against {@link #getState()}, and <b>removes</b> it on
+   * first use — a {@code state} must not be replayable.
+   */
+  public static final class PendingAuthorization implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final String state;
+    private final Long globalUnitId;
+    private final String returnUrl;
+    private final String nonce;
+    private final String verifier;
+
+    /**
+     * @param state the opaque value the callback must present to claim this authorization. Required, and
+     *        carried <b>inside</b> this object so state and payload can never be written apart
+     * @param globalUnitId the Global Unit this authorization request was minted for. Required
+     * @param returnUrl the deep link to return to after login, or {@code null} when there is none
+     * @param nonce the OIDC nonce bound to the authorize request. Required
+     * @param verifier the PKCE code verifier bound to the authorize request. Required
+     * @throws IllegalArgumentException if a required value is missing
+     */
+    public PendingAuthorization(String state, Long globalUnitId, String returnUrl, String nonce,
+      String verifier) {
+      if (state == null || state.isEmpty()) {
+        throw new IllegalArgumentException("state is required");
+      }
+      if (globalUnitId == null) {
+        throw new IllegalArgumentException("globalUnitId is required");
+      }
+      if (nonce == null || nonce.isEmpty()) {
+        throw new IllegalArgumentException("nonce is required");
+      }
+      if (verifier == null || verifier.isEmpty()) {
+        throw new IllegalArgumentException("verifier is required");
+      }
+      this.state = state;
+      this.globalUnitId = globalUnitId;
+      this.returnUrl = returnUrl;
+      this.nonce = nonce;
+      this.verifier = verifier;
+    }
+
+    public String getState() {
+      return this.state;
+    }
+
+    public Long getGlobalUnitId() {
+      return this.globalUnitId;
+    }
+
+    public String getNonce() {
+      return this.nonce;
+    }
+
+    public String getReturnUrl() {
+      return this.returnUrl;
+    }
+
+    public String getVerifier() {
+      return this.verifier;
+    }
+  }
+
+  private static final long serialVersionUID = 1L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(CognitoLoginAction.class);
+
+  /** RFC 7636 requires 43-128 characters; 32 random bytes base64url-encode to exactly 43. */
+  private static final int VERIFIER_BYTES = 32;
+  private static final int STATE_BYTES = 32;
+  private static final int NONCE_BYTES = 32;
+
+  /**
+   * A2-2462: {@code profile} is requested so the ID token carries {@code given_name} and {@code family_name},
+   * which {@code CognitoCallbackAction} uses to fill an account whose names are blank. Measured against the
+   * live pool on 2026-09-08: with {@code "openid email"} both claims are <b>absent</b>; adding {@code profile}
+   * makes both arrive clean and usable.
+   * <p>
+   * The claims-inventory deferred this scope on the grounds that it "should travel with the feature that
+   * consumes it, not ahead of it". That feature is now here, which is what makes the change appropriate.
+   * <b>Do not widen this further</b> without a consumer: every additional scope is user data MARLO asks for
+   * and must then justify holding.
+   */
+  private static final String OAUTH_SCOPE = "openid email profile";
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 (V-4). A same-origin return URL is still rejected when its normalized path's
+   * final segment is one of these, case-insensitively -- see {@link #isAuthenticationEndpoint(String)}. Every
+   * entry is lowercase because the comparison lowercases the candidate before matching.
+   */
+  private static final Set<String> AUTHENTICATION_ENDPOINT_PATHS = Collections
+    .unmodifiableSet(new HashSet<>(Arrays.asList("cognitologin.do", "cognitocallback.do", "validateuser.do")));
+
+  private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). The only i18n key this class ever passes to {@link #refuse(String)}
+   * that means "infrastructure, not account" -- matches {@code LoginAction#AUTH_ERROR_UNAVAILABLE}'s
+   * meaning exactly. Kept as its own literal (rather than importing LoginAction's) because this class does
+   * not extend {@code LoginAction} and the comparison is purely internal to this method.
+   */
+  private static final String UNAVAILABLE_KEY = "login.error.cognitoUnavailable";
+
+  // Managers
+  private final UserManager userManager;
+  private final GlobalUnitManager crpManager;
+  private final CustomParameterManager customParameterManager;
+  private final ParameterManager parameterManager;
+
+  // Request parameters
+  private String email;
+  private Long globalUnitId;
+  private Boolean agree;
+
+  // Result
+  private String authorizeUrl;
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). Unlike {@code CognitoCallbackAction}, a refusal here never redirects --
+   * {@code struts-home.xml}'s {@code input} result renders {@code login.ftl} in the SAME request, with
+   * {@code model=action} -- so the visible category is exposed directly off this instance rather than
+   * through a URL parameter. Set exactly once, inside {@link #refuse(String)}, from a hardcoded i18n key
+   * literal this class's own call sites choose -- never from anything caller-controlled.
+   */
+  private boolean cognitoUnavailable;
+  private boolean cognitoFailed;
+
+  // @Inject
+  public CognitoLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
+    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+    super(config);
+    this.userManager = userManager;
+    this.crpManager = crpManager;
+    this.customParameterManager = customParameterManager;
+    this.parameterManager = parameterManager;
+  }
+
+  /**
+   * Server-side re-check, state minting and redirect. Split from {@link #execute()} so the core logic can be
+   * exercised without a live Struts request -- exactly the seam T01 established for {@code finishLogin}, and
+   * for the same reason: a federated flow's caller (here, a test; there, {@code CognitoCallbackAction}) should
+   * not need a servlet container to drive it.
+   *
+   * @param returnUrl the deep link to bind into the pending authorization, or {@code null} when there is none
+   * @return {@link #SUCCESS} with {@link #getAuthorizeUrl()} populated, or {@link #INPUT} with a field error
+   */
+  protected String authorize(String returnUrl) {
+    // Validated HERE, not in execute(): authorize(String) is the seam every caller and every test uses, so a
+    // guard on one entry point would be bypassable by all the others. The check belongs with the value's use.
+    String safeReturnUrl = this.sameOriginOrNull(returnUrl);
+
+    // CHG-COGNITO-AUTH-001-T14 (OPS-001 / design.md 11): "attempt started" -- the first event design.md 11
+    // names, logged before every gate below (including the environment check) so a rejection at any of
+    // them can be correlated back to this one line. Resolved here, once, and reused as `globalUnit` below
+    // rather than queried twice. "Resolved mode" is the literal COGNITO: this endpoint IS the Cognito path
+    // by construction (cognitoLogin.do) -- the wizard's client-side `mode` is never read or trusted here
+    // (design.md 9.2), so this is a fact about which endpoint was hit, not a value the caller told MARLO.
+    GlobalUnit requestedGlobalUnit =
+      this.globalUnitId == null ? null : this.crpManager.getGlobalUnitById(this.globalUnitId);
+    LOG.info("Cognito login attempt started for {} (Global Unit {}, mode COGNITO)",
+      LogSanitizer.sanitizeForLog(this.email),
+      requestedGlobalUnit == null ? "<unresolved>" : requestedGlobalUnit.getAcronym());
+
+    if (!this.isCognitoConfigured()) {
+      LOG.warn("Cognito login requested but the environment is not configured (design.md 9.3)");
+      return this.refuse(UNAVAILABLE_KEY);
+    }
+
+    if (this.globalUnitId == null) {
+      // CHG-COGNITO-AUTH-001-T14 (OPS-001): this branch had no log line at all before.
+      LOG.info("Cognito login refused: no Global Unit was selected");
+      return this.refuse("login.error.cognitoNotEligible");
+    }
+    GlobalUnit globalUnit = requestedGlobalUnit;
+    if (globalUnit == null) {
+      LOG.info("Cognito login refused: the selected Global Unit could not be resolved");
+      return this.refuse("login.error.cognitoNotEligible");
+    }
+
+    // Authoritative re-check (design.md 9.2). The client's cognitoEnabled is a rendering hint only; a
+    // crafted request naming a Global Unit whose flag is off is refused here regardless of what it claims.
+    if (!this.isCognitoActiveFor(globalUnit)) {
+      LOG.info("Cognito login refused: {} is off for Global Unit {}", APConstants.COGNITO_AUTH_ACTIVE,
+        globalUnit.getAcronym());
+      return this.refuse("login.error.cognitoNotEligible");
+    }
+
+    String normalizedEmail = this.email == null ? null : this.email.trim().toLowerCase();
+    User user = null;
+    if (normalizedEmail != null && !normalizedEmail.isEmpty()) {
+      // The wizard's step 1 (crpByEmail.do) resolves an email OR a username -- login.js:131-134 skips the
+      // email-format check when the value carries no "@" and leaves it "for the server to resolve" -- and
+      // login.js:244 forwards whatever was typed to this endpoint under the `email` parameter. Resolving
+      // only by email leaves a CGIAR user who signs in with their username unable to reach the authorize
+      // redirect at all, and LoginAction's T11b guard then correctly refuses their local password too, so
+      // the account is left with no way in. Mirrors ValidateUserAction:229-232 and LoginAction:213-216,
+      // the two sites that already resolve this same submitted value both ways.
+      user = this.userManager.getUserByEmail(normalizedEmail);
+      if (user == null) {
+        user = this.userManager.getUserByUsername(normalizedEmail);
+      }
+    }
+    if (user == null || !user.isCgiarUser()) {
+      LOG.info("Cognito login refused: the submitted account is not a CGIAR-authenticated account");
+      return this.refuse("login.error.cognitoNotEligible");
+    }
+
+    // The terms must be ACCEPTED to start the flow -- checked, never written here. design.md 5.4 was
+    // amended during T08: this endpoint is unauthenticated and `email` is unverified (13.1 correction), so
+    // writing users.agree_terms here would let anyone set, or REVOKE, a third party's compliance record.
+    // The write moved to the callback, where the ID token has proved who the person actually is.
+    //
+    // The check itself still belongs here. On the local path the checkbox carries HTML5 `required` inside
+    // the form; on this path DD-2 puts the control OUTSIDE the form, so `required` cannot fire and nothing
+    // in the browser stops an unaccepted submission. Without this guard a CGIAR user completes sign-in
+    // having declined the terms -- the compliance regression 5.4 exists to prevent, in a new shape.
+    if (!Boolean.TRUE.equals(this.agree)) {
+      LOG.info("Cognito login refused: the terms were not accepted");
+      return this.refuse("login.error.cognitoNotEligible");
+    }
+
+    String state = this.randomUrlSafeToken(STATE_BYTES);
+    String nonce = this.randomUrlSafeToken(NONCE_BYTES);
+    String verifier = this.randomUrlSafeToken(VERIFIER_BYTES);
+    String codeChallenge = this.codeChallengeOf(verifier);
+
+    // DD-4, and specifically its Concurrency clause: FIXED session keys, not a state-keyed map. An earlier
+    // revision stored each attempt under "cognito.pending." + state, which is exactly the keyed map DD-4
+    // rejected "as unbounded session growth" -- nothing removes an entry but a callback bearing that state,
+    // so an anonymous caller could loop this endpoint on one cookie and grow a heap-resident session for the
+    // full 30-minute timeout. Single-slot means last-writer-wins across tabs, which DD-4 accepted: the loser
+    // sees a state mismatch and retries.
+    // ONE attribute, and the state travels inside it. Two separate setAttribute calls can interleave between
+    // two tabs on one session into authorization_A + state_B: the callback then matches B's state, loads A's
+    // nonce and verifier, and the token exchange fails at Cognito. That fails closed, but it is not the
+    // "last-writer-wins" DD-4 accepted -- under a single object the pair is always consistent.
+    Session shiroSession = SecurityUtils.getSubject().getSession();
+    shiroSession.setAttribute(APConstants.COGNITO_PENDING_AUTHORIZATION,
+      new PendingAuthorization(state, this.globalUnitId, safeReturnUrl, nonce, verifier));
+
+    this.authorizeUrl = this.buildAuthorizeUrl(state, nonce, codeChallenge);
+    return SUCCESS;
+  }
+
+  private String buildAuthorizeUrl(String state, String nonce, String codeChallenge) {
+    StringBuilder url = new StringBuilder("https://").append(this.config.getCognitoDomain()).append("/oauth2/authorize")
+      .append("?response_type=code").append("&client_id=").append(this.urlEncode(this.config.getCognitoClientId()))
+      .append("&redirect_uri=").append(this.urlEncode(this.config.getCognitoCallbackUrl())).append("&scope=")
+      .append(this.urlEncode(OAUTH_SCOPE)).append("&state=").append(this.urlEncode(state)).append("&nonce=")
+      .append(this.urlEncode(nonce)).append("&code_challenge=").append(this.urlEncode(codeChallenge))
+      .append("&code_challenge_method=S256");
+    // CHG-COGNITO-AUTH-001-T15: omitted entirely when unset, so Cognito falls back to its own Hosted UI
+    // provider-selection screen -- an empty-valued parameter is not the same as an absent one.
+    String identityProvider = this.config.getCognitoIdentityProvider();
+    if (!identityProvider.isEmpty()) {
+      url.append("&identity_provider=").append(this.urlEncode(identityProvider));
+    }
+    return url.toString();
+  }
+
+  private String codeChallengeOf(String verifier) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(verifier.getBytes(StandardCharsets.US_ASCII));
+      return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+    } catch (NoSuchAlgorithmException e) {
+      // SHA-256 is a guaranteed algorithm on every JVM implementation; this cannot happen in practice.
+      throw new IllegalStateException("SHA-256 is not available", e);
+    }
+  }
+
+  @Override
+  public String execute() throws Exception {
+    String returnUrl =
+      ServletActionContext.getRequest() == null ? null : ServletActionContext.getRequest().getHeader("Referer");
+    return this.authorize(returnUrl);
+  }
+
+  /**
+   * Keeps a deep link only when it points back into this MARLO instance.
+   * <p>
+   * <b>This is an open-redirect guard, not tidiness.</b> {@code returnUrl} arrives in the {@code Referer}
+   * header of a GET navigation, so the page that links here chooses it — including a page the attacker
+   * controls, which can also set {@code Referrer-Policy: unsafe-url} to defeat the browser's default
+   * truncation. It is then bound into the session and handed to {@code finishLogin}, whose only test is
+   * {@code urlAction.contains(".do")} — satisfied by a host such as {@code https://evil.do/}. The victim
+   * would authenticate for real at the CGIAR IdP and be redirected off-site immediately afterwards.
+   * <p>
+   * DD-4's problem statement requires the return URL to be <b>not attacker-controllable</b>. Binding it
+   * server-side stops it being changed on the way back; it does nothing about the value chosen when it is
+   * minted. That is what this closes. The local path is not exposed the same way — {@code login.do} is a
+   * POST from MARLO's own form, so its {@code Referer} cannot be chosen without the victim's password.
+   *
+   * @param candidate the raw {@code Referer} value, possibly {@code null}
+   * @return the value when it is same-origin with this MARLO instance AND does not target an authentication
+   *         endpoint, otherwise {@code null}
+   */
+  private String sameOriginOrNull(String candidate) {
+    if (candidate == null || candidate.trim().isEmpty()) {
+      return null;
+    }
+    String baseUrl = this.getBaseUrl();
+    if (baseUrl == null || baseUrl.trim().isEmpty()) {
+      return null;
+    }
+    // Compared on the origin, and only after a "/" is appended to both, so that a look-alike host such as
+    // https://marlo.example.org.evil.com/ cannot pass a bare startsWith against https://marlo.example.org.
+    String origin = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+    String normalized = candidate.trim();
+    if (!normalized.equals(baseUrl) && !normalized.startsWith(origin)) {
+      LOG.info("Cognito login: discarding an off-site return URL");
+      return null;
+    }
+    // CHG-COGNITO-AUTH-001-T19 (V-4): same-origin is necessary but not sufficient. A same-origin
+    // cognitoCallback.do?code=...&state=... passes the check above just as well as a legitimate deep link,
+    // is stored in the PendingAuthorization, and is later handed straight back to this same flow by
+    // finishLogin's ".do" heuristic -- redirecting a freshly-authenticated user into a single-use
+    // authorization that is already consumed. Rejected here, distinctly logged, exactly as the off-site case
+    // above is.
+    if (this.isAuthenticationEndpoint(normalized)) {
+      LOG.info("Cognito login: discarding a same-origin return URL that targets an authentication endpoint");
+      return null;
+    }
+    return normalized;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T19 (V-4). {@code true} when {@code candidate}'s normalized path resolves to one of
+   * {@link #AUTHENTICATION_ENDPOINT_PATHS} -- compared against the final path segment only, never a substring
+   * of the whole URL. A substring match is the exact idiom that produced this defect in the first place:
+   * {@code finishLogin}'s {@code !urlAction.contains("logout")} is its sibling, and both would reject a
+   * legitimate deep link such as {@code notCognitoLogin.do} or one carrying {@code cognitoCallback.do} as a
+   * query value.
+   * <p>
+   * The path comes from a parsed, normalized {@link URI}, not string surgery: {@link URI#normalize()}
+   * collapses a {@code ../} traversal, {@link URI#getPath()} returns the already percent-decoded path, and a
+   * trailing {@code ;jsessionid=...} matrix parameter is stripped from the final segment before comparison. A
+   * candidate this cannot parse is treated as an authentication endpoint -- {@code null} is the safe answer
+   * for anything unparseable, and returning {@code true} here is what makes {@link #sameOriginOrNull(String)}
+   * produce that {@code null} instead of propagating the exception.
+   *
+   * @param candidate an already same-origin, trimmed, non-null return URL
+   * @return {@code true} when the URL must be rejected as an authentication endpoint
+   */
+  private boolean isAuthenticationEndpoint(String candidate) {
+    String path;
+    try {
+      path = new URI(candidate).normalize().getPath();
+    } catch (URISyntaxException e) {
+      LOG.info("Cognito login: discarding a return URL that could not be parsed");
+      return true;
+    }
+    if (path == null || path.isEmpty()) {
+      return false;
+    }
+    String trimmedPath = path;
+    while (trimmedPath.length() > 1 && trimmedPath.endsWith("/")) {
+      trimmedPath = trimmedPath.substring(0, trimmedPath.length() - 1);
+    }
+    int lastSlash = trimmedPath.lastIndexOf('/');
+    String lastSegment = lastSlash >= 0 ? trimmedPath.substring(lastSlash + 1) : trimmedPath;
+    int matrixParam = lastSegment.indexOf(';');
+    if (matrixParam >= 0) {
+      lastSegment = lastSegment.substring(0, matrixParam);
+    }
+    return AUTHENTICATION_ENDPOINT_PATHS.contains(lastSegment.toLowerCase(Locale.ROOT));
+  }
+
+  public Boolean getAgree() {
+    return this.agree;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} only on the ONE refusal branch that is an infrastructure
+   * condition (environment not configured) -- see {@link #refuse(String)}. Never derived from anything on
+   * the request; {@code false} on every other path, including a request that never called
+   * {@link #authorize(String)} at all.
+   */
+  public boolean isCognitoUnavailable() {
+    return this.cognitoUnavailable;
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T22 (V-6). {@code true} on every OTHER refusal this class produces --
+   * {@code cognitoNotEligible}'s five branches -- collapsed into the single generic public category so
+   * none of them is distinguishable from an ordinary failure (SEC-006).
+   */
+  public boolean isCognitoFailed() {
+    return this.cognitoFailed;
+  }
+
+  /**
+   * @return the full {@code https://<domain>/oauth2/authorize?...} URL to redirect to, populated only when
+   *         {@link #authorize(String)} returned {@link #SUCCESS}
+   */
+  public String getAuthorizeUrl() {
+    return this.authorizeUrl;
+  }
+
+  public String getEmail() {
+    return this.email;
+  }
+
+  public Long getGlobalUnitId() {
+    return this.globalUnitId;
+  }
+
+  /**
+   * @return {@code true} when every Cognito setting this action needs to build a redirect is present.
+   *         {@link APConfig}'s Cognito getters return {@code ""}, never {@code null}, so a phase-0 environment
+   *         (design.md 9.3, 14) is detected here and fails closed instead of producing a broken redirect
+   */
+  private boolean isCognitoConfigured() {
+    return !this.config.getCognitoDomain().isEmpty() && !this.config.getCognitoClientId().isEmpty()
+      && !this.config.getCognitoCallbackUrl().isEmpty()
+      // A2-2463 (CFG-2): the three keys that verify the token on the way BACK are checked here too, even
+      // though this method only builds the outbound redirect. Without them a half-configured environment
+      // sends the person to the corporate IdP, they type their password, they authenticate successfully,
+      // and the failure lands on return -- so a corporate credential is spent before anyone learns the
+      // sign-in could never complete. Refusing here costs nothing and moves that discovery before the
+      // redirect. These are the remaining 3 of the 6 required keys; client.secret and identity.provider
+      // are absent on purpose, both being optional by design.
+      && !this.config.getCognitoJwksUri().isEmpty() && !this.config.getCognitoRegion().isEmpty()
+      && !this.config.getCognitoUserPoolId().isEmpty();
+  }
+
+  /**
+   * Resolves {@code cognito_auth_active} for {@code globalUnit} (design.md 9.2). Delegates to
+   * {@link CognitoAuthSpecificity}, the single shared resolver both this action and {@code
+   * CrpByUserEmailAction} call (PS-16, design.md 9.2's advisory carried into T10) -- so the "rendering
+   * hint" and "authoritative" readings of this flag can never drift apart from each other.
+   */
+  private boolean isCognitoActiveFor(GlobalUnit globalUnit) {
+    return CognitoAuthSpecificity.isActiveFor(globalUnit, this.customParameterManager, this.parameterManager);
+  }
+
+  /**
+   * Generates a cryptographically random, URL-safe token with {@link SecureRandom} -- never
+   * {@link java.util.Random}, which two calls could make look different "by luck" without being
+   * unguessable. Base64url without padding keeps every character in RFC 7636's allowed set.
+   *
+   * @param numBytes how many random bytes to draw before encoding
+   * @return a base64url (no padding) encoding of {@code numBytes} random bytes
+   */
+  private String randomUrlSafeToken(int numBytes) {
+    byte[] raw = new byte[numBytes];
+    SECURE_RANDOM.nextBytes(raw);
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
+  }
+
+  private String refuse(String i18nKey) {
+    this.addFieldError("loginMessage", this.getText(i18nKey));
+    // CHG-COGNITO-AUTH-001-T22 (V-6): collapse the granular key into exactly one of the two public
+    // categories -- UNAVAILABLE_KEY alone is "infrastructure, not account"; every other key this class
+    // passes here (only cognitoNotEligible) is account-shaped and MUST NOT be distinguishable (SEC-006).
+    this.cognitoUnavailable = UNAVAILABLE_KEY.equals(i18nKey);
+    this.cognitoFailed = !this.cognitoUnavailable;
+    return INPUT;
+  }
+
+  public void setAgree(Boolean agree) {
+    this.agree = agree;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public void setGlobalUnitId(Long globalUnitId) {
+    this.globalUnitId = globalUnitId;
+  }
+
+  private String urlEncode(String value) {
+    return URLEncoder.encode(value, StandardCharsets.UTF_8);
+  }
+}

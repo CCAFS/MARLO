@@ -25,10 +25,9 @@ import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-
-import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +50,8 @@ public class SearchUserAction extends BaseAction {
 
   private UserManager userManager;
 
+  private DirectoryService directoryService;
+
 
   private String userEmail;
 
@@ -64,9 +65,10 @@ public class SearchUserAction extends BaseAction {
 
 
   @Inject
-  public SearchUserAction(APConfig config, UserManager userManager) {
+  public SearchUserAction(APConfig config, UserManager userManager, DirectoryService directoryService) {
     super(config);
     this.userManager = userManager;
+    this.directoryService = directoryService;
   }
 
 
@@ -190,28 +192,16 @@ public class SearchUserAction extends BaseAction {
     } else {
       if (userEmail.toLowerCase().endsWith(APConstants.OUTLOOK_EMAIL)) {
 
-        LDAPService service = new LDAPService();
-        if (config.isProduction()) {
-          service.setInternalConnection(false);
-        } else {
-          service.setInternalConnection(true);
-        }
+        DirectoryPerson person = this.directoryService.findByEmail(userEmail.toLowerCase());
 
-        LDAPUser userLDAP;
-        try {
-          userLDAP = service.searchUserByEmail(userEmail.toLowerCase());
-        } catch (Exception e) {
-          userLDAP = null;
-        }
-
-        if (userLDAP != null) {
+        if (person.isFound()) {
 
           userFound.put("newUser", true);
           userFound.put("id", -1);
-          userFound.put("name", userLDAP.getFirstName());
-          userFound.put("lastName", userLDAP.getLastName());
-          userFound.put("username", userLDAP.getLogin().toLowerCase());
-          userFound.put("email", userLDAP.getEmail().toLowerCase());
+          userFound.put("name", person.getFirstName());
+          userFound.put("lastName", person.getLastName());
+          userFound.put("username", person.getLogin().toLowerCase());
+          userFound.put("email", person.getEmail().toLowerCase());
           userFound.put("cgiar", true);
           userFound.put("active", false);
           userFound.put("autosave", false);

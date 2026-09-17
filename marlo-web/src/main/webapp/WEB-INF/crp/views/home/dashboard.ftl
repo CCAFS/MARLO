@@ -9,7 +9,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20260828",
+  "${baseUrlMedia}/css/home/dashboard.css?20260908",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -328,8 +328,15 @@
            below. A single upcoming thing renders no second panel, and the
            fallback crosses kinds, so one activity plus an unopened phase pairs
            the two. --]
+      [#-- The 44px offset that lines the column's top edge up with the frame's
+           is for a lone panel only: a pair is already tall enough to reach the
+           frame's bottom, so keeping the offset drops it past it (A2-2453).
+           This condition mirrors the branches below exactly -- change one and
+           the other has to change with it. --]
+      [#assign scSidePair = scNextItem?has_content?then(
+        scSecondItem?has_content || scNextPhase?has_content, scSecondPhase?has_content) /]
       [#if scNextItem?has_content || scNextPhase?has_content]
-        <div class="scheduleCard__side">
+        <div class="scheduleCard__side[#if scSidePair] scheduleCard__side--pair[/#if]">
           [#if scNextItem?has_content]
             [@scNextActivityPanel activity=scNextItem[0] eyebrowKey="dashboard.schedule.next.activityEyebrow" /]
             [#if scSecondItem?has_content]
