@@ -207,11 +207,14 @@
   resize: vertical;
 }
 
-/* customForm prints a committed answer as a <p>; the page default greys it. */
-.cpi-page .cpi-field .input > p { color: var(--cpi-ink); }
+/* customForm prints a committed answer as a <p> -- inside .input for a field and
+   inside .textArea for a narrative -- and global.css greys both. */
+.cpi-page .cpi-field .input > p,
+.cpi-page .cpi-field .textArea > p { color: var(--cpi-ink); }
 
 /* Committed value: prose, the way the design shows a field the phase has closed. */
-.cpi-page .cpi-field.is-read .input > p {
+.cpi-page .cpi-field.is-read .input > p,
+.cpi-page .cpi-field.is-read .textArea > p {
   margin: 0;
   min-height: 34px;
   display: flex;
@@ -220,7 +223,8 @@
   font-weight: 500;
   color: var(--cpi-ink);
 }
-.cpi-page .cpi-field--text.is-read .input > p {
+.cpi-page .cpi-field--text.is-read .input > p,
+.cpi-page .cpi-field--text.is-read .textArea > p {
   display: block;
   font-size: 13.5px;
   font-weight: 400;
@@ -228,7 +232,8 @@
   max-width: 960px;
 }
 /* Not open yet: visible, clearly inert. */
-.cpi-page .cpi-field.is-locked .input > p {
+.cpi-page .cpi-field.is-locked .input > p,
+.cpi-page .cpi-field.is-locked .textArea > p {
   margin: 0;
   min-height: 36px;
   display: flex;
