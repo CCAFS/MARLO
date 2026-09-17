@@ -129,7 +129,7 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
   public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
-    "deliverable_completed_previous_phases_active";
+    "deliverable_completed_in_previous_phases_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
   public static final String AI_SECTION_ACTIVE = "ai_section_active";
@@ -406,7 +406,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
 
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUserPartnerships)";
 
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
@@ -778,7 +778,7 @@ public final class APConstants {
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.9.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.9.pdf";
 
   // GeoiIp maps database8
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";
