@@ -841,7 +841,7 @@ public final class APConstants {
   public static final long REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL = 3;
 
   // Capdev Parameters
-  public static final String CRP_CD_ROLE = "crp_cd_role";
+  public static final String CRP_CD_ROLE = "crp_cd_rol";
   public static final String CRP_CD_ROLE_ACRONYM = "CD";
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
