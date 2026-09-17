@@ -232,9 +232,9 @@
           [#-- ═══ Additional questions for this performance indicator ═══ --]
           [#if action.hasSpecificities('crp_baseline_indicators') && (cpiOutcome.indicators?has_content)!false]
             <div class="cpi-card cpi-questions">
-              <h4 class="cpi-card__title">[@s.text name="projectOutcome.additionalQuestions" /]</h4>
+              <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
               [#list cpiOutcome.indicators as indicator]
-                [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true /]
+                [@cpiQuestion element=indicator index=indicator_index /]
               [/#list]
             </div>
           [/#if]
@@ -422,6 +422,29 @@
      Every field is rendered even when it is closed: customForm keeps a hidden input
      carrying the stored value, and ProjectOutcomeAction.saveMilestones() writes back
      whatever the form posts, so a field left out of the markup would be saved as empty. --]
+[#-- One additional question: the statement configured in Overall Performance
+     Indicators, numbered, with the cluster's answer underneath. The question is
+     the field's label, so customForm's own label is suppressed and the required
+     marker is rendered next to the statement instead. --]
+[#macro cpiQuestion element index]
+  [#local projectOutcomeIndicator = action.getIndicator(element.id) /]
+  [#local customName = "projectOutcome.indicators[${index}]" /]
+  <div class="cpi-question">
+    <span class="cpi-question__n">${index + 1}</span>
+    <div class="cpi-question__body">
+      <span class="cpi-question__text">
+        <span class="decodeHTML trumbowyg-editor">${(element.indicator)!}</span>
+        [#if editable]<span class="cpi-question__req">*</span>[/#if]
+      </span>
+      <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" />
+      <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" />
+      <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=editable showTitle=false fieldEmptyText="projectContributionCrp.notAnswered" /]
+      </div>
+    </div>
+  </div>
+[/#macro]
+
 [#macro cpiMilestoneFields element year isPrincipal=false]
   [#local projectMilestone = action.getMilestone(element.id, year) /]
   [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]

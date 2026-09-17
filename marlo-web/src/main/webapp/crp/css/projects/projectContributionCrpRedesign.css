@@ -286,5 +286,37 @@
 .cpi-page .cpi-dt--empty .cpi-dt__note { font-size: 12.5px; color: var(--cpi-muted); }
 .cpi-page .cpi-empty { padding: 14px; text-align: center; color: var(--cpi-muted); }
 
-/* ── Additional questions ───────────────────────────────────────── */
-.cpi-page .cpi-questions .baselineIndicator { border: 1px solid var(--cpi-line); border-radius: 10px; margin-bottom: 12px; }
+/* ── Additional questions ─────────────────────────────────────────
+ * The statement is the label, so it carries the required marker and the
+ * answer sits directly under it -- no second label, no box around the pair.
+ */
+.cpi-page .cpi-question { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+.cpi-page .cpi-question:last-child { margin-bottom: 0; }
+.cpi-page .cpi-question__n {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 6px;
+  background: #EAF1F5;
+  color: #15719B;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cpi-page .cpi-question__body { flex: 1; min-width: 0; }
+.cpi-page .cpi-question__text {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--cpi-ink);
+}
+.cpi-page .cpi-question__text .decodeHTML { display: inline; }
+.cpi-page .cpi-question__text p { display: inline; margin: 0; }
+.cpi-page .cpi-question__req { margin-left: 5px; font-size: 13px; font-weight: 500; color: #C7401C; }
+.cpi-page .cpi-question .cpi-field { margin-bottom: 0; }
+.cpi-page .cpi-question .textArea { width: 100%; }
