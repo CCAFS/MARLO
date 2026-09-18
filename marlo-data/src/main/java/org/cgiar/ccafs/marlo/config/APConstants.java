@@ -129,10 +129,12 @@ public final class APConstants {
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
     "crp_show_section_impact_covid19_ranges_years";
   public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
-    "deliverable_completed_previous_phases_active";
+    "deliverable_completed_in_previous_phases_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
   public static final String AI_SECTION_ACTIVE = "ai_section_active";
+  // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
+  public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
@@ -404,7 +406,7 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableMetadataElements)";
 
   public static final String PROJECT_DELIVERABLE_PARTNERSHIPS_RELATION =
-    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePartnerships)";
+    "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverableUserPartnerships)";
 
   public static final String PROJECT_DELIVERABLE_PROGRAMS =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Deliverable.deliverablePrograms)";
@@ -565,6 +567,9 @@ public final class APConstants {
   public static final String INSTITUTION_NAME = "institutionName";
 
   public static final String SESSION_CRP = "current_crp";
+  // CHG-COGNITO-AUTH-001-T08: pre-auth round-trip state. FIXED keys, one pending authorization per session
+  // -- DD-4 rejected a state-keyed map as unbounded session growth on an unauthenticated endpoint.
+  public static final String COGNITO_PENDING_AUTHORIZATION = "cognitoPendingAuthorization";
 
   // Session variables
   public static final String SESSION_USER = "current_user";
@@ -768,12 +773,12 @@ public final class APConstants {
   public static final long REP_IND_TRAINING_TERMS_LONG = 2;
 
   // Capdev Parameters
-  public static final String CRP_CD_ROLE = "crp_cd_role";
+  public static final String CRP_CD_ROLE = "crp_cd_rol";
   public static final String CRP_CD_ROLE_ACRONYM = "CD";
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 
   // Marlo PDF Manual Name
-  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_v2.9.pdf";
+  public static final String MARLO_PDF_MANUAL_NAME = "Introduction_To_MARLO_V2.9.pdf";
 
   // GeoiIp maps database8
   public static final String DATABASE_COUNTRY_FILENAME = "GeoLite2-Country.mmdb";

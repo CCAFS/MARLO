@@ -5,7 +5,7 @@
 **Last Updated:** 2026-04-30.
 **Source Inputs:** `MARLO_Technical_Overview.docx` (April 2026), `AGENTS.md`, `reports/ai-context/*`, current source tree (`marlo-web`, `marlo-data`, `marlo-core`, `marlo-utils`, `marlo-parent`).
 
-> This PRD is the constitutional product baseline for MARLO. It frames *what* MARLO is, *who* it serves, and *what success looks like*. Technical details live in `docs/system-design/design.md` and `docs/detailed-design/detailed-design.md`. Module-level specs live under `docs/specs/`.
+> This PRD is the constitutional product baseline for MARLO. It frames *what* MARLO is, *who* it serves, and *what success looks like*. Technical details live in `docs/ux-ui/design.md` and `docs/trd/trd.md`. Module-level specs live under `docs/specs/`.
 
 ---
 
@@ -256,15 +256,15 @@ These are the live, unresolved questions the constitution cannot answer alone. T
 5. **Tenant onboarding playbook** — Onboarding a new Program/Platform is "controlled" today. A repeatable, scripted procedure (and the migration of seed data) would unlock the "MARLO as a Service" promise. Should live as an `epic` spec.
 6. **AI services governance** — Citations and grounding are required, but a formal evaluation harness for hallucination rate and SLA on AI services is not yet in place.
 7. **Legacy modules retirement** — `powb2019`, `annualReport2018`, and Pentaho/iText components are flagged for semi-annual review. Retire-or-keep decisions need explicit per-module specs.
-8. **Per-program visual identity** — Specificities and `custom/*.properties` give per-program text and feature toggles, but the depth of *visual* customization (logo, palette, components) per Global Unit is not yet fully documented. See `docs/system-design/design.md` §12.
+8. **Per-program visual identity** — Specificities and `custom/*.properties` give per-program text and feature toggles, but the depth of *visual* customization (logo, palette, components) per Global Unit is not yet fully documented. See `docs/ux-ui/design.md` §12.
 
 ---
 
 ## 10. Document map
 
 - **PRD (this document)** — Why MARLO exists and what success looks like.
-- `docs/system-design/design.md` — UI/UX system blueprint (FTL composition, macros, navigation, design tokens, accessibility).
-- `docs/detailed-design/detailed-design.md` — Technical blueprint (modules, data model, API surface, security, observability, testing).
+- `docs/ux-ui/design.md` — UI/UX system blueprint (FTL composition, macros, navigation, design tokens, accessibility).
+- `docs/trd/trd.md` — Technical blueprint (modules, data model, API surface, security, observability, testing).
 - `docs/specs/general-setup/` — Methodology templates for module specs (`requirements.md`, `design.md`, `task.md`).
 - `docs/specs/domain/<module>/` — Module-level SDD specs (e.g., `domain/projects/`, `domain/deliverables/`, `domain/innovations/`, `domain/oicrs/`, `domain/powb/`, `domain/annual-report/`, `domain/qa/`, `domain/admin/`, `domain/auth/`, `domain/bi/`, `domain/ai-services/`).
 - `docs/specs/enhancement/<feature>/` — Cross-cutting feature enhancements that don't belong to a single domain.

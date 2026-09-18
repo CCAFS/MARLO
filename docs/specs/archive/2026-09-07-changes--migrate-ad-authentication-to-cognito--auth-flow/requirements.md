@@ -1,0 +1,512 @@
+# CGIAR Authentication via Amazon Cognito — Requirements
+
+**Spec ID:** `CHG-COGNITO-AUTH-001`
+**Status:** Draft
+**Owner:** IBD Team — Alliance of Bioversity International and CIAT
+**Reviewers:** Tech lead, QA lead, PMU lead
+**Last Updated:** 2026-08-24
+**Depth:** Full — authentication, external integration, and a staged migration
+**Parent spec:** `docs/specs/changes/migrate-ad-authentication-to-cognito` ([`family.md`](../family.md) child 1 of 2)
+**Related PRD sections:** `docs/prd.md` §3 (Personas), §7.2 (Quality and security acceptance)
+**Related UX/UI Design sections:** `docs/ux-ui/design.md` §7 (Design Tokens), §10 (Accessibility), §11 (Light theme only). *The login screen has **no entry** in the §4 Screen Inventory — adding one is a constitutional edit and is out of scope here (see `design.md` R-D8)*
+**Related TRD sections:** `docs/trd/trd.md` §8.1–8.4 (Security & Authorization), §4.3 (Interceptor stacks), ADR-6
+**Related infrastructure:** `docs/infrastructure.md` §2, §4
+**Companion ai-context docs:** `reports/ai-context/struts-critical-routing-catalog.md`, `reports/ai-context/interceptor-validator-playbook.md`
+
+---
+
+## Executive Summary
+
+MARLO authenticates users through one of two paths, selected by `users.is_cgiar_user`. This spec replaces **only** the CGIAR path — today a direct LDAP/LDAPS bind against CGIAR Active Directory — with Amazon Cognito federating to CGIAR's identity provider. The local database path is untouched.
+
+Three facts from the codebase shape everything below:
+
+1. **The realm is the single dispatch point.** `APCustomRealm.doGetAuthenticationInfo()` chooses between the two password-based paths. Cognito is added as a Shiro **token type**, dispatched by an `instanceof` guard inserted *above* the existing unconditional cast, so the whole `UsernamePasswordToken` path below it is preserved byte-for-byte. The `Authenticator` interface is **not** reused — its signature is `(String email, String password)` and cannot carry a token-based assertion (`design.md` DD-1).
+2. **The frontend seam already exists.** The login page is a three-step wizard — email → project → password — and step 1 already calls `crpByEmail.do`, which resolves the user record. That endpoint can report whether the user is a CGIAR user, letting the wizard branch **before** a password is ever requested.
+3. **Authorization does not participate.** Roles, permissions, and Global Unit membership come from local tables. Nothing downstream of authentication knows how identity was proven.
+
+Because the Global Unit is chosen in wizard step 2 — before authentication — it can be carried through the OIDC round trip and restored on return. The user's project selection survives the redirect.
+
+---
+
+## Glossary
+
+| Term | Meaning |
+|---|---|
+| **CGIAR user** | A MARLO user whose row has `users.is_cgiar_user = 1`. Authenticated against CGIAR Active Directory today |
+| **Local user** | A MARLO user whose row has `users.is_cgiar_user = 0`. Authenticated against `users.password` (MD5). **Out of scope** |
+| **Global Unit** | A CRP, Platform, or Center. Selected in login wizard step 2; scopes the entire session |
+| **IdP** | CGIAR's identity provider (ADFS or Entra ID — see OQ-3), the authority for CGIAR credentials |
+| **Cognito** | Amazon Cognito User Pool acting as the OIDC broker in front of the IdP |
+| **Authorization Code + PKCE** | The OAuth 2.0 flow used. The browser receives a short-lived code; the server exchanges it for tokens |
+| **ID token** | The signed JWT Cognito returns, asserting who the user is |
+| **Specificity** | MARLO's per-Global-Unit feature flag (`parameters` + `custom_parameters`) |
+| **Wizard** | The three-step login form: email → project → password |
+
+---
+
+## 1. Overview
+
+MARLO must stop being an intermediary for CGIAR credentials. Today a CGIAR user types their AD password into a MARLO form, and MARLO binds to Active Directory on their behalf over LDAP. This spec moves that exchange to CGIAR's own identity provider, brokered by Amazon Cognito, so the password never reaches MARLO.
+
+The change is gated by a per-Global-Unit specificity so it can be enabled progressively and switched off without a deploy.
+
+---
+
+## 2. Problem Statement
+
+| Problem | Consequence |
+|---|---|
+| MARLO receives, holds in memory, and relays CGIAR passwords | MARLO is inside the blast radius of a credential compromise it does not own |
+| Authentication depends on LDAP network reach to an internal AD host | Login availability is coupled to VPN/network topology; a network change breaks login |
+| MFA and SSO cannot be offered | They must be enforced at the IdP, which MARLO currently bypasses |
+| Every CGIAR login performs **two** LDAP round trips | One to resolve the username (`getCgiarNickname`), one to authenticate. Latency and failure surface are doubled |
+| The AD integration is a vendored binary (`adauth`) committed into **two** in-repo Maven repositories — 16 versions under `marlo-data`, 11 under `marlo-web` | No upstream security response path; the dependency cannot be patched by MARLO |
+
+Addresses `docs/prd.md` §7.2 (quality and security acceptance).
+
+---
+
+## 3. In-Scope Requirements
+
+### 3.1 Functional
+
+#### CHG-COGNITO-AUTH-001-FN-001 — Branch the login wizard by user type — **AMENDED, then RE-AMENDED 2026-09-04**
+
+> **AMENDED after a UX decision taken by the user 2026-09-04, then RE-AMENDED the same day.** The **selection**
+> **logic is unchanged**: the method offered is still exactly `is_cgiar_user AND cognito_auth_active`, and it is
+> resolved **automatically**. What changes is **presentation**. Step 3 still opens directly on the resolved
+> method — the password field for an external user, the CGIAR control for a CGIAR user — but it now **names**
+> that method with an explicit heading instead of leaving it implicit. The password input is still created up
+> front and removed on the CGIAR branch, which is T12's validated mechanism; the earlier wording — step 3 "no
+> longer jumps straight to a password field" and the input "created **on demand** when the user chooses the
+> external path rather than rendered up front and removed" — is **withdrawn** (see Decision Log, 2026-09-04).
+> **The heading names the method; it does not gate it.**
+>
+> **Only methods the backend can actually accept are offered:**
+>
+> | `is_cgiar_user` | `cognito_auth_active` | Method shown |
+> |---|---|---|
+> | 1 | **true** | **Sign in with CGIAR** only |
+> | 1 | false | **External user** only — MIG-001 coexistence |
+> | 0 | any | **External user** only |
+>
+> **Why never both.** For `is_cgiar_user = 1` on a migrated unit, the local password path is **refused by the
+> server** — that is SEC-005, enforced by T11 on `validateUser.do` and T11b on `login.do`, and the refusal is
+> deliberately indistinguishable from a wrong password (SEC-006). Offering *External user* there would present
+> a control that **cannot succeed** and whose failure is designed to be unexplainable. **The UI offers only
+> what the server can accept; the server remains authoritative regardless.**
+
+The system **SHALL** determine, after the user submits their email in wizard step 1 and before any password is
+requested, whether the account authenticates against CGIAR or locally, and present the corresponding step 3
+as an **explicitly labelled method** rather than as an implicit branch.
+
+##### Scenario: CGIAR user on a migrated unit reaches step 3
+
+- **GIVEN** a user whose `users.is_cgiar_user = 1` and whose selected Global Unit has the Cognito specificity enabled
+- **WHEN** they complete wizard step 1 (email) and step 2 (project selection)
+- **THEN** step 3 **MUST** present a single, labelled **"Sign in with CGIAR"** control and **no** external option
+- **AND** once CGIAR mode is resolved the password input **MUST** be removed from the DOM before the flow
+  continues, and **MUST NOT** be focusable or present in the submitted form — **RE-AMENDED 2026-09-04**: this
+  restores the original T12 guarantee. The stronger "never created on this path, rather than created and
+  removed" wording introduced earlier the same day is **withdrawn** (see Decision Log, 2026-09-04)
+- **AND** the user **MUST NOT** be required to enter a password at any point
+- **BUT** it **MUST NOT** change what step 1 or step 2 look like or how they behave
+- **AND IT MUST** keep the selected Global Unit visible in step 3, exactly as today
+
+##### Scenario: External user reaches step 3
+
+- **GIVEN** a user whose `users.is_cgiar_user = 0`, **or** whose selected Global Unit has the specificity disabled
+- **WHEN** they complete steps 1 and 2
+- **THEN** step 3 **MUST** present the local password step under an explicit **"External user"** heading, and
+  **no** CGIAR option — **RE-AMENDED 2026-09-04**: the *selection control* and the clause requiring the
+  password field to be "revealed only after that control is chosen" are **withdrawn** (see Decision Log,
+  2026-09-04). Method resolution stays automatic; the heading names the method, it does not gate it
+- **AND** the email entered in step 1 **MUST** be preserved — the user does not retype it
+- **AND** once revealed, the password step **MUST** behave exactly as today, authenticating through the
+  unmodified `DBAuthenticator` MD5 path
+- **BUT** it **MUST NOT** contact Cognito, construct an authorize URL, or read any Cognito configuration
+
+##### Scenario: Terms and Conditions are shared by both paths
+
+- **GIVEN** either authentication method
+- **WHEN** the user starts Cognito authentication **or** submits the local login
+- **THEN** acceptance of the Terms and Conditions **MUST** already have been given
+- **AND** the checkbox **MUST NOT** be duplicated per method unless technically necessary — it lives in the
+  shared `.terms-container`, alongside the recaptcha and button containers, and applies to both
+- **AND** the server-side obligation is unchanged: `cognitoLogin.do` still refuses without `agree`, and
+  `users.agree_terms` is still written **only** after the callback (T09), never from the unauthenticated
+  redirect endpoint
+
+##### Unchanged by this amendment
+
+Global Unit discovery stays **before** authentication; `cognito_auth_active` is still evaluated **per selected
+unit, before** the redirect; and every backend gate in `CognitoLoginAction` remains, so a directly-posted
+request to the unauthenticated endpoint is refused exactly as before. **T08, T11, T11b, T15, T16 and T17
+behaviour is preserved.**
+
+#### CHG-COGNITO-AUTH-001-FN-002 — Authenticate a CGIAR user through Cognito
+
+The system **SHALL** authenticate CGIAR users by an OAuth 2.0 Authorization Code flow with PKCE against Cognito, which federates to the CGIAR IdP.
+
+##### Scenario: Successful sign-in
+
+- **GIVEN** a CGIAR user who has selected a Global Unit and activated "Sign in with CGIAR"
+- **WHEN** they authenticate successfully at the CGIAR IdP
+- **THEN** they **MUST** return to MARLO already signed in, scoped to the Global Unit they selected before leaving
+- **AND** the session **MUST** carry the same attributes a local login produces: `SESSION_USER`, `SESSION_CRP`, the Global Unit's custom parameters, and the session colour
+- **AND** `users.last_login` **MUST** be updated
+- **AND IT MUST** resolve identity to the pre-existing `users` row — the local record is the authority for who the user is inside MARLO
+- **BUT** it **MUST NOT** create, modify, or auto-provision a `users` row
+
+##### Scenario: The user is not a member of the selected Global Unit
+
+- **GIVEN** a CGIAR user who authenticated successfully at the IdP
+- **AND** who is not present in `crp_users` for the selected Global Unit
+- **WHEN** they return to MARLO
+- **THEN** the existing `login.error.invalidUserCrp` message **MUST** be shown
+- **AND** the Shiro session **MUST** be cleared and the subject logged out
+- **AND IT MUST** apply the **same mechanism** as the local-login case for the same condition: the same
+  `login.error.invalidUserCrp` key, the same `getSession().clear()` and `Subject.logout()`, through the same
+  shared `finishLogin` tail — **RE-AMENDED 2026-09-07**: the earlier wording said "behave **identically**",
+  which the **presentation** deliberately no longer does. T21 and T22 made the Cognito path **redirect** to
+  `login.do` instead of re-rendering in place, because rendering in place left the authorization code and
+  `state` in the address bar and in browser history and poisoned the `Referer` — that is **V-4, V-5 and V-7**
+  (`execution.md` §34, §37, §40). The local path carries no authorization material in its URL and needs no
+  such redirect. **The divergence is the fix, not a defect** (see Decision Log, 2026-09-07)
+
+##### Scenario: MARLO account is inactive
+
+- **GIVEN** a user whose IdP authentication succeeds but whose `users` row is inactive
+- **WHEN** they return to MARLO
+- **THEN** access **MUST** be denied with the existing `USER_DISABLED` message
+- **AND IT MUST** treat the local `is_active` flag as authoritative regardless of IdP state
+
+---
+
+#### CHG-COGNITO-AUTH-001-FN-003 — Preserve Global Unit selection across the redirect
+
+The system **SHALL** carry the Global Unit chosen in wizard step 2 through the OIDC round trip and restore it on return.
+
+##### Scenario: Selection survives
+
+- **GIVEN** a CGIAR user who selected Global Unit `X` in step 2
+- **WHEN** they complete sign-in at the IdP and return
+- **THEN** the session **MUST** be scoped to Global Unit `X`
+- **BUT** it **MUST NOT** ask them to select a project again
+- **AND IT MUST** reject a returned value that does not match the one MARLO issued, rather than trusting the value present on return
+
+---
+
+#### CHG-COGNITO-AUTH-001-FN-004 — Post-login redirect parity
+
+The system **SHALL** apply the same post-login destination rules to a Cognito login as to a local login.
+
+##### Scenario: Deep-link preserved
+
+- **GIVEN** a CGIAR user who was sent to the login page while requesting a `.do` URL
+- **WHEN** they complete Cognito sign-in
+- **THEN** they **MUST** land on that original URL
+- **AND IT MUST** apply the existing per-Global-Unit-type routing (types 1, 3, 4, 5 → dashboard; type 2 → `centerDashboard.do`)
+- **BUT** it **MUST NOT** redirect to a `logout` URL, matching current behavior
+
+---
+
+#### CHG-COGNITO-AUTH-001-FN-005 — Failure handling
+
+The system **SHALL** return the user to the MARLO login page with an actionable message for every failure mode of the Cognito flow.
+
+##### Scenario: The user cancels or the IdP denies
+
+- **GIVEN** a CGIAR user who cancels at the IdP, or whose IdP account is disabled, locked, or expired
+- **WHEN** control returns to MARLO
+- **THEN** the login page **MUST** be shown with a message describing what happened
+- **AND IT MUST** be an i18n key resolved from `global.properties`, never a literal string
+- **BUT** it **MUST NOT** expose the raw provider error, an authorization code, or any token value to the browser or the logs
+
+##### Scenario: Cognito is unreachable
+
+- **GIVEN** Cognito or the IdP is unavailable
+- **WHEN** a CGIAR user attempts sign-in
+- **THEN** a service-unavailable message **MUST** be shown
+- **AND IT MUST** leave the local login path fully functional, so local administrators retain access
+
+---
+
+#### CHG-COGNITO-AUTH-001-FN-006 — Username synchronization — **AMENDED 2026-09-04**
+
+> **AMENDED after real E2E evidence (U-3, `execution.md` §31). The original requirement rested on a premise
+> the real token disproved.** It read: *"The system SHALL maintain `users.username` for CGIAR users without an
+> LDAP lookup… GIVEN a CGIAR user whose ID token **carries their CGIAR login identifier**."* **No such claim
+> exists.** A real federated ID token from the CGIAR-AzureAD provider carries **16 claims**, and the CGIAR/AD
+> login (`cgamboa`) is in **none** of them:
+>
+> - `username` — **absent**
+> - `preferred_username` — **absent**
+> - `cognito:username` — present, but it is **Cognito's own federated identifier**: the provider name,
+>   lowercased, prefixed to the mapped value (`cgiar-azuread_c.gamboa@cgiar.org`)
+> - `email` — present
+> - the remaining claims (`at_hash`, `aud`, `auth_time`, `cognito:groups`, `email_verified`, `exp`, `iat`,
+>   `identities`, `iss`, `jti`, `nonce`, `origin_jti`, `sub`, `token_use`) carry no login identifier
+>
+> The pool's attribute mapping *"User pool attribute: username"* does **not** produce a separate `username`
+> claim — it feeds the pool's own username, which Cognito prefixes and emits as `cognito:username`. The AD
+> claim being mapped returns the **UPN**, not the `sAMAccountName`. **MARLO cannot obtain `cgamboa` from this
+> token by any mapping**, so the original requirement was unsatisfiable as written.
+
+**The system SHALL NOT modify `users.username` during Cognito authentication.**
+
+##### Scenario: An existing username is preserved
+
+- **GIVEN** a CGIAR user with a populated `users.username` (for example `cgamboa`, set by `getCgiarNickname()`
+  from Active Directory on a previous local login)
+- **WHEN** they sign in successfully through Cognito
+- **THEN** `users.username` **MUST** be left **exactly as it was**
+- **AND** the user **MUST** still be resolved by their normalized corporate email (OQ-9), which is sufficient
+- **AND IT MUST NOT** be derived from the email, and **MUST NOT** be `cognito:username`, with or without the
+  provider prefix stripped
+
+##### Scenario: A null or blank username stays null or blank
+
+- **GIVEN** a CGIAR user whose `users.username` is `null` or blank
+- **WHEN** they sign in successfully through Cognito
+- **THEN** it **MUST** remain `null` or blank — **no value is invented**
+- **AND** the LDAP path remains the only writer: `APCustomRealm.getCgiarNickname()` looks Active Directory up
+  **by email** and sets the username from `ldapUser.getLogin()`, so a local login repairs or populates it
+
+##### Why this is safe, and why the previous behaviour was not
+
+`users.username` is **not** MARLO's identity key — OQ-9 settled that on the normalized corporate email, and
+the Cognito path never needs the username to authenticate. Writing `cognito:username` there was **strictly
+worse than not writing**: it replaced a correct AD login with a value correct for nothing, breaking
+username-based local login (`APCustomRealm:161`, `getUserByUsername`) and rendering as a display name in QA
+comments (`FeedbackQACommentsAction:180`, `:403`). **AND IT MUST NOT** overwrite `users.email`, which remains
+the identity key inside MARLO.
+
+---
+#### CHG-COGNITO-AUTH-001-FN-007 — Logout
+
+The system **SHALL** terminate the MARLO session on logout and **SHALL NOT** silently re-authenticate the user.
+
+##### Scenario: Logout is not undone by SSO
+
+- **GIVEN** a CGIAR user with an active MARLO session
+- **WHEN** they log out
+- **THEN** the Shiro session **MUST** be cleared and the cached authorization info invalidated, as today
+- **AND IT MUST NOT** be possible for a subsequent page load to restore the session without an explicit new sign-in action
+- **BUT** whether the IdP's own SSO session ends is **out of scope** — see OQ-8
+
+---
+
+### 3.2 Security
+
+#### CHG-COGNITO-AUTH-001-SEC-001 — Token validation
+
+The system **SHALL** fully validate every ID token before deriving identity from it.
+
+##### Scenario: Only valid tokens establish a session
+
+- **GIVEN** an ID token returned from the code exchange
+- **WHEN** MARLO processes it
+- **THEN** it **MUST** verify the signature against the pool's published keys, and that `iss`, `aud`, and `exp` match the configured pool, client, and current time
+- **AND IT MUST** verify the `nonce` matches the one MARLO issued for this attempt
+- **BUT** it **MUST NOT** derive any identity from an unverified token — decoding without verification is a complete authentication bypass
+- **AND IT MUST** reject, with no session created, a token that is unsigned, wrongly signed, expired, issued for another audience, issued by another issuer, or carrying a replayed or absent `nonce`
+
+#### CHG-COGNITO-AUTH-001-SEC-002 — Request integrity
+
+The system **SHALL** protect the authorization round trip against forgery and interception.
+
+- The authorize request **MUST** include an unguessable `state` bound to the user's session, and the callback **MUST** reject a mismatched or absent `state`.
+- The flow **MUST** use PKCE.
+- The callback URL **MUST** be validated against an exact-match allowlist; wildcards **MUST NOT** be accepted.
+- An authorization code **MUST NOT** be accepted twice.
+
+#### CHG-COGNITO-AUTH-001-SEC-003 — Session fixation
+
+On successful authentication the system **MUST** issue a new session identifier and **MUST NOT** promote the pre-authentication session to an authenticated one.
+
+#### CHG-COGNITO-AUTH-001-SEC-004 — Secret handling
+
+Cognito configuration **MUST** live in `marlo-${profile}.properties`, which is gitignored. No pool ID, client ID, client secret, domain, or callback URL may appear in a `.java` file. The client secret **MUST** be sourced from the deployment's secret store.
+
+#### CHG-COGNITO-AUTH-001-SEC-005 — No credential handling for CGIAR users
+
+MARLO **MUST NOT** accept, transmit, log, or store a CGIAR password at any point in the new flow.
+
+##### Scenario: No endpoint keeps relaying CGIAR credentials
+
+- **GIVEN** a Global Unit with the Cognito specificity enabled
+- **AND** a user whose `users.is_cgiar_user = 1`
+- **WHEN** any MARLO endpoint receives that user's email and a password
+- **THEN** it **MUST** refuse to authenticate them against Active Directory
+- **AND IT MUST** return the same generic failure shape as any other rejection, disclosing nothing new
+- **BUT** it **MUST NOT** refuse a local (`is_cgiar_user = 0`) account on the same endpoint
+
+> This scenario exists because the login wizard reaches **two** endpoints with the password — `validateUser.do` before `login.do` — and only one of them was visible in the first draft of the design.
+
+#### CHG-COGNITO-AUTH-001-SEC-006 — A federated identity MUST NOT unlock a local account
+
+The system **SHALL** verify that the account resolved from a Cognito identity is itself a CGIAR account before establishing a session.
+
+##### Scenario: IdP credential cannot open a local account
+
+- **GIVEN** a `users` row whose email is a CGIAR address **but** whose `is_cgiar_user = 0`
+- **WHEN** someone authenticates successfully at the CGIAR IdP for that address and returns to MARLO
+- **THEN** the sign-in **MUST** be refused and no session created
+- **AND IT MUST** be refused on `is_cgiar_user`, not merely on Global Unit membership — membership may well succeed
+- **BUT** it **MUST NOT** reveal that the account exists under a different authentication mode
+
+> Without this, a valid IdP credential would grant access to a **local** account without its MD5 password — bypassing the exact path this spec declares out of scope and untouched. `OQ-1` exists partly to size this population.
+
+---
+
+### 3.3 Migration & Operations
+
+#### CHG-COGNITO-AUTH-001-MIG-001 — Specificity-gated rollout
+
+The flow **SHALL** be gated by a per-Global-Unit specificity, following the `AGENTS.md` specificity workflow.
+
+##### Scenario: Instant rollback without deploy
+
+- **GIVEN** the Cognito flow is enabled for Global Unit `X`
+- **WHEN** an operator sets the specificity to `false` for `X`
+- **THEN** CGIAR users of `X` **MUST** return to the LDAP flow on their next login attempt —
+  **AMENDED 2026-09-07**: "immediately" holds only when the flag is written **through the application**
+  (`saveCustomParameter`) or the application is restarted. `CustomParameterMySQLDAO:90` marks the override
+  lookup `setCacheable(true)` with a **3600 s** TTL, and Hibernate cannot see a write made outside its session
+  — so a flag flipped by **direct SQL or by a Flyway migration can take up to an hour to take effect**
+  (`execution.md` §24.3). **This is an environment constraint, not an implementation defect**, and the
+  rollback route that satisfies the requirement is the application one
+- **AND IT MUST NOT** require a code change, a build, or a redeploy
+- **BUT** it **MUST NOT** affect any other Global Unit
+
+##### Scenario: Both paths coexist
+
+- **GIVEN** Global Unit `X` has the flag enabled and Global Unit `Y` does not
+- **WHEN** a CGIAR user who belongs to both signs in
+- **THEN** the path used **MUST** be determined by the Global Unit selected in wizard step 2
+- **AND IT MUST** resolve the flag before authentication, since the session is not yet populated at that point
+
+> **Constraint discovered in code:** `BaseAction.hasSpecificities()` reads the session, and custom parameters are only written to the session *after* a successful login. The flag therefore **cannot** be read through `hasSpecificities()` at authentication time and must be resolved directly from the selected Global Unit. `design.md` owns the mechanism.
+
+#### CHG-COGNITO-AUTH-001-OPS-001 — Observability
+
+Authentication outcomes **SHALL** be logged with enough detail to diagnose a failure and no more.
+
+- Every attempt **MUST** log outcome, which path was taken, and the Global Unit.
+- Logs **MUST NOT** contain tokens, authorization codes, `state`, `nonce`, or passwords.
+
+#### CHG-COGNITO-AUTH-001-OPS-002 — LDAP remains available during rollout
+
+Until every Global Unit is migrated, the LDAP path **MUST** stay functional. Removing `adauth` is child spec 2's work and **MUST NOT** happen here.
+
+---
+
+### 3.4 Non-Functional
+
+| ID | Requirement |
+|---|---|
+| `CHG-COGNITO-AUTH-001-NF-001` | The complete CGIAR sign-in round trip **SHOULD** complete within 5 s at p95, excluding time the user spends typing at the IdP. Today's double LDAP round trip is the baseline to beat |
+| `CHG-COGNITO-AUTH-001-NF-002` | A Cognito or IdP outage **MUST NOT** degrade the local login path |
+| `CHG-COGNITO-AUTH-001-NF-003` | The login page **MUST** continue to satisfy `docs/ux-ui/design.md` §10: keyboard reachable, visible focus, accessible name on every control |
+| `CHG-COGNITO-AUTH-001-NF-004` | New UI **MUST** reuse existing Bootstrap components and the current palette (`docs/ux-ui/design.md` §7). Light theme only (§11) — no dark-only colors |
+| `CHG-COGNITO-AUTH-001-NF-005` | Checkstyle **MUST** pass: 2-space indent, 120-char lines, same-line braces, mandatory blocks, ≤3500-line files |
+| `CHG-COGNITO-AUTH-001-NF-006` | No dependency in `marlo-parent/pom.xml` may be downgraded (`CLAUDE.md` hard rule 11) |
+
+---
+
+## 4. Out-of-Scope
+
+| Excluded | Note |
+|---|---|
+| **The local database login flow** | `DBAuthenticator`, `AuthenticationManager`, `MD5Convert`, `users.password`. Not touched, not refactored, not moved |
+| Directory search and `adauth` removal | Child spec 2 (`directory-retirement`) |
+| Authorization | `user_role`, `crp_users`, permissions, `canEdit*` interceptors |
+| Migrating local users into Cognito | Never in scope |
+| Replacing Shiro | Shiro remains the session and authorization layer |
+| `/api/v2/*` token auth (`QAToken`) | But see OQ-4 — `/api/**` Basic auth is a **different** surface and is a live risk |
+| IdP-side MFA policy | Enabled at the IdP once federation exists; no MARLO code involved |
+| Ending the IdP SSO session on MARLO logout | OQ-8 |
+
+---
+
+## 5. Personas Affected
+
+| Persona (`docs/prd.md` §3) | Impact |
+|---|---|
+| Cluster Coordinator, QA Reviewer, PMU / Program Lead, Program Admin | If CGIAR users: step 3 becomes a button and they authenticate at CGIAR. Everything after login is unchanged |
+| Super Admin | Same, plus responsibility for the specificity rollout |
+| Local (non-CGIAR) users | **No impact whatsoever** |
+| Public reader | None — no authentication involved |
+| AI service consumer | None from this spec, **pending OQ-4** |
+
+---
+
+## 6. Defect classes and their gates
+
+Per the AKILI rule that a gate blind to the dominant defect class is not a gate:
+
+| # | Defect class this spec can produce | Gate |
+|---|---|---|
+| D-1 | Token validation accepts an invalid token → **authentication bypass** | Automated unit tests, one per rejection case in SEC-001. **This is the highest-severity class and it is fully automatable — there is no excuse for leaving it to inspection** |
+| D-2 | The local login path is altered | Automated: assert **the `UsernamePasswordToken` path through `doGetAuthenticationInfo()` produces identical behavior**, and that the password input is **absent from the DOM at submit time** on the COGNITO branch. Plus a diff review. *(Restated after Judgment Day round 1: the earlier wording — "the realm's local branch is untouched" — would pass green over a rewritten shared prologue, since `APCustomRealm.java:113-115` casts unconditionally at the head of the method, before any branch.)* |
+| D-3 | Global Unit is lost or substituted across the redirect | Automated integration test asserting the restored unit equals the issued one, and that a tampered value is rejected |
+| D-4 | The specificity does not actually gate, or cannot roll back | **Manual verification in a live environment.** No automated check can prove "no deploy required". Recorded as a HITL check at the end of phase 1 |
+| D-5 | Login page accessibility or visual regression | **No automated gate exists in this repo** — there is no frontend test runner and no visual harness. Substitute: manual keyboard + screen-reader walkthrough at the HITL pause, plus a T6 multimodal review of a screenshot. Recorded as an accepted gap, not silently uncovered |
+| D-6 | A secret leaks into source or logs | Automated grep in CI-equivalent form: no Cognito config literal in any `.java`; log assertions for token/code absence |
+| D-7 | `/api/**` Basic auth breaks for CGIAR users | **No gate until OQ-4 is answered.** Recorded as an accepted risk with a discovery task; this is a known blind spot, not an oversight |
+| D-8 | Session fixation | Automated test: session ID before ≠ session ID after |
+
+**Accepted blind spots:** D-5 (no frontend/visual test infrastructure) and D-7 (unknown consumers). Both are recorded rather than papered over. `docs/infrastructure.md` §6 documents that the repository's entire automated suite is three JUnit 4 classes — a green `mvn test` proves nothing about this spec, and every requirement above needs a test written for it.
+
+---
+
+## 7. Constitutional Compliance Checklist
+
+- [x] **Phase replication:** Not applicable — authentication writes no phased data. `users.last_login` and ~~`users.username`~~ (**removed 2026-09-04, FN-006 amended**) are phase-independent.
+- [x] **Save validation:** Not applicable — no `Action.validate()` save pipeline. The login action's existing `validate()` is preserved unchanged.
+- [x] **Permissions:** both new actions declare `unloggedStack` (`struts.xml:198-203`) — reachable unauthenticated, and named per TRD §4.3 rule 1. See `design.md` §8.
+- [ ] **Specificity:** flag added via `parameters` + `custom_parameters`, constant in **both** `APConstants.java` files, value identical to `parameters.key`.
+- [ ] **Migrations:** the specificity ships as a Flyway migration named `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`.
+- [ ] **i18n:** all new user-facing strings are keys in `global.properties`. *(Note: the existing `ADLoginMessages` enum holds literal English strings — new messages follow the constitutional rule rather than that precedent. See DL entry.)*
+- [ ] **License header:** GPL header on every new `.java` file.
+- [ ] **Code style:** Checkstyle passes.
+- [x] **REST:** Not applicable — the callback is a Struts action in the existing `home` package, not a new `/api/*` endpoint. No new `*.json` Struts path is introduced (`CLAUDE.md` hard rule 3).
+- [ ] **Audit:** `users.username` writes go through the existing `saveUser` path and its audit listener.
+- [ ] **Dependency floors:** AWS SDK and JWT libraries are additions; nothing is downgraded.
+- [x] **Branching:** working on `staging-cognito`, branched from and merging to `staging`.
+
+---
+
+## 8. Open Questions
+
+| # | Question | Blocks | Owner |
+|---|---|---|---|
+| ~~OQ-3~~ | ~~Which IdP does CGIAR run, and will CGIAR IT federate MARLO?~~ **CLOSED 2026-09-02 — dissolved, not answered.** No new federation is needed: the existing IBD Cognito setup is already integrated with the CGIAR corporate directory and serves other applications. MARLO reuses it, configured through the **8** `cognito.*` environment variables | ~~Blocks implementation~~ — **T12–T14 unblocked** | CGIAR IT / IBD |
+| OQ-1 | `SELECT is_cgiar_user, COUNT(*) FROM users GROUP BY is_cgiar_user` — and how many of those emails resolve at the IdP? | Rollout sizing; FN-002 orphan handling | IBD |
+| OQ-4 | ~~Who calls `/api/**` with Basic auth, and are any of them CGIAR users?~~ **CLOSED 2026-09-07 — none.** | D-7's gate is discharged | IBD (answered) |
+| ~~OQ-8~~ | ~~Should MARLO logout also end the IdP SSO session?~~ **CLOSED 2026-09-02 — no.** MARLO ends only its own session and the Cognito application session; the CGIAR corporate SSO session is left intact so unrelated CGIAR applications stay signed in | FN-007 — **no RP-initiated logout** | PMU |
+| ~~OQ-9~~ | ~~Which token claim is the stable user identifier?~~ **CLOSED 2026-09-02 — the corporate `email`, normalized (trim + lowercase).** A different corporate email is a different user, not a re-identified one. Not a new join key: `getUser(String)` already resolves on `LOWER(email)` | ~~Blocks T07~~ — **T07, T09 unblocked** | IBD |
+| OQ-10 | For a CGIAR user whose Global Unit has **not** enabled the flag: LDAP as today. Confirmed — but should a user belonging to a mix of enabled and disabled units see anything different? | FN-001 edge case | PMU |
+| OQ-11 | Do any **type-2 (Center)** or **type-5** Global Units have CGIAR users? Verified: 40 existing specificity migrations use `global_unit_type_id` in (1,3,4) and **none** uses type 2, so a Center can never enable this flag and its CGIAR users stay on LDAP permanently — making phase 4 unreachable for them | `design.md` §3, §14; R-D10 | PMU |
+
+---
+
+## 9. Decision Log
+
+| Date | Decision | Rationale |
+|---|---|---|
+| 2026-08-24 | Option A — Cognito federated to CGIAR AD, redirect for CGIAR users only | AWS does not permit `InitiateAuth` for federated users. Inherited from the parent proposal |
+| 2026-08-24 | Branch the wizard at step 1→2, not at step 3 | `crpByEmail.do` already resolves the user record; adding the CGIAR flag to its response is a minimal change and means a password field is never rendered for a CGIAR user |
+| 2026-08-24 | Carry the Global Unit through the OIDC round trip rather than re-asking after callback | The parent proposal assumed selection would move after login. Reading the code showed step 2 precedes authentication, so the selection can be preserved — better UX than the proposal predicted |
+| 2026-08-24 | The specificity is resolved from the selected Global Unit, not via `hasSpecificities()` | `hasSpecificities()` reads the session, which is unpopulated at authentication time. Discovered in `BaseAction:6574` |
+| 2026-08-24 | New login messages use i18n keys, not the `ADLoginMessages` literal-string precedent | `CLAUDE.md` hard rule 8. Following the existing pattern would propagate a constitutional violation. Existing enum values are left untouched — changing them is not this spec's scope |
+| 2026-08-24 | D-5 and D-7 recorded as accepted blind spots | The repository has no frontend/visual test harness, and `/api/**` consumers are unknown. Naming them is what keeps them from being mistaken for coverage |
+| 2026-09-02 | **OQ-3 CLOSED — reuse the existing CGIAR Cognito setup; no new federation** | The IBD Cognito setup is already integrated with the CGIAR corporate directory and already serves other applications. MARLO integrates with it rather than establishing its own relying-party agreement. **This closes OQ-3 by dissolving it, not by answering it** — the risk R-D6 named ("CGIAR IT may decline to federate") cannot occur because no new federation is requested. Deployed environments supply the **8** `cognito.*` keys as environment variables — **corrected 2026-09-07: this entry said 7, and was accurate when written.** T15 added the eighth, `cognito.identity.provider`, on 2026-09-03 (`tasks.md` T15, `execution.md` §32) and this entry was not updated, so a deployment following it would have omitted the one setting that routes users straight to the CGIAR IdP instead of to Cognito's hosted provider chooser. Verified 2026-09-02 that the then-current 7 names match `APConfig`'s `@Value` fields and `marlo-test.properties` exactly, so T03 already implements this contract |
+| 2026-09-02 | **OQ-9 CLOSED — the stable identifier is the corporate `email`, normalized (trim + lowercase)** | Each CGIAR user has a unique corporate email; for MARLO's identity model it is treated as stable. A different corporate email is a **different user**, not the same user re-identified. **This is not the orphaning risk R-D2 warned about, because it is not a change:** `UserMySQLDAO.getUser(String)` already resolves on `LOWER(email)`, and `users.email` is already MARLO's login identity, so no new join key and no data migration are introduced. What the decision does require is that an email change stay an **administrative** act on `users.email` — nothing re-links automatically, and no code should imply it does |
+| 2026-09-02 | **OQ-8 CLOSED — local logout only; never terminate the CGIAR SSO session** | Ending the IdP session would sign the user out of unrelated CGIAR applications open in the same browser (corporate email among them). MARLO ends only its own session and the Cognito application session. FN-007 must therefore **not** perform RP-initiated logout |
+| 2026-09-04 | **The step-3 method is announced by a heading, not chosen through a control** — FN-001 and `design.md` §5.2 re-amended the same day they were amended | The earlier amendment required an *External user* control that revealed the password only once chosen, and an absence-by-construction guarantee on the CGIAR path. Both are withdrawn. **A selection step offering only one valid method is artificial navigation and unnecessary friction**: the matrix above resolves every account to exactly one method the server can accept, so the "choice" has a single option and the click buys nothing. Automatic resolution (`mode = isCgiarUser && cognitoEnabled`) is kept byte-identical, and T12's validated create-then-remove mechanism is kept rather than inverted into a primary creation path — it is exercised by a real corporate login. **The server remains authoritative either way** (SEC-005/SEC-006, T11/T11b): the UI decides what to offer, never what to permit |
+| 2026-09-07 | **OQ-4 CLOSED on IBD confirmation — no `/api/**` Basic-auth consumers exist** | IBD, who owns the integration inventory, confirmed that no external application, script or integration authenticates to `/api/**` with Basic auth; report generation and similar processes reach MARLO through normal actions and the ordinary application authentication flow. **D-7 was an accepted risk with no gate until this was answered; the answer discharges it.** T00's second entry — the service account `ClarisaPublicAccesFilter` binds through the same realm — was verified independently from the database rather than accepted: `is_cgiar_user = 0` and no membership in any Cognito-enabled Global Unit, so it is unaffected on two independent counts. **Two limits are recorded rather than glossed:** the answer is organizational, not derived from access logs, and it is point-in-time — the `authcBasic` mapping still exists, so a future integration could still adopt it |
+| 2026-09-07 | **FN-002 S5 re-amended — the Cognito refusal diverges from the local one in *presentation*, and that divergence is the fix** | The clause required the two to "behave identically". T21 and T22 deliberately made the Cognito path redirect to `login.do` rather than re-render in place, because rendering in place left the authorization code and `state` in the address bar and browser history and poisoned the `Referer` — the root cause of **V-4**, fixed as **V-5** and **V-7**. The local path carries no authorization material in its URL and needs no redirect. **The mechanism stays identical**: same message key, same `getSession().clear()`, same `Subject.logout()`, same shared `finishLogin` tail. Found by `/akili-test` as spec drift: FN-001 and FN-006 were amended when they drifted, this clause was not. **No production code changed to satisfy an obsolete requirement** |
+| 2026-09-07 | **MIG-001 S17 amended — "immediately" is true of the application route, not of direct SQL** | `CustomParameterMySQLDAO:90` marks the specificity lookup `setCacheable(true)` with a 3600 s TTL, and Hibernate cannot observe a write made outside its own session. A flag flipped by direct SQL or by a Flyway migration can therefore take **up to an hour** to take effect (`execution.md` §24.3, recorded as a Category B environment behaviour during T12). Flipping it through `saveCustomParameter`, or restarting, is immediate. **The requirement was stronger than any route could satisfy; the amendment names the route that does.** An operational consequence for the rollback runbook, not a code defect |

@@ -2,7 +2,7 @@
 
 **Purpose:** This file defines the *format and conventions* for `design.md` inside any module spec under `docs/specs/`. It is a methodology template, not a feature design.
 
-**Pairs with:** `requirements.md` and `task.md` in the same spec folder.
+**Pairs with:** `requirements.md` and `task.md` in the same spec folder — plus `family.md` when this spec is part of a spec family (template: `docs/specs/general-setup/family.md`).
 
 ---
 

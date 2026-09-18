@@ -16,6 +16,26 @@ var userDisplayName = "";
 // True while validateUser.do is in flight. Guards the step navigation ("Go back") and the button
 // state, so an attempt that is still running can't be navigated away from or submitted twice
 var isSubmitting = false;
+// CHG-COGNITO-AUTH-001-T12: true when crpByEmail.do reported user.isCgiarUser for the account
+// currently in step 1/2 (set in secondForm()). Combined with cognitoEnabled (below) to compose
+// `mode = user.isCgiarUser && card.cognitoEnabled` once step 3 is reached (FN-001, design.md 5.2)
+var isCgiarUser = false;
+// Per-unit Cognito flag (T10) of the Global Unit card currently selected. Never a single scalar
+// on the user: a mixed-membership account can see a different value per card (MIG-001). Set on
+// card selection - the click handler below - which also fires from the auto-skip path in
+// secondForm() when crps.length == 1
+var cognitoEnabled = false;
+// Numeric id (not acronym) of the selected Global Unit card, read from its data-global-unit-id
+// attribute (written in loadAvailableItems). Needed both by the Cognito redirect
+// (cognitoLogin.do requires a Long globalUnitId) and by PS-20's validateUser.do post - the
+// acronym #crp-input already carries is not what either endpoint expects
+var selectedGlobalUnitId = null;
+// CHG-COGNITO-AUTH-001-T12 fix (audit Issue 1): a clone of #login-password, captured in init()
+// AFTER the eye-icon toggle is bound below so the clone carries that handler too. The COGNITO
+// branch of showPasswordStep() .remove()s the real #login-password from the document; this
+// template is what restores it if the same page later needs the LOCAL branch again. Never
+// inserted directly - always re-cloned, so it can restore the field more than once per page load
+var passwordFieldTemplate;
 
 function init() {
   initJreject();
@@ -52,13 +72,33 @@ function init() {
     $("input#crp-input").val(selectedImageAcronym);
     setCRPCookie();
 
-    // Mirror the selected project card (image/acronym) into the step 3 full-width card
-    $('#login-selected-project-card').html($(this).html());
+    // CHG-COGNITO-AUTH-001-T12/PS-20: capture this card's numeric Global Unit id and its
+    // per-unit Cognito flag (both written as data-* attributes in loadAvailableItems), so
+    // showPasswordStep() can compose `mode` and the Cognito control / validateUser.do post know
+    // which Global Unit was actually selected
+    selectedGlobalUnitId = $(this).attr('data-global-unit-id') || null;
+    cognitoEnabled = $(this).attr('data-cognito-enabled') === 'true';
+
+    // Mirror the selected project card (image/acronym) into the step 3 full-width card(s) -
+    // .selected-project-card matches the mirror in both the password step and the cgiar step
+    $('.selected-project-card').html($(this).html());
   });
 
   // Hide wrong data line and message in email and password inputs
   $('input.login-input').on("change", function(e) {
     cleanWrongData();
+  });
+
+  // BUG-LOGIN-TERMS-001-FN-006: #terms is not a .login-input, so the binding above never reaches it.
+  // Found by walking the real flow: the user ticks the box -- correcting the exact thing the message
+  // asks for -- and the message stays on screen, because nothing clears it until the next attempt
+  // repaints it. Scoped deliberately: only when the box becomes CHECKED, and only while the terms
+  // message is the one showing, so toggling the checkbox cannot wipe an unrelated message such as
+  // incorrectPassword
+  $('input#terms').on("change", function() {
+    if($(this).is(':checked') && !$('.loginForm p.invalidField.termsRequired').hasClass("hidden")) {
+      cleanWrongData();
+    }
   });
 
   // Keep the submit button disabled while the email/username field is empty, so step 1 can't be
@@ -119,6 +159,12 @@ function init() {
       showPasswordStep();
     } else if(inputPassword.val() == "") {
       wrongData("voidPassword");
+    } else if(!termsAccepted()) {
+      // BUG-LOGIN-TERMS-001-FN-001: deliberately BEFORE checkPassword(). That function's beforeSend takes
+      // the button lock, and the terms refusal used to arrive only after validateUser.do had answered - at
+      // which point the lock was held and the success branch had nothing left to release it. Reported
+      // after voidPassword so an empty password still names itself first, the behaviour that ships today
+      return;
     } else {
       checkPassword(username.val(), inputPassword.val());
     }
@@ -173,6 +219,17 @@ function init() {
     }
   });
 
+  // CHG-COGNITO-AUTH-001-T12 fix (audit finding 6): captured here, not right after the eye-icon
+  // binding above. jQuery's .clone(true) copies only handlers already bound to the source node at
+  // clone time, and #login-password's .user-password input is also targeted (via .login-input) by
+  // the keydown/blur/keyup bindings just above this line - capturing before them left every
+  // restored field missing the "Accessible Enter to login" relay. Benign today only because native
+  // implicit form submission still clicks input#login_next on Enter; a later edit relying on the
+  // keyup handler itself would silently break, but only after a COGNITO visit.
+  // INVARIANT: this capture must stay below every binding that targets .form-control, .login-input
+  // or .icon-show-password - moving it back above any of them reopens this gap.
+  passwordFieldTemplate = $("#login-password").clone(true);
+
   // Accessible "Enter" (keyCode==13) to select crp,center or platform
   $(".selection-bar-options ul li").keyup(function(event) {
     if(event.keyCode === 13) {
@@ -196,6 +253,26 @@ function init() {
     }
   });
 
+  // CHG-COGNITO-AUTH-001-T12: the CGIAR sign-in control (FN-001 COGNITO branch). A real
+  // <button type="button">, so it is keyboard-reachable and activates on both Enter and Space for
+  // free, and it never submits the login form - it navigates to cognitoLogin.do instead. The
+  // redirect is always user-initiated (design.md 5.5): nothing here fires without this click
+  $('#login-cgiar-button').on('click', function() {
+    // BUG-LOGIN-TERMS-001-FN-002: this control is type="button", so the HTML5 "required" that used to sit
+    // on #terms never fired for it and the redirect carried &agree=false to a server that refuses it under
+    // the generic "cognitoFailed" category (SEC-006) - a dead end the user could not diagnose, one page
+    // load away from the step they were on. CognitoLoginAction's own guard STAYS (SEC-001): this endpoint
+    // is unauthenticated, so the client check is an affordance for the user, never a control
+    if(!termsAccepted()) {
+      return;
+    }
+
+    window.location.href = baseUrl + "/cognitoLogin.do"
+        + "?email=" + encodeURIComponent($.trim(username.val()))
+        + "&globalUnitId=" + encodeURIComponent(selectedGlobalUnitId)
+        + "&agree=" + $('input#terms').is(':checked');
+  });
+
   // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
   updateNextButtonState();
 
@@ -208,15 +285,24 @@ function showEmailStep() {
   hasAccess = false;
   availableCrpsCount = 0;
   userDisplayName = "";
+  isCgiarUser = false;
+  cognitoEnabled = false;
+  selectedGlobalUnitId = null;
 
   cleanWrongData();
 
-  // Reset input password
+  // Reset input password (a no-op once the COGNITO branch of showPasswordStep() has .remove()'d
+  // this field for the current attempt)
   $(".loginForm #login-password .user-password").val("");
 
-  // Hide the big crp image and the project/password steps
+  // Hide the big crp image and the project/password/cgiar steps
   $(".crps-select, .project-skeleton, .loginForm .form-group").addClass("hidden");
-  $("#login-step-project, #login-step-password").addClass("hidden");
+  $("#login-step-project, #login-step-password, #login-step-cgiar").addClass("hidden");
+
+  // Restore the shared submit button and hide the Cognito-only control, in case the previous
+  // attempt reached the COGNITO branch of showPasswordStep()
+  $("#login-cgiar-button").addClass("hidden");
+  $("input#login_next").removeClass("hidden");
 
   // Hide terms and conditions checkbox
   $('.terms-container').addClass("hidden");
@@ -259,7 +345,7 @@ function showEmailStep() {
 function showProjectSkeleton() {
   cleanWrongData();
 
-  $("#login-step-email, #login-step-password").addClass("hidden");
+  $("#login-step-email, #login-step-password, #login-step-cgiar").addClass("hidden");
   $("#login-step-project").removeClass("hidden");
 
   $(".crps-select").addClass("hidden");
@@ -270,6 +356,13 @@ function showProjectSkeleton() {
   $('.terms-container').addClass("hidden");
 
   $("#loginFormContainer .loginForm").addClass("max-size");
+
+  // Restore the shared submit button and hide the Cognito-only control, exactly as
+  // showEmailStep()/showProjectStep() do - unreachable today (this step only follows step 1,
+  // which already resets both), kept for symmetry so a future caller of this function does not
+  // reintroduce the gap those two functions were fixed to close
+  $("input#login_next").removeClass("hidden");
+  $("#login-cgiar-button").addClass("hidden");
 }
 
 // Step 2: Select project (CRP/Center/Platform)
@@ -278,33 +371,76 @@ function showProjectStep() {
 
   cleanWrongData();
 
-  $("#login-step-email, #login-step-password").addClass("hidden");
+  $("#login-step-email, #login-step-password, #login-step-cgiar").addClass("hidden");
   $("#login-step-project").removeClass("hidden");
 
   // Show the project card grid, hide the loading skeleton
   $(".project-skeleton").addClass("hidden");
   $(".crps-select").removeClass("hidden");
 
-  // Show the "go back" link, hide terms checkbox (shown again on the password step)
+  // Show the "go back" link, hide terms checkbox (shown again on the password/cgiar step)
   $('.login-back-container').removeClass('hidden');
   $('.terms-container').addClass("hidden");
 
   $("#loginFormContainer .loginForm").addClass("max-size");
 
-  // Change button value to Login
+  // Change button value to Login, and restore it in case the previous attempt reached the
+  // COGNITO branch of showPasswordStep(), which hides it in favor of #login-cgiar-button
   $("input#login_next").val("Log in");
+  $("input#login_next").removeClass("hidden");
+  $("#login-cgiar-button").addClass("hidden");
 
   clearLoginButtonLoading();
   updateNextButtonState();
 }
 
-// Step 3: Password
+// Step 3: branches by mode = user.isCgiarUser && card.cognitoEnabled (FN-001, design.md 5.2).
+// isCgiarUser is captured in secondForm() from crpByEmail.do's user.isCgiarUser; cognitoEnabled
+// and selectedGlobalUnitId are captured on card selection (the click handler above), including
+// the auto-skip path in secondForm() when crps.length == 1, which clicks the sole card before
+// calling this function - so both values are already current by the time mode is composed below
 function showPasswordStep() {
+  // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 2): mode must never default to LOCAL just because
+  // no card was ever explicitly clicked. login.js's own auto-select selector for a non-AICCRA
+  // first card carries a stray trailing underscore and matches no element (pre-existing, not
+  // fixed here - see the report), and updateNextButtonState() does not require an active card
+  // before enabling "Log in" on the project step - so a multi-unit CGIAR user could otherwise
+  // reach here with selectedGlobalUnitId still null and silently compose LOCAL in front of a
+  // possibly-migrated account. Re-derive from the actually active card first; if there is still
+  // none, refuse to guess and send the user back to pick one.
+  // CHG-COGNITO-AUTH-001-T12 fix (audit finding 5): ":not(.hidden)" is required, not decorative.
+  // showEmailStep() hides every card but never strips ".active", and a re-lookup for a different
+  // email leaves a PREVIOUS user's selected card ".active" and hidden at the same time. Without
+  // this filter, that stale card would be silently adopted here (wrong Cognito flag, wrong
+  // globalUnitId posted to validateUser.do) instead of correctly finding nothing and bouncing to
+  // step 2. loadAvailableItems() only ever un-hides the CURRENT lookup's cards, so ":not(.hidden)"
+  // is an exact discriminator for "belongs to this user's current session", not just "was once
+  // clicked".
+  // Scoped to crpSession == '': harmless defensive coding, kept for clarity even though
+  // loadAvailableItems() only calls secondForm() when hasAccess || crpSession == "" (so inside
+  // secondForm(), crpSession != '' already implies hasAccess === true, and the !hasAccess
+  // branch that also calls showPasswordStep() is unreachable) - this gate is not load-bearing
+  // justification for that path, just an explicit statement of the intended scope.
+  if(selectedGlobalUnitId == null && crpSession == '') {
+    var $activeCard = $('.selection-bar-options ul li.active:not(.hidden)');
+    if($activeCard.length) {
+      selectedGlobalUnitId = $activeCard.attr('data-global-unit-id') || null;
+      cognitoEnabled = $activeCard.attr('data-cognito-enabled') === 'true';
+    }
+  }
+
+  if(selectedGlobalUnitId == null && crpSession == '') {
+    showProjectStep();
+    wrongData("selectProject");
+    return;
+  }
+
   currentStep = "password";
 
   cleanWrongData();
 
-  // Show terms and conditions checkbox
+  // Show terms and conditions checkbox - shared by both branches below. design.md 5.2/5.4: the
+  // CGIAR block carries the same terms checkbox as the password step, never a duplicate of it
   showTermsCheckbox();
 
   // Echo who is logging in: the complete name when the user record has one, and always what was
@@ -318,26 +454,66 @@ function showPasswordStep() {
   }
 
   // Mirror the actually selected project card (image/acronym), in case it was
-  // auto-selected before its "hidden" class was cleared
+  // auto-selected before its "hidden" class was cleared. .selected-project-card matches the
+  // mirror in both the password step and the cgiar step, so this reaches whichever shows next
   var $activeProjectCard = $('.selection-bar-options ul li.active');
   if($activeProjectCard.length) {
-    $('#login-selected-project-card').html($activeProjectCard.html());
+    $('.selected-project-card').html($activeProjectCard.html());
   }
 
   // Change height value to the password step
   $("#loginFormContainer .loginForm:not(.instructions)").addClass("max-size");
 
-  $("#login-step-email, #login-step-project").addClass("hidden");
-  $("#login-step-password").removeClass("hidden");
-
-  // Change button value to Login
+  // Change button value to Login (applies to input#login_next regardless of branch; COGNITO
+  // hides that button below, so the value is moot there but left set for a clean restore)
   $("input#login_next").val("Log in");
+
+  var mode = (isCgiarUser && cognitoEnabled) ? "COGNITO" : "LOCAL";
+
+  if(mode == "COGNITO") {
+    // FN-001: the password input must not be rendered, focusable, or present in the submitted
+    // form. .remove() - not .hide(), not disabled - a hidden or disabled input still ships in
+    // FormData; this is the exact defect Judgment Day found in revision 1 (tasks.md T12)
+    $("#login-password").remove();
+
+    $("#login-step-email, #login-step-project, #login-step-password").addClass("hidden");
+    $("#login-step-cgiar").removeClass("hidden");
+
+    // The shared "Log in" button submits a password this branch does not have; it is replaced by
+    // the dedicated Cognito control, which navigates to cognitoLogin.do instead of submitting
+    $("input#login_next").addClass("hidden");
+    $("#login-cgiar-button").removeClass("hidden");
+
+    // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
+    // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
+    // below rather than leaving the user to tab in from the top of the document
+    $("#login-cgiar-button").focus();
+  } else {
+    $("#login-step-email, #login-step-project, #login-step-cgiar").addClass("hidden");
+    $("#login-step-password").removeClass("hidden");
+
+    $("#login-cgiar-button").addClass("hidden");
+    $("input#login_next").removeClass("hidden");
+
+    // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 1): a prior visit to the COGNITO branch above
+    // .remove()d #login-password from the document. Restore it from the template captured in
+    // init() before this arm can rely on it - #login-password is #login-step-password's last
+    // child, so append() puts it back in its original position. Re-cloned every time (never the
+    // template node itself) so the same page can restore it more than once
+    if($("#login-password").length === 0) {
+      $("#login-step-password").append(passwordFieldTemplate.clone(true));
+      // Reassigning inputPassword is not optional: :142/:746's references to the stale detached
+      // node are what makes the LOCAL step permanently unusable after a COGNITO visit otherwise
+      inputPassword = $("input[name='user.password']");
+    }
+
+    // Set focus on password input (LOCAL only - the Cognito control manages its own
+    // focus/activation and is not part of this form's tab-to-submit flow)
+    $(".loginForm #login-password input").focus();
+  }
 
   clearLoginButtonLoading();
   updateNextButtonState();
-
-  // Set focus on password input
-  $(".loginForm #login-password input").focus();
 
   // Show the "go back" link
   $('.login-back-container').removeClass('hidden');
@@ -449,6 +625,15 @@ function loadAvailableItems(email) {
                 // in the select bar
                 $(".crps-select .name-type-container.type-" + data.crps[i].idType).removeClass("hidden");
 
+                // CHG-COGNITO-AUTH-001-T12/PS-20: store this Global Unit's numeric id and its
+                // per-unit Cognito flag (T10) on its card, so selecting it later (the click
+                // handler above) can compose `mode` and know which unit to authenticate against,
+                // without a second round trip to crpByEmail.do
+                $('.selection-bar-options ul #crp-' + data.crps[i].acronym).attr({
+                  'data-global-unit-id': data.crps[i].id,
+                  'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false'
+                });
+
                 // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
                 // so the ones this user is not assigned to must stay hidden, otherwise they show up
                 // as empty bordered cards next to the real options
@@ -478,12 +663,14 @@ function loadAvailableItems(email) {
                 }
               });
 
-              // If the user previously accepted the terms and conditions, check the box by default
-              if(data.user.agree) {
-                $('input#terms').attr('checked', true);
-              } else {
-                $('input#terms').attr('checked', false);
-              }
+              // If the user previously accepted the terms and conditions, check the box by default.
+              // BUG-LOGIN-TERMS-001-FN-005: .prop(), not .attr(). jQuery's .attr('checked', ...) writes the
+              // CONTENT attribute, which stops driving the rendered state once the element's dirty-value
+              // flag is set - that is, once the user has clicked the checkbox even once. Since
+              // showEmailStep() never resets #terms either, a "Go back" plus a second lookup could leave a
+              // user whose record says agree=true looking at an unticked box this line believed it had
+              // ticked. "=== true" keeps a null agree_terms from rendering as accepted
+              $('input#terms').prop('checked', data.user.agree === true);
 
               // If user has access to the crpSession or crpSession is void, change to secondForm, if doesn't denied
               // access
@@ -513,6 +700,10 @@ function secondForm(data) {
   // Keep the user's complete name to show it on the password step
   userDisplayName = sanitizeUserName(data.user.name);
 
+  // CHG-COGNITO-AUTH-001-T12: one half of `mode = user.isCgiarUser && card.cognitoEnabled`
+  // (FN-001). The other half, cognitoEnabled, is captured per-card on selection below
+  isCgiarUser = !!data.user.isCgiarUser;
+
   // If has a crpSession validate if user has access, if doesn't click the crpSession option
   // If hasn't crpSession and user has multiple projects, show the project selection step
   if(crpSession != '') {
@@ -540,16 +731,26 @@ function secondForm(data) {
 
 // Validate login success
 function checkPassword(email,password) {
+  // CHG-COGNITO-AUTH-001-PS-20: the guard on validateUser.do (T11) narrows to the selected
+  // Global Unit only when it is supplied; without it, a mixed-membership CGIAR user (MIG-001)
+  // is refused on every membership instead of just the migrated one. Sent only when known, so an
+  // attempt that somehow reaches this function without a card ever being selected does not send
+  // an empty value that fails Struts' Long conversion
+  var postData = {
+    userEmail: email,
+    userPassword: password,
+    agree: $('input#terms').is(':checked')
+  };
+  if(selectedGlobalUnitId) {
+    postData.globalUnitId = selectedGlobalUnitId;
+  }
+
   $
       .ajax({
           url: baseUrl + "/validateUser.do",
           // POST so the credentials are not left in the URL (proxy logs, browser history, Referer)
           type: "POST",
-          data: {
-              userEmail: email,
-              userPassword: password,
-              agree: $('input#terms').is(':checked')
-          },
+          data: postData,
           beforeSend: function() {
             // Lock the button for the whole request. It used to be locked only when the terms
             // checkbox was checked, which let a second attempt be fired on top of the first one
@@ -601,7 +802,21 @@ function checkPassword(email,password) {
               clearLoginButtonLoading();
               updateNextButtonState();
             } else {
-              // Keep the spinner and the lock while the real form submits and the page navigates away
+              // Keep the spinner and the lock while the real form submits and the page navigates away.
+              // BUG-LOGIN-TERMS-001-FN-003: but a submit that constraint validation refuses NEVER FIRES,
+              // and this branch is the one holding the lock - so a refusal here left the button disabled
+              // with its spinner, "Go back" disabled and isSubmitting stuck true, recoverable only by
+              // reloading the page. The terms guard above makes that specific case unreachable; this check
+              // makes the whole CLASS unreachable, for whatever required control this form grows next.
+              // closest("form") rather than an id: the form's id is generated by the Struts theme
+              var loginFormElement = $("input#login_formSubmit").closest("form")[0];
+              if(loginFormElement && typeof loginFormElement.checkValidity == "function"
+                  && !loginFormElement.checkValidity()) {
+                clearLoginButtonLoading();
+                updateNextButtonState();
+                wrongData("serverError");
+                return;
+              }
               $("input#login_formSubmit").click();
             }
           },
@@ -625,8 +840,12 @@ function wrongData(type,customMessage) {
   // event never fires and a message from the previous attempt used to stay on screen and stack
   cleanWrongData();
 
-  // bottom red line in input
-  $('input.login-input').addClass("wrongData");
+  // bottom red line in input. BUG-LOGIN-TERMS-001: not for "termsRequired" - neither the email nor the
+  // password input is what is wrong there, and underlining both sends the user to check fields they have
+  // already filled in correctly
+  if(type != "termsRequired") {
+    $('input.login-input').addClass("wrongData");
+  }
 
   // {type} must be a bare CSS class. Passing a whole sentence built an invalid selector
   // (".loginForm p.invalidField.An error has ocurred...") and made jQuery throw, which aborted the
@@ -649,8 +868,22 @@ function wrongData(type,customMessage) {
   // Set focus on the wrong field
   if(type == "voidPassword" || type == "incorrectPassword") {
     inputPassword.focus();
+  } else if(type == "termsRequired") {
+    // BUG-LOGIN-TERMS-001: the checkbox, not the email field. By step 3 the email input sits inside a step
+    // carrying .hidden, which is display:none (global.css) - focusing a display:none element is a no-op,
+    // so the fallback below would leave the message on screen with nothing pointing at the control to act
+    // on. On the COGNITO branch the password input does not exist at all, making this the only target
+    $('input#terms').focus();
   } else {
     username.focus();
+  }
+
+  // BUG-LOGIN-TERMS-001: "termsRequired" names a control the user has not completed yet, not an outcome
+  // worth reporting. postMessageToSlack below is a SYNCHRONOUS XMLHttpRequest (utils.js), so routing the
+  // most frequent slip this form can produce through it would block the UI thread on a webhook round trip
+  // and bury the real notifications underneath it
+  if(type == "termsRequired") {
+    return;
   }
 
   var slackMessage = {
@@ -716,6 +949,18 @@ function clearLoginButtonLoading() {
   $("input#login_next").val("Log in");
   $('.login-back-container').removeClass("is-busy");
   $('.login-back-container .loginBack').attr("disabled", false);
+}
+
+// BUG-LOGIN-TERMS-001-FN-001/FN-002: the terms gate, shared by both step-3 branches. It replaces the HTML5
+// "required" that used to sit on #terms - see loginForm.ftl for why that attribute could not work on either
+// one. Returns true when the attempt may proceed; shows the message, focuses the checkbox and returns false
+// otherwise. One helper, two call sites, so the branches cannot drift apart
+function termsAccepted() {
+  if($('input#terms').is(':checked')) {
+    return true;
+  }
+  wrongData("termsRequired");
+  return false;
 }
 
 // Permissive check for "looks like a usable email address": a single "@", something before it, and a

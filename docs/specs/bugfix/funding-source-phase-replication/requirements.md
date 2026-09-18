@@ -6,8 +6,8 @@
 **Reviewers:** PMU lead, QA lead, Tech lead
 **Last Updated:** 2026-08-20
 **Related PRD sections:** docs/prd.md — funding source management
-**Related System Design sections:** docs/system-design/design.md — Funding Sources screens
-**Related Detailed Design sections:** docs/detailed-design/detailed-design.md §3 (data model), §5 (save pipeline)
+**Related UX/UI Design sections:** docs/ux-ui/design.md — Funding Sources screens
+**Related TRD sections:** docs/trd/trd.md §3 (data model), §5 (save pipeline)
 **Companion ai-context docs:** reports/ai-context/persistence-replication-managerimpl.md, reports/ai-context/save-validation-matrix.md
 
 ---

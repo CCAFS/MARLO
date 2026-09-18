@@ -27,8 +27,10 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
+import org.cgiar.ccafs.marlo.security.CognitoTokenValidator;
 import org.cgiar.ccafs.marlo.security.authentication.DBAuthenticator;
 import org.cgiar.ccafs.marlo.security.authentication.LDAPAuthenticator;
+import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +48,31 @@ public class MarloShiroConfiguration {
                                       UserManager userManager,
                                       APConfig apConfig) {
       return new APCustomRealm(dbAuthenticator, ldapAuthenticator, userManager, apConfig);
+  }
+
+  /**
+   * CHG-COGNITO-AUTH-001-T06: singleton wiring for the Cognito token validator (design.md DD-5), placed
+   * alongside the realm's own hand-construction above since neither is discovered by classpath scanning.
+   * <p>
+   * <b>Not injected into {@link APCustomRealm} itself.</b> The realm's {@code doGetAuthenticationInfo}
+   * never has a raw ID token to hand to {@link CognitoTokenValidator#validate(String, String)} -- a
+   * {@code CognitoAuthenticationToken} carries only an already-validated {@code CognitoAssertion}
+   * (design.md 2.1, DD-5) -- so wiring the validator into the realm's constructor would add a dependency
+   * the realm structurally cannot call. This bean exists for the callback/login actions (T08, T09) that do
+   * hold a raw token.
+   * <p>
+   * <b>Must stay a plain singleton.</b> A prototype-scoped bean would give every injection point its own
+   * JWKS cache, silently multiplying design.md 12's "exactly one outbound MARLO-to-AWS call per login"
+   * measure -- a forward note from the independent T05 audit. A bare {@code @Bean} method is singleton by
+   * default, so no {@code @Scope} is added.
+   * <p>
+   * Constructing {@link CognitoTokenValidatorImpl} performs no I/O: {@link APConfig} returns {@code ""},
+   * never {@code null}, for every unset Cognito key (design.md 9.3), so this bean builds safely during
+   * Spring context startup even on an environment with no Cognito configuration at all.
+   */
+  @Bean
+  public CognitoTokenValidator cognitoTokenValidator(APConfig apConfig) {
+      return new CognitoTokenValidatorImpl(apConfig);
   }
 
   /**

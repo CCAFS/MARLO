@@ -68,7 +68,7 @@ For the full product framing, see [`docs/prd.md`](./docs/prd.md).
 | AI | AWS Bedrock (Claude, Titan), Amazon OpenSearch, AWS Lambda |
 | CI/CD | GitHub Actions → Jenkins; SonarCloud; Snyk |
 
-Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §8.5.
+Dependency floors (post-January 2026 SETI security modernization) MUST NOT be downgraded — see [`docs/trd/trd.md`](./docs/trd/trd.md) §8.5.
 
 ---
 
@@ -92,7 +92,7 @@ MARLO/
 └── EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md  Debugging runbook for accordion-style UIs
 ```
 
-For the module breakdown in detail, see [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) §2.
+For the module breakdown in detail, see [`docs/trd/trd.md`](./docs/trd/trd.md) §2.
 
 ---
 
@@ -129,17 +129,19 @@ Active Spring profile selects which file is loaded: `marlo-${spring.profiles.act
 
 ### Run
 
-Use the run script that matches the branch's Java version:
+MARLO currently uses Java 17 — `marlo-parent/pom.xml` is the verification source for the active level:
 
 ```bash
-# Java 8 branches
-scripts/run-marlo-java8.sh           # macOS / Linux
-scripts/run-marlo-java8.bat          # Windows
+# Current (Java 17)
+scripts/run-marlo-java17.sh          # macOS / Linux
+scripts/run-marlo-java17.bat         # Windows
 
-# Java 17 branches (name contains java17 / java_17)
-scripts/run-marlo-java17.sh
-scripts/run-marlo-java17.bat
+# Legacy Java 8 branches / profiles only
+scripts/run-marlo-java8.sh
+scripts/run-marlo-java8.bat
 ```
+
+> The Java 17 script **kills any running `cargo:run`, deletes `marlo-{utils,data,web}/target`, and rewrites `marlo-dev.properties`** before building. Never run it while another agent or build is working in the same checkout.
 
 Flyway migrations apply automatically on Tomcat startup. The app comes up on the local Cargo Tomcat instance.
 
@@ -178,8 +180,11 @@ The repository follows a **Spec-Driven Development (SDD)** methodology. The docu
 - [`AGENTS.md`](./AGENTS.md) — operational ground truth: language rules, file headers, code style, Checkstyle, migration naming, specificity workflow, file organization, run scripts.
 - [`CLAUDE.md`](./CLAUDE.md) — entry point for AI assistants; lists the 12 hard rules and the doc-reading order.
 - [`docs/prd.md`](./docs/prd.md) — Product Requirements: problem, personas, goals, success metrics, scope, user stories, acceptance, assumptions, open questions.
-- [`docs/system-design/design.md`](./docs/system-design/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
-- [`docs/detailed-design/detailed-design.md`](./docs/detailed-design/detailed-design.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
+- [`docs/ux-ui/design.md`](./docs/ux-ui/design.md) — UI/UX system blueprint: information architecture, screen inventory, navigation, layout patterns, components, accessibility.
+- [`docs/trd/trd.md`](./docs/trd/trd.md) — technical blueprint: modules, data model, phase replication contract, API surface, save pipeline, security, observability, testing, ADR snapshots.
+- [`docs/infrastructure.md`](./docs/infrastructure.md) — environments blueprint: Test / Staging / Production topology, deployment pipeline, network & security, and the **Local Environment contract** (how to start the local stack).
+- [`docs/akili.md`](./docs/akili.md) — the AKILI-SPECS lifecycle guide: the eleven `/akili-*` commands, what each writes, the review gates, and the documentation-depth ladder.
+- [`.agents/`](./.agents/) — the AKILI multi-agent personas (Leader, Implementer, Reviewer, Tester) used by `/akili-execute` and `/akili-test`. The methodology is **AKILI-SPECS** by Juan Carlos Cadavid ([jcadavid.com](https://jcadavid.com/es/methodology/)), MIT-licensed, installed with `npm install -g akili-specs`; the repository versions only the personas and their model wrappers, never the packaged commands and skills.
 
 ### Spec methodology and taxonomy
 
@@ -188,6 +193,7 @@ Every module spec under `docs/specs/` MUST follow these templates:
 - [`docs/specs/general-setup/requirements.md`](./docs/specs/general-setup/requirements.md)
 - [`docs/specs/general-setup/design.md`](./docs/specs/general-setup/design.md)
 - [`docs/specs/general-setup/task.md`](./docs/specs/general-setup/task.md)
+- [`docs/specs/general-setup/family.md`](./docs/specs/general-setup/family.md) — only when a spec was chunked into child specs (the spec-family manifest).
 
 Spec folders live under:
 
@@ -195,6 +201,11 @@ Spec folders live under:
 - `docs/specs/enhancement/<feature>/` — cross-cutting features.
 - `docs/specs/bugfix/<slug>/` — bug-driven specs needing structured trace.
 - `docs/specs/epic/<name>/` — multi-spec initiatives (e.g., `epic/java-17-cutover/`, `epic/tenant-onboarding/`).
+- `docs/specs/changes/<change-name>/` — the AKILI default path for a bounded change, created by `/akili-propose` when no other folder fits.
+
+These are not spec folders and are never scanned as one: `docs/specs/archive/` (completed specs moved by `/akili-archive`), `docs/specs/general-setup/`, `docs/specs/kaizen/` and `docs/specs/kaizen-log.md`, `docs/specs/audits/`, `docs/specs/quick/`.
+
+The full taxonomy rules, the spec-file names, and the AKILI lifecycle live in [`CLAUDE.md`](./CLAUDE.md).
 
 ### Operational runbooks
 
@@ -223,7 +234,7 @@ These rules are constitutional. Deviations require an explicit, justified Decisi
 7. **Code style:** 2-space indent, 120 char line limit, braces on same line, mandatory blocks for `if/while/for/do`, max file length 3500 lines. `mvn checkstyle:check` is a gate.
 8. **English only** in code, identifiers, and inline comments. User-facing strings MUST be i18n-keyed.
 9. **Branching:** never commit directly to `main`.
-10. **Run scripts** match the branch's Java version (Java 17 only on branches containing `java17` / `java_17`).
+10. **Run scripts:** MARLO currently uses Java 17 — use `scripts/run-marlo-java17.sh` (or `.bat`). `marlo-parent/pom.xml` is the verification source for the active Java level; `scripts/run-marlo-java8.sh` is only for legacy Java 8 branches/profiles.
 11. **Dependency floors** (post-January 2026 SETI baseline) MUST NOT be downgraded.
 12. **Never commit credentials.** `marlo-${profile}.properties` is gitignored.
 

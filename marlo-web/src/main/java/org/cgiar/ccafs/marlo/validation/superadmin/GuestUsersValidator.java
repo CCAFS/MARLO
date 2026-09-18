@@ -17,43 +17,49 @@ package org.cgiar.ccafs.marlo.validation.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
+import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
-import org.cgiar.ciat.auth.LDAPService;
-import org.cgiar.ciat.auth.LDAPUser;
-
 import java.util.HashMap;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named
 public class GuestUsersValidator extends BaseValidator {
 
-  public GuestUsersValidator() {
+  private final DirectoryService directoryService;
+
+  @Inject
+  public GuestUsersValidator(DirectoryService directoryService) {
+    super();
+    this.directoryService = directoryService;
   }
 
-  public LDAPUser getOutlookUser(String email) {
-    LDAPService service = new LDAPService();
-    if (config.isProduction()) {
-      service.setInternalConnection(false);
-    } else {
-      service.setInternalConnection(true);
-    }
-    LDAPUser user = null;
-    try {
-      user = service.searchUserByEmail(email);
-    } catch (Exception e) {
-      user = null;
-    }
-    return user;
-  }
-
-  public void validate(BaseAction action, User user, String selectedGlobalUnitAcronym, boolean isCGIARUser,
-    boolean saving) {
+  /**
+   * Validates the Guest User being created and <b>returns the directory's answer for their email</b>.
+   * <p>
+   * The lookup was always performed here -- it is what decides whether the names are asked for -- but the
+   * {@link DirectoryPerson} was discarded, so {@code CrpUsersAction.save()} asked the directory a second
+   * time for the same address. Two lookups mean two LDAP connections with no cache between them, and they
+   * can disagree on one submission: the first answers, the names are hidden, the second times out, and the
+   * account is created as non-CGIAR with blank names. Returning the answer lets the caller reuse it, so one
+   * save asks once and every decision in it comes from the same reply.
+   *
+   * @param action the action being validated, where the invalid fields and messages are reported
+   * @param user the user the administrator is creating
+   * @param selectedGlobalUnitAcronym the Global Unit selected on the screen
+   * @param isCGIARUser unused: reassigned below from the directory's answer before it is passed on
+   * @param saving whether this runs as part of a save
+   * @return the directory's answer for {@code user}'s email, never {@code null}
+   */
+  public DirectoryPerson validate(BaseAction action, User user, String selectedGlobalUnitAcronym,
+    boolean isCGIARUser, boolean saving) {
     action.setInvalidFields(new HashMap<>());
-    LDAPUser LDAPUser = this.getOutlookUser(user.getEmail());
-    if (LDAPUser != null) {
+    DirectoryPerson person = this.directoryService.findByEmail(user.getEmail());
+    if (person.isFound()) {
       isCGIARUser = true;
     } else {
       isCGIARUser = false;
@@ -65,6 +71,7 @@ public class GuestUsersValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
+    return person;
   }
 
   public void validateGuestUsers(BaseAction action, User user, String selectedGlobalUnitAcronym, boolean isCGIARUser) {

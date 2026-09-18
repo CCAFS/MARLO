@@ -66,6 +66,13 @@
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
 		<javax.inject.version>1</javax.inject.version>
+		<!-- CHG-COGNITO-AUTH-001-T03. Version declaration only: neither artifact is depended on by any
+		     module yet, so nothing is added to the WAR until a later task declares it. -->
+		<aws-java-sdk-v2.version>2.31.30</aws-java-sdk-v2.version>
+		<!-- nimbus-jose-jwt stays on the 9.x line deliberately. 10.x requires Java 11+; 9.x is Java 8+,
+		     so a legacy Java 8 branch (scripts/run-marlo-java8.sh, hard rule 10) that ever picks up this
+		     parent POM is not broken by a version property it does not use. -->
+		<nimbus-jose-jwt.version>9.48</nimbus-jose-jwt.version>
 		<tomcat.version>9.0.118</tomcat.version>
 		<log4j.version>2.16.0</log4j.version>
 		<sonar.organization>ccafs</sonar.organization>
@@ -767,6 +774,25 @@
         <artifactId>springdoc-openapi-ui</artifactId>
         <version>1.7.0</version>
     </dependency>
+			<!-- CHG-COGNITO-AUTH-001-T03 - Amazon Cognito support.
+			     The AWS SDK v2 BOM is imported rather than pinning one artifact, so every AWS artifact a
+			     later task needs resolves to one consistent version set. Importing a BOM manages versions
+			     only; it adds no dependency to any module. -->
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${aws-java-sdk-v2.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- JOSE/JWT. Used to validate the Cognito ID token against the pool JWKS (design.md 11).
+			     Signature validation is done locally against cached keys, so this - not the SDK - is the
+			     library on the hot path of every federated login. -->
+			<dependency>
+				<groupId>com.nimbusds</groupId>
+				<artifactId>nimbus-jose-jwt</artifactId>
+				<version>${nimbus-jose-jwt.version}</version>
+			</dependency>
 </dependencies>
 	</dependencyManagement>
 	<reporting>
