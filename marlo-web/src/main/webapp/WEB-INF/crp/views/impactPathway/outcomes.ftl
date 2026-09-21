@@ -749,7 +749,9 @@
               <span class="contentResult">[#if outcome.file??]
                 <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="24px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span>
-              [#if editable]<span class="removeIcon opi-fileRemove"> </span>[/#if]
+              [#-- The remove control is a real button carrying a visible glyph, a tooltip and an
+                   accessible name: as a blank span it read as an unexplained red box (A2-2499). --]
+              [#if editable][#local removeFileLabel][@s.text name="outcomes.file.remove"/][/#local]<button type="button" class="removeIcon opi-fileRemove" title="${removeFileLabel}" aria-label="${removeFileLabel}">&#10005;</button>[/#if]
             </p>
             [#-- Single source of truth for the empty state. The native control paints its own
                  "no file chosen" text, which global.css leaves visible next to the "Select a file"

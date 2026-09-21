@@ -1694,18 +1694,28 @@ span.icon-20 {
 .opi-page .fileUploaded { margin: 0; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
 .opi-page .fileUploaded a { font: 500 12.5px Figtree, sans-serif; color: var(--opi-primary); overflow-wrap: anywhere; }
 
+/* position/top/right are resets: .removeIcon in global.css is absolutely positioned against
+   whatever ancestor happens to be positioned, which laid the control over the file name. */
 .opi-page .opi-fileRemove {
-  display: inline-block;
-  height: 26px;
-  padding: 0 9px;
-  line-height: 24px;
+  position: static;
+  top: auto;
+  right: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
   border: 1px solid var(--opi-danger-border);
   border-radius: 6px;
   background: var(--opi-danger-bg);
-  font: 600 12px Figtree, sans-serif;
+  font: 600 11px Figtree, sans-serif;
   color: var(--opi-danger);
   cursor: pointer;
 }
+
+.opi-page .opi-fileRemove:hover { background: #F8E5E1; }
 
 /* ---------- Legacy stacked milestones (non-AICCRA) ---------- */
 
