@@ -1281,6 +1281,11 @@ public class CognitoLogHygieneTest {
     }
 
     @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
     public CustomParameter saveCustomParameter(CustomParameter customParameter) {
       throw new UnsupportedOperationException("not needed by this suite");
     }
@@ -1428,6 +1433,11 @@ public class CognitoLogHygieneTest {
     @Override
     public CustomParameter getCustomParameterByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId) {
       return this.overridesByUnitId.get(Long.valueOf(globalUnitId));
+    }
+
+    @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      return new ArrayList<CustomParameter>();
     }
 
     @Override

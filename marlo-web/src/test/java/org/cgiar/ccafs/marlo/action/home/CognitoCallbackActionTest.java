@@ -1638,6 +1638,11 @@ public class CognitoCallbackActionTest {
     }
 
     @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
     public CustomParameter saveCustomParameter(CustomParameter customParameter) {
       throw new UnsupportedOperationException("not needed by this suite");
     }
@@ -1685,6 +1690,11 @@ public class CognitoCallbackActionTest {
 
     @Override
     public CustomParameter getCustomParameterByParameterKeyAndGlobalUnitId(String paramaterKey, long globalUnitId) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
       throw new UnsupportedOperationException("not needed by this suite");
     }
 
@@ -1891,6 +1901,11 @@ public class CognitoCallbackActionTest {
       override.setValue("true");
       override.setActive(true);
       return override;
+    }
+
+    @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      return new ArrayList<CustomParameter>();
     }
 
     @Override

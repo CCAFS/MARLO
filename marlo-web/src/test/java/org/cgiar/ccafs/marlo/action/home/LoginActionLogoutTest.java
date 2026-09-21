@@ -466,6 +466,11 @@ public class LoginActionLogoutTest {
     }
 
     @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      throw new UnsupportedOperationException("not needed by this suite");
+    }
+
+    @Override
     public CustomParameter saveCustomParameter(CustomParameter customParameter) {
       throw new UnsupportedOperationException("not needed by this suite");
     }

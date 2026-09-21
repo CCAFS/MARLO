@@ -404,6 +404,11 @@ public class LoginActionFinishLoginTest {
     }
 
     @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      return new ArrayList<CustomParameter>();
+    }
+
+    @Override
     public CustomParameter saveCustomParameter(CustomParameter customParameter) {
       return customParameter;
     }

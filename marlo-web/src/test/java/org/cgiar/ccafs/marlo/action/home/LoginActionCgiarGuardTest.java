@@ -606,6 +606,11 @@ public class LoginActionCgiarGuardTest {
     }
 
     @Override
+    public List<CustomParameter> getCustomParametersByParameterKey(String parameterKey) {
+      return new ArrayList<CustomParameter>();
+    }
+
+    @Override
     public CustomParameter saveCustomParameter(CustomParameter customParameter) {
       throw new UnsupportedOperationException("not needed by this suite");
     }
