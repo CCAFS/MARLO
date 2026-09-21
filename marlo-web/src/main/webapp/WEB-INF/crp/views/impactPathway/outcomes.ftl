@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091508",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026092101",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091508",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026092101",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -751,7 +751,11 @@
                 [/#if]</span>
               [#if editable]<span class="removeIcon opi-fileRemove"> </span>[/#if]
             </p>
-            [#if !hasFile]<span class="opi-panel__note">[@s.text name="outcomes.file.none"/]</span>[/#if]
+            [#-- Single source of truth for the empty state. The native control paints its own
+                 "no file chosen" text, which global.css leaves visible next to the "Select a file"
+                 pseudo-button; outcomes.css hides it so this note is not doubled (A2-2497).
+                 Always rendered, toggled by outcomes.js as the file is uploaded or removed. --]
+            <span class="opi-panel__note opi-fileNone" style="display:${hasFile?string('none','inline')}">[@s.text name="outcomes.file.none"/]</span>
           [#else]
             <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]

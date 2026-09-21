@@ -1674,7 +1674,23 @@ span.icon-20 {
    below ~390px of viewport. Same guard on the uploaded-file line, where a long
    PDF name would do it. */
 .opi-page .fileUploadContainer .fileUpload { display: inline-block; min-width: 0; max-width: 100%; }
-.opi-page .fileUploadContainer input.upload { max-width: 100%; font: 400 12.5px Figtree, sans-serif; color: var(--opi-ink-soft); }
+
+/* global.css hides only the native file-input BUTTON (::-webkit-file-upload-button) and paints
+   "Select a file" as a ::before pseudo-element. The control's own "no file chosen" text stays
+   visible beside it, so the panel showed that status twice (A2-2497). The pseudo-button carries
+   its own explicit colour, so transparent text hides the native label and nothing else; the width
+   trims the empty strip it leaves behind. The .opi-fileNone note below is now the only status.
+   The width is explicit because a file input's intrinsic width is fixed by the UA (~273px) and
+   ignores the pseudo-button: 106px is the pill plus slack, the pill measuring 82-89px across the
+   weights and fallback fonts this page can land on. */
+.opi-page .fileUploadContainer input.upload {
+  width: 106px;
+  max-width: 100%;
+  overflow: hidden;
+  font: 400 12.5px Figtree, sans-serif;
+  color: transparent;
+}
+
 .opi-page .fileUploaded { margin: 0; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
 .opi-page .fileUploaded a { font: 500 12.5px Figtree, sans-serif; color: var(--opi-primary); overflow-wrap: anywhere; }
 

@@ -672,6 +672,8 @@ $fileUpload.fileupload({
         $ub.find('.textMessage .contentResult').html(r.fileFileName);
         $ub.find('.textMessage').show();
         $ub.find('.fileUpload').hide();
+        // The empty-state note is the panel's only file status, so it follows the upload.
+        $ub.find('.opi-fileNone').hide();
         // Set file ID
         $ub.find('input.fileID').val(r.fileID);
         $ub.find('input.outcomeID').val(r.outcomeID);
@@ -696,6 +698,7 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $ub.find('.textMessage .contentResult').html("");
   $ub.find('.textMessage').hide();
   $ub.find('.fileUpload').show();
+  $ub.find('.opi-fileNone').show();
   $ub.find('input.fileID').val('');
   $ub.find('input.outcomeID').val('');
 });
