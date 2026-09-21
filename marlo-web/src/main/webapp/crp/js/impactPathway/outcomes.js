@@ -1069,6 +1069,23 @@ $(document).ready(function() {
     var $card = $(this).closest('.outcome');
     setTimeout(function() { opiRefreshQuestions($card); }, 0);
   });
+
+  // ---- a brand-new indicator opens the column for the closing year it is given ----
+  // Only on a card that has never been saved, and only while its matrix is still empty: the
+  // point is to hand the user a cell to type the target into instead of making them open the
+  // column by hand. Once a column exists the + Year menu owns the matrix, so changing the
+  // closing year again adds nothing -- otherwise every correction would leave a stray column.
+  $page.on('change', 'select.outcomeYear', function() {
+    var $sel = $(this);
+    // .outcomeYear covers both the baseline and the closing select; only the latter bounds
+    // the matrix. Same name test opiCardYear uses.
+    if (!/\]\.year$/.test($sel.attr('name') || '')) { return; }
+    var $card = $sel.closest('.outcome');
+    if (!$card.exists() || !opiCardIsNew($card)) { return; }
+    if (opiYears($card).length > 0) { return; }
+    var year = parseInt($sel.val(), 10);
+    if (year > 0) { opiAddYear($card, year); }
+  });
 });
 
 /**
@@ -1487,6 +1504,16 @@ function opiAddYear($card, year) {
   updateAllIndexes();
   opiRefreshCardStatus($card);
   opiMarkDirty();
+}
+
+/**
+ * Whether the card is one the user just added and has not saved yet. The hidden id input is
+ * empty until the save comes back with a row behind it.
+ * @param {jQuery} $card the .outcome card
+ * @return {boolean} true when the indicator has never been saved
+ */
+function opiCardIsNew($card) {
+  return $.trim($card.find('input.outcomeId').first().val() || '') === '';
 }
 
 /**
