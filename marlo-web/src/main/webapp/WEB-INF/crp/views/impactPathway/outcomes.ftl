@@ -759,7 +759,7 @@
                  Always rendered, toggled by outcomes.js as the file is uploaded or removed. --]
             <span class="opi-panel__note opi-fileNone" style="display:${hasFile?string('none','inline')}">[@s.text name="outcomes.file.none"/]</span>
           [#else]
-            <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
+            <p class="opi-panel__msg"><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]
         </div>
 

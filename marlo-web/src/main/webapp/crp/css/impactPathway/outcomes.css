@@ -1717,6 +1717,16 @@ span.icon-20 {
 
 .opi-page .opi-fileRemove:hover { background: #F8E5E1; }
 
+/* The "save the outcome first" message is a flex item of .opi-panel; at desktop widths it sat
+   beside the panel label instead of under it (A2-2505). A 100% basis keeps it on its own line,
+   starting at the same x as the label at every width. */
+.opi-page .opi-panel__msg {
+  flex: 1 0 100%;
+  margin: 0;
+  font: 400 12.5px/1.5 Figtree, sans-serif;
+  color: var(--opi-muted);
+}
+
 /* ---------- Legacy stacked milestones (non-AICCRA) ---------- */
 
 .opi-page .milestones-list:not(.opi-matrix__rows) { display: flex; flex-direction: column; gap: 8px; }
