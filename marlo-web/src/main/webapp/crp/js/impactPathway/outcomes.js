@@ -648,9 +648,16 @@ function addBaselineIndicator() {
 
 function removeBaselineIndicator() {
   var $item = $(this).parents('.baselineIndicator');
+  // Captured before the row goes: afterwards $item is detached and finds no card.
+  var $card = $item.closest('.outcome');
   $item.hide(function() {
     $item.remove();
     updateAllIndexes();
+    // The delegated click handler recomputes the gate on the next tick, while this row is
+    // still in the DOM and still empty -- so it disables the add button and nothing ever
+    // re-enables it, leaving no question to fill in and no way to add one (A2-2503).
+    // The gate is only true of the list once the row is actually gone.
+    if ($('.opi-page').exists()) { opiRefreshQuestions($card); }
   });
 }
 
