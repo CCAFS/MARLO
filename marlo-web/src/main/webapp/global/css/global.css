@@ -3036,7 +3036,7 @@ h3.contentSubTitle {
 }
 
 .buttons button[name=save]:hover {
-	background-color: #8BA383;
+	background-color: var(--marlo-brand-dark);
 }
 
 .buttons button[name=next] {
@@ -6716,7 +6716,7 @@ h4.testEnvironment {
 .button-save {
 	color: #FFFFFF;
 	background: var(--marlo-brand);
-	border-bottom: 3px solid #7E9377;
+	border-bottom: 3px solid var(--marlo-brand-dark);
 	outline: none;
 }
 
