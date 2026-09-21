@@ -887,6 +887,12 @@ span.icon-20 {
 
 .opi-status.is-missing { background: var(--opi-warn-bg); border-color: var(--opi-warn-border); color: var(--opi-warn); }
 
+/* outcomes.ftl renders this pill empty and JS only fills it once there is a status to report,
+   but the padding, border and ok-tone background still painted that empty span as a small green
+   box beside the card's delete control — on a freshly added indicator nobody had touched yet,
+   which read as "complete" (A2-2501). Same guard as .opi-yearMenu__customNote. */
+.opi-status:empty { display: none; }
+
 .opi-card__relations { flex: none; display: inline-flex; align-items: center; }
 
 /* relationsPopupMacro renders `.form-group.elementRelations > button.btn-xs`,

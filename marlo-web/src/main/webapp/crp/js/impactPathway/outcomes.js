@@ -292,7 +292,13 @@ function addOutcome() {
   // });
   $list.append($item);
   updateAllIndexes();
-  $item.show('slow');
+  $item.show('slow', function() {
+    // A new indicator's gaps are known the moment it exists -- statement, closing year, target
+    // unit and the still-empty period-target matrix -- so it opens with the missing-fields tag
+    // rather than no status at all. Painted from the animation's callback because
+    // opiMissingFields only counts required markers that are already visible.
+    if ($('.opi-page').exists()) { opiRefreshCardStatus($item); }
+  });
 }
 
 function removeOutcome() {
