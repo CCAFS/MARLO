@@ -292,7 +292,21 @@ function addOutcome() {
   // });
   $list.append($item);
   updateAllIndexes();
-  $item.show('slow');
+  $item.show('slow', function() {
+    // #outcome-template is rendered outside the <form>, so the one-shot
+    // $('form .allowTextEditor').setTrumbowyg() in global.js never reached it and every card
+    // cloned from it opened with a bare textarea: no toolbar, and any HTML the field holds
+    // shown as literal <p> tags, because without the editor nothing renders it. Built here,
+    // once the card is on screen -- trumbowyg measures itself and autogrow needs a laid-out
+    // element. Calling it on an element that already has an instance is a no-op, the plugin
+    // guards that itself.
+    $item.find('.allowTextEditor').setTrumbowyg();
+    // A new indicator's gaps are known the moment it exists -- statement, closing year, target
+    // unit and the still-empty period-target matrix -- so it opens with the missing-fields tag
+    // rather than no status at all. Painted from the animation's callback because
+    // opiMissingFields only counts required markers that are already visible.
+    if ($('.opi-page').exists()) { opiRefreshCardStatus($item); }
+  });
 }
 
 function removeOutcome() {
@@ -642,9 +656,16 @@ function addBaselineIndicator() {
 
 function removeBaselineIndicator() {
   var $item = $(this).parents('.baselineIndicator');
+  // Captured before the row goes: afterwards $item is detached and finds no card.
+  var $card = $item.closest('.outcome');
   $item.hide(function() {
     $item.remove();
     updateAllIndexes();
+    // The delegated click handler recomputes the gate on the next tick, while this row is
+    // still in the DOM and still empty -- so it disables the add button and nothing ever
+    // re-enables it, leaving no question to fill in and no way to add one (A2-2503).
+    // The gate is only true of the list once the row is actually gone.
+    if ($('.opi-page').exists()) { opiRefreshQuestions($card); }
   });
 }
 
@@ -672,6 +693,8 @@ $fileUpload.fileupload({
         $ub.find('.textMessage .contentResult').html(r.fileFileName);
         $ub.find('.textMessage').show();
         $ub.find('.fileUpload').hide();
+        // The empty-state note is the panel's only file status, so it follows the upload.
+        $ub.find('.opi-fileNone').hide();
         // Set file ID
         $ub.find('input.fileID').val(r.fileID);
         $ub.find('input.outcomeID').val(r.outcomeID);
@@ -696,6 +719,7 @@ $uploadBlock.find('.removeIcon').on('click', function() {
   $ub.find('.textMessage .contentResult').html("");
   $ub.find('.textMessage').hide();
   $ub.find('.fileUpload').show();
+  $ub.find('.opi-fileNone').show();
   $ub.find('input.fileID').val('');
   $ub.find('input.outcomeID').val('');
 });
@@ -1052,6 +1076,23 @@ $(document).ready(function() {
   $page.on('click', '.addBaselineIndicator, .removeBaselineIndicator', function() {
     var $card = $(this).closest('.outcome');
     setTimeout(function() { opiRefreshQuestions($card); }, 0);
+  });
+
+  // ---- a brand-new indicator opens the column for the closing year it is given ----
+  // Only on a card that has never been saved, and only while its matrix is still empty: the
+  // point is to hand the user a cell to type the target into instead of making them open the
+  // column by hand. Once a column exists the + Year menu owns the matrix, so changing the
+  // closing year again adds nothing -- otherwise every correction would leave a stray column.
+  $page.on('change', 'select.outcomeYear', function() {
+    var $sel = $(this);
+    // .outcomeYear covers both the baseline and the closing select; only the latter bounds
+    // the matrix. Same name test opiCardYear uses.
+    if (!/\]\.year$/.test($sel.attr('name') || '')) { return; }
+    var $card = $sel.closest('.outcome');
+    if (!$card.exists() || !opiCardIsNew($card)) { return; }
+    if (opiYears($card).length > 0) { return; }
+    var year = parseInt($sel.val(), 10);
+    if (year > 0) { opiAddYear($card, year); }
   });
 });
 
@@ -1471,6 +1512,16 @@ function opiAddYear($card, year) {
   updateAllIndexes();
   opiRefreshCardStatus($card);
   opiMarkDirty();
+}
+
+/**
+ * Whether the card is one the user just added and has not saved yet. The hidden id input is
+ * empty until the save comes back with a row behind it.
+ * @param {jQuery} $card the .outcome card
+ * @return {boolean} true when the indicator has never been saved
+ */
+function opiCardIsNew($card) {
+  return $.trim($card.find('input.outcomeId').first().val() || '') === '';
 }
 
 /**

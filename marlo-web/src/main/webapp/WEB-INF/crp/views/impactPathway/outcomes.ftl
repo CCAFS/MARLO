@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026091508",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026092104",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026091508",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026092104",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -745,15 +745,24 @@
             [#if editable]
             <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
             [/#if]
-            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+            [#-- inline-flex, not block: the stylesheet lays this line out as a flex row, and an
+                 inline display:block would override it and drop the children back onto a baseline.
+                 It also matches what jQuery .show() restores after a client-side upload. --]
+            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('inline-flex','none')}">
               <span class="contentResult">[#if outcome.file??]
                 <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="24px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span>
-              [#if editable]<span class="removeIcon opi-fileRemove"> </span>[/#if]
+              [#-- The remove control is a real button carrying a visible glyph, a tooltip and an
+                   accessible name: as a blank span it read as an unexplained red box (A2-2499). --]
+              [#if editable][#local removeFileLabel][@s.text name="outcomes.file.remove"/][/#local]<button type="button" class="removeIcon opi-fileRemove" title="${removeFileLabel}" aria-label="${removeFileLabel}">&#10005;</button>[/#if]
             </p>
-            [#if !hasFile]<span class="opi-panel__note">[@s.text name="outcomes.file.none"/]</span>[/#if]
+            [#-- Single source of truth for the empty state. The native control paints its own
+                 "no file chosen" text, which global.css leaves visible next to the "Select a file"
+                 pseudo-button; outcomes.css hides it so this note is not doubled (A2-2497).
+                 Always rendered, toggled by outcomes.js as the file is uploaded or removed. --]
+            <span class="opi-panel__note opi-fileNone" style="display:${hasFile?string('none','inline')}">[@s.text name="outcomes.file.none"/]</span>
           [#else]
-            <p><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
+            <p class="opi-panel__msg"><i>[@customForm.text name="outcome.baselineInstructionsUnavailbale" readText=!editable /] </i></p>
           [/#if]
         </div>
 
