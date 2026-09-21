@@ -745,7 +745,10 @@
             [#if editable]
             <div class="fileUpload" style="display:${hasFile?string('none','block')}"> <input class="upload" type="file" name="file" data-url="${baseUrl}/uploadBaseLine.do"></div>
             [/#if]
-            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('block','none')}">
+            [#-- inline-flex, not block: the stylesheet lays this line out as a flex row, and an
+                 inline display:block would override it and drop the children back onto a baseline.
+                 It also matches what jQuery .show() restores after a client-side upload. --]
+            <p class="fileUploaded textMessage checked" style="display:${hasFile?string('inline-flex','none')}">
               <span class="contentResult">[#if outcome.file??]
                 <a target="_blank" href="${action.getBaseLineFileURL((outcome.id?string)!-1)}&filename=${(outcome.file.fileName)!}" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="24px" alt="Download document" /> ${(outcome.file.fileName)!('No file name')} </a>
                 [/#if]</span>

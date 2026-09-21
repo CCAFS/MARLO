@@ -1342,11 +1342,16 @@ span.icon-20 {
   display: block;
 }
 
+/* min-height, not height: the panel wraps. The template state stacks its message on a second
+   line by design, and the empty state wraps below ~420px — a fixed height would spill both out
+   of the rounded box. This floors the single-line states to a consistent 52px and lets the rest
+   grow. Height is the outer box: .opi-page sets border-box, so the content box is 30px. */
 .opi-panel {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  min-height: 52px;
   padding: 10px 14px;
   background: var(--opi-surface-alt);
   border: 1px solid #EEF2F5;
@@ -1691,8 +1696,48 @@ span.icon-20 {
   color: transparent;
 }
 
-.opi-page .fileUploaded { margin: 0; display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
-.opi-page .fileUploaded a { font: 500 12.5px Figtree, sans-serif; color: var(--opi-primary); overflow-wrap: anywhere; }
+/* global.css:650 frames .fileUploaded in a dashed border — a box drawn inside a panel that is
+   already one — and p.checked (global.css:546) paints a 16x16 success tick as a background image
+   at 5px, reserving padding-left:25px for it. Dropping that padding to clear the border put the
+   tick on top of the file name, so the two are set together here: the tick paints at this
+   element's own left edge — which lands on the same x as the "Select a file" button of the empty
+   state — and the name clears it by 16px of icon plus the panel's own 8px gap. */
+.opi-page .fileUploaded {
+  margin: 0;
+  padding-left: 24px;
+  background-position: 0 center;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+/* .contentResult is a plain inline span, so the anchor inside it sat on a baseline and dragged the
+   descender gap with it: the line grew to 38.5px around a 24px icon and pushed the panel to 60px.
+   As a flex parent there is no baseline to clear, which is what lets the uploaded state settle on
+   the panel's 52px like every other single-line state. */
+.opi-page .fileUploaded .contentResult { display: inline-flex; align-items: center; min-width: 0; }
+
+/* The template puts literal whitespace either side of the file name inside the anchor, which an
+   inline <a> renders as underlined blanks around the PDF icon. Flex drops whitespace-only nodes,
+   so the gap here replaces them and the underline tracks the name alone. */
+.opi-page .fileUploaded a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--opi-primary);
+  overflow-wrap: anywhere;
+}
+
+/* global.css:948 paints the "Select a file" pseudo-button in the pre-redesign #2BA6CB. Align it
+   with the section's primary, using the same fill/hover pair as every other OPI button. The
+   :active rule is not redundant — global.css re-asserts its own blue on press. */
+.opi-page .fileUpload .upload::before { background: var(--opi-primary); font-weight: 500; }
+.opi-page .fileUpload .upload:hover::before { background: var(--opi-primary-dark); }
+.opi-page .fileUpload .upload:active::before { background-color: var(--opi-primary-dark); }
 
 /* position/top/right are resets: .removeIcon in global.css is absolutely positioned against
    whatever ancestor happens to be positioned, which laid the control over the file name. */
