@@ -1,16 +1,18 @@
-# Admin → Management and the Liaison Institution model — Agent Context
+# Admin → Management, the Liaison Institution model, and user creation — Agent Context
 
 Read this before touching the CRP admin **Management** screen (`/admin/{crp}/management`), **Regional Mapping**,
-**PPA Partners**, or anything that reads `liaison_institutions` / `liaison_users` / the `crp_cu` parameter. It is a
-compact, as-built operational guide; inspect the target source files after reading it.
+**PPA Partners**, **Users** (`/admin/{crp}/crpUsers`), or anything that reads `liaison_institutions` /
+`liaison_users` / the `crp_cu` parameter. It is a compact, as-built operational guide; inspect the target source
+files after reading it.
 
-**Covers:** the liaison institution model (PMU, components, regions, partners), the `crp_cu` parameter, and the
-**Management**, **Regional Mapping** and **PPA Partners** screens as far as they touch it.
+**Covers:** the liaison institution model (PMU, components, regions, partners), the `crp_cu` parameter, the
+**Management**, **Regional Mapping** and **PPA Partners** screens as far as they touch it, and **every path that
+creates a `users` row** — see § *User creation*.
 
 **Does not cover** — no agent context exists yet for these admin actions, so inspect the source directly:
-`activityManager`, `guestUser`, `siteIntegration`, `crpPhases`, `projectPhases`, `allianceLeversManagement`,
-`crpUsers`, `locations`, `targetUnits`, `marloInstitutions`, `crpDeliverables`, `feedbackManagement`,
-`homepageBannerManagement`, `timelineManagement`, `feedbackRolesPermissionsManagement`, `portfolioManagement`.
+`activityManager`, `siteIntegration`, `crpPhases`, `projectPhases`, `allianceLeversManagement`, `locations`,
+`targetUnits`, `marloInstitutions`, `crpDeliverables`, `feedbackManagement`, `homepageBannerManagement`,
+`timelineManagement`, `feedbackRolesPermissionsManagement`, `portfolioManagement`.
 Add a section to this file when you document one of them.
 
 **Incident record:** `docs/specs/bugfix/pmu-liaison-institution-missing/` (BUG-ADMIN-PMULIAISON-001) — the failure
@@ -156,6 +158,103 @@ commit independently and used to leave a person with a role and no liaison row.
   removing someone from one unit deletes the other unit's liaison row.
 - **`liaisonName` / `liaisonAcronym` are dead inputs.** `GlobalUnitCreateAction` reads and forwards them, but no FTL
   or JS submits them, so every new unit gets a PMU record literally named `"PMU"`.
+
+## User Creation
+
+**Two screens create a `users` row, and they produce different accounts.** Everything else that looks like
+creation is not: `CrpAdminManagmentAction:270` and `BaseAction:701` activate an existing account,
+`APCustomRealm:336` writes the LDAP username onto one, and `PartnerRequestAction` / `CrpPpaPartnersAction`
+build transient `User` objects that are only e-mail recipients.
+
+| | **Admin → Users** | **The global "create user" dialog** |
+|---|---|---|
+| Route | `{crp}/crpUsers.do` → `CrpUsersAction.save()` | `createUser.do` → `json.global.ManageUsersAction.create()` |
+| View / JS | `admin/crpUsers.ftl` · `crp/js/admin/crpUsers.js` | `global/macros/usersPopup.ftl` · `global/js/usersManagement.js` |
+| Account state | **active** | **inactive** (`addUser()` saves, then sets `active = false` and saves again) |
+| Role + `crp_users` | Guest role + membership | neither |
+| Password | generated and e-mailed here, or never | never — activation generates it later |
+| Welcome e-mail | yes | none |
+
+The dialog's `create-user` block is **unconditional** in the macro, so every view that imports `usersPopup.ftl`
+can create users: `projects/projectPartners`, `admin/management`, `regionalMapping`, `siteIntegration`,
+`activityManager`, `ppaPartners`, `impactPathway/clusterActivities`, and the two superadmin views — plus six
+legacy `center/` views. **Unmapped in every `struts-*.xml`, therefore dead:**
+`center/json/global/ManageUsersAction` and `json/global/SearchUserAction` (mapped once in 2017 with
+`method="create"` on a class that only has `execute()`, so it never ran).
+
+### The three branches, duplicated in both actions
+
+`CrpUsersAction:676-726` and `ManageUsersAction:200-252` carry the same cascade, line for line. Change one and
+you must change the other.
+
+| | Condition | Names | `username` | `is_cgiar_user` | Password |
+|---|---|---|---|---|---|
+| 1 | `person.isFound()` | from the directory | from the directory | `1` | none — the e-mail points at corporate credentials |
+| 2 | `isCognitoCgiarAddress(...)` | **required from the admin**, provisional | **never written** | `1` | none |
+| 3 | otherwise | required from the admin | never written | `0` | `RandomStringUtils.randomNumeric(6)` |
+
+**The directory is consulted before the specificity is read.** `isCognitoCgiarAddress` sits in the `else if`, so
+`cognito_auth_active` is evaluated only after the directory has already failed to answer. Branch 2's names are
+replaced by `CognitoCallbackAction:672-677` on first sign-in — from the **ID token**, not the directory, which is
+why `username` stays null forever: nothing writes it after branch 2.
+
+**Cognito never creates the account.** `CognitoIdentityMapper` gate 1 rejects an assertion with no matching row
+and FN-002 forbids auto-provisioning, so a corporate user must be created here *first*.
+
+### A directory outage is indistinguishable from an absent person
+
+`LdapDirectoryService.findByEmail` catches **every** exception and returns `notFound(email, ERROR)`. It also
+picks the connection from `!config.isProduction()`, so a non-production checkout targets the **internal**
+controllers — `ciatroot4` / `ciatroot5.CGIARAD.ORG:3268`, which do not resolve outside the CIAT network.
+**In any local environment branch 1 is unreachable and every corporate address falls to branch 2 or 3.** Plan
+tests accordingly; the "directory found them" path cannot be exercised locally.
+
+`findByEmail` is also called **twice per save** — `GuestUsersValidator:44` and `CrpUsersAction:676` — on separate
+connections with no cache or pool. They can disagree on the same submission.
+
+### How the screen decides to ask for the names
+
+The browser cannot reach the directory, so the decision is the server's. Three inputs, all server-supplied:
+
+- `crpUsers.ftl` renders `#cognitoAuthActive` (`hasSpecificities('cognito_auth_active')`, read from the session)
+  and `#directoryUnconfirmed` (`invalidFields['input-user.firstName']` — set only when the directory failed to
+  confirm the address on the last save).
+- `crpUsers.js` `namesAreRequired()` reads both, plus `directoryFound` from `directoryByEmail.do`
+  (`DirectoryByEmailAction`) — a **read-only** lookup gated on a session, the CRP administrator permission, and
+  the corporate domain. A refused, unknown or failed lookup all answer `found: false`, so the names are asked for.
+- The fields hide **only** when none of the three says otherwise and the address is corporate.
+
+**Never add a directory lookup to `crpByEmail.do`.** It is in `struts-home.xml`'s `homeJson` package, which
+extends `json-default` with **no interceptor stack** — public, and called unauthenticated by the login wizard.
+It also carries an explicit FN-001 / R-D3 contract forbidding it from revealing whether an unknown address would
+have been CGIAR or local.
+
+### Landmines
+
+- **`validate()` does not abort the save here either.** `GuestUsersValidator` reports through
+  `BaseAction.addMessage`, which only appends to `validationMessage` and `missingFields` — no field error, no
+  action error — so Struts runs `save()` regardless. The guard that actually stops a half-created account is
+  `if (newUser.getId() != null)` inside `save()`.
+- **A failed save shows the administrator nothing.** Both `[@s.iterator]` blocks in
+  `global/pages/generalMessages.ftl` are commented out, so `global.js:226` finds no `#generalMessages #message`
+  and notifies neither success nor error. The page simply comes back.
+- **A hidden input still posts.** `slideUp()` does not clear the field, and Struts binds the empty string, which
+  is not `null`. Until A2-2449 (`641f69302a`, 2026-09-10) branch 3 only checked `!= null`, so from 2019 every
+  corporate address the directory could not confirm was created with **blank names and `is_cgiar_user = 0`**.
+  Those accounts are refused by Cognito gate 2 and still reach the local login. The count is unverified.
+- **`required=(isCgiarUser)!true` and `required=(isCGIARUser)!true`** in `crpUsers.ftl` are dead conditions: the
+  getter is `isCGIARUser()`, so neither spelling resolves and both fall through to the `!true` default.
+
+### Known Gaps
+
+- The superadmin variant of the screen (`crpUsers.ftl:62`) picks the Global Unit from a dropdown, but
+  `#cognitoAuthActive` comes from the **session's** unit while the server resolves `isCognitoCgiarAddress`
+  against the **selected** one. Worst case is names asked when they were not needed; the server still decides
+  correctly.
+- Branch 2 accounts can never sign in by username, because nothing writes `users.username` after creation.
+  Persisting the directory's login when `directoryByEmail.do` returns one would close it, and needs a uniqueness
+  check: `UserMySQLDAO.getEmailByUsername` uses `uniqueResult()` and the column has no unique constraint, so a
+  duplicate breaks username sign-in for the account that already had it.
 
 ## Known Gaps (deliberate, see requirements.md §8)
 
