@@ -7,6 +7,19 @@ target
 !.bowerrc
 bin
 
+# AKILI-SPECS harness — must be committed despite the blanket `.*` rule above.
+# `.agents/` holds the Leader/Implementer/Reviewer/Tester personas and `.claude/agents/`
+# holds the thin model-binding wrappers. Both are project configuration that every
+# teammate and every session needs, so they are explicitly re-included here.
+!.agents/
+!.agents/**
+!.claude/
+!.claude/agents/
+!.claude/agents/**
+# Keep local-only Claude Code state ignored.
+.claude/settings.local.json
+.claude/*.local.*
+
 # Configuration 
 /configuration/marlo.properties
 

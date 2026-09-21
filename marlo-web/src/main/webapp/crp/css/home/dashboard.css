@@ -781,6 +781,14 @@ div#impactGraphic-fullscreen {
     gap: 10px;
   }
 
+  /* Two panels are tall enough to reach the frame's bottom edge on their own,
+     so the offset above stops aligning the column and just drops it past the
+     frame. Only a lone panel keeps it (A2-2453). Declared before the stacked
+     layout below, which puts both cases back on the same 12px. */
+  .scheduleCard__side--pair {
+    margin-top: 0;
+  }
+
   .scheduleCard__next {
     display: flex;
     flex-direction: column;

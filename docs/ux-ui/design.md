@@ -3,7 +3,7 @@
 **Status:** Living document. Version: 1.0 (Constitutional Baseline).
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT.
 **Last Updated:** 2026-04-30.
-**Related:** [docs/prd.md](../prd.md), [docs/detailed-design/detailed-design.md](../detailed-design/detailed-design.md), [reports/ai-context/frontend-composition-map.md](../../reports/ai-context/frontend-composition-map.md).
+**Related:** [docs/prd.md](../prd.md), [docs/trd/trd.md](../trd/trd.md), [reports/ai-context/frontend-composition-map.md](../../reports/ai-context/frontend-composition-map.md).
 
 > This document defines MARLO's **UI/UX system**: how pages are composed, how forms behave, what visual and interaction primitives exist, and what the platform commits to in terms of consistency and accessibility. It is *not* a brand book; it is the rule set the codebase already follows and that future contributions must respect.
 
