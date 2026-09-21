@@ -293,6 +293,14 @@ function addOutcome() {
   $list.append($item);
   updateAllIndexes();
   $item.show('slow', function() {
+    // #outcome-template is rendered outside the <form>, so the one-shot
+    // $('form .allowTextEditor').setTrumbowyg() in global.js never reached it and every card
+    // cloned from it opened with a bare textarea: no toolbar, and any HTML the field holds
+    // shown as literal <p> tags, because without the editor nothing renders it. Built here,
+    // once the card is on screen -- trumbowyg measures itself and autogrow needs a laid-out
+    // element. Calling it on an element that already has an instance is a no-op, the plugin
+    // guards that itself.
+    $item.find('.allowTextEditor').setTrumbowyg();
     // A new indicator's gaps are known the moment it exists -- statement, closing year, target
     // unit and the still-empty period-target matrix -- so it opens with the missing-fields tag
     // rather than no status at all. Painted from the animation's callback because
