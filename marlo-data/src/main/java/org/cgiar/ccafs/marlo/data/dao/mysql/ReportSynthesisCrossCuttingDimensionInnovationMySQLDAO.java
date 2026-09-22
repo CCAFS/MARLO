@@ -61,12 +61,7 @@ public class ReportSynthesisCrossCuttingDimensionInnovationMySQLDAO extends Abst
   @Override
   public List<ReportSynthesisCrossCuttingDimensionInnovation> findAll() {
     String query = "from " + ReportSynthesisCrossCuttingDimensionInnovation.class.getName() + " where is_active=1";
-    List<ReportSynthesisCrossCuttingDimensionInnovation> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override
