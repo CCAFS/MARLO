@@ -783,7 +783,7 @@ public class APConfig {
   /**
    * Get the Tawk.to site id configured for this server. It is the id the chat widget uses while nobody is
    * signed in, so it is what the login screen shows; from the sign-in on, the chat belongs to the global unit
-   * and its crp_taw_api parameter is the only source. It is optional on purpose: a server that leaves the
+   * and its crp_tawk_api parameter is the only source. It is optional on purpose: a server that leaves the
    * property empty simply renders no chat on the login screen, and the empty default keeps an older properties
    * file from breaking the context.
    *
