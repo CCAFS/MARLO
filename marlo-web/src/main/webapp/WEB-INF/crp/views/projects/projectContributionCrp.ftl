@@ -155,12 +155,6 @@
           [#list cpiYears as y][#if y == currentCycleYear][#assign cpiOpenYear = y /][/#if][/#list]
           [#if cpiOpenYear == -1 && cpiYears?has_content][#assign cpiOpenYear = cpiYears?last /][/#if]
 
-          [#-- Evidence already linked to this contribution, same sources the relations
-               popups read, so the counts here and in the popups cannot disagree. --]
-          [#assign cpiDeliverables = (action.getDeliverableRelationsProject(projectOutcome.id, 'org.cgiar.ccafs.marlo.data.model.ProjectOutcome', project.id))![] /]
-          [#assign cpiStudies = (action.getexpectedCrpOutcomes(projectOutcome.id))![] /]
-          [#assign cpiInnovations = (action.getInnovationProjectOutcomes(projectOutcome.id))![] /]
-
           [#-- ═══ Indicator card ═══ --]
           <div class="cpi-card cpi-indicator">
             <div class="cpi-indicator__top">
@@ -268,11 +262,6 @@
                             <strong>[#if (m.value)?has_content]${m.value?string(",##0")}[#else]&mdash;[/#if]</strong>
                             <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
                           </span>
-                          <div class="cpi-evidence">
-                            <span class="cpi-evidence__item">${cpiDeliverables?size} [@s.text name="projectContributionCrp.evidence.deliverables" /]</span>
-                            <span class="cpi-evidence__item">${cpiStudies?size} [@s.text name="projectContributionCrp.evidence.studies" /]</span>
-                            <span class="cpi-evidence__item">${cpiInnovations?size} [@s.text name="projectContributionCrp.evidence.innovations" /]</span>
-                          </div>
                         </div>
                         [@cpiMilestoneFields element=m year=year isPrincipal=true /]
                       [/#if]

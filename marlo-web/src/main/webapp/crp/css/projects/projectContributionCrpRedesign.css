@@ -142,17 +142,6 @@
   text-transform: uppercase;
   color: #4B5563;
 }
-.cpi-page .cpi-evidence { display: flex; flex-direction: column; gap: 7px; }
-.cpi-page .cpi-evidence__item {
-  padding: 5px 12px;
-  border: 1px solid #BEDFEC;
-  border-radius: 8px;
-  background: #F2F9FC;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: #15719B;
-  white-space: nowrap;
-}
 
 /* ── Field groups ───────────────────────────────────────────────
  * The controls come from customForm (forms.ftl), so the markup is
