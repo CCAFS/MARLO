@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20260416"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20260922"
   ] 
 /]
 [#-- ,  
@@ -37,7 +37,7 @@
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 <script>
-  var globalMaxYear = ${maxYear};
+  var globalMaxYear = ${maxYear!"null"};
 </script>
 <!--
 <div class="container helpText viewMore-block">
