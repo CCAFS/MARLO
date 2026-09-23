@@ -61,12 +61,7 @@ public class ReportSynthesisFlagshipProgressInnovationMySQLDAO extends AbstractM
   @Override
   public List<ReportSynthesisFlagshipProgressInnovation> findAll() {
     String query = "from " + ReportSynthesisFlagshipProgressInnovation.class.getName() + " where is_active=1";
-    List<ReportSynthesisFlagshipProgressInnovation> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override
