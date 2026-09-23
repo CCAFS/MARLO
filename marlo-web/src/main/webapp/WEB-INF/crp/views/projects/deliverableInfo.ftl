@@ -215,8 +215,8 @@
               <input class="id" type="hidden" name="deliverable.activities[${element_index}].id" value="${(element.id)!}" />
               <input class="aId" type="hidden" name="deliverable.activities[${element_index}].activity.id" value="${(element.activity.id)!}" />
               <span class="name">
-              [#if element.activity.activityTitle?has_content]
-                ${(element.activity.activityTitle.title)!}<br />
+              [#if element.activity.displayTitle?has_content]
+                ${(element.activity.displayTitle)!}<br />
               [#else]
                 No Title selected
               [/#if]
@@ -245,7 +245,7 @@
       [#if activities?has_content]
         [#list activities as element]
           <span id="activity-${(element.id)!}">
-            ${(element.activityTitle.title)!} <br />
+            ${(element.displayTitle)!} <br />
           </span>
         [/#list]
       [/#if]

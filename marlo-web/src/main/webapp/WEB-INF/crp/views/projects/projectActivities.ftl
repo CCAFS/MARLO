@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20260416"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20260922"
   ] 
 /]
 [#-- ,  
@@ -37,7 +37,7 @@
 [#import "/WEB-INF/crp/macros/relationsPopupMacro.ftl" as popUps /]
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 <script>
-  var globalMaxYear = ${maxYear};
+  var globalMaxYear = ${maxYear!"null"};
 </script>
 <!--
 <div class="container helpText viewMore-block">
@@ -187,16 +187,16 @@
     [/#if]
     [#-- Partner Title --]
     <div class="blockTitle closed">
-      [#if element.title?has_content]${(element.activityTitle.title)!'New Activity'}[#else]New Activity[/#if]
+      ${(element.displayTitle)!'New Activity'}
       <div class="clearfix"></div>
     </div>
 
     <div class="blockContent" style="display:none">
       [#-- Title --]
       
-      [#if !action.isAiccra()]
+      [#if action.isProjectActivityCreationActive()]
       <div class="form-group">
-        [@customForm.input name="${customName}.title" value="${(element.activityTitle.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=editable /]
+        [@customForm.input name="${customName}.title" value="${(element.title)!'New Activity'}" type="text" i18nkey="project.activities.inputTitle"  placeholder="" className="activityTitle limitWords-30" required=true editable=editable /]
       </div>
       [/#if]
         <input class="activityId" type="hidden" name="${customName}.id" value="${(element.id)!-1}" />
@@ -205,7 +205,7 @@
      
       
       [#-- Activity Title --]
-      [#if action.isAiccra()]
+      [#if !action.isProjectActivityCreationActive()]
         <div class="form-group">
           [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=(action.canAccessSuperAdmin() || action.isRole("PC") || action.isRole("PL")) && isActive/]
         </div>

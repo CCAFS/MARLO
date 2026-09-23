@@ -114,6 +114,25 @@ public class Activity extends MarloAuditableEntity implements java.io.Serializab
     return deliverables;
   }
 
+  /**
+   * Returns the title to show for this activity: the catalog entry when the project takes it from the Activity
+   * management catalog, and the title the project typed when it creates its own activities.
+   * <p>
+   * The catalog entry wins because the title column is a copy taken when the activity is saved, so it goes stale as
+   * soon as the catalog entry is renamed. Reading the data rather than the project_activity_creation_active
+   * specificity also keeps a project right when the specificity changed while activities of both kinds existed.
+   *
+   * @return the catalog title when there is one, the typed title otherwise
+   */
+  public String getDisplayTitle() {
+    if (activityTitle != null && activityTitle.getTitle() != null) {
+      return activityTitle.getTitle();
+    }
+
+    return title;
+  }
+
+
   public String getDescription() {
     return description;
   }
