@@ -89,12 +89,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   public List<ProjectPartner> findAllByPhaseProject(long projectId, long phaseId) {
     String query = "from " + ProjectPartner.class.getName() + " where id_phase=" + phaseId + " and project_id="
       + projectId + " and is_active=1";
-    List<ProjectPartner> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override

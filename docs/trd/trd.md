@@ -92,7 +92,7 @@ MARLO is structured as a multi-module Maven project. The aggregator (`marlo-aggr
 | `marlo-parent` | Dependency and plugin management. No executable code. | `pom.xml` declares `struts2`, `hibernate`, `spring`, `shiro`, `mysql`, `flyway`, etc. (see `marlo-parent/pom.xml`). |
 | `marlo-utils` | Pure utility classes (dates, strings, file processing for Excel/CSV/PDF, JSON helpers, constants). | `org.cgiar.ccafs.marlo.utils.*`. |
 | `marlo-core` | Minimal servlet/Spring bootstrap shared by the web tier. No domain code. | `org.marlo.core.CoreAppContextConfig`, `org.marlo.core.WebAppInitializer`. |
-| `marlo-data` | Domain layer: JPA/Hibernate entities (`model`), `dao`/`mapper`, Manager interfaces and implementations. Audit listeners. Also hosts the Shiro / Hibernate wiring. | `org.cgiar.ccafs.marlo.data.{model,dao,manager,mapper}`; `IAuditLog`, `HibernateAuditLogListener`, `AuditColumnHibernateListener`; `MarloShiroConfiguration`, `MarloLocalSessionFactoryBean`, `MarloDatabaseConfiguration`. |
+| `marlo-data` | Domain layer: JPA/Hibernate entities (`model`), `dao`/`mapper`, Manager interfaces and implementations. Audit listeners. Also hosts the Shiro / Hibernate wiring and the corporate-directory abstraction. | `org.cgiar.ccafs.marlo.data.{model,dao,manager,mapper}`; `IAuditLog`, `HibernateAuditLogListener`, `AuditColumnHibernateListener`; `MarloShiroConfiguration`, `MarloLocalSessionFactoryBean`, `MarloDatabaseConfiguration`; `security/directory/` — `DirectoryService`, `DirectoryPerson`, `DirectorySource`, `DirectoryLookupException` and `impl/`, the provider-agnostic seam over corporate directory lookups. |
 | `marlo-web` | Web tier: Struts actions, REST controllers, FreeMarker templates, validators, interceptors, Spring MVC config, web resources, SQL migrations. | `org.cgiar.ccafs.marlo.action.*`, `rest.controller.v2.*`, `validation.*`, `interceptor.*`. |
 
 ### 2.1 Action package map (`marlo-web`)
@@ -424,7 +424,7 @@ Interceptors (`canEditProject`, `canEditAi`, `canEditDeliverable`, `editFunding`
 
 ### 8.4 REST authentication
 
-- `/api/*` endpoints authenticate via tokens (e.g., `QAToken`) wired through Shiro.
+- `/api/**` is mapped to `authcBasic` through the same Shiro realm — `marlo-data/src/main/java/org/cgiar/ccafs/marlo/MarloShiroConfiguration.java`, `filterChainDefinitionMap` (corrected 2026-09-17: this line previously claimed token authentication via `QAToken`).
 - DTO boundaries prevent accidental exposure of internal fields.
 - `errors/` package provides standardized 4xx / 5xx responses.
 - Public unauthenticated read endpoints, if any, MUST be explicitly enumerated in their controller and reviewed in module specs.
@@ -932,6 +932,8 @@ change requires predictable change cost.
 | **MO-1** | A developer or AKILI Implementer → adds a per-Global-Unit feature flag on the specificity mechanism during normal development ⇒ the flag is available to backend and views | **Exactly 5 change sites, all enumerated in `AGENTS.md`: one Flyway migration, both `APConstants.java` copies, the `BaseAction.hasSpecificities` guard, the FTL condition. No other file changes** [derived from `AGENTS.md` "Specificity Implementation Guide"] | *Defer binding:* feature flags. *Localize changes:* a documented, closed change set |
 | **MO-2** | A developer or AKILI Implementer → adds a field to an existing form section on one action + validator + manager + FTL during normal development ⇒ the field saves, validates, and replicates | **Change confined to one section's action, validator, manager chain, and view; zero changes to sibling sections** [ASSUMED — not previously stated as a measure] | *Localize changes:* semantic coherence per section. *Prevent ripple:* the layered pattern's stable interfaces |
 | **MO-3** | A developer → changes a user-facing string on `global.properties` / `custom/*.properties` during normal development ⇒ the string changes for the intended programs only | **Zero Java or FTL changes required; zero cross-program leakage** [PRD §5.1] | *Defer binding:* runtime i18n resolution |
+
+**Measured evidence (2026-08-29, `changes/migrate-ad-authentication-to-cognito/directory-abstraction`).** Introducing the `security/directory/` seam dropped the change cost of swapping a corporate-directory provider from **6 classes to 1** — the first *measured* confirmation that the Modifiability tactics above hold in practice rather than by assumption.
 
 **Disclosed trade-off (Performance ↔ Modifiability).** The layered pattern adds indirection on every
 persistence path. It is retained because no performance scenario measure currently fails because of

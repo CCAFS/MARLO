@@ -281,7 +281,7 @@ Record these in their failure-only form. A green run should cost one summary lin
 
 **The asymmetry rule travels with the commands:** `-q` suppresses *passing* noise only. **Failures always print complete and verbatim** — they are evidence. Never truncate, summarize, or paraphrase a compile error, a Checkstyle violation, or a test failure.
 
-> **Honest state of testing in MARLO (verified 2026-08-27):** 3 JUnit 4 test files exist in the whole repository (`marlo-web/src/test/java/`), one with its only test body commented out. There is no Surefire configuration, no JaCoCo, and every run script builds with `-DskipTests`. **A green test run is not meaningful verification evidence here.** Do not report a task verified on that basis. Closing this gap is tracked as an open question in `docs/trd/trd.md`.
+> **Honest state of testing in MARLO (measured 2026-09-17):** 36 test files exist under `marlo-web/src/test/java/`, 35 of them carrying `@Test` methods, 271 in total. There is still no explicit Surefire configuration, no JaCoCo, and every run script builds with `-DskipTests`. **The suite is real evidence for the code it covers — a green run is no longer meaningless.** Coverage remains thin for a repository this size, so a green run does not replace compile + Checkstyle as the gate; claim tests only when the task actually exercised them. Closing the remaining gap is tracked as an open question in `docs/trd/trd.md`.
 
 ---
 
@@ -308,6 +308,8 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 ---
 
 ## Model Routing
+
+> The phases named below are defined in **[`docs/akili.md`](./docs/akili.md)** — what each `/akili-*` command does, what it writes, and where a human approves. This section only routes them to models.
 
 **Criteria-first:** match the model to the *dominant cognitive demand* of the phase, not to a hardcoded name. Guiding principles:
 
@@ -341,8 +343,12 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 | `/akili-test` — **Leader** | T1 (orchestration) |
 | `/akili-test` — **Tester(s)** | T2 — prefer a model different from the Implementer (author ≠ tester) |
 | `/akili-validate` | T3 |
-| `/akili-audit` | T4 then T1 |
+| `/akili-audit` | T4 + T3 — drift detection over large context, judged critically |
 | `/akili-archive` | T5 |
+| `/akili-quick` | T2 |
+| `/akili-resume` | T5 |
+| `/akili-seo` | T3 + T5 |
+| `/akili-specify` — UX/UI design (only when visual design is in scope) | T6 |
 | Visual / screenshot verification | T6 |
 
 ### Model registry
@@ -395,10 +401,16 @@ discipline. It gets no `Bash` (the Leader extracts and passes the diff) and no `
 whole point); `Read`/`Grep`/`Glob` remain because the persona permits opening a source file when the
 diff alone is genuinely ambiguous.
 
-**The Tester runs the T2 *fallback* (`opus`), not the T2 primary.** Claude Code exposes three aliases,
+**The Tester runs `opus` rather than the T2 primary.** Claude Code exposes three aliases,
 so `sonnet` for both Implementer and Tester would collapse author != tester. `haiku` would be
 under-capable here: MARLO has no test precedent for anything touching Hibernate, Struts actions, or
 the save pipeline, so the Tester is authoring the first one of its kind rather than copying a pattern.
+
+> **Accepted divergence:** the packaged registry routes `/akili-test` Tester(s) to **T2**, whose Claude
+> Code fallback is `haiku` — not `opus`. MARLO deliberately escalates to `opus` for the reason above.
+> Earlier revisions of this section called `opus` "the T2 fallback", which the packaged registry does
+> not say; the divergence is the escalation itself, recorded here so `/akili-audit` reads it as
+> intentional. Re-evaluate if the packaged tier for this phase changes.
 
 **Restrict the Reviewer and nowhere else.** A Leader, Implementer, or Tester carrying an allowlist is
 a broken role, not a stricter one.
@@ -437,6 +449,15 @@ MARLO's stack is Java 17 / Struts 2 / Hibernate-JPA / FreeMarker / jQuery / Mave
 |---|---|---|
 | `api-design-principles` | The Spring MVC REST layer under `marlo-web/src/main/java/.../rest/` (`/api/*`) | Load when adding or changing a REST endpoint, resource shape, or response contract. Not for Struts `.do` actions |
 | `error-handling-patterns` | The save pipeline (`Action.validate()` then `Validator` then manager save chain) plus the interceptor stack | Load when adding a validator, changing validation flow, or touching interceptor error paths. Pair with `reports/ai-context/save-validation-matrix.md` and `reports/ai-context/interceptor-validator-playbook.md` |
+
+**MARLO's own skills.** These are not packaged with AKILI — they are project skills written for this repository, and they encode gates the packaged skills know nothing about. They reach agents through this map exactly like the rows above.
+
+| Skill | Applies To | When to load |
+|---|---|---|
+| `marlo-verify` | Any Java, CSS, or JS change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work |
+| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock and runs the hardcoded-`global_unit_id` risk review |
+| `marlo-commit` | Any commit, amend, or PR body in this repository | Load at the commit step of `/akili-execute`, and whenever a change is finished. It builds the semantic subject, adds the `[SPEC:<path>]` prefix, checks the target branch, and omits AI attribution |
+| `marlo-jira` | Jira issues for MARLO / AICCRA on `cgiarmel.atlassian.net` | Load whenever an issue, ticket, or key like `A2-2452` comes up — including in Spanish, and including when no project is named, since `A2` is the default |
 
 **During `/akili-specify`, derive each task's required skills from this map. During `/akili-execute` and `/akili-test`, the Leader assigns these skills and the Implementer / Tester MUST load them before writing code or tests.**
 

@@ -86,6 +86,7 @@ Numbers are append-only. Removed requirements MUST be marked `(deprecated)` and 
 5. **No solutions in requirements.** Implementation choices belong in `design.md`.
 6. **English only.** Per `AGENTS.md`. User-facing strings reference i18n keys, not literal text.
 7. **Honor constitutional constraints.** Phased replication, specificity flow, save validation pattern, interceptor stacks, GPL header, Checkstyle, code style — all are non-negotiable unless an explicit, justified deviation is recorded in the Decision Log.
+8. **An amendment must record the closure sweep it ran** — forward for the superseded value, backward for documents citing the amended section. An unswept correction is relocated, not applied.
 
 ---
 

@@ -13,9 +13,10 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 3. **[docs/ux-ui/design.md](./docs/ux-ui/design.md)** — UI / UX system blueprint: information architecture, screen inventory, navigation, layout patterns, component inventory, accessibility commitments.
 4. **[docs/trd/trd.md](./docs/trd/trd.md)** — technical blueprint: modules, data model, API surface, save pipeline, security model, observability, testing strategy, ADR snapshots.
 5. **[docs/infrastructure.md](./docs/infrastructure.md)** — environments blueprint: target environment, core components, deployment strategy, network & security, and the **Local Environment contract** (how to start the local stack). Consult it instead of guessing run commands.
-6. **[docs/specs/general-setup/](./docs/specs/general-setup/)** — methodology templates for module specs (`requirements.md`, `design.md`, `task.md`, and `family.md` for spec families).
-7. **[reports/ai-context/](./reports/ai-context/)** — operational runbooks for the most touched flows (frontend composition, save validation matrix, persistence replication, struts routing, interceptor playbook). Treat these as authoritative companions when modifying critical sections.
-8. **[EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md)** — debugging runbook for accordion-style list UIs.
+6. **[docs/akili.md](./docs/akili.md)** — the AKILI-SPECS lifecycle: the eleven `/akili-*` commands, the artifacts each phase writes, the review gates, and the documentation-depth ladder. Read it before running any `/akili-*` command.
+7. **[docs/specs/general-setup/](./docs/specs/general-setup/)** — methodology templates for module specs (`requirements.md`, `design.md`, `task.md`, and `family.md` for spec families).
+8. **[reports/ai-context/](./reports/ai-context/)** — operational runbooks for the most touched flows (frontend composition, save validation matrix, persistence replication, struts routing, interceptor playbook). Treat these as authoritative companions when modifying critical sections.
+9. **[EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md)** — debugging runbook for accordion-style list UIs.
 
 ---
 
@@ -36,6 +37,7 @@ This file is the entry point for Claude Code (and any AI assistant) working on M
 | Start the local stack (db / backend / frontend) | `docs/infrastructure.md` §6 "Local Environment" — never guess a run command |
 | Change deployment, environments, or infrastructure | `docs/infrastructure.md` §1–§5 (governed; not improvised by agents) |
 | Split a proposal into child specs | `docs/specs/general-setup/family.md` + author `family.md` in the parent spec folder |
+| Understand or run an AKILI phase, or decide how much spec a change needs | `docs/akili.md` |
 | Decide which model to run a phase on | `## Model Routing` in this file or `AGENTS.md` |
 | Decide which skills a task needs | `## Skill Map` in this file or `AGENTS.md` |
 
@@ -60,10 +62,19 @@ read `docs/specs/domain/<module>/agent-context.md` first when the file exists.
 - `docs/specs/enhancement/<feature>/` — cross-cutting enhancements that don't belong to a single domain (e.g., `enhancement/dark-mode/`, `enhancement/design-tokens/`, `enhancement/a11y-automation/`).
 - `docs/specs/bugfix/<slug>/` — structured bug-driven specs that need explicit traceability beyond a normal commit.
 - `docs/specs/epic/<name>/` — multi-spec initiatives (e.g., `epic/java-17-cutover/`, `epic/tenant-onboarding/`, `epic/legacy-modules-retirement/`).
+- `docs/specs/changes/<change-name>/` — the AKILI default path for a bounded change: what `/akili-propose <name>` creates when no other taxonomy folder fits. MARLO's largest programme lives here (`changes/migrate-ad-authentication-to-cognito/`).
+- `docs/specs/archive/<YYYY-MM-DD>-<spec-path-slug>/` — **not a spec folder.** Completed specs moved here by `/akili-archive`, with their full artifact chain. Read-only history; never edited in place, never scanned as an active spec.
 - `docs/specs/kaizen/` — **not a spec folder.** One kaizen entry file per spec, written by the `kaizen` skill's Record phase. Its `README.md` is scaffolding and is never counted as an entry.
+- `docs/specs/kaizen-log.md` — **not a spec folder**, a single file: the `## Active Lessons` digest. Its only writer is the `kaizen` skill's Apply Mode on `staging`; `/akili-propose`, `/akili-specify`, `/akili-execute` and `/akili-resume` read it and nothing else for lesson content.
 - `docs/specs/audits/` — **not a spec folder.** One drift report per `/akili-audit` run. Its `README.md` is scaffolding and is never counted as a report.
 
-Each spec folder MUST contain three files: `requirements.md`, `design.md`, `task.md`, all following the templates under `docs/specs/general-setup/`. A spec folder MAY also contain `agent-context.md`: a compact, agent-first summary for routine work. When it exists, read `agent-context.md` before the longer spec files and open the longer files only when the change is broad, architectural, risky, or needs formal traceability.
+**Non-spec carve-outs.** `archive/`, `general-setup/`, `quick/`, `kaizen/`, `audits/` and any family container (a folder whose only spec file is `family.md`) are never read as a spec by any AKILI command.
+
+A spec folder that carries a spec MUST contain three files: `requirements.md`, `design.md`, `tasks.md`, all following the templates under `docs/specs/general-setup/`. **Note the names:** the *templates* are `requirements.md` / `design.md` / `task.md` (singular) and the *instances* they produce are `requirements.md` / `design.md` / `tasks.md` (plural) — AKILI writes and reads `tasks.md`, and every lifecycle rule in this file that names `tasks.md` means the instance.
+
+A spec folder MAY also contain `agent-context.md`: a compact, agent-first summary for routine work. When it exists, read `agent-context.md` before the longer spec files and open the longer files only when the change is broad, architectural, risky, or needs formal traceability. **A `docs/specs/domain/<module>/` folder holding only `agent-context.md` is a valid shape, not an incomplete spec** — it documents a module for routine work without claiming a formal spec exists. Four modules currently sit in that shape: `activities`, `bi`, `funding-sources`, `parameters`.
+
+An AKILI-produced spec folder also accumulates, as its lifecycle advances: `proposal.md` (`/akili-propose`), `execution.md` (`/akili-execute`), `test-report.md` (`/akili-test`), `validation-report.md` (`/akili-validate`), `archive-summary.md` (`/akili-archive`), and `judgment.md` when the `judgment-day` skill runs.
 
 A spec folder that was **chunked into child specs** MUST also contain `family.md` — the manifest tracking child order, dependencies, and status (template: `docs/specs/general-setup/family.md`). Its absence means the spec is flat, with no added obligations. The manifest is a closed set: no AKILI command creates a child spec folder without a prior manifest row.
 
@@ -186,7 +197,7 @@ Record these in their failure-only form. A green run should cost one summary lin
 
 **The asymmetry rule travels with the commands:** `-q` suppresses *passing* noise only. **Failures always print complete and verbatim** — they are evidence. Never truncate, summarize, or paraphrase a compile error, a Checkstyle violation, or a test failure.
 
-> **Honest state of testing in MARLO (verified 2026-08-27):** 3 JUnit 4 test files exist in the whole repository (`marlo-web/src/test/java/`), one with its only test body commented out. There is no Surefire configuration, no JaCoCo, and every run script builds with `-DskipTests`. **A green test run is not meaningful verification evidence here.** Do not report a task verified on that basis. Closing this gap is tracked as an open question in `docs/trd/trd.md`.
+> **Honest state of testing in MARLO (measured 2026-09-17):** 36 test files exist under `marlo-web/src/test/java/`, 35 of them carrying `@Test` methods, 271 in total. There is still no explicit Surefire configuration, no JaCoCo, and every run script builds with `-DskipTests`. **The suite is real evidence for the code it covers — a green run is no longer meaningless.** Coverage remains thin for a repository this size, so a green run does not replace compile + Checkstyle as the gate; claim tests only when the task actually exercised them. Closing the remaining gap is tracked as an open question in `docs/trd/trd.md`.
 
 ---
 
@@ -213,6 +224,8 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 ---
 
 ## Model Routing
+
+> The phases named below are defined in **[`docs/akili.md`](./docs/akili.md)** — what each `/akili-*` command does, what it writes, and where a human approves. This section only routes them to models.
 
 **Criteria-first:** match the model to the *dominant cognitive demand* of the phase, not to a hardcoded name. Guiding principles:
 
@@ -246,8 +259,12 @@ Do not commit generated CodeGraph databases. `.codegraph/.gitignore` already exc
 | `/akili-test` — **Leader** | T1 (orchestration) |
 | `/akili-test` — **Tester(s)** | T2 — prefer a model different from the Implementer (author ≠ tester) |
 | `/akili-validate` | T3 |
-| `/akili-audit` | T4 then T1 |
+| `/akili-audit` | T4 + T3 — drift detection over large context, judged critically |
 | `/akili-archive` | T5 |
+| `/akili-quick` | T2 |
+| `/akili-resume` | T5 |
+| `/akili-seo` | T3 + T5 |
+| `/akili-specify` — UX/UI design (only when visual design is in scope) | T6 |
 | Visual / screenshot verification | T6 |
 
 ### Model registry
@@ -300,10 +317,16 @@ discipline. It gets no `Bash` (the Leader extracts and passes the diff) and no `
 whole point); `Read`/`Grep`/`Glob` remain because the persona permits opening a source file when the
 diff alone is genuinely ambiguous.
 
-**The Tester runs the T2 *fallback* (`opus`), not the T2 primary.** Claude Code exposes three aliases,
+**The Tester runs `opus` rather than the T2 primary.** Claude Code exposes three aliases,
 so `sonnet` for both Implementer and Tester would collapse author != tester. `haiku` would be
 under-capable here: MARLO has no test precedent for anything touching Hibernate, Struts actions, or
 the save pipeline, so the Tester is authoring the first one of its kind rather than copying a pattern.
+
+> **Accepted divergence:** the packaged registry routes `/akili-test` Tester(s) to **T2**, whose Claude
+> Code fallback is `haiku` — not `opus`. MARLO deliberately escalates to `opus` for the reason above.
+> Earlier revisions of this section called `opus` "the T2 fallback", which the packaged registry does
+> not say; the divergence is the escalation itself, recorded here so `/akili-audit` reads it as
+> intentional. Re-evaluate if the packaged tier for this phase changes.
 
 **Restrict the Reviewer and nowhere else.** A Leader, Implementer, or Tester carrying an allowlist is
 a broken role, not a stricter one.
@@ -342,6 +365,15 @@ MARLO's stack is Java 17 / Struts 2 / Hibernate-JPA / FreeMarker / jQuery / Mave
 |---|---|---|
 | `api-design-principles` | The Spring MVC REST layer under `marlo-web/src/main/java/.../rest/` (`/api/*`) | Load when adding or changing a REST endpoint, resource shape, or response contract. Not for Struts `.do` actions |
 | `error-handling-patterns` | The save pipeline (`Action.validate()` then `Validator` then manager save chain) plus the interceptor stack | Load when adding a validator, changing validation flow, or touching interceptor error paths. Pair with `reports/ai-context/save-validation-matrix.md` and `reports/ai-context/interceptor-validator-playbook.md` |
+
+**MARLO's own skills.** These are not packaged with AKILI — they are project skills written for this repository, and they encode gates the packaged skills know nothing about. They reach agents through this map exactly like the rows above.
+
+| Skill | Applies To | When to load |
+|---|---|---|
+| `marlo-verify` | Any Java, CSS, or JS change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work |
+| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock and runs the hardcoded-`global_unit_id` risk review |
+| `marlo-commit` | Any commit, amend, or PR body in this repository | Load at the commit step of `/akili-execute`, and whenever a change is finished. It builds the semantic subject, adds the `[SPEC:<path>]` prefix, checks the target branch, and omits AI attribution |
+| `marlo-jira` | Jira issues for MARLO / AICCRA on `cgiarmel.atlassian.net` | Load whenever an issue, ticket, or key like `A2-2452` comes up — including in Spanish, and including when no project is named, since `A2` is the default |
 
 **During `/akili-specify`, derive each task's required skills from this map. During `/akili-execute` and `/akili-test`, the Leader assigns these skills and the Implementer / Tester MUST load them before writing code or tests.**
 
