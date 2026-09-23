@@ -60,12 +60,7 @@ public class PartnerDivisionMySQLDAO extends AbstractMarloDAO<PartnerDivision, L
   @Override
   public List<PartnerDivision> findAll() {
     String query = "from " + PartnerDivision.class.getName() + " where is_active=1";
-    List<PartnerDivision> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override
