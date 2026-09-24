@@ -6436,12 +6436,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
-      && (this.getCurrentCrp().getId() >= 45)) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.getCurrentCrp() != null && this.getCurrentCrp().isAiccra();
   }
 
   /**
@@ -8027,6 +8022,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       LOG.debug("Could not read the upkeep flag of the actual phase, so the progress is reported as inactive", e);
       return false;
     }
+  }
+
+  /**
+   * Tells whether a project creates its own activities by typing the activity title, instead of picking it from the
+   * Activity management catalog of the Global Unit.
+   * <p>
+   * The answer comes from the {@code project_activity_creation_active} specificity. When the Global Unit has no custom
+   * parameter for it, the legacy behaviour is kept: every Global Unit typed its own titles until the catalog was
+   * introduced for AICCRA in 2021.
+   *
+   * @return true when the activity title is a free text field, false when it comes from the catalog
+   */
+  public boolean isProjectActivityCreationActive() {
+    String value = this.specificityValue(APConstants.PROJECT_ACTIVITY_CREATION_ACTIVE);
+    if (value == null) {
+      return !this.isAiccra();
+    }
+
+    return Boolean.parseBoolean(value);
   }
 
   /**

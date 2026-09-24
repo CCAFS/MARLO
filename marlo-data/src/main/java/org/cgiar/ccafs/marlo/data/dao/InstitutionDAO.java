@@ -51,6 +51,15 @@ public interface InstitutionDAO {
   public Institution find(long id);
 
   /**
+   * This method gets an institution only when it is still active. It exists because Institution does not map the
+   * is_active column and its isActive() method is hardcoded to true, so the flag cannot be read from the entity.
+   * 
+   * @param id is the institution identifier
+   * @return the Institution when it exists and is active, null otherwise
+   */
+  public Institution findActive(long id);
+
+  /**
    * This method gets a list of institution that are active
    * 
    * @return a list from Institution null if no exist records

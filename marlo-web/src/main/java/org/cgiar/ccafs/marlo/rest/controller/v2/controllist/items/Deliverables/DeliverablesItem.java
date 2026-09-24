@@ -90,11 +90,16 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
 public class DeliverablesItem<T> {
+
+  // Logger
+  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesItem.class);
 
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
@@ -378,17 +383,25 @@ public class DeliverablesItem<T> {
                     && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
                     DeliverableAffiliation deliverableAffiliation = new DeliverableAffiliation();
                     deliverableAffiliation.setCreatedBy(user);
-                    Institution institutionAffiliation =
-                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    Institution institutionAffiliation = institution.getClarisa_id() != null
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null;
                     deliverableAffiliation.setInstitution(institutionAffiliation);
                     deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
                     deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
                     deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
                     deliverableAffiliation.setPhase(phase);
                     deliverableAffiliation.setDeliverable(deliverable);
-                    deliverableAffiliation =
-                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // Persist only when the CLARISA code resolved to an institution MARLO still treats as valid.
+                    // institutionAffiliation is null otherwise, and institution_id is NOT NULL.
+                    if (institutionAffiliation != null) {
+                      deliverableAffiliation =
+                        deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                      deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    } else {
+                      LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution "
+                        + "in MARLO (deliverable {}, phase {})", institution.getName(), institution.getClarisa_id(),
+                        deliverable.getId(), phase.getId());
+                    }
                   }
                   if (institution.getConfidant() != null
                     && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
@@ -403,7 +416,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliationsNotMapped.setName(institution.getName());
                     deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
                     deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
-                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
                     deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
@@ -742,17 +755,25 @@ public class DeliverablesItem<T> {
                     && institution.getConfidant().longValue() >= APConstants.ACCEPTATION_PERCENTAGE) {
                     DeliverableAffiliation deliverableAffiliation = new DeliverableAffiliation();
                     deliverableAffiliation.setCreatedBy(user);
-                    Institution institutionAffiliation =
-                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    Institution institutionAffiliation = institution.getClarisa_id() != null
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null;
                     deliverableAffiliation.setInstitution(institutionAffiliation);
                     deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
                     deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
                     deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
                     deliverableAffiliation.setPhase(phase);
                     deliverableAffiliation.setDeliverable(deliverable);
-                    deliverableAffiliation =
-                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // Persist only when the CLARISA code resolved to an institution MARLO still treats as valid.
+                    // institutionAffiliation is null otherwise, and institution_id is NOT NULL.
+                    if (institutionAffiliation != null) {
+                      deliverableAffiliation =
+                        deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                      deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    } else {
+                      LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution "
+                        + "in MARLO (deliverable {}, phase {})", institution.getName(), institution.getClarisa_id(),
+                        deliverable.getId(), phase.getId());
+                    }
                   }
                   if (institution.getConfidant() != null
                     && (institution.getConfidant().longValue() < APConstants.ACCEPTATION_PERCENTAGE
@@ -767,7 +788,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliationsNotMapped.setName(institution.getName());
                     deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
                     deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
-                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
                     deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
@@ -1533,17 +1554,25 @@ public class DeliverablesItem<T> {
                   } else {
                     deliverableAffiliation.setModifiedBy(user);
                   }
-                  Institution institutionAffiliation =
-                    institutionManager.getInstitutionById(institution.getClarisa_id());
+                  Institution institutionAffiliation = institution.getClarisa_id() != null
+                    ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null;
                   deliverableAffiliation.setInstitution(institutionAffiliation);
                   deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
                   deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
                   deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
                   deliverableAffiliation.setPhase(phase);
                   deliverableAffiliation.setDeliverable(deliverable);
-                  deliverableAffiliation =
-                    deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                  deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  // Persist only when the CLARISA code resolved to an institution MARLO still treats as valid.
+                  // institutionAffiliation is null otherwise, and institution_id is NOT NULL.
+                  if (institutionAffiliation != null) {
+                    deliverableAffiliation =
+                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                  } else {
+                    LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution "
+                      + "in MARLO (deliverable {}, phase {})", institution.getName(), institution.getClarisa_id(),
+                      deliverable.getId(), phase.getId());
+                  }
                 }
                 // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
                 // affiliation not mapped
@@ -1559,7 +1588,7 @@ public class DeliverablesItem<T> {
                   deliverableAffiliationsNotMapped.setName(institution.getName());
                   deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
                   deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
-                    ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                    ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null);
                   deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                     .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
                   deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);
@@ -2013,17 +2042,25 @@ public class DeliverablesItem<T> {
                     } else {
                       deliverableAffiliation.setModifiedBy(user);
                     }
-                    Institution institutionAffiliation =
-                      institutionManager.getInstitutionById(institution.getClarisa_id());
+                    Institution institutionAffiliation = institution.getClarisa_id() != null
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null;
                     deliverableAffiliation.setInstitution(institutionAffiliation);
                     deliverableAffiliation.setInstitutionMatchConfidence(institution.getConfidant().intValue());
                     deliverableAffiliation.setDeliverableMetadataExternalSources(deliverableMetadataExternalSources);
                     deliverableAffiliation.setInstitutionNameWebOfScience(institution.getName());
                     deliverableAffiliation.setPhase(phase);
                     deliverableAffiliation.setDeliverable(deliverable);
-                    deliverableAffiliation =
-                      deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
-                    deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    // Persist only when the CLARISA code resolved to an institution MARLO still treats as valid.
+                    // institutionAffiliation is null otherwise, and institution_id is NOT NULL.
+                    if (institutionAffiliation != null) {
+                      deliverableAffiliation =
+                        deliverableAffiliationManager.saveDeliverableAffiliation(deliverableAffiliation);
+                      deliverableAffiliationManager.replicate(deliverableAffiliation, phase);
+                    } else {
+                      LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution "
+                        + "in MARLO (deliverable {}, phase {})", institution.getName(), institution.getClarisa_id(),
+                        deliverable.getId(), phase.getId());
+                    }
                   }
                   // save institutions with a percentage below APCONSTANT percentage acceptance in deliverable
                   // affiliation not mapped
@@ -2040,7 +2077,7 @@ public class DeliverablesItem<T> {
                     deliverableAffiliationsNotMapped.setName(institution.getName());
                     deliverableAffiliationsNotMapped.setFullAddress(institution.getFull_address());
                     deliverableAffiliationsNotMapped.setPossibleInstitution(institution.getClarisa_id() != null
-                      ? institutionManager.getInstitutionById(institution.getClarisa_id()) : null);
+                      ? institutionManager.getActiveInstitutionById(institution.getClarisa_id()) : null);
                     deliverableAffiliationsNotMapped = deliverableAffiliationsNotMappedManager
                       .saveDeliverableAffiliationsNotMapped(deliverableAffiliationsNotMapped);
                     deliverableAffiliationsNotMappedManager.replicate(deliverableAffiliationsNotMapped, phase);

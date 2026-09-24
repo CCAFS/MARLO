@@ -236,7 +236,7 @@ function updateDeliverable(item,activityIndex) {
 function date(start,end) {
   var dateFormat = "yy-mm-dd";
   var maxYear = window.globalMaxYear || 2031; 
-  var maxDate = '${maxYear}-12-31';
+  var maxDate = maxYear + '-12-31';
   
   var from = $(start).datepicker({
       dateFormat: dateFormat,

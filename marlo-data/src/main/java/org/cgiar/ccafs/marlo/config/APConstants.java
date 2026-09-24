@@ -134,6 +134,8 @@ public final class APConstants {
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
   public static final String AI_SECTION_ACTIVE = "ai_section_active";
+  // Allows a project to create its own activities by typing the title. Value MUST equal parameters.key
+  public static final String PROJECT_ACTIVITY_CREATION_ACTIVE = "project_activity_creation_active";
   // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
   public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";

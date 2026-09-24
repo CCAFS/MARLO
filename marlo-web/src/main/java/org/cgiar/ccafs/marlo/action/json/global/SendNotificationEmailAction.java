@@ -24,9 +24,11 @@ import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Submission;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -34,19 +36,23 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SendNotificationEmailAction extends BaseAction {
 
   private static final long serialVersionUID = -6338578372277010087L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(SendNotificationEmailAction.class);
 
   private EmailLogManager emailLogManager;
   private GlobalUnitManager globalUnitManager;
@@ -85,36 +91,81 @@ public class SendNotificationEmailAction extends BaseAction {
   public String execute() throws Exception {
     results = new ArrayList<>();
     Project project = null;
-    globalUnit = globalUnitManager.getGlobalUnitById(45);
     if (projectID != null) {
-      project = projectManager.getProjectById(Long.parseLong(projectID));
+      try {
+        project = projectManager.getProjectById(Long.parseLong(projectID));
+      } catch (NumberFormatException e) {
+        LOG.warn("Unable to send notification email: invalid projectID={}", projectID);
+        return SUCCESS;
+      }
+    }
+    if (project == null) {
+      LOG.warn("Unable to send notification email: project not found for projectID={}", projectID);
+      return SUCCESS;
     }
 
+    if (project.getGlobalUnitProjects() == null || project.getGlobalUnitProjects().isEmpty()) {
+      LOG.error("Unable to send notification email: project has no Global Unit associations, projectID={}",
+        projectID);
+      return SUCCESS;
+    }
     GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+      .filter(gu -> gu != null && gu.isActive() && gu.isOrigin()).findFirst().orElse(null);
+    if (globalUnitProject == null) {
+      LOG.error("Unable to send notification email: project has no active origin Global Unit, projectID={}", projectID);
+      return SUCCESS;
+    }
+    GlobalUnit projectGlobalUnit = globalUnitProject.getGlobalUnit();
+    if (projectGlobalUnit == null || projectGlobalUnit.getId() == null) {
+      LOG.error("Unable to send notification email: origin Global Unit is not configured, projectID={}", projectID);
+      return SUCCESS;
+    }
+    Long globalUnitId = projectGlobalUnit.getId();
+    globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId);
+    if (globalUnit == null) {
+      LOG.error("Unable to send notification email: origin Global Unit not found, projectID={}, globalUnitID={}",
+        projectID, globalUnitId);
+      return SUCCESS;
+    }
+
+    User currentUser = this.getCurrentUser();
+    if (currentUser == null || currentUser.getId() == null || currentUser.getEmail() == null) {
+      LOG.warn("Unable to send notification email: current user is not available for projectID={}", projectID);
+      return SUCCESS;
+    }
+    Phase actualPhase = this.getActualPhase();
+    if (actualPhase == null) {
+      LOG.error("Unable to send notification email: actual phase is not available for projectID={}", projectID);
+      return SUCCESS;
+    }
 
     // Send email to the user that is submitting the project.
     // TO
-    String toEmail = this.getCurrentUser().getEmail();
+    String toEmail = currentUser.getEmail();
     String ccEmail = "";
 
 
     StringBuilder ccEmails = new StringBuilder();
 
-    // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
-    Long crpPmuRole = Long.parseLong((String) this.getSession().get(APConstants.CRP_PMU_ROLE));
-
     // Add project leader
-    if (project.getLeaderPerson(this.getActualPhase()) != null && project.getLeaderPerson(this.getActualPhase())
-      .getUser().getId().longValue() != this.getCurrentUser().getId().longValue()) {
-      ccEmails.append(project.getLeaderPerson(this.getActualPhase()).getUser().getEmail());
+    if (project.getLeaderPerson(actualPhase) != null && project.getLeaderPerson(actualPhase).getUser() != null
+      && project.getLeaderPerson(actualPhase).getUser().getId() != null
+      && project.getLeaderPerson(actualPhase).getUser().getId().longValue() != currentUser.getId().longValue()
+      && project.getLeaderPerson(actualPhase).getUser().getEmail() != null) {
+      ccEmails.append(project.getLeaderPerson(actualPhase).getUser().getEmail());
       ccEmails.append(", ");
     }
     // Add project coordinator(s)
-    for (ProjectPartnerPerson projectPartnerPerson : project.getCoordinatorPersons(this.getActualPhase())) {
-      if (projectPartnerPerson.getUser().getId() != this.getCurrentUser().getId()) {
-        ccEmails.append(projectPartnerPerson.getUser().getEmail());
-        ccEmails.append(", ");
+    List<ProjectPartnerPerson> coordinatorPersons = project.getCoordinatorPersons(actualPhase);
+    if (coordinatorPersons != null) {
+      for (ProjectPartnerPerson projectPartnerPerson : coordinatorPersons) {
+        if (projectPartnerPerson != null && projectPartnerPerson.getUser() != null
+          && projectPartnerPerson.getUser().getId() != null
+          && projectPartnerPerson.getUser().getId().longValue() != currentUser.getId().longValue()
+          && projectPartnerPerson.getUser().getEmail() != null) {
+          ccEmails.append(projectPartnerPerson.getUser().getEmail());
+          ccEmails.append(", ");
+        }
       }
     }
 
@@ -137,12 +188,17 @@ public class SendNotificationEmailAction extends BaseAction {
     // Building the email message
     StringBuilder message = new StringBuilder();
     String[] values = new String[7];
-    values[0] = this.getCurrentUser().getComposedCompleteName();
+    values[0] = currentUser.getComposedCompleteName();
     values[1] = crp;
-    values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+    if (project.getProjecInfoPhase(actualPhase) == null) {
+      LOG.error("Unable to send notification email: project phase information is not available for projectID={}",
+        projectID);
+      return SUCCESS;
+    }
+    values[2] = project.getProjecInfoPhase(actualPhase).getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
-    values[4] = String.valueOf(this.getActualPhase().getYear());
-    values[5] = this.getActualPhase().getDescription().toLowerCase();
+    values[4] = String.valueOf(actualPhase.getYear());
+    values[5] = actualPhase.getDescription() == null ? "" : actualPhase.getDescription().toLowerCase();
 
 
     if (this.isPlanningActive()) {

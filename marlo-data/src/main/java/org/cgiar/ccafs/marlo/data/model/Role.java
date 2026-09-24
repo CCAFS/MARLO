@@ -105,7 +105,7 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
     String acronym = this.getAcronym();
 
 
-    if (this.getCrp() != null && this.getCrp().getAcronym() != null && this.getCrp().getAcronym().contains("AICCRA")) {
+    if (this.getCrp() != null && this.getCrp().isAiccra()) {
       switch (this.getAcronym()) {
         case "PL":
           acronym = "Cluster Leader";
@@ -207,4 +207,3 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
       + ", order=" + order + "]";
   }
 }
-

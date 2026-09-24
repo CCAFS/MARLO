@@ -332,6 +332,11 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return this.globalUnitType.getId().intValue() == 4;
   }
 
+  public boolean isAiccra() {
+    // Temporary compatibility condition; remove this override when Global Unit-specific behavior is cleaned up.
+    return true;
+  }
+
   public boolean isCrpType() {
     // CRP or Platform
     return this.globalUnitType.getId().intValue() == 1 || this.globalUnitType.getId().intValue() == 3;
@@ -540,4 +545,3 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
 
 }
-
