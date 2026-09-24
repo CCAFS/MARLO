@@ -62,7 +62,6 @@ public final class APConstants {
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
-  public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -127,11 +126,8 @@ public final class APConstants {
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
   public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
-  public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
-  public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
-  public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
   public static final String CRP_PROJECT_PAGE_YEAR = "project_website_year_value";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
@@ -167,7 +163,6 @@ public final class APConstants {
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
   public static final String OICR_SCORE_FIELD_ACTIVE = "oicr_score_field_active";
-  public static final String MELIA_SCORE_FIELD_ACTIVE = "melia_score_field_active";
   public static final String DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE =
     "duplicated_deliverables_functionality_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
@@ -186,7 +181,6 @@ public final class APConstants {
     "impact_pathway_cross_cutting_markets_active";
   public static final String CONTRIBUTION_PERFORMANCE_INDICATORS_SHOW_MULTIPLE_MILESTONES_PER_YEAR_ACTIVE =
     "contribution_performance_indicators_show_multiple_milestones_per_year_active";
-  public static final String DISPLAY_USER_MENU_NEW_STYLE = "display_user_menu_new_style";
   public static final String SHOW_CONTRIBUTION_PERFORMANCE_INDICATOR_DEPRECATED_TAB_ACTIVE =
     "show_contribution_performance_indicator_deprecated_tab_active";
 
@@ -196,8 +190,6 @@ public final class APConstants {
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
-  // public static final String CRP_EMAIL_PL_CRPADMIN_FL =
-  // "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";

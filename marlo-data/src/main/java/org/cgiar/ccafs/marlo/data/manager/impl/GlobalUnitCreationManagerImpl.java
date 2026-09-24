@@ -97,8 +97,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       APConstants.CRP_SL_ROLE,
       APConstants.CRP_CD_ROLE,
       APConstants.CRP_CU,
-      APConstants.CRP_AICCRA_AF_START_PHASE,
-      APConstants.CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION)));
+      APConstants.CRP_AICCRA_AF_START_PHASE)));
 
   private static final Set<String> ROLE_PARAMETER_KEYS =
     Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
@@ -702,10 +701,6 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     }
     if (APConstants.CRP_CU.equals(key)) {
       return computedCrpCu;
-    }
-    // Timeline zoom accepts only 1..8; migration default_value '423' is invalid. New GUs start at 4.
-    if (APConstants.CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION.equals(key)) {
-      return "4";
     }
     // New GU must not start closed or force a session refresh cycle from the template.
     if (APConstants.CRP_CLOSED.equals(key) || APConstants.CRP_REFRESH.equals(key)) {
