@@ -10,7 +10,16 @@
 		<action name="{crp}/sendOICRsQueueMessage" method="sendOICRsQueueMessage"
 			class="org.cgiar.ccafs.marlo.action.report.MicroserviceReportAction">
 			<interceptor-ref name="homeStack" />
-    		<result name="success"></result>
+			<!-- Fire-and-forget endpoint: it enqueues a message and renders no view, so both
+			     outcomes are plain HTTP status codes. Without a mapped "error" result Struts
+			     raises "No result defined", which the global Exception mapping turns into an
+			     unhandled-exception page and email. -->
+			<result name="success" type="httpheader">
+				<param name="status">200</param>
+			</result>
+			<result name="error" type="httpheader">
+				<param name="status">500</param>
+			</result>
 		</action>
 		
 		<action name="{crp}/fetchPDF" method="fetchPDF"
