@@ -6347,12 +6347,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
-      && (this.getCurrentCrp().getId() >= 45)) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.getCurrentCrp() != null && this.getCurrentCrp().isAiccra();
   }
 
   /**
