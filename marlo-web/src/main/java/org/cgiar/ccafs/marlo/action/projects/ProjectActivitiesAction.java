@@ -613,7 +613,7 @@ public class ProjectActivitiesAction extends BaseAction {
         }
 
         // Activity Title
-        if (this.isAiccra()) {
+        if (!this.isProjectActivityCreationActive()) {
           try {
             long activityTitleId = Long.parseLong(titleParam);
             ActivityTitle activityTitle = activityTitleManager.getActivityTitleById(activityTitleId);
@@ -861,7 +861,7 @@ public class ProjectActivitiesAction extends BaseAction {
       // Partner person
       activityEntity.setProjectPartnerPerson(getValidPartnerPerson(activityUI));
 
-      // Activity title (just for AICCRA)
+      // Activity title (only when it comes from the catalog)
       handleActivityTitle(activityEntity);
 
       // Deliverables - guardar tanto para actividades nuevas como existentes
@@ -893,7 +893,7 @@ public class ProjectActivitiesAction extends BaseAction {
   }
 
   private void handleActivityTitle(Activity activity) {
-    if (this.isAiccra()) {
+    if (!this.isProjectActivityCreationActive()) {
       if (activity.getActivityTitle() != null && activity.getActivityTitle().getId() != null) {
         ActivityTitle title = activityTitleManager.getActivityTitleById(activity.getActivityTitle().getId());
         if (title != null) {

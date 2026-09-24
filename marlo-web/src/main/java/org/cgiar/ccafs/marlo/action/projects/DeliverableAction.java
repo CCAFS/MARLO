@@ -2313,9 +2313,8 @@ public class DeliverableAction extends BaseAction {
        * }
        */
       if (activities != null && !activities.isEmpty()) {
-        activities = activities.stream().filter(c -> c.isActive() && c.getActivityTitle() != null)
-          .sorted((a1, a2) -> a1.getActivityTitle().getTitle().compareTo(a2.getActivityTitle().getTitle()))
-          .collect(Collectors.toList());
+        activities = activities.stream().filter(c -> c.isActive() && StringUtils.isNotBlank(c.getDisplayTitle()))
+          .sorted((a1, a2) -> a1.getDisplayTitle().compareTo(a2.getDisplayTitle())).collect(Collectors.toList());
       }
 
       List<DeliverableSearchSummary> deliverableDTOs = new ArrayList<>();
