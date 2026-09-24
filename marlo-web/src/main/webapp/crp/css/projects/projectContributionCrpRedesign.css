@@ -75,16 +75,59 @@
   color: #15719B;
 }
 .cpi-page .cpi-indicator__name { flex: 1; min-width: 0; font-size: 15px; font-weight: 500; line-height: 1.45; color: var(--cpi-ink); }
-.cpi-page .cpi-indicator__details { flex: none; display: flex; align-items: center; gap: 7px; cursor: pointer; }
-.cpi-page .cpi-indicator__details p { margin: 0; font-size: 12.5px; font-weight: 500; color: var(--cpi-brand); }
+.cpi-page .cpi-indicator__details {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--cpi-brand);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+.cpi-page .cpi-indicator__details:hover { background: var(--cpi-brand-dark); }
+/* annualReportGlobal.css turns .button-evidences red on keyboard focus. */
+.cpi-page .cpi-indicator__details:focus-visible { color: #fff; outline: 2px solid #E4572E; outline-offset: 2px; }
 .cpi-page .cpi-indicator__meta { display: block; font-size: 13px; color: #4B5563; }
 .cpi-page .cpi-indicator__note { display: block; margin-top: 6px; font-size: 12.5px; color: var(--cpi-muted); }
 
 /* ── Period tabs ────────────────────────────────────────────────── */
 .cpi-page .cpi-periods__title { margin-bottom: 10px; border-bottom: 0; padding-bottom: 0; }
-.cpi-page .cpi-tabs { border-bottom: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
-.cpi-page .cpi-tabs > li > a {
+/* bootstrap.css gives every .nav a clearfix -- ::before and ::after with
+   content " " and display: table -- for floated tabs. On this flex row both
+   pseudo-elements are empty flex items, and each one takes a gap: the first tab
+   sat 4px off the pane's left edge and the same slot trailed the last one.
+   A flex row contains its items without a clearfix, so both are removed. */
+.cpi-page .cpi-tabs::before,
+.cpi-page .cpi-tabs::after { content: none; display: none; }
+.cpi-page .cpi-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 4px;
   margin: 0;
+  padding: 0;
+  border-bottom: 0;
+}
+/* Only the open tab reaches 1px into the pane, so it joins the pane while the
+   others sit on its top border. */
+.cpi-page .cpi-tabs > li { float: none; margin: 0; }
+.cpi-page .cpi-tabs > li.active { margin-bottom: -1px; }
+.cpi-page .cpi-tabs > li > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  /* annualReportGlobal.css, which this page loads, forces 14px 22px !important on
+     every .nav-tabs link; only an !important can restate the design's padding. */
+  padding: 0 16px !important;
+  line-height: 1;
   border: 1px solid var(--cpi-line);
   border-bottom: 0;
   border-radius: 9px 9px 0 0;
@@ -93,6 +136,14 @@
   font-weight: 500;
   color: #4B5563;
 }
+.cpi-page .cpi-tabs > li > a:hover,
+.cpi-page .cpi-tabs > li > a:focus {
+  border-color: var(--cpi-line);
+  background: #E9EDF1;
+  color: var(--cpi-ink);
+}
+.cpi-page .cpi-tabs > li > a:focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+.cpi-page .cpi-tabs > li.active > a { height: 39px; }
 .cpi-page .cpi-tabs > li.active > a,
 .cpi-page .cpi-tabs > li.active > a:hover,
 .cpi-page .cpi-tabs > li.active > a:focus {
@@ -103,7 +154,6 @@
   color: var(--cpi-ink);
 }
 .cpi-page .cpi-tabs__now {
-  margin-left: 6px;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: .05em;
@@ -119,14 +169,7 @@
 }
 
 /* ── Period pane ────────────────────────────────────────────────── */
-.cpi-page .cpi-pane__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
+.cpi-page .cpi-pane__head { margin-bottom: 16px; }
 .cpi-page .cpi-pane__headline { font-size: 13.5px; font-weight: 500; color: var(--cpi-ink); }
 .cpi-page .cpi-pane__headline strong { font-size: 15px; font-weight: 500; }
 .cpi-page .cpi-chip {
@@ -150,8 +193,14 @@
  * keeps owning the labels, the required flags and the word counters.
  */
 .cpi-page .cpi-fields { margin-top: 4px; }
-.cpi-page .cpi-fields__values { display: flex; flex-wrap: wrap; gap: 18px; }
-.cpi-page .cpi-fields__values > .cpi-field { flex: 1 1 210px; min-width: 0; margin-bottom: 8px; }
+.cpi-page .cpi-fields__top { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 8px; }
+.cpi-page .cpi-fields__main { flex: 1; min-width: 0; }
+.cpi-page .cpi-fields__values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.cpi-page .cpi-fields__values > .cpi-field { min-width: 0; margin-bottom: 8px; }
 .cpi-page .cpi-field { margin-bottom: 16px; position: relative; }
 .cpi-page .cpi-field .feedback-flex-items { height: 0; }
 .cpi-page .cpi-field .input { position: relative; }
@@ -167,6 +216,52 @@
 .cpi-page .cpi-field label.readOnly { color: var(--cpi-muted); }
 .cpi-page .cpi-field label .requiredTag { color: #C7401C; font-weight: 500; }
 .cpi-page .cpi-field .input > img { width: 14px; height: 14px; vertical-align: -2px; }
+
+/* A label the section draws itself, so a help icon can follow its last word. */
+/* Sized like the label it wraps, so its line box is the 16.9px every other field's label has. */
+.cpi-page .cpi-field__label { display: block; margin-bottom: 5px; font-size: 12.5px; line-height: 1.35; }
+.cpi-page .cpi-field__label label { display: inline; margin: 0; }
+.cpi-page .cpi-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  /* Top-aligned and nudged rather than shifted below the baseline: a 15px box in
+     a 16.9px line would otherwise grow the line and drop this field's input 4px
+     below its neighbours in the row. */
+  position: relative;
+  top: 1px;
+  vertical-align: top;
+  border: 1.3px solid #AEB6C1;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: #6B7280;
+  cursor: help;
+  transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.cpi-page .cpi-help:hover,
+.cpi-page .cpi-help:focus-visible {
+  border-color: var(--cpi-brand);
+  background: #E8F4F9;
+  color: var(--cpi-brand);
+}
+.cpi-page .cpi-help:focus { outline: none; }
+.cpi-page .cpi-help:focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+
+/* global.css hangs a 27x27 unit chip off every .input wrapping an editable
+   .targetValueNumber field (::after, text stamped into data-targetunit by
+   setFormatInput() in utils.js). It is 27px tall against this section's 36px
+   inputs, so it sat in the bottom-right corner cut across the border, on every
+   value field here: the PMC target, the expected and achieved values of each
+   period and disaggregated target, and the overall expected value. The design
+   carries no affix -- the unit is stated on the indicator card -- so the chip is
+   switched off, as the OPI redesign does in impactPathway/outcomes.css. */
+.cpi-page .input:has(input[type="text"].targetValueNumber)::after,
+.cpi-page .input:has(input[type="number"].targetValueNumber)::after { content: none; }
 
 /* The feedback bubble is absolutely positioned so it cannot break the row. */
 .cpi-page .cpi-field .commentNumberContainer { position: absolute; top: 0; right: 0; }
@@ -213,7 +308,8 @@
 .cpi-page .cpi-field.is-read .input > p,
 .cpi-page .cpi-field.is-read .textArea > p {
   margin: 0;
-  min-height: 34px;
+  /* The height of an input, so a row mixing open and closed fields stays level. */
+  min-height: 36px;
   display: flex;
   align-items: center;
   font-size: 14px;
@@ -246,7 +342,46 @@
 .cpi-page .cpi-field .fieldError { display: block; font-size: 11.5px; color: #C7401C; }
 .cpi-page .cpi-field__note { display: block; margin-top: 5px; font-size: 11.5px; line-height: 1.45; color: var(--cpi-muted); }
 .cpi-page .cpi-field .limitWords { font-size: 11.5px; color: var(--cpi-muted); }
-.cpi-page .cpi-fields__relations { margin-top: 2px; }
+/* The relations macro is shared, so only its presentation changes here. Its
+   wrapper is dissolved so the buttons stack in one column whatever call rendered
+   them; the modals it nests stay hidden until Bootstrap opens them. The button
+   keeps inline flow rather than flex so the count and its label stay one run of
+   text with their own space between them. */
+.cpi-page .cpi-fields__relations { flex: none; display: flex; flex-direction: column; gap: 7px; }
+.cpi-page .cpi-fields__relations .elementRelations { display: contents; }
+.cpi-page .cpi-fields__relations .elementRelations > .btn {
+  display: block;
+  height: 32px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid #BEDFEC;
+  border-radius: 8px;
+  background: #F2F9FC;
+  box-shadow: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 30px;
+  text-align: left;
+  white-space: nowrap;
+  color: #15719B;
+}
+.cpi-page .cpi-fields__relations .elementRelations > .btn:hover,
+.cpi-page .cpi-fields__relations .elementRelations > .btn:focus {
+  border-color: #9DCFE3;
+  background: #E8F4F9;
+  color: var(--cpi-brand-dark);
+}
+.cpi-page .cpi-fields__relations .elementRelations > .btn:focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+.cpi-page .cpi-fields__relations .elementRelations > .btn strong { font-weight: inherit; }
+.cpi-page .cpi-fields__relations .elementRelations > .btn .icon-20 {
+  width: 7px;
+  height: 7px;
+  margin: 0 5px 0 0;
+  border-radius: 2px;
+  background: var(--cpi-brand);
+  opacity: 1;
+  vertical-align: 1px;
+}
 
 /* ── Disaggregated targets ──────────────────────────────────────── */
 .cpi-page .cpi-dts { margin-top: 6px; }
@@ -259,18 +394,26 @@
   margin-bottom: 10px;
 }
 .cpi-page .cpi-dt__head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer; }
+.cpi-page .cpi-dt__head:focus { outline: none; }
+.cpi-page .cpi-dt__head:focus-visible { outline: 2px solid #E4572E; outline-offset: -2px; border-radius: 10px; }
 .cpi-page .cpi-dt__caret {
   flex: none;
-  width: 0;
-  height: 0;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 7px solid #4B5563;
-  transition: transform .15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: #EEF2F5;
+  color: #4B5563;
+  transition: background-color .15s ease;
 }
-.cpi-page .cpi-dt__head[aria-expanded="true"] .cpi-dt__caret { transform: rotate(90deg); }
+.cpi-page .cpi-dt__head:hover .cpi-dt__caret { background: #DDE5EC; }
+.cpi-page .cpi-dt__caret svg { transition: transform .15s ease; }
+.cpi-page .cpi-dt__head[aria-expanded="true"] .cpi-dt__caret svg { transform: rotate(90deg); }
 .cpi-page .cpi-dt__title { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 500; color: var(--cpi-brand); }
-.cpi-page .cpi-dt__body { padding: 4px 14px 14px 30px; border-top: 1px solid #F1F4F7; }
+/* 46px lines the body up with the title: 12px of head padding, the 24px toggle and its 10px gap. */
+.cpi-page .cpi-dt__body { padding: 12px 14px 16px 46px; border-top: 1px solid #F1F4F7; }
 .cpi-page .cpi-dt--empty { padding: 9px 12px; background: var(--cpi-soft); }
 .cpi-page .cpi-dt--empty .cpi-dt__note { font-size: 12.5px; color: var(--cpi-muted); }
 .cpi-page .cpi-empty { padding: 14px; text-align: center; color: var(--cpi-muted); }
@@ -309,3 +452,15 @@
 .cpi-page .cpi-question__req { margin-left: 5px; font-size: 13px; font-weight: 500; color: #C7401C; }
 .cpi-page .cpi-question .cpi-field { margin-bottom: 0; }
 .cpi-page .cpi-question .textArea { width: 100%; }
+
+@media (max-width: 767px) {
+  .cpi-page .cpi-fields__top { flex-direction: column; }
+  .cpi-page .cpi-fields__values { grid-template-columns: minmax(0, 1fr); }
+  .cpi-page .cpi-dt__body { padding-left: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cpi-page .cpi-help,
+  .cpi-page .cpi-dt__caret,
+  .cpi-page .cpi-dt__caret svg { transition: none; }
+}

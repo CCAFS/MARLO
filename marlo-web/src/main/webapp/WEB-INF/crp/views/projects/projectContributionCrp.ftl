@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
-  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260916",
+  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260923",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
   "https://www.gstatic.com/charts/loader.js",
@@ -16,7 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
-  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260916",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260923",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -161,10 +161,10 @@
               <span class="cpi-indicator__code">${(cpiOutcome.acronym)!(cpiOutcome.composeID)!'&mdash;'}</span>
               <span class="cpi-indicator__name">${(cpiOutcome.description)!}</span>
               [#if (cpiOutcome.instructions?? && cpiOutcome.instructions != '')]
-                <div class="button-evidences cpi-indicator__details">
-                  <p>[@s.text name="projectContributionCrp.seeDetails" /]</p>
-                  <img src="${baseUrlCdn}/global/images/28-info-outline.png" width="20" alt="" />
-                </div>
+                <button type="button" class="button-evidences cpi-indicator__details">
+                  [@s.text name="projectContributionCrp.seeDetails" /]
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.4v3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="5.3" r=".9" fill="currentColor"/></svg>
+                </button>
               [/#if]
             </div>
             <span class="cpi-indicator__meta">
@@ -256,13 +256,6 @@
                     [#list cpiAllMilestones as m]
                       [#if !cpiHeadlineDone && cpiRowOf[m_index] == 0 && ((m.year)!-1) == year]
                         [#assign cpiHeadlineDone = true /]
-                        <div class="cpi-pane__head">
-                          <span class="cpi-pane__headline">
-                            [@s.text name="projectContributionCrp.overallTargetTo" /] ${year?c}:
-                            <strong>[#if (m.value)?has_content]${m.value?string(",##0")}[#else]&mdash;[/#if]</strong>
-                            <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
-                          </span>
-                        </div>
                         [@cpiMilestoneFields element=m year=year isPrincipal=true /]
                       [/#if]
                     [/#list]
@@ -283,8 +276,8 @@
                             [#if !cpiRowDone && cpiRowOf[m_index] == row && ((m.year)!-1) == year]
                               [#assign cpiRowDone = true /]
                               <div class="cpi-dt">
-                                <div class="cpi-dt__head" data-cpi-toggle="cpiDt-${year?c}-${row}" aria-expanded="false">
-                                  <span class="cpi-dt__caret"></span>
+                                <div class="cpi-dt__head" data-cpi-toggle="cpiDt-${year?c}-${row}" role="button" tabindex="0" aria-controls="cpiDt-${year?c}-${row}" aria-expanded="false">
+                                  <span class="cpi-dt__caret" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M4 2.5 7.5 6 4 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                                   <span class="cpi-dt__title">[@s.text name="projectContributionCrp.target" /] ${row}: ${(m.title)!}</span>
                                   [#if (m.code)?has_content]<span class="cpi-chip">${m.code}</span>[/#if]
                                 </div>
@@ -459,19 +452,50 @@
     <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" />
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
 
-    <div class="cpi-fields__values" style="display:${showOutcomeValue?string('flex', 'none')}">
-      <div class="cpi-field ${canSetted?string('is-edit','is-read')}">
-        [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=false editable=canSetted help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true /]
-        <span class="cpi-field__note">[@s.text name="projectContributionCrp.pmcNote" /]</span>
+    <div class="cpi-fields__top">
+      <div class="cpi-fields__main">
+        [#if isPrincipal]
+          <div class="cpi-pane__head">
+            <span class="cpi-pane__headline">
+              [@s.text name="projectContributionCrp.overallTargetTo" /] ${year?c}:
+              <strong>[#if (element.value)?has_content]${element.value?string(",##0")}[#else]&mdash;[/#if]</strong>
+              <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
+            </span>
+          </div>
+        [/#if]
+        <div class="cpi-fields__values"[#if !showOutcomeValue] style="display:none"[/#if]>
+          [#-- The label is drawn here rather than by customForm so the help sits on the
+               label's own line, right of the text. customForm prints its help as an
+               <img title> after a block label, which drops it onto a line of its own,
+               and only while the field is editable. --]
+          <div class="cpi-field ${canSetted?string('is-edit','is-read')}">
+            <span class="cpi-field__label">
+              <label for="${customName}.settedValue" class="${canSetted?string('editable','readOnly')}">[@s.text name="projectOutcomeMilestone.settedValue" /]:</label>
+              [@cpiHelp key="projectOutcomeMilestone.pmcValue.helpText" /]
+            </span>
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=false editable=canSetted showTitle=false /]
+            <span class="cpi-field__note">[@s.text name="projectContributionCrp.pmcNote" /]</span>
+          </div>
+          <div class="cpi-field ${canExpected?string('is-edit', (reportingActive || !isCurrentPeriod)?string('is-read','is-locked'))}">
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
+            [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
+          </div>
+          <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}">
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isCurrentPeriod && achievedPhase editable=canAchieved /]
+            [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
+          </div>
+        </div>
       </div>
-      <div class="cpi-field ${canExpected?string('is-edit', (reportingActive || !isCurrentPeriod)?string('is-read','is-locked'))}">
-        [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
-        [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
-      </div>
-      <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}">
-        [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isCurrentPeriod && achievedPhase editable=canAchieved /]
-        [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
-      </div>
+
+      [#-- Evidence already linked to the indicator: the headline's companion, so it only
+           appears on the principal target of the period being reported. --]
+      [#if isPrincipal && isCurrentPeriod]
+        <div class="cpi-fields__relations">
+          [@popUps.relationsMacro element=projectOutcome labelText=true /]
+          [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
+          [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
+        </div>
+      [/#if]
     </div>
 
     <div class="cpi-field cpi-field--text ${canExpected?string('is-edit','is-read')}">
@@ -481,15 +505,19 @@
       [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isCurrentPeriod && achievedPhase className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=canAchieved /]
       [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
     </div>
-
-    [#if isPrincipal && isCurrentPeriod]
-      <div class="cpi-fields__relations">
-        [@popUps.relationsMacro element=projectOutcome labelText=true /]
-        [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
-        [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
-      </div>
-    [/#if]
   </div>
+[/#macro]
+
+[#-- A field's help, as a quiet icon beside its label. The text reaches the reader
+     through the app-wide jQuery UI tooltip, which every [title] gets on hover and on
+     keyboard focus. s.text hands back the key itself when a program has no text for
+     it, so an untranslated key renders nothing rather than a tooltip reading the key. --]
+[#macro cpiHelp key]
+  [#local text][@s.text name=key /][/#local]
+  [#local plain = (text?is_markup_output)?then(text?markup_string, text)?trim /]
+  [#if plain?has_content && plain != key]
+    <span class="cpi-help" tabindex="0" role="img" aria-label="${text}" title="${text}">?</span>
+  [/#if]
 [/#macro]
 
 [#macro nextUserMacro element name index isTemplate=false]

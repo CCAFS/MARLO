@@ -4,21 +4,35 @@
  */
 $(document).ready(function () {
 
+  function setOpen($head, open) {
+    $head.attr('aria-expanded', open ? 'true' : 'false');
+  }
+
   // Open the first disaggregated target of each period so the pane never reads as empty.
   $('.cpi-pane').each(function () {
     var $first = $(this).find('.cpi-dt__head').first();
     if ($first.length) {
-      $first.attr('aria-expanded', 'true');
+      setOpen($first, true);
       $('#' + $first.attr('data-cpi-toggle')).show();
     }
   });
 
-  $('.cpi-dt__head').on('click', function () {
-    var $head = $(this);
+  function toggle($head) {
     var $body = $('#' + $head.attr('data-cpi-toggle'));
-    var isOpen = $head.attr('aria-expanded') === 'true';
-    $head.attr('aria-expanded', isOpen ? 'false' : 'true');
+    setOpen($head, $head.attr('aria-expanded') !== 'true');
     $body.slideToggle(140);
+  }
+
+  $('.cpi-dt__head').on('click', function () {
+    toggle($(this));
+  });
+
+  // The head is a role="button" div, so it has to answer the keys a button does.
+  $('.cpi-dt__head').on('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle($(this));
+    }
   });
 
 });
