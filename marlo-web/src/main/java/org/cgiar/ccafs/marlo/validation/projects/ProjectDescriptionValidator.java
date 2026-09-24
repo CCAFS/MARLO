@@ -155,7 +155,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
       if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
         action.addMessage(action.getText("projectDescription.flagships"));
-        action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("list-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
 
 
@@ -179,7 +179,7 @@ public class ProjectDescriptionValidator extends BaseValidator {
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {
           action.addMessage(action.getText("projectDescription.regions"));
-          action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("list-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
