@@ -1,6 +1,10 @@
 [#ftl]
 
-[#if canEdit || actionName == 'AICCRA/crpDashboard']
+[#assign currentActionName = (actionName!'')]
+[#assign actionPath = currentActionName?contains("/")?then(
+  currentActionName?substring(currentActionName?index_of("/") + 1), currentActionName)]
+
+[#if canEdit || actionPath == 'crpDashboard']
 <div id="guide-button" class="guide-button" >
   <img src="${baseUrlCdn}/global/images/guideButton.png" />
 </div>
@@ -16,27 +20,27 @@
     <div class="text-modal-evidences">
     
     [#if reportingActive?exists && reportingActive]
-      [#if actionName == 'AICCRA/crpDashboard']
+      [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="guide.button.home.popup.title" /]</h3>    
         <div class="text-inter">
           [@s.text name="guide.button.home.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/description']
+      [#elseif actionPath == 'description']
         <h3 >[@s.text name="guide.button.description.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.description.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/partners']
+      [#elseif actionPath == 'partners']
         <h3 >[@s.text name="guide.button.partner.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.partner.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/locations']
+      [#elseif actionPath == 'locations']
         <h3 >[@s.text name="guide.button.location.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.location.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/contributionsCrpList']
+      [#elseif actionPath == 'contributionsCrpList']
         <h3 >[@s.text name="guide.button.contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.contributionList.popup.descriptionAR" /]
-      [#elseif actionName =='AICCRA/contributionCrp']
+      [#elseif actionPath == 'contributionCrp']
         <h3 >[@s.text name="guide.button.contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [#if projectOutcome.crpProgramOutcome.crpProgram.acronym ==' PDO']
@@ -44,31 +48,31 @@
           [#else]
             [@s.text name="guide.button.contribution.popup.descriptionAR" /]
           [/#if]  
-      [#elseif actionName == 'AICCRA/studies']
+      [#elseif actionPath == 'studies']
         <h3 >[@s.text name="guide.button.oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.oicrsList.popup.descriptionAR" /]
-      [#elseif actionName =='AICCRA/study']
+      [#elseif actionPath == 'study']
         <h3 >[@s.text name="guide.button.oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.oicrs.popup.descriptionAR" /]
-      [#elseif actionName =='AICCRA/deliverableList']
+      [#elseif actionPath == 'deliverableList']
         <h3 >[@s.text name="guide.button.deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.deliverableList.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/deliverable']
+      [#elseif actionPath == 'deliverable']
         <h3 >[@s.text name="guide.button.deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.deliverable.popup.descriptionAR" /]
-      [#elseif actionName == 'AICCRA/innovationsList' || actionName =='AICCRA/innovation']
+      [#elseif actionPath == 'innovationsList' || actionPath == 'innovation']
         <h3 >[@s.text name="guide.button.innovation.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.innovation.popup.descriptionAR" /]
-      [#elseif actionName == "AICCRA/activities" ]
+      [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="guide.button.activity.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.activity.popup.descriptionAR" /]
-      [#elseif actionName == "AICCRA/budgetByPartners" ]
+      [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="guide.button.budget.popup.title" /]</h3>   
         
           [@s.text name="guide.button.budget.popup.descriptionAR" /]
@@ -78,55 +82,55 @@
     [/#if]
 
     [#if POWB?exists && POWB ]
-      [#if actionName == 'AICCRA/crpDashboard']
+      [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="guide.button.home.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.home.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/description']
+      [#elseif actionPath == 'description']
         <h3 >[@s.text name="guide.button.description.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.description.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/partners']
+      [#elseif actionPath == 'partners']
         <h3 >[@s.text name="guide.button.partner.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.partner.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/locations']
+      [#elseif actionPath == 'locations']
         <h3 >[@s.text name="guide.button.location.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.location.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/contributionsCrpList']
+      [#elseif actionPath == 'contributionsCrpList']
         <h3 >[@s.text name="guide.button.contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.contributionList.popup.descriptionAWPB" /]
-      [#elseif actionName =='AICCRA/contributionCrp']
+      [#elseif actionPath == 'contributionCrp']
         <h3 >[@s.text name="guide.button.contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.contribution.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/studies']
+      [#elseif actionPath == 'studies']
         <h3 >[@s.text name="guide.button.oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.oicrsList.popup.descriptionAWPB" /]
-      [#elseif actionName =='AICCRA/study']
+      [#elseif actionPath == 'study']
         <h3 >[@s.text name="guide.button.oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.oicrs.popup.descriptionAWPB" /]
-      [#elseif actionName =='AICCRA/deliverableList']
+      [#elseif actionPath == 'deliverableList']
         <h3 >[@s.text name="guide.button.deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.deliverableList.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/deliverable']
+      [#elseif actionPath == 'deliverable']
         <h3 >[@s.text name="guide.button.deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.deliverable.popup.descriptionAWPB" /]
-      [#elseif actionName == 'AICCRA/innovationsList' || actionName =='AICCRA/innovation']
+      [#elseif actionPath == 'innovationsList' || actionPath == 'innovation']
         <h3 >[@s.text name="guide.button.innovation.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.innovation.popup.descriptionAWPB" /]
-      [#elseif actionName == "AICCRA/activities" ]
+      [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="guide.button.activity.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="guide.button.activity.popup.descriptionAWPB" /]
-      [#elseif actionName == "AICCRA/budgetByPartners" ]
+      [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="guide.button.budget.popup.title" /]</h3>   
         
           [@s.text name="guide.button.budget.popup.descriptionAWPB" /]
@@ -136,59 +140,59 @@
     [/#if]
 
     [#if UpKeepActive?exists &&  UpKeepActive]
-      [#if actionName == 'AICCRA/crpDashboard']
+      [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="home.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="home.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/description']
+      [#elseif actionPath == 'description']
         <h3 >[@s.text name="description.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="description.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/partners']
+      [#elseif actionPath == 'partners']
         <h3 >[@s.text name="partner.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="partner.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/locations']
+      [#elseif actionPath == 'locations']
         <h3 >[@s.text name="location.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="location.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/contributionsCrpList']
+      [#elseif actionPath == 'contributionsCrpList']
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="contributionList.popup.descriptionMY" /]
-      [#elseif actionName =='AICCRA/contributionCrp']
+      [#elseif actionPath == 'contributionCrp']
         <h3 >[@s.text name="contribution.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="contribution.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/studies']
+      [#elseif actionPath == 'studies']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="oicrsList.popup.descriptionMY" /]
-      [#elseif actionName =='AICCRA/study']
+      [#elseif actionPath == 'study']
         <h3 >[@s.text name="oicrs.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="oicrs.popup.descriptionMY" /]
-      [#elseif actionName =='AICCRA/deliverableList']
+      [#elseif actionPath == 'deliverableList']
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverableList.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/deliverable']
+      [#elseif actionPath == 'deliverable']
         <h3 >[@s.text name="deliverable.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="deliverable.popup.descriptionMY" /]
-      [#elseif actionName == 'AICCRA/innovationsList']
+      [#elseif actionPath == 'innovationsList']
         <h3 >[@s.text name="innovation.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="innovationList.popup.descriptionMY" /]
-      [#elseif actionName =='AICCRA/innovation']
+      [#elseif actionPath == 'innovation']
         <h3 >[@s.text name="innovation.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="innovation.popup.descriptionMY" /]
-      [#elseif actionName == "AICCRA/activities" ]
+      [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="activity.popup.title" /]</h3>   
         <div class="text-inter">
           [@s.text name="activity.popup.descriptionMY" /]
-      [#elseif actionName == "AICCRA/budgetByPartners" ]
+      [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="budget.popup.title" /]</h3>   
         
           [@s.text name="budget.popup.descriptionMY" /]

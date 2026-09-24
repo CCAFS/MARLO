@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230403"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20260924"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -378,7 +378,7 @@
           <div class="form-group">
             [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
             <div class="note">
-              If you don't find the country office you're looking for,request to have it added by
+              If you don't find the country office you're looking for, request to have it added by
               [#if !action.isAiccra()]
                 <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
               [#else]
@@ -512,7 +512,7 @@
           [#recover]
             [#assign canEditEmail=true /]
           [/#attempt] --]
-          [#assign canEditEmail = editable && isTemplate]
+          [#assign canEditEmail = editable && (isTemplate || !(element.id??))]
           <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
           [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
           [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]

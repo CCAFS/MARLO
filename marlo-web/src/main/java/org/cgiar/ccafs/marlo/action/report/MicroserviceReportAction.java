@@ -341,25 +341,8 @@ public class MicroserviceReportAction extends BaseAction {
           ((Map<String, Object>) inner).put("apiKey", apiKey);
         }
       } else {
-        // Manually construct the data object if jsonData is not provided
-        String link =
-          "https://localhost:8443/marlo-web/projects/AICCRA/studySummary.do?studyID=3517&cycle=Reporting&year=2024";
-
-        data = new HashMap<>();
-        data.put("pattern", "pdf.generate");
-
-        Map<String, Object> nestedData = new HashMap<>();
-        nestedData.put("templateData", OICRsTemplateData);
-
-        Map<String, String> linkData = new HashMap<>();
-        linkData.put("link", link);
-
-        nestedData.put("data", linkData);
-        nestedData.put("clusterAcronym", false);
-        nestedData.put("fileName", OICRsReportName);
-        nestedData.put("bucketName", bucketName);
-        nestedData.put("apiKey", apiKey);
-        data.put("data", nestedData);
+        logger.error("Unable to send OICR report message: report JSON data is not available");
+        return ERROR;
       }
 
       try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
