@@ -149,11 +149,6 @@ public class AutoSaveWriterAction extends BaseAction {
 
       }
 
-      /*
-       * if (nameClass.equals(ProjectBilateralCofinancing.class.getName())) {
-       * jSon = jSon.replaceAll("project\\.", "");
-       * }
-       */
       if (nameClass.equals(ProjectOutcome.class.getName())) {
         jSon = jSon.replaceAll("projectOutcome\\.", "");
       }

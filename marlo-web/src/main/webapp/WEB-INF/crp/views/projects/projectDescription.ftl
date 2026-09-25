@@ -184,7 +184,7 @@
 
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=true className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project Challenges, causes and proposed solutions --]
@@ -218,7 +218,7 @@
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
-                [@customForm.textArea name="project.projectInfo.statusJustification" i18nkey="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=(editable || editStatus)   /]
+                [@customForm.textArea name="project.projectInfo.statusJustification" i18nkey="project.statusJustification" required=true className="project-statusJustification limitWords-100" editable=(editable || editStatus)   /]
               </div>
             </div>
 
