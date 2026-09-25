@@ -8,7 +8,7 @@
   ] 
 /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/capDev/capacityDevelopment.js",
   "${baseUrlMedia}/js/capDev/syncParticipants.js",
   "${baseUrlMedia}/js/capDev/capdevDescription.js?20181211",

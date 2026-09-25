@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
-  "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/projects/projectPartners.js?191502"
   ] 
 /]  

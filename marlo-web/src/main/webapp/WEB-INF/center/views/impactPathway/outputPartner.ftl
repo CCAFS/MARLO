@@ -3,7 +3,7 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/impactPathway/output.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 

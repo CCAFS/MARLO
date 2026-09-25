@@ -3,7 +3,7 @@
 [#assign currentSectionString = "program-${actionName?replace('/','-')}-${crpProgramID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["cytoscape","cytoscape-panzoom","select2"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
   "${baseUrlCdn}/global/js/autoSave.js", 
   "${baseUrlCdn}/global/js/impactGraphic.js",

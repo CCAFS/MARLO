@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/admin/management.js" ,
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ] 
