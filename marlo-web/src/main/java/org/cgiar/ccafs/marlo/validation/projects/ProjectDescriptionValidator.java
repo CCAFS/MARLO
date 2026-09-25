@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -57,6 +58,12 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  private boolean hasActivePrograms(BaseAction action, int programType) {
+    GlobalUnit crp = crpManager.getGlobalUnitById(action.getCrpID());
+    return crp != null && crp.getCrpPrograms() != null
+      && crp.getCrpPrograms().stream().anyMatch(c -> c.isActive() && c.getProgramType() == programType);
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
@@ -153,7 +160,9 @@ public class ProjectDescriptionValidator extends BaseValidator {
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
 
-      if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
+      // A list is only mandatory when the CRP offers at least one active program to pick from
+      if (this.hasActivePrograms(action, ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        && (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0)) {
         action.addMessage(action.getText("projectDescription.flagships"));
         action.getInvalidFields().put("list-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
@@ -174,7 +183,8 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
 
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
-        && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
+        && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")
+        && this.hasActivePrograms(action, ProgramType.REGIONAL_PROGRAM_TYPE.getValue())) {
         if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {

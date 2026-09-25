@@ -223,6 +223,8 @@
             [#--  Regions/global and Flagships that the project is working on --]
             [#if (!project.projectInfo.administrative)!false]
 
+            [#-- Heading and box are only shown when at least one of the lists has elements --]
+            [#if (programFlagships)?has_content || (regionFlagships)?has_content]
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
               <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
@@ -232,7 +234,8 @@
             [/#if]
 
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
-              [#-- Flagships --]
+              [#-- Flagships: only shown (and required) when there are elements in the list --]
+              [#if (programFlagships)?has_content]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 <div id="projectFlagshipsBlock" listname="project.flagshipValue" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
@@ -264,6 +267,9 @@
                   [/#if]
                 </div>
               </div>
+              [#else]
+                <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
+              [/#if]
               [#-- Regions --]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 [#if regionFlagships?has_content]
@@ -296,6 +302,9 @@
               </div>
               <div class="clearfix"></div>
             </div>
+            [#else]
+              <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
+            [/#if]
             [/#if]
 
             [#-- Cluster of Activities --]
