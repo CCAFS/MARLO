@@ -99,7 +99,7 @@ public class CrpUsersActionDirectoryTest {
     this.userManager = new FakeUserManager();
 
     APConfig config = new APConfig();
-    SendMailS noOpSendMailS = new SendMailS(config, null, null) {
+    SendMailS noOpSendMailS = new SendMailS(config, null, null, null) {
 
       @Override
       public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,

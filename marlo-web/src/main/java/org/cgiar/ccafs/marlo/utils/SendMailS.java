@@ -15,11 +15,16 @@
 package org.cgiar.ccafs.marlo.utils;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -40,6 +45,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import com.opensymphony.xwork2.ActionContext;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +65,68 @@ public class SendMailS extends BaseAction {
   private APConfig config;
   private EmailLogManager emailLogManager;
   private final SessionFactory sessionFactory;
+  private final CustomParameterManager customParameterManager;
 
   @Inject
-  public SendMailS(APConfig config, EmailLogManager emailLogManager, SessionFactory sessionFactory) {
+  public SendMailS(APConfig config, EmailLogManager emailLogManager, SessionFactory sessionFactory,
+    CustomParameterManager customParameterManager) {
     this.config = config;
     this.emailLogManager = emailLogManager;
     this.sessionFactory = sessionFactory;
+    this.customParameterManager = customParameterManager;
+  }
+
+  /**
+   * Reads the CRP of the request being served. This bean is a Spring singleton, so Struts never injects a session
+   * into it and the inherited getCrpID() is always null here; the session has to be taken from the ActionContext of
+   * the current thread instead.
+   *
+   * @return the id of the CRP in the session of the current request, or null when there is none (REST endpoints and
+   *         background threads run outside Struts).
+   */
+  private Long getRequestCrpID() {
+    ActionContext context = ActionContext.getContext();
+    if (context == null) {
+      return null;
+    }
+
+    Map<String, Object> requestSession = context.getSession();
+    if (requestSession == null) {
+      return null;
+    }
+
+    Object sessionCrp = requestSession.get(APConstants.SESSION_CRP);
+    if (!(sessionCrp instanceof GlobalUnit)) {
+      return null;
+    }
+
+    Long crpID = ((GlobalUnit) sessionCrp).getId();
+    return crpID != null && crpID != 0L ? crpID : null;
+  }
+
+  /**
+   * Tells whether the email must go only to the support team, as set by the specificity crp_email_support_team.
+   * When the CRP or the specificity cannot be read the email is restricted anyway: sending it to a real recipient
+   * cannot be undone, while an email held back only reaches the support team.
+   *
+   * @return true when the recipients must be replaced by the support team.
+   */
+  private boolean isRestrictedToSupport() {
+    Long crpID = this.getRequestCrpID();
+    if (crpID == null) {
+      LOG.info("There is no CRP in the current request, so the email is sent only to the support team");
+      return true;
+    }
+
+    try {
+      CustomParameter sendEmailSupport = this.customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_SUPPORT_TEAM, crpID);
+      return sendEmailSupport != null && Boolean.parseBoolean(sendEmailSupport.getValue());
+    } catch (Exception e) {
+      LOG.warn("Could not read the custom parameter {} for the CRP {}, so the email is sent only to the support team",
+        APConstants.CRP_EMAIL_SUPPORT_TEAM, crpID, e);
+      return true;
+    }
   }
 
   /**
@@ -84,7 +146,7 @@ public class SendMailS extends BaseAction {
    */
   public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
     byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
-    if (this.sendEmailJustToSupport()) {
+    if (this.isRestrictedToSupport()) {
       toEmail = this.config.getEmailNotification();
       ccEmail = null;
       bbcEmail = null;
