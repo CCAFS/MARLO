@@ -61,7 +61,6 @@ public final class APConstants {
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
-  public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -133,6 +132,8 @@ public final class APConstants {
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
   public static final String AI_SECTION_ACTIVE = "ai_section_active";
+  // Allows a project to create its own activities by typing the title. Value MUST equal parameters.key
+  public static final String PROJECT_ACTIVITY_CREATION_ACTIVE = "project_activity_creation_active";
   // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
   public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
@@ -161,7 +162,6 @@ public final class APConstants {
   public static final String OICR_SCORE_FIELD_ACTIVE = "oicr_score_field_active";
   public static final String DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE =
     "duplicated_deliverables_functionality_active";
-  public static final String MELIA_SCORE_FIELD_ACTIVE = "melia_score_field_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
     "deliverable_shared_clusters_trainees_active";
   public static final String HIGHLIGHT_COMMENTS_ACTIVE = "highlight_comments_active";
@@ -176,7 +176,6 @@ public final class APConstants {
     "impact_pathway_cross_cutting_markets_active";
   public static final String CONTRIBUTION_PERFORMANCE_INDICATORS_SHOW_MULTIPLE_MILESTONES_PER_YEAR_ACTIVE =
     "contribution_performance_indicators_show_multiple_milestones_per_year_active";
-  public static final String DISPLAY_USER_MENU_NEW_STYLE = "display_user_menu_new_style";
   public static final String SHOW_CONTRIBUTION_PERFORMANCE_INDICATOR_DEPRECATED_TAB_ACTIVE =
     "show_contribution_performance_indicator_deprecated_tab_active";
 
@@ -186,8 +185,6 @@ public final class APConstants {
 
   // Email parameters to copy to FL FM CL
   public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
-  // public static final String CRP_EMAIL_PL_CRPADMIN_FL =
-  // "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";

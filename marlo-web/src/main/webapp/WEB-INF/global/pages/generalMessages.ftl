@@ -2,8 +2,12 @@
 [#-- Messages are going to show using notify plugin (see global.js) --]
 <section id="generalMessages" class="container">  
   <ul class="messages" style="display: none;">
-    <#--  [@s.iterator value="actionMessages"]<li id="message" class="success">[@s.property escape="false" /]</li>[/@s.iterator]  -->
-    <#--  [@s.iterator value="actionErrors"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]  -->
+    [#-- These two feed showNotificationMessages() in global.js, which reads
+         $('#generalMessages').find("#message"). They live inside a hidden <ul>, so they render
+         nothing on their own; commenting them out in e8cb9a02a1 left the alert below with no
+         data source and silenced every POST+redirect save message in the site. --]
+    [@s.iterator value="actionMessages"]<li id="message" class="success">[@s.property escape="false" /]</li>[/@s.iterator]
+    [@s.iterator value="actionErrors"]<li id="message" class="error">[@s.property escape="false" /]</li>[/@s.iterator]
   </ul>
 </section>  
 

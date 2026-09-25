@@ -1373,32 +1373,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-  /**
-   * Verify if the project have Cluster of Activity to activate Budget by CoA
-   *
-   * @return true if the project have CoA or false otherwise.
-   */
-  public Boolean canEditBudgetByCoAs(long projectID) {
-    Project project = this.projectManager.getProjectById(projectID);
-    if (this.hasSpecificities(this.getCrpEnableBudgetByCoas())) {
-      if (project.getProjectClusterActivities().stream()
-        .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList()) == null) {
-        return false;
-      }
-      if (project.getProjectClusterActivities().stream()
-        .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
-        .size() > 1) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-
-  }
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
@@ -2818,10 +2792,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .collect(Collectors.toList());
     globalUnits.sort((gu1, gu2) -> gu1.getAcronym().compareTo(gu2.getAcronym()));
     return globalUnits;
-  }
-
-  public String getCrpEnableBudgetByCoas() {
-    return APConstants.CRP_ENABLE_BUDGETBYCOAS;
   }
 
   public String getCrpEnableBudgetExecution() {
@@ -7933,6 +7903,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       LOG.debug("Could not read the upkeep flag of the actual phase, so the progress is reported as inactive", e);
       return false;
     }
+  }
+
+  /**
+   * Tells whether a project creates its own activities by typing the activity title, instead of picking it from the
+   * Activity management catalog of the Global Unit.
+   * <p>
+   * The answer comes from the {@code project_activity_creation_active} specificity. When the Global Unit has no custom
+   * parameter for it, the legacy behaviour is kept: every Global Unit typed its own titles until the catalog was
+   * introduced for AICCRA in 2021.
+   *
+   * @return true when the activity title is a free text field, false when it comes from the catalog
+   */
+  public boolean isProjectActivityCreationActive() {
+    String value = this.specificityValue(APConstants.PROJECT_ACTIVITY_CREATION_ACTIVE);
+    if (value == null) {
+      return !this.isAiccra();
+    }
+
+    return Boolean.parseBoolean(value);
   }
 
   /**

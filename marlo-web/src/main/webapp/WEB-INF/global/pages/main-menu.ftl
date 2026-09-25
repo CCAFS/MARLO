@@ -140,9 +140,9 @@
 [#if logged?? && logged]
   [#--
     The user menu is part of the platform-wide chrome, so it is rendered for
-    every global unit. It used to sit behind the `display_user_menu_new_style`
-    specificity, which only existed for a few units and left the rest without
-    a user menu.
+    every global unit. It used to sit behind a per-unit specificity, which
+    only existed for a few units and left the rest without a user menu; that
+    specificity was removed from the catalog once the menu became chrome.
 
     Initials are built defensively: users without a first or last name would
     otherwise blow up ?substring(0, 1) now that this runs everywhere.

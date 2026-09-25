@@ -236,7 +236,7 @@
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
               [#-- Flagships --]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
-                <div id="projectFlagshipsBlock" class="${customForm.changedField('project.flagshipValue')}">
+                <div id="projectFlagshipsBlock" listname="project.flagshipValue" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
                   [#if editable && action.hasPermission("flagships")]
                     [@s.fielderror cssClass="fieldError" fieldName="project.flagshipValue"/]
@@ -269,7 +269,7 @@
               [#-- Regions --]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 [#if regionFlagships?has_content]
-                  <div id="projectRegionsBlock" class="${customForm.changedField('project.regionsValue')}">
+                  <div id="projectRegionsBlock" listname="project.regionsValue" class="${customForm.changedField('project.regionsValue')}">
                     <p><label>[@s.text name="projectDescription.regions${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("regions") /]</label></p>
                     [#if editable && action.hasPermission("regions")]
                       [#if isCrpProject]

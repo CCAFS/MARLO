@@ -1679,8 +1679,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         String deliverables = "";
         String activityTitle = "";
 
-        if (activity.getActivityTitle() != null && activity.getActivityTitle().getTitle() != null) {
-          activityTitle = activity.getActivityTitle().getTitle();
+        if (activity.getDisplayTitle() != null) {
+          activityTitle = activity.getDisplayTitle();
         }
         if (activity.getStartDate() != null) {
           startDate = formatter.format(activity.getStartDate());
@@ -3045,9 +3045,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getActivities() != null && !deliverable.getActivities().isEmpty()) {
           for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
             if (deliverableActivity != null && deliverableActivity.getActivity() != null
-              && deliverableActivity.getActivity().getActivityTitle() != null
-              && deliverableActivity.getActivity().getActivityTitle().getTitle() != null) {
-              activities += "● " + deliverableActivity.getActivity().getActivityTitle().getTitle() + "\n <br>";
+              && deliverableActivity.getActivity().getDisplayTitle() != null) {
+              activities += "● " + deliverableActivity.getActivity().getDisplayTitle() + "\n <br>";
             }
           }
         }
@@ -4046,9 +4045,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (deliverable.getActivities() != null && !deliverable.getActivities().isEmpty()) {
           for (DeliverableActivity deliverableActivity : deliverable.getActivities()) {
             if (deliverableActivity != null && deliverableActivity.getActivity() != null
-              && deliverableActivity.getActivity().getActivityTitle() != null
-              && deliverableActivity.getActivity().getActivityTitle().getTitle() != null) {
-              activities += "● " + deliverableActivity.getActivity().getActivityTitle().getTitle() + "\n <br>";
+              && deliverableActivity.getActivity().getDisplayTitle() != null) {
+              activities += "● " + deliverableActivity.getActivity().getDisplayTitle() + "\n <br>";
             }
           }
         }
@@ -10401,9 +10399,9 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
     }
 
-    // Activity Title (for AICCRA)
-    if (activity.getActivityTitle() != null && activity.getActivityTitle().getTitle() != null) {
-      data.put("activityTitle", this.getSanitizedText(activity.getActivityTitle().getTitle()));
+    // Activity Title
+    if (activity.getDisplayTitle() != null) {
+      data.put("activityTitle", this.getSanitizedText(activity.getDisplayTitle()));
     }
 
     // Deliverables associated with this activity - using same logic as ProjectActivitiesAction
