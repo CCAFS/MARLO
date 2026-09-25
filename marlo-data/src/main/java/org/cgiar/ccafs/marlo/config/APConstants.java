@@ -355,7 +355,6 @@ public final class APConstants {
   public static final String PROJECT_INDICATOR_PHASE_PREVIOUS_NAME = "AR";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
-  // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
   public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
@@ -368,7 +367,6 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyProjects)";
-  public static final String PROJECT_CCAFS_COFUNDED = "COFUNDED";
   public static final String PROJECT_CCFASOTUCOME_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectIndicators)";
   public static final String PROJECT_CLUSTER_ACTIVITIES_RELATION =
