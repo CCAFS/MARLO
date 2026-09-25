@@ -824,13 +824,12 @@ public class ProjectDescriptionAction extends BaseAction {
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
 
-    if (this.isAiccra()) {
-      clusterTypes = new ArrayList<>();
-      clusterTypes = clusterTypeManager.findAll();
-      if (clusterTypes != null && !clusterTypes.isEmpty()) {
-        clusterTypes =
-          clusterTypes.stream().filter(c -> c != this.getManagementClusterType()).collect(Collectors.toList());
-      }
+    clusterTypes = clusterTypeManager.findAll();
+    if (clusterTypes != null && !clusterTypes.isEmpty()) {
+      // Resolved once: the lambda used to call this per element, and each call ran its own findAll().
+      ClusterType managementClusterType = this.getManagementClusterType();
+      clusterTypes =
+        clusterTypes.stream().filter(c -> c != managementClusterType).collect(Collectors.toList());
     }
 
 

@@ -4303,19 +4303,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public ClusterType getManagementClusterType() {
-    ClusterType clusterType = new ClusterType();
-
-    List<ClusterType> clusterTypes = new ArrayList<>();
-    clusterTypes = clusterTypeManager.findAll();
-    if (clusterTypes != null && !clusterTypes.isEmpty()) {
-      if (clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()) != null
-        && !clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList())
-          .isEmpty()) {
-        clusterType =
-          clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()).get(0);
+    List<ClusterType> types = clusterTypeManager.findAll();
+    if (types != null) {
+      for (ClusterType type : types) {
+        // The catalogue allows a null name, and an unguarded contains() here breaks every caller of this method.
+        if (type.getName() != null && type.getName().contains("Management")) {
+          return type;
+        }
       }
     }
-    return clusterType;
+    // Callers expect a non-null instance; an empty one means the catalogue has no Management row.
+    return new ClusterType();
   }
 
   /**
