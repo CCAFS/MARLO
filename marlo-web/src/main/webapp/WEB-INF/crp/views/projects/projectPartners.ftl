@@ -5,10 +5,10 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
-  "${baseUrlMedia}/js/projects/projectPartners.js?191502"
+  "${baseUrlMedia}/js/projects/projectPartners.js?20260925"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20260924"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20260925"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -116,6 +116,14 @@
             [#-- [/#if] --]
           
           
+            [#-- Partners search --]
+            <div class="partnersSearch-wrap">
+              <input type="text" id="partnersSearch" class="form-control partnersSearch" placeholder="[@s.text name='projectPartners.searchPartner' /]" autocomplete="off" />
+              <div class="iconSearch partnersSearch-icon">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </div>
+            </div>
+            
             [#-- Partners list --]
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
@@ -132,6 +140,8 @@
                 [/#if]
                  --]
               [/#if] 
+              [#-- Shown by projectPartners.js when no partner matches the search --]
+              <p class="partnersSearch-empty text-center" style="display:none">[@s.text name="projectPartners.searchPartner.empty" /]</p>
               [#if (editable && canEdit)]
                 <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
               [/#if]

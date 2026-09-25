@@ -121,6 +121,14 @@ function attachEvents() {
   /**
    * Project partner Events
    */
+  // Filter the partner blocks by organization name or contact person
+  $('#partnersSearch').on('input', filterPartnersBySearch);
+  // The search box lives inside the section form, so Enter would submit (and save) the whole section
+  $('#partnersSearch').on('keydown', function(e) {
+    if(e.which === 13) {
+      e.preventDefault();
+    }
+  });
   // Add a project partner Event
   $(".addProjectPartner").on('click', addPartnerEvent);
   // Remove a project partner Event
@@ -854,6 +862,33 @@ function addSelect2() {
       width: '100%'
   });
 
+}
+
+/*
+ * Filters the partner blocks against what is typed in the search box. Only the block visibility is touched: the
+ * inputs of a hidden partner are still part of the form and are still submitted, and the indexes are untouched,
+ * so a filtered list saves exactly like an unfiltered one.
+ *
+ * The match runs over the block title, which carries the organization composed name and the contact people
+ * rendered by projectPartners.ftl.
+ */
+function filterPartnersBySearch() {
+  var searchTerm = ($(this).val() || '').toLowerCase().trim();
+  var $partners = $partnersBlock.find('.projectPartner');
+  var matches = 0;
+
+  $partners.each(function() {
+    var partnerText = ($(this).find('> .blockTitle').text() || '').toLowerCase();
+
+    if(!searchTerm || partnerText.indexOf(searchTerm) !== -1) {
+      $(this).show();
+      matches++;
+    } else {
+      $(this).hide();
+    }
+  });
+
+  $partnersBlock.find('.partnersSearch-empty').toggle(searchTerm !== '' && matches === 0);
 }
 
 /**
