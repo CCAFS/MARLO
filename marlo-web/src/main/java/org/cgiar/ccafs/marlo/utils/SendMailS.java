@@ -46,6 +46,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +131,52 @@ public class SendMailS extends BaseAction {
   }
 
   /**
+   * Tells whether the CRP of the request has turned its email notifications off, as set by the specificity
+   * crp_enable_email_notification. The actions check it before sending, but not all of them do, so it is enforced
+   * here for every email. An undefined specificity or an empty value keeps the notifications on, as the actions read
+   * it. When there is no CRP or the specificity cannot be read the email is still sent, since
+   * isRestrictedToSupport() already holds it back to the support team in both cases.
+   *
+   * @param toEmail the TO recipients of the email.
+   * @param ccEmail the CC recipients of the email.
+   * @param bbcEmail the BCC recipients of the email.
+   * @param subject the subject of the email, only to identify it in the log.
+   * @return true when the email must not be sent at all.
+   */
+  private boolean isNotificationDisabled(String toEmail, String ccEmail, String bbcEmail, String subject) {
+    // An email addressed only to the support team, such as the exception reports, is not a user notification.
+    String supportEmail = this.config.getEmailNotification();
+    boolean onlyToSupport = supportEmail != null && supportEmail.trim().equalsIgnoreCase(StringUtils.trim(toEmail))
+      && (StringUtils.isBlank(ccEmail) || supportEmail.trim().equalsIgnoreCase(ccEmail.trim()))
+      && (StringUtils.isBlank(bbcEmail) || supportEmail.trim().equalsIgnoreCase(bbcEmail.trim()));
+    if (onlyToSupport) {
+      return false;
+    }
+
+    Long crpID = this.getRequestCrpID();
+    if (crpID == null) {
+      return false;
+    }
+
+    try {
+      CustomParameter emailNotification = this.customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_EMAIL_NOTIFICATIONS, crpID);
+      if (emailNotification == null || emailNotification.getValue() == null
+        || emailNotification.getValue().equalsIgnoreCase("true")) {
+        return false;
+      }
+
+      LOG.info("The email notifications are disabled for the CRP {}, so the message '{}' is not sent", crpID,
+        subject);
+      return true;
+    } catch (Exception e) {
+      LOG.warn("Could not read the custom parameter {} for the CRP {}, so the message '{}' is sent anyway",
+        APConstants.CRP_EMAIL_NOTIFICATIONS, crpID, subject, e);
+      return false;
+    }
+  }
+
+  /**
    * This method send an email from the main email system.
    * 
    * @param toEmail is the email or the list of emails separated by a single
@@ -146,6 +193,9 @@ public class SendMailS extends BaseAction {
    */
   public void send(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
     byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
+    if (this.isNotificationDisabled(toEmail, ccEmail, bbcEmail, subject)) {
+      return;
+    }
     if (this.isRestrictedToSupport()) {
       toEmail = this.config.getEmailNotification();
       ccEmail = null;
@@ -483,6 +533,9 @@ public class SendMailS extends BaseAction {
   public void sendTemporalMethod(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
     byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
     // TODO delete this method and change the feedback email services- this ignore send just to support specificity
+    if (this.isNotificationDisabled(toEmail, ccEmail, bbcEmail, subject)) {
+      return;
+    }
     // Get a Properties object
     Properties properties = System.getProperties();
 
