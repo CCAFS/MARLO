@@ -1144,8 +1144,11 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (project.getProjectInfo().getType() != null && project.getProjectInfo().getType() == APConstants.PROJECT_CORE
-        && this.getManagementClusterType() != null) {
+      // The management cluster never renders the cluster type select, so prepare() nulls it on POST and no form
+      // parameter puts it back. administrative is read from projectDB: the form does not carry it, and project only
+      // receives it from the database further down this method.
+      if (Boolean.TRUE.equals(projectDB.getProjectInfo().getAdministrative())
+        && this.getManagementClusterType().getId() != null) {
         ClusterType managementClusterType =
           clusterTypeManager.getClusterTypeById(this.getManagementClusterType().getId());
         if (managementClusterType != null) {

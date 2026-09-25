@@ -19,7 +19,6 @@
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 [#assign isNewCenterTypeProject = (action.isNewCenterType(project.id))!false ]
-[#assign isManagementCluster = (action.isManagementCluster(project.id))!false ]
 
 [#if !action.isAiccra()]
   [#assign breadCrumb = [
@@ -122,8 +121,7 @@
                 [/#if]
               </div>
               [#-- Cluster Types --]
-              [#if action.isAiccra() && !isManagementCluster]  
-             
+              [#if !((project.projectInfo.administrative)!false)]
                 <div class="col-md-6">
                   [#if editable]
                     [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType" disabled=!editable listName="clusterTypes" keyFieldName="id" displayFieldName="name" required=true editable=true /]

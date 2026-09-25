@@ -7691,21 +7691,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-  public boolean isManagementCluster(long id) {
-    boolean isManagement = false;
-    Project project = projectManager.getProjectById(id);
-    if (project != null) {
-      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
-        && project.getProjectInfo().getClusterType().getId() != null) {
-        if (project.getProjectInfo().getClusterType().getId().equals(this.getManagementClusterType().getId())) {
-          isManagement = true;
-        }
-      }
-    }
-    return isManagement;
-  }
-
   /**
    * Check if the project was created in a new Center
    *
