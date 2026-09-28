@@ -10,12 +10,7 @@ import org.cgiar.ccafs.marlo.data.dao.RoleDAO;
 import org.cgiar.ccafs.marlo.data.dao.UserDAO;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitProjectManager;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
-import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
-import org.cgiar.ccafs.marlo.data.model.CrpProgram;
-import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
-import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -101,7 +96,6 @@ public class SendEmails {
     action.setSession(new HashMap<>());
     action.loadProvider(action.getSession());
     action.getSession().put(APConstants.CRP_ADMIN_ROLE, "83");
-    action.getSession().put(APConstants.CRP_EMAIL_CC_FL_FM_CL, true);
     action.getSession().put(APConstants.CRP_PMU_ROLE, "84");
     action.getSession().put(APConstants.CRP_PL_ROLE, "91");
     action.getSession().put(APConstants.CRP_PL_ROLE, "91");
@@ -193,7 +187,6 @@ public class SendEmails {
     action.setSession(new HashMap<>());
     action.loadProvider(action.getSession());
     action.getSession().put(APConstants.CRP_ADMIN_ROLE, "98");
-    action.getSession().put(APConstants.CRP_EMAIL_CC_FL_FM_CL, true);
     action.getSession().put(APConstants.CRP_PMU_ROLE, "99");
     action.getSession().put(APConstants.CRP_PL_ROLE, "106");
     action.setPhaseID(new Long(8));
@@ -360,12 +353,6 @@ public class SendEmails {
   }
 
   private static void notifyRoleAssigned(User userAssigned, Role role, Project project, GlobalUnit loggedCrp) {
-
-
-    // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject =
-
-      globalUnitProjectManager.findByProjectAndGlobalUnitId(project.getId(), loggedCrp.getId());
     userAssigned = userDAO.getUser(userAssigned.getId());
 
 
@@ -395,56 +382,6 @@ public class SendEmails {
         ccEmail += crpAdminsEmail;
       } else {
         ccEmail += ", " + crpAdminsEmail;
-      }
-    }
-
-    // Copy to FL, CL and FM depending on CRP_EMAIL_CC_FL_FM_CL specificity
-    if (action.hasSpecificities(APConstants.CRP_EMAIL_CC_FL_FM_CL)) {
-      // CC for leaders and coordinators
-      // CC will be also the Management Liaison associated with the flagship(s), if is PMU only the PMU contact
-      Long crpPmuRole = Long.parseLong((String) action.getSession().get(APConstants.CRP_PMU_ROLE));
-      Role roleCrpPmu = roleDAO.find(crpPmuRole);
-      // If Managment liason is PMU
-      if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
-        if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getAcronym()
-          .equals(roleCrpPmu.getAcronym())) {
-        } else if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null
-          && project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getCrpProgram() != null
-          && project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getCrpProgram()
-            .getProgramType() == 1) {
-          // If Managment liason is FL
-          List<CrpProgram> crpPrograms = globalUnitProject
-            .getGlobalUnit().getCrpPrograms().stream().filter(cp -> cp.getId() == project
-              .getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution().getCrpProgram().getId())
-            .collect(Collectors.toList());
-          if (crpPrograms != null) {
-            if (crpPrograms.size() > 1) {
-              // LOG.warn("Crp programs should be 1");
-            }
-            CrpProgram crpProgram = crpPrograms.get(0);
-            for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-              .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-              if (ccEmail.isEmpty()) {
-                ccEmail += crpProgramLeader.getUser().getEmail();
-              } else {
-                ccEmail += ", " + crpProgramLeader.getUser().getEmail();
-              }
-            }
-            // CC will be also other Cluster Leaders
-            for (CrpClusterOfActivity crpClusterOfActivity : crpProgram.getCrpClusterOfActivities().stream()
-              .filter(cl -> cl.isActive() && cl.getPhase().equals(action.getActualPhase()))
-              .collect(Collectors.toList())) {
-              for (CrpClusterActivityLeader crpClusterActivityLeader : crpClusterOfActivity
-                .getCrpClusterActivityLeaders().stream().filter(cl -> cl.isActive()).collect(Collectors.toList())) {
-                if (ccEmail.isEmpty()) {
-                  ccEmail += crpClusterActivityLeader.getUser().getEmail();
-                } else {
-                  ccEmail += ", " + crpClusterActivityLeader.getUser().getEmail();
-                }
-              }
-            }
-          }
-        }
       }
     }
 

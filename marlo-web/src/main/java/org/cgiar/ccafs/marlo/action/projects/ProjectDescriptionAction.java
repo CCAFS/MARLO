@@ -824,13 +824,12 @@ public class ProjectDescriptionAction extends BaseAction {
       projectStatuses.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
 
-    if (this.isAiccra()) {
-      clusterTypes = new ArrayList<>();
-      clusterTypes = clusterTypeManager.findAll();
-      if (clusterTypes != null && !clusterTypes.isEmpty()) {
-        clusterTypes =
-          clusterTypes.stream().filter(c -> c != this.getManagementClusterType()).collect(Collectors.toList());
-      }
+    clusterTypes = clusterTypeManager.findAll();
+    if (clusterTypes != null && !clusterTypes.isEmpty()) {
+      // Resolved once: the lambda used to call this per element, and each call ran its own findAll().
+      ClusterType managementClusterType = this.getManagementClusterType();
+      clusterTypes =
+        clusterTypes.stream().filter(c -> c != managementClusterType).collect(Collectors.toList());
     }
 
 
@@ -865,16 +864,13 @@ public class ProjectDescriptionAction extends BaseAction {
 
       LiaisonInstitution liaisonFromForm = project.getProjecInfoPhase(this.getActualPhase()).getLiaisonInstitution();
 
-      if (this.isAiccra() && liaisonFromForm != null && liaisonFromForm.getId() != null) {
-          
-          Long newId = liaisonFromForm.getId();
-          LiaisonInstitution safeLiaison = new LiaisonInstitution();
-          safeLiaison.setId(newId);
-          
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(safeLiaison);
-
+      if (liaisonFromForm != null && liaisonFromForm.getId() != null) {
+        Long newId = liaisonFromForm.getId();
+        LiaisonInstitution safeLiaison = new LiaisonInstitution();
+        safeLiaison.setId(newId);
+        project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(safeLiaison);
       } else {
-          project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
+        project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
       }
       project.getProjectInfo().setNoRegional(null);
       project.getProjectInfo().setCrossCuttingCapacity(null);
@@ -1148,8 +1144,11 @@ public class ProjectDescriptionAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_SCOPES_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (project.getProjectInfo().getType() != null && project.getProjectInfo().getType() == APConstants.PROJECT_CORE
-        && this.getManagementClusterType() != null) {
+      // The management cluster never renders the cluster type select, so prepare() nulls it on POST and no form
+      // parameter puts it back. administrative is read from projectDB: the form does not carry it, and project only
+      // receives it from the database further down this method.
+      if (Boolean.TRUE.equals(projectDB.getProjectInfo().getAdministrative())
+        && this.getManagementClusterType().getId() != null) {
         ClusterType managementClusterType =
           clusterTypeManager.getClusterTypeById(this.getManagementClusterType().getId());
         if (managementClusterType != null) {

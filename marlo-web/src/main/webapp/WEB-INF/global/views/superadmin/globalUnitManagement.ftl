@@ -3,7 +3,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload"] /]
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js",
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925",
   "${baseUrlCdn}/global/js/superadmin/globalUnitManagement.js?20260916"
 ] /]
 [#assign customCSS = [ "${baseUrlCdn}/global/css/superadmin/superadmin.css?20260914", "${baseUrlCdn}/global/css/superadmin/globalUnitManagement.css?20260914" ] /]

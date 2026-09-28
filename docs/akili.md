@@ -8,7 +8,7 @@ MARLO's spec-driven work runs on **AKILI-SPECS**, a methodology distributed as a
 |---|---|
 | Methodology | AKILI-SPECS by Juan Carlos Cadavid — [jcadavid.com](https://jcadavid.com/es/methodology/) |
 | License | MIT (the methodology). MARLO itself is GPL — see [`LICENSE`](../LICENSE) |
-| Package | `akili-specs`, installed version **2.23.2** |
+| Package | `akili-specs`, installed version **2.27.0** |
 | Confirmed host | Claude Code only. OpenCode and Antigravity are recorded in the model registry but unverified here |
 | Versioned in this repo | `.agents/*.md` (personas) and `.claude/agents/akili-*.md` (model wrappers) — **only these**. Commands and skills come from the package |
 
@@ -164,8 +164,8 @@ Recorded so a future session does not mistake absence for breakage.
 
 | Gap | Consequence |
 |---|---|
-| The `akili` binary is not on PATH (global npm install needs sudo) | Commands and skills work; `akili update` / `doctor` must wait for a sudo install |
-| `codegraph` CLI is not installed | Commands fall back to Glob/Grep with lower-confidence scans — report degraded confidence, never a narrowed scope |
+| `/usr/local/lib/node_modules` is root-owned | `akili update` fails at its npm step with `EACCES`. Run `sudo npm install -g akili-specs@latest`, then `akili install --force --tool claude` to refresh the files in `~/.claude` |
+| `playwright-cli` is not installed | `akili doctor` reports it as recommended. Without it, E2E/browser work loads the Playwright MCP schemas instead |
 | No `.agents/agents/` nested wrappers | Google Antigravity cannot discover the personas. Claude Code is unaffected |
 | `/akili-audit` has never run | `docs/specs/audits/` holds only its README. There is no drift baseline yet |
 | `/akili-quick` has never run | `docs/specs/quick/` does not exist; it is created on first use |

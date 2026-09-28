@@ -48,7 +48,7 @@
     [/#if]
 
     [#-- Redesign layer: overrides global.css, must stay after it --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?202608262" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/marlo-redesign.css?20260916" />
 
     [#-- Global Unit brand colour. Redefines the brand tokens declared by marlo-redesign.css and, for a Center,
          by global-center.css, so it must stay after both links. Rendered only when the unit has crp_theme_color

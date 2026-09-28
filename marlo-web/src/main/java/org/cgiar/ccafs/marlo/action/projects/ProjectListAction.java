@@ -249,7 +249,9 @@ public class ProjectListAction extends BaseAction {
     projectInfo.setAdministrative(new Boolean(admin));
     projectInfo.setPhase(phase);
     projectInfo.setProject(project);
-    if (type == APConstants.PROJECT_CORE) {
+    // An empty ClusterType means the catalogue has no Management row; persisting it would hand
+    // Hibernate a transient instance with no id.
+    if (admin && this.getManagementClusterType().getId() != null) {
       projectInfo.setClusterType(this.getManagementClusterType());
     }
     projectInfoManager.saveProjectInfo(projectInfo);
@@ -362,7 +364,7 @@ public class ProjectListAction extends BaseAction {
       projectInfo.setLiaisonInstitution(liaisonInstitution);
       projectInfo.setScale(0);
       projectInfo.setCofinancing(false);
-      if (this.isAiccra() && type == APConstants.PROJECT_CORE) {
+      if (admin && this.getManagementClusterType().getId() != null) {
         projectInfo.setClusterType(this.getManagementClusterType());
       }
 

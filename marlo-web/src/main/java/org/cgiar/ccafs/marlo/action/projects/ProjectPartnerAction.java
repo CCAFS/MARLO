@@ -1721,17 +1721,17 @@ public class ProjectPartnerAction extends BaseAction {
       // Initialise the partner list first, if it is not there yet
       initializePartnersList(params);
       
-      // Luego hacer el binding de cada campo
+      // Then bind each field
       bindPartnersInstitution(params);
       bindPartnersPartnerPersons(params);
       bindPartnersSelectedLocations(params);
       bindPartnersPartnerContributors(params);
       
-      LOG.debug("=== Finalizando manualBinding para ProjectPartner ===");
+      LOG.debug("Finished the manual binding of the project partners");
   }
 
   // =====================================================
-  // INICIALIZAR LISTA DE PARTNERS
+  // INITIALIZE PARTNERS LIST
   // =====================================================
 
   private void initializePartnersList(Map<String, Parameter> params) {
@@ -1762,7 +1762,7 @@ public class ProjectPartnerAction extends BaseAction {
               project.getPartners().add(newPartner);
           }
           
-          // Bindear los IDs de los partners existentes
+          // Bind the IDs of the existing partners
           for (String key : params.keySet()) {
               if (key.matches("project\\.partners\\[\\d+\\]\\.id")) {
                   int index = extractIndex(key);
@@ -1777,7 +1777,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear phase.id
+              // Bind phase.id
               if (key.matches("project\\.partners\\[\\d+\\]\\.phase\\.id")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1794,7 +1794,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear responsibilities
+              // Bind responsibilities
               if (key.matches("project\\.partners\\[\\d+\\]\\.responsibilities")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1803,7 +1803,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear subDepartment
+              // Bind subDepartment
               if (key.matches("project\\.partners\\[\\d+\\]\\.subDepartment")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1857,7 +1857,7 @@ public class ProjectPartnerAction extends BaseAction {
                       partner.setPartnerPersons(new ArrayList<>());
                   }
                   
-                  // Asegurar que la lista tenga suficientes elementos
+                  // Make sure the list has enough elements
                   while (partner.getPartnerPersons().size() <= personIndex) {
                       partner.getPartnerPersons().add(new ProjectPartnerPerson());
                   }
@@ -2026,7 +2026,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
     }
     
-    LOG.debug("=== Finalizando binding de selectedLocations ===");
+    LOG.debug("Finished the binding of the selected locations");
   }
 
   // =====================================================
@@ -2046,7 +2046,7 @@ public class ProjectPartnerAction extends BaseAction {
                       partner.setPartnerContributors(new ArrayList<>());
                   }
                   
-                  // Asegurar que la lista tenga suficientes elementos
+                  // Make sure the list has enough elements
                   while (partner.getPartnerContributors().size() <= contributorIndex) {
                       ProjectPartnerContribution contribution = new ProjectPartnerContribution();
                       contribution.setProjectPartnerContributor(new ProjectPartner());

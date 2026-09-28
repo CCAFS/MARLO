@@ -98,7 +98,7 @@
         </div>
       </div>
       [#-- Section Buttons --]
-      [#if (action.canAddCoreProject() || action.canAddBilateralProject()) && (!crpClosed) && !reportingActive && action.getActualPhase().editable]
+      [#if action.canAddCoreProject() && (!crpClosed) && !reportingActive && action.getActualPhase().editable]
       <div class="buttons">
         <div class="buttons-content">
           <a class="addButton" href="[@s.url action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="projectsList.addResearchProject" /]</a>

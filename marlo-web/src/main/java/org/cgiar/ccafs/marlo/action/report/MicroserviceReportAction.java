@@ -52,7 +52,7 @@ public class MicroserviceReportAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
 
-  private final Logger logger = LoggerFactory.getLogger(MicroserviceReportAction.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MicroserviceReportAction.class);
   private long projectID;
 
   // Managers
@@ -341,7 +341,7 @@ public class MicroserviceReportAction extends BaseAction {
           ((Map<String, Object>) inner).put("apiKey", apiKey);
         }
       } else {
-        logger.error("Unable to send OICR report message: report JSON data is not available");
+        LOG.error("Unable to send OICR report message: report JSON data is not available");
         return ERROR;
       }
 
@@ -365,10 +365,11 @@ public class MicroserviceReportAction extends BaseAction {
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
       KeyManagementException e) {
-      System.out.println("Queue connection error: " + e.getMessage());
+      // The action answers HTTP 500 from here, so this log is the only trace the failure leaves.
+      LOG.error("Unable to send the OICR report message: queue connection failed, queue={}", queueName, e);
       return ERROR;
     } catch (Exception e) {
-      System.out.println("Message sending error: " + e.getMessage());
+      LOG.error("Unable to send the OICR report message: publishing failed, queue={}", queueName, e);
       return ERROR;
     }
     return SUCCESS;
