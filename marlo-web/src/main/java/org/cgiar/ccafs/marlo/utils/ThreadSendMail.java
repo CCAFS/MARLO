@@ -76,6 +76,16 @@ public class ThreadSendMail extends Thread {
   }
 
   /**
+   * The error of a failed attempt for the log row. It is never null: null is what sendWithRetries answers for a sent
+   * message, so an exception without a message would otherwise be logged as a delivery and skip the backup server.
+   */
+  static String describe(MessagingException e) {
+    Throwable reason = e.getCause() == null ? e : e.getCause();
+    String message = reason.getMessage();
+    return message == null || message.trim().isEmpty() ? reason.getClass().getName() : message;
+  }
+
+  /**
    * Attempts a message up to MAX_ATTEMPTS times, one minute apart.
    *
    * @param message the message to hand to the mail server.
@@ -94,7 +104,7 @@ public class ThreadSendMail extends Thread {
         attempts++;
         if (failures == MAX_ATTEMPTS) {
           LOG.error("The {} '{}' could not be sent after {} attempts", label, subject, failures, e);
-          return e.getCause() == null ? e.getMessage() : e.getCause().getMessage();
+          return describe(e);
         }
         LOG.warn("Attempt {} to send the {} '{}' failed", failures, label, subject, e);
         this.pause(label);

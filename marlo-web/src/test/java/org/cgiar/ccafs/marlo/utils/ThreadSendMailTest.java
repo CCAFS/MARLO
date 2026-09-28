@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -278,6 +279,16 @@ public class ThreadSendMailTest {
     assertEquals(SENT_ON, row.getDate());
     assertEquals(GLOBAL_UNIT, row.getGlobalUnitId());
     assertEquals(18, thread.pauses);
+  }
+
+  @Test
+  public void testFailureWithoutMessageIsNeverReadAsSent() {
+    // sendWithRetries answers null for a sent message, so the description of a failure can never be null.
+    assertEquals("javax.mail.MessagingException", ThreadSendMail.describe(new MessagingException()));
+    assertEquals("java.io.IOException",
+      ThreadSendMail.describe(new MessagingException("outer", new java.io.IOException())));
+    assertEquals("refused",
+      ThreadSendMail.describe(new MessagingException("outer", new java.io.IOException("refused"))));
   }
 
   @Test
