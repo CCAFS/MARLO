@@ -388,7 +388,7 @@ public class SendMailS extends BaseAction {
       LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
       // msgbackup.setContent(mimeMultipart);
-      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory, config);
+      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, config);
       thread.start();
 
     } catch (MessagingException e) {
@@ -734,7 +734,7 @@ public class SendMailS extends BaseAction {
       LOG.info("Message ID: \n" + msg.getMessageID());
       msg.setContent(mimeMultipart);
       // msgbackup.setContent(mimeMultipart);
-      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, sessionFactory, config);
+      ThreadSendMail thread = new ThreadSendMail(msg, subject, emailLogManager, emailLog, config);
       thread.start();
 
     } catch (MessagingException e) {

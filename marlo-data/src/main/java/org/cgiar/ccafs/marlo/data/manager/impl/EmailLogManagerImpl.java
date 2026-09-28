@@ -69,7 +69,13 @@ public class EmailLogManagerImpl implements EmailLogManager {
     return emailLogDAO.find(emailLogID);
   }
 
+  /**
+   * Transactional so an update of an existing row is flushed: the failed-email retry marks the rows it resends,
+   * and without a transaction the request session stays in FlushMode.MANUAL, so the row kept succes_email = 0 and
+   * the next retry sent the same email again.
+   */
   @Override
+  @Transactional
   public EmailLog saveEmailLog(EmailLog emailLog) {
 
     return emailLogDAO.save(emailLog);
