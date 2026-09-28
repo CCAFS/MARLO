@@ -1376,32 +1376,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-  /**
-   * Verify if the project have Cluster of Activity to activate Budget by CoA
-   *
-   * @return true if the project have CoA or false otherwise.
-   */
-  public Boolean canEditBudgetByCoAs(long projectID) {
-    Project project = this.projectManager.getProjectById(projectID);
-    if (this.hasSpecificities(this.getCrpEnableBudgetByCoas())) {
-      if (project.getProjectClusterActivities().stream()
-        .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase()))
-        .collect(Collectors.toList()) == null) {
-        return false;
-      }
-      if (project.getProjectClusterActivities().stream()
-        .filter(pc -> pc.isActive() && pc.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())
-        .size() > 1) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-
-  }
-
   public boolean canEditCenterType() {
     return this.hasPermissionNoBase(
       this.generatePermission(Permission.PROJECT_FUNDING_W1_BASE_PERMISSION, this.getCrpSession()));
@@ -2869,10 +2843,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       .collect(Collectors.toList());
     globalUnits.sort((gu1, gu2) -> gu1.getAcronym().compareTo(gu2.getAcronym()));
     return globalUnits;
-  }
-
-  public String getCrpEnableBudgetByCoas() {
-    return APConstants.CRP_ENABLE_BUDGETBYCOAS;
   }
 
   public String getCrpEnableBudgetExecution() {
@@ -4384,19 +4354,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public ClusterType getManagementClusterType() {
-    ClusterType clusterType = new ClusterType();
-
-    List<ClusterType> clusterTypes = new ArrayList<>();
-    clusterTypes = clusterTypeManager.findAll();
-    if (clusterTypes != null && !clusterTypes.isEmpty()) {
-      if (clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()) != null
-        && !clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList())
-          .isEmpty()) {
-        clusterType =
-          clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()).get(0);
+    List<ClusterType> types = clusterTypeManager.findAll();
+    if (types != null) {
+      for (ClusterType type : types) {
+        // The catalogue allows a null name, and an unguarded contains() here breaks every caller of this method.
+        if (type.getName() != null && type.getName().contains("Management")) {
+          return type;
+        }
       }
     }
-    return clusterType;
+    // Callers expect a non-null instance; an empty one means the catalogue has no Management row.
+    return new ClusterType();
   }
 
   /**
@@ -6398,12 +6366,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
   public boolean isAiccra() {
-    if (this.getCurrentCrp() != null && this.getCurrentCrp().getId() != null
-      && (this.getCurrentCrp().getId() >= 45)) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.getCurrentCrp() != null && this.getCurrentCrp().isAiccra();
   }
 
   /**
@@ -7779,21 +7742,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-  public boolean isManagementCluster(long id) {
-    boolean isManagement = false;
-    Project project = projectManager.getProjectById(id);
-    if (project != null) {
-      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
-        && project.getProjectInfo().getClusterType().getId() != null) {
-        if (project.getProjectInfo().getClusterType().getId().equals(this.getManagementClusterType().getId())) {
-          isManagement = true;
-        }
-      }
-    }
-    return isManagement;
-  }
-
   /**
    * Check if the project was created in a new Center
    *
@@ -7989,6 +7937,25 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       LOG.debug("Could not read the upkeep flag of the actual phase, so the progress is reported as inactive", e);
       return false;
     }
+  }
+
+  /**
+   * Tells whether a project creates its own activities by typing the activity title, instead of picking it from the
+   * Activity management catalog of the Global Unit.
+   * <p>
+   * The answer comes from the {@code project_activity_creation_active} specificity. When the Global Unit has no custom
+   * parameter for it, the legacy behaviour is kept: every Global Unit typed its own titles until the catalog was
+   * introduced for AICCRA in 2021.
+   *
+   * @return true when the activity title is a free text field, false when it comes from the catalog
+   */
+  public boolean isProjectActivityCreationActive() {
+    String value = this.specificityValue(APConstants.PROJECT_ACTIVITY_CREATION_ACTIVE);
+    if (value == null) {
+      return !this.isAiccra();
+    }
+
+    return Boolean.parseBoolean(value);
   }
 
   /**

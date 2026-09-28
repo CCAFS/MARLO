@@ -89,7 +89,7 @@ passed none.** Every code task passed with zero findings. The document describin
 
 ## Pending Items
 
-> **Spec branch — nothing below was written.** All items await the apply phase on `staging`.
+> **Spec branch — nothing below was written at record time. Apply pass ran 2026-09-17 on `staging`:** P1, P3, P5, P7, P9 applied; P10 closed as a verified no-op; P8 was already applied on the spec branch; **P2, P4 and P6 stay open as upstream recommendations** to the AKILI methodology repository, which MARLO cannot apply locally.
 
 ### P1
 
@@ -99,7 +99,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | `.agents/reviewer.md` (append-only) |
 | Edit | Add: *"**Correction-note sweep.** A correction note is a self-declared index of a defect class. Harvest every note quoting its own former text (`previously read`, `this cell read`, `used to read`), grep that text across the spec family, and treat any hit outside the note itself as a surviving sibling."* |
 | Severity | High |
-| Status | pending |
+| Status | **applied 2026-09-17 on `staging`** — appended to `.agents/reviewer.md` under *Structured Evaluation*. |
 
 ### P2
 
@@ -109,7 +109,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | **Upstream — AKILI methodology repository** (`/akili-validate`, Correction Closure) |
 | Edit | Correction Closure currently sweeps *the corrected value*. Add the inverse sweep: *the set of correction notes is itself the index of every defect class the spec has already identified* — harvest and grep them. |
 | Severity | High |
-| Status | pending — recommended for upstreaming |
+| Status | pending — recommended for upstreaming (no local edit; the target is the AKILI methodology repository, not MARLO) |
 
 ### P3
 
@@ -119,7 +119,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | `.agents/tester.md` (append-only) |
 | Edit | Add: *"**A fixture must not supply the value its assertion later checks.** If the double is built from the same input the test then passes in, the assertion cannot distinguish a correct mapping from an echo of the request — it is not a gate. Make the double's value differ."* |
 | Severity | Medium |
-| Status | pending |
+| Status | **applied 2026-09-17 on `staging`** — appended to `.agents/tester.md` under *Prove Behavior, Not Count*. |
 
 ### P4
 
@@ -129,7 +129,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | **Upstream — AKILI methodology repository** (`docs/specs/general-setup/task.md`, *Disqualifies the evidence*) |
 | Edit | Note that a task-level *Disqualifies the evidence* clause describing a **fixture shape** generalises across sibling fields and requirements, and should be promoted to a spec-wide rule rather than repeated per task. |
 | Severity | Medium |
-| Status | pending — recommended for upstreaming |
+| Status | pending — recommended for upstreaming (no local edit; the target is the packaged AKILI template, not MARLO's copy) |
 
 ### P5
 
@@ -139,7 +139,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | `docs/specs/general-setup/task.md` |
 | Edit | Add: *"`execution.md` is append-only. Cite **section headings**, not absolute line numbers, for intra-file references — every append invalidates a line-number self-citation, including ones written in the same pass."* |
 | Severity | Medium |
-| Status | pending |
+| Status | **applied 2026-09-17 on `staging`** — added to *Conventions reminders* in `docs/specs/general-setup/task.md`. |
 
 ### P6
 
@@ -149,7 +149,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | **Upstream — AKILI methodology repository** (execution-log template) |
 | Edit | Same rule as P5, at the template level — it is a property of every append-only AKILI audit log, not of this project. |
 | Severity | Medium |
-| Status | pending — recommended for upstreaming |
+| Status | pending — recommended for upstreaming (no local edit; the target is the packaged execution-log template) |
 
 ### P7
 
@@ -159,7 +159,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | root `CLAUDE.md:189` **and** `AGENTS.md:284` |
 | Edit | The claim *"3 JUnit 4 test files exist in the whole repository, one with its only test body commented out"* is **now false — measured: 12 files, 11 with `@Test`, 39 passing tests.** Replace the count, and keep the honest judgment in calibrated form: 39 tests over a codebase this size is still thin coverage, so a green run remains weak evidence — **but it is no longer meaningless**, and this spec's per-consumer suites *are* the gate for the behavior they cover. |
 | Severity | **High** |
-| Status | pending |
+| Status | **applied 2026-09-17 on `staging`**, merged with `auth-flow` P2, which targeted the same two lines. **Both figure sets were stale** (12/39 here, 31/207 there); measured on apply day: **36 test files, 35 carrying `@Test`, 271 `@Test` methods**, still no Surefire configuration. The applied text keeps this item's calibrated judgment — thin coverage, but no longer meaningless. |
 | Why it matters | This sentence is constitution. Left standing it trains every future agent that MARLO has no tests worth running — including the agents for children 2 and 3, who inherit `DirectoryServiceContractTest` as their reusable contract. |
 
 ### P8
@@ -182,7 +182,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | `docs/trd/trd.md` — **no ADR number allocated** (numbering is an apply-time act) |
 | Edit | Two additions declared by `design.md` §8, **withheld correctly from this branch but originally never recorded**, so the sync had no carrier: (1) **§2 domain modules** — one line recording that `marlo-data` gains a `security/directory` package; (2) **§14.5 `MO-2`** — change cost for directory work drops from **6 classes to 1**, evidence the scenario's measure is met. **No existing ADR is superseded.** |
 | Severity | Medium |
-| Status | pending |
+| Status | **applied 2026-09-17 on `staging`** — both additions landed: `§2` records the `security/directory/` package on the `marlo-data` row, and `§14.5` gains the 6-classes-to-1 measurement as evidence below the scenario table. **No ADR number allocated:** the item supersedes no existing decision. |
 
 ### P10
 
@@ -192,7 +192,7 @@ passed none.** Every code task passed with zero findings. The document describin
 | Target | root `CLAUDE.md` → `## Module Guides` |
 | Edit | **No edit required — recorded as a verified zero.** The spec added a *package* (`marlo-data/.../security/directory/`), not a module, and its conventions do not diverge from the root. Confirmed on disk: **zero** `marlo-*/CLAUDE.md` files exist, so the table's *"no child guides exist"* row is still true. |
 | Severity | Low |
-| Status | pending — no-op, recorded so a later pass does not re-derive it |
+| Status | **closed 2026-09-17 on `staging` — no-op, re-verified.** Zero `marlo-*/CLAUDE.md` files exist, so the `## Module Guides` row stating that no child guides exist is still true. No edit made. |
 
 ---
 

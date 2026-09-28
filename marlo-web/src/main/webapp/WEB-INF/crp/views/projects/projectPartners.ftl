@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2", "flag-icon-css"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
-  "${baseUrlCdn}/global/js/usersManagement.js?20230927", 
-  "${baseUrlMedia}/js/projects/projectPartners.js?191502"
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
+  "${baseUrlMedia}/js/projects/projectPartners.js?20260925"
   ] 
 /]  
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20230403"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20260925"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -116,6 +116,14 @@
             [#-- [/#if] --]
           
           
+            [#-- Partners search --]
+            <div class="partnersSearch-wrap">
+              <input type="text" id="partnersSearch" class="form-control partnersSearch" placeholder="[@s.text name='projectPartners.searchPartner' /]" autocomplete="off" />
+              <div class="iconSearch partnersSearch-icon">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </div>
+            </div>
+            
             [#-- Partners list --]
             <div id="projectPartnersBlock" class="simpleBox" listname="project.partners">
               [#if project.partners?has_content]
@@ -132,6 +140,8 @@
                 [/#if]
                  --]
               [/#if] 
+              [#-- Shown by projectPartners.js when no partner matches the search --]
+              <p class="partnersSearch-empty text-center" style="display:none">[@s.text name="projectPartners.searchPartner.empty" /]</p>
               [#if (editable && canEdit)]
                 <div class="addProjectPartner bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> [@s.text name="projectPartners.addProjectPartner" /]</div>
               [/#if]
@@ -378,7 +388,7 @@
           <div class="form-group">
             [@customForm.select name="" showTitle=false i18nkey="location.select.country" listName="${name}.institution.locations" header=true keyFieldName="locElement.isoAlpha2" displayFieldName="composedName" value="id" placeholder="Select a country..." className="countriesList"/]
             <div class="note">
-              If you don't find the country office you're looking for,request to have it added by
+              If you don't find the country office you're looking for, request to have it added by
               [#if !action.isAiccra()]
                 <a href="#" class="" data-toggle="modal" data-target="#requestModal">clicking here</a>
               [#else]
@@ -512,7 +522,7 @@
           [#recover]
             [#assign canEditEmail=true /]
           [/#attempt] --]
-          [#assign canEditEmail = editable && isTemplate]
+          [#assign canEditEmail = editable && (isTemplate || !(element.id??))]
           <input type="hidden" class="canEditEmail" value="${canEditEmail?string}" />
           [#-- Contact Person information is going to come from the users table, not from project_partner table (refer to the table project_partners in the database) --] 
           [#assign partnerClass = "${name}.user.id"?string?replace("\\W+", "", "r") /]

@@ -62,7 +62,6 @@ public final class APConstants {
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
   public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
-  public static final String CRP_TIMELINE_WEEK_PARAMETER_VISUALIZATION = "crp_timeline_week_parameter_visualization";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -127,11 +126,8 @@ public final class APConstants {
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
   public static final Long CRP_DASHBOARD_CENTER_IDENTIFICATION = new Long(4);
-  public static final String CRP_ENABLE_BUDGETBYCOAS = "crp_budgetbycoas";
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
-  public static final String CRP_GENERIC_PROJECT = "crp_generic_project";
-  public static final String CRP_GENERIC_PROJECT_VALUE = "crp_generic_project_value";
   public static final String CRP_PROJECT_PAGE_YEAR = "project_website_year_value";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
   public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
@@ -140,6 +136,8 @@ public final class APConstants {
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
   public static final String AI_SECTION_ACTIVE = "ai_section_active";
+  // Allows a project to create its own activities by typing the title. Value MUST equal parameters.key
+  public static final String PROJECT_ACTIVITY_CREATION_ACTIVE = "project_activity_creation_active";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";
@@ -167,7 +165,6 @@ public final class APConstants {
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
   public static final String OICR_SCORE_FIELD_ACTIVE = "oicr_score_field_active";
-  public static final String MELIA_SCORE_FIELD_ACTIVE = "melia_score_field_active";
   public static final String DUPLICATED_DELIVERABLES_FUNCTIONALITY_ACTIVE =
     "duplicated_deliverables_functionality_active";
   public static final String DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE =
@@ -184,7 +181,6 @@ public final class APConstants {
   public static final String GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE = "generate_pentaho_innovations_report_active";
   public static final String IMPACT_PATHWAY_CROSS_CUTTING_MARKETS_ACTIVE =
     "impact_pathway_cross_cutting_markets_active";
-  public static final String DISPLAY_USER_MENU_NEW_STYLE = "display_user_menu_new_style";
   public static final String SHOW_CONTRIBUTION_PERFORMANCE_INDICATOR_DEPRECATED_TAB_ACTIVE =
     "show_contribution_performance_indicator_deprecated_tab_active";
 
@@ -192,10 +188,6 @@ public final class APConstants {
     "is_expected_deliverable_report_all_years_visible";
   public static final String CRP_EMAIL_SUPPORT_TEAM = "crp_email_support_team";
 
-  // Email parameters to copy to FL FM CL
-  public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
-  // public static final String CRP_EMAIL_PL_CRPADMIN_FL =
-  // "crp_email_pl_crpAdmin_fl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
@@ -394,7 +386,6 @@ public final class APConstants {
   public static final String PROJECT_INDICATOR_PHASE_PREVIOUS_NAME = "AR";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
-  // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
   public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
@@ -407,7 +398,6 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyProjects)";
-  public static final String PROJECT_CCAFS_COFUNDED = "COFUNDED";
   public static final String PROJECT_CCFASOTUCOME_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectIndicators)";
   public static final String PROJECT_CLUSTER_ACTIVITIES_RELATION =
@@ -676,7 +666,6 @@ public final class APConstants {
   public static final String CENTER_PARAMETERS = "center_parameters";
   public static final String CENTER_LANGUAGE = "center_language";
   public static final String CENTER_CUSTOM_FILE = "center_custom_file";
-  public static final String CENTER_COORD_ROLE = "center_coord_role";
   public static final String CENTER_PROGRAM_TYPE = "center_program_type";
   public static final String CENTER_IMPACT_PATHWAY_ACTIVE = "center_impact_pathway_active";
   public static final String CENTER_MONITORING_ACTIVE = "center_monitoring_active";
@@ -839,7 +828,7 @@ public final class APConstants {
   public static final long REP_IND_GEOGRAPHIC_SCOPE_MULTINATIONAL = 3;
 
   // Capdev Parameters
-  public static final String CRP_CD_ROLE = "crp_cd_role";
+  public static final String CRP_CD_ROLE = "crp_cd_rol";
   public static final String CRP_CD_ROLE_ACRONYM = "CD";
   public static final String CRP_CAP_DEV_ACTIVE = "crp_capdev_active";
 

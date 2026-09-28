@@ -69,6 +69,16 @@ public interface InstitutionManager {
   public Institution getInstitutionById(long institutionId);
 
   /**
+   * This method gets an institution by the given id, but only when MARLO still considers it a valid target: the
+   * institution has to exist and be active. Use it wherever an institution is resolved from an external identifier
+   * such as a CLARISA code, since an external source has no way of knowing which institutions MARLO retired.
+   * 
+   * @param institutionId is the institution identifier
+   * @return the Institution when it exists and is active, null otherwise
+   */
+  public Institution getActiveInstitutionById(long institutionId);
+
+  /**
    * get intitution quantity by crp and phase
    * 
    * @author IBD

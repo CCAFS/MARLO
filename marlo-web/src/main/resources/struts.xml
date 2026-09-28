@@ -586,7 +586,6 @@
 	<include file="struts-center-home.xml" />
 	<include file="struts-center-impactPathway.xml" />
 	<include file="struts-center-monitoring.xml" />
-	<include file="struts-center-admin.xml" />
 	<include file="struts-center-summaries.xml" />
 	<include file="struts-center-capDev.xml" />
 	<include file="struts-data.xml" />

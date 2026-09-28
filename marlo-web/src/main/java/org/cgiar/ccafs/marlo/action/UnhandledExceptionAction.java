@@ -95,32 +95,31 @@ public class UnhandledExceptionAction extends BaseAction {
 
     GlobalUnit crp = this.getCurrentCrp();
 
-    if (this.isAiccra()) {
-      subject = "Exception occurred in AICCRA";
-    } else {
-      subject = "Exception occurred in MARLO";
-    }
+    String globalUnitName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+      : crp.getName() != null ? crp.getName() : "MARLO";
+    subject = "Exception occurred in " + globalUnitName;
 
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
       + this.getCurrentUser().getEmail() + ") ");
     message.append("has experienced an exception on the platform. </br>");
     message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
-    String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
-    if (crpAcronymName != null) {
-      message.append("<b>CRP: </b>" + crp.getAcronym() + ".</br>");
-    }
+    String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+      : crp.getName() != null ? crp.getName() : "MARLO";
+    message.append("<b>Global Unit: </b>" + crpAcronymName + ".</br>");
     if (this.getActualPhase() != null) {
       message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
     }
     String actionNameSubject = "";
     if (this.getActionName() != null) {
       message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
-      if (this.getActionName().contains("AICCRA/")) {
-        actionNameSubject = this.getActionName().replace("AICCRA/", " - ");
+      String actionName = this.getActionName();
+      if (this.isAiccra()) {
+        int namespaceSeparator = actionName.indexOf('/');
+        actionNameSubject = " - "
+          + (namespaceSeparator >= 0 ? actionName.substring(namespaceSeparator + 1) : actionName);
       } else {
-        actionNameSubject = " - " + this.getActionName();
+        actionNameSubject = " - " + actionName;
       }
-
     }
 
     if (this.getActualPhase() != null && this.getActualPhase().getComposedName() != null) {

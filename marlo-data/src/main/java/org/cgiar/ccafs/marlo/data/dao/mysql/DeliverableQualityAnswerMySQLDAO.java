@@ -60,12 +60,7 @@ public class DeliverableQualityAnswerMySQLDAO extends AbstractMarloDAO<Deliverab
   @Override
   public List<DeliverableQualityAnswer> findAll() {
     String query = "from " + DeliverableQualityAnswer.class.getName() + " where is_active=1";
-    List<DeliverableQualityAnswer> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override
