@@ -26,6 +26,8 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
   private String fileName;
   private String messageID;
   private Long globalUnitId;
+  // Where the email was sent from: the Struts action as "<namespace>/<action>", or the URI of a REST request.
+  private String sourceAction;
 
   private byte[] fileContent;
 
@@ -70,6 +72,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
     return messageID;
   }
 
+  public String getSourceAction() {
+    return sourceAction;
+  }
+
   public String getSubject() {
     return this.subject;
   }
@@ -112,6 +118,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
 
   public void setGlobalUnitId(Long globalUnitId) {
     this.globalUnitId = globalUnitId;
+  }
+
+  public void setSourceAction(String sourceAction) {
+    this.sourceAction = sourceAction;
   }
 
   public void setMessage(String message) {

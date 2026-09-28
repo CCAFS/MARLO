@@ -46,10 +46,14 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
 import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Named
 public class SendMailS extends BaseAction {
@@ -103,6 +107,28 @@ public class SendMailS extends BaseAction {
 
     Long crpID = ((GlobalUnit) sessionCrp).getId();
     return crpID != null && crpID != 0L ? crpID : null;
+  }
+
+  /**
+   * Tells where the email being sent comes from, for the source_action column of email_logs: the Struts action of
+   * the request as "<namespace>/<action>", or the URI of a request served outside Struts (the REST endpoints).
+   *
+   * @return the source, or null for a send from a background thread, which has neither.
+   */
+  // Package-private so SendMailSSourceTest can call it.
+  String getRequestSource() {
+    ActionContext context = ActionContext.getContext();
+    if (context != null && context.getActionInvocation() != null
+      && context.getActionInvocation().getProxy() != null) {
+      ActionProxy proxy = context.getActionInvocation().getProxy();
+      String namespace = StringUtils.removeEnd(StringUtils.defaultString(proxy.getNamespace()), "/");
+      return StringUtils.left(namespace + "/" + proxy.getActionName(), 255);
+    }
+    RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+    if (attributes instanceof ServletRequestAttributes) {
+      return StringUtils.left(((ServletRequestAttributes) attributes).getRequest().getRequestURI(), 255);
+    }
+    return null;
   }
 
   /**
@@ -276,6 +302,7 @@ public class SendMailS extends BaseAction {
 
     EmailLog emailLog = new EmailLog();
     emailLog.setGlobalUnitId(this.getRequestCrpID());
+    emailLog.setSourceAction(this.getRequestSource());
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);
@@ -622,6 +649,7 @@ public class SendMailS extends BaseAction {
 
     EmailLog emailLog = new EmailLog();
     emailLog.setGlobalUnitId(this.getRequestCrpID());
+    emailLog.setSourceAction(this.getRequestSource());
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);
