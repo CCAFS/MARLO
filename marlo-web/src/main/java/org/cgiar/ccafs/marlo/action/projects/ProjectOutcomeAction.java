@@ -1890,6 +1890,18 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+  /**
+   * Tells whether the current user may write the end-year target set by the PMC (the milestone's
+   * settedValue). The PMC target is the programme's own figure: every user reads it, and only a super
+   * administrator, a CRP administrator or the PMU edits it. projectContributionCrp.ftl opens the field
+   * on the same rule, so an edit made on the form is kept here instead of being dropped on save.
+   *
+   * @return true if the current user may edit the PMC target
+   */
+  private boolean canEditPmcTarget() {
+    return this.canAccessSuperAdmin() || this.canEditCrpAdmin() || this.isPMU();
+  }
+
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
@@ -1942,7 +1954,7 @@ public class ProjectOutcomeAction extends BaseAction {
                   projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
                   projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
                   projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-                  if (this.canAccessSuperAdmin()) {
+                  if (this.canEditPmcTarget()) {
                     projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
                   }
                 }
@@ -1957,7 +1969,7 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
             projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-            if (this.canAccessSuperAdmin()) {
+            if (this.canEditPmcTarget()) {
               projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
             }
 

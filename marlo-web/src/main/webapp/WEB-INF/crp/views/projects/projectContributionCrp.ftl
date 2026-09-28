@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
   "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260923",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
@@ -223,9 +223,15 @@
             </div>
           </div>
 
-          [#-- ═══ Additional questions for this performance indicator ═══ --]
+          [#-- ═══ Additional questions for this performance indicator ═══
+               Answered in the annual report only (A2-2439). The card is still
+               rendered in the other cycles but not shown: saveIndicators()
+               deletes every ProjectOutcomeIndicator the form does not post
+               back, so leaving the markup out would drop the answers rather
+               than hide them. --]
+          [#assign cpiShowQuestions = !((action.isAiccra())!false) || reportingActive /]
           [#if action.hasSpecificities('crp_baseline_indicators') && (cpiOutcome.indicators?has_content)!false]
-            <div class="cpi-card cpi-questions">
+            <div class="cpi-card cpi-questions"[#if !cpiShowQuestions] style="display:none"[/#if]>
               <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
               [#list cpiOutcome.indicators as indicator]
                 [@cpiQuestion element=indicator index=indicator_index /]
@@ -411,6 +417,7 @@
 [#macro cpiQuestion element index]
   [#local projectOutcomeIndicator = action.getIndicator(element.id) /]
   [#local customName = "projectOutcome.indicators[${index}]" /]
+  [#local canAnswer = editable && cpiShowQuestions /]
   <div class="cpi-question">
     <span class="cpi-question__n">${index + 1}</span>
     <div class="cpi-question__body">
@@ -419,12 +426,12 @@
              trumbowyg-editor is the editor's own chrome -- inset shadow, 80px
              min-height, 10px padding and a forced #505050 -- so it is left out. --]
         <span class="decodeHTML">${(element.indicator)!}</span>
-        [#if editable]<span class="cpi-question__req">*</span>[/#if]
+        [#if canAnswer]<span class="cpi-question__req">*</span>[/#if]
       </span>
       <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" />
       <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" />
-      <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=editable showTitle=false fieldEmptyText="projectContributionCrp.notAnswered" /]
+      <div class="cpi-field cpi-field--text ${canAnswer?string('is-edit','is-read')}">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=canAnswer showTitle=false fieldEmptyText="projectContributionCrp.notAnswered" /]
       </div>
     </div>
   </div>
@@ -442,10 +449,54 @@
   [/#if]
 
   [#local isCurrentPeriod = isYearRequired(milestoneYear) /]
-  [#local achievedPhase = reportingActive || action.isUpKeepActive() /]
-  [#local canSetted = editable && action.canAccessSuperAdmin() && isCurrentPeriod /]
+
+  [#-- ═══ A2-2439 · which field the cycle owns ═══════════════════════
+       MARLO has no "Progress" phase description: the mid-year cycle is a
+       Planning phase carrying upkeep = 1, so the three AICCRA cycles are told
+       apart as AWPB (Planning, no upkeep), Progress (Planning, upkeep) and
+       AR (Reporting).
+
+         field                 AWPB      Progress   AR
+         end-year target PMC   read      read       read     (admin / PMU: edit)
+         expected end-year     edit      edit       read
+         narrative contrib.    edit      edit       read
+         achieved value        hidden    optional   required
+         narrative achieved    hidden    optional   required
+
+       Legacy CRPs keep their own rules: their UpKeep phase exists precisely so
+       reported figures can still be corrected, and 15 of them still have one
+       open, so only AICCRA takes the cycle above.
+
+       Each default is resolved on its own line. FreeMarker's `!` default binds
+       looser than `&&`, so `(x)!false && y` reads as `x ! (false && y)` -- the
+       default swallows the rest of the expression and y is dropped. --]
+  [#local isAiccraRules = (action.isAiccra())!false /]
+  [#local isUpkeepCycle = (action.isUpKeepActive())!false /]
+  [#local isPlanningCycle = (action.isPlanningActive())!false /]
+  [#local isAwpbCycle = isAiccraRules && isPlanningCycle && !isUpkeepCycle /]
+
+  [#-- The PMC target is the programme's own figure: every user reads it in every
+       cycle, and only an administrator or the PMU edits it. saveMilestones() holds
+       the same rule through canEditPmcTarget(), so an edit made here is kept. --]
+  [#local isSuperAdmin = (action.canAccessSuperAdmin())!false /]
+  [#local isCrpAdmin = (action.canEditCrpAdmin())!false /]
+  [#local isPmu = (action.isPMU())!false /]
+  [#local isAdminOrPmu = isSuperAdmin || isCrpAdmin || isPmu /]
+  [#local achievedPhase = reportingActive || isUpkeepCycle /]
+  [#local showAchieved = !isAwpbCycle /]
+
+  [#-- A hidden field is still rendered: customForm leaves an input carrying the
+       stored value, and saveMilestones() writes expectedValue and achievedValue
+       back in every phase, outside its planning/reporting branches. Dropping the
+       markup would post nothing and blank the stored figure. --]
+  [#local canSetted = editable && isCurrentPeriod && isAiccraRules?then(isAdminOrPmu, isSuperAdmin) /]
   [#local canExpected = editable && !reportingActive && isCurrentPeriod /]
+  [#local canNarrative = editable && !reportingActive && isCurrentPeriod /]
   [#local canAchieved = editable && achievedPhase && isCurrentPeriod /]
+  [#-- Progress takes the achieved figure as an early read, so it is optional there
+       and only the annual report requires it. ProjectOutcomeValidator holds the same
+       rule, so the form and the missing-fields check agree. --]
+  [#local achievedRequired = isCurrentPeriod && isAiccraRules?then(reportingActive, achievedPhase) /]
 
   <div class="cpi-fields">
     <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
@@ -480,8 +531,8 @@
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
             [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
           </div>
-          <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}">
-            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isCurrentPeriod && achievedPhase editable=canAchieved /]
+          <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=achievedRequired editable=canAchieved /]
             [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
           </div>
         </div>
@@ -498,11 +549,11 @@
       [/#if]
     </div>
 
-    <div class="cpi-field cpi-field--text ${canExpected?string('is-edit','is-read')}">
-      [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isCurrentPeriod className="limitWords-200" editable=canExpected help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false /]
+    <div class="cpi-field cpi-field--text ${canNarrative?string('is-edit','is-read')}">
+      [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isCurrentPeriod className="limitWords-200" editable=canNarrative help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false /]
     </div>
-    <div class="cpi-field cpi-field--text ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}">
-      [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isCurrentPeriod && achievedPhase className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=canAchieved /]
+    <div class="cpi-field cpi-field--text ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
+      [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=achievedRequired className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=canAchieved /]
       [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
     </div>
   </div>
