@@ -144,6 +144,23 @@ public class SendMailS extends BaseAction {
    * @return true when the email must not be sent at all.
    */
   private boolean isNotificationDisabled(String toEmail, String ccEmail, String bbcEmail, String subject) {
+    return this.isNotificationDisabled(this.getRequestCrpID(), toEmail, ccEmail, bbcEmail, subject);
+  }
+
+  /**
+   * Tells whether the given CRP has turned its email notifications off, as set by the specificity
+   * crp_enable_email_notification. It is the check of isNotificationDisabled(String, String, String, String) for an
+   * email whose CRP is not the one of the request, such as a logged email resent by sendRetry().
+   *
+   * @param crpID the CRP the email was sent for, or null when it is unknown, which keeps the email.
+   * @param toEmail the TO recipients of the email.
+   * @param ccEmail the CC recipients of the email.
+   * @param bbcEmail the BCC recipients of the email.
+   * @param subject the subject of the email, only to identify it in the log.
+   * @return true when the email must not be sent at all.
+   */
+  private boolean isNotificationDisabled(Long crpID, String toEmail, String ccEmail, String bbcEmail,
+    String subject) {
     // An email addressed only to the support team, such as the exception reports, is not a user notification.
     String supportEmail = this.config.getEmailNotification();
     boolean onlyToSupport = supportEmail != null && supportEmail.trim().equalsIgnoreCase(StringUtils.trim(toEmail))
@@ -153,7 +170,6 @@ public class SendMailS extends BaseAction {
       return false;
     }
 
-    Long crpID = this.getRequestCrpID();
     if (crpID == null) {
       return false;
     }
@@ -259,6 +275,7 @@ public class SendMailS extends BaseAction {
     }
 
     EmailLog emailLog = new EmailLog();
+    emailLog.setGlobalUnitId(this.getRequestCrpID());
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);
@@ -380,8 +397,20 @@ public class SendMailS extends BaseAction {
     }
   }
 
+  /**
+   * Resends a logged email that failed. The retry runs from the session of the super administrator who starts it,
+   * for the logged emails of every CRP at once, so the CRP whose notification switch applies is the one recorded on
+   * the log row rather than the one of the request.
+   *
+   * @param globalUnitId the CRP recorded on the log row, or null for a row logged before it was recorded.
+   * @return true when the email was sent, false when it failed or was dropped because the notifications of its
+   *         CRP are off.
+   */
   public boolean sendRetry(String toEmail, String ccEmail, String bbcEmail, String subject, String messageContent,
-    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml) {
+    byte[] attachment, String attachmentMimeType, String fileName, boolean isHtml, Long globalUnitId) {
+    if (this.isNotificationDisabled(globalUnitId, toEmail, ccEmail, bbcEmail, subject)) {
+      return false;
+    }
 
     // Get a Properties object
     Properties properties = System.getProperties();
@@ -402,9 +431,6 @@ public class SendMailS extends BaseAction {
       ccEmail = ccEmail + ", " + string;
     }
 
-    // properties.put("mail.smtp.auth", "true");
-    // properties.put("mail.smtp.starttls.enable", "true");
-    // properties.put("mail.smtp.ssl.trust", config.getEmailHost());
     properties.put("mail.smtp.host", config.getEmailHost());
     properties.put("mail.smtp.port", config.getEmailPort());
     // changes for smtp secure dperez
@@ -440,6 +466,7 @@ public class SendMailS extends BaseAction {
     }
 
     EmailLog emailLog = new EmailLog();
+    emailLog.setGlobalUnitId(this.getRequestCrpID());
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
     emailLog.setTo(bbcEmail);
@@ -594,6 +621,7 @@ public class SendMailS extends BaseAction {
     }
 
     EmailLog emailLog = new EmailLog();
+    emailLog.setGlobalUnitId(this.getRequestCrpID());
     emailLog.setBbc(bbcEmail);
     emailLog.setCc(ccEmail);
     emailLog.setTo(toEmail);

@@ -44,5 +44,8 @@
         <property name="messageID" type="string">
             <column name="message_id" sql-type="TEXT" />
         </property>
+        <property name="globalUnitId" type="java.lang.Long">
+            <column name="global_unit_id" />
+        </property>
     </class>
 </hibernate-mapping>

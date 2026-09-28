@@ -76,7 +76,8 @@ public class SendFailEmailAction extends BaseAction {
         for (EmailLog emailLog : emailLogs) {
           boolean send =
             sendMail.sendRetry(emailLog.getTo(), emailLog.getCc(), emailLog.getBbc(), emailLog.getSubject(),
-              emailLog.getMessage(), emailLog.getFileContent(), contentType, emailLog.getFileName(), true);
+              emailLog.getMessage(), emailLog.getFileContent(), contentType, emailLog.getFileName(), true,
+              emailLog.getGlobalUnitId());
           if (send) {
             emailLog.setFileContent(null);
           }

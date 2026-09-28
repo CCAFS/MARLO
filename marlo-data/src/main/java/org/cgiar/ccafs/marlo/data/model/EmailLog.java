@@ -25,6 +25,7 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
   private Boolean succes;
   private String fileName;
   private String messageID;
+  private Long globalUnitId;
 
   private byte[] fileContent;
 
@@ -55,6 +56,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
 
   public String getFileName() {
     return fileName;
+  }
+
+  public Long getGlobalUnitId() {
+    return globalUnitId;
   }
 
   public String getMessage() {
@@ -103,6 +108,10 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
 
   public void setFileName(String fileName) {
     this.fileName = fileName;
+  }
+
+  public void setGlobalUnitId(Long globalUnitId) {
+    this.globalUnitId = globalUnitId;
   }
 
   public void setMessage(String message) {
