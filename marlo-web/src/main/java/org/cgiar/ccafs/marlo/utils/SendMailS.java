@@ -114,6 +114,18 @@ public class SendMailS extends BaseAction {
   }
 
   /**
+   * Sets the TO of a message sent from a test environment the way send() does: the BCC when there is one, the TO
+   * otherwise. sendRetry() used to take the BCC unconditionally, so a row without BCC failed on every retry.
+   */
+  private void setTestRecipient(MimeMessage msg, String toEmail, String bbcEmail) throws MessagingException {
+    String recipient = bbcEmail != null ? bbcEmail : toEmail;
+    if (recipient != null) {
+      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
+    }
+    LOG.info("   - TO: {}", recipient);
+  }
+
+  /**
    * Tells where the email being sent comes from, for the source_action column of email_logs: the Struts action of
    * the request as "<namespace>/<action>", or the URI of a request served outside Struts (the REST endpoints).
    *
@@ -143,9 +155,19 @@ public class SendMailS extends BaseAction {
    * @return true when the recipients must be replaced by the support team.
    */
   private boolean isRestrictedToSupport() {
-    Long crpID = this.getRequestCrpID();
+    return this.isRestrictedToSupport(this.getRequestCrpID());
+  }
+
+  /**
+   * The check of isRestrictedToSupport() for an email whose CRP is not the one of the request, such as a logged email
+   * resent by sendRetry(). A row logged before its CRP was recorded is restricted too, for the same reason.
+   *
+   * @param crpID the CRP the email was sent for, or null when it is unknown.
+   * @return true when the recipients must be replaced by the support team.
+   */
+  private boolean isRestrictedToSupport(Long crpID) {
     if (crpID == null) {
-      LOG.info("There is no CRP in the current request, so the email is sent only to the support team");
+      LOG.info("The email has no CRP, so it is sent only to the support team");
       return true;
     }
 
@@ -433,6 +455,10 @@ public class SendMailS extends BaseAction {
    * for the logged emails of every CRP at once, so the CRP whose notification switch applies is the one recorded on
    * the log row rather than the one of the request.
    *
+   * It applies the support-team restriction of send() with that same CRP. Without it a retry from an environment
+   * that sends only to the support team reached the real recipients stored on the row, which are the ones of
+   * production in a copied database.
+   *
    * @param globalUnitId the CRP recorded on the log row, or null for a row logged before it was recorded.
    * @return true when the email was sent, false when it failed or was dropped because the notifications of its
    *         CRP are off.
@@ -442,8 +468,12 @@ public class SendMailS extends BaseAction {
     if (this.isNotificationDisabled(globalUnitId, toEmail, ccEmail, bbcEmail, subject)) {
       return false;
     }
+    if (this.isRestrictedToSupport(globalUnitId)) {
+      toEmail = this.config.getEmailNotification();
+      ccEmail = null;
+      bbcEmail = null;
+    }
 
-    // Get a Properties object
     Properties properties = System.getProperties();
     String[] ccEmails = null;
     if (ccEmail != null) {
@@ -524,10 +554,7 @@ public class SendMailS extends BaseAction {
         testingHeader.append("----------------------------------------------------<br><br>");
         subject = "TEST " + subject;
         messageContent = testingHeader.toString() + messageContent;
-        // if (toEmail != null) {
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - TO: " + bbcEmail);
-        // }
+        this.setTestRecipient(msg, toEmail, bbcEmail);
       } else {
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
