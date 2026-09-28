@@ -369,7 +369,7 @@
             src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png">
           <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
             src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif">
-          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myProjects.title" /]</span>
+          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.browse.projects" /]</span>
           <span class="dashboardBrowse__catCount">${(myProjects?size)!0}</span>
         </button>
         [#if action.isAiccra()]

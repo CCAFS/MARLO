@@ -60,11 +60,16 @@ public class SafeguardValidator extends BaseValidator {
   }
 
   public void validate(BaseAction action, Project project, Safeguards safeguards, boolean saving) {
-    ProjectInfo projectInfo = new ProjectInfo();
-    projectInfo = project.getProjecInfoPhase(action.getActualPhase());
-    if ((!(projectInfo.getAdministrative() != null && projectInfo.getAdministrative().booleanValue() == true))
-      && (action.isUpKeepActive() || action.isReportingActive())
-      && (projectInfo.getClusterType().getId() != 2 && projectInfo.getClusterType().getId() != 3)) {
+    ProjectInfo projectInfo = project.getProjecInfoPhase(action.getActualPhase());
+    if (projectInfo == null) {
+      return;
+    }
+    // A cluster with no cluster type cannot open the Safeguards section, so it is not validated either. Reading the
+    // id without this guard throws for every cluster whose type is missing.
+    Long clusterTypeId = projectInfo.getClusterType() == null ? null : projectInfo.getClusterType().getId();
+    if (!Boolean.TRUE.equals(projectInfo.getAdministrative())
+      && (action.isUpKeepActive() || action.isReportingActive()) && clusterTypeId != null
+      && clusterTypeId.longValue() != 2 && clusterTypeId.longValue() != 3) {
 
       action.setInvalidFields(new HashMap<>());
       if (!saving) {

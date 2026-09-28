@@ -19,7 +19,6 @@
 [#assign isCrpProject = (action.isProjectCrpOrPlatform(project.id))!false ]
 [#assign isCenterProject = (action.isProjectCenter(project.id))!false ]
 [#assign isNewCenterTypeProject = (action.isNewCenterType(project.id))!false ]
-[#assign isManagementCluster = (action.isManagementCluster(project.id))!false ]
 
 [#if !action.isAiccra()]
   [#assign breadCrumb = [
@@ -122,8 +121,7 @@
                 [/#if]
               </div>
               [#-- Cluster Types --]
-              [#if action.isAiccra() && !isManagementCluster]  
-             
+              [#if !((project.projectInfo.administrative)!false)]
                 <div class="col-md-6">
                   [#if editable]
                     [@customForm.select name="project.projectInfo.clusterType.id" className="clusterType" i18nkey="project.clusterType" disabled=!editable listName="clusterTypes" keyFieldName="id" displayFieldName="name" required=true editable=true /]
@@ -184,7 +182,7 @@
 
             [#-- Project Summary --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=!((project.bilateralProject)!false) className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
+              [@customForm.textArea name="project.projectInfo.summary"  i18nkey="project.summary" required=true className="project-description limitWords-250" editable=editable && action.hasPermission("summary") /]
             </div>
             
             [#-- Project Challenges, causes and proposed solutions --]
@@ -218,13 +216,15 @@
                 </div>
               </div>
               <div id="statusDescription" class="form-group" style="display:${project.projectInfo.statusJustificationRequired?string('block','none')}">
-                [@customForm.textArea name="project.projectInfo.statusJustification" i18nkey="project.statusJustification" required=!((project.bilateralProject)!false) className="project-statusJustification limitWords-100" editable=(editable || editStatus)   /]
+                [@customForm.textArea name="project.projectInfo.statusJustification" i18nkey="project.statusJustification" required=true className="project-statusJustification limitWords-100" editable=(editable || editStatus)   /]
               </div>
             </div>
 
             [#--  Regions/global and Flagships that the project is working on --]
             [#if (!project.projectInfo.administrative)!false]
 
+            [#-- Heading and box are only shown when at least one of the lists has elements --]
+            [#if (programFlagships)?has_content || (regionFlagships)?has_content]
             [#if regionFlagships?has_content]
               [#-- For the CRPs which has Regional Programs --]
               <h5>[@customForm.text name="projectDescription.projectWorkingWithRegions${isCenterProject?string('Center','')}" readText=!editable /]:</h5>
@@ -234,7 +234,8 @@
             [/#if]
 
             <div id="projectWorking" class="fullBlock dottedBox clearfix">
-              [#-- Flagships --]
+              [#-- Flagships: only shown (and required) when there are elements in the list --]
+              [#if (programFlagships)?has_content]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 <div id="projectFlagshipsBlock" listname="project.flagshipValue" class="${customForm.changedField('project.flagshipValue')}">
                   <p><label>[@s.text name="projectDescription.flagships${isCenterProject?string('Center','')}" /]:[@customForm.req required=editable && action.hasPermission("flagships") /] </label></p>
@@ -266,6 +267,9 @@
                   [/#if]
                 </div>
               </div>
+              [#else]
+                <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
+              [/#if]
               [#-- Regions --]
               <div class="col-md-${(regionFlagships?has_content)?string('6','12')}">
                 [#if regionFlagships?has_content]
@@ -298,6 +302,9 @@
               </div>
               <div class="clearfix"></div>
             </div>
+            [#else]
+              <input type="hidden" name="project.flagshipValue" value="${(project.flagshipValue)!}"/>
+            [/#if]
             [/#if]
 
             [#-- Cluster of Activities --]

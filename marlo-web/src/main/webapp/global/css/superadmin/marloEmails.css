@@ -71,10 +71,94 @@
   white-space: nowrap;
 }
 
-/* The message id is long and has no reason to push the readable columns out of the table */
-.emailsOnTrack table#marloEmailsTable td.emailMessageId {
+/* Error texts can run to several lines; they stay readable without widening the table */
+.emailsOnTrack table#marloEmailsTable td.emailError {
   font-size: 0.85em;
   color: #767676;
+  max-width: 220px;
+}
+
+.emailsOnTrack table#marloEmailsTable td.emailTo {
+  max-width: 180px;
+}
+
+.emailsOnTrack .emailsMuted {
+  color: #767676;
+  font-style: italic;
+}
+
+/* Tabs: sent and not sent */
+.emailsOnTrack .emailsTabs {
+  margin-bottom: 15px;
+}
+
+.emailsOnTrack .emailsTabs .badge {
+  background: #0b7ba6;
+  font-weight: normal;
+}
+
+.emailsOnTrack .emailsTabs li:not(.active) .badge {
+  background: #999;
+}
+
+/* Filters, in one wrapping row above the table */
+.emailsOnTrack .emailsFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.emailsOnTrack .emailsFilter label {
+  display: block;
+  margin-bottom: 3px;
+  color: #4b4b4b;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.emailsOnTrack .emailsFilter select.form-control {
+  min-width: 140px;
+}
+
+.emailsOnTrack .emailsFilter-search {
+  flex: 1 1 220px;
+}
+
+.emailsOnTrack .emailsFilter-search .emails-search-wrap {
+  margin: 0;
+  width: 100%;
+}
+
+.emailsOnTrack .emailsFilter-search .emails-search-wrap .emails-search {
+  width: 100%;
+}
+
+/* Re-send, under the table */
+.emailsOnTrack .emailsResend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.emailsResendStatus {
+  color: #4b4b4b;
+  font-size: 0.9em;
+}
+
+/* Detail popup: the stored HTML of the message, in a sandboxed frame */
+#emailDetailPopup .emailDetailMessage {
+  width: 100%;
+  height: 450px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+#emailDetailPopup .emailDetailResendStatus {
+  margin-right: 10px;
 }
 
 .emailsOnTrack .dataTables_info,
@@ -87,5 +171,13 @@
   .emailsOnTrack .emails-search-wrap .emails-search {
     width: 100%;
     margin-left: 0;
+  }
+
+  .emailsOnTrack .emailsFilter {
+    flex: 1 1 45%;
+  }
+
+  .emailsOnTrack .emailsFilter select.form-control {
+    min-width: 0;
   }
 }

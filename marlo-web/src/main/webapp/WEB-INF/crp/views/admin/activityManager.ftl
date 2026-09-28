@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["vanilla-color-picker","intro.js"] /]
 [#assign customJS = [
-  "${baseUrlCdn}/global/js/usersManagement.js", 
+  "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js",
   "${baseUrlCdn}/global/js/relationsModalDataTables.js?20260828",
   "${baseUrlMedia}/js/admin/activity.js" ,
