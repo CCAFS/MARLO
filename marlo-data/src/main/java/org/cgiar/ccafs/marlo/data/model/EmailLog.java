@@ -26,7 +26,8 @@ public class EmailLog extends MarloBaseEntity implements java.io.Serializable {
   private String fileName;
   private String messageID;
   private Long globalUnitId;
-  // Where the email was sent from: the Struts action as "<namespace>/<action>", or the URI of a REST request.
+  // Where the email was sent from: the Struts action as "<namespace>/<action>", the URI of a REST request, or
+  // "background" outside any request. NULL for the rows logged before it was recorded.
   private String sourceAction;
 
   private byte[] fileContent;

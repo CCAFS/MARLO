@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.json.global;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.model.EmailLogSearch;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -25,14 +26,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Garcia - CIAT/CCAFS
@@ -44,6 +45,8 @@ public class SendFailEmailAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -6338578372277010087L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(SendFailEmailAction.class);
 
 
   private EmailLogManager emailLogManager;
@@ -72,8 +75,7 @@ public class SendFailEmailAction extends BaseAction {
       return NONE;
     }
     results = new ArrayList<>();
-    List<EmailLog> emailLogs = emailLogManager.findAll().stream().filter(c -> c.getSucces().booleanValue() == false)
-      .collect(Collectors.toList());
+    List<EmailLog> emailLogs = this.selectedEmailLogs();
 
     switch (type) {
       case 0:
@@ -82,17 +84,22 @@ public class SendFailEmailAction extends BaseAction {
         break;
       case 1:
         for (EmailLog emailLog : emailLogs) {
-          boolean send =
-            sendMail.sendRetry(emailLog.getTo(), emailLog.getCc(), emailLog.getBbc(), emailLog.getSubject(),
+          boolean send = false;
+          // One email that cannot be resent must not stop the rest of the batch.
+          try {
+            send = sendMail.sendRetry(emailLog.getTo(), emailLog.getCc(), emailLog.getBbc(), emailLog.getSubject(),
               emailLog.getMessage(), emailLog.getFileContent(), contentType, emailLog.getFileName(), true,
               emailLog.getGlobalUnitId());
-          if (send) {
-            emailLog.setFileContent(null);
+            if (send) {
+              emailLog.setFileContent(null);
+            }
+            emailLog.setSucces(send);
+            emailLogManager.saveEmailLog(emailLog);
+          } catch (Exception e) {
+            LOG.error("Could not resend the logged email {}", emailLog.getId(), e);
           }
-          emailLog.setSucces(send);
-          emailLogManager.saveEmailLog(emailLog);
           HashMap<String, String> map = new HashMap<>();
-          map.put("id", emailLog.getId().toString());
+          map.put("id", String.valueOf(emailLog.getId()));
           map.put("subject", emailLog.getSubject());
           map.put("to", emailLog.getTo());
 
@@ -109,6 +116,27 @@ public class SendFailEmailAction extends BaseAction {
   }
 
 
+  /**
+   * The emails not sent that the request asks for: the one given by "id", or every one matching the filters of
+   * System Admin -> Emails, which are all of them when no filter is set. A row whose outcome was never recorded
+   * counts as not sent; the previous filter threw a NullPointerException on it.
+   */
+  private List<EmailLog> selectedEmailLogs() {
+    Map<String, Parameter> parameters = this.getParameters();
+    Long id = EmailLogsAction.idValue(EmailLogsAction.value(parameters, "id"));
+    if (id != null) {
+      EmailLog emailLog = emailLogManager.getEmailLogById(id);
+      List<EmailLog> single = new ArrayList<>();
+      if (emailLog != null && !Boolean.TRUE.equals(emailLog.getSucces())) {
+        single.add(emailLog);
+      }
+      return single;
+    }
+    EmailLogSearch search = EmailLogsAction.read(parameters);
+    search.setSent(false);
+    return emailLogManager.search(search);
+  }
+
   public ArrayList<EmailLog> getEmails() {
     return emails;
   }
@@ -122,7 +150,8 @@ public class SendFailEmailAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    type = Integer.parseInt(StringUtils.trim(parameters.get("type").getMultipleValues()[0]));
+    // A missing or unreadable type does nothing, instead of throwing before execute() checks the permission.
+    type = EmailLogsAction.intValue(parameters, "type", -1);
 
 
   }

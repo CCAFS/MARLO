@@ -66,6 +66,10 @@ public class SendMailS extends BaseAction {
   // LOG
   private static final Logger LOG = LoggerFactory.getLogger(SendMailS.class);
 
+  // source_action of an email sent outside any request. Kept apart from NULL, which is a row logged before the
+  // source was recorded at all.
+  static final String BACKGROUND_SOURCE = "background";
+
   // Managers
   private APConfig config;
   private EmailLogManager emailLogManager;
@@ -113,7 +117,7 @@ public class SendMailS extends BaseAction {
    * Tells where the email being sent comes from, for the source_action column of email_logs: the Struts action of
    * the request as "<namespace>/<action>", or the URI of a request served outside Struts (the REST endpoints).
    *
-   * @return the source, or null for a send from a background thread, which has neither.
+   * @return the source, or BACKGROUND_SOURCE for a send from a background thread, which has neither.
    */
   // Package-private so SendMailSSourceTest can call it.
   String getRequestSource() {
@@ -122,13 +126,13 @@ public class SendMailS extends BaseAction {
       && context.getActionInvocation().getProxy() != null) {
       ActionProxy proxy = context.getActionInvocation().getProxy();
       String namespace = StringUtils.removeEnd(StringUtils.defaultString(proxy.getNamespace()), "/");
-      return StringUtils.left(namespace + "/" + proxy.getActionName(), 255);
+      return StringUtils.left(namespace + "/" + StringUtils.defaultString(proxy.getActionName()), 255);
     }
     RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
     if (attributes instanceof ServletRequestAttributes) {
       return StringUtils.left(((ServletRequestAttributes) attributes).getRequest().getRequestURI(), 255);
     }
-    return null;
+    return BACKGROUND_SOURCE;
   }
 
   /**

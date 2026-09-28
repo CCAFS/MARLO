@@ -276,6 +276,25 @@
 			</result>
 		</action>
 
+		<!-- System Admin -> Emails: one page of the table, and one email for the detail popup -->
+		<action name="emailLogs"
+			class="org.cgiar.ccafs.marlo.action.json.global.EmailLogsAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="root">response</param>
+			</result>
+		</action>
+
+		<action name="emailLogDetail"
+			class="org.cgiar.ccafs.marlo.action.json.global.EmailLogDetailAction">
+			<result type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="root">detail</param>
+			</result>
+		</action>
+
 		<action name="searchCountryListPL"
 			class="org.cgiar.ccafs.marlo.action.json.project.ProjectLocationCountryListAction">
 			<result type="json">

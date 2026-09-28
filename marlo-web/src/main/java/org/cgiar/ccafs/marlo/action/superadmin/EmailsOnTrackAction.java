@@ -17,16 +17,22 @@ package org.cgiar.ccafs.marlo.action.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
-import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 /**
+ * System Admin -> Emails. The page only needs the options of its filters: the rows are read a page at a time by
+ * EmailLogsAction. It used to load every logged email with its message and attachment (tens of megabytes) on each
+ * visit, to show the ones not sent.
+ *
  * @author Sebastian Amariles - CIAT/CCAFS
  */
 public class EmailsOnTrackAction extends BaseAction {
@@ -35,39 +41,44 @@ public class EmailsOnTrackAction extends BaseAction {
 
   // Managers
   private EmailLogManager emailLogManager;
+  private GlobalUnitManager globalUnitManager;
   // Front-end
-  private ArrayList<EmailLog> emails;
-  private ArrayList<EmailLog> emailsSent;
+  private List<GlobalUnit> globalUnits;
+  private List<String> sourceActions;
 
   @Inject
-  public EmailsOnTrackAction(APConfig config, EmailLogManager emailLogManager) {
+  public EmailsOnTrackAction(APConfig config, EmailLogManager emailLogManager, GlobalUnitManager globalUnitManager) {
     super(config);
     this.emailLogManager = emailLogManager;
+    this.globalUnitManager = globalUnitManager;
   }
 
-  public ArrayList<EmailLog> getEmails() {
-    return emails;
+  /**
+   * @return the global units that have logged emails, by acronym.
+   */
+  public List<GlobalUnit> getGlobalUnits() {
+    return globalUnits;
+  }
+
+  /**
+   * @return the places the logged emails were sent from, in alphabetical order.
+   */
+  public List<String> getSourceActions() {
+    return sourceActions;
   }
 
   @Override
   public void prepare() throws Exception {
-    List<EmailLog> emailLogs = emailLogManager.findAll();
-    emails = new ArrayList<>();
-    emailsSent = new ArrayList<>();
-
-    // The DAO answers with null, not with an empty list, when no email has been logged yet.
-    if (emailLogs == null) {
-      return;
+    globalUnits = new ArrayList<>();
+    for (Long globalUnitId : emailLogManager.findGlobalUnitIds()) {
+      GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitId);
+      if (globalUnit != null) {
+        globalUnits.add(globalUnit);
+      }
     }
-
-    // succes_email is nullable, so an entry whose outcome was never recorded is reported as not sent, which is
-    // the list the section is about and the one that can be sent again.
-    emails.addAll(emailLogs.stream().filter(c -> !Boolean.TRUE.equals(c.getSucces())).collect(Collectors.toList()));
-
-    /*
-     * Emails sent list
-     */
-    emailsSent.addAll(emailLogs.stream().filter(c -> Boolean.TRUE.equals(c.getSucces())).collect(Collectors.toList()));
+    globalUnits.sort(Comparator.comparing(GlobalUnit::getAcronym, Comparator.nullsLast(String::compareToIgnoreCase)));
+    sourceActions = new ArrayList<>(emailLogManager.findSourceActions());
+    sourceActions.removeIf(Objects::isNull);
   }
 
   @Override
@@ -78,23 +89,4 @@ public class EmailsOnTrackAction extends BaseAction {
       return NOT_AUTHORIZED;
     }
   }
-
-  public void setEmails(ArrayList<EmailLog> emails) {
-    this.emails = emails;
-  }
- 
-  public ArrayList<EmailLog> getEmailsSent() {
-    return emailsSent;
-  }
- 
-  public void setEmailsSent(ArrayList<EmailLog> emailsSent) {
-    this.emailsSent = emailsSent;
-  }
-
-  @Override
-  public void validate() {
-    if (save) {
-    }
-  }
-
 }

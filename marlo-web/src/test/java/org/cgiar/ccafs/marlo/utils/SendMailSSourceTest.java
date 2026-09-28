@@ -29,7 +29,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * SendMailS records in email_logs.source_action where each email was sent from. It runs inside a Struts action, a
@@ -65,8 +64,9 @@ public class SendMailSSourceTest {
   }
 
   @Test
-  public void testBackgroundThreadHasNoSource() {
-    assertNull(sendMail.getRequestSource());
+  public void testBackgroundThreadIsBackground() {
+    // Not NULL: NULL is left for the rows logged before the source was recorded.
+    assertEquals(SendMailS.BACKGROUND_SOURCE, sendMail.getRequestSource());
   }
 
   @Test
