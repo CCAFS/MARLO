@@ -1,19 +1,854 @@
-.crpPhase {
-    padding: 18px 20px 10px 20px;
+/*
+ * Planning / Reporting cycles (admin -> crpPhases).
+ *
+ * Everything here is scoped under .phaseCycles. Two reasons it has to be:
+ *  - global.css paints every bare <button> Bootstrap blue with a 3px bottom
+ *    border, so each control below resets that before styling itself;
+ *  - the phase selector rendered by main-menu.ftl on this same page already owns
+ *    .phaseRow / .phaseRow__name / .phaseRow__dates (marlo-redesign.css, section
+ *    4), which is why the table rows here are .cycRow and not .phaseRow.
+ *
+ * Colours come from the design tokens in global/css/marlo-redesign.css; the two
+ * literals left in place (the row tones) have no token because they name phase
+ * kinds, not states.
+ */
+
+/************* LAYOUT ***************/
+
+.phaseCycles {
+  font-family: var(--marlo-font-sans);
+  color: var(--marlo-ink);
 }
 
-.crpPhase.current{
-  border-color: #bbb;
+/* global.css hands every <button> a blue fill, 5px 26px of padding and a 3px
+   bottom border, so each control here has to undo that first.
+
+   The reset names the classes instead of the elements on purpose. `.phaseCycles
+   button` would be (0,1,1) and would outrank every (0,1,0) component rule below
+   it -- padding, background and border would all stay reset and the tabs, pills
+   and footer buttons would render as bare text. Listing the classes keeps the
+   reset at the same specificity as the rules that follow, so source order
+   decides and each component wins back exactly the properties it declares. */
+.cycSearch__clear,
+.cycTabs__item,
+.cycToggle,
+.cycYear,
+.cycEmpty__reset,
+.cycFooter__discard {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-decoration: none;
 }
 
-.crpPhase.planning span.index {
-  background: #337ab7;
+/* Bootstrap ships .sr-only, but it is not in MARLO's own stylesheets; declaring
+   it here keeps the landing radio labelled even if that changes. */
+.phaseCycles .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.crpPhase.reporting span.index {
-  background: #777777;
+/************* HEADING ***************/
+
+.phaseCycles__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
 }
 
-.crpPhase.displayOn{
-  border: 1px dashed #bdbdbd;
+.phaseCycles__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.phaseCycles__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--marlo-ink);
+}
+
+.phaseCycles__subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--marlo-text-muted);
+}
+
+/************* CARD ***************/
+
+.phaseCycles__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-xl);
+  background: var(--marlo-surface);
+  box-shadow: var(--marlo-shadow-card);
+}
+
+/************* TOOLBAR ***************/
+
+.cycToolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--marlo-border-soft);
+}
+
+.cycToolbar__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cycToolbar__row--years {
+  gap: 6px;
+}
+
+.cycToolbar__label {
+  margin-right: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--marlo-text-muted);
+}
+
+/* Search */
+.cycSearch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 320px;
+  max-width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-surface);
+  color: var(--marlo-text-muted);
+}
+
+.cycSearch:focus-within {
+  border-color: var(--marlo-brand);
+}
+
+.cycSearch svg {
+  flex: none;
+}
+
+.cycSearch__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 13.5px;
+  color: var(--marlo-ink);
+}
+
+.cycSearch__clear {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--marlo-radius-pill);
+  background: var(--marlo-neutral-bg);
+  color: var(--marlo-text);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cycSearch__clear:hover {
+  background: var(--marlo-neutral-border);
+}
+
+/* Type tabs */
+.cycTabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-neutral-bg);
+}
+
+.cycTabs__item {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--marlo-radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--marlo-text-muted);
+  cursor: pointer;
+}
+
+.cycTabs__item:hover {
+  color: var(--marlo-ink);
+}
+
+.cycTabs__item.is-selected {
+  background: var(--marlo-surface);
+  color: var(--marlo-ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(31, 42, 55, 0.14);
+}
+
+/* Open-only toggle */
+.cycToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-surface);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--marlo-text);
+  cursor: pointer;
+}
+
+.cycToggle__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--marlo-radius-pill);
+  background: var(--marlo-text-disabled);
+}
+
+.cycToggle.is-selected {
+  border-color: var(--marlo-success-border);
+  background: var(--marlo-success-bg);
+  color: var(--marlo-success-text);
+}
+
+.cycToggle.is-selected .cycToggle__dot {
+  background: var(--marlo-success-text);
+}
+
+.cycResult {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--marlo-text-muted);
+}
+
+/* Year pills */
+.cycYear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--marlo-text);
+  cursor: pointer;
+}
+
+.cycYear:hover {
+  border-color: var(--marlo-brand);
+}
+
+.cycYear.is-selected {
+  border-color: var(--marlo-brand-dark);
+  background: var(--marlo-brand);
+  color: var(--marlo-surface);
+  font-weight: 600;
+}
+
+.cycYear__count {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+/************* TABLE ***************/
+
+/* One scroll box on both axes. The sticky column header and the sticky year
+   headers below are positioned against it. */
+.cycTable {
+  max-height: 498px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.cycTable__inner {
+  min-width: 880px;
+}
+
+/* The single source of the column geometry: header, year headers and rows all
+   read it. The last three tracks are fixed because they hold controls of a known
+   size; the first three share what is left. */
+.cycHead,
+.cycRow {
+  display: grid;
+  grid-template-columns: minmax(240px, 2.4fr) minmax(160px, 1.7fr) minmax(120px, 1.4fr) 116px 144px 68px;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.cycHead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 38px;
+  border-bottom: 1px solid var(--marlo-border);
+  background: var(--marlo-surface-rail);
+}
+
+.cycHead__cell {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--marlo-text-muted);
+}
+
+.cycHead__cell--end {
+  text-align: right;
+}
+
+/* Year group */
+.cycGroup__head {
+  position: sticky;
+  top: 38px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 16px;
+  border-top: 1px solid var(--marlo-border);
+  border-bottom: 1px solid var(--marlo-border);
+  background: var(--marlo-neutral-bg);
+}
+
+.cycGroup__year {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--marlo-ink);
+}
+
+.cycGroup__meta {
+  font-size: 12.5px;
+  color: var(--marlo-text-muted);
+}
+
+.cycBadge {
+  padding: 1px 7px;
+  border-radius: var(--marlo-radius-xs);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.cycBadge--current {
+  background: var(--marlo-danger);
+  color: var(--marlo-surface);
+}
+
+.cycBadge--landing {
+  display: none;
+  border: 1px solid var(--marlo-info-border);
+  background: var(--marlo-info-bg);
+  color: var(--marlo-info-text);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.cycRow.is-landing .cycBadge--landing {
+  display: inline-block;
+}
+
+/* .cycRow and .cycGroup__head both set `display`, which outranks normalize's
+   element-level [hidden] rule, so the filtered-out state has to be spelled out.
+   Same pattern as .phaseRow[hidden] in marlo-redesign.css. */
+.cycRow[hidden],
+.cycGroup[hidden],
+.cycEmpty[hidden] {
+  display: none;
+}
+
+/************* ROW ***************/
+
+.cycRow {
+  min-height: 56px;
+  border-bottom: 1px solid var(--marlo-border-faint);
+  background: var(--marlo-surface);
+}
+
+.cycRow:hover {
+  background: var(--marlo-surface-rail);
+}
+
+.cycRow.is-open {
+  background: var(--marlo-surface-rail);
+}
+
+.cycRow > input[type="hidden"] {
+  display: none;
+}
+
+.cycRow__cell {
+  min-width: 0;
+}
+
+/* Phase */
+.cycRow__phase {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cycRow__tone {
+  flex: none;
+  width: 4px;
+  height: 30px;
+  border-radius: 2px;
+  background: var(--marlo-border-strong);
+}
+
+.cycRow--planning .cycRow__tone {
+  background: #0277a2;
+}
+
+.cycRow--progress .cycRow__tone {
+  background: #8a5a00;
+}
+
+.cycRow--reporting .cycRow__tone {
+  background: #2e6b2f;
+}
+
+.cycRow__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.cycRow__name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--marlo-ink);
+}
+
+.cycRow__meta {
+  overflow: hidden;
+  font-size: 12.5px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--marlo-text-muted);
+}
+
+/* Window */
+.cycRow__window {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cycRow__dates {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--marlo-ink);
+}
+
+.cycRow__dates--none {
+  font-weight: 400;
+  color: var(--marlo-text-subtle);
+}
+
+.cycRow__duration {
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--marlo-text-muted);
+}
+
+.cycRow__duration--live {
+  font-weight: 500;
+  color: var(--marlo-warning-text);
+}
+
+/* Next phase */
+.cycRow__nextName {
+  display: block;
+  overflow: hidden;
+  padding-right: 12px;
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--marlo-text);
+}
+
+.cycRow__nextName--none {
+  color: var(--marlo-text-subtle);
+}
+
+/************* SEGMENTED CONTROLS ***************/
+
+.cycSwitch {
+  /* Contains the absolutely positioned radios below: without it they escape to
+     the nearest positioned ancestor, and tabbing to one scrolls the page to
+     wherever that put them instead of to the button the user sees. */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-neutral-bg);
+}
+
+/* The radio is the state; the label is the button. It stays in the layer so the
+   keyboard still reaches it -- the focus ring is drawn on the label. */
+.cycSwitch__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Bootstrap gives every <label> a bottom margin and 700 weight. */
+.cycSwitch__option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  width: 50px;
+  height: 26px;
+  border-radius: var(--marlo-radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--marlo-text);
+  cursor: pointer;
+}
+
+.cycSwitch--status .cycSwitch__option {
+  width: 63px;
+}
+
+.cycSwitch__option:hover {
+  color: var(--marlo-ink);
+}
+
+.cycSwitch__input:checked + .cycSwitch__option {
+  background: var(--marlo-surface);
+  color: var(--marlo-ink);
+  box-shadow: 0 1px 2px rgba(31, 42, 55, 0.14);
+}
+
+/* Open is the one state worth reading at a glance across the table. */
+.cycSwitch__input:checked + .cycSwitch__option--open {
+  background: var(--marlo-success-text);
+  color: var(--marlo-surface);
+}
+
+.cycSwitch__input:focus-visible + .cycSwitch__option {
+  outline: 2px solid var(--marlo-danger);
+  outline-offset: 2px;
+}
+
+/* Phases before 2019 (and the 2019 POWB) cannot be reopened here. The inputs
+   stay in the DOM and keep posting their current value; only the buttons go. */
+.cycSwitch--locked {
+  display: none;
+}
+
+.cycStatic {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--marlo-text);
+}
+
+.cycStatic--locked {
+  font-weight: 500;
+  color: var(--marlo-text-subtle);
+}
+
+/************* LANDING ***************/
+
+.cycRow__landing {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cycLanding__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cycLanding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-pill);
+  background: var(--marlo-surface);
+  cursor: pointer;
+}
+
+.cycLanding:hover {
+  border-color: var(--marlo-brand);
+}
+
+.cycLanding__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--marlo-radius-pill);
+  background: transparent;
+}
+
+.cycLanding__input:checked + .cycLanding {
+  border: 2px solid var(--marlo-brand);
+}
+
+.cycLanding__input:checked + .cycLanding .cycLanding__dot {
+  background: var(--marlo-brand);
+}
+
+.cycLanding__input:focus-visible + .cycLanding {
+  outline: 2px solid var(--marlo-danger);
+  outline-offset: 2px;
+}
+
+.cycLanding--static {
+  cursor: default;
+}
+
+.cycRow.is-landing .cycLanding--static {
+  border: 2px solid var(--marlo-brand);
+}
+
+.cycRow.is-landing .cycLanding--static .cycLanding__dot {
+  background: var(--marlo-brand);
+}
+
+/* Start and end date are not edited on this screen, but they must still be
+   posted: see the note at the top of crpPhases.ftl. */
+.cycRow__dateInputs {
+  display: none;
+}
+
+/************* EMPTY STATE ***************/
+
+.cycEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+}
+
+.cycEmpty__text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--marlo-ink);
+}
+
+.cycEmpty--noData {
+  padding: 48px 16px;
+  font-weight: 400;
+  text-align: center;
+  color: var(--marlo-text-muted);
+}
+
+.cycEmpty__reset {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--marlo-brand);
+  cursor: pointer;
+}
+
+.cycEmpty__reset:hover {
+  border-color: var(--marlo-brand);
+  background: var(--marlo-brand-tint);
+}
+
+/************* FOOTER ***************/
+
+.cycFooter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--marlo-border);
+  background: var(--marlo-surface-rail);
+}
+
+.cycFooter.is-dirty {
+  background: var(--marlo-warning-bg);
+}
+
+.cycFooter__state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--marlo-text-muted);
+}
+
+.cycFooter.is-dirty .cycFooter__state {
+  font-weight: 600;
+  color: var(--marlo-warning-text);
+}
+
+.cycFooter__check {
+  flex: none;
+  color: var(--marlo-success-text);
+}
+
+.cycFooter.is-dirty .cycFooter__check {
+  display: none;
+}
+
+.cycFooter__dot {
+  display: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--marlo-radius-pill);
+  background: var(--marlo-danger);
+}
+
+.cycFooter.is-dirty .cycFooter__dot {
+  display: block;
+}
+
+.cycFooter__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.cycFooter__discard {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--marlo-text);
+  cursor: pointer;
+}
+
+.cycFooter__discard:hover:not([disabled]) {
+  border-color: var(--marlo-text-disabled);
+}
+
+.cycFooter__discard[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* global.css paints .button-save the old green with a 3px bottom border. */
+.cycFooter .button-save {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-brand);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--marlo-surface);
+  cursor: pointer;
+}
+
+.cycFooter .button-save:hover {
+  background: var(--marlo-brand-dark);
+}
+
+.cycFooter .button-save.disabled,
+.cycFooter .button-save.disabled:hover,
+.cycFooter .button-save[disabled] {
+  border: 0;
+  background: #a6bcc8 !important;
+  color: var(--marlo-surface);
+  cursor: not-allowed;
+}
+
+.cycFooter a.form-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--marlo-radius-lg);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+/************* NARROW VIEWPORTS ***************/
+
+@media (max-width: 991px) {
+  .phaseCycles__head {
+    align-items: flex-start;
+  }
+
+  .cycSearch {
+    width: 100%;
+  }
+
+  .cycResult {
+    margin-left: 0;
+  }
 }
