@@ -28,8 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 /**
@@ -63,6 +65,12 @@ public class SendFailEmailAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    // The json package cannot use superAdminStack, which lives in marlo-default, and without this check any
+    // signed-in user could list the failed emails of every global unit or resend all of them.
+    if (!this.canAccessSuperAdmin()) {
+      ServletActionContext.getResponse().setStatus(HttpServletResponse.SC_FORBIDDEN);
+      return NONE;
+    }
     results = new ArrayList<>();
     List<EmailLog> emailLogs = emailLogManager.findAll().stream().filter(c -> c.getSucces().booleanValue() == false)
       .collect(Collectors.toList());
