@@ -946,7 +946,9 @@ function initNumberField(fieldId, options = {}) {
       keepOneDecimalZero: true,
       allowDecimals: true,
       isPercentage: true,
-      isRecallMethod: false
+      isRecallMethod: false,
+      // Opt-in: when true a cleared field stays empty instead of becoming 0.
+      allowEmpty: false
   };
   
   // Combinar opciones por defecto con las proporcionadas
@@ -1141,7 +1143,7 @@ function initNumberField(fieldId, options = {}) {
       // Normalizar ceros iniciales (mantenemos los ceros finales durante la edición)
       const normalizedValue = valueWithoutCommas.replace(/^0+(\d)/, '$1');
       let adjustCursor = valueWithoutCommas.length - normalizedValue.length;
-      valueWithoutCommas = normalizedValue === '' ? '0' : normalizedValue;
+      valueWithoutCommas = (normalizedValue === '' && !config.allowEmpty) ? '0' : normalizedValue;
       
       // Primera fase: eliminar caracteres no válidos (solo números y un punto si se permiten decimales)
       let cleanValue = '';
