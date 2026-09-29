@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
   "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260923",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -16,7 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
-  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260929",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260930",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -68,22 +68,22 @@
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
 
+        [#-- Feedback status legend, drawn by dataInfo-projects.ftl in the top quote beside
+             the cluster chip, so it never pushes or overlaps the section header. --]
+        [#macro topQuoteExtras]
+          [#if action.hasSpecificities('feedback_active') ]
+            <div class="cpi-feedback-legend" role="note">
+              <span class="cpi-feedback-legend__title">[@s.text name="feedbackStatus.title" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment.png" alt="" />[@s.text name="feedbackStatus.blue" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment_yellow.png" alt="" />[@s.text name="feedbackStatus.yellow" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment_green.png" alt="" />[@s.text name="feedbackStatus.green" /]</span>
+            </div>
+          [/#if]
+        [/#macro]
         [#-- Cluster quote, immediately before the form so it sits with the section --]
         [#include "/WEB-INF/crp/views/projects/dataInfo-projects.ftl" /]
 
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          [#--  Feedback Status --]
-          [#if action.hasSpecificities('feedback_active') ]
-            <div class="form-group col-md-12 legendContent">
-              <div class="colors">
-                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
-              </div>
-            </div>
-          [/#if]
-
           [#-- ═══ A2-2439 · section header ═══ --]
           <div class="cpi-head">
             <div class="cpi-head__titles">

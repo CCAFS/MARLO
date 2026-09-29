@@ -45,6 +45,47 @@
 .cpi-page .cpi-head__back { flex: none; font-size: 13px; font-weight: 500; color: var(--cpi-brand); }
 .cpi-page strong, .cpi-page b { font-weight: 500; }
 
+/* ── Feedback status legend ─────────────────────────────────────────
+ * Drawn in #top-quote (dataInfo-projects.ftl) ahead of the cluster chip, and only
+ * while feedback_active is on. global.css floats the quote right and every chip in
+ * it left; here the quote is a wrapping flex row instead, so on a narrow page the
+ * chip drops under the legend flush right, with room above the section header.
+ */
+.cpi-page #top-quote {
+  float: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px 14px;
+  margin-bottom: 12px;
+}
+.cpi-page #top-quote > * { float: none; margin-left: 0; }
+.cpi-page #top-quote .cpi-feedback-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  min-height: 29px;
+  cursor: default;
+}
+.cpi-page #top-quote .cpi-feedback-legend__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--cpi-muted);
+}
+.cpi-page #top-quote .cpi-feedback-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--cpi-ink);
+  white-space: nowrap;
+}
+.cpi-page #top-quote .cpi-feedback-legend__item img { width: 16px; height: auto; }
+
 /* ── Cards ──────────────────────────────────────────────────────── */
 .cpi-page .cpi-card {
   background: var(--cpi-surface);
@@ -203,7 +244,14 @@
 }
 .cpi-page .cpi-fields__values > .cpi-field { min-width: 0; margin-bottom: 8px; }
 .cpi-page .cpi-field { margin-bottom: 16px; position: relative; }
-.cpi-page .cpi-field .feedback-flex-items { height: 0; }
+/* With feedback on, addfeedbackFlexItemsClass() (feedbackAutoImplementation.js)
+   moves a commentable field and its comment bubble into this wrapper. It must keep
+   its content's height: a 0-height wrapper centres the field on a zero line, so
+   half of it rose over the field above -- the achieved narrative's label landed on
+   the expected narrative's text. Top-aligned, so the bubble can line up with the
+   control rather than with the middle of a label + control + counter stack. */
+.cpi-page .cpi-field .feedback-flex-items { align-items: flex-start; gap: 8px; }
+.cpi-page .cpi-field .feedback-flex-items > .fieldReference { flex: 1; min-width: 0; }
 .cpi-page .cpi-field .input { position: relative; }
 
 .cpi-page .cpi-field label {
@@ -264,8 +312,32 @@
 .cpi-page .input:has(input[type="text"].targetValueNumber)::after,
 .cpi-page .input:has(input[type="number"].targetValueNumber)::after { content: none; }
 
-/* The feedback bubble is absolutely positioned so it cannot break the row. */
-.cpi-page .cpi-field .commentNumberContainer { position: absolute; top: 0; right: 0; }
+/* The feedback bubble sits in flow beside the control, never on top of it. Its top
+   margin is the label's line (16.9px) plus the label's 5px gap, which puts the
+   22px icon level with the first line of the input or textarea. The answered /
+   total count rides the icon's corner instead of floating 38px above it, where it
+   landed on the label of the field. */
+.cpi-page .cpi-field .commentNumberContainer {
+  position: relative;
+  flex: none;
+  margin-top: 22px;
+}
+.cpi-page .cpi-field img.qaComment { width: 22px; margin-left: 0; }
+.cpi-page .cpi-field .numberOfCommentsBubble {
+  top: -9px;
+  right: -9px;
+  left: auto;
+  z-index: 1;
+  margin: 0;
+  transform: none;
+}
+.cpi-page .cpi-field .numberOfCommentsBubble p {
+  min-width: 20px;
+  padding: 1px 5px;
+  font-size: 9.5px;
+  line-height: 14px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .25);
+}
 
 .cpi-page .cpi-field input.form-control,
 .cpi-page .cpi-field textarea.form-control {
