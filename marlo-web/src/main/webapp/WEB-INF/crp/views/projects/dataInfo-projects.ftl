@@ -1,5 +1,7 @@
 [#ftl]
 <div id="top-quote">
+  [#-- A section can put its own chips ahead of the ID chip by defining this macro. --]
+  [#if topQuoteExtras??][@topQuoteExtras /][/#if]
   [#if project?has_content]
     [#if action.isAiccra()]
       <div id="clusterID-quote" class="quote-id" title="C${(project.id)!} - [#if (project.projectInfo.title?has_content)!false]${(project.projectInfo.title)!}[/#if]">
