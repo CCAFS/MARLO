@@ -16,7 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
-  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260923",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260929",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -223,22 +223,6 @@
             </div>
           </div>
 
-          [#-- ═══ Additional questions for this performance indicator ═══
-               Answered in the annual report only (A2-2439). The card is still
-               rendered in the other cycles but not shown: saveIndicators()
-               deletes every ProjectOutcomeIndicator the form does not post
-               back, so leaving the markup out would drop the answers rather
-               than hide them. --]
-          [#assign cpiShowQuestions = !((action.isAiccra())!false) || reportingActive /]
-          [#if action.hasSpecificities('crp_baseline_indicators') && (cpiOutcome.indicators?has_content)!false]
-            <div class="cpi-card cpi-questions"[#if !cpiShowQuestions] style="display:none"[/#if]>
-              <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
-              [#list cpiOutcome.indicators as indicator]
-                [@cpiQuestion element=indicator index=indicator_index /]
-              [/#list]
-            </div>
-          [/#if]
-
           [#-- ═══ Yearly contribution to intermediate targets ═══ --]
           <div class="cpi-periods">
             <h4 class="cpi-card__title cpi-periods__title">[@s.text name="projectOutcome.contributionToMilestones" /]</h4>
@@ -310,6 +294,22 @@
               <p class="cpi-empty">[@s.text name="projectContributionCrp.noPeriods" /]</p>
             [/#if]
           </div>
+          [#-- ═══ Additional questions for this performance indicator ═══
+               Answered in the annual report only (A2-2439). The card is still
+               rendered in the other cycles but not shown: saveIndicators()
+               deletes every ProjectOutcomeIndicator the form does not post
+               back, so leaving the markup out would drop the answers rather
+               than hide them. --]
+          [#assign cpiShowQuestions = !((action.isAiccra())!false) || reportingActive /]
+          [#if action.hasSpecificities('crp_baseline_indicators') && (cpiOutcome.indicators?has_content)!false]
+            <div class="cpi-card cpi-questions"[#if !cpiShowQuestions] style="display:none"[/#if]>
+              <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
+              [#list cpiOutcome.indicators as indicator]
+                [@cpiQuestion element=indicator index=indicator_index /]
+              [/#list]
+            </div>
+          [/#if]
+
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">

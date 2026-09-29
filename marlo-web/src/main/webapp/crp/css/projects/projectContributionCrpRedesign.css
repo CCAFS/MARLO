@@ -97,6 +97,7 @@
 .cpi-page .cpi-indicator__note { display: block; margin-top: 6px; font-size: 12.5px; color: var(--cpi-muted); }
 
 /* ── Period tabs ────────────────────────────────────────────────── */
+.cpi-page .cpi-periods + .cpi-questions { margin-top: 18px; }
 .cpi-page .cpi-periods__title { margin-bottom: 10px; border-bottom: 0; padding-bottom: 0; }
 /* bootstrap.css gives every .nav a clearfix -- ::before and ::after with
    content " " and display: table -- for floated tabs. On this flex row both
