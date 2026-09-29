@@ -17,8 +17,10 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -30,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -61,6 +64,16 @@ public class ProjectDescriptionValidator extends BaseValidator {
   }
 
   private boolean hasActivePrograms(BaseAction action, int programType) {
+    // The description action already loaded the active programs in prepare(). Reusing them keeps validate() out of
+    // any transaction: committing one would flush the project entities prepare() mutates on POST.
+    if (action instanceof ProjectDescriptionAction) {
+      ProjectDescriptionAction descriptionAction = (ProjectDescriptionAction) action;
+      List<CrpProgram> programs = programType == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        ? descriptionAction.getProgramFlagships() : descriptionAction.getRegionFlagships();
+      if (programs != null) {
+        return !programs.isEmpty();
+      }
+    }
     GlobalUnit crp = crpManager.getGlobalUnitById(action.getCrpID());
     return crp != null && crp.getCrpPrograms() != null
       && crp.getCrpPrograms().stream().anyMatch(c -> c.isActive() && c.getProgramType() == programType);
