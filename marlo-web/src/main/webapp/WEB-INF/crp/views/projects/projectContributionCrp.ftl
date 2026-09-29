@@ -212,11 +212,7 @@
           <div class="cpi-card">
             <h4 class="cpi-card__title">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h4>
             <div class="cpi-field" style="display:${showOutcomeValue?string('block', 'none')}">
-              [#if (action.isAFPhase(actualPhase.id))!false]
-                [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(cpiOutcome.year)!afYear type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
-              [#else]
-                [@customForm.input name="projectOutcome.expectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
-              [/#if]
+              [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(cpiOutcome.year)!afYear type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
             </div>
             <div class="cpi-field">
               [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false)) /]

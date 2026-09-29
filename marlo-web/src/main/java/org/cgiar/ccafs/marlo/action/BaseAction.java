@@ -407,7 +407,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Variables
   private String crpSession;
 
-  private String customTextHeader;
   private String feedbackBIReportName;
 
   protected boolean dataSaved;
@@ -3080,23 +3079,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get the Custom text from parameters table that for the testing banner
-   *
-   * @return the custom text header from parameters table
-   */
-  public String getCustomTextHeader() {
-    try {
-      if (APConstants.CRP_LOGIN_HEADER_TEXT != null
-        && this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT) != null) {
-        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
-      }
-    } catch (Exception e) {
-      LOG.error("Could not read the custom login header text from the session", e);
-    }
-    return customTextHeader;
-  }
-
-  /**
    * This method return the Date Format from APConstants class
    *
    * @return A dateformat (yyyy-MM-dd)
@@ -5737,29 +5719,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  /**
-   * This method return the first AF AICCRA ID Phase
-   *
-   * @return ID value of first AICCRA AF phase
-   */
-  public long getStartAFPhase() {
-    long startAFPhase = 423;
-
-    if (this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE) != null) {
-      try {
-        startAFPhase = Long.parseLong((String) this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE));
-      } catch (NumberFormatException e) {
-        LOG.error("The session value of {} is not a number, so the default start AF phase {} is used",
-          APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase, e);
-      }
-    } else {
-      // This parameter only exists for AICCRA, so any other global unit falls back to the default phase.
-      LOG.debug("{} is not in the session, so the default start AF phase {} is used",
-        APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase);
-    }
-    return startAFPhase;
-  }
-
   public Submission getSubmission() {
     return this.submission;
   }
@@ -6346,24 +6305,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isAdmin() {
     return this.securityContext.hasRole("Admin");
   }
-
-  /**
-   * This method return true if the phase belong to an AF AICCRA phase
-   *
-   * @param phaseID is the phase ID to be identified.
-   * @return Boolean object with the value
-   */
-  public boolean isAFPhase(long phaseID) {
-    // getStartAFPhase() already handles a malformed session value and falls back to the default phase.
-    long startAFPhase = this.getStartAFPhase();
-
-    if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 
   public boolean isAiccra() {
     return this.getCurrentCrp() != null && this.getCurrentCrp().isAiccra();
@@ -7395,7 +7336,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // [end] 19/06/2024 cgamboa
 
 
-    // aqui se debe aplicar la nueva funcion getCompleteDeliverableListByPhase
+    // The new getCompleteDeliverableListByPhase function should be applied here
 
     if (deliverableID != null && phaseID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
@@ -8960,10 +8901,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
-  }
-
-  public void setCustomTextHeader(String customTextHeader) {
-    this.customTextHeader = customTextHeader;
   }
 
   public void setDataSaved(boolean dataSaved) {
