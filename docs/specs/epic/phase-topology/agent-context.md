@@ -187,8 +187,8 @@ surrounding try/catch. Combined with 3 test files in the whole repository, this 
   `ProjectBudgetByPartnersReplicationAction`, `marloBulkReplication.ftl`. Replication fires on save only, never
   retroactively, so a newly created phase starts **empty** until one of these runs.
 - **Phase membership:** `CrpProjectPhases` / `projectPhases.ftl` populates `project_phases`.
-- **Phase-id holders:** `custom_parameters` keys `current_phase` and `crp_aiccra_af_start_phase` store phase ids.
-  Deleting a phase must repoint them.
+- **Phase-id holders:** the `custom_parameters` key `current_phase` stores a phase id. Deleting a phase must repoint
+  it. (`crp_aiccra_af_start_phase` was the other one; it was removed on 2026-09-29.)
 - **Autosave draft keys:** `BaseAction:2494` builds them from `phase.getName()` + `phase.getYear()`. Renaming a
   phase orphans every draft.
 

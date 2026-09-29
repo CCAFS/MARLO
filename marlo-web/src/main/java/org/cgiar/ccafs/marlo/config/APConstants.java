@@ -59,9 +59,7 @@ public final class APConstants {
   public static final String CRP_FPM_ROLE = "crp_fpm_rol";
   public static final String CRP_REPORT_DELIVERABLE_PPA_FILTER = "crp_report_deliverable_ppa_filter";
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
-  public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
-  public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -70,9 +68,6 @@ public final class APConstants {
   public static final String CRP_LESSONS_ACTIVE = "crp_lessons_active";
   public static final String CRP_MULTIPLE_COA = "crp_multiple_coa";
   public static final String CRP_ONE_GENDER = "crp_one_gender";
-  public static final String CRP_OPEN_PLANNING_DATE = "crp_open_planing_date";
-  public static final String CRP_OPEN_REAL_DATE_REPORTING = "crp_real_reporting_date";
-  public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
   public static final String CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS = "crp_show_project_outcome_communications";
   public static final String CRP_PARAMETERS = "crp_parameters";

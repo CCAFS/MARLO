@@ -951,21 +951,11 @@ public class ProjectExpectedStudiesAction extends BaseAction {
         /*
          * Set RepIndStageStudy composed name
          */
-        if (this.isAFPhase(this.getActualPhase().getId())) {
-          if ((this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null)
-            && (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null)) {
-
-            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
-              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
-                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
-          }
-        } else {
-          if ((this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null)
-            && (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription() != null)) {
-            this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
-              .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
-                + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescription());
-          }
+        if ((this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName() != null)
+          && (this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF() != null)) {
+          this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy()
+            .setComposedName("<b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getName()
+              + "</b>" + this.expectedStudy.getProjectExpectedStudyInfo().getRepIndStageStudy().getDescriptionAF());
         }
 
         // Load Status
@@ -1750,16 +1740,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       if ((this.stageStudies != null) && !this.stageStudies.isEmpty()) {
         for (final RepIndStageStudy stageStudy : this.stageStudies) {
 
-          if (stageStudy != null) {
-            if (this.isAFPhase(this.getActualPhase().getId())) {
-              if ((stageStudy.getName() != null) && (stageStudy.getDescriptionAF() != null)) {
-                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
-              }
-            } else {
-              if ((stageStudy.getName() != null) && (stageStudy.getDescription() != null)) {
-                stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescription());
-              }
-            }
+          if ((stageStudy != null) && (stageStudy.getName() != null) && (stageStudy.getDescriptionAF() != null)) {
+            stageStudy.setComposedName(stageStudy.getName() + ": " + stageStudy.getDescriptionAF());
           }
         }
       }
@@ -2949,8 +2931,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         } catch (final Exception e) {
-          this.logger.error("unable to delete deliverable user partnership in saveInstitutions function  ",
-            e.getMessage());
+          this.logger.error("unable to delete deliverable user partnership in saveInstitutions function", e);
         }
 
       }
@@ -3468,8 +3449,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
             }
           }
         } catch (final Exception e) {
-          this.logger.error("unable to delete deliverable user partnership in saveInstitutions function  ",
-            e.getMessage());
+          this.logger.error("unable to delete deliverable user partnership in saveInstitutions function", e);
         }
 
       }
@@ -3792,8 +3772,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           }
         }
       } catch (final Exception e) {
-        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
-          e.getMessage());
+        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function",
+          e);
       }
 
     }
@@ -4928,7 +4908,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       if (currentPortfolio != null) {
         currentPortfolioEndDate = currentPortfolio.getEndDate();
-        actualPortfolioID = currentPortfolio.getId(); // <<< agrega esta línea
+        actualPortfolioID = currentPortfolio.getId();
       }
 
     } catch (Exception e) {
