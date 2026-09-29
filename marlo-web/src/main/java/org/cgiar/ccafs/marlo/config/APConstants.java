@@ -61,7 +61,6 @@ public final class APConstants {
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
   public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
-  public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
