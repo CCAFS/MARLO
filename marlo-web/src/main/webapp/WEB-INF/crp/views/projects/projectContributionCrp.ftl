@@ -6,7 +6,7 @@
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
   "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260923",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
