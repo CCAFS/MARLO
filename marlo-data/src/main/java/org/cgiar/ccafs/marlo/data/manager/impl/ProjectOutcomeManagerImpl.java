@@ -182,7 +182,16 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectID the project id we are working
    * @param projectOutcome the projectOutcome to clone
    */
-  private void addProjectOutcomePhase(Phase next, long projectID, ProjectOutcome projectOutcome) {
+  /**
+   * Replicates a project outcome, its milestones and next users into the given phase and every phase after it.
+   *
+   * @param copyAchieved whether the achieved figures and narratives are carried into phases that already hold the
+   *        outcome. Only a phase that can edit them (Reporting, or a Planning phase with upkeep) passes true: a plain
+   *        planning phase never shows them, so what it holds is stale and would overwrite what a later phase
+   *        reported.
+   */
+  private void addProjectOutcomePhase(Phase next, long projectID, ProjectOutcome projectOutcome,
+    boolean copyAchieved) {
     Phase phase = phaseMySQLDAO.find(next.getId());
     List<ProjectOutcome> projectOutcomes = phase.getProjectOutcomes().stream()
       .filter(c -> c.isActive() && c.getProject().getId().longValue() == projectID
@@ -219,7 +228,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     } else {
 
       for (ProjectOutcome projectOutcomeAdd : projectOutcomes) {
-        projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
+        if (copyAchieved) {
+          projectOutcomeAdd.setAchievedValue(projectOutcome.getAchievedValue());
+        }
 
 
         if (projectOutcome.getExpectedUnit() != null) {
@@ -230,7 +241,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         }
         projectOutcomeAdd.setExpectedUnit(projectOutcome.getExpectedUnit());
         projectOutcomeAdd.setExpectedValue(projectOutcome.getExpectedValue());
-        projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+        if (copyAchieved) {
+          projectOutcomeAdd.setNarrativeAchieved(projectOutcome.getNarrativeAchieved());
+        }
         projectOutcomeAdd.setNarrativeTarget(projectOutcome.getNarrativeTarget());
         projectOutcomeAdd.setActive(projectOutcome.isActive());
 
@@ -239,7 +252,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
         // projectOutcomeAdd.setCrpProgramOutcome(
         // crpProgramOutcomeDAO.getCrpProgramOutcome(projectOutcome.getCrpProgramOutcome().getComposeID(), next));
         projectOutcomeAdd = projectOutcomeDAO.save(projectOutcomeAdd);
-        this.updateProjectMilestones(projectOutcomeAdd, projectOutcome);
+        this.updateProjectMilestones(projectOutcomeAdd, projectOutcome, copyAchieved);
         // this.updateProjectIndicators(projectOutcomeAdd, projectOutcome);
         this.updateProjectNextUsers(projectOutcomeAdd, projectOutcome);
       }
@@ -247,7 +260,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     }
 
     if (phase.getNext() != null) {
-      this.addProjectOutcomePhase(phase.getNext(), projectID, projectOutcome);
+      this.addProjectOutcomePhase(phase.getNext(), projectID, projectOutcome, copyAchieved);
 
     }
 
@@ -366,7 +379,15 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     return projectOutcomeDAO.getProjectOutcomeByProgramOutcomeAndProject(programOutcomeId, projectId);
   }
 
+  /**
+   * Saves the project outcome and replicates it forward.
+   * Transactional because the replication updates rows that already exist in later phases, and those updates are
+   * only written when the session is flushed. The web layer opens the session through OpenSessionInViewFilter, which
+   * never flushes, so outside a transaction every update was silently dropped and only the rows the replication had
+   * to create reached the database.
+   */
   @Override
+  @Transactional
   public ProjectOutcome saveProjectOutcome(ProjectOutcome projectOutcome) {
     if (projectOutcome.getOrder() == null) {
       projectOutcome.setOrder((double) 1);
@@ -376,8 +397,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
     Phase currentPhase = phaseMySQLDAO.find(projectOutcome.getPhase().getId());
     if (currentPhase.getDescription().equals(APConstants.PLANNING)) {
       if (projectOutcome.getPhase().getNext() != null) {
+        // Only a planning phase with upkeep (Progress) edits the achieved figures.
+        boolean copyAchieved = Boolean.TRUE.equals(currentPhase.getUpkeep());
         this.addProjectOutcomePhase(projectOutcome.getPhase().getNext(), projectOutcome.getProject().getId(),
-          projectOutcome);
+          projectOutcome, copyAchieved);
       }
     }
     // Uncomment this line to allow reporting replication to upkeep
@@ -385,7 +408,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       if (currentPhase.getNext() != null && currentPhase.getNext().getNext() != null) {
         Phase upkeepPhase = currentPhase.getNext().getNext();
         if (upkeepPhase != null) {
-          this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome);
+          this.addProjectOutcomePhase(upkeepPhase, projectOutcome.getProject().getId(), projectOutcome, true);
         }
       }
     }
@@ -512,7 +535,8 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
    * @param projectOutcomePrev project outcome to update
    * @param projectOutcome project outcome modified
    */
-  private void updateProjectMilestones(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome) {
+  private void updateProjectMilestones(ProjectOutcome projectOutcomePrev, ProjectOutcome projectOutcome,
+    boolean copyAchieved) {
     if (projectOutcome.getMilestones() == null) {
       projectOutcome.setMilestones(new ArrayList<ProjectMilestone>());
     }
@@ -576,7 +600,9 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
               .filter(c -> c.isActive()
                 && c.getCrpMilestone().getComposeID().equals(projectMilestone.getCrpMilestone().getComposeID()))
               .collect(Collectors.toList()).get(0);
-            milestone.setAchievedValue(projectMilestone.getAchievedValue());
+            if (copyAchieved) {
+              milestone.setAchievedValue(projectMilestone.getAchievedValue());
+            }
             if (projectMilestone.getExpectedUnit() != null) {
               if (projectMilestone.getExpectedUnit().getId() == null
                 || projectMilestone.getExpectedUnit().getId().longValue() == -1) {
@@ -585,8 +611,10 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
             }
 
             milestone.setExpectedValue(projectMilestone.getExpectedValue());
-            milestone.setAchievedValue(projectMilestone.getAchievedValue());
-            milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+            if (copyAchieved) {
+              milestone.setAchievedValue(projectMilestone.getAchievedValue());
+              milestone.setNarrativeAchieved(projectMilestone.getNarrativeAchieved());
+            }
             milestone.setNarrativeTarget(projectMilestone.getNarrativeTarget());
             milestone.setYear(projectMilestone.getYear());
             milestone.setSettedValue(projectMilestone.getSettedValue());

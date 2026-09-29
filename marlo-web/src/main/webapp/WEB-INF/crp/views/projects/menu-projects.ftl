@@ -94,7 +94,7 @@
 
 
 [#-- Menu--]
-<nav id="secondaryMenu" class="">
+<nav id="secondaryMenu" class="clusterMenu">
   <p>[@s.text name="projects.menu.project" /]<br />
     <small> 
     [#-- Global Unit Acronym --]
