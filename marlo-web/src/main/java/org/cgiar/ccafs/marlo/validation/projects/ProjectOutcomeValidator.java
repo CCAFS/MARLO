@@ -325,10 +325,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
     // if (action.isAiccra() == false) {
     if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
-        List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
-          .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
-        for (int i = 0; i < milestones.size(); i++) {
-          this.validateProjectMilestone(action, milestones.get(i), i);
+        // Keep the posted index: the invalid-field key names the form input milestones[i], so an index taken
+        // from a filtered list flagged a field of another year (and painted that year's tab red).
+        for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
+          ProjectMilestone milestone = projectOutcome.getMilestones().get(i);
+          if (milestone != null && milestone.getYear() == action.getCurrentCycleYear()) {
+            this.validateProjectMilestone(action, milestone, i);
+          }
         }
       } else {
         for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
