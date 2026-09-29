@@ -69,9 +69,6 @@ public final class APConstants {
   public static final String CRP_LESSONS_ACTIVE = "crp_lessons_active";
   public static final String CRP_MULTIPLE_COA = "crp_multiple_coa";
   public static final String CRP_ONE_GENDER = "crp_one_gender";
-  public static final String CRP_OPEN_PLANNING_DATE = "crp_open_planing_date";
-  public static final String CRP_OPEN_REAL_DATE_REPORTING = "crp_real_reporting_date";
-  public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
   public static final String CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS = "crp_show_project_outcome_communications";
   public static final String CRP_PARAMETERS = "crp_parameters";
