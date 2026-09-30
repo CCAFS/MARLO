@@ -118,10 +118,10 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
       }
 
       if (action.isReportingActive()) {
-        this.saveMissingFields(project, APConstants.REPORTING, action.getReportingYear(),
+        this.saveMissingFields(project, APConstants.REPORTING, action.getActualPhase().getYear(),
           action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       } else {
-        this.saveMissingFields(project, APConstants.PLANNING, action.getPlanningYear(),
+        this.saveMissingFields(project, APConstants.PLANNING, action.getActualPhase().getYear(),
           action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       }
     }

@@ -202,11 +202,6 @@ public class ProjectListAction extends BaseAction {
     // TODO add phase call the parameters
     GlobalUnit crp = globalUnitProject.getGlobalUnit();
 
-    //
-    // CustomParameter customParameter = crp.getCustomParameters().stream()
-    // .filter(cp -> cp.isActive() && cp.getParameter().getKey().equals(APConstants.CRP_PLANNING_YEAR))
-    // .collect(Collectors.toList()).get(0);
-
     Phase phase = this.getCenterCrpPhase(crp);
 
     CenterProject centerProject = this.createCenterProject(project, true);

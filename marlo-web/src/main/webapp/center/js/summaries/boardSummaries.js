@@ -11,7 +11,6 @@ function init() {
   addSelect2();
   attachEvents();
   $(".reportYear").attr("disabled", "true");
-  updateYearSelect();
   // ajaxService();
 }
 
@@ -31,17 +30,6 @@ function attachEvents() {
   $("input[name='cycle']").on(
       "change",
       function() {
-        $("select.reportYear").empty();
-        if($(this).val() == "Planning") {
-          $("select.reportYear").append(
-              "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
-        } else {
-          $("select.reportYear")
-              .append(
-                  "<option value='" + $(".reportingYear").text() + "' selected>" + $(".reportingYear").text()
-                      + "</option>");
-// console.log(reportYear);
-        }
         $("#projectID").val("-1");
         ajaxService();
         updateUrl($(".summariesOptions").find(".selected"));
@@ -143,16 +131,6 @@ function ajaxService() {
         console.log(e);
       }
   });
-}
-
-function updateYearSelect() {
-  if($("input[name='cycle']:checked").val() == "Planning") {
-    $("select.reportYear").append(
-        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
-  } else {
-    $("select.reportYear").append(
-        "<option value='" + $(".planningYear").text() + "' selected>" + $(".planningYear").text() + "</option>");
-  }
 }
 
 function addGenderTerms() {

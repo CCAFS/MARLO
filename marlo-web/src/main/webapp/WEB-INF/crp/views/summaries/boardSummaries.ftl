@@ -343,8 +343,6 @@
 [#include "/WEB-INF/global/pages/header.ftl" /]
 [#include "/WEB-INF/global/pages/main-menu.ftl" /]
 
-<span class="hidden planningYear">${(action.getPlanningYear())!}</span>
-<span class="hidden reportingYear">${(action.getReportingYear())!}</span>
     
 <section class="container sectionSummarie">
   <article id="" class="">

@@ -111,10 +111,10 @@ public class SynthesisByOutcomeValidator extends BaseValidator {
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
     if (action.isReportingActive()) {
-      this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getReportingYear(),
+      this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     } else {
-      this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getPlanningYear(),
+      this.saveMissingFields(ipProgram, APConstants.PLANNING, action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SYNTHESISOUTCOME.getStatus(), action);
     }
 
