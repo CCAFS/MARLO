@@ -24,6 +24,21 @@ Validation path for critical save sections:
 2. `save` flag controls whether section validation is executed.
 3. A non-empty invalid field set or action errors should be treated as save blockers.
 4. Sections without explicit validator call (Portfolio Management) should be reviewed before complex changes.
+5. **No `@Transactional` call inside `validate()` on the save path, not even a read.** On POST, `prepare()` has already
+   mutated managed entities (cleared collections, nulled checkbox fields, transient instances swapped in) and the
+   `ParametersInterceptor` has bound the form on top. A non-readOnly `@Transactional` manager/DAO call commits that
+   half-edited state on the spot: it either fails there with a constraint error before `save()` runs, or writes it
+   even if validation then rejects the save. Reuse what `prepare()` already loaded, or call a non-transactional method.
+   Precedent: `f389f18e0a` made `ProjectDescriptionValidator.hasActivePrograms()` call
+   `GlobalUnitManager.getGlobalUnitById` (`GlobalUnitMySQLDAO.find()` is `@Transactional`), and saving Project
+   Description failed in `validate()` with a `DataIntegrityViolationException`; `b0ad9abc6c` fixed it. The
+   mechanism was reproduced on 2026-09-30 against Spring 5.3.39 / Hibernate 5.6.15 with a `FlushMode.MANUAL` session:
+   a transactional read commits a dirty entity immediately, a `readOnly = true` one does not. Save-path calls of this
+   kind still present (not demonstrated as failing, since that depends on what each `prepare()` mutates):
+   `getGlobalUnitById` in `PowbCollaborationValidator`, `PlannedCollaborationValidator`, `PlannedBudgetValidator`,
+   `ProgramChangeValidator`, `ProgressOutcomesValidator`, `ToC2019Validator`; `deleteSectionStatus` in
+   `Policies2018Validator`, `Innovations2018Validator`, `StudiesOICR2018Validator`, `OutcomeMilestonesValidator`.
+   The `getGlobalUnitById` in each validator's `getAutoSaveFilePath()` runs only when `!saving` and is safe.
 
 ## Key References
 - `marlo-web/src/main/resources/struts-projects.xml`

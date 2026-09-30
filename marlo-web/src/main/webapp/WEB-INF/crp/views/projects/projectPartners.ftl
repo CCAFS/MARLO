@@ -105,7 +105,7 @@
                   [#-- Lessons learnt from last planning/reporting cycle --]
                   [#-- [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
                   <div class="fullBlock">
-                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:[@customForm.req required=false /]</label>
+                    <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]:[@customForm.req required=false /]</label>
                     <div class="textArea limitWords-100"><p>${project.projectComponentLessonPreview.lessons}</p></div>
                   </div>
                   [/#if]

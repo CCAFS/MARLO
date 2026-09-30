@@ -469,7 +469,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean next;
   private Map<String, Parameter> parameters;
   private boolean planningActive;
-  private int planningYear;
   @Autowired
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Autowired
@@ -486,8 +485,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Autowired
   private DeliverableTypeManager deliverableTypeManager;
   private boolean reportingActive;
-
-  private int reportingYear;
 
   protected HttpServletRequest request;
 
@@ -4540,22 +4537,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return gson.toJson(phases);
   }
 
-  public int getPlanningYear() {
-    String planningYear = this.getSessionValue(APConstants.CRP_PLANNING_YEAR);
-    if (planningYear == null) {
-      LOG.debug("{} is not in the session, so the planning year is 0", APConstants.CRP_PLANNING_YEAR);
-      return 0;
-    }
-
-    try {
-      return Integer.parseInt(planningYear);
-    } catch (NumberFormatException e) {
-      LOG.debug("The session value of {} is not a number, so the planning year is 0",
-        APConstants.CRP_PLANNING_YEAR, e);
-      return 0;
-    }
-  }
-
   public List<GlobalUnit> getPlatformsList() {
     List<GlobalUnit> centers = new ArrayList<>();
     if (!this.canAccessSuperAdmin()) {
@@ -5458,22 +5439,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public long getReportingIndTypeActivityAcademicDegree() {
     return APConstants.REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE;
-  }
-
-  public int getReportingYear() {
-    String reportingYear = this.getSessionValue(APConstants.CRP_REPORTING_YEAR);
-    if (reportingYear == null) {
-      LOG.debug("{} is not in the session, so the reporting year is 0", APConstants.CRP_REPORTING_YEAR);
-      return 0;
-    }
-
-    try {
-      return Integer.parseInt(reportingYear);
-    } catch (NumberFormatException e) {
-      LOG.debug("The session value of {} is not a number, so the reporting year is 0",
-        APConstants.CRP_REPORTING_YEAR, e);
-      return 0;
-    }
   }
 
   /**
@@ -7742,17 +7707,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public boolean isPlanningActiveParam() {
-    String planningActive = this.getSessionValue(APConstants.CRP_PLANNING_ACTIVE);
-    if (planningActive == null) {
-      LOG.debug("{} is not in the session, so the planning is reported as inactive",
-        APConstants.CRP_PLANNING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(planningActive);
-  }
-
   public boolean isPMU() {
     String roles = this.getRoles();
     if (roles.contains("PMU")) {
@@ -8134,22 +8088,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       reporting = false;
     }
     return reporting;
-  }
-
-  public boolean isReportingActiveParam() {
-
-    if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
-      return true;
-    }
-
-    String reportingActive = this.getSessionValue(APConstants.CRP_REPORTING_ACTIVE);
-    if (reportingActive == null) {
-      LOG.debug("{} is not in the session, so the reporting is reported as inactive",
-        APConstants.CRP_REPORTING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(reportingActive);
   }
 
   public boolean isRole(String roleAcronym) {
@@ -8802,12 +8740,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (this.isReportingActive()) {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-      ipProgram.getProjectComponentLesson().setYear(this.getReportingYear());
-
     } else {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-      ipProgram.getProjectComponentLesson().setYear(this.getPlanningYear());
     }
+    // The lessons are loaded back by the year of the actual phase, so they are saved with that year too
+    Phase actualPhase = this.getActualPhase();
+    ipProgram.getProjectComponentLesson().setYear(actualPhase == null ? 0 : actualPhase.getYear());
     this.projectComponentLessonManager.saveProjectComponentLesson(ipProgram.getProjectComponentLesson());
 
   }
@@ -9036,16 +8974,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.planningActive = planningActive;
   }
 
-  public void setPlanningYear(int planningYear) {
-    this.planningYear = planningYear;
-  }
-
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;
-  }
-
-  public void setReportingYear(int reportingYear) {
-    this.reportingYear = reportingYear;
   }
 
   public void setSave(boolean save) {
