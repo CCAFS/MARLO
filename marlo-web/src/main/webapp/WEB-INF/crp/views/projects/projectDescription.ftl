@@ -112,11 +112,12 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [#if editable && action.hasPermission("managementLiaison")]
-                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutions" keyFieldName="id" displayFieldName="composedName" required=true editable=true /]
+                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutionLabels" required=true editable=true /]
                 [#else]
                   <label class="col-form-label required">${action.getText("project.liaisonInstitution")}:</label>
                   <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
-                    ${(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
+                    [#assign currentLiaisonId = (project.projectInfo.liaisonInstitution.id?c)!"" /]
+                    ${(liaisonInstitutionLabels[currentLiaisonId])!(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
                   </p>
                 [/#if]
               </div>

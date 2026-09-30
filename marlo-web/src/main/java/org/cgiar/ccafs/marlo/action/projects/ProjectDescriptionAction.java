@@ -67,7 +67,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -138,6 +140,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
+  // Management Liaison option labels, keyed by liaison institution id, in display order
+  private Map<String, String> liaisonInstitutionLabels;
   private List<CrpClusterOfActivity> clusterofActivites;
   private Project projectDB;
 
@@ -352,6 +356,33 @@ public class ProjectDescriptionAction extends BaseAction {
       return ids;
     }
     return null;
+  }
+
+  /**
+   * Builds the Management Liaison option label, prefixed with a tag that tells where the liaison comes from:
+   * a flagship (component) program, a regional program, or a managing partner institution.
+   *
+   * @param liaisonInstitution the liaison institution to label.
+   * @return the tagged label, or the plain composed name when the liaison has no recognizable source.
+   */
+  private String getLiaisonInstitutionLabel(LiaisonInstitution liaisonInstitution) {
+    String composedName = liaisonInstitution.getComposedName() == null ? "" : liaisonInstitution.getComposedName();
+    String tag = null;
+    if (liaisonInstitution.getInstitution() != null) {
+      tag = this.getText("global.CrpPpaPartner");
+    } else if (liaisonInstitution.getCrpProgram() != null) {
+      if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+        tag = this.getText("global.flagship");
+      } else if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE
+        .getValue()) {
+        tag = this.getText("project.liaisonInstitution.tag.regional");
+      }
+    }
+    return tag == null ? composedName : "[" + tag + "] " + composedName;
+  }
+
+  public Map<String, String> getLiaisonInstitutionLabels() {
+    return liaisonInstitutionLabels;
   }
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
@@ -772,6 +803,14 @@ public class ProjectDescriptionAction extends BaseAction {
       }
       // liaisonInstitutions.addAll(
       // liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
+    }
+    // The sources are unordered HashSets, so sort by the label the select displays
+    liaisonInstitutions
+      .sort(Comparator.comparing(this::getLiaisonInstitutionLabel, String.CASE_INSENSITIVE_ORDER));
+    liaisonInstitutionLabels = new LinkedHashMap<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      liaisonInstitutionLabels.put(String.valueOf(liaisonInstitution.getId()),
+        this.getLiaisonInstitutionLabel(liaisonInstitution));
     }
     // load the liasons intitutions for the crp
 
