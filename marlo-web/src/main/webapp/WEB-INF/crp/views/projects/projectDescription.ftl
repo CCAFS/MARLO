@@ -191,11 +191,6 @@
               [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" paramText="${(actualPhase.year?c)!}" /]
             </div>
             
-            [#-- Project Lessons Learned --]
-            <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.lessonsLearned.helpText" paramText="${(actualPhase.year?c)!}" /]
-            </div>
-
             [#-- Project status --]
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
@@ -356,57 +351,6 @@
             </div>
             [/#if]
 
-            [#if (project.projectInfo.isProjectEditLeader() && !phaseOne)!false]
-
-              [#-- Select the cross-cutting dimension(s) to this project? --]
-              <div class="form-group">
-                <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
-                <div class="row">
-                  <div class="col-md-12">
-                    [#if aiccra]
-                    [#assign crossCuttingMarkers = [
-                        { "id":"gender", "name": "crossCuttingGender" },
-                        { "id":"youth", "name": "crossCuttingYouth" },
-                        { "id":"na", "name": "crossCuttingNa" }
-                      ]
-                    /]
-                    [#else]
-                        [#assign crossCuttingMarkers = [
-                        { "id":"gender", "name": "crossCuttingGender" },
-                        { "id":"youth", "name": "crossCuttingYouth" },
-                        { "id":"capacity", "name": "crossCuttingCapacity" },
-                        { "id":"climate", "name": "crossCuttingClimate" },
-                        { "id":"na", "name": "crossCuttingNa" }
-                      ]
-                    /]
-                    [/#if]
-                    [#if editable]
-                      [#list crossCuttingMarkers as marker]
-                        <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.${marker.name}" id="${marker.id}" class="[#if marker.id != "na"]ccMarker[/#if]" value="true" [#if (project.projectInfo[marker.name])!false ]checked="checked"[/#if]>[@s.text name="crossCuttingMarker.${marker.id}" /]</label>
-                      [/#list]
-                    [#else]
-                      [#assign checkedItems = false /]
-                      [#list crossCuttingMarkers as marker]
-                        [#if (project.projectInfo[marker.name])!false ]
-                          <div class="${customForm.changedField('project.projectInfo.${marker.name}')}">
-                            <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="project.projectInfo.${marker.name}" value="true">
-                          </div>
-                          [#assign checkedItems = true /]
-                        [/#if]
-                      [/#list]
-                      [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-                      [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
-                    [/#if]
-                  </div>
-                </div>
-                <br />
-              </div>
-
-              [#-- If no gender dimension, then please explain why not --]
-              <div id="gender-question" class="form-group" style="display:${((project.projectInfo.crossCuttingGender)!false)?string('none','block')}">
-                [@customForm.textArea name="project.projectInfo.dimension" i18nkey="project.dimension"  required=true className=" limitWords-50" editable=editable /]
-              </div>
-            [/#if]
           </div>
 
           [#-- Section Buttons & hidden inputs--]

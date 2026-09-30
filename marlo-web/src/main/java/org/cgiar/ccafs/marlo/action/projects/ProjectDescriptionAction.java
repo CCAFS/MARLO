@@ -100,6 +100,15 @@ public class ProjectDescriptionAction extends BaseAction {
   // Acronym of the Project Development Objective component, listed first in the component list
   private static final String PDO_ACRONYM = "PDO";
   private static final Pattern COMPONENT_NUMBER_PATTERN = Pattern.compile("\\d+");
+  // PDO first, then the numbered components in numeric order, then the rest by their displayed label
+  static final Comparator<CrpProgram> COMPONENT_ORDER =
+    Comparator.comparingInt((CrpProgram p) -> getComponentSortGroup(p.getAcronym(), p.getComposedName()))
+      .thenComparingInt(p -> getComponentNumber(p.getComposedName()))
+      .thenComparing(CrpProgram::getComposedName, String.CASE_INSENSITIVE_ORDER);
+  // Same rule for the Management Liaison component options; the other options tie, so their label decides
+  static final Comparator<LiaisonInstitution> LIAISON_COMPONENT_ORDER =
+    Comparator.comparingInt(ProjectDescriptionAction::getLiaisonComponentSortGroup)
+      .thenComparingInt(ProjectDescriptionAction::getLiaisonComponentNumber);
 
   // Managers
   private ProjectManager projectManager;
@@ -364,14 +373,17 @@ public class ProjectDescriptionAction extends BaseAction {
   }
 
   /**
-   * Returns the first number in the component label (acronym: name), used to sort the numbered components in
-   * numeric order, so that "Component 10" comes after "Component 9".
+   * Returns the first number in a component label, used to sort the numbered components in numeric order, so that
+   * "Component 10" comes after "Component 9".
    *
-   * @param program the component program.
-   * @return the first number of the label, or Integer.MAX_VALUE when the label has none.
+   * @param label the displayed component label.
+   * @return the first number of the label, or Integer.MAX_VALUE when the label is null or has none.
    */
-  private int getComponentNumber(CrpProgram program) {
-    Matcher matcher = COMPONENT_NUMBER_PATTERN.matcher(program.getComposedName());
+  private static int getComponentNumber(String label) {
+    if (label == null) {
+      return Integer.MAX_VALUE;
+    }
+    Matcher matcher = COMPONENT_NUMBER_PATTERN.matcher(label);
     if (matcher.find()) {
       try {
         return Integer.parseInt(matcher.group());
@@ -385,14 +397,42 @@ public class ProjectDescriptionAction extends BaseAction {
   /**
    * Returns the sort group of a component: 0 for the PDO, 1 for the numbered components and 2 for the rest.
    *
-   * @param program the component program.
+   * @param acronym the component acronym.
+   * @param label the displayed component label.
    * @return the sort group.
    */
-  private int getComponentSortGroup(CrpProgram program) {
-    if (PDO_ACRONYM.equalsIgnoreCase(program.getAcronym() == null ? null : program.getAcronym().trim())) {
+  private static int getComponentSortGroup(String acronym, String label) {
+    if (PDO_ACRONYM.equalsIgnoreCase(acronym == null ? null : acronym.trim())) {
       return 0;
     }
-    return this.getComponentNumber(program) == Integer.MAX_VALUE ? 2 : 1;
+    return getComponentNumber(label) == Integer.MAX_VALUE ? 2 : 1;
+  }
+
+  /**
+   * Returns the component number of a Management Liaison option, read from the label it displays. In AICCRA the
+   * number is in the name ("KS - 1. Knowledge..."), in AICCRA 3 in the acronym ("Component 1 - ...").
+   *
+   * @param liaisonInstitution the liaison institution.
+   * @return the component number, or 0 when the liaison is not a component so that its label decides.
+   */
+  private static int getLiaisonComponentNumber(LiaisonInstitution liaisonInstitution) {
+    if (!isComponentLiaison(liaisonInstitution)) {
+      return 0;
+    }
+    return getComponentNumber(liaisonInstitution.getComposedName());
+  }
+
+  /**
+   * Returns the component sort group of a Management Liaison option, as {@link #getComponentSortGroup} does.
+   *
+   * @param liaisonInstitution the liaison institution.
+   * @return the sort group, or 0 when the liaison is not a component so that its label decides.
+   */
+  private static int getLiaisonComponentSortGroup(LiaisonInstitution liaisonInstitution) {
+    if (!isComponentLiaison(liaisonInstitution)) {
+      return 0;
+    }
+    return getComponentSortGroup(liaisonInstitution.getAcronym(), liaisonInstitution.getComposedName());
   }
 
   /**
@@ -404,18 +444,43 @@ public class ProjectDescriptionAction extends BaseAction {
    */
   private String getLiaisonInstitutionLabel(LiaisonInstitution liaisonInstitution) {
     String composedName = liaisonInstitution.getComposedName() == null ? "" : liaisonInstitution.getComposedName();
-    String tag = null;
-    if (liaisonInstitution.getInstitution() != null) {
-      tag = this.getText("global.CrpPpaPartner");
-    } else if (liaisonInstitution.getCrpProgram() != null) {
-      if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
-        tag = this.getText("global.flagship");
-      } else if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE
-        .getValue()) {
-        tag = this.getText("project.liaisonInstitution.tag.regional");
-      }
-    }
+    String tag = this.getLiaisonInstitutionTag(liaisonInstitution);
     return tag == null ? composedName : "[" + tag + "] " + composedName;
+  }
+
+  /**
+   * Returns the key that groups the Management Liaison options by source: the bracketed tag, or the plain composed
+   * name when the liaison has no recognizable source.
+   *
+   * @param liaisonInstitution the liaison institution.
+   * @return the group key.
+   */
+  private String getLiaisonInstitutionGroup(LiaisonInstitution liaisonInstitution) {
+    String tag = this.getLiaisonInstitutionTag(liaisonInstitution);
+    if (tag == null) {
+      return liaisonInstitution.getComposedName() == null ? "" : liaisonInstitution.getComposedName();
+    }
+    return "[" + tag + "]";
+  }
+
+  /**
+   * Returns the source tag of a Management Liaison option: managing partner, component or regional manager.
+   *
+   * @param liaisonInstitution the liaison institution.
+   * @return the translated tag, or null when the liaison has no recognizable source.
+   */
+  private String getLiaisonInstitutionTag(LiaisonInstitution liaisonInstitution) {
+    if (liaisonInstitution.getInstitution() != null) {
+      return this.getText("global.CrpPpaPartner");
+    }
+    if (isComponentLiaison(liaisonInstitution)) {
+      return this.getText("global.flagship");
+    }
+    if (liaisonInstitution.getCrpProgram() != null
+      && liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()) {
+      return this.getText("project.liaisonInstitution.tag.regional");
+    }
+    return null;
   }
 
   public Map<String, String> getLiaisonInstitutionLabels() {
@@ -509,6 +574,19 @@ public class ProjectDescriptionAction extends BaseAction {
    */
   private String getWorplansAbsolutePath() {
     return config.getUploadsBaseFolder() + File.separator + this.getWorkplanRelativePath() + File.separator;
+  }
+
+  /**
+   * Tells whether a Management Liaison option is a component: a flagship program liaison with no partner
+   * institution.
+   *
+   * @param liaisonInstitution the liaison institution.
+   * @return true when the liaison is a component.
+   */
+  private static boolean isComponentLiaison(LiaisonInstitution liaisonInstitution) {
+    return liaisonInstitution != null && liaisonInstitution.getInstitution() == null
+      && liaisonInstitution.getCrpProgram() != null
+      && liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue();
   }
 
 
@@ -841,9 +919,11 @@ public class ProjectDescriptionAction extends BaseAction {
       // liaisonInstitutions.addAll(
       // liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     }
-    // The sources are unordered HashSets, so sort by the label the select displays
-    liaisonInstitutions
-      .sort(Comparator.comparing(this::getLiaisonInstitutionLabel, String.CASE_INSENSITIVE_ORDER));
+    // The sources are unordered HashSets: group the options by source, list the components PDO first and then by
+    // their number, and the rest by the label the select displays
+    liaisonInstitutions.sort(Comparator.comparing(this::getLiaisonInstitutionGroup, String.CASE_INSENSITIVE_ORDER)
+      .thenComparing(LIAISON_COMPONENT_ORDER)
+      .thenComparing(this::getLiaisonInstitutionLabel, String.CASE_INSENSITIVE_ORDER));
     liaisonInstitutionLabels = new LinkedHashMap<>();
     for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
       liaisonInstitutionLabels.put(String.valueOf(liaisonInstitution.getId()),
@@ -860,9 +940,7 @@ public class ProjectDescriptionAction extends BaseAction {
       .collect(Collectors.toList()));
 
     // PDO first, then the numbered components in numeric order, then the rest by their displayed label
-    programFlagships.sort(Comparator.comparingInt(this::getComponentSortGroup)
-      .thenComparingInt(this::getComponentNumber)
-      .thenComparing(CrpProgram::getComposedName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+    programFlagships.sort(COMPONENT_ORDER);
     clusterofActivites = new ArrayList<>();
 
     for (CrpProgram crpProgram : project.getFlagships()) {
@@ -952,11 +1030,8 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
       }
       project.getProjectInfo().setNoRegional(null);
-      project.getProjectInfo().setCrossCuttingCapacity(null);
-      project.getProjectInfo().setCrossCuttingClimate(null);
-      project.getProjectInfo().setCrossCuttingNa(null);
-      project.getProjectInfo().setCrossCuttingGender(null);
-      project.getProjectInfo().setCrossCuttingYouth(null);
+      // The cross-cutting checkboxes are no longer rendered (A2-2583), so they are not reset here: the form never
+      // posts them, and resetting them would overwrite the stored values on save.
       project.getProjectInfo().setClusterType(null);
     }
 
@@ -979,39 +1054,18 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getNoRegional() == null) {
         project.getProjectInfo().setNoRegional(false);
       }
-      if (project.getProjectInfo().getCrossCuttingCapacity() == null) {
-        project.getProjectInfo().setCrossCuttingCapacity(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingClimate() == null) {
-        project.getProjectInfo().setCrossCuttingClimate(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingNa() == null) {
-        project.getProjectInfo().setCrossCuttingNa(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingGender() == null) {
-        project.getProjectInfo().setCrossCuttingGender(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
-        project.getProjectInfo().setCrossCuttingYouth(false);
-      }
-
-      if (this.isReportingActive()) {
-
-        // Capacity Development
-        project.getProjectInfo()
-          .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
-        // Capacity Gender
-        project.getProjectInfo()
-          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
-        // Capacity Youth
-        project.getProjectInfo()
-          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
-        // Climate Change
-        project.getProjectInfo()
-          .setCrossCuttingClimate(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingClimate());
-        // N/A
-        project.getProjectInfo()
-          .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
+      // Lessons Learned (A2-2582) and the cross-cutting dimensions with their gender justification (A2-2583) are no
+      // longer shown in this section, so the form never posts them. Keep the stored values: a draft read from the
+      // autosave file would otherwise save them empty.
+      ProjectInfo projectInfoDB = projectDB.getProjecInfoPhase(this.getActualPhase());
+      if (projectInfoDB != null) {
+        project.getProjectInfo().setLessonsLearned(projectInfoDB.getLessonsLearned());
+        project.getProjectInfo().setDimension(projectInfoDB.getDimension());
+        project.getProjectInfo().setCrossCuttingCapacity(projectInfoDB.getCrossCuttingCapacity());
+        project.getProjectInfo().setCrossCuttingGender(projectInfoDB.getCrossCuttingGender());
+        project.getProjectInfo().setCrossCuttingYouth(projectInfoDB.getCrossCuttingYouth());
+        project.getProjectInfo().setCrossCuttingClimate(projectInfoDB.getCrossCuttingClimate());
+        project.getProjectInfo().setCrossCuttingNa(projectInfoDB.getCrossCuttingNa());
       }
 
 
