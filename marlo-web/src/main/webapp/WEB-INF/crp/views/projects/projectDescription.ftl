@@ -188,7 +188,7 @@
             
             [#-- Project Challenges, causes and proposed solutions --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" paramText="${(actualPhase.year?c)!}" /]
+              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" paramText="${(project.projectInfo.endDate?date?string('yyyy'))!((actualPhase.year?c)!)}" /]
             </div>
             
             [#-- Project status --]
@@ -240,7 +240,8 @@
 
                     [#-- Contributions allowed to this flagship --]
                     [#list (programFlagships)![] as element]
-                      [#assign flagshipName][#if isCrpProject || isNewCenterTypeProject ]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
+                      [#-- Plain string, not a captured block: checkBoxFlat passes the label to s.text, which escapes it again --]
+                      [#assign flagshipName = (isCrpProject || isNewCenterTypeProject)?then((element.composedName)!'', (element.centerComposedName)!'') /]
 
                       [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
                       [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
@@ -278,7 +279,8 @@
                         [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
                       [/#if]
                       [#list (regionFlagships)![] as element]
-                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        [#-- Plain string, not a captured block: checkBoxFlat passes the label to s.text, which escapes it again --]
+                        [#assign regionName = isCrpProject?then((element.composedName)!'', (element.name)!'') /]
                         [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${regionName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
                       [/#list]
 
@@ -289,7 +291,7 @@
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                       [#list (project.regions)![] as element]
-                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        [#assign regionName = isCrpProject?then((element.composedName)!'', (element.name)!'') /]
                         <p class="checked">${regionName}</p>
                       [/#list]
                     [/#if]
