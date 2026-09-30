@@ -30,11 +30,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Order of the components in Project Description: PDO first, then the numbered components in numeric order, then
- * the rest by their displayed label. The same rule orders the Cluster Description checklist (A2-2580) and the
- * component options of the Management Liaison select (A2-2578).
+ * Tests for {@link ProjectDescriptionAction}, one section per concern.
  */
-public class ProjectDescriptionActionComponentOrderTest {
+public class ProjectDescriptionActionTest {
 
   // Cluster Description checklist order (A2-2580): PDO first, then the numbered components in numeric order, then
   // the rest by their displayed label
