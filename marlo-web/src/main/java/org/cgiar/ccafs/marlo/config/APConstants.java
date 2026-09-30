@@ -232,7 +232,6 @@ public final class APConstants {
   public static final String AGREEMENT_STATUS = "agreementStatus";
   public static final String PARTNERS_ID = "partnerIDs";
 
-  public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
