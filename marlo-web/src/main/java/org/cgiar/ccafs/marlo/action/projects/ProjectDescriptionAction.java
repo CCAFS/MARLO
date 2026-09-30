@@ -67,9 +67,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -93,6 +97,9 @@ public class ProjectDescriptionAction extends BaseAction {
 
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectDescriptionAction.class);
+  // Acronym of the Project Development Objective component, listed first in the component list
+  private static final String PDO_ACRONYM = "PDO";
+  private static final Pattern COMPONENT_NUMBER_PATTERN = Pattern.compile("\\d+");
 
   // Managers
   private ProjectManager projectManager;
@@ -138,6 +145,8 @@ public class ProjectDescriptionAction extends BaseAction {
   private List<CrpProgram> programFlagships;
   private List<CrpProgram> regionFlagships;
   private List<LiaisonInstitution> liaisonInstitutions;
+  // Management Liaison option labels, keyed by liaison institution id, in display order
+  private Map<String, String> liaisonInstitutionLabels;
   private List<CrpClusterOfActivity> clusterofActivites;
   private Project projectDB;
 
@@ -352,6 +361,65 @@ public class ProjectDescriptionAction extends BaseAction {
       return ids;
     }
     return null;
+  }
+
+  /**
+   * Returns the first number in the component label (acronym: name), used to sort the numbered components in
+   * numeric order, so that "Component 10" comes after "Component 9".
+   *
+   * @param program the component program.
+   * @return the first number of the label, or Integer.MAX_VALUE when the label has none.
+   */
+  private int getComponentNumber(CrpProgram program) {
+    Matcher matcher = COMPONENT_NUMBER_PATTERN.matcher(program.getComposedName());
+    if (matcher.find()) {
+      try {
+        return Integer.parseInt(matcher.group());
+      } catch (NumberFormatException e) {
+        return Integer.MAX_VALUE;
+      }
+    }
+    return Integer.MAX_VALUE;
+  }
+
+  /**
+   * Returns the sort group of a component: 0 for the PDO, 1 for the numbered components and 2 for the rest.
+   *
+   * @param program the component program.
+   * @return the sort group.
+   */
+  private int getComponentSortGroup(CrpProgram program) {
+    if (PDO_ACRONYM.equalsIgnoreCase(program.getAcronym() == null ? null : program.getAcronym().trim())) {
+      return 0;
+    }
+    return this.getComponentNumber(program) == Integer.MAX_VALUE ? 2 : 1;
+  }
+
+  /**
+   * Builds the Management Liaison option label, prefixed with a tag that tells where the liaison comes from:
+   * a flagship (component) program, a regional program, or a managing partner institution.
+   *
+   * @param liaisonInstitution the liaison institution to label.
+   * @return the tagged label, or the plain composed name when the liaison has no recognizable source.
+   */
+  private String getLiaisonInstitutionLabel(LiaisonInstitution liaisonInstitution) {
+    String composedName = liaisonInstitution.getComposedName() == null ? "" : liaisonInstitution.getComposedName();
+    String tag = null;
+    if (liaisonInstitution.getInstitution() != null) {
+      tag = this.getText("global.CrpPpaPartner");
+    } else if (liaisonInstitution.getCrpProgram() != null) {
+      if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()) {
+        tag = this.getText("global.flagship");
+      } else if (liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE
+        .getValue()) {
+        tag = this.getText("project.liaisonInstitution.tag.regional");
+      }
+    }
+    return tag == null ? composedName : "[" + tag + "] " + composedName;
+  }
+
+  public Map<String, String> getLiaisonInstitutionLabels() {
+    return liaisonInstitutionLabels;
   }
 
   public List<LiaisonInstitution> getLiaisonInstitutions() {
@@ -773,6 +841,14 @@ public class ProjectDescriptionAction extends BaseAction {
       // liaisonInstitutions.addAll(
       // liaisonInstitutionManager.findAll().stream().filter(c -> c.getCrp() == null).collect(Collectors.toList()));
     }
+    // The sources are unordered HashSets, so sort by the label the select displays
+    liaisonInstitutions
+      .sort(Comparator.comparing(this::getLiaisonInstitutionLabel, String.CASE_INSENSITIVE_ORDER));
+    liaisonInstitutionLabels = new LinkedHashMap<>();
+    for (LiaisonInstitution liaisonInstitution : liaisonInstitutions) {
+      liaisonInstitutionLabels.put(String.valueOf(liaisonInstitution.getId()),
+        this.getLiaisonInstitutionLabel(liaisonInstitution));
+    }
     // load the liasons intitutions for the crp
 
 
@@ -783,7 +859,10 @@ public class ProjectDescriptionAction extends BaseAction {
       .filter(c -> c.isActive() && c.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
       .collect(Collectors.toList()));
 
-    programFlagships.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    // PDO first, then the numbered components in numeric order, then the rest by their displayed label
+    programFlagships.sort(Comparator.comparingInt(this::getComponentSortGroup)
+      .thenComparingInt(this::getComponentNumber)
+      .thenComparing(CrpProgram::getComposedName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
     clusterofActivites = new ArrayList<>();
 
     for (CrpProgram crpProgram : project.getFlagships()) {

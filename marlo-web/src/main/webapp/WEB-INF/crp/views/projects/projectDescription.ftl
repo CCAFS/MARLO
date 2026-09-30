@@ -112,11 +112,12 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [#if editable && action.hasPermission("managementLiaison")]
-                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutions" keyFieldName="id" displayFieldName="composedName" required=true editable=true /]
+                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutionLabels" required=true editable=true /]
                 [#else]
                   <label class="col-form-label required">${action.getText("project.liaisonInstitution")}:</label>
                   <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
-                    ${(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
+                    [#assign currentLiaisonId = (project.projectInfo.liaisonInstitution.id?c)!"" /]
+                    ${(liaisonInstitutionLabels[currentLiaisonId])!(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
                   </p>
                 [/#if]
               </div>
@@ -187,12 +188,12 @@
             
             [#-- Project Challenges, causes and proposed solutions --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" /]
+              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" paramText="${(actualPhase.year?c)!}" /]
             </div>
             
             [#-- Project Lessons Learned --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.lessonsLearned.helpText" /]
+              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.lessonsLearned.helpText" paramText="${(actualPhase.year?c)!}" /]
             </div>
 
             [#-- Project status --]
