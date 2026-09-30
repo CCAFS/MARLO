@@ -100,6 +100,11 @@ public class ProjectDescriptionAction extends BaseAction {
   // Acronym of the Project Development Objective component, listed first in the component list
   private static final String PDO_ACRONYM = "PDO";
   private static final Pattern COMPONENT_NUMBER_PATTERN = Pattern.compile("\\d+");
+  // PDO first, then the numbered components in numeric order, then the rest by their displayed label
+  static final Comparator<CrpProgram> COMPONENT_ORDER =
+    Comparator.comparingInt(ProjectDescriptionAction::getComponentSortGroup)
+      .thenComparingInt(ProjectDescriptionAction::getComponentNumber)
+      .thenComparing(CrpProgram::getComposedName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
 
   // Managers
   private ProjectManager projectManager;
@@ -370,7 +375,7 @@ public class ProjectDescriptionAction extends BaseAction {
    * @param program the component program.
    * @return the first number of the label, or Integer.MAX_VALUE when the label has none.
    */
-  private int getComponentNumber(CrpProgram program) {
+  static int getComponentNumber(CrpProgram program) {
     Matcher matcher = COMPONENT_NUMBER_PATTERN.matcher(program.getComposedName());
     if (matcher.find()) {
       try {
@@ -388,11 +393,11 @@ public class ProjectDescriptionAction extends BaseAction {
    * @param program the component program.
    * @return the sort group.
    */
-  private int getComponentSortGroup(CrpProgram program) {
+  static int getComponentSortGroup(CrpProgram program) {
     if (PDO_ACRONYM.equalsIgnoreCase(program.getAcronym() == null ? null : program.getAcronym().trim())) {
       return 0;
     }
-    return this.getComponentNumber(program) == Integer.MAX_VALUE ? 2 : 1;
+    return getComponentNumber(program) == Integer.MAX_VALUE ? 2 : 1;
   }
 
   /**
@@ -860,9 +865,7 @@ public class ProjectDescriptionAction extends BaseAction {
       .collect(Collectors.toList()));
 
     // PDO first, then the numbered components in numeric order, then the rest by their displayed label
-    programFlagships.sort(Comparator.comparingInt(this::getComponentSortGroup)
-      .thenComparingInt(this::getComponentNumber)
-      .thenComparing(CrpProgram::getComposedName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+    programFlagships.sort(COMPONENT_ORDER);
     clusterofActivites = new ArrayList<>();
 
     for (CrpProgram crpProgram : project.getFlagships()) {
