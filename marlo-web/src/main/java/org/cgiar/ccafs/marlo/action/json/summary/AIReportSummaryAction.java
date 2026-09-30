@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.json.summary;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ai.service.AIIndicatorReport;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.HashMap;
@@ -26,12 +27,15 @@ import javax.inject.Inject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class AIReportSummaryAction extends BaseAction {
 
 
   private static final long serialVersionUID = -5595055892247130791L;
+  private static final Logger LOG = LoggerFactory.getLogger(AIReportSummaryAction.class);
 
   private String indicatorName;
   private int year;
@@ -83,13 +87,21 @@ public class AIReportSummaryAction extends BaseAction {
       this.indicatorName = parameters.get("indicatorName")[0];
     }
 
-    if (parameters.containsKey("year")) {
+    // Without a valid year the report is generated for the year of the current phase
+    this.year = this.getCurrentPhaseYear();
+    String[] yearValues = parameters.get("year");
+    if (yearValues != null && yearValues.length > 0 && yearValues[0] != null) {
       try {
-        this.year = Integer.parseInt(parameters.get("year")[0]);
+        this.year = Integer.parseInt(yearValues[0].trim());
       } catch (NumberFormatException e) {
-        this.year = 2025; // fallback or default year
+        LOG.debug("The year parameter is not a number, so the year of the current phase ({}) is used", this.year);
       }
     }
+  }
+
+  private int getCurrentPhaseYear() {
+    Phase actualPhase = this.getActualPhase();
+    return actualPhase == null || actualPhase.getYear() < 0 ? 0 : actualPhase.getYear();
   }
 
   public void setIndicatorName(String indicatorName) {

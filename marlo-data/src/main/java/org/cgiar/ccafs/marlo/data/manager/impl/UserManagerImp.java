@@ -105,7 +105,7 @@ public class UserManagerImp implements UserManager {
     if (user != null) {
       return user;
     }
-    LOG.warn("Information related to the user {} wasn't found.", email);
+    LOG.debug("Information related to the user {} wasn't found.", email);
     return null;
   }
 
@@ -115,7 +115,7 @@ public class UserManagerImp implements UserManager {
     if (email != null) {
       return this.getUserByEmail(email);
     }
-    LOG.warn("Information related to the user {} wasn't found.", username);
+    LOG.debug("Information related to the user {} wasn't found.", username);
     return null;
   }
 
