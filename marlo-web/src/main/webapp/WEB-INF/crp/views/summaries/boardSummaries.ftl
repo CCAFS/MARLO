@@ -576,11 +576,22 @@
 
       [#-- AI --]
       [#if report.allowAI??]
+      [#-- Years of the visible phases of the report cycles, defaulting to the year of the current phase --]
+      [#assign currentPhaseYear = (actualPhase.year)!0 /]
+      [#assign aiYears = [] /]
+      [#list (reportPhases)![] as phase]
+        [#if !aiYears?seq_contains(phase.year)][#assign aiYears = aiYears + [phase.year] /][/#if]
+      [/#list]
+      [#if !aiYears?has_content && (currentPhaseYear > 0)][#assign aiYears = [currentPhaseYear] /][/#if]
+      [#assign aiYears = aiYears?sort?reverse /]
+      [#assign aiSelectedYear = aiYears?seq_contains(currentPhaseYear)?then(currentPhaseYear, (aiYears?first)!0) /]
       <div class="form-group col-md-10" style="padding: 0;">
         <div class="col-md-6" style="padding-left: 0;">
           <label for="">Year:</label>
           <select name="year" id="">
-            <option value="2025" selected>2025</option>
+            [#list aiYears as aiYear]
+            <option value="${aiYear?c}" [#if aiYear == aiSelectedYear]selected[/#if]>${aiYear?c}</option>
+            [/#list]
           </select>
         </div>
         <div class="col-md-6" style="padding-left: 0;">
