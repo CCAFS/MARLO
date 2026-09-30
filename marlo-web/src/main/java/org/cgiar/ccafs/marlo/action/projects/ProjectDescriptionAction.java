@@ -952,11 +952,8 @@ public class ProjectDescriptionAction extends BaseAction {
         project.getProjecInfoPhase(this.getActualPhase()).setLiaisonInstitution(null);
       }
       project.getProjectInfo().setNoRegional(null);
-      project.getProjectInfo().setCrossCuttingCapacity(null);
-      project.getProjectInfo().setCrossCuttingClimate(null);
-      project.getProjectInfo().setCrossCuttingNa(null);
-      project.getProjectInfo().setCrossCuttingGender(null);
-      project.getProjectInfo().setCrossCuttingYouth(null);
+      // The cross-cutting checkboxes are no longer rendered (A2-2583), so they are not reset here: the form never
+      // posts them, and resetting them would overwrite the stored values on save.
       project.getProjectInfo().setClusterType(null);
     }
 
@@ -979,39 +976,18 @@ public class ProjectDescriptionAction extends BaseAction {
       if (project.getProjectInfo().getNoRegional() == null) {
         project.getProjectInfo().setNoRegional(false);
       }
-      if (project.getProjectInfo().getCrossCuttingCapacity() == null) {
-        project.getProjectInfo().setCrossCuttingCapacity(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingClimate() == null) {
-        project.getProjectInfo().setCrossCuttingClimate(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingNa() == null) {
-        project.getProjectInfo().setCrossCuttingNa(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingGender() == null) {
-        project.getProjectInfo().setCrossCuttingGender(false);
-      }
-      if (project.getProjectInfo().getCrossCuttingYouth() == null) {
-        project.getProjectInfo().setCrossCuttingYouth(false);
-      }
-
-      if (this.isReportingActive()) {
-
-        // Capacity Development
-        project.getProjectInfo()
-          .setCrossCuttingCapacity(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingCapacity());
-        // Capacity Gender
-        project.getProjectInfo()
-          .setCrossCuttingGender(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingGender());
-        // Capacity Youth
-        project.getProjectInfo()
-          .setCrossCuttingYouth(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingYouth());
-        // Climate Change
-        project.getProjectInfo()
-          .setCrossCuttingClimate(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingClimate());
-        // N/A
-        project.getProjectInfo()
-          .setCrossCuttingNa(projectDB.getProjecInfoPhase(this.getActualPhase()).getCrossCuttingNa());
+      // Lessons Learned (A2-2582) and the cross-cutting dimensions with their gender justification (A2-2583) are no
+      // longer shown in this section, so the form never posts them. Keep the stored values: a draft read from the
+      // autosave file would otherwise save them empty.
+      ProjectInfo projectInfoDB = projectDB.getProjecInfoPhase(this.getActualPhase());
+      if (projectInfoDB != null) {
+        project.getProjectInfo().setLessonsLearned(projectInfoDB.getLessonsLearned());
+        project.getProjectInfo().setDimension(projectInfoDB.getDimension());
+        project.getProjectInfo().setCrossCuttingCapacity(projectInfoDB.getCrossCuttingCapacity());
+        project.getProjectInfo().setCrossCuttingGender(projectInfoDB.getCrossCuttingGender());
+        project.getProjectInfo().setCrossCuttingYouth(projectInfoDB.getCrossCuttingYouth());
+        project.getProjectInfo().setCrossCuttingClimate(projectInfoDB.getCrossCuttingClimate());
+        project.getProjectInfo().setCrossCuttingNa(projectInfoDB.getCrossCuttingNa());
       }
 
 
