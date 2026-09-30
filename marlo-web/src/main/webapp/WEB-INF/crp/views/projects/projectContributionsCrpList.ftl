@@ -120,11 +120,7 @@
 				        <thead>
 				          <tr>
 				            <th>[@s.text name="global.flagship" /]</th>
-				            [#if (action.isAFPhase(actualPhase.id))!false]
-				              <th>Performance Indicator</th>
-				            [#else]
-				              <th>Performance Indicator 2023</th>
-				            [/#if]
+				            <th>Performance Indicator</th>
 				            <th></th>
 				            [#if action.hasSpecificities('feedback_active') ]
 				              <th><div style="text-align:center;">Feedback Comments</div></th>
@@ -350,9 +346,7 @@
 					    <thead>
 					      <tr>
 					        <th>[@s.text name="global.flagship" /]</th>
-					        [#if (action.isAFPhase(actualPhase.id))!false]
-					          <th>Performance Indicator</th>
-					        [/#if]
+					        <th>Performance Indicator</th>
 					        <th></th>
 					        [#if action.hasSpecificities('feedback_active') ]
 					          <th><div style="text-align:center;">Feedback Comments</div></th>

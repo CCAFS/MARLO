@@ -181,18 +181,10 @@
                 <div class="col-md-5 input-container">
                   [#if editable]
                   
-                    [#if (action.isAFPhase(actualPhase.id))!false]
-                      [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
-                    [#else]
-                      [@customForm.input name="projectOutcome.expectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
-                    [/#if]
+                    [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
                     
                   [#else]
-                    [#if (action.isAFPhase(actualPhase.id))!false]
-                      <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${(projectOutcome.crpProgramOutcome.year)!afYear}: </label>
-                    [#else]
-                      <label for="">[@s.text name="projectOutcome.expectedValue" /]: </label>
-                    [/#if]
+                    <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${(projectOutcome.crpProgramOutcome.year)!afYear}: </label>
                     <div class="input"><p class="text"> ${(projectOutcome.expectedValue?string(",##0"))!'No expected value indicated'}</p></div>
                   [/#if]               
                 </div>
