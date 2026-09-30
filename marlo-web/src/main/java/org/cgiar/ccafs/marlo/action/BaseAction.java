@@ -7656,17 +7656,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public boolean isPlanningActiveParam() {
-    String planningActive = this.getSessionValue(APConstants.CRP_PLANNING_ACTIVE);
-    if (planningActive == null) {
-      LOG.debug("{} is not in the session, so the planning is reported as inactive",
-        APConstants.CRP_PLANNING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(planningActive);
-  }
-
   public boolean isPMU() {
     String roles = this.getRoles();
     if (roles.contains("PMU")) {
@@ -8048,22 +8037,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       reporting = false;
     }
     return reporting;
-  }
-
-  public boolean isReportingActiveParam() {
-
-    if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
-      return true;
-    }
-
-    String reportingActive = this.getSessionValue(APConstants.CRP_REPORTING_ACTIVE);
-    if (reportingActive == null) {
-      LOG.debug("{} is not in the session, so the reporting is reported as inactive",
-        APConstants.CRP_REPORTING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(reportingActive);
   }
 
   public boolean isRole(String roleAcronym) {

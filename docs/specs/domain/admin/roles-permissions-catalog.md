@@ -687,7 +687,7 @@ Note that `CRP-Admin` also holds `crp:*`, which on its own would satisfy the che
 semantics — but `crp:*` is emitted by that same phase-gated branch, so it is lost with the rest.
 
 **Why this is a defect and not the phase rule working as intended.** The program is not configured as closed:
-`crp_closed = false`, `crp_admin_active = true`, `crp_planning_active = true`, `crp_reporting_active = true`.
+`crp_closed = false` and `crp_admin_active = true`.
 More importantly, the Admin module does not manage phased data — it manages users, institutions, PPA partners and
 **the phases themselves**. The `crpPhases` screen, the only place a phase can be reopened, sits inside the module
 that the closed phase blocks. The single escape is `SuperAdmin`, whose `*` is emitted without phase

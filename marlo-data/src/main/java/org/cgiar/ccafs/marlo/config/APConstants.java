@@ -81,12 +81,10 @@ public final class APConstants {
   public static final String HANDLE = "handle";
   public static final String DOI = "doi";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
-  public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
   public static final String CRP_PMU = "crp_pmu_closed";
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String CRP_REFRESH = "crp_refresh";
-  public static final String CRP_REPORTING_ACTIVE = "crp_reporting_active";
   public static final String CURRENT_PHASE = "crp_current_phase";
   public static final String PHASES = "crp_phases";
   public static final String ALL_PHASES = "crp_all_phases";
