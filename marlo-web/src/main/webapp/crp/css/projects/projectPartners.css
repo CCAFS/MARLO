@@ -71,3 +71,45 @@ p.fieldErrorInstitutions i {
   opacity: 0.7;
   color: #5F5E5E;
 }
+
+/*
+ * Partners search box: same geometry and colours as the .dataTables_filter/.iconSearch control used on the
+ * listing pages (projects/projectsList.css) and on marloParameters, so the search box looks identical here
+ * even though this section is a list of expandable blocks instead of a DataTable.
+ */
+.partnersSearch-wrap {
+  position: relative;
+  width: 295px;
+  margin: 0 0 10px auto;
+}
+
+.partnersSearch-wrap .partnersSearch {
+  height: 30px;
+  width: 295px;
+  padding-right: 42px;
+}
+
+.partnersSearch-wrap .partnersSearch-icon {
+  background: #0b7ba6;
+  height: 30px;
+  width: 40px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.partnersSearch-wrap .partnersSearch-icon .glyphicon {
+  color: #fff;
+  font-size: 14px;
+}
+
+.partnersSearch-empty {
+  color: #5F5E5E;
+  font-style: italic;
+  padding: 15px 0;
+}

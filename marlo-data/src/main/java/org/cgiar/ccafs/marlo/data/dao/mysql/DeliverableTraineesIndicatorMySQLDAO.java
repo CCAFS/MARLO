@@ -61,12 +61,7 @@ public class DeliverableTraineesIndicatorMySQLDAO extends AbstractMarloDAO<Deliv
   @Override
   public List<DeliverableTraineesIndicator> findAll() {
     String query = "from " + DeliverableTraineesIndicator.class.getName();
-    List<DeliverableTraineesIndicator> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override

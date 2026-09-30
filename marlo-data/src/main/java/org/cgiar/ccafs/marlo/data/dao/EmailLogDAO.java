@@ -17,11 +17,53 @@
 package org.cgiar.ccafs.marlo.data.dao;
 
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.model.EmailLogSearch;
 
 import java.util.List;
 
 
 public interface EmailLogDAO {
+
+  /**
+   * Counts the logged emails that match the given filters.
+   *
+   * @param search the filters; a null field does not filter.
+   * @return the number of matching rows.
+   */
+  public long count(EmailLogSearch search);
+
+  /**
+   * Lists the global units the logged emails were sent for, for the filter of System Admin -> Emails.
+   *
+   * @return the distinct global unit ids, without null.
+   */
+  public List<Long> findGlobalUnitIds();
+
+  /**
+   * Lists the places the logged emails were sent from, for the filter of System Admin -> Emails.
+   *
+   * @return the distinct source actions in alphabetical order, without null.
+   */
+  public List<String> findSourceActions();
+
+  /**
+   * Lists one page of the logged emails that match the given filters, without the message or the attachment: a page
+   * of the sent emails would otherwise read megabytes that the table never shows.
+   *
+   * @param search the filters and the order; a null field does not filter.
+   * @param first the position of the first row, from 0.
+   * @param max the number of rows.
+   * @return detached EmailLog objects holding only the columns of the table.
+   */
+  public List<EmailLog> findSummaries(EmailLogSearch search, int first, int max);
+
+  /**
+   * Lists every logged email that matches the given filters, message and attachment included, for the resend.
+   *
+   * @param search the filters; a null field does not filter.
+   * @return the matching rows.
+   */
+  public List<EmailLog> search(EmailLogSearch search);
 
   /**
    * This method removes a specific emailLog value from the database.

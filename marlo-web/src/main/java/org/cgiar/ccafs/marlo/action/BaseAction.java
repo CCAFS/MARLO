@@ -404,7 +404,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   // Variables
   private String crpSession;
 
-  private String customTextHeader;
   private String feedbackBIReportName;
 
   protected boolean dataSaved;
@@ -467,7 +466,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   protected boolean next;
   private Map<String, Parameter> parameters;
   private boolean planningActive;
-  private int planningYear;
   @Autowired
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Autowired
@@ -484,8 +482,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   @Autowired
   private DeliverableTypeManager deliverableTypeManager;
   private boolean reportingActive;
-
-  private int reportingYear;
 
   protected HttpServletRequest request;
 
@@ -3029,23 +3025,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * Get the Custom text from parameters table that for the testing banner
-   *
-   * @return the custom text header from parameters table
-   */
-  public String getCustomTextHeader() {
-    try {
-      if (APConstants.CRP_LOGIN_HEADER_TEXT != null
-        && this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT) != null) {
-        customTextHeader = (String) this.getSession().get(APConstants.CRP_LOGIN_HEADER_TEXT);
-      }
-    } catch (Exception e) {
-      LOG.error("Could not read the custom login header text from the session", e);
-    }
-    return customTextHeader;
-  }
-
-  /**
    * This method return the Date Format from APConstants class
    *
    * @return A dateformat (yyyy-MM-dd)
@@ -4303,19 +4282,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public ClusterType getManagementClusterType() {
-    ClusterType clusterType = new ClusterType();
-
-    List<ClusterType> clusterTypes = new ArrayList<>();
-    clusterTypes = clusterTypeManager.findAll();
-    if (clusterTypes != null && !clusterTypes.isEmpty()) {
-      if (clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()) != null
-        && !clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList())
-          .isEmpty()) {
-        clusterType =
-          clusterTypes.stream().filter(c -> c.getName().contains("Management")).collect(Collectors.toList()).get(0);
+    List<ClusterType> types = clusterTypeManager.findAll();
+    if (types != null) {
+      for (ClusterType type : types) {
+        // The catalogue allows a null name, and an unguarded contains() here breaks every caller of this method.
+        if (type.getName() != null && type.getName().contains("Management")) {
+          return type;
+        }
       }
     }
-    return clusterType;
+    // Callers expect a non-null instance; an empty one means the catalogue has no Management row.
+    return new ClusterType();
   }
 
   /**
@@ -4507,22 +4484,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     GsonBuilder builder = new GsonBuilder();
     Gson gson = builder.create();
     return gson.toJson(phases);
-  }
-
-  public int getPlanningYear() {
-    String planningYear = this.getSessionValue(APConstants.CRP_PLANNING_YEAR);
-    if (planningYear == null) {
-      LOG.debug("{} is not in the session, so the planning year is 0", APConstants.CRP_PLANNING_YEAR);
-      return 0;
-    }
-
-    try {
-      return Integer.parseInt(planningYear);
-    } catch (NumberFormatException e) {
-      LOG.debug("The session value of {} is not a number, so the planning year is 0",
-        APConstants.CRP_PLANNING_YEAR, e);
-      return 0;
-    }
   }
 
   public List<GlobalUnit> getPlatformsList() {
@@ -5429,22 +5390,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return APConstants.REPORTING_INDICATOR_TYPE_ACTIVITY_ACADEMIC_DEGREE;
   }
 
-  public int getReportingYear() {
-    String reportingYear = this.getSessionValue(APConstants.CRP_REPORTING_YEAR);
-    if (reportingYear == null) {
-      LOG.debug("{} is not in the session, so the reporting year is 0", APConstants.CRP_REPORTING_YEAR);
-      return 0;
-    }
-
-    try {
-      return Integer.parseInt(reportingYear);
-    } catch (NumberFormatException e) {
-      LOG.debug("The session value of {} is not a number, so the reporting year is 0",
-        APConstants.CRP_REPORTING_YEAR, e);
-      return 0;
-    }
-  }
-
   /**
    * Check the annual report 2018 Section Status
    *
@@ -5686,29 +5631,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return null;
     }
-  }
-
-  /**
-   * This method return the first AF AICCRA ID Phase
-   *
-   * @return ID value of first AICCRA AF phase
-   */
-  public long getStartAFPhase() {
-    long startAFPhase = 423;
-
-    if (this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE) != null) {
-      try {
-        startAFPhase = Long.parseLong((String) this.getSession().get(APConstants.CRP_AICCRA_AF_START_PHASE));
-      } catch (NumberFormatException e) {
-        LOG.error("The session value of {} is not a number, so the default start AF phase {} is used",
-          APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase, e);
-      }
-    } else {
-      // This parameter only exists for AICCRA, so any other global unit falls back to the default phase.
-      LOG.debug("{} is not in the session, so the default start AF phase {} is used",
-        APConstants.CRP_AICCRA_AF_START_PHASE, startAFPhase);
-    }
-    return startAFPhase;
   }
 
   public Submission getSubmission() {
@@ -6297,24 +6219,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean isAdmin() {
     return this.securityContext.hasRole("Admin");
   }
-
-  /**
-   * This method return true if the phase belong to an AF AICCRA phase
-   *
-   * @param phaseID is the phase ID to be identified.
-   * @return Boolean object with the value
-   */
-  public boolean isAFPhase(long phaseID) {
-    // getStartAFPhase() already handles a malformed session value and falls back to the default phase.
-    long startAFPhase = this.getStartAFPhase();
-
-    if (startAFPhase != 0 && phaseID != 0 && phaseID >= startAFPhase) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
 
   public boolean isAiccra() {
     return this.getCurrentCrp() != null && this.getCurrentCrp().isAiccra();
@@ -7346,7 +7250,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     // [end] 19/06/2024 cgamboa
 
 
-    // aqui se debe aplicar la nueva funcion getCompleteDeliverableListByPhase
+    // The new getCompleteDeliverableListByPhase function should be applied here
 
     if (deliverableID != null && phaseID != null) {
       Deliverable deliverable = this.deliverableManager.getDeliverableById(deliverableID);
@@ -7693,21 +7597,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return true;
   }
 
-  public boolean isManagementCluster(long id) {
-    boolean isManagement = false;
-    Project project = projectManager.getProjectById(id);
-    if (project != null) {
-      project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
-      if (project.getProjectInfo() != null && project.getProjectInfo().getClusterType() != null
-        && project.getProjectInfo().getClusterType().getId() != null) {
-        if (project.getProjectInfo().getClusterType().getId().equals(this.getManagementClusterType().getId())) {
-          isManagement = true;
-        }
-      }
-    }
-    return isManagement;
-  }
-
   /**
    * Check if the project was created in a new Center
    *
@@ -7765,17 +7654,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     } else {
       return false;
     }
-  }
-
-  public boolean isPlanningActiveParam() {
-    String planningActive = this.getSessionValue(APConstants.CRP_PLANNING_ACTIVE);
-    if (planningActive == null) {
-      LOG.debug("{} is not in the session, so the planning is reported as inactive",
-        APConstants.CRP_PLANNING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(planningActive);
   }
 
   public boolean isPMU() {
@@ -8159,22 +8037,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       reporting = false;
     }
     return reporting;
-  }
-
-  public boolean isReportingActiveParam() {
-
-    if (this.getSession().containsKey(APConstants.TEMP_CYCLE)) {
-      return true;
-    }
-
-    String reportingActive = this.getSessionValue(APConstants.CRP_REPORTING_ACTIVE);
-    if (reportingActive == null) {
-      LOG.debug("{} is not in the session, so the reporting is reported as inactive",
-        APConstants.CRP_REPORTING_ACTIVE);
-      return false;
-    }
-
-    return Boolean.parseBoolean(reportingActive);
   }
 
   public boolean isRole(String roleAcronym) {
@@ -8827,12 +8689,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     if (this.isReportingActive()) {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.REPORTING);
-      ipProgram.getProjectComponentLesson().setYear(this.getReportingYear());
-
     } else {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.PLANNING);
-      ipProgram.getProjectComponentLesson().setYear(this.getPlanningYear());
     }
+    // The lessons are loaded back by the year of the actual phase, so they are saved with that year too
+    Phase actualPhase = this.getActualPhase();
+    ipProgram.getProjectComponentLesson().setYear(actualPhase == null ? 0 : actualPhase.getYear());
     this.projectComponentLessonManager.saveProjectComponentLesson(ipProgram.getProjectComponentLesson());
 
   }
@@ -8926,10 +8788,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setCurrentCenter(GlobalUnit currentCenter) {
     this.currentCenter = currentCenter;
-  }
-
-  public void setCustomTextHeader(String customTextHeader) {
-    this.customTextHeader = customTextHeader;
   }
 
   public void setDataSaved(boolean dataSaved) {
@@ -9065,16 +8923,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     this.planningActive = planningActive;
   }
 
-  public void setPlanningYear(int planningYear) {
-    this.planningYear = planningYear;
-  }
-
   public void setReportingActive(boolean reportingActive) {
     this.reportingActive = reportingActive;
-  }
-
-  public void setReportingYear(int reportingYear) {
-    this.reportingYear = reportingYear;
   }
 
   public void setSave(boolean save) {

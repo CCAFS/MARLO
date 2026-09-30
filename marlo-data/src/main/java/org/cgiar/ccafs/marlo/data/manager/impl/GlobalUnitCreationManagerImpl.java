@@ -96,8 +96,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       APConstants.CRP_RPM_ROLE,
       APConstants.CRP_SL_ROLE,
       APConstants.CRP_CD_ROLE,
-      APConstants.CRP_CU,
-      APConstants.CRP_AICCRA_AF_START_PHASE)));
+      APConstants.CRP_CU)));
 
   private static final Set<String> ROLE_PARAMETER_KEYS =
     Collections.unmodifiableSet(new HashSet<>(Arrays.asList(

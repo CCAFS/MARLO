@@ -31,232 +31,194 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate5.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class ThreadSendMail extends Thread {
 
   private static final Logger LOG = LoggerFactory.getLogger(ThreadSendMail.class);
+  // Attempts per server before giving up on it.
+  private static final int MAX_ATTEMPTS = 10;
   private Message sendeMail;
   private Message backupsendeMail;
   private String subject;
 
   private EmailLogManager emailLogManager;
   private EmailLog emailLog;
-  private SessionFactory sessionFactory;
   private APConfig config;
+  // Failed attempts across both servers, recorded as the tried count of the log row.
+  private int attempts;
 
   public ThreadSendMail(Message sendeMail, String subject, EmailLogManager emailLogManager, EmailLog emailLog,
-    SessionFactory sessionFactory, APConfig config) {
+    APConfig config) {
     this.sendeMail = sendeMail;
     this.subject = subject;
     this.emailLogManager = emailLogManager;
     this.emailLog = emailLog;
-    this.sessionFactory = sessionFactory;
     this.config = config;
   }
 
   /**
-   * Saves the log of a message that has already been handed to the mail server. The send runs on a plain Thread,
-   * which has no Hibernate session bound to it, so one is opened and bound here for the DAO to find through
-   * getCurrentSession. Nothing is rethrown: by this point the message is already sent, and letting a failure of
-   * the log escape would kill the thread and skip the backup send, which is what left email_logs empty.
+   * Saves the log of a message. EmailLogManager.saveEmailLog is @Transactional, so Spring opens, commits and closes
+   * a Hibernate session of its own even though this plain Thread has none bound. Opening and beginning one here as
+   * well made Spring fail with "Transaction already active". Nothing is rethrown: by this point the send is over,
+   * and letting a failure of the log escape would kill the thread.
    *
    * @param log the entry to save.
    */
-  private void persistEmailLog(EmailLog log) {
-    // Qualified because javax.mail.Session is already imported in this class.
-    org.hibernate.Session session = null;
-    boolean bound = false;
-    // Opening and binding are inside the try on purpose: bindResource throws when the thread already holds a
-    // session, and openSession throws when the pool is exhausted, so leaving them out would reopen the very
-    // hole this method closes.
+  // Package-private so ThreadSendMailTest can capture the row instead of writing it.
+  void persistEmailLog(EmailLog log) {
     try {
-      session = sessionFactory.openSession();
-      TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-      bound = true;
-      session.beginTransaction();
       emailLogManager.saveEmailLog(log);
-      session.getTransaction().commit();
     } catch (Exception e) {
       LOG.error("Could not save the log of the message '{}'", subject, e);
+    }
+  }
+
+  /**
+   * The error of a failed attempt for the log row. It is never null: null is what sendWithRetries answers for a sent
+   * message, so an exception without a message would otherwise be logged as a delivery and skip the backup server.
+   */
+  static String describe(MessagingException e) {
+    Throwable reason = e.getCause() == null ? e : e.getCause();
+    String message = reason.getMessage();
+    return message == null || message.trim().isEmpty() ? reason.getClass().getName() : message;
+  }
+
+  /**
+   * Attempts a message up to MAX_ATTEMPTS times, one minute apart.
+   *
+   * @param message the message to hand to the mail server.
+   * @param label what the message is, for the log.
+   * @return null when it was sent, or the error of the last attempt.
+   */
+  private String sendWithRetries(Message message, String label) {
+    int failures = 0;
+    while (true) {
       try {
-        if (session != null && session.getTransaction() != null && session.getTransaction().isActive()) {
-          session.getTransaction().rollback();
+        Transport.send(message);
+        LOG.info("The {} '{}' was sent after {} failed attempts", label, subject, failures);
+        return null;
+      } catch (MessagingException e) {
+        failures++;
+        attempts++;
+        if (failures == MAX_ATTEMPTS) {
+          LOG.error("The {} '{}' could not be sent after {} attempts", label, subject, failures, e);
+          return describe(e);
         }
-      } catch (Exception rollbackException) {
-        LOG.error("Could not roll back the log of the message '{}'", subject, rollbackException);
-      }
-    } finally {
-      if (bound) {
-        try {
-          TransactionSynchronizationManager.unbindResource(sessionFactory);
-        } catch (Exception e) {
-          LOG.error("Could not unbind the session that logged the message '{}'", subject, e);
-        }
-      }
-      // Closed separately so a failure to unbind cannot leak the connection back to the pool.
-      if (session != null) {
-        try {
-          session.close();
-        } catch (Exception e) {
-          LOG.error("Could not close the session that logged the message '{}'", subject, e);
-        }
+        LOG.warn("Attempt {} to send the {} '{}' failed", failures, label, subject, e);
+        this.pause(label);
       }
     }
   }
 
+  /**
+   * Waits one minute between send attempts. Package-private so ThreadSendMailTest can skip the wait.
+   */
+  void pause(String label) {
+    try {
+      Thread.sleep(1 * // minutes to sleep
+        60 * // seconds to a minute
+        1000);
+    } catch (InterruptedException e1) {
+      LOG.warn("The wait between send attempts of the {} '{}' was interrupted", label, subject, e1);
+    }
+  }
+
+  /**
+   * Writes the one log row of this email, once its outcome is known. A delivered email drops its attachment,
+   * which is only kept so the failed-email retry can resend it.
+   */
+  private void recordOutcome(boolean sent, String error) {
+    emailLog.setTried(attempts);
+    emailLog.setSucces(sent);
+    emailLog.setError(error);
+    if (sent) {
+      emailLog.setFileContent(null);
+    }
+    this.persistEmailLog(emailLog);
+  }
+
+  /**
+   * Sends the message through the main server and, when that fails, through the backup server, and logs the email
+   * in a single row. The main failure used to be logged as a row of its own before the backup was tried, so an email
+   * the backup delivered stayed marked as failed and the retry of System Admin -> Emails sent it a second time. The
+   * backup outcome went to a second row that lost the date and the global unit of the original.
+   */
   @Override
   public void run() {
-    boolean sent = false;
-    boolean reply = false;
-    EmailLog emailLogBkup = new EmailLog();
-    emailLogBkup.setBbc(emailLog.getBbc());
-    emailLogBkup.setCc(emailLog.getCc());
-    emailLogBkup.setTo(emailLog.getTo());
-
-    emailLogBkup.setMessage(emailLog.getMessage());
-    emailLogBkup.setSubject(emailLog.getSubject());
-    if (emailLog.getFileName() != null) {
-      emailLogBkup.setFileContent(emailLog.getFileContent());
-      emailLogBkup.setFileName(emailLog.getFileName());
-    }
     AuditLogContextProvider.push(new AuditLogContext());
-    int i = 0;
-    while (!sent) {
-      try {
-
-        Transport.send(sendeMail);
-        LOG.info("Message sent TRIED#: " + i + " \n" + subject);
-        sent = true;
-        emailLog.setTried(i++);
-        emailLog.setSucces(true);
-        emailLog.setFileContent(null);
-        this.persistEmailLog(emailLog);
-
-      } catch (MessagingException e) {
-        LOG.info("Message  DID NOT sent: \n" + subject);
-
-        i++;
-        if (i == 10) {
-          reply = true;
-          LOG.error("The message '{}' could not be sent after {} attempts", subject, i, e);
-          emailLog.setTried(i);
-          emailLog.setSucces(false);
-          emailLog.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-          this.persistEmailLog(emailLog);
-          break;
-
-        }
-        try {
-          Thread.sleep(1 * // minutes to sleep
-            60 * // seconds to a minute
-            1000);
-        } catch (InterruptedException e1) {
-          LOG.warn("The wait between send attempts of the message '{}' was interrupted", subject, e1);
-        }
-        LOG.warn("Attempt {} to send the message '{}' failed", i, subject, e);
-      }
-
+    String mainError = this.sendWithRetries(sendeMail, "message");
+    if (mainError == null) {
+      this.recordOutcome(true, null);
+      return;
     }
-    if (reply) {
-      LOG.info("Sending the backup copy of the message '{}'", subject);
-      Properties backupproperties = System.getProperties();
-      backupproperties.put("mail.debug", "true");
-      backupproperties.put("mail.smtp.host", config.getEmailHostbackup());
-      backupproperties.put("mail.smtp.port", config.getEmailPortbackup());
-      backupproperties.put("mail.smtp.auth", config.getEmail_authBackup());
-      backupproperties.put("mail.smtp.starttls.enable", config.getEmail_starttlsbackup());
 
-      Session backupsession = Session.getInstance(backupproperties, new Authenticator() {
+    LOG.info("Sending the backup copy of the message '{}'", subject);
+    Properties backupproperties = System.getProperties();
+    backupproperties.put("mail.debug", "true");
+    backupproperties.put("mail.smtp.host", config.getEmailHostbackup());
+    backupproperties.put("mail.smtp.port", config.getEmailPortbackup());
+    backupproperties.put("mail.smtp.auth", config.getEmail_authBackup());
+    backupproperties.put("mail.smtp.starttls.enable", config.getEmail_starttlsbackup());
 
-        @Override
-        protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(config.getEmail_user_backup(), config.getEmail_password_backup());
+    Session backupsession = Session.getInstance(backupproperties, new Authenticator() {
+
+      @Override
+      protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(config.getEmail_user_backup(), config.getEmail_password_backup());
+      }
+    });
+    MimeMessage msgbackup = new MimeMessage(backupsession) {
+
+      @Override
+      protected void updateMessageID() throws MessagingException {
+        if (this.getHeader("Message-ID") == null) {
+          super.updateMessageID();
         }
-      });
-      MimeMessage msgbackup = new MimeMessage(backupsession) {
+      }
+    };
+    try {
 
-        @Override
-        protected void updateMessageID() throws MessagingException {
-          if (this.getHeader("Message-ID") == null) {
-            super.updateMessageID();
-          }
-        }
-      };
-      try {
-
-        msgbackup.saveChanges();
-      } catch (MessagingException e1) {
-        LOG.error("Could not save the changes of the backup message '{}'", subject, e1);
+      msgbackup.saveChanges();
+    } catch (MessagingException e1) {
+      LOG.error("Could not save the changes of the backup message '{}'", subject, e1);
+    }
+    try {
+      if (!config.isProduction()) {
+        msgbackup.setRecipients(Message.RecipientType.TO, sendeMail.getRecipients(Message.RecipientType.TO));
+      } else {
+        msgbackup.setRecipients(Message.RecipientType.TO, sendeMail.getRecipients(Message.RecipientType.TO));
+        msgbackup.setRecipients(Message.RecipientType.CC, sendeMail.getRecipients(Message.RecipientType.CC));
       }
       try {
-        if (!config.isProduction()) {
-          msgbackup.setRecipients(Message.RecipientType.TO, sendeMail.getRecipients(Message.RecipientType.TO));
-        } else {
-          msgbackup.setRecipients(Message.RecipientType.TO, sendeMail.getRecipients(Message.RecipientType.TO));
-          msgbackup.setRecipients(Message.RecipientType.CC, sendeMail.getRecipients(Message.RecipientType.CC));
-        }
-        try {
-          msgbackup.setFrom(new InternetAddress(config.getEmail_notificaction_backup()));
-        } catch (AddressException e) {
-          msgbackup.setFrom((InternetAddress) null);
-          LOG.error("Could not set the FROM address of the backup message '{}'", subject, e);
-        }
-        msgbackup.setRecipients(Message.RecipientType.BCC, sendeMail.getRecipients(Message.RecipientType.BCC));
-        msgbackup.setSubject(sendeMail.getSubject());
-        msgbackup.setSentDate(sendeMail.getSentDate());
-        msgbackup.setContent((MimeMultipart) sendeMail.getContent());
-      } catch (MessagingException e) {
-        LOG.error("Could not build the backup message '{}'", subject, e);
-
-      } catch (Exception e) {
-        LOG.error("There was an unexpected error building the backup message '{}'", subject, e);
+        msgbackup.setFrom(new InternetAddress(config.getEmail_notificaction_backup()));
+      } catch (AddressException e) {
+        msgbackup.setFrom((InternetAddress) null);
+        LOG.error("Could not set the FROM address of the backup message '{}'", subject, e);
       }
-      i = 0;
+      msgbackup.setRecipients(Message.RecipientType.BCC, sendeMail.getRecipients(Message.RecipientType.BCC));
+      msgbackup.setSubject(sendeMail.getSubject());
+      msgbackup.setSentDate(sendeMail.getSentDate());
+      msgbackup.setContent((MimeMultipart) sendeMail.getContent());
+    } catch (MessagingException e) {
+      LOG.error("Could not build the backup message '{}'", subject, e);
+
+    } catch (Exception e) {
+      LOG.error("There was an unexpected error building the backup message '{}'", subject, e);
+    }
+
+    String backupError = this.sendWithRetries(msgbackup, "backup message");
+    if (backupError == null) {
+      // The row now describes the copy that was actually delivered.
       try {
-        emailLogBkup.setMessageID(msgbackup.getMessageID());
+        emailLog.setMessageID(msgbackup.getMessageID());
       } catch (MessagingException e1) {
         LOG.error("Could not read the id of the backup message '{}'", subject, e1);
       }
-      while (!sent) {
-        try {
-
-          Transport.send(msgbackup);
-          LOG.info("Backup Message sent TRIED#: " + i + " \n" + subject);
-          sent = true;
-          emailLogBkup.setTried(i++);
-          emailLogBkup.setSucces(true);
-          emailLogBkup.setFileContent(null);
-          this.persistEmailLog(emailLogBkup);
-
-        } catch (MessagingException e) {
-          LOG.info("Backup Message  DID NOT sent: \n" + subject);
-
-          i++;
-          if (i == 10) {
-            LOG.error("The backup message '{}' could not be sent after {} attempts", subject, i, e);
-            emailLogBkup.setTried(i);
-            emailLogBkup.setSucces(false);
-            emailLogBkup.setError(e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
-            this.persistEmailLog(emailLogBkup);
-            break;
-
-          }
-          try {
-            Thread.sleep(1 * // minutes to sleep
-              60 * // seconds to a minute
-              1000);
-          } catch (InterruptedException e1) {
-            LOG.warn("The wait between send attempts of the backup message '{}' was interrupted", subject, e1);
-          }
-          LOG.warn("Attempt {} to send the backup message '{}' failed", i, subject, e);
-        }
-      }
+      this.recordOutcome(true, "Delivered by the backup server after the main server failed: " + mainError);
+    } else {
+      this.recordOutcome(false, "Main server: " + mainError + " Backup server: " + backupError);
     }
-
   }
 }

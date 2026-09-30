@@ -59,9 +59,7 @@ public final class APConstants {
   public static final String CRP_FPM_ROLE = "crp_fpm_rol";
   public static final String CRP_REPORT_DELIVERABLE_PPA_FILTER = "crp_report_deliverable_ppa_filter";
   public static final String CRP_PROJECT_BUDGET_ZERO = "crp_project_budget_zero";
-  public static final String CRP_LOGIN_HEADER_TEXT = "crp_login_header_text";
   public static final String CRP_CLUSTER_BI_FEEDBACK_REPORT_NAME = "crp_cluster_bi_feedback_report_name";
-  public static final String CRP_AICCRA_AF_START_PHASE = "crp_aiccra_af_start_phase";
 
   public static final String CRP_HAS_REGIONS = "crp_has_regions";
   public static final String CRP_ID = "crpID";
@@ -70,9 +68,6 @@ public final class APConstants {
   public static final String CRP_LESSONS_ACTIVE = "crp_lessons_active";
   public static final String CRP_MULTIPLE_COA = "crp_multiple_coa";
   public static final String CRP_ONE_GENDER = "crp_one_gender";
-  public static final String CRP_OPEN_PLANNING_DATE = "crp_open_planing_date";
-  public static final String CRP_OPEN_REAL_DATE_REPORTING = "crp_real_reporting_date";
-  public static final String CRP_OPEN_REPORTING_DATE = "crp_open_reporting_date";
   // Crp Parameters
   public static final String CRP_SHOW_PROJECT_OUTCOME_COMMUNICATIONS = "crp_show_project_outcome_communications";
   public static final String CRP_PARAMETERS = "crp_parameters";
@@ -88,14 +83,10 @@ public final class APConstants {
   public static final String HANDLE = "handle";
   public static final String DOI = "doi";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
-  public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
-  public static final String CRP_PLANNING_YEAR = "crp_planning_year";
   public static final String CRP_PMU = "crp_pmu_closed";
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String CRP_REFRESH = "crp_refresh";
-  public static final String CRP_REPORTING_ACTIVE = "crp_reporting_active";
-  public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
   public static final String CURRENT_PHASE = "crp_current_phase";
   public static final String PHASES = "crp_phases";
   public static final String ALL_PHASES = "crp_all_phases";
@@ -190,8 +181,6 @@ public final class APConstants {
     "is_expected_deliverable_report_all_years_visible";
   public static final String CRP_EMAIL_SUPPORT_TEAM = "crp_email_support_team";
 
-  // Email parameters to copy to FL FM CL
-  public static final String CRP_EMAIL_CC_FL_FM_CL = "crp_email_cc_fl_fm_cl";
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
 
   public static final String CYCLE = "cycle";
@@ -243,7 +232,6 @@ public final class APConstants {
   public static final String AGREEMENT_STATUS = "agreementStatus";
   public static final String PARTNERS_ID = "partnerIDs";
 
-  public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =
@@ -390,7 +378,6 @@ public final class APConstants {
   public static final String PROJECT_INDICATOR_PHASE_PREVIOUS_NAME = "AR";
 
   public static final String PROJECT_BILATERAL = "BILATERAL";
-  // public static final String PROJECT_CORE_TYPE = "CORE";
   public static final String PROJECT_BUDGETS_ACTVITIES_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.projectBudgetsCluserActvities)";
   public static final String PROJECT_BUDGETS_FLAGSHIP_RELATION =
@@ -403,7 +390,6 @@ public final class APConstants {
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyIndicators)";
   public static final String PROJECT_CASE_STUDIES_PROJECTS_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.CaseStudy.caseStudyProjects)";
-  public static final String PROJECT_CCAFS_COFUNDED = "COFUNDED";
   public static final String PROJECT_CCFASOTUCOME_RELATION =
     "java.util.Set(org.cgiar.ccafs.marlo.data.model.Project.ipProjectIndicators)";
   public static final String PROJECT_CLUSTER_ACTIVITIES_RELATION =
