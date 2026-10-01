@@ -173,6 +173,28 @@
   environment may lack the cascade.)*
 - **Red run:** execute the falsifier above once on the throwaway schema and record the red result before
   reverting it.
+- **Independent re-run (2026-10-01, review pass):** the migration was executed again from scratch, because the
+  earlier `[x]` was taken on trust rather than reproduced. Throwaway schema `marlo_mig_test`, built from `aiccradb2`
+  with the eight tables involved and the **five** foreign keys that bear on this migration recreated with their real
+  `DELETE_RULE` (`custom_parameters_ibfk_1` NO ACTION, the two grant FKs CASCADE, `section_statuses_impacts` and
+  `project_impact_categories` NO ACTION). Those five are the complete set: an `information_schema` sweep confirms
+  nothing else in the schema references `section_statuses`, `custom_parameters`, `role_permissions` or
+  `center_role_permissions`, so no incoming FK can break a delete unseen. Dropped afterwards; the five real
+  databases were only ever read.
+  - *Seeded decoys:* `crp_covid_required_other` and `crp_show_section_impact_covid19_extra` in `parameters`, the
+    permission `crp:{0}:project:{1}:impactsOther` with 5 `role_permissions` grants, and one synthetic
+    `section_name='impacts'` row pointing at a real `project_impacts` id (none occurs naturally).
+  - *Run 1:* 276 / 0 / 2 / 53 / 9 / 1 rows — role_permissions, center_role_permissions, permissions,
+    custom_parameters, parameters, section_statuses. No error.
+  - *After run 1:* all five targets at 0; **all 8 decoys intact**; `project_impacts` still 9 and
+    `project_impacts_categories` still 5; `section_statuses` 28487 → 28486, i.e. only the synthetic row; 0 orphaned
+    `custom_parameters` and 0 orphaned `role_permissions`.
+  - *Run 2:* **0 rows on all six statements** — idempotent.
+  - *Red run A (delete order):* running the `parameters` delete before `custom_parameters` fails with
+    `ERROR 1451 ... CONSTRAINT custom_parameters_ibfk_1`. The child-first order is load-bearing, not stylistic.
+  - *Red run B (exact match):* swapping `IN` for `LIKE 'crp_show_section_impact_covid19%' OR LIKE
+    'crp_covid_required%'` drops both parameter decoys (2 → 0), and `LIKE 'crp:{0}:project:{1}:impacts%'` drops the
+    permission decoy (1 → 0). Under the shipped `IN`, all three survive — so the decoys genuinely discriminate.
 - **Disqualifier:** a run on copies without the FKs does not test the delete order; a run where the "before" count
   of a target is 0 proves nothing about that target; a run against `aiccradb1`–`4` themselves is forbidden.
 - **Consumers:** `GlobalUnitCreationManagerImpl.createGlobalUnit()` → `cloneRolePermissionsByAcronym` reads the
