@@ -133,9 +133,6 @@ public class ValidateProjectSectionAction extends BaseAction {
             this.projectSectionValidator.validateSafeguards(this, this.getProjectID());
           }
           break;
-        case IMPACTS:
-          this.projectSectionValidator.validateProjectImpactCovid(this, this.getProjectID());
-          break;
         case ACTIVITIES:
           this.projectSectionValidator.validateProjectActivities(this, this.getProjectID());
           break;
@@ -533,22 +530,6 @@ public class ValidateProjectSectionAction extends BaseAction {
 
           section.put("sectionName", sectionStatus.getSectionName());
           section.put("missingFields", sectionStatus.getMissingFields());
-          break;
-
-        case IMPACTS:
-          if (!this.hasSpecificities(APConstants.CRP_COVID_REQUIRED)) {
-            section = new HashMap<String, Object>();
-
-            section.put("sectionName", ProjectSectionStatusEnum.IMPACTS);
-            section.put("missingFields", "");
-          } else {
-            sectionStatus = sectionStatusManager.getSectionStatusByProject(projectID, cycle,
-              this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
-            section = new HashMap<String, Object>();
-
-            section.put("sectionName", sectionStatus.getSectionName());
-            section.put("missingFields", sectionStatus.getMissingFields());
-          }
           break;
 
         default:

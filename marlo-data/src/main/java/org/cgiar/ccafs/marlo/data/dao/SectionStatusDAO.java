@@ -108,9 +108,6 @@ public interface SectionStatusDAO {
   public SectionStatus getSectionStatusByProjectHighlight(long projectHighlightID, String cycle, int year,
     Boolean upkeep, String sectionName);
 
-  public SectionStatus getSectionStatusByProjectImpacts(Long projectImpactID, String cycle, int year, Boolean upkeep,
-    String sectionName);
-
   public SectionStatus getSectionStatusByProjectInnovation(long projectInnovationID, String cycle, int year,
     Boolean upkeep, String sectionName);
 

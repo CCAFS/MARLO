@@ -64,8 +64,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   private ProjectPolicy projectPolicy;
 
-  private ProjectImpacts projectImpact;
-
   public SectionStatus() {
   }
 
@@ -121,10 +119,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
 
   public ProjectHighlight getProjectHighlight() {
     return projectHighlight;
-  }
-
-  public ProjectImpacts getProjectImpact() {
-    return projectImpact;
   }
 
   public ProjectInnovation getProjectInnovation() {
@@ -216,11 +210,6 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
   }
 
 
-  public void setProjectImpact(ProjectImpacts projectImpact) {
-    this.projectImpact = projectImpact;
-  }
-
-
   public void setProjectInnovation(ProjectInnovation projectInnovation) {
     this.projectInnovation = projectInnovation;
   }
@@ -267,8 +256,7 @@ public class SectionStatus extends MarloBaseEntity implements java.io.Serializab
       + projectOutcome + ", caseStudy=" + caseStudy + ", projectHighlight=" + projectHighlight + ", ipProgram="
       + ipProgram + ", ipLiaisonInstitution=" + ipLiaisonInstitution + ", powbSynthesis=" + powbSynthesis
       + ", projectInnovation=" + projectInnovation + ", projectExpectedStudy=" + projectExpectedStudy
-      + ", reportSynthesis=" + reportSynthesis + ", projectLp6Contribution=" + projectLp6Contribution
-      + ", projectImpact=" + projectImpact + "]";
+      + ", reportSynthesis=" + reportSynthesis + ", projectLp6Contribution=" + projectLp6Contribution + "]";
   }
 }
 

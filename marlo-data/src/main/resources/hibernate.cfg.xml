@@ -389,8 +389,6 @@
   <mapping resource="xmls/BiParameters.hbm.xml"/>
   <mapping resource="xmls/QATokenAuth.hbm.xml"/>
   <mapping resource="xmls/UrlSynthesisLogs.hbm.xml"/>
-  <mapping resource="xmls/ProjectImpacts.hbm.xml"/>
-  <mapping resource="xmls/ProjectImpactsCategories.hbm.xml"/>
   <mapping resource="xmls/ProgressTargetCaseGeographicScopes.hbm.xml"/>
   <mapping resource="xmls/ProgressTargetCaseGeographicRegions.hbm.xml"/>
   <mapping resource="xmls/ProgressTargetCaseGeographicCountries.hbm.xml"/>
