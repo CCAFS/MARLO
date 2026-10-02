@@ -529,8 +529,11 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   @Override
   public String toString() {
-    return "GlobalUnit [id=" + this.getId() + ", globalUnitType=" + globalUnitType + ", name=" + name + ", acronym="
-      + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
+    // Only the type id: globalUnitType is lazy, and its toString() throws a LazyInitializationException outside a
+    // session (the audit listener logs entities after the transaction), while reading the id does not load it
+    Long globalUnitTypeId = globalUnitType == null ? null : globalUnitType.getId();
+    return "GlobalUnit [id=" + this.getId() + ", globalUnitTypeId=" + globalUnitTypeId + ", name=" + name
+      + ", acronym=" + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
   }
 
 

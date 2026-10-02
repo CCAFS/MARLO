@@ -8320,52 +8320,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public boolean isYearToShowSectionCovid19() {
-    if (!this.hasSpecificities(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19)) {
-      return false;
-    }
-
-    // The range is stored as [since]-[until]. A global unit can have the section turned on with no range configured,
-    // which is not an anomaly: the section stays hidden until the range is filled in.
-    String rangesYears = this.getSessionValue(APConstants.CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS);
-    if (StringUtils.isBlank(rangesYears)) {
-      LOG.debug("The COVID-19 year range is not configured, so the section is hidden");
-      return false;
-    }
-
-    Phase phase = this.getActualPhase();
-    if (phase == null) {
-      LOG.debug("There is no phase to compare with the COVID-19 year range, so the section is hidden");
-      return false;
-    }
-
-    int phaseYear = phase.getYear();
-    String[] years = rangesYears.split("-");
-    // There is no year zero, so it is the value the years that do not parse fall back to.
-    int since = NumberUtils.toInt(StringUtils.trim(years[0]), 0);
-    if (since == 0) {
-      LOG.warn("The COVID-19 year range {} does not start with a valid year, so the section is hidden", rangesYears);
-      return false;
-    }
-
-    if (years.length == 1) {
-      // A single year has no upper bound: the section is shown from that year onwards.
-      return since <= phaseYear;
-    }
-
-    if (years.length == 2) {
-      int until = NumberUtils.toInt(StringUtils.trim(years[1]), 0);
-      if (until == 0) {
-        LOG.warn("The COVID-19 year range {} does not end with a valid year, so the section is hidden", rangesYears);
-        return false;
-      }
-      return since <= phaseYear && until >= phaseYear;
-    }
-
-    LOG.warn("The COVID-19 year range {} is not a [since]-[until] range, so the section is hidden", rangesYears);
-    return false;
-  }
-
   public void loadDissemination(Deliverable deliverableBD) {
 
     if (deliverableBD.getDeliverableDisseminations() != null) {
