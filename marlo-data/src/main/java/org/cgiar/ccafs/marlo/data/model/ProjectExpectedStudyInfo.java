@@ -148,9 +148,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
   private Boolean hasMilestones;
 
   @Expose
-  private Boolean hasCovidAnalysis;
-
-  @Expose
   public String score;
   @Expose
   public String allianceOicr;
@@ -266,10 +263,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     return hasCgiarContribution;
   }
 
-
-  public Boolean getHasCovidAnalysis() {
-    return hasCovidAnalysis;
-  }
 
 
   public Boolean getHasMilestones() {
@@ -519,10 +512,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.hasCgiarContribution = hasCgiarContribution;
   }
 
-  public void setHasCovidAnalysis(Boolean hasCovidAnalysis) {
-    this.hasCovidAnalysis = hasCovidAnalysis;
-  }
-
   public void setHasMilestones(Boolean hasMilestones) {
     this.hasMilestones = hasMilestones;
   }
@@ -721,7 +710,6 @@ public class ProjectExpectedStudyInfo extends MarloBaseEntity implements java.io
     this.setClimateChangeLevel(projectExpectedStudyInfoUpdate.getClimateChangeLevel());
     this.setDescribeClimateChange(projectExpectedStudyInfoUpdate.getDescribeClimateChange());
     this.setOtherStudyType(projectExpectedStudyInfoUpdate.getOtherStudyType());
-    this.setHasCovidAnalysis(projectExpectedStudyInfoUpdate.getHasCovidAnalysis());
     this.setHasMilestones(projectExpectedStudyInfoUpdate.getHasMilestones());
     this.setScore(projectExpectedStudyInfoUpdate.getScore());
     this.setAllianceOicr(projectExpectedStudyInfoUpdate.getAllianceOicr());

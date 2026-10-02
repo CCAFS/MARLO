@@ -445,7 +445,7 @@ public class ProjectOutcomeManagerImpl implements ProjectOutcomeManager {
       }
     }
 
-    if (currentPhase.getCrp() != null && currentPhase.getCrp().isAiccra()) {
+    if (currentPhase.getCrp() != null) {
 
       // AICCRA global unit
       for (ProjectOutcomeIndicator projectOutcomeIndicator : projectOutcomePrev.getProjectOutcomeIndicators().stream()

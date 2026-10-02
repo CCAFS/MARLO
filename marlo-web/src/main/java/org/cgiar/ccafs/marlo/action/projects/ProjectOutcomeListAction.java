@@ -217,9 +217,7 @@ public class ProjectOutcomeListAction extends BaseAction {
       projectOutcome.setCrpProgramOutcome(crpProgramOutcomeManager.getCrpProgramOutcomeById(outcomeId));
       projectOutcome = projectOutcomeManager.saveProjectOutcome(projectOutcome);
       projectOutcomeID = projectOutcome.getId().longValue();
-      if (this.isAiccra()) {
-        this.addAllCrpMilestones(projectOutcome);
-      }
+      this.addAllCrpMilestones(projectOutcome);
 
       return SUCCESS;
     } else {

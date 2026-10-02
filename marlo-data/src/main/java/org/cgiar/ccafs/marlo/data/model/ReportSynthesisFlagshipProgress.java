@@ -50,9 +50,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
   private String detailedAnnex;
 
   @Expose
-  private String relevanceCovid;
-
-  @Expose
   private String expandedResearchAreas;
 
   @Expose
@@ -260,10 +257,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     return projectStudies;
   }
 
-  public String getRelevanceCovid() {
-    return relevanceCovid;
-  }
-
 
   public ReportSynthesis getReportSynthesis() {
     return reportSynthesis;
@@ -418,10 +411,6 @@ public class ReportSynthesisFlagshipProgress extends MarloAuditableEntity implem
     this.projectStudies = projectStudies;
   }
 
-
-  public void setRelevanceCovid(String relevanceCovid) {
-    this.relevanceCovid = relevanceCovid;
-  }
 
 
   public void setReportSynthesis(ReportSynthesis reportSynthesis) {
