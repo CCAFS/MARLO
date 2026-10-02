@@ -8289,7 +8289,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           personData.put("email", person.getUser().getEmail());
         }
         String role = this.getSanitizedText(person.getContactType());
-        if (this.isAiccra() && role != null) {
+        if (role != null) {
           String normalizedRole = role.toUpperCase(Locale.ENGLISH);
           if ("PL".equals(normalizedRole)) {
             role = "Cluster leader";
