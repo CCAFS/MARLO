@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -286,7 +287,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
       // Building the Email message:
       StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
       // get CRPAdmin contacts
       String crpAdmins = "";
@@ -303,8 +304,8 @@ public class ClusterActivitiesAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-      message.append(this.getText("email.bye"));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support", new String[] {crpAdmins})}));
+      message.append(this.getText("email.role.bye"));
 
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
@@ -342,9 +343,11 @@ public class ClusterActivitiesAction extends BaseAction {
       }
       if (this.validateEmailNotification()) {
         if (buffer != null && fileName != null && contentType != null) {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            buffer, contentType, fileName, true);
         } else {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            null, null, null, true);
         }
       }
     }
@@ -423,14 +426,15 @@ public class ClusterActivitiesAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.assigned", new String[] {crpClusterPreview.getIdentifier(),
       crpClusterPreview.getDescription(), crp, this.getText("email.cluster.responsabilities")}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+      null, null, null, true);
   }
 
 
@@ -499,13 +503,14 @@ public class ClusterActivitiesAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.cluster.unassigned",
       new String[] {crpClusterOfActivity.getIdentifier(), crpClusterOfActivity.getDescription(), crp}));
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+      null, null, null, true);
   }
 
 

@@ -37,6 +37,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.ByteArrayOutputStream;
@@ -326,7 +327,7 @@ public class CrpPpaPartnersAction extends BaseAction {
 
       // Building the Email message:
       StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
       // get CRPAdmin contacts
       String crpAdmins = "";
@@ -343,8 +344,8 @@ public class CrpPpaPartnersAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-      message.append(this.getText("email.bye"));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support", new String[] {crpAdmins})}));
+      message.append(this.getText("email.role.bye"));
 
       // Saving crpUser
       Map<String, Object> mapUser = new HashMap<>();
@@ -383,9 +384,11 @@ public class CrpPpaPartnersAction extends BaseAction {
       }
       if (this.validateEmailNotification()) {
         if (buffer != null && fileName != null && contentType != null) {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            buffer, contentType, fileName, true);
         } else {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            null, null, null, true);
         }
       }
     }
@@ -447,15 +450,16 @@ public class CrpPpaPartnersAction extends BaseAction {
 
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userRoleAssigned.getUser().getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userRoleAssigned.getUser().getFirstName()}));
     message.append(this.getText("email.contactpoint.assigned",
       new String[] {ppaPartner, crp, this.getText("email.contactpoint.responsabilities")}));
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
   }
 
@@ -515,13 +519,14 @@ public class CrpPpaPartnersAction extends BaseAction {
 
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userRoleUnassigned.getUser().getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userRoleUnassigned.getUser().getFirstName()}));
     message.append(this.getText("email.contactpoint.unassigned", new String[] {crp, ppaPartner}));
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
 
   }
