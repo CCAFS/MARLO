@@ -138,6 +138,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
     StringBuilder query = new StringBuilder();
     query.append("select distinct i from Institution i left join fetch i.institutionType it where ");
+    query.append("i.active = true and ");
     query.append("(i.name like concat('%', :institutionName, '%') ");
     query.append("or i.acronym like concat('%', :institutionName, '%') ");
     query.append("or i.websiteLink like concat('%', :institutionName, '%')) ");
