@@ -99,6 +99,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -776,7 +777,7 @@ public class ProjectPartnerAction extends BaseAction {
 
         // Building the Email message:
         StringBuilder message = new StringBuilder();
-        message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+        message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
         // get CRPAdmin contacts
         String crpAdmins = "";
@@ -794,8 +795,9 @@ public class ProjectPartnerAction extends BaseAction {
         }
 
         message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-          config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-        message.append(this.getText("email.bye"));
+          config.getBaseUrl(), user.getEmail(), password,
+          this.getText("email.role.support", new String[] {crpAdmins})}));
+        message.append(this.getText("email.role.bye"));
 
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
@@ -833,10 +835,11 @@ public class ProjectPartnerAction extends BaseAction {
         if (!this.isCenterGlobalUnit()) {
           if (this.validateEmailNotification()) {
             if (buffer != null && fileName != null && contentType != null) {
-              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
-                true);
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+                buffer, contentType, fileName, true);
             } else {
-              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+                null, null, null, true);
             }
           }
         }
@@ -957,7 +960,7 @@ public class ProjectPartnerAction extends BaseAction {
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.project.assigned",
       new String[] {projectRole, crp, project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
         project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
@@ -966,13 +969,14 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       message.append(this.getText("email.project.coordinator.responsabilities"));
     }
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
     if (!this.isCenterGlobalUnit()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
 
     // TIP notification email
@@ -1081,7 +1085,7 @@ public class ProjectPartnerAction extends BaseAction {
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userUnassigned.getFirstName()}));
 
     if (role.getId() == plRole.getId().longValue()) {
       message.append(this.getText("email.project.leader.unAssigned",
@@ -1093,12 +1097,13 @@ public class ProjectPartnerAction extends BaseAction {
           project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     }
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
     if (!this.isCenterGlobalUnit()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
   }
 

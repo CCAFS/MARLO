@@ -86,6 +86,56 @@ public class SendMailS extends BaseAction {
   }
 
   /**
+   * Builds the content of a message: the body as a multipart/alternative with a text/plain part and, for an HTML
+   * body, the text/html part after it, so that a client that does not render HTML shows the text. With an attachment,
+   * that alternative goes inside a multipart/mixed next to the attachment; it used to sit inside the alternative,
+   * where a client may read the file as one more rendering of the body and hide it.
+   *
+   * @param messageContent the body of the email.
+   * @param isHtml whether the body is HTML; a plain body gets only the text/plain part.
+   * @param attachment the file to attach, or null.
+   * @param attachmentMimeType the MIME type of the file, or null.
+   * @param fileName the name of the file, or null.
+   * @return the content to set on the message.
+   */
+  // Package-private and static so SendMailSContentTest can check the structure without sending.
+  static MimeMultipart buildContent(String messageContent, boolean isHtml, byte[] attachment,
+    String attachmentMimeType, String fileName) throws MessagingException {
+    MimeMultipart body = new MimeMultipart("alternative");
+
+    // The parts go from the plainest to the richest: clients show the last one they can render.
+    MimeBodyPart textPart = new MimeBodyPart();
+    textPart.setText(isHtml ? EmailPlainText.fromHtml(messageContent) : StringUtils.defaultString(messageContent),
+      "utf-8");
+    body.addBodyPart(textPart);
+    if (isHtml) {
+      MimeBodyPart htmlPart = new MimeBodyPart();
+      htmlPart.setText(messageContent, "utf-8", "html");
+      body.addBodyPart(htmlPart);
+    }
+
+    if (!hasAttachment(attachment, attachmentMimeType, fileName)) {
+      return body;
+    }
+
+    MimeMultipart mixed = new MimeMultipart("mixed");
+    MimeBodyPart bodyPart = new MimeBodyPart();
+    bodyPart.setContent(body);
+    mixed.addBodyPart(bodyPart);
+
+    DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
+    MimeBodyPart attachmentPart = new MimeBodyPart();
+    attachmentPart.setDataHandler(new DataHandler(dataSource));
+    attachmentPart.setFileName(fileName);
+    mixed.addBodyPart(attachmentPart);
+    return mixed;
+  }
+
+  private static boolean hasAttachment(byte[] attachment, String attachmentMimeType, String fileName) {
+    return attachment != null && attachmentMimeType != null && fileName != null;
+  }
+
+  /**
    * Reads the CRP of the request being served. This bean is a Spring singleton, so Struts never injects a session
    * into it and the inherited getCrpID() is always null here; the session has to be taken from the ActionContext of
    * the current thread instead.
@@ -410,25 +460,10 @@ public class SendMailS extends BaseAction {
       // msgbackup.setSubject(subject + "Backup");
       // msgbackup.setSentDate(new Date());
 
-      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
+      MimeMultipart mimeMultipart =
+        buildContent(messageContent, isHtml, attachment, attachmentMimeType, fileName);
 
-      // Body content: TEXT
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      if (isHtml) {
-        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
-      } else {
-        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
-      }
-
-      mimeMultipart.addBodyPart(mimeBodyPart);
-
-      if (attachment != null && attachmentMimeType != null && fileName != null) {
-        // Body content: ATTACHMENT
-        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-        attachmentBodyPart.setFileName(fileName);
-        mimeMultipart.addBodyPart(attachmentBodyPart);
+      if (hasAttachment(attachment, attachmentMimeType, fileName)) {
         emailLog.setFileName(fileName);
         emailLog.setFileContent(attachment);
         try {
@@ -581,25 +616,10 @@ public class SendMailS extends BaseAction {
       msg.setSubject(subject);
       msg.setSentDate(new Date());
 
-      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
+      MimeMultipart mimeMultipart =
+        buildContent(messageContent, isHtml, attachment, attachmentMimeType, fileName);
 
-      // Body content: TEXT
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      if (isHtml) {
-        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
-      } else {
-        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
-      }
-
-      mimeMultipart.addBodyPart(mimeBodyPart);
-
-      if (attachment != null && attachmentMimeType != null && fileName != null) {
-        // Body content: ATTACHMENT
-        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-        attachmentBodyPart.setFileName(fileName);
-        mimeMultipart.addBodyPart(attachmentBodyPart);
+      if (hasAttachment(attachment, attachmentMimeType, fileName)) {
         emailLog.setFileName(fileName);
         emailLog.setFileContent(attachment);
       }
@@ -762,25 +782,10 @@ public class SendMailS extends BaseAction {
       // msgbackup.setSubject(subject + "Backup");
       // msgbackup.setSentDate(new Date());
 
-      MimeMultipart mimeMultipart = new MimeMultipart("alternative");
+      MimeMultipart mimeMultipart =
+        buildContent(messageContent, isHtml, attachment, attachmentMimeType, fileName);
 
-      // Body content: TEXT
-      MimeBodyPart mimeBodyPart = new MimeBodyPart();
-      if (isHtml) {
-        mimeBodyPart.setContent(messageContent, "text/html; charset=utf-8");
-      } else {
-        mimeBodyPart.setContent(messageContent, "text; charset=utf-8");
-      }
-
-      mimeMultipart.addBodyPart(mimeBodyPart);
-
-      if (attachment != null && attachmentMimeType != null && fileName != null) {
-        // Body content: ATTACHMENT
-        DataSource dataSource = new ByteArrayDataSource(attachment, attachmentMimeType);
-        MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-        attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
-        attachmentBodyPart.setFileName(fileName);
-        mimeMultipart.addBodyPart(attachmentBodyPart);
+      if (hasAttachment(attachment, attachmentMimeType, fileName)) {
         emailLog.setFileName(fileName);
         emailLog.setFileContent(attachment);
         try {
