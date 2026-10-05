@@ -91,10 +91,7 @@ public class DeliverableShfrmPriorityActionMySQLDAO extends AbstractMarloDAO<Del
     String query = "from " + DeliverableShfrmPriorityAction.class.getName() + " where is_active=1 and deliverable_id="
       + deliverableId + " and shfrm_priority_action_id=" + priorityActionId + " and id_phase=" + phaseId;
     List<DeliverableShfrmPriorityAction> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    return list;
   }
 
   @Override

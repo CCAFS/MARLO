@@ -62,11 +62,7 @@ public class DeliverableCrpOutcomeMySQLDAO extends AbstractMarloDAO<DeliverableC
   public List<DeliverableCrpOutcome> findAll() {
     String query = "from " + DeliverableCrpOutcome.class.getName();
     List<DeliverableCrpOutcome> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

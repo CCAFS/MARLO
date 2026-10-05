@@ -64,11 +64,7 @@ public class PhaseMySQLDAO extends AbstractMarloDAO<Phase, Long> implements Phas
   public List<Phase> findAll() {
     String query = "from " + Phase.class.getName() + " ";
     List<Phase> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

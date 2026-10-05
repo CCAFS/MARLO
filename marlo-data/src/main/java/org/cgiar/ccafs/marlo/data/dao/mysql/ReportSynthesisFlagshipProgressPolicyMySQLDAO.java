@@ -62,11 +62,7 @@ public class ReportSynthesisFlagshipProgressPolicyMySQLDAO extends AbstractMarlo
   public List<ReportSynthesisFlagshipProgressPolicy> findAll() {
     String query = "from " + ReportSynthesisFlagshipProgressPolicy.class.getName() + " where is_active=1";
     List<ReportSynthesisFlagshipProgressPolicy> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

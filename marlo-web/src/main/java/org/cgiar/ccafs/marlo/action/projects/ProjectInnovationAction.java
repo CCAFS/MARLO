@@ -88,7 +88,6 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ToolFunctionCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -167,7 +166,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ToolFunctionCategory;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -257,7 +255,6 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
-  private SrfIdoManager srfIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
@@ -344,8 +341,6 @@ public class ProjectInnovationAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private List<SrfSubIdo> subIdos;
   private List<SrfSubIdo> principalSubIdo;
-  private List<SrfIdo> srfIdos;
-  private HashMap<Long, String> idoList;
   private List<ProjectOutcome> projectOutcomes;
   private List<FeedbackQACommentableFields> feedbackComments;
   private List<CrpProgramOutcome> crpOutcomes;
@@ -398,7 +393,7 @@ public class ProjectInnovationAction extends BaseAction {
       ProjectInnovationSharedManager projectInnovationSharedManager,
       ProjectInnovationCenterManager projectInnovationCenterManager,
       ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
-      ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
+      ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
       ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
       ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
       ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
@@ -466,7 +461,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
-    this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.projectOutcomeManager = projectOutcomeManager;
@@ -758,10 +752,6 @@ public class ProjectInnovationAction extends BaseAction {
     return geographicScopeList;
   }
 
-  public HashMap<Long, String> getIdoList() {
-    return idoList;
-  }
-
   public List<ImpactArea> getImpactAreaList() {
     return impactAreaList;
   }
@@ -902,10 +892,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Sdg> getSdgList() {
     return sdgList;
-  }
-
-  public List<SrfIdo> getSrfIdos() {
-    return srfIdos;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -1563,9 +1549,10 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
         try {
-          if (innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) {
+          if ((innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) && phase != null
+              && phase.getId() != null) {
             List<ProjectInnovationToolCategory> innovationToolCategoryList = projectInnovationToolCategoryManager
-                .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), this.getPhaseID());
+                .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), phase.getId());
             if (innovationToolCategoryList != null && !innovationToolCategoryList.isEmpty()) {
               innovation.setToolCategories(innovationToolCategoryList);
             }
@@ -2397,16 +2384,6 @@ public class ProjectInnovationAction extends BaseAction {
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
       }
-    }
-
-    // SrfIDO
-    idoList = new HashMap<>();
-    srfIdos = new ArrayList<>();
-    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      idoList.put(srfIdo.getId(), srfIdo.getDescription());
-
-      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      srfIdos.add(srfIdo);
     }
 
     if (innovation.getProjectInnovationInfo() != null) {
@@ -4913,10 +4890,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.geographicScopeList = geographicScopeList;
   }
 
-  public void setIdoList(HashMap<Long, String> idoList) {
-    this.idoList = idoList;
-  }
-
   public void setImpactAreaList(List<ImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
   }
@@ -5036,10 +5009,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setSdgList(List<Sdg> sdgList) {
     this.sdgList = sdgList;
-  }
-
-  public void setSrfIdos(List<SrfIdo> srfIdos) {
-    this.srfIdos = srfIdos;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {
