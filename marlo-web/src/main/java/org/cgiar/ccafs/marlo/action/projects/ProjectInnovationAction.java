@@ -2743,15 +2743,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveActors(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveActors called - innovation.getActors(): " + (innovation.getActors() != null ? innovation.getActors().size() : "null"));
-    if (innovation.getActors() != null) {
-      for (ProjectInnovationActor a : innovation.getActors()) {
-        logger.info("Actor - id: " + a.getId() + ", actor: " + (a.getActor() != null ? a.getActor().getId() : "null") + ", total: " + a.getTotal());
-      }
-    }
-    
-    // Leer actor.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read actor.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> actorTypeIds = new HashMap<>();
     
@@ -3070,7 +3062,7 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveBundles(ProjectInnovation projectInnovation, Phase phase) {
     try {
-      // Leer selectedInnovation.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+      // Read selectedInnovation.id from the request parameters (Struts 6 does not instantiate nested objects)
       HttpServletRequest request = this.getRequest();
       Map<Integer, Long> selectedInnovationIds = new HashMap<>();
       
@@ -3120,7 +3112,7 @@ public class ProjectInnovationAction extends BaseAction {
             bundle.setId(null);
           }
 
-          // Rehidratar selectedInnovation desde BD usando ID del request (patrón Struts 6)
+          // Rehydrate selectedInnovation from the database using the request ID (Struts 6 pattern)
           ProjectInnovation selectedInnovationManaged = null;
           Long selectedId = selectedInnovationIds.get(index);
           
@@ -3475,10 +3467,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveCrpOutcomes called - innovation.getCrpOutcomes(): " + (innovation.getCrpOutcomes() != null ? innovation.getCrpOutcomes().size() : "null"));
-    
-    // Leer crpOutcome.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read crpOutcome.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> crpOutcomeIds = new HashMap<>();
     
@@ -3512,7 +3501,7 @@ public class ProjectInnovationAction extends BaseAction {
           new ArrayList<>(projectInnovation.getProjectInnovationCrpOutcomes().stream()
             .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        // Crear set de IDs que se mantienen (desde request)
+        // Build the set of IDs that are kept (from the request)
         Set<Long> keepIds = new HashSet<>(crpOutcomeIds.values());
         
         for (ProjectInnovationCrpOutcome innovationOutcome : outcomePrev) {
@@ -3527,12 +3516,12 @@ public class ProjectInnovationAction extends BaseAction {
       logger.error("unable to delete crp outcome", e);
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!crpOutcomeIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : crpOutcomeIds.entrySet()) {
         Long crpOutcomeId = entry.getValue();
         
-        // Verificar si ya existe este outcome para esta innovación y fase
+        // Check whether this outcome already exists for this innovation and phase
         boolean exists = false;
         if (projectInnovation.getProjectInnovationCrpOutcomes() != null) {
           exists = projectInnovation.getProjectInnovationCrpOutcomes().stream()
@@ -3650,11 +3639,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveGeographicScope(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveGeographicScope called - innovation.getGeographicScopes(): " + 
-      (innovation.getGeographicScopes() != null ? innovation.getGeographicScopes().size() : "null"));
-    
-    // Leer repIndGeographicScope.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read repIndGeographicScope.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> geographicScopeIds = new HashMap<>();
     
@@ -3695,7 +3680,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!geographicScopeIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : geographicScopeIds.entrySet()) {
         Long scopeId = entry.getValue();
@@ -4011,8 +3996,8 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
       } catch (final Exception e) {
-        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
-            e.getMessage());
+        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function",
+            e);
       }
     }
 
@@ -4210,7 +4195,7 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationShared innovationProject : this.innovation.getSharedInnovations()) {
         if (innovationProject.getId() == null) {
           
-          // Validar que el proyecto no sea nulo antes de intentar guardar
+          // Make sure the project is not null before trying to save
           if (innovationProject.getProject() == null || innovationProject.getProject().getId() == null) {
             logger.warn("Skipping ProjectInnovationShared with null project for innovation: {}", 
                         projectInnovation.getId());
@@ -4223,7 +4208,7 @@ public class ProjectInnovationAction extends BaseAction {
 
           Project project = this.projectManager.getProjectById(innovationProject.getProject().getId());
           
-          // Validar que el proyecto exista en la base de datos
+          // Make sure the project exists in the database
           if (project == null) {
             logger.warn("Project with ID {} not found for innovation: {}", 
                         innovationProject.getProject().getId(), projectInnovation.getId());
@@ -4523,11 +4508,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveRegions(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveRegions called - innovation.getRegions(): " + 
-      (innovation.getRegions() != null ? innovation.getRegions().size() : "null"));
-    
-    // Leer locElement.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read locElement.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> regionIds = new HashMap<>();
     
@@ -4561,7 +4542,7 @@ public class ProjectInnovationAction extends BaseAction {
             .stream()
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        // Crear set de IDs que se mantienen (desde request)
+        // Build the set of IDs that are kept (from the request)
         Set<Long> keepIds = new HashSet<>(regionIds.values());
         
         for (ProjectInnovationRegion innovationRegion : regionPrev) {
@@ -4575,12 +4556,12 @@ public class ProjectInnovationAction extends BaseAction {
       logger.error("error in regions delete process " + e);
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!regionIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : regionIds.entrySet()) {
         Long regionId = entry.getValue();
         
-        // Verificar si ya existe esta región para esta innovación y fase
+        // Check whether this region already exists for this innovation and phase
         boolean exists = false;
         if (projectInnovation.getProjectInnovationRegions() != null) {
           exists = projectInnovation.getProjectInnovationRegions().stream()
