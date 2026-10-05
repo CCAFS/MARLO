@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.logging.LogContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -27,6 +28,7 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
@@ -52,7 +54,11 @@ public class UnhandledExceptionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // Print the exception in the log
+    // Print the exception in the log. The page is rendered with HTTP 200, but the request failed as a 500; a client
+    // that closed the connection received nothing, so it gets no status.
+    if (!(exception instanceof ClientAbortException)) {
+      LogContext.putStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
     LOG.error("There was an unexpected exception", exception);
 
     if (this.isAiccra()) {
@@ -158,8 +164,7 @@ public class UnhandledExceptionAction extends BaseAction {
 
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
-    LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.",
-      this.getCurrentUser().getEmail());
+    LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.");
   }
 
   public void setException(Exception exception) {

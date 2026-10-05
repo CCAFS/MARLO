@@ -315,7 +315,7 @@
                                     <div class="tab-content ">          
                                       [#-- Progress tab --]  
                                         <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                                          [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                                          [#if projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
                                           <h4 class="headTitle" style="font-size: 15px;"> <i>This information is only for reference and is not editable</i></h4>
                                             [#-- 
                                             && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
@@ -346,7 +346,7 @@
                                         [#-- Reporting tab --]
                                         
                                           <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
-                                            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                            [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
                                               [#--  <h4 class="headTitle">Progress to Targets</h4> --]
                                                 <div class="nextUsersList">
                                                   [#-- Baseline Indicators --]
@@ -370,7 +370,7 @@
                                     </div>   
                                   </div>
                                 [#else]     
-                                  [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                  [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
                                             <div class="nextUsersList">
                                               [#-- Baseline Indicators --]
                                               [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]

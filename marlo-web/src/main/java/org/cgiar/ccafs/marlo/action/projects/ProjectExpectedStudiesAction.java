@@ -2466,11 +2466,6 @@ public class ProjectExpectedStudiesAction extends BaseAction {
           .setReferencesFile(this.expectedStudy.getProjectExpectedStudyInfo().getReferencesFile());
       }
 
-      // Save COVID Analysis
-      if (this.expectedStudy.getProjectExpectedStudyInfo().getHasCovidAnalysis() == null) {
-        this.expectedStudy.getProjectExpectedStudyInfo().setHasCovidAnalysis(false);
-      }
-
       // Setup new expected year
       if ((this.expectedStudy.getProjectExpectedStudyInfo().getStatus() != null)
         && (this.expectedStudy.getProjectExpectedStudyInfo().getStatus().getId() != null)

@@ -48,7 +48,6 @@ public final class APConstants {
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
-  public static final String CRP_COVID_REQUIRED = "crp_covid_required";
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
@@ -120,9 +119,6 @@ public final class APConstants {
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
   public static final String CRP_PROJECT_PAGE_YEAR = "project_website_year_value";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
-    "crp_show_section_impact_covid19_ranges_years";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
