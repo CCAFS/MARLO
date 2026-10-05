@@ -115,9 +115,6 @@ public final class APConstants {
   public static final String CRP_HAS_DISEMINATION = "crp_has_disemination";
   public static final String CRP_ENABLE_BUDGET_EXECUTION = "crp_enable_budget_execution";
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
-    "crp_show_section_impact_covid19_ranges_years";
   public static final String DELIVERABLE_COMPLETED_IN_PREVIOUS_PHASES_ACTIVE =
     "deliverable_completed_in_previous_phases_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";

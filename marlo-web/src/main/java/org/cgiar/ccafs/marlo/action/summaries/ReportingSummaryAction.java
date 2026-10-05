@@ -583,7 +583,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     masterReport.getParameterValues().put("i8nCaseStudiesROutcomeStory", this.getText("study.outcomestory.readText"));
     masterReport.getParameterValues().put("i8nCaseStudiesROutcomestoryLinks",
       this.getText("study.outcomestoryLinks.readText"));
-    masterReport.getParameterValues().put("i8nStudiesCovidAnalysis", this.getText("summaries.study.hasCovidAnalysis"));
     masterReport.getParameterValues().put("i8nStudiesLinkPerformance",
       this.getText("summaries.study.linkPerformanceIndicator"));
     masterReport.getParameterValues().put("i8nMeliaPublications", this.getText("summaries.study.meliaPublications"));
@@ -2166,14 +2165,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links", "studyPolicies",
         "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional", "isNational",
         "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaPublications", "performanceIndicator",
-        "covidAnalysis", "centers", "clusterAcronym"},
+        "centers", "clusterAcronym"},
       new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class},
       0);
     Set<ProjectExpectedStudy> myStudies = new HashSet<>();
 
@@ -2219,7 +2218,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           studyProjects = null, tagged = null, cgiarInnovation = null, cgiarInnovations = null, climateRelevance = null,
           link = null, links = null, studyPolicies = null, isSrfTargetText = null,
           otherCrossCuttingDimensionsSelection = null, url = null, studiesReference = null, meliaPublications = null,
-          performanceIndicator = null, covidAnalysis = null, centers = null, clusterAcronym = null;
+          performanceIndicator = null, centers = null, clusterAcronym = null;
 
         Boolean isContribution = false, isRegional = false, isNational = false, isOutcomeCaseStudy = false,
           isSrfTarget = false;
@@ -2648,16 +2647,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           && !projectExpectedStudyInfo.getContacts().trim().isEmpty()) {
           contacts = htmlParser.plainTextToHtml(projectExpectedStudyInfo.getContacts());
         }
-        // Covid Analysis
-        if (projectExpectedStudyInfo.getHasCovidAnalysis() != null) {
-          if (projectExpectedStudyInfo.getHasCovidAnalysis()) {
-            covidAnalysis = "Yes";
-          } else {
-            covidAnalysis = "No";
-
-          }
-        }
-
         // Performance indicator
         // Expected Study Project Outcome list
         if (projectExpectedStudyInfo.getProjectExpectedStudy() != null
@@ -2750,7 +2739,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           otherCrossCuttingDimensions, comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation,
           cgiarInnovations, climateRelevance, link, links, studyPolicies, isSrfTargetText,
           otherCrossCuttingDimensionsSelection, isContribution, isRegional, isNational, isOutcomeCaseStudy, isSrfTarget,
-          url, studiesReference, meliaPublications, performanceIndicator, covidAnalysis, centers, clusterAcronym});
+          url, studiesReference, meliaPublications, performanceIndicator, centers, clusterAcronym});
 
       }
     }
@@ -8300,7 +8289,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           personData.put("email", person.getUser().getEmail());
         }
         String role = this.getSanitizedText(person.getContactType());
-        if (this.isAiccra() && role != null) {
+        if (role != null) {
           String normalizedRole = role.toUpperCase(Locale.ENGLISH);
           if ("PL".equals(normalizedRole)) {
             role = "Cluster leader";
@@ -8741,11 +8730,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Outcome Story
     if (studyInfo.getOutcomeStory() != null && !studyInfo.getOutcomeStory().trim().isEmpty()) {
       data.put("outcomeStory", this.getSanitizedText(studyInfo.getOutcomeStory()));
-    }
-
-    // COVID Analysis
-    if (studyInfo.getHasCovidAnalysis() != null) {
-      data.put("hasCovidAnalysis", studyInfo.getHasCovidAnalysis());
     }
 
     // Tag
