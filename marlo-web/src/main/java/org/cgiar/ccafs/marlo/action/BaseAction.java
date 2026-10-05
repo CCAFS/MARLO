@@ -7460,8 +7460,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     try {
       Deliverable deliverableBD = this.deliverableManager.getDeliverableById(deliverableID);
       this.loadDissemination(deliverableBD);
-      // Called once per row of the deliverable list; an absent dissemination record is the everyday case. The
-      // catch stays because getDisseminationUrl() is still dereferenced below and can be null on its own.
+      // Called once per row of the deliverable list; an absent dissemination record is the everyday case, and a
+      // dissemination without a URL answers null below instead of throwing.
       if (deliverableBD == null || deliverableBD.getDissemination() == null) {
         return null;
       }
@@ -7470,11 +7470,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && deliverableBD.getDissemination().getAlreadyDisseminated().booleanValue()) {
 
         String channel = deliverableBD.getDissemination().getDisseminationChannel();
-        String link = deliverableBD.getDissemination().getDisseminationUrl().replaceAll(" ", "%20");;
+        String link = deliverableBD.getDissemination().getDisseminationUrl();
         if (channel == null || channel.equals("-1")) {
           return null;
         }
-        if (link == null || link.equals("-1") || link.isEmpty()) {
+        if (link == null) {
+          return null;
+        }
+        link = link.replaceAll(" ", "%20");
+        if (link.equals("-1") || link.isEmpty()) {
           return null;
         }
 
@@ -8253,10 +8257,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void loadDissemination(Deliverable deliverableBD) {
 
-    if (deliverableBD.getDeliverableDisseminations() != null) {
+    if (deliverableBD != null && deliverableBD.getDeliverableDisseminations() != null) {
+      Phase actualPhase = this.getActualPhase();
       deliverableBD.setDisseminations(new ArrayList<>(deliverableBD.getDeliverableDisseminations().stream()
-        .filter(dd -> dd.isActive() && dd.getPhase().equals(this.getActualPhase())).collect(Collectors.toList())));
-      if (deliverableBD.getDeliverableDisseminations().size() > 0) {
+        .filter(dd -> dd != null && dd.isActive() && dd.getPhase() != null && dd.getPhase().equals(actualPhase))
+        .collect(Collectors.toList())));
+      // The size check must read the phase-filtered list: a deliverable disseminated only in other phases has
+      // records in getDeliverableDisseminations() and none in getDisseminations().
+      if (!deliverableBD.getDisseminations().isEmpty()) {
         deliverableBD.setDissemination(deliverableBD.getDisseminations().get(0));
       } else {
         deliverableBD.setDissemination(new DeliverableDissemination());
