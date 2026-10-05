@@ -50,6 +50,13 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   @Expose
   private Date added;
+
+  /**
+   * Mapped read-only to institutions.is_active (field access, see Institutions.hbm.xml): the flag is maintained by the
+   * CLARISA synchronization and by data migrations, never by MARLO. Null is read as active.
+   */
+  private Boolean active = Boolean.TRUE;
+
   private String nameWithCountry;
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
@@ -300,7 +307,7 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   @Override
   public boolean isActive() {
-    return true;
+    return !Boolean.FALSE.equals(this.active);
   }
 
   public boolean isPPA(long crpID, Phase phase) {
