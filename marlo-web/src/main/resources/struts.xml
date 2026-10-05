@@ -79,6 +79,10 @@
 			<interceptor name="validSessionCrp"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidSessionCrpInterceptor" />
 
+			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+			<interceptor name="validPhase"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
+
 			<!-- Crp Admin interceptors -->
 			<interceptor name="canEditCrpAdmin"
 				class="org.cgiar.ccafs.marlo.interceptor.admin.EditCrpAdminInterceptor" />
@@ -192,6 +196,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
@@ -199,6 +204,7 @@
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			
@@ -206,6 +212,7 @@
         		<interceptor-ref name="i18nFile" />
         		<interceptor-ref name="validCrp" />
         		<interceptor-ref name="validSessionCrp" />
+        		<interceptor-ref name="validPhase" />
         		<interceptor-ref name="privateStudy" />        
         		<interceptor-ref name="defaultStack" />
             </interceptor-stack>
@@ -220,6 +227,7 @@
       <interceptor-stack name="privateSummaryStack">
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
 
@@ -235,6 +243,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="accessibleAdmin" />
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -248,6 +257,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditImpactPathway" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -260,6 +270,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
@@ -271,6 +282,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
@@ -282,6 +294,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditProject" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -294,6 +307,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditAi" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -306,6 +320,7 @@
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="canEditProject" />        
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
@@ -319,6 +334,7 @@
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="canEditProjectLp6Contribution" />
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
@@ -331,6 +347,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editFunding" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -343,6 +360,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -355,6 +373,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditCrp" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -366,6 +385,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditPublication" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -378,6 +398,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editExpectedStudy" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -390,6 +411,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
@@ -398,6 +420,7 @@
 			<interceptor-stack name="superAdminStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="superAdminValidation" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -410,6 +433,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditPowbSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -422,6 +446,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditReportSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -435,6 +460,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
@@ -443,6 +469,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
@@ -452,6 +479,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterImpactPathway" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -463,6 +491,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterProject" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -474,6 +503,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterDeliverable" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -485,6 +515,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterOutcome" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -496,6 +527,7 @@
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="editCenterOutput" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -505,13 +537,22 @@
 			<interceptor-stack name="centerCapdevStack">
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCapdev" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			<!-- ******************************************************************************************* -->
 
+			<!-- Default for the actions that declare no interceptors: validPhase answers 404 when the phaseID does not
+				belong to the session Global Unit (A2-2606) -->
+			<interceptor-stack name="marloDefaultStack">
+				<interceptor-ref name="validPhase" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 		</interceptors>
+
+		<default-interceptor-ref name="marloDefaultStack" />
 
 		<default-action-ref name="login" />
 

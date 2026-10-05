@@ -2051,8 +2051,14 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         long requestedPhaseID = NumberUtils.toLong(phaseIDParam, 0L);
 
         // There is no phase with id 0, so anything that does not parse falls back to the current phase param.
+        // A phase id that is not one of the session Global Unit's phases falls back the same way: returning null
+        // here made RequireUserInterceptor clear the session, so a link carrying another Global Unit's phase (a
+        // second tab, a bookmark, an email) logged the user out before ValidSessionCrpInterceptor could switch.
         if (requestedPhaseID != 0L && allPhases != null) {
-          return allPhases.get(requestedPhaseID);
+          Phase requestedPhase = allPhases.get(requestedPhaseID);
+          if (requestedPhase != null) {
+            return requestedPhase;
+          }
         }
 
         // An absent or empty value is the everyday case: the templates still render the param with no value

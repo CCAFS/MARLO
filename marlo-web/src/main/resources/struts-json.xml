@@ -13,7 +13,12 @@
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
 
+			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+			<interceptor name="validPhase"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
+
 			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="prepare" />
@@ -21,6 +26,7 @@
 			
 			<interceptor-stack name="jsonStackWithAudit">
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="prepare" />
@@ -28,6 +34,14 @@
 		</interceptors>
 
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
+
+		<!-- validPhase answers 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+		<global-results>
+			<result name="404" type="httpheader">
+				<param name="status">404</param>
+				<param name="errorMessage">Not Found</param>
+			</result>
+		</global-results>
 
 		<action name="deliverableStatus"
 			class="org.cgiar.ccafs.marlo.action.json.global.DeliverableStatusAction">
@@ -48,6 +62,7 @@
 
 		<action name="uploadFundingSource"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			<result type="json">
 				<param name="noCache">true</param>
@@ -57,6 +72,7 @@
 
 		<action name="uploadFundingSourceResearch"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileResearchAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -67,6 +83,7 @@
 
 		<action name="uploadPowbSynthesis"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadPowbSynthesisGeneral">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -77,6 +94,7 @@
 
 		<action name="uploadStudies"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadStudiesFileAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -87,6 +105,7 @@
 
 		<action name="uploadProjectLocationActivitiesCSV"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadProjectLocationActivitiesCSVAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -97,6 +116,7 @@
 
 		<action name="uploadPartnership"
 			class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.UploadPartnershipFileAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -107,6 +127,7 @@
 
 		<action name="uploadBaseLine"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -584,6 +605,7 @@
 
 		<action name="uploadDeliverable"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -652,6 +674,7 @@
 
 		<action name="globalUnitLogoUpload"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.UploadGlobalUnitLogoAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			<interceptor-ref name="fileUpload">
 				<param name="maximumSize">314572900</param>
@@ -672,6 +695,7 @@
 
 		<action name="unsubmitImpactpathway"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
 			<result type="json">
@@ -1323,6 +1347,26 @@
 
 	<package name="json-planning" namespace="/impactPathway"
 		extends="json-default">
+
+		<interceptors>
+			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+			<interceptor name="validPhase"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
+
+			<interceptor-stack name="jsonPlanningStack">
+				<interceptor-ref name="validPhase" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="jsonPlanningStack"></default-interceptor-ref>
+
+		<global-results>
+			<result name="404" type="httpheader">
+				<param name="status">404</param>
+				<param name="errorMessage">Not Found</param>
+			</result>
+		</global-results>
 		<action name="validateImpactPathway"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.ValidateSectionStatusImpactPathway">
 			<result type="json">
