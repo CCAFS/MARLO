@@ -7382,24 +7382,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
-  public boolean isExpectedDeliverablesReportAllYearsVisible() {
-    // Specificity for show expected deliverable summary - all years selection - in summaries section
-    Boolean isVisible = false;
-    try {
-      if (this.hasSpecificities(APConstants.IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE)) {
-        isVisible = true;
-      } else {
-        isVisible = false;
-      }
-
-    } catch (Exception e) {
-      LOG.error("Could not read the specificity {}, so the all years selection is hidden",
-        APConstants.IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE, e);
-    }
-
-    return isVisible;
-  }
-
 
   /**
    * Findable
