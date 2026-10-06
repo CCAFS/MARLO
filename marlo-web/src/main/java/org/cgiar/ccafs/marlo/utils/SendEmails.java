@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -327,9 +326,12 @@ public class SendEmails {
 
         try {
           inputStream = action.getClass().getResourceAsStream("/manual/" + fileName);
-          buffer = readFully(inputStream);
-        } catch (FileNotFoundException e) {
-          LOG.error("The manual file {} was not found", fileName, e);
+          if (inputStream == null) {
+            // getResourceAsStream returns null instead of throwing when the manual is missing.
+            LOG.error("The manual file {} was not found, so the email goes out without it", fileName);
+          } else {
+            buffer = readFully(inputStream);
+          }
         } catch (IOException e) {
           LOG.error("Could not read the manual file {}", fileName, e);
         } finally {

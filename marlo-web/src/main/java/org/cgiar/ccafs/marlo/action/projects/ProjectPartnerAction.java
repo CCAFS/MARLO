@@ -107,7 +107,6 @@ import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -816,9 +815,12 @@ public class ProjectPartnerAction extends BaseAction {
 
         try {
           inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
-          buffer = readFully(inputStream);
-        } catch (FileNotFoundException e) {
-          LOG.error("The manual file {} was not found", fileName, e);
+          if (inputStream == null) {
+            // getResourceAsStream returns null instead of throwing when the manual is missing.
+            LOG.error("The manual file {} was not found, so the email goes out without it", fileName);
+          } else {
+            buffer = readFully(inputStream);
+          }
         } catch (IOException e) {
           LOG.error("Could not read the manual file {}", fileName, e);
         } finally {

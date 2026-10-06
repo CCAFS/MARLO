@@ -53,7 +53,6 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -1034,10 +1033,12 @@ public class CrpUsersAction extends BaseAction {
 
     try {
       inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
-      buffer = readFully(inputStream);
-    } catch (FileNotFoundException e) {
-      // The email is still sent, only without the manual attached, so this is the only trace of it.
-      LOG.error("The user manual {} was not found, so the email goes out without it", fileName, e);
+      if (inputStream == null) {
+        // getResourceAsStream returns null instead of throwing when the manual is missing.
+        LOG.error("The user manual {} was not found, so the email goes out without it", fileName);
+      } else {
+        buffer = readFully(inputStream);
+      }
     } catch (IOException e) {
       LOG.error("The user manual {} could not be read, so the email goes out without it", fileName, e);
     } finally {

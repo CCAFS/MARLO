@@ -55,7 +55,6 @@ import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +75,8 @@ import com.google.gson.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Christian Garcia
@@ -87,6 +88,8 @@ public class ClusterActivitiesAction extends BaseAction {
    * 
    */
   private static final long serialVersionUID = -2049759808815382048L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ClusterActivitiesAction.class);
 
 
   /**
@@ -324,10 +327,12 @@ public class ClusterActivitiesAction extends BaseAction {
 
       try {
         inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
-        buffer = readFully(inputStream);
-      } catch (FileNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        if (inputStream == null) {
+          // getResourceAsStream returns null instead of throwing when the manual is missing.
+          LOG.error("The user manual {} was not found, so the email goes out without it", fileName);
+        } else {
+          buffer = readFully(inputStream);
+        }
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
