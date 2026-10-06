@@ -451,8 +451,10 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
   @Override
   public String execute() throws Exception {
 
-    // A missing or unknown projectID, or a project without info in this phase, has no report to build
-    if (this.getSelectedPhase() == null || project == null || projectInfo == null) {
+    // A missing or unknown projectID, a project without info in this phase, or one without an active origin global
+    // unit (needed for the file name and the report header) has no report to build
+    if (this.getSelectedPhase() == null || project == null || projectInfo == null
+      || this.getOriginGlobalUnitProject() == null) {
       return NOT_FOUND;
     }
 
@@ -1113,8 +1115,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
   @Override
   public String getFileName() {
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    GlobalUnitProject globalUnitProject = this.getOriginGlobalUnitProject();
 
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectActivitiesSummary-");
@@ -1340,8 +1341,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     // Add center url to LOG
     // LOG.info("Center URL is: " + centerURL);
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    GlobalUnitProject globalUnitProject = this.getOriginGlobalUnitProject();
     centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
@@ -1424,6 +1424,19 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       }
     }
     return outputs;
+  }
+
+  /**
+   * Gets the active global unit where the project was created.
+   * 
+   * @return the origin GlobalUnitProject, or null when the project is missing or has no active origin
+   */
+  private GlobalUnitProject getOriginGlobalUnitProject() {
+    if (project == null || project.getGlobalUnitProjects() == null) {
+      return null;
+    }
+    return project.getGlobalUnitProjects().stream().filter(gu -> gu != null && gu.isActive() && gu.isOrigin())
+      .findFirst().orElse(null);
   }
 
   public Project getProject() {
